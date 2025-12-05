@@ -1,18 +1,18 @@
 import { useMemo } from 'react';
 import { useProjects } from '@/hooks/useProjects';
 import { useClients } from '@/hooks/useClients';
-import { useQuote } from '@/hooks/useQuotes';
+import { useCalendarEvents } from '@/hooks/useCalendarEvents';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, LineChart, Line, Legend
+  PieChart, Pie, Cell, LineChart, Line, AreaChart, Area
 } from 'recharts';
 import { 
-  TrendingUp, TrendingDown, Users, FolderOpen, FileText, 
-  DollarSign, CheckCircle, Clock, Loader2 
+  TrendingUp, TrendingDown, Users, FolderOpen, 
+  DollarSign, CheckCircle, Calendar, Loader2 
 } from 'lucide-react';
-import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
+import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, parseISO, startOfWeek, endOfWeek, addWeeks, isSameWeek } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -23,6 +23,7 @@ const COLORS = ['hsl(217, 91%, 50%)', 'hsl(142, 76%, 36%)', 'hsl(38, 92%, 50%)',
 export default function Analytics() {
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
   const { data: clients = [], isLoading: clientsLoading } = useClients();
+  const { data: calendarEvents = [], isLoading: calendarLoading } = useCalendarEvents();
   const { user } = useAuth();
 
   // Fetch all quotes for analytics
@@ -38,7 +39,7 @@ export default function Analytics() {
     enabled: !!user,
   });
 
-  const isLoading = projectsLoading || clientsLoading || quotesLoading;
+  const isLoading = projectsLoading || clientsLoading || quotesLoading || calendarLoading;
 
   // Statistics calculations
   const stats = useMemo(() => {
@@ -95,6 +96,45 @@ export default function Analytics() {
       ? Math.round(((thisMonthProjects - lastMonthProjects) / lastMonthProjects) * 100)
       : thisMonthProjects > 0 ? 100 : 0;
 
+    // Calendar analytics
+    const eventsByType = {
+      'Spotkanie': calendarEvents.filter(e => e.event_type === 'Spotkanie').length,
+      'Termin': calendarEvents.filter(e => e.event_type === 'Termin').length,
+      'Przypomnienie': calendarEvents.filter(e => e.event_type === 'Przypomnienie').length,
+      'Inne': calendarEvents.filter(e => e.event_type === 'Inne').length,
+    };
+
+    const eventsByStatus = {
+      'Zaplanowany': calendarEvents.filter(e => e.status === 'Zaplanowany').length,
+      'W toku': calendarEvents.filter(e => e.status === 'W toku').length,
+      'Zakończony': calendarEvents.filter(e => e.status === 'Zakończony').length,
+      'Anulowany': calendarEvents.filter(e => e.status === 'Anulowany').length,
+    };
+
+    // Weekly calendar events for last 8 weeks
+    const weeklyEvents = Array.from({ length: 8 }, (_, i) => {
+      const weekStart = startOfWeek(addWeeks(now, -(7 - i)), { weekStartsOn: 1 });
+      const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
+      
+      const count = calendarEvents.filter(e => {
+        const eventDate = parseISO(e.event_date);
+        return isWithinInterval(eventDate, { start: weekStart, end: weekEnd });
+      }).length;
+
+      return {
+        week: format(weekStart, 'd MMM', { locale: pl }),
+        wydarzenia: count,
+      };
+    });
+
+    // Upcoming events this week
+    const thisWeekStart = startOfWeek(now, { weekStartsOn: 1 });
+    const thisWeekEnd = endOfWeek(now, { weekStartsOn: 1 });
+    const upcomingEvents = calendarEvents.filter(e => {
+      const eventDate = parseISO(e.event_date);
+      return isWithinInterval(eventDate, { start: thisWeekStart, end: thisWeekEnd });
+    });
+
     return {
       statusCounts,
       monthlyProjects,
@@ -103,8 +143,13 @@ export default function Analytics() {
       conversionRate,
       projectsTrend,
       thisMonthProjects,
+      eventsByType,
+      eventsByStatus,
+      weeklyEvents,
+      upcomingEvents,
+      totalEvents: calendarEvents.length,
     };
-  }, [projects, allQuotes]);
+  }, [projects, allQuotes, calendarEvents]);
 
   const pieData = Object.entries(stats.statusCounts).map(([name, value]) => ({ name, value }));
 
@@ -267,8 +312,145 @@ export default function Analytics() {
         </Card>
       </div>
 
+      {/* Calendar Analytics Section */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold text-foreground mb-4">Analityka Kalendarza</h2>
+        
+        {/* Calendar KPIs */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Wszystkie wydarzenia</p>
+                  <p className="text-3xl font-bold">{stats.totalEvents}</p>
+                </div>
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Calendar className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Ten tydzień</p>
+                  <p className="text-3xl font-bold">{stats.upcomingEvents.length}</p>
+                </div>
+                <div className="h-12 w-12 rounded-lg bg-success/10 flex items-center justify-center">
+                  <CheckCircle className="h-6 w-6 text-success" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Spotkania</p>
+                  <p className="text-3xl font-bold">{stats.eventsByType['Spotkanie']}</p>
+                </div>
+                <div className="h-12 w-12 rounded-lg bg-accent flex items-center justify-center">
+                  <Users className="h-6 w-6 text-accent-foreground" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Zakończone</p>
+                  <p className="text-3xl font-bold">{stats.eventsByStatus['Zakończony']}</p>
+                </div>
+                <div className="h-12 w-12 rounded-lg bg-warning/10 flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-warning" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Calendar Charts */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Weekly Events Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Wydarzenia w czasie</CardTitle>
+              <CardDescription>Liczba wydarzeń w ostatnich 8 tygodniach</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={stats.weeklyEvents}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="week" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--card))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="wydarzenia" 
+                      stroke="hsl(var(--primary))" 
+                      fill="hsl(var(--primary) / 0.3)" 
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Event Types Distribution */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Rodzaje wydarzeń</CardTitle>
+              <CardDescription>Rozkład wydarzeń według typu</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={Object.entries(stats.eventsByType).map(([name, value]) => ({ name, value }))}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                      label={({ name, value }) => value > 0 ? `${name}: ${value}` : ''}
+                      labelLine={false}
+                    >
+                      {Object.entries(stats.eventsByType).map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--card))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       {/* Recent Activity */}
-      <Card>
+      <Card className="mt-6">
         <CardHeader>
           <CardTitle>Ostatnia aktywność</CardTitle>
           <CardDescription>Najnowsze projekty w tym miesiącu</CardDescription>
@@ -303,6 +485,39 @@ export default function Analytics() {
                     <Badge variant="outline">{project.status}</Badge>
                   </div>
                 ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Upcoming Events This Week */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Nadchodzące wydarzenia</CardTitle>
+          <CardDescription>Wydarzenia zaplanowane na ten tydzień</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {stats.upcomingEvents.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">
+              Brak wydarzeń w tym tygodniu
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {stats.upcomingEvents.slice(0, 5).map(event => (
+                <div 
+                  key={event.id} 
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
+                >
+                  <div>
+                    <p className="font-medium">{event.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {format(parseISO(event.event_date), 'd MMM', { locale: pl })}
+                      {event.event_time && ` • ${event.event_time}`}
+                    </p>
+                  </div>
+                  <Badge variant="outline">{event.event_type}</Badge>
+                </div>
+              ))}
             </div>
           )}
         </CardContent>

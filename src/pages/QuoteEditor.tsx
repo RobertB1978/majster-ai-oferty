@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { TemplateSelector } from '@/components/quotes/TemplateSelector';
 import { QuoteVersionsPanel } from '@/components/quotes/QuoteVersionsPanel';
 import { QuoteSnapshot } from '@/hooks/useQuoteVersions';
+import { VoiceInputButton } from '@/components/voice/VoiceInputButton';
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
 const categories = ['Materiał', 'Robocizna'] as const;
@@ -313,12 +314,17 @@ export default function QuoteEditor() {
                 <div className="grid gap-4 sm:grid-cols-12">
                   <div className="sm:col-span-4">
                     <Label className="text-xs text-muted-foreground">Nazwa pozycji *</Label>
-                    <Input
-                      value={position.name}
-                      onChange={(e) => updatePosition(position.id, 'name', e.target.value)}
-                      placeholder="np. Płytki ceramiczne"
-                      className={validationErrors[`${position.id}_name`] ? 'border-destructive' : ''}
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        value={position.name}
+                        onChange={(e) => updatePosition(position.id, 'name', e.target.value)}
+                        placeholder="np. Płytki ceramiczne"
+                        className={validationErrors[`${position.id}_name`] ? 'border-destructive' : ''}
+                      />
+                      <VoiceInputButton 
+                        onTranscript={(text) => updatePosition(position.id, 'name', position.name + ' ' + text)}
+                      />
+                    </div>
                     {validationErrors[`${position.id}_name`] && (
                       <p className="mt-1 text-xs text-destructive">{validationErrors[`${position.id}_name`]}</p>
                     )}
