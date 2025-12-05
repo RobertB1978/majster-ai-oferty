@@ -2,13 +2,17 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProject } from '@/hooks/useProjects';
 import { useQuote, useSaveQuote, QuotePosition } from '@/hooks/useQuotes';
+import { useCreateItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, Trash2, Save, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Loader2, AlertCircle, Bookmark } from 'lucide-react';
 import { toast } from 'sonner';
+import { TemplateSelector } from '@/components/quotes/TemplateSelector';
+import { QuoteVersionsPanel } from '@/components/quotes/QuoteVersionsPanel';
+import { QuoteSnapshot } from '@/hooks/useQuoteVersions';
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
 const categories = ['Materiał', 'Robocizna'] as const;
@@ -18,6 +22,7 @@ export default function QuoteEditor() {
   const { data: project, isLoading: projectLoading } = useProject(id!);
   const { data: existingQuote, isLoading: quoteLoading } = useQuote(id!);
   const saveQuote = useSaveQuote();
+  const createTemplate = useCreateItemTemplate();
   const navigate = useNavigate();
 
   const [positions, setPositions] = useState<QuotePosition[]>([]);
@@ -69,15 +74,42 @@ export default function QuoteEditor() {
       category: 'Materiał',
     };
     setPositions([...positions, newPosition]);
-    // Clear validation errors when adding new position
     setValidationErrors({});
+  };
+
+  const addFromTemplate = (template: ItemTemplate) => {
+    const newPosition: QuotePosition = {
+      id: crypto.randomUUID(),
+      name: template.name,
+      qty: Number(template.default_qty),
+      unit: template.unit,
+      price: Number(template.default_price),
+      category: template.category,
+    };
+    setPositions([...positions, newPosition]);
+    toast.success(`Dodano: ${template.name}`);
+  };
+
+  const saveAsTemplate = async (position: QuotePosition) => {
+    if (!position.name.trim()) {
+      toast.error('Podaj nazwę pozycji przed zapisaniem jako szablon');
+      return;
+    }
+    
+    await createTemplate.mutateAsync({
+      name: position.name,
+      unit: position.unit,
+      default_qty: position.qty,
+      default_price: position.price,
+      category: position.category,
+      description: '',
+    });
   };
 
   const updatePosition = (positionId: string, field: keyof QuotePosition, value: any) => {
     setPositions(positions.map(p => 
       p.id === positionId ? { ...p, [field]: value } : p
     ));
-    // Clear validation error for this field
     setValidationErrors(prev => {
       const newErrors = { ...prev };
       delete newErrors[`${positionId}_${field}`];
@@ -134,6 +166,19 @@ export default function QuoteEditor() {
   const subtotal = summaryMaterials + summaryLabor;
   const total = subtotal * (1 + marginPercent / 100);
 
+  const currentSnapshot: QuoteSnapshot = {
+    positions,
+    summary_materials: summaryMaterials,
+    summary_labor: summaryLabor,
+    margin_percent: marginPercent,
+    total,
+  };
+
+  const handleLoadVersion = (snapshot: QuoteSnapshot) => {
+    setPositions(snapshot.positions);
+    setMarginPercent(snapshot.margin_percent);
+  };
+
   const handleSave = async () => {
     if (!validateQuote()) return;
 
@@ -144,7 +189,7 @@ export default function QuoteEditor() {
         marginPercent,
       });
       navigate(`/projects/${id}`);
-    } catch (error) {
+    } catch {
       // Error handled by hook
     }
   };
@@ -162,10 +207,21 @@ export default function QuoteEditor() {
         </h1>
       </div>
 
-      <Button size="lg" onClick={addPosition}>
-        <Plus className="mr-2 h-5 w-5" />
-        Dodaj pozycję
-      </Button>
+      {/* Versions Panel */}
+      <QuoteVersionsPanel 
+        projectId={id!} 
+        currentSnapshot={currentSnapshot}
+        onLoadVersion={handleLoadVersion}
+      />
+
+      {/* Action Buttons */}
+      <div className="flex flex-wrap gap-3">
+        <Button size="lg" onClick={addPosition}>
+          <Plus className="mr-2 h-5 w-5" />
+          Dodaj pozycję
+        </Button>
+        <TemplateSelector onSelectTemplate={addFromTemplate} />
+      </div>
 
       {/* Positions */}
       <div className="space-y-4">
@@ -174,7 +230,7 @@ export default function QuoteEditor() {
             <CardContent className="py-8 text-center">
               <AlertCircle className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">
-                Brak pozycji. Kliknij "Dodaj pozycję" aby rozpocząć wycenę.
+                Brak pozycji. Kliknij "Dodaj pozycję" lub wybierz szablon.
               </p>
             </CardContent>
           </Card>
@@ -186,15 +242,27 @@ export default function QuoteEditor() {
                   <span className="text-xs font-medium text-muted-foreground">
                     Pozycja #{index + 1}
                   </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 text-destructive hover:text-destructive"
-                    onClick={() => removePosition(position.id)}
-                  >
-                    <Trash2 className="mr-1 h-4 w-4" />
-                    Usuń
-                  </Button>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8"
+                      onClick={() => saveAsTemplate(position)}
+                      disabled={createTemplate.isPending}
+                    >
+                      <Bookmark className="mr-1 h-4 w-4" />
+                      Zapisz szablon
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 text-destructive hover:text-destructive"
+                      onClick={() => removePosition(position.id)}
+                    >
+                      <Trash2 className="mr-1 h-4 w-4" />
+                      Usuń
+                    </Button>
+                  </div>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-12">
                   <div className="sm:col-span-4">
