@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { useData } from '@/contexts/DataContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useProjects } from '@/hooks/useProjects';
+import { useClients } from '@/hooks/useClients';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, FolderOpen, Users, FileText } from 'lucide-react';
+import { Plus, FolderOpen, Users, FileText, Loader2 } from 'lucide-react';
 
 const statusColors: Record<string, string> = {
   'Nowy': 'bg-muted text-muted-foreground',
@@ -14,13 +14,15 @@ const statusColors: Record<string, string> = {
 };
 
 export default function Dashboard() {
-  const { user } = useAuth();
-  const { projects, clients, getClientById } = useData();
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const { data: clients = [], isLoading: clientsLoading } = useClients();
   const navigate = useNavigate();
 
   const recentProjects = [...projects]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 5);
+
+  const isLoading = projectsLoading || clientsLoading;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -85,40 +87,41 @@ export default function Dashboard() {
           <CardDescription>Twoje najnowsze projekty</CardDescription>
         </CardHeader>
         <CardContent>
-          {recentProjects.length === 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : recentProjects.length === 0 ? (
             <p className="py-8 text-center text-muted-foreground">
               Brak projektów. Utwórz pierwszy projekt!
             </p>
           ) : (
             <div className="space-y-3">
-              {recentProjects.map((project) => {
-                const client = getClientById(project.client_id);
-                return (
-                  <div
-                    key={project.id}
-                    className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div className="space-y-1">
-                      <p className="font-medium">{project.project_name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {client?.name || 'Nieznany klient'}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Badge className={statusColors[project.status]}>
-                        {project.status}
-                      </Badge>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate(`/projects/${project.id}`)}
-                      >
-                        Otwórz
-                      </Button>
-                    </div>
+              {recentProjects.map((project) => (
+                <div
+                  key={project.id}
+                  className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="space-y-1">
+                    <p className="font-medium">{project.project_name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {project.clients?.name || 'Nieznany klient'}
+                    </p>
                   </div>
-                );
-              })}
+                  <div className="flex items-center gap-3">
+                    <Badge className={statusColors[project.status]}>
+                      {project.status}
+                    </Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/projects/${project.id}`)}
+                    >
+                      Otwórz
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </CardContent>

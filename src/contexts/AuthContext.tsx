@@ -1,59 +1,86 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '@/types';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<{ error: string | null }>;
+  register: (email: string, password: string) => Promise<{ error: string | null }>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('majster_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Demo login - in production this would call Supabase
-    const demoUser: User = {
-      id: '1',
+  const login = async (email: string, password: string): Promise<{ error: string | null }> => {
+    const { error } = await supabase.auth.signInWithPassword({
       email,
-      created_at: new Date().toISOString(),
-    };
-    setUser(demoUser);
-    localStorage.setItem('majster_user', JSON.stringify(demoUser));
-    return true;
+      password,
+    });
+
+    if (error) {
+      if (error.message.includes('Invalid login credentials')) {
+        return { error: 'Nieprawidłowy email lub hasło' };
+      }
+      return { error: error.message };
+    }
+
+    return { error: null };
   };
 
-  const register = async (email: string, password: string): Promise<boolean> => {
-    // Demo register - in production this would call Supabase
-    const newUser: User = {
-      id: crypto.randomUUID(),
+  const register = async (email: string, password: string): Promise<{ error: string | null }> => {
+    const redirectUrl = `${window.location.origin}/dashboard`;
+
+    const { error } = await supabase.auth.signUp({
       email,
-      created_at: new Date().toISOString(),
-    };
-    setUser(newUser);
-    localStorage.setItem('majster_user', JSON.stringify(newUser));
-    return true;
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
+      },
+    });
+
+    if (error) {
+      if (error.message.includes('User already registered')) {
+        return { error: 'Konto z tym adresem email już istnieje' };
+      }
+      return { error: error.message };
+    }
+
+    return { error: null };
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('majster_user');
+  const logout = async () => {
+    await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, session, isLoading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

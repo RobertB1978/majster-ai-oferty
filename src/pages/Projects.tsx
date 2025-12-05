@@ -1,10 +1,9 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useData } from '@/contexts/DataContext';
+import { useProjects } from '@/hooks/useProjects';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 
 const statusColors: Record<string, string> = {
   'Nowy': 'bg-muted text-muted-foreground',
@@ -14,7 +13,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function Projects() {
-  const { projects, getClientById } = useData();
+  const { data: projects = [], isLoading } = useProjects();
   const navigate = useNavigate();
 
   return (
@@ -27,7 +26,11 @@ export default function Projects() {
         </Button>
       </div>
 
-      {projects.length === 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : projects.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-muted-foreground">Brak projektów. Utwórz pierwszy projekt!</p>
@@ -35,32 +38,29 @@ export default function Projects() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {projects.map((project) => {
-            const client = getClientById(project.client_id);
-            return (
-              <Card key={project.id} className="animate-slide-in">
-                <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="space-y-1">
-                    <p className="font-medium text-foreground">{project.project_name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Klient: {client?.name || 'Nieznany'}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge className={statusColors[project.status]}>
-                      {project.status}
-                    </Badge>
-                    <Button
-                      variant="outline"
-                      onClick={() => navigate(`/projects/${project.id}`)}
-                    >
-                      Otwórz
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+          {projects.map((project) => (
+            <Card key={project.id} className="animate-slide-in">
+              <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-1">
+                  <p className="font-medium text-foreground">{project.project_name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Klient: {project.clients?.name || 'Nieznany'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Badge className={statusColors[project.status]}>
+                    {project.status}
+                  </Badge>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate(`/projects/${project.id}`)}
+                  >
+                    Otwórz
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
     </div>

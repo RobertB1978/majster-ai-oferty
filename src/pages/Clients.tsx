@@ -1,16 +1,19 @@
 import { useState } from 'react';
-import { useData } from '@/contexts/DataContext';
+import { useClients, useAddClient, useUpdateClient, useDeleteClient, Client } from '@/hooks/useClients';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Phone, Mail, MapPin, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Client } from '@/types';
 
 export default function Clients() {
-  const { clients, addClient, updateClient, deleteClient } = useData();
+  const { data: clients = [], isLoading } = useClients();
+  const addClient = useAddClient();
+  const updateClient = useUpdateClient();
+  const deleteClient = useDeleteClient();
+  
   const [isOpen, setIsOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [formData, setFormData] = useState({
@@ -40,7 +43,7 @@ export default function Clients() {
     setIsOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name.trim()) {
@@ -49,21 +52,18 @@ export default function Clients() {
     }
 
     if (editingClient) {
-      updateClient(editingClient.id, formData);
-      toast.success('Klient zaktualizowany');
+      await updateClient.mutateAsync({ id: editingClient.id, ...formData });
     } else {
-      addClient(formData);
-      toast.success('Klient dodany');
+      await addClient.mutateAsync(formData);
     }
 
     setIsOpen(false);
     resetForm();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Czy na pewno chcesz usunąć tego klienta?')) {
-      deleteClient(id);
-      toast.success('Klient usunięty');
+      await deleteClient.mutateAsync(id);
     }
   };
 
@@ -122,7 +122,14 @@ export default function Clients() {
                   placeholder="ul. Przykładowa 1, 00-001 Warszawa"
                 />
               </div>
-              <Button type="submit" className="w-full">
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={addClient.isPending || updateClient.isPending}
+              >
+                {addClient.isPending || updateClient.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
                 {editingClient ? 'Zapisz zmiany' : 'Dodaj klienta'}
               </Button>
             </form>
@@ -130,7 +137,11 @@ export default function Clients() {
         </Dialog>
       </div>
 
-      {clients.length === 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : clients.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-muted-foreground">Brak klientów. Dodaj pierwszego klienta!</p>
