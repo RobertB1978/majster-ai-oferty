@@ -1,7 +1,14 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, Wrench } from 'lucide-react';
+import { LogOut, Wrench, HelpCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export function TopBar() {
   const { user, logout } = useAuth();
@@ -23,13 +30,31 @@ export function TopBar() {
         </div>
         
         {user && (
-          <div className="flex items-center gap-4">
-            <span className="hidden text-sm text-muted-foreground sm:inline">
+          <div className="flex items-center gap-2">
+            <NotificationCenter />
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <HelpCircle className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate('/profile')}>
+                  Profil firmy
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.open('https://majster.ai/pomoc', '_blank')}>
+                  Dokumentacja
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <span className="hidden text-sm text-muted-foreground sm:inline ml-2">
               {user.email}
             </span>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
-              Wyloguj
+              <span className="hidden sm:inline">Wyloguj</span>
             </Button>
           </div>
         )}

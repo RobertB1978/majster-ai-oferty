@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Wrench, Mail, Lock, Loader2 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Wrench, Mail, Lock, Loader2, Fingerprint } from 'lucide-react';
 import { toast } from 'sonner';
+import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -16,12 +18,36 @@ export default function Login() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { login, user } = useAuth();
   const navigate = useNavigate();
+  const { isSupported, checkIfEnabled, authenticateWithBiometric, isAuthenticating } = useBiometricAuth();
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
 
   useEffect(() => {
     if (user) {
       navigate('/dashboard');
     }
   }, [user, navigate]);
+
+  // Check for stored email and biometric availability
+  useEffect(() => {
+    const storedEmail = localStorage.getItem('majster_last_email');
+    if (storedEmail) {
+      setEmail(storedEmail);
+      if (isSupported) {
+        const enabled = checkIfEnabled(storedEmail);
+        setBiometricAvailable(enabled);
+      }
+    }
+  }, [isSupported, checkIfEnabled]);
+
+  // Update biometric availability when email changes
+  useEffect(() => {
+    if (email && isSupported) {
+      const enabled = checkIfEnabled(email);
+      setBiometricAvailable(enabled);
+    } else {
+      setBiometricAvailable(false);
+    }
+  }, [email, isSupported, checkIfEnabled]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,8 +78,25 @@ export default function Login() {
         toast.error(error);
       }
     } else {
+      localStorage.setItem('majster_last_email', email);
       toast.success('Zalogowano pomyślnie');
       navigate('/dashboard');
+    }
+  };
+
+  const handleBiometricLogin = async () => {
+    if (!email) {
+      toast.error('Wprowadź email przed użyciem logowania biometrycznego');
+      return;
+    }
+
+    const success = await authenticateWithBiometric(email);
+    if (success) {
+      // For biometric login, we need the password stored or use a different auth flow
+      // Since we're using Supabase Auth, we'll just verify the biometric and show the password field
+      toast.success('Weryfikacja biometryczna powiodła się. Wprowadź hasło.');
+    } else {
+      toast.error('Weryfikacja biometryczna nie powiodła się');
     }
   };
 
@@ -118,6 +161,37 @@ export default function Login() {
               )}
             </Button>
           </form>
+
+          {biometricAvailable && (
+            <>
+              <div className="relative my-4">
+                <Separator />
+                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
+                  lub
+                </span>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleBiometricLogin}
+                disabled={isAuthenticating}
+              >
+                {isAuthenticating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Weryfikacja...
+                  </>
+                ) : (
+                  <>
+                    <Fingerprint className="mr-2 h-4 w-4" />
+                    Zaloguj odciskiem palca
+                  </>
+                )}
+              </Button>
+            </>
+          )}
+
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Nie masz konta?{' '}
             <Link to="/register" className="font-medium text-primary hover:underline">
