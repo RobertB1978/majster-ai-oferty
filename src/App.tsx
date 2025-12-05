@@ -21,6 +21,8 @@ import QuoteEditor from "./pages/QuoteEditor";
 import PdfGenerator from "./pages/PdfGenerator";
 import CompanyProfile from "./pages/CompanyProfile";
 import ItemTemplates from "./pages/ItemTemplates";
+import Calendar from "./pages/Calendar";
+import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +52,8 @@ const App = () => (
               <Route path="/projects/:id/pdf" element={<PdfGenerator />} />
               <Route path="/profile" element={<CompanyProfile />} />
               <Route path="/templates" element={<ItemTemplates />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/analytics" element={<Analytics />} />
             </Route>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<NotFound />} />
