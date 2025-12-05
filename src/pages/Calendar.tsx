@@ -10,8 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Plus, Trash2, Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ChevronLeft, ChevronRight, Plus, Trash2, Calendar as CalendarIcon, Loader2, GanttChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ProjectTimeline } from '@/components/calendar/ProjectTimeline';
 
 const eventTypeColors: Record<string, string> = {
   deadline: 'bg-destructive/10 text-destructive border-destructive/20',
@@ -31,6 +33,7 @@ export default function Calendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'calendar' | 'timeline'>('calendar');
   const [newEvent, setNewEvent] = useState({
     title: '',
     description: '',
@@ -84,13 +87,28 @@ export default function Calendar() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl">Kalendarz</h1>
           <p className="mt-1 text-muted-foreground">Zarządzaj terminami i wydarzeniami</p>
         </div>
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'calendar' | 'timeline')}>
+          <TabsList>
+            <TabsTrigger value="calendar" className="gap-2">
+              <CalendarIcon className="h-4 w-4" />
+              Kalendarz
+            </TabsTrigger>
+            <TabsTrigger value="timeline" className="gap-2">
+              <GanttChart className="h-4 w-4" />
+              Timeline
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
+      {activeTab === 'timeline' ? (
+        <ProjectTimeline currentMonth={currentMonth} onMonthChange={setCurrentMonth} />
+      ) : (
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Calendar Grid */}
         <Card className="lg:col-span-2">
@@ -311,6 +329,7 @@ export default function Calendar() {
           </CardContent>
         </Card>
       </div>
+      )}
     </div>
   );
 }
