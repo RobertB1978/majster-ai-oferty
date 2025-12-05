@@ -1,21 +1,23 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useData } from '@/contexts/DataContext';
+import { useClients } from '@/hooks/useClients';
+import { useAddProject } from '@/hooks/useProjects';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function NewProject() {
-  const { clients, addProject } = useData();
+  const { data: clients = [], isLoading: clientsLoading } = useClients();
+  const addProject = useAddProject();
   const navigate = useNavigate();
   const [projectName, setProjectName] = useState('');
   const [clientId, setClientId] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!projectName.trim()) {
@@ -28,13 +30,12 @@ export default function NewProject() {
       return;
     }
 
-    const project = addProject({
+    const project = await addProject.mutateAsync({
       project_name: projectName,
       client_id: clientId,
       status: 'Nowy',
     });
 
-    toast.success('Projekt utworzony');
     navigate(`/projects/${project.id}`);
   };
 
@@ -64,7 +65,7 @@ export default function NewProject() {
               <Label htmlFor="client">Klient</Label>
               <Select value={clientId} onValueChange={setClientId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Wybierz klienta" />
+                  <SelectValue placeholder={clientsLoading ? "Ładowanie..." : "Wybierz klienta"} />
                 </SelectTrigger>
                 <SelectContent>
                   {clients.map((client) => (
@@ -74,7 +75,7 @@ export default function NewProject() {
                   ))}
                 </SelectContent>
               </Select>
-              {clients.length === 0 && (
+              {!clientsLoading && clients.length === 0 && (
                 <p className="text-sm text-muted-foreground">
                   Brak klientów.{' '}
                   <Button variant="link" className="h-auto p-0" onClick={() => navigate('/clients')}>
@@ -83,7 +84,13 @@ export default function NewProject() {
                 </p>
               )}
             </div>
-            <Button type="submit" className="w-full" size="lg">
+            <Button 
+              type="submit" 
+              className="w-full" 
+              size="lg"
+              disabled={addProject.isPending}
+            >
+              {addProject.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Utwórz projekt
             </Button>
           </form>

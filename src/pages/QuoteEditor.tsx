@@ -1,28 +1,46 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useData } from '@/contexts/DataContext';
+import { useProject } from '@/hooks/useProjects';
+import { useQuote, useSaveQuote, QuotePosition } from '@/hooks/useQuotes';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, Trash2, Save } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { QuotePosition } from '@/types';
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
 const categories = ['Materiał', 'Robocizna'] as const;
 
 export default function QuoteEditor() {
   const { id } = useParams<{ id: string }>();
-  const { getProjectById, getQuoteByProjectId, saveQuote } = useData();
+  const { data: project, isLoading: projectLoading } = useProject(id!);
+  const { data: existingQuote, isLoading: quoteLoading } = useQuote(id!);
+  const saveQuote = useSaveQuote();
   const navigate = useNavigate();
 
-  const project = getProjectById(id!);
-  const existingQuote = getQuoteByProjectId(id!);
+  const [positions, setPositions] = useState<QuotePosition[]>([]);
+  const [marginPercent, setMarginPercent] = useState(10);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const [positions, setPositions] = useState<QuotePosition[]>(existingQuote?.positions || []);
-  const [marginPercent, setMarginPercent] = useState(existingQuote?.margin_percent || 10);
+  useEffect(() => {
+    if (existingQuote && !isInitialized) {
+      setPositions(existingQuote.positions || []);
+      setMarginPercent(Number(existingQuote.margin_percent) || 10);
+      setIsInitialized(true);
+    } else if (!quoteLoading && !existingQuote && !isInitialized) {
+      setIsInitialized(true);
+    }
+  }, [existingQuote, quoteLoading, isInitialized]);
+
+  if (projectLoading || quoteLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   if (!project) {
     return (
@@ -73,7 +91,7 @@ export default function QuoteEditor() {
   const subtotal = summaryMaterials + summaryLabor;
   const total = subtotal * (1 + marginPercent / 100);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (positions.length === 0) {
       toast.error('Dodaj przynajmniej jedną pozycję');
       return;
@@ -85,8 +103,12 @@ export default function QuoteEditor() {
       return;
     }
 
-    saveQuote(id!, positions, marginPercent);
-    toast.success('Wycena zapisana');
+    await saveQuote.mutateAsync({
+      projectId: id!,
+      positions,
+      marginPercent,
+    });
+
     navigate(`/projects/${id}`);
   };
 
@@ -119,7 +141,7 @@ export default function QuoteEditor() {
             </CardContent>
           </Card>
         ) : (
-          positions.map((position, index) => (
+          positions.map((position) => (
             <Card key={position.id} className="animate-slide-in">
               <CardContent className="p-4">
                 <div className="grid gap-4 sm:grid-cols-12">
@@ -231,7 +253,13 @@ export default function QuoteEditor() {
         </CardContent>
       </Card>
 
-      <Button size="lg" onClick={handleSave} className="w-full sm:w-auto">
+      <Button 
+        size="lg" 
+        onClick={handleSave} 
+        className="w-full sm:w-auto"
+        disabled={saveQuote.isPending}
+      >
+        {saveQuote.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         <Save className="mr-2 h-5 w-5" />
         Zapisz wycenę
       </Button>

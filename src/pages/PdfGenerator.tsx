@@ -1,30 +1,54 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useData } from '@/contexts/DataContext';
+import { useProject } from '@/hooks/useProjects';
+import { useQuote } from '@/hooks/useQuotes';
+import { usePdfData, useSavePdfData } from '@/hooks/usePdfData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Download, FileText, Wrench } from 'lucide-react';
+import { ArrowLeft, Download, Wrench, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function PdfGenerator() {
   const { id } = useParams<{ id: string }>();
-  const { getProjectById, getQuoteByProjectId, getClientById, getPdfDataByProjectId, savePdfData } = useData();
+  const { data: project, isLoading: projectLoading } = useProject(id!);
+  const { data: quote, isLoading: quoteLoading } = useQuote(id!);
+  const { data: existingPdfData, isLoading: pdfDataLoading } = usePdfData(id!);
+  const savePdfData = useSavePdfData();
   const navigate = useNavigate();
   const printRef = useRef<HTMLDivElement>(null);
 
-  const project = getProjectById(id!);
-  const quote = getQuoteByProjectId(id!);
-  const existingPdfData = getPdfDataByProjectId(id!);
+  const [version, setVersion] = useState<'standard' | 'premium'>('standard');
+  const [title, setTitle] = useState('');
+  const [offerText, setOfferText] = useState('Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na realizację prac.');
+  const [deadlineText, setDeadlineText] = useState('Do ustalenia');
+  const [terms, setTerms] = useState('Płatność: 50% zaliczki, 50% po wykonaniu prac.\nGwarancja: 24 miesiące na wykonane prace.');
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const [version, setVersion] = useState<'standard' | 'premium'>(existingPdfData?.version || 'standard');
-  const [title, setTitle] = useState(existingPdfData?.title || `Oferta - ${project?.project_name || ''}`);
-  const [offerText, setOfferText] = useState(existingPdfData?.offer_text || 'Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na realizację prac.');
-  const [deadlineText, setDeadlineText] = useState(existingPdfData?.deadline_text || 'Do ustalenia');
-  const [terms, setTerms] = useState(existingPdfData?.terms || 'Płatność: 50% zaliczki, 50% po wykonaniu prac.\nGwarancja: 24 miesiące na wykonane prace.');
+  useEffect(() => {
+    if (existingPdfData && !isInitialized) {
+      setVersion(existingPdfData.version as 'standard' | 'premium');
+      setTitle(existingPdfData.title);
+      setOfferText(existingPdfData.offer_text || offerText);
+      setDeadlineText(existingPdfData.deadline_text || deadlineText);
+      setTerms(existingPdfData.terms || terms);
+      setIsInitialized(true);
+    } else if (!pdfDataLoading && !existingPdfData && project && !isInitialized) {
+      setTitle(`Oferta - ${project.project_name}`);
+      setIsInitialized(true);
+    }
+  }, [existingPdfData, pdfDataLoading, project, isInitialized]);
+
+  if (projectLoading || quoteLoading || pdfDataLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   if (!project) {
     return (
@@ -42,10 +66,15 @@ export default function PdfGenerator() {
     );
   }
 
-  const client = getClientById(project.client_id);
-
-  const handleGeneratePdf = () => {
-    savePdfData(id!, { version, title, offer_text: offerText, terms, deadline_text: deadlineText });
+  const handleGeneratePdf = async () => {
+    await savePdfData.mutateAsync({
+      projectId: id!,
+      version,
+      title,
+      offer_text: offerText,
+      terms,
+      deadline_text: deadlineText,
+    });
     
     const printContent = printRef.current;
     if (!printContent) return;
@@ -157,12 +186,16 @@ export default function PdfGenerator() {
             </CardContent>
           </Card>
 
-          <div className="flex gap-3">
-            <Button size="lg" onClick={handleGeneratePdf} className="flex-1">
-              <Download className="mr-2 h-5 w-5" />
-              Generuj i pobierz PDF
-            </Button>
-          </div>
+          <Button 
+            size="lg" 
+            onClick={handleGeneratePdf} 
+            className="w-full"
+            disabled={savePdfData.isPending}
+          >
+            {savePdfData.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Download className="mr-2 h-5 w-5" />
+            Generuj i pobierz PDF
+          </Button>
         </div>
 
         {/* Preview */}
@@ -191,15 +224,15 @@ export default function PdfGenerator() {
               </div>
 
               {/* Client info */}
-              {client && (
+              {project.clients && (
                 <div className="mb-6 rounded-lg bg-muted p-4">
                   <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     Klient
                   </h3>
-                  <p className="font-medium">{client.name}</p>
-                  {client.address && <p className="text-muted-foreground">{client.address}</p>}
-                  {client.phone && <p className="text-muted-foreground">{client.phone}</p>}
-                  {client.email && <p className="text-muted-foreground">{client.email}</p>}
+                  <p className="font-medium">{project.clients.name}</p>
+                  {project.clients.address && <p className="text-muted-foreground">{project.clients.address}</p>}
+                  {project.clients.phone && <p className="text-muted-foreground">{project.clients.phone}</p>}
+                  {project.clients.email && <p className="text-muted-foreground">{project.clients.email}</p>}
                 </div>
               )}
 
@@ -239,19 +272,19 @@ export default function PdfGenerator() {
                 <div className="mb-6 rounded-lg bg-muted p-4">
                   <div className="mb-2 flex justify-between">
                     <span>Materiały:</span>
-                    <span>{quote.summary_materials.toFixed(2)} zł</span>
+                    <span>{Number(quote.summary_materials).toFixed(2)} zł</span>
                   </div>
                   <div className="mb-2 flex justify-between">
                     <span>Robocizna:</span>
-                    <span>{quote.summary_labor.toFixed(2)} zł</span>
+                    <span>{Number(quote.summary_labor).toFixed(2)} zł</span>
                   </div>
                   <div className="mb-2 flex justify-between">
                     <span>Marża ({quote.margin_percent}%):</span>
-                    <span>{((quote.summary_materials + quote.summary_labor) * quote.margin_percent / 100).toFixed(2)} zł</span>
+                    <span>{((Number(quote.summary_materials) + Number(quote.summary_labor)) * Number(quote.margin_percent) / 100).toFixed(2)} zł</span>
                   </div>
                   <div className="mt-3 flex justify-between border-t border-border pt-3 text-lg font-bold">
                     <span>Razem:</span>
-                    <span className="text-primary">{quote.total.toFixed(2)} zł</span>
+                    <span className="text-primary">{Number(quote.total).toFixed(2)} zł</span>
                   </div>
                 </div>
               )}

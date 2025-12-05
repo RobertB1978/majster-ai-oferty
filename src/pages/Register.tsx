@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -13,8 +13,14 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { register } = useAuth();
+  const { register, user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,16 +41,14 @@ export default function Register() {
     }
 
     setIsLoading(true);
-    try {
-      const success = await register(email, password);
-      if (success) {
-        toast.success('Konto utworzone pomyślnie');
-        navigate('/dashboard');
-      }
-    } catch {
-      toast.error('Błąd rejestracji');
-    } finally {
-      setIsLoading(false);
+    const { error } = await register(email, password);
+    setIsLoading(false);
+
+    if (error) {
+      toast.error(error);
+    } else {
+      toast.success('Konto utworzone pomyślnie');
+      navigate('/dashboard');
     }
   };
 

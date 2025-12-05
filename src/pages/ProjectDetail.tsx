@@ -1,28 +1,28 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useData } from '@/contexts/DataContext';
+import { useProject, useUpdateProject } from '@/hooks/useProjects';
+import { useQuote } from '@/hooks/useQuotes';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Calculator, FileText, User, Calendar } from 'lucide-react';
+import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const statuses = ['Nowy', 'Wycena w toku', 'Oferta wysłana', 'Zaakceptowany'] as const;
 
-const statusColors: Record<string, string> = {
-  'Nowy': 'bg-muted text-muted-foreground',
-  'Wycena w toku': 'bg-warning/10 text-warning',
-  'Oferta wysłana': 'bg-primary/10 text-primary',
-  'Zaakceptowany': 'bg-success/10 text-success',
-};
-
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
-  const { getProjectById, updateProject, getQuoteByProjectId } = useData();
+  const { data: project, isLoading: projectLoading } = useProject(id!);
+  const { data: quote, isLoading: quoteLoading } = useQuote(id!);
+  const updateProject = useUpdateProject();
   const navigate = useNavigate();
 
-  const project = getProjectById(id!);
-  const quote = getQuoteByProjectId(id!);
+  if (projectLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   if (!project) {
     return (
@@ -40,9 +40,11 @@ export default function ProjectDetail() {
     );
   }
 
-  const handleStatusChange = (status: string) => {
-    updateProject(project.id, { status: status as typeof statuses[number] });
-    toast.success('Status zaktualizowany');
+  const handleStatusChange = async (status: string) => {
+    await updateProject.mutateAsync({ 
+      id: project.id, 
+      status: status as typeof statuses[number] 
+    });
   };
 
   return (
@@ -61,7 +63,7 @@ export default function ProjectDetail() {
             <div className="flex items-center gap-1">
               <User className="h-4 w-4" />
               <Link to="/clients" className="hover:text-primary hover:underline">
-                {project.client?.name || 'Nieznany klient'}
+                {project.clients?.name || 'Nieznany klient'}
               </Link>
             </div>
             <div className="flex items-center gap-1">
@@ -100,7 +102,13 @@ export default function ProjectDetail() {
       </div>
 
       {/* Quote summary */}
-      {quote && (
+      {quoteLoading ? (
+        <Card>
+          <CardContent className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </CardContent>
+        </Card>
+      ) : quote ? (
         <Card>
           <CardHeader>
             <CardTitle>Podsumowanie wyceny</CardTitle>
@@ -109,30 +117,28 @@ export default function ProjectDetail() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Materiały:</span>
-                <span className="font-medium">{quote.summary_materials.toFixed(2)} zł</span>
+                <span className="font-medium">{Number(quote.summary_materials).toFixed(2)} zł</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Robocizna:</span>
-                <span className="font-medium">{quote.summary_labor.toFixed(2)} zł</span>
+                <span className="font-medium">{Number(quote.summary_labor).toFixed(2)} zł</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Marża ({quote.margin_percent}%):</span>
                 <span className="font-medium">
-                  {((quote.summary_materials + quote.summary_labor) * quote.margin_percent / 100).toFixed(2)} zł
+                  {((Number(quote.summary_materials) + Number(quote.summary_labor)) * Number(quote.margin_percent) / 100).toFixed(2)} zł
                 </span>
               </div>
               <div className="border-t border-border pt-3">
                 <div className="flex justify-between text-lg font-bold">
                   <span>Kwota całkowita:</span>
-                  <span className="text-primary">{quote.total.toFixed(2)} zł</span>
+                  <span className="text-primary">{Number(quote.total).toFixed(2)} zł</span>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
-      )}
-
-      {!quote && (
+      ) : (
         <Card>
           <CardContent className="py-8 text-center">
             <p className="text-muted-foreground">
