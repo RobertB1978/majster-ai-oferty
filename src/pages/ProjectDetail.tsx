@@ -1,12 +1,14 @@
+import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useProject, useUpdateProject } from '@/hooks/useProjects';
 import { useQuote } from '@/hooks/useQuotes';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download } from 'lucide-react';
+import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download, Mail } from 'lucide-react';
 import { exportQuoteToExcel } from '@/lib/exportUtils';
 import { OfferHistoryPanel } from '@/components/offers/OfferHistoryPanel';
+import { SendOfferModal } from '@/components/offers/SendOfferModal';
 
 const statuses = ['Nowy', 'Wycena w toku', 'Oferta wysłana', 'Zaakceptowany'] as const;
 
@@ -16,6 +18,7 @@ export default function ProjectDetail() {
   const { data: quote, isLoading: quoteLoading } = useQuote(id!);
   const updateProject = useUpdateProject();
   const navigate = useNavigate();
+  const [sendModalOpen, setSendModalOpen] = useState(false);
 
   if (projectLoading) {
     return (
@@ -100,6 +103,10 @@ export default function ProjectDetail() {
           <FileText className="mr-2 h-5 w-5" />
           Generuj ofertę PDF
         </Button>
+        <Button size="lg" variant="outline" onClick={() => setSendModalOpen(true)}>
+          <Mail className="mr-2 h-5 w-5" />
+          Wyślij mailem
+        </Button>
         {quote && (
           <Button 
             variant="outline" 
@@ -117,6 +124,16 @@ export default function ProjectDetail() {
           </Button>
         )}
       </div>
+
+      {/* Send Offer Modal */}
+      <SendOfferModal
+        open={sendModalOpen}
+        onOpenChange={setSendModalOpen}
+        projectId={id!}
+        projectName={project.project_name}
+        clientEmail={project.clients?.email || ''}
+        clientName={project.clients?.name || ''}
+      />
 
       {/* Quote summary */}
       {quoteLoading ? (
