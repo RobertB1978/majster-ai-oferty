@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { 
@@ -65,7 +66,10 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden" aria-describedby={undefined}>
+        <VisuallyHidden.Root>
+          <DialogTitle>Kreator konfiguracji Majster.AI</DialogTitle>
+        </VisuallyHidden.Root>
         {showCongrats ? (
           <div className="p-8 text-center animate-fade-in">
             <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-success/10">
