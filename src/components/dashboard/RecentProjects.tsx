@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,10 +31,9 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
   const navigate = useNavigate();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
+    <div
+      className="animate-fade-in"
+      style={{ animationDelay: '0.3s' }}
     >
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -77,12 +75,10 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
           ) : (
             <div className="space-y-3">
               {projects.map((project, index) => (
-                <motion.div
+                <div
                   key={project.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                  className="group flex flex-col gap-3 rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-primary/20 sm:flex-row sm:items-center sm:justify-between"
+                  className="group flex flex-col gap-3 rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md hover:border-primary/20 sm:flex-row sm:items-center sm:justify-between animate-fade-in"
+                  style={{ animationDelay: `${0.1 * index}s` }}
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
@@ -116,12 +112,12 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
                       Otwórz
                     </Button>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           )}
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

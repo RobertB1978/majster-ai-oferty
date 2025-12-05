@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { useProfile, useUpdateProfile, useUploadLogo } from '@/hooks/useProfile';
 import { useAuth } from '@/contexts/AuthContext';
 import { profileSchema, ProfileFormData } from '@/lib/validations';
@@ -124,97 +123,86 @@ export default function CompanyProfile() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Logo Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0 }}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Image className="h-5 w-5" />
-                Logo firmy
-              </CardTitle>
-              <CardDescription>
-                Przesłane logo będzie widoczne na ofertach
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col items-center gap-4">
-                {profile?.logo_url ? (
-                  <div className="relative group">
-                    <img
-                      src={profile.logo_url}
-                      alt="Logo firmy"
-                      className="h-32 w-32 rounded-lg border border-border object-contain transition-transform group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        Zmień
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex h-32 w-32 items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted">
-                    <Building2 className="h-12 w-12 text-muted-foreground" />
-                  </div>
-                )}
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleLogoUpload}
-                  accept="image/*"
-                  className="hidden"
-                />
-                <Button
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploadLogo.isPending}
-                >
-                  {uploadLogo.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Upload className="mr-2 h-4 w-4" />
-                  )}
-                  Prześlij logo
-                </Button>
-                <p className="text-center text-xs text-muted-foreground">
-                  Max 2MB, format: JPG, PNG
-                </p>
-              </div>
-
-              {/* PDF Preview mockup */}
-              {profile?.logo_url && (
-                <div className="mt-6 p-4 rounded-lg border bg-background">
-                  <p className="text-xs text-muted-foreground mb-2">Podgląd na ofercie:</p>
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={profile.logo_url}
-                      alt="Logo"
-                      className="h-8 w-8 object-contain"
-                    />
-                    <div>
-                      <p className="text-sm font-medium">{formData.company_name || 'Nazwa firmy'}</p>
-                      <p className="text-xs text-muted-foreground">{formData.phone || 'Telefon'}</p>
-                    </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Image className="h-5 w-5" />
+              Logo firmy
+            </CardTitle>
+            <CardDescription>
+              Przesłane logo będzie widoczne na ofertach
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col items-center gap-4">
+              {profile?.logo_url ? (
+                <div className="relative group">
+                  <img
+                    src={profile.logo_url}
+                    alt="Logo firmy"
+                    className="h-32 w-32 rounded-lg border border-border object-contain transition-transform group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      Zmień
+                    </Button>
                   </div>
                 </div>
+              ) : (
+                <div className="flex h-32 w-32 items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted">
+                  <Building2 className="h-12 w-12 text-muted-foreground" />
+                </div>
               )}
-            </CardContent>
-          </Card>
-        </motion.div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleLogoUpload}
+                accept="image/*"
+                className="hidden"
+              />
+              <Button
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadLogo.isPending}
+              >
+                {uploadLogo.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Upload className="mr-2 h-4 w-4" />
+                )}
+                Prześlij logo
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                Max 2MB, format: JPG, PNG
+              </p>
+            </div>
+
+            {/* PDF Preview mockup */}
+            {profile?.logo_url && (
+              <div className="mt-6 p-4 rounded-lg border bg-background">
+                <p className="text-xs text-muted-foreground mb-2">Podgląd na ofercie:</p>
+                <div className="flex items-center gap-3">
+                  <img
+                    src={profile.logo_url}
+                    alt="Logo"
+                    className="h-8 w-8 object-contain"
+                  />
+                  <div>
+                    <p className="text-sm font-medium">{formData.company_name || 'Nazwa firmy'}</p>
+                    <p className="text-xs text-muted-foreground">{formData.phone || 'Telefon'}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Form Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="lg:col-span-2 space-y-6"
-        >
+        <div className="lg:col-span-2 space-y-6">
           <form onSubmit={handleSubmit}>
             {/* Company Data Section */}
             <Collapsible
@@ -493,14 +481,8 @@ export default function CompanyProfile() {
           </form>
 
           {/* Security Settings */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            {user?.email && <BiometricSetup email={user.email} />}
-          </motion.div>
-        </motion.div>
+          {user?.email && <BiometricSetup email={user.email} />}
+        </div>
       </div>
     </div>
   );

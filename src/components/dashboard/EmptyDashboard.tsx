@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
@@ -33,13 +32,9 @@ export function EmptyDashboard() {
   const navigate = useNavigate();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4"
-    >
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 animate-fade-in">
       <div className="relative mb-8">
-        <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse-glow" />
         <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 shadow-xl">
           <Sparkles className="h-12 w-12 text-primary-foreground" />
         </div>
@@ -65,11 +60,10 @@ export function EmptyDashboard() {
 
       <div className="grid gap-6 sm:grid-cols-3 max-w-3xl">
         {benefits.map((benefit, index) => (
-          <motion.div
+          <div
             key={benefit.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 + index * 0.1 }}
+            className="animate-fade-in"
+            style={{ animationDelay: `${0.2 + index * 0.1}s` }}
           >
             <Card className="h-full">
               <CardContent className="p-6 text-center">
@@ -80,9 +74,9 @@ export function EmptyDashboard() {
                 <p className="text-sm text-muted-foreground">{benefit.description}</p>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }
