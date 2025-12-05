@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_keys: {
+        Row: {
+          api_key: string
+          created_at: string
+          id: string
+          is_active: boolean
+          key_name: string
+          last_used_at: string | null
+          permissions: Json | null
+          user_id: string
+        }
+        Insert: {
+          api_key?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key_name: string
+          last_used_at?: string | null
+          permissions?: Json | null
+          user_id: string
+        }
+        Update: {
+          api_key?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key_name?: string
+          last_used_at?: string | null
+          permissions?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       calendar_events: {
         Row: {
           created_at: string
@@ -91,6 +124,42 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_reports: {
+        Row: {
+          created_at: string
+          gross_margin: number | null
+          id: string
+          project_count: number | null
+          report_data: Json | null
+          report_month: string
+          total_costs: number | null
+          total_revenue: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          gross_margin?: number | null
+          id?: string
+          project_count?: number | null
+          report_data?: Json | null
+          report_month: string
+          total_costs?: number | null
+          total_revenue?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          gross_margin?: number | null
+          id?: string
+          project_count?: number | null
+          report_data?: Json | null
+          report_month?: string
+          total_costs?: number | null
+          total_revenue?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       item_templates: {
         Row: {
           category: string
@@ -159,6 +228,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      offer_approvals: {
+        Row: {
+          approved_at: string | null
+          client_comment: string | null
+          client_email: string | null
+          client_name: string | null
+          created_at: string
+          id: string
+          project_id: string
+          public_token: string
+          signature_data: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          client_comment?: string | null
+          client_email?: string | null
+          client_name?: string | null
+          created_at?: string
+          id?: string
+          project_id: string
+          public_token?: string
+          signature_data?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          client_comment?: string | null
+          client_email?: string | null
+          client_name?: string | null
+          created_at?: string
+          id?: string
+          project_id?: string
+          public_token?: string
+          signature_data?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_approvals_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       offer_sends: {
         Row: {
@@ -336,6 +455,47 @@ export type Database = {
         }
         Relationships: []
       }
+      project_photos: {
+        Row: {
+          analysis_result: Json | null
+          analysis_status: string
+          created_at: string
+          file_name: string
+          id: string
+          photo_url: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          analysis_result?: Json | null
+          analysis_status?: string
+          created_at?: string
+          file_name: string
+          id?: string
+          photo_url: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          analysis_result?: Json | null
+          analysis_status?: string
+          created_at?: string
+          file_name?: string
+          id?: string
+          photo_url?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_photos_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           client_id: string
@@ -376,6 +536,62 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_costs: {
+        Row: {
+          created_at: string
+          document_url: string | null
+          gross_amount: number
+          id: string
+          invoice_date: string | null
+          invoice_number: string | null
+          items: Json
+          net_amount: number
+          ocr_status: string
+          project_id: string
+          supplier_name: string | null
+          user_id: string
+          vat_amount: number
+        }
+        Insert: {
+          created_at?: string
+          document_url?: string | null
+          gross_amount?: number
+          id?: string
+          invoice_date?: string | null
+          invoice_number?: string | null
+          items?: Json
+          net_amount?: number
+          ocr_status?: string
+          project_id: string
+          supplier_name?: string | null
+          user_id: string
+          vat_amount?: number
+        }
+        Update: {
+          created_at?: string
+          document_url?: string | null
+          gross_amount?: number
+          id?: string
+          invoice_date?: string | null
+          invoice_number?: string | null
+          items?: Json
+          net_amount?: number
+          ocr_status?: string
+          project_id?: string
+          supplier_name?: string | null
+          user_id?: string
+          vat_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_costs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -449,6 +665,280 @@ export type Database = {
             foreignKeyName: "quotes_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subcontractor_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          reviewer_user_id: string
+          subcontractor_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          reviewer_user_id: string
+          subcontractor_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          reviewer_user_id?: string
+          subcontractor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subcontractor_reviews_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subcontractor_services: {
+        Row: {
+          created_at: string
+          id: string
+          price_per_unit: number | null
+          service_name: string
+          subcontractor_id: string
+          unit: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          price_per_unit?: number | null
+          service_name: string
+          subcontractor_id: string
+          unit?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          price_per_unit?: number | null
+          service_name?: string
+          subcontractor_id?: string
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subcontractor_services_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subcontractors: {
+        Row: {
+          avatar_url: string | null
+          company_name: string
+          contact_name: string | null
+          created_at: string
+          description: string | null
+          email: string | null
+          hourly_rate: number | null
+          id: string
+          is_public: boolean
+          location_city: string | null
+          location_lat: number | null
+          location_lng: number | null
+          phone: string | null
+          portfolio_images: Json | null
+          rating: number | null
+          review_count: number | null
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          company_name: string
+          contact_name?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_public?: boolean
+          location_city?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          phone?: string | null
+          portfolio_images?: Json | null
+          rating?: number | null
+          review_count?: number | null
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          company_name?: string
+          contact_name?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_public?: boolean
+          location_city?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          phone?: string | null
+          portfolio_images?: Json | null
+          rating?: number | null
+          review_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      team_locations: {
+        Row: {
+          id: string
+          latitude: number
+          longitude: number
+          project_id: string | null
+          recorded_at: string
+          status: string
+          team_member_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          latitude: number
+          longitude: number
+          project_id?: string | null
+          recorded_at?: string
+          status?: string
+          team_member_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          latitude?: number
+          longitude?: number
+          project_id?: string | null
+          recorded_at?: string
+          status?: string
+          team_member_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_locations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_locations_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          owner_user_id: string
+          phone: string | null
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          owner_user_id: string
+          phone?: string | null
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          owner_user_id?: string
+          phone?: string | null
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      work_tasks: {
+        Row: {
+          assigned_team_member_id: string | null
+          color: string | null
+          created_at: string
+          description: string | null
+          end_date: string
+          id: string
+          project_id: string
+          start_date: string
+          status: string
+          task_type: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          assigned_team_member_id?: string | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          end_date: string
+          id?: string
+          project_id: string
+          start_date: string
+          status?: string
+          task_type?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          assigned_team_member_id?: string | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          end_date?: string
+          id?: string
+          project_id?: string
+          start_date?: string
+          status?: string
+          task_type?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_tasks_assigned_team_member_id_fkey"
+            columns: ["assigned_team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
