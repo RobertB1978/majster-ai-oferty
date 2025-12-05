@@ -88,6 +88,57 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          bank_account: string | null
+          city: string | null
+          company_name: string
+          created_at: string
+          email_for_offers: string | null
+          id: string
+          logo_url: string | null
+          nip: string | null
+          owner_name: string | null
+          phone: string | null
+          postal_code: string | null
+          street: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bank_account?: string | null
+          city?: string | null
+          company_name?: string
+          created_at?: string
+          email_for_offers?: string | null
+          id?: string
+          logo_url?: string | null
+          nip?: string | null
+          owner_name?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          street?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bank_account?: string | null
+          city?: string | null
+          company_name?: string
+          created_at?: string
+          email_for_offers?: string | null
+          id?: string
+          logo_url?: string | null
+          nip?: string | null
+          owner_name?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          street?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           client_id: string
