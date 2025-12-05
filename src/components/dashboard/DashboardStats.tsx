@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
   FolderOpen, 
@@ -22,10 +21,9 @@ function StatsCard({ title, value, icon, trend, delay = 0 }: StatsCardProps) {
   const trendColor = trend && trend > 0 ? 'text-success' : trend && trend < 0 ? 'text-destructive' : 'text-muted-foreground';
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
+    <div
+      className="animate-fade-in"
+      style={{ animationDelay: `${delay}s` }}
     >
       <Card className="overflow-hidden">
         <CardContent className="p-6">
@@ -46,7 +44,7 @@ function StatsCard({ title, value, icon, trend, delay = 0 }: StatsCardProps) {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }
 

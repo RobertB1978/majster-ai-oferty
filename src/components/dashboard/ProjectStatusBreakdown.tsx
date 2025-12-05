@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock } from 'lucide-react';
 
@@ -25,10 +24,9 @@ export function ProjectStatusBreakdown({
   const total = newCount + inProgressCount + sentCount + acceptedCount;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
+    <div
+      className="animate-fade-in"
+      style={{ animationDelay: '0.2s' }}
     >
       <Card>
         <CardHeader>
@@ -69,6 +67,6 @@ export function ProjectStatusBreakdown({
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }
