@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { OfflineFallback } from "@/components/pwa/OfflineFallback";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -17,6 +19,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import QuoteEditor from "./pages/QuoteEditor";
 import PdfGenerator from "./pages/PdfGenerator";
 import CompanyProfile from "./pages/CompanyProfile";
+import ItemTemplates from "./pages/ItemTemplates";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +30,8 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner />
+        <OfflineFallback />
+        <InstallPrompt />
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
@@ -42,6 +47,7 @@ const App = () => (
               <Route path="/projects/:id/quote" element={<QuoteEditor />} />
               <Route path="/projects/:id/pdf" element={<PdfGenerator />} />
               <Route path="/profile" element={<CompanyProfile />} />
+              <Route path="/templates" element={<ItemTemplates />} />
             </Route>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<NotFound />} />

@@ -4,8 +4,9 @@ import { useQuote } from '@/hooks/useQuotes';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2 } from 'lucide-react';
+import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { exportQuoteToExcel, exportQuoteToCSV } from '@/lib/exportUtils';
 
 const statuses = ['Nowy', 'Wycena w toku', 'Oferta wysłana', 'Zaakceptowany'] as const;
 
@@ -99,6 +100,22 @@ export default function ProjectDetail() {
           <FileText className="mr-2 h-5 w-5" />
           Generuj ofertę PDF
         </Button>
+        {quote && (
+          <Button 
+            variant="outline" 
+            onClick={() => exportQuoteToExcel({
+              projectName: project.project_name,
+              positions: quote.positions,
+              summaryMaterials: Number(quote.summary_materials),
+              summaryLabor: Number(quote.summary_labor),
+              marginPercent: Number(quote.margin_percent),
+              total: Number(quote.total),
+            })}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Eksport Excel
+          </Button>
+        )}
       </div>
 
       {/* Quote summary */}

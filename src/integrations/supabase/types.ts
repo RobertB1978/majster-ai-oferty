@@ -44,6 +44,78 @@ export type Database = {
         }
         Relationships: []
       }
+      item_templates: {
+        Row: {
+          category: string
+          created_at: string
+          default_price: number
+          default_qty: number
+          description: string | null
+          id: string
+          name: string
+          unit: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          default_price?: number
+          default_qty?: number
+          description?: string | null
+          id?: string
+          name: string
+          unit?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          default_price?: number
+          default_qty?: number
+          description?: string | null
+          id?: string
+          name?: string
+          unit?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      offer_sends: {
+        Row: {
+          client_email: string
+          error_message: string | null
+          id: string
+          message: string | null
+          project_id: string
+          sent_at: string
+          status: string
+          subject: string
+          user_id: string
+        }
+        Insert: {
+          client_email: string
+          error_message?: string | null
+          id?: string
+          message?: string | null
+          project_id: string
+          sent_at?: string
+          status?: string
+          subject: string
+          user_id: string
+        }
+        Update: {
+          client_email?: string
+          error_message?: string | null
+          id?: string
+          message?: string | null
+          project_id?: string
+          sent_at?: string
+          status?: string
+          subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pdf_data: {
         Row: {
           created_at: string
@@ -95,6 +167,9 @@ export type Database = {
           company_name: string
           created_at: string
           email_for_offers: string | null
+          email_greeting: string | null
+          email_signature: string | null
+          email_subject_template: string | null
           id: string
           logo_url: string | null
           nip: string | null
@@ -111,6 +186,9 @@ export type Database = {
           company_name?: string
           created_at?: string
           email_for_offers?: string | null
+          email_greeting?: string | null
+          email_signature?: string | null
+          email_subject_template?: string | null
           id?: string
           logo_url?: string | null
           nip?: string | null
@@ -127,6 +205,9 @@ export type Database = {
           company_name?: string
           created_at?: string
           email_for_offers?: string | null
+          email_greeting?: string | null
+          email_signature?: string | null
+          email_subject_template?: string | null
           id?: string
           logo_url?: string | null
           nip?: string | null
@@ -173,6 +254,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      quote_versions: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          project_id: string
+          quote_snapshot: Json
+          user_id: string
+          version_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          project_id: string
+          quote_snapshot?: Json
+          user_id: string
+          version_name?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          project_id?: string
+          quote_snapshot?: Json
+          user_id?: string
+          version_name?: string
+        }
+        Relationships: []
       }
       quotes: {
         Row: {

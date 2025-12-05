@@ -6,7 +6,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SearchInput } from '@/components/ui/search-input';
-import { Plus, Loader2, FolderKanban } from 'lucide-react';
+import { Plus, Loader2, FolderKanban, Download } from 'lucide-react';
+import { exportProjectsToCSV } from '@/lib/exportUtils';
 
 const statusColors: Record<string, string> = {
   'Nowy': 'bg-muted text-muted-foreground',
@@ -54,10 +55,18 @@ export default function Projects() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-foreground sm:text-3xl">Projekty</h1>
-        <Button size="lg" onClick={() => navigate('/projects/new')}>
-          <Plus className="mr-2 h-5 w-5" />
-          Nowy projekt
-        </Button>
+        <div className="flex gap-2">
+          {projects.length > 0 && (
+            <Button variant="outline" onClick={() => exportProjectsToCSV(projects)}>
+              <Download className="mr-2 h-4 w-4" />
+              Eksportuj CSV
+            </Button>
+          )}
+          <Button size="lg" onClick={() => navigate('/projects/new')}>
+            <Plus className="mr-2 h-5 w-5" />
+            Nowy projekt
+          </Button>
+        </div>
       </div>
 
       {/* Search and Filters */}

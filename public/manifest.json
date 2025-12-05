@@ -1,24 +1,41 @@
 {
-  "name": "Majster.AI",
+  "name": "Majster.AI — Szybkie Wyceny",
   "short_name": "Majster.AI",
-  "description": "Twórz wyceny i generuj profesjonalne oferty PDF",
-  "start_url": "/",
+  "description": "Twórz wyceny i generuj profesjonalne oferty PDF dla klientów",
+  "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#2563eb",
   "orientation": "portrait-primary",
+  "categories": ["business", "productivity"],
+  "lang": "pl-PL",
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
 }
