@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Plus, Users, FileText, Calendar } from 'lucide-react';
 
@@ -31,13 +30,8 @@ export function QuickActions() {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.25 }}
-      className="flex flex-wrap gap-3"
-    >
-      {actions.map((action, index) => (
+    <div className="flex flex-wrap gap-3 animate-fade-in opacity-0" style={{ animationDelay: '0.25s' }}>
+      {actions.map((action) => (
         <Button
           key={action.label}
           variant={action.primary ? 'default' : 'outline'}
@@ -49,6 +43,6 @@ export function QuickActions() {
           {action.label}
         </Button>
       ))}
-    </motion.div>
+    </div>
   );
 }
