@@ -1,5 +1,5 @@
 import { NavLink } from '@/components/NavLink';
-import { LayoutDashboard, Users, FolderKanban, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, FolderKanban, Menu, X, Building2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -8,6 +8,7 @@ const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/clients', label: 'Klienci', icon: Users },
   { to: '/projects', label: 'Projekty', icon: FolderKanban },
+  { to: '/profile', label: 'Profil firmy', icon: Building2 },
 ];
 
 export function Navigation() {

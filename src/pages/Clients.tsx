@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useClients, useAddClient, useUpdateClient, useDeleteClient, Client } from '@/hooks/useClients';
+import { clientSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+
+interface ClientFormData {
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+}
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { SearchInput } from '@/components/ui/search-input';
+import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Loader2, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Clients() {
@@ -16,16 +25,31 @@ export default function Clients() {
   
   const [isOpen, setIsOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
-  const [formData, setFormData] = useState({
+  const [searchQuery, setSearchQuery] = useState('');
+  const [formData, setFormData] = useState<ClientFormData>({
     name: '',
     phone: '',
     email: '',
     address: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Filter clients based on search
+  const filteredClients = useMemo(() => {
+    if (!searchQuery.trim()) return clients;
+    
+    const query = searchQuery.toLowerCase();
+    return clients.filter(client => 
+      client.name.toLowerCase().includes(query) ||
+      client.email?.toLowerCase().includes(query) ||
+      client.phone?.toLowerCase().includes(query)
+    );
+  }, [clients, searchQuery]);
 
   const resetForm = () => {
     setFormData({ name: '', phone: '', email: '', address: '' });
     setEditingClient(null);
+    setErrors({});
   };
 
   const handleOpenDialog = (client?: Client) => {
@@ -33,9 +57,9 @@ export default function Clients() {
       setEditingClient(client);
       setFormData({
         name: client.name,
-        phone: client.phone,
-        email: client.email,
-        address: client.address,
+        phone: client.phone || '',
+        email: client.email || '',
+        address: client.address || '',
       });
     } else {
       resetForm();
@@ -43,26 +67,45 @@ export default function Clients() {
     setIsOpen(true);
   };
 
+  const validateForm = (): boolean => {
+    const result = clientSchema.safeParse(formData);
+    if (!result.success) {
+      const newErrors: Record<string, string> = {};
+      result.error.errors.forEach(err => {
+        if (err.path[0]) {
+          newErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(newErrors);
+      return false;
+    }
+    setErrors({});
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name.trim()) {
-      toast.error('Podaj nazwę klienta');
+    if (!validateForm()) {
+      toast.error('Popraw błędy w formularzu');
       return;
     }
 
-    if (editingClient) {
-      await updateClient.mutateAsync({ id: editingClient.id, ...formData });
-    } else {
-      await addClient.mutateAsync(formData);
+    try {
+      if (editingClient) {
+        await updateClient.mutateAsync({ id: editingClient.id, ...formData });
+      } else {
+        await addClient.mutateAsync(formData);
+      }
+      setIsOpen(false);
+      resetForm();
+    } catch (error) {
+      // Error handled by hook
     }
-
-    setIsOpen(false);
-    resetForm();
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Czy na pewno chcesz usunąć tego klienta?')) {
+  const handleDelete = async (id: string, name: string) => {
+    if (confirm(`Czy na pewno chcesz usunąć klienta "${name}"?`)) {
       await deleteClient.mutateAsync(id);
     }
   };
@@ -86,13 +129,15 @@ export default function Clients() {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Imię i nazwisko / Nazwa firmy</Label>
+                <Label htmlFor="name">Imię i nazwisko / Nazwa firmy *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Jan Kowalski"
+                  className={errors.name ? 'border-destructive' : ''}
                 />
+                {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Telefon</Label>
@@ -101,7 +146,9 @@ export default function Clients() {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+48 123 456 789"
+                  className={errors.phone ? 'border-destructive' : ''}
                 />
+                {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -111,7 +158,9 @@ export default function Clients() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="jan@example.pl"
+                  className={errors.email ? 'border-destructive' : ''}
                 />
+                {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">Adres</Label>
@@ -120,22 +169,36 @@ export default function Clients() {
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   placeholder="ul. Przykładowa 1, 00-001 Warszawa"
+                  className={errors.address ? 'border-destructive' : ''}
                 />
+                {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
               </div>
               <Button 
                 type="submit" 
                 className="w-full"
                 disabled={addClient.isPending || updateClient.isPending}
               >
-                {addClient.isPending || updateClient.isPending ? (
+                {(addClient.isPending || updateClient.isPending) && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
+                )}
                 {editingClient ? 'Zapisz zmiany' : 'Dodaj klienta'}
               </Button>
             </form>
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Search */}
+      {clients.length > 0 && (
+        <div className="max-w-md">
+          <SearchInput
+            placeholder="Szukaj klienta (nazwa, email, telefon)..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onClear={() => setSearchQuery('')}
+          />
+        </div>
+      )}
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
@@ -144,12 +207,22 @@ export default function Clients() {
       ) : clients.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
+            <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <p className="text-muted-foreground">Brak klientów. Dodaj pierwszego klienta!</p>
+          </CardContent>
+        </Card>
+      ) : filteredClients.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground">Nie znaleziono klientów pasujących do wyszukiwania.</p>
+            <Button variant="link" onClick={() => setSearchQuery('')}>
+              Wyczyść wyszukiwanie
+            </Button>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {clients.map((client) => (
+          {filteredClients.map((client) => (
             <Card key={client.id} className="animate-slide-in">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-start justify-between text-lg">
@@ -167,7 +240,7 @@ export default function Clients() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive hover:text-destructive"
-                      onClick={() => handleDelete(client.id)}
+                      onClick={() => handleDelete(client.id, client.name)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -197,6 +270,13 @@ export default function Clients() {
             </Card>
           ))}
         </div>
+      )}
+
+      {/* Results count */}
+      {searchQuery && filteredClients.length > 0 && (
+        <p className="text-sm text-muted-foreground">
+          Znaleziono: {filteredClients.length} z {clients.length} klientów
+        </p>
       )}
     </div>
   );

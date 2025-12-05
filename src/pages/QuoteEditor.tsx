@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, Trash2, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
@@ -23,6 +23,7 @@ export default function QuoteEditor() {
   const [positions, setPositions] = useState<QuotePosition[]>([]);
   const [marginPercent, setMarginPercent] = useState(10);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (existingQuote && !isInitialized) {
@@ -68,16 +69,58 @@ export default function QuoteEditor() {
       category: 'Materiał',
     };
     setPositions([...positions, newPosition]);
+    // Clear validation errors when adding new position
+    setValidationErrors({});
   };
 
   const updatePosition = (positionId: string, field: keyof QuotePosition, value: any) => {
     setPositions(positions.map(p => 
       p.id === positionId ? { ...p, [field]: value } : p
     ));
+    // Clear validation error for this field
+    setValidationErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[`${positionId}_${field}`];
+      return newErrors;
+    });
   };
 
   const removePosition = (positionId: string) => {
     setPositions(positions.filter(p => p.id !== positionId));
+  };
+
+  const validateQuote = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (positions.length === 0) {
+      toast.error('Dodaj przynajmniej jedną pozycję');
+      return false;
+    }
+
+    positions.forEach((pos) => {
+      if (!pos.name.trim()) {
+        errors[`${pos.id}_name`] = 'Nazwa jest wymagana';
+      }
+      if (pos.qty <= 0) {
+        errors[`${pos.id}_qty`] = 'Ilość musi być > 0';
+      }
+      if (pos.price < 0) {
+        errors[`${pos.id}_price`] = 'Cena nie może być ujemna';
+      }
+    });
+
+    if (marginPercent < 0 || marginPercent > 100) {
+      errors['marginPercent'] = 'Marża: 0-100%';
+    }
+
+    setValidationErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      toast.error('Popraw błędy w formularzu');
+      return false;
+    }
+
+    return true;
   };
 
   const summaryMaterials = positions
@@ -92,24 +135,18 @@ export default function QuoteEditor() {
   const total = subtotal * (1 + marginPercent / 100);
 
   const handleSave = async () => {
-    if (positions.length === 0) {
-      toast.error('Dodaj przynajmniej jedną pozycję');
-      return;
+    if (!validateQuote()) return;
+
+    try {
+      await saveQuote.mutateAsync({
+        projectId: id!,
+        positions,
+        marginPercent,
+      });
+      navigate(`/projects/${id}`);
+    } catch (error) {
+      // Error handled by hook
     }
-
-    const emptyPositions = positions.filter(p => !p.name.trim());
-    if (emptyPositions.length > 0) {
-      toast.error('Uzupełnij nazwy wszystkich pozycji');
-      return;
-    }
-
-    await saveQuote.mutateAsync({
-      projectId: id!,
-      positions,
-      marginPercent,
-    });
-
-    navigate(`/projects/${id}`);
   };
 
   return (
@@ -135,33 +172,56 @@ export default function QuoteEditor() {
         {positions.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center">
+              <AlertCircle className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">
                 Brak pozycji. Kliknij "Dodaj pozycję" aby rozpocząć wycenę.
               </p>
             </CardContent>
           </Card>
         ) : (
-          positions.map((position) => (
+          positions.map((position, index) => (
             <Card key={position.id} className="animate-slide-in">
               <CardContent className="p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Pozycja #{index + 1}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-destructive hover:text-destructive"
+                    onClick={() => removePosition(position.id)}
+                  >
+                    <Trash2 className="mr-1 h-4 w-4" />
+                    Usuń
+                  </Button>
+                </div>
                 <div className="grid gap-4 sm:grid-cols-12">
                   <div className="sm:col-span-4">
-                    <Label className="text-xs text-muted-foreground">Nazwa pozycji</Label>
+                    <Label className="text-xs text-muted-foreground">Nazwa pozycji *</Label>
                     <Input
                       value={position.name}
                       onChange={(e) => updatePosition(position.id, 'name', e.target.value)}
                       placeholder="np. Płytki ceramiczne"
+                      className={validationErrors[`${position.id}_name`] ? 'border-destructive' : ''}
                     />
+                    {validationErrors[`${position.id}_name`] && (
+                      <p className="mt-1 text-xs text-destructive">{validationErrors[`${position.id}_name`]}</p>
+                    )}
                   </div>
-                  <div className="sm:col-span-1">
-                    <Label className="text-xs text-muted-foreground">Ilość</Label>
+                  <div className="sm:col-span-2">
+                    <Label className="text-xs text-muted-foreground">Ilość *</Label>
                     <Input
                       type="number"
-                      min="0"
+                      min="0.01"
                       step="0.01"
                       value={position.qty}
                       onChange={(e) => updatePosition(position.id, 'qty', parseFloat(e.target.value) || 0)}
+                      className={validationErrors[`${position.id}_qty`] ? 'border-destructive' : ''}
                     />
+                    {validationErrors[`${position.id}_qty`] && (
+                      <p className="mt-1 text-xs text-destructive">{validationErrors[`${position.id}_qty`]}</p>
+                    )}
                   </div>
                   <div className="sm:col-span-2">
                     <Label className="text-xs text-muted-foreground">Jednostka</Label>
@@ -184,10 +244,14 @@ export default function QuoteEditor() {
                       step="0.01"
                       value={position.price}
                       onChange={(e) => updatePosition(position.id, 'price', parseFloat(e.target.value) || 0)}
+                      className={validationErrors[`${position.id}_price`] ? 'border-destructive' : ''}
                     />
+                    {validationErrors[`${position.id}_price`] && (
+                      <p className="mt-1 text-xs text-destructive">{validationErrors[`${position.id}_price`]}</p>
+                    )}
                   </div>
                   <div className="sm:col-span-2">
-                    <Label className="text-xs text-muted-foreground">Kategoria</Label>
+                    <Label className="text-xs text-muted-foreground">Kategoria *</Label>
                     <Select value={position.category} onValueChange={(v) => updatePosition(position.id, 'category', v as 'Materiał' | 'Robocizna')}>
                       <SelectTrigger>
                         <SelectValue />
@@ -199,18 +263,8 @@ export default function QuoteEditor() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="flex items-end sm:col-span-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => removePosition(position.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
                 </div>
-                <div className="mt-2 text-right text-sm font-medium">
+                <div className="mt-3 text-right text-sm font-medium">
                   Suma: <span className="text-primary">{(position.qty * position.price).toFixed(2)} zł</span>
                 </div>
               </CardContent>
@@ -235,14 +289,19 @@ export default function QuoteEditor() {
           </div>
           <div className="flex items-center justify-between gap-4">
             <span className="text-muted-foreground">Marża (%):</span>
-            <Input
-              type="number"
-              min="0"
-              max="100"
-              className="w-24"
-              value={marginPercent}
-              onChange={(e) => setMarginPercent(parseFloat(e.target.value) || 0)}
-            />
+            <div>
+              <Input
+                type="number"
+                min="0"
+                max="100"
+                className={`w-24 ${validationErrors['marginPercent'] ? 'border-destructive' : ''}`}
+                value={marginPercent}
+                onChange={(e) => setMarginPercent(parseFloat(e.target.value) || 0)}
+              />
+              {validationErrors['marginPercent'] && (
+                <p className="mt-1 text-xs text-destructive">{validationErrors['marginPercent']}</p>
+              )}
+            </div>
           </div>
           <div className="border-t border-border pt-4">
             <div className="flex justify-between text-lg font-bold">
