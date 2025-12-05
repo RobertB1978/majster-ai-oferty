@@ -3,12 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useProject } from '@/hooks/useProjects';
 import { useQuote, useSaveQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useCreateItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
+import { useAiSuggestions } from '@/hooks/useAiSuggestions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, Trash2, Save, Loader2, AlertCircle, Bookmark } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Loader2, AlertCircle, Bookmark, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { TemplateSelector } from '@/components/quotes/TemplateSelector';
 import { QuoteVersionsPanel } from '@/components/quotes/QuoteVersionsPanel';
@@ -23,6 +24,7 @@ export default function QuoteEditor() {
   const { data: existingQuote, isLoading: quoteLoading } = useQuote(id!);
   const saveQuote = useSaveQuote();
   const createTemplate = useCreateItemTemplate();
+  const aiSuggestions = useAiSuggestions();
   const navigate = useNavigate();
 
   const [positions, setPositions] = useState<QuotePosition[]>([]);
@@ -179,6 +181,37 @@ export default function QuoteEditor() {
     setMarginPercent(snapshot.margin_percent);
   };
 
+  const handleAiSuggestions = async () => {
+    if (!project) return;
+    
+    const existingPositions = positions.map(p => ({ name: p.name, category: p.category }));
+    
+    try {
+      const suggestions = await aiSuggestions.mutateAsync({
+        projectName: project.project_name,
+        existingPositions
+      });
+
+      if (suggestions.length > 0) {
+        const newPositions = suggestions.map(s => ({
+          id: crypto.randomUUID(),
+          name: s.name,
+          qty: 1,
+          unit: s.unit,
+          price: s.price,
+          category: s.category as 'Materiał' | 'Robocizna',
+        }));
+        
+        setPositions([...positions, ...newPositions]);
+        toast.success(`Dodano ${suggestions.length} sugestii AI`);
+      } else {
+        toast.info('Brak sugestii dla tego projektu');
+      }
+    } catch {
+      // Error handled by hook
+    }
+  };
+
   const handleSave = async () => {
     if (!validateQuote()) return;
 
@@ -221,6 +254,19 @@ export default function QuoteEditor() {
           Dodaj pozycję
         </Button>
         <TemplateSelector onSelectTemplate={addFromTemplate} />
+        <Button 
+          size="lg" 
+          variant="outline" 
+          onClick={handleAiSuggestions}
+          disabled={aiSuggestions.isPending}
+        >
+          {aiSuggestions.isPending ? (
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+          ) : (
+            <Sparkles className="mr-2 h-5 w-5" />
+          )}
+          AI Sugestie
+        </Button>
       </div>
 
       {/* Positions */}
