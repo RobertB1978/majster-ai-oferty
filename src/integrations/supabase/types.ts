@@ -127,6 +127,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       offer_sends: {
         Row: {
           client_email: string
@@ -159,6 +192,42 @@ export type Database = {
           sent_at?: string
           status?: string
           subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      onboarding_progress: {
+        Row: {
+          completed_at: string | null
+          completed_steps: number[] | null
+          created_at: string
+          current_step: number
+          id: string
+          is_completed: boolean
+          skipped_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_steps?: number[] | null
+          created_at?: string
+          current_step?: number
+          id?: string
+          is_completed?: boolean
+          skipped_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_steps?: number[] | null
+          created_at?: string
+          current_step?: number
+          id?: string
+          is_completed?: boolean
+          skipped_at?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -271,24 +340,33 @@ export type Database = {
         Row: {
           client_id: string
           created_at: string
+          end_date: string | null
           id: string
+          priority: string | null
           project_name: string
+          start_date: string | null
           status: string
           user_id: string
         }
         Insert: {
           client_id: string
           created_at?: string
+          end_date?: string | null
           id?: string
+          priority?: string | null
           project_name: string
+          start_date?: string | null
           status?: string
           user_id: string
         }
         Update: {
           client_id?: string
           created_at?: string
+          end_date?: string | null
           id?: string
+          priority?: string | null
           project_name?: string
+          start_date?: string | null
           status?: string
           user_id?: string
         }
