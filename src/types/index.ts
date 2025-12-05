@@ -14,14 +14,20 @@ export interface Client {
   created_at: string;
 }
 
+export type ProjectStatus = 'Nowy' | 'Wycena w toku' | 'Oferta wysłana' | 'Zaakceptowany';
+export type ProjectPriority = 'low' | 'normal' | 'high';
+
 export interface Project {
   id: string;
   user_id: string;
   client_id: string;
   project_name: string;
-  status: 'Nowy' | 'Wycena w toku' | 'Oferta wysłana' | 'Zaakceptowany';
+  status: ProjectStatus;
+  priority?: ProjectPriority;
+  start_date?: string;
+  end_date?: string;
   created_at: string;
-  client?: Client;
+  clients?: Client;
 }
 
 export interface QuotePosition {

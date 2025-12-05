@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Client } from './useClients';
 
 export type ProjectStatus = 'Nowy' | 'Wycena w toku' | 'Oferta wysłana' | 'Zaakceptowany';
+export type ProjectPriority = 'low' | 'normal' | 'high';
 
 export interface Project {
   id: string;
@@ -12,6 +13,9 @@ export interface Project {
   client_id: string;
   project_name: string;
   status: ProjectStatus;
+  priority?: ProjectPriority | null;
+  start_date?: string | null;
+  end_date?: string | null;
   created_at: string;
   clients?: Client;
 }
