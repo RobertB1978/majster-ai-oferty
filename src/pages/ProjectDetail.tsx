@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download } from 'lucide-react';
-import { toast } from 'sonner';
-import { exportQuoteToExcel, exportQuoteToCSV } from '@/lib/exportUtils';
+import { exportQuoteToExcel } from '@/lib/exportUtils';
+import { OfferHistoryPanel } from '@/components/offers/OfferHistoryPanel';
 
 const statuses = ['Nowy', 'Wycena w toku', 'Oferta wysłana', 'Zaakceptowany'] as const;
 
@@ -91,7 +91,7 @@ export default function ProjectDetail() {
       </div>
 
       {/* Actions */}
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-wrap gap-3">
         <Button size="lg" onClick={() => navigate(`/projects/${id}/quote`)}>
           <Calculator className="mr-2 h-5 w-5" />
           Edytuj wycenę
@@ -164,6 +164,9 @@ export default function ProjectDetail() {
           </CardContent>
         </Card>
       )}
+
+      {/* Offer History */}
+      <OfferHistoryPanel projectId={id!} />
     </div>
   );
 }

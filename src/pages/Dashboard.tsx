@@ -4,7 +4,7 @@ import { useClients } from '@/hooks/useClients';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, FolderOpen, Users, FileText, Loader2 } from 'lucide-react';
+import { Plus, FolderOpen, Users, FileText, Loader2, TrendingUp, Clock, CheckCircle } from 'lucide-react';
 
 const statusColors: Record<string, string> = {
   'Nowy': 'bg-muted text-muted-foreground',
@@ -24,6 +24,20 @@ export default function Dashboard() {
 
   const isLoading = projectsLoading || clientsLoading;
 
+  // Statystyki
+  const stats = {
+    total: projects.length,
+    new: projects.filter(p => p.status === 'Nowy').length,
+    inProgress: projects.filter(p => p.status === 'Wycena w toku').length,
+    sent: projects.filter(p => p.status === 'Oferta wysłana').length,
+    accepted: projects.filter(p => p.status === 'Zaakceptowany').length,
+  };
+
+  // Projekty z ostatniego tygodnia
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  const recentCount = projects.filter(p => new Date(p.created_at) > oneWeekAgo).length;
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
@@ -35,16 +49,16 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      {/* Main Stats */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
               <FolderOpen className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{projects.length}</p>
-              <p className="text-sm text-muted-foreground">Projektów</p>
+              <p className="text-2xl font-bold">{stats.total}</p>
+              <p className="text-sm text-muted-foreground">Wszystkich projektów</p>
             </div>
           </CardContent>
         </Card>
@@ -62,17 +76,56 @@ export default function Dashboard() {
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10">
-              <FileText className="h-6 w-6 text-success" />
+              <CheckCircle className="h-6 w-6 text-success" />
             </div>
             <div>
-              <p className="text-2xl font-bold">
-                {projects.filter(p => p.status === 'Zaakceptowany').length}
-              </p>
+              <p className="text-2xl font-bold">{stats.accepted}</p>
               <p className="text-sm text-muted-foreground">Zaakceptowanych</p>
             </div>
           </CardContent>
         </Card>
+        <Card>
+          <CardContent className="flex items-center gap-4 p-6">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10">
+              <TrendingUp className="h-6 w-6 text-warning" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{recentCount}</p>
+              <p className="text-sm text-muted-foreground">Nowych (7 dni)</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Status breakdown */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5" />
+            Status projektów
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 sm:grid-cols-4">
+            <div className="rounded-lg border border-border bg-muted/30 p-4 text-center">
+              <p className="text-3xl font-bold text-muted-foreground">{stats.new}</p>
+              <p className="text-sm text-muted-foreground">Nowe</p>
+            </div>
+            <div className="rounded-lg border border-border bg-warning/5 p-4 text-center">
+              <p className="text-3xl font-bold text-warning">{stats.inProgress}</p>
+              <p className="text-sm text-muted-foreground">W toku</p>
+            </div>
+            <div className="rounded-lg border border-border bg-primary/5 p-4 text-center">
+              <p className="text-3xl font-bold text-primary">{stats.sent}</p>
+              <p className="text-sm text-muted-foreground">Wysłane</p>
+            </div>
+            <div className="rounded-lg border border-border bg-success/5 p-4 text-center">
+              <p className="text-3xl font-bold text-success">{stats.accepted}</p>
+              <p className="text-sm text-muted-foreground">Zaakceptowane</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Quick action */}
       <Button size="lg" onClick={() => navigate('/projects/new')} className="w-full sm:w-auto">
