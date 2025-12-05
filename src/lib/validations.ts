@@ -70,6 +70,9 @@ export const profileSchema = z.object({
       message: 'Nieprawidłowy format email',
     }),
   bank_account: z.string().max(50, 'Numer konta max 50 znaków').optional(),
+  email_subject_template: z.string().max(200, 'Temat max 200 znaków').optional(),
+  email_greeting: z.string().max(500, 'Powitanie max 500 znaków').optional(),
+  email_signature: z.string().max(500, 'Podpis max 500 znaków').optional(),
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;

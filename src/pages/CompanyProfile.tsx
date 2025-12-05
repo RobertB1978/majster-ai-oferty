@@ -4,8 +4,9 @@ import { profileSchema, ProfileFormData } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Building2, Upload, Loader2, Save, User, Phone, Mail, MapPin, CreditCard, FileText } from 'lucide-react';
+import { Building2, Upload, Loader2, Save, User, Phone, Mail, MapPin, CreditCard, FileText, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function CompanyProfile() {
@@ -24,6 +25,9 @@ export default function CompanyProfile() {
     phone: '',
     email_for_offers: '',
     bank_account: '',
+    email_subject_template: '',
+    email_greeting: '',
+    email_signature: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -40,6 +44,9 @@ export default function CompanyProfile() {
         phone: profile.phone || '',
         email_for_offers: profile.email_for_offers || '',
         bank_account: profile.bank_account || '',
+        email_subject_template: profile.email_subject_template || 'Oferta od {company_name}',
+        email_greeting: profile.email_greeting || 'Szanowny Kliencie,',
+        email_signature: profile.email_signature || 'Z poważaniem',
       });
     }
   }, [profile]);
@@ -165,7 +172,7 @@ export default function CompanyProfile() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 {/* Company Name */}
                 <div className="space-y-2 sm:col-span-2">
@@ -322,6 +329,62 @@ export default function CompanyProfile() {
                   {errors.bank_account && (
                     <p className="text-sm text-destructive">{errors.bank_account}</p>
                   )}
+                </div>
+              </div>
+
+              {/* Email Settings Section */}
+              <div className="border-t border-border pt-6">
+                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold">
+                  <MessageSquare className="h-5 w-5" />
+                  Ustawienia wiadomości e-mail
+                </h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email_subject_template">Domyślny temat wiadomości</Label>
+                    <Input
+                      id="email_subject_template"
+                      value={formData.email_subject_template}
+                      onChange={(e) => setFormData({ ...formData, email_subject_template: e.target.value })}
+                      placeholder="Oferta od {company_name}"
+                      className={errors.email_subject_template ? 'border-destructive' : ''}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Użyj {'{company_name}'} aby wstawić nazwę firmy
+                    </p>
+                    {errors.email_subject_template && (
+                      <p className="text-sm text-destructive">{errors.email_subject_template}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email_greeting">Powitanie w wiadomości</Label>
+                    <Textarea
+                      id="email_greeting"
+                      value={formData.email_greeting}
+                      onChange={(e) => setFormData({ ...formData, email_greeting: e.target.value })}
+                      placeholder="Szanowny Kliencie,"
+                      rows={2}
+                      className={errors.email_greeting ? 'border-destructive' : ''}
+                    />
+                    {errors.email_greeting && (
+                      <p className="text-sm text-destructive">{errors.email_greeting}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email_signature">Podpis w wiadomości</Label>
+                    <Textarea
+                      id="email_signature"
+                      value={formData.email_signature}
+                      onChange={(e) => setFormData({ ...formData, email_signature: e.target.value })}
+                      placeholder="Z poważaniem"
+                      rows={2}
+                      className={errors.email_signature ? 'border-destructive' : ''}
+                    />
+                    {errors.email_signature && (
+                      <p className="text-sm text-destructive">{errors.email_signature}</p>
+                    )}
+                  </div>
                 </div>
               </div>
 

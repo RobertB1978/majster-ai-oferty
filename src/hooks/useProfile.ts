@@ -16,6 +16,9 @@ export interface Profile {
   email_for_offers: string;
   bank_account: string;
   logo_url: string;
+  email_subject_template: string;
+  email_greeting: string;
+  email_signature: string;
   created_at: string;
   updated_at: string;
 }
