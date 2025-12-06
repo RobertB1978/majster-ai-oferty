@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings as SettingsIcon, Key, Bell, Globe, CreditCard, Calendar } from 'lucide-react';
+import { Settings as SettingsIcon, Key, Bell, Globe, CreditCard, Calendar, FileText } from 'lucide-react';
 import { ApiKeysPanel } from '@/components/api/ApiKeysPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { LanguageSwitcher } from '@/components/settings/LanguageSwitcher';
 import { BillingDashboard } from '@/components/billing/BillingDashboard';
 import { CalendarSync } from '@/components/calendar/CalendarSync';
+import { CompanyDocuments } from '@/components/documents/CompanyDocuments';
+import { PushNotificationSettings } from '@/components/notifications/PushNotificationSettings';
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -37,6 +39,10 @@ export default function Settings() {
               <Globe className="h-4 w-4" />
               {t('settings.language')}
             </TabsTrigger>
+            <TabsTrigger value="documents" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Dokumenty
+            </TabsTrigger>
             <TabsTrigger value="calendar" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               {t('nav.calendar')}
@@ -47,7 +53,7 @@ export default function Settings() {
             </TabsTrigger>
             <TabsTrigger value="api" className="flex items-center gap-2">
               <Key className="h-4 w-4" />
-              Klucze API
+              API
             </TabsTrigger>
             <TabsTrigger value="notifications" className="flex items-center gap-2">
               <Bell className="h-4 w-4" />
@@ -77,6 +83,10 @@ export default function Settings() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="documents" className="mt-4">
+            <CompanyDocuments />
+          </TabsContent>
+
           <TabsContent value="calendar" className="mt-4">
             <CalendarSync />
           </TabsContent>
@@ -90,43 +100,7 @@ export default function Settings() {
           </TabsContent>
 
           <TabsContent value="notifications" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('settings.notifications')}</CardTitle>
-                <CardDescription>
-                  Zarządzaj ustawieniami powiadomień
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Powiadomienia email</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Otrzymuj powiadomienia o nowych ofertach
-                    </p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Powiadomienia push</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Otrzymuj powiadomienia w przeglądarce
-                    </p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Przypomnienia o terminach</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Przypomnienia o zbliżających się terminach projektów
-                    </p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-              </CardContent>
-            </Card>
+            <PushNotificationSettings />
           </TabsContent>
         </Tabs>
       </div>

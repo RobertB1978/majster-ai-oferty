@@ -9,6 +9,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { OfflineFallback } from "@/components/pwa/OfflineFallback";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { CookieConsent } from "@/components/legal/CookieConsent";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -30,6 +31,8 @@ import Marketplace from "./pages/Marketplace";
 import Settings from "./pages/Settings";
 import Billing from "./pages/Billing";
 import OfferApproval from "./pages/OfferApproval";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,12 +48,15 @@ const App = () => (
               <Sonner />
               <OfflineFallback />
               <InstallPrompt />
+              <CookieConsent />
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/offer/:token" element={<OfferApproval />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
                 <Route element={<AppLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/clients" element={<Clients />} />
