@@ -24,7 +24,6 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useVoiceToText } from '@/hooks/useVoiceToText';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
@@ -36,11 +35,11 @@ interface VoiceQuoteResult {
   description: string;
   items: Array<{
     name: string;
-    quantity: number;
+    qty: number;
     unit: string;
     price: number;
   }>;
-  totalEstimate: number;
+  summary: string;
 }
 
 export default function NewProject() {
@@ -59,32 +58,90 @@ export default function NewProject() {
   // Mode state
   const [activeMode, setActiveMode] = useState<CreationMode>(initialMode);
   
-  // Voice state
-  const { transcript, isListening, isSupported, startListening, stopListening, resetTranscript } = useVoiceToText({
-    language: 'pl-PL',
-    continuous: true,
-  });
+  // Voice state - using Web Speech API
+  const [isListening, setIsListening] = useState(false);
+  const [transcript, setTranscript] = useState('');
   const [voiceResult, setVoiceResult] = useState<VoiceQuoteResult | null>(null);
   const [isProcessingVoice, setIsProcessingVoice] = useState(false);
+  const [recognition, setRecognition] = useState<any>(null);
   
   // AI state
   const [aiInput, setAiInput] = useState('');
   const [aiMessages, setAiMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
   const [isProcessingAi, setIsProcessingAi] = useState(false);
 
-  // Auto-start voice if mode is voice
+  // Initialize speech recognition
   useEffect(() => {
-    if (initialMode === 'voice' && isSupported && !isListening) {
-      setTimeout(() => {
-        startListening();
-        toast.info('Nagrywanie rozpoczęte', {
-          description: 'Powiedz szczegóły projektu...'
-        });
-      }, 500);
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognitionInstance = new SpeechRecognition();
+      recognitionInstance.lang = 'pl-PL';
+      recognitionInstance.continuous = true;
+      recognitionInstance.interimResults = true;
+      
+      recognitionInstance.onresult = (event: any) => {
+        let finalTranscript = '';
+        let interimTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i];
+          if (result.isFinal) {
+            finalTranscript += result[0].transcript;
+          } else {
+            interimTranscript += result[0].transcript;
+          }
+        }
+        
+        if (finalTranscript) {
+          setTranscript(prev => prev + ' ' + finalTranscript);
+        }
+      };
+      
+      recognitionInstance.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          toast.error('Brak dostępu do mikrofonu. Włącz mikrofon w ustawieniach przeglądarki.');
+        }
+      };
+      
+      recognitionInstance.onend = () => {
+        setIsListening(false);
+      };
+      
+      setRecognition(recognitionInstance);
     }
-  }, [initialMode, isSupported]);
+    
+    return () => {
+      if (recognition) {
+        recognition.abort();
+      }
+    };
+  }, []);
 
-  // Process voice input
+  const handleVoiceToggle = () => {
+    if (!recognition) {
+      toast.error('Rozpoznawanie mowy nie jest obsługiwane w tej przeglądarce. Użyj Chrome.');
+      return;
+    }
+    
+    if (isListening) {
+      recognition.stop();
+      setIsListening(false);
+    } else {
+      setTranscript('');
+      try {
+        recognition.start();
+        setIsListening(true);
+        toast.info('Nagrywanie rozpoczęte. Mów wyraźnie...');
+      } catch (error) {
+        console.error('Error starting recognition:', error);
+        toast.error('Nie udało się uruchomić mikrofonu');
+      }
+    }
+  };
+
+  // Process voice input with AI
   const handleProcessVoice = async () => {
     if (!transcript.trim()) {
       toast.error('Brak nagranego tekstu');
@@ -98,15 +155,20 @@ export default function NewProject() {
         body: { text: transcript }
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Voice processing error:', error);
+        throw error;
+      }
       
-      setVoiceResult(data);
-      setProjectName(data.projectName || '');
-      setDescription(data.description || '');
-      toast.success('Oferta przygotowana!');
+      if (data) {
+        setVoiceResult(data);
+        setProjectName(data.projectName || '');
+        setDescription(data.summary || '');
+        toast.success('Wycena przygotowana!');
+      }
     } catch (error) {
       console.error('Error processing voice:', error);
-      toast.error('Błąd przetwarzania głosu');
+      toast.error('Błąd przetwarzania głosu. Spróbuj ponownie.');
     } finally {
       setIsProcessingVoice(false);
     }
@@ -126,21 +188,22 @@ export default function NewProject() {
         body: { 
           message: userMessage,
           context: 'quote_creation',
-          projectData: { projectName, description }
+          history: aiMessages.slice(-6)
         }
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('AI error:', error);
+        throw error;
+      }
       
-      setAiMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
-      
-      // Extract project data if AI suggests
-      if (data.projectName) setProjectName(data.projectName);
-      if (data.description) setDescription(data.description);
+      const aiReply = data?.response || data?.reply || 'Przepraszam, wystąpił błąd.';
+      setAiMessages(prev => [...prev, { role: 'assistant', content: aiReply }]);
       
     } catch (error) {
       console.error('Error with AI:', error);
-      toast.error('Błąd komunikacji z AI');
+      toast.error('Błąd komunikacji z AI. Spróbuj ponownie.');
+      setAiMessages(prev => [...prev, { role: 'assistant', content: 'Przepraszam, wystąpił problem z połączeniem. Spróbuj ponownie.' }]);
     } finally {
       setIsProcessingAi(false);
     }
@@ -168,14 +231,7 @@ export default function NewProject() {
     navigate(`/projects/${project.id}`);
   };
 
-  const handleVoiceToggle = () => {
-    if (isListening) {
-      stopListening();
-    } else {
-      resetTranscript();
-      startListening();
-    }
-  };
+  const isVoiceSupported = !!(window as any).SpeechRecognition || !!(window as any).webkitSpeechRecognition;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -221,108 +277,122 @@ export default function NewProject() {
 
               {/* Voice Tab */}
               <TabsContent value="voice" className="space-y-4">
-                <div className="flex flex-col items-center py-6">
-                  <button
-                    onClick={handleVoiceToggle}
-                    disabled={!isSupported || isProcessingVoice}
-                    className={cn(
-                      "relative h-24 w-24 rounded-full flex items-center justify-center",
-                      "transition-all duration-300",
-                      isListening
-                        ? "bg-gradient-to-br from-rose-500 to-orange-500 shadow-xl shadow-rose-500/30 scale-110"
-                        : "bg-gradient-to-br from-primary to-primary-glow shadow-lg hover:scale-105",
-                      "disabled:opacity-50"
-                    )}
-                  >
-                    {isListening && (
-                      <span className="absolute inset-0 rounded-full bg-rose-500/30 animate-ping" />
-                    )}
-                    {isListening ? (
-                      <MicOff className="h-10 w-10 text-white relative z-10" />
-                    ) : (
-                      <Mic className="h-10 w-10 text-white relative z-10" />
-                    )}
-                  </button>
-                  
-                  <p className="text-sm text-muted-foreground mt-4">
-                    {isListening ? 'Mówię... Kliknij aby zatrzymać' : 'Kliknij aby nagrywać'}
-                  </p>
-                </div>
-
-                {transcript && (
-                  <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <FileText className="h-4 w-4" />
-                      Rozpoznany tekst:
-                    </div>
-                    <p className="text-sm">{transcript}</p>
-                    <div className="flex gap-2">
-                      <Button 
-                        onClick={handleProcessVoice}
+                {!isVoiceSupported ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Mic className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>Rozpoznawanie mowy nie jest obsługiwane w tej przeglądarce.</p>
+                    <p className="text-sm mt-2">Użyj przeglądarki Chrome lub Edge.</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex flex-col items-center py-6">
+                      <button
+                        onClick={handleVoiceToggle}
                         disabled={isProcessingVoice}
-                        className="flex-1"
-                      >
-                        {isProcessingVoice ? (
-                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        ) : (
-                          <CheckCircle2 className="h-4 w-4 mr-2" />
+                        className={cn(
+                          "relative h-24 w-24 rounded-full flex items-center justify-center",
+                          "transition-all duration-300",
+                          isListening
+                            ? "bg-gradient-to-br from-rose-500 to-orange-500 shadow-xl shadow-rose-500/30 scale-110"
+                            : "bg-gradient-to-br from-primary to-primary-glow shadow-lg hover:scale-105",
+                          "disabled:opacity-50"
                         )}
-                        Przetwórz
-                      </Button>
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          resetTranscript();
-                          setVoiceResult(null);
-                        }}
                       >
-                        <RefreshCw className="h-4 w-4" />
-                      </Button>
+                        {isListening && (
+                          <span className="absolute inset-0 rounded-full bg-rose-500/30 animate-ping" />
+                        )}
+                        {isListening ? (
+                          <MicOff className="h-10 w-10 text-white relative z-10" />
+                        ) : (
+                          <Mic className="h-10 w-10 text-white relative z-10" />
+                        )}
+                      </button>
+                      
+                      <p className="text-sm text-muted-foreground mt-4">
+                        {isListening ? 'Nagrywam... Kliknij aby zatrzymać' : 'Kliknij aby nagrywać'}
+                      </p>
                     </div>
-                  </div>
-                )}
 
-                {voiceResult && (
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 space-y-2">
-                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
-                      <CheckCircle2 className="h-4 w-4" />
-                      <span className="font-medium">Oferta przygotowana</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Szacowana wartość: {voiceResult.totalEstimate?.toLocaleString('pl-PL')} zł
-                    </p>
-                  </div>
+                    {transcript && (
+                      <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <FileText className="h-4 w-4" />
+                          Rozpoznany tekst:
+                        </div>
+                        <p className="text-sm">{transcript}</p>
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={handleProcessVoice}
+                            disabled={isProcessingVoice}
+                            className="flex-1"
+                          >
+                            {isProcessingVoice ? (
+                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                            ) : (
+                              <CheckCircle2 className="h-4 w-4 mr-2" />
+                            )}
+                            Przetwórz z AI
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            onClick={() => {
+                              setTranscript('');
+                              setVoiceResult(null);
+                            }}
+                          >
+                            <RefreshCw className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {voiceResult && (
+                      <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 space-y-2">
+                        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                          <CheckCircle2 className="h-4 w-4" />
+                          <span className="font-medium">Wycena przygotowana</span>
+                        </div>
+                        {voiceResult.items && voiceResult.items.length > 0 && (
+                          <div className="text-sm text-muted-foreground">
+                            {voiceResult.items.length} pozycji | Suma: ~{voiceResult.items.reduce((acc, item) => acc + (item.qty * item.price), 0).toLocaleString('pl-PL')} zł
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
               </TabsContent>
 
               {/* AI Tab */}
               <TabsContent value="ai" className="space-y-4">
-                <div className="bg-muted/30 rounded-lg p-4 min-h-[200px] max-h-[300px] overflow-y-auto space-y-3">
+                <div className="bg-muted/30 rounded-lg p-4 min-h-[250px] max-h-[350px] overflow-y-auto space-y-3">
                   {aiMessages.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
-                      <Bot className="h-12 w-12 mb-2 opacity-50" />
-                      <p className="text-sm">Opisz projekt, który chcesz stworzyć</p>
-                      <p className="text-xs mt-1">np. "Remont łazienki 15m2, wymiana płytek..."</p>
+                    <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
+                      <Bot className="h-12 w-12 mb-3 opacity-50" />
+                      <p className="text-sm text-center">Opisz projekt, który chcesz wycenić</p>
+                      <p className="text-xs mt-2 text-center max-w-xs">
+                        np. "Remont łazienki 8m2, wymiana płytek, wanna na kabinę prysznicową"
+                      </p>
                     </div>
                   ) : (
                     aiMessages.map((msg, i) => (
                       <div
                         key={i}
                         className={cn(
-                          "p-3 rounded-lg max-w-[85%]",
+                          "p-3 rounded-lg max-w-[90%]",
                           msg.role === 'user'
                             ? "bg-primary text-primary-foreground ml-auto"
-                            : "bg-muted"
+                            : "bg-muted mr-auto"
                         )}
                       >
-                        <p className="text-sm">{msg.content}</p>
+                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                       </div>
                     ))
                   )}
                   {isProcessingAi && (
-                    <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="flex items-center gap-2 text-muted-foreground p-3">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-sm">AI myśli...</span>
+                      <span className="text-sm">AI odpowiada...</span>
                     </div>
                   )}
                 </div>
@@ -333,8 +403,13 @@ export default function NewProject() {
                     onChange={(e) => setAiInput(e.target.value)}
                     placeholder="Opisz projekt lub zadaj pytanie..."
                     onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendAiMessage()}
+                    disabled={isProcessingAi}
                   />
-                  <Button onClick={handleSendAiMessage} disabled={isProcessingAi || !aiInput.trim()}>
+                  <Button 
+                    onClick={handleSendAiMessage} 
+                    disabled={isProcessingAi || !aiInput.trim()}
+                    className="bg-gradient-to-r from-primary to-primary-glow"
+                  >
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
@@ -365,17 +440,17 @@ export default function NewProject() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="projectName">Nazwa projektu</Label>
+                <Label htmlFor="projectName">Nazwa projektu *</Label>
                 <Input
                   id="projectName"
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
-                  placeholder="np. Remont łazienki"
+                  placeholder="np. Remont łazienki ul. Warszawska 15"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="client">Klient</Label>
+                <Label htmlFor="client">Klient *</Label>
                 <Select value={clientId} onValueChange={setClientId}>
                   <SelectTrigger>
                     <SelectValue placeholder={clientsLoading ? "Ładowanie..." : "Wybierz klienta"} />
@@ -412,11 +487,11 @@ export default function NewProject() {
               {voiceResult && voiceResult.items && voiceResult.items.length > 0 && (
                 <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                   <Label>Pozycje z wyceny głosowej:</Label>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-1 text-sm max-h-32 overflow-y-auto">
                     {voiceResult.items.map((item, i) => (
                       <div key={i} className="flex justify-between">
-                        <span>{item.name} ({item.quantity} {item.unit})</span>
-                        <span className="font-medium">{item.price?.toLocaleString('pl-PL')} zł</span>
+                        <span>{item.name} ({item.qty} {item.unit})</span>
+                        <span className="font-medium">{(item.qty * item.price).toLocaleString('pl-PL')} zł</span>
                       </div>
                     ))}
                   </div>
