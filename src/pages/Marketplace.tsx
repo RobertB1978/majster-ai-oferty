@@ -91,7 +91,7 @@ export default function Marketplace() {
   const filteredPublic = publicSubcontractors.filter((sub) => {
     const matchesSearch = sub.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (sub.description?.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCity = !cityFilter || sub.location_city?.toLowerCase().includes(cityFilter.toLowerCase());
+    const matchesCity = !cityFilter || cityFilter === 'all' || sub.location_city?.toLowerCase().includes(cityFilter.toLowerCase());
     return matchesSearch && matchesCity;
   });
 
@@ -243,7 +243,7 @@ export default function Marketplace() {
                   <SelectValue placeholder="Miasto" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Wszystkie miasta</SelectItem>
+                  <SelectItem value="all">Wszystkie miasta</SelectItem>
                   {cities.map((city) => (
                     <SelectItem key={city} value={city}>
                       {city}

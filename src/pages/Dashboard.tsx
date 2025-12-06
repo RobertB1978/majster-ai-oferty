@@ -4,14 +4,14 @@ import { useProjects } from '@/hooks/useProjects';
 import { useClients } from '@/hooks/useClients';
 import { useOnboardingProgress, useCreateOnboardingProgress } from '@/hooks/useOnboarding';
 import { Button } from '@/components/ui/button';
-import { Plus, Sparkles, TrendingUp, FileText, Users } from 'lucide-react';
+import { Plus, Sparkles } from 'lucide-react';
 import { EmptyDashboard } from '@/components/dashboard/EmptyDashboard';
 import { DashboardStats } from '@/components/dashboard/DashboardStats';
 import { ProjectStatusBreakdown } from '@/components/dashboard/ProjectStatusBreakdown';
 import { RecentProjects } from '@/components/dashboard/RecentProjects';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
-import { VoiceQuoteCreator } from '@/components/voice/VoiceQuoteCreator';
+import { QuoteCreationHub } from '@/components/dashboard/QuoteCreationHub';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -104,28 +104,10 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      {/* Voice Quote Creator - Main Feature */}
-      <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
-                <Sparkles className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <div>
-                <CardTitle className="text-lg">Stwórz wycenę głosowo</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Powiedz co chcesz wycenić, a AI przygotuje ofertę
-                </p>
-              </div>
-            </div>
-            <Badge variant="secondary">
-              Nowość
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <VoiceQuoteCreator onQuoteCreated={handleVoiceQuoteCreated} />
+      {/* Quote Creation Hub - Main Feature */}
+      <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-background to-transparent overflow-hidden">
+        <CardContent className="p-6 sm:p-8">
+          <QuoteCreationHub onVoiceQuoteCreated={handleVoiceQuoteCreated} />
         </CardContent>
       </Card>
 
