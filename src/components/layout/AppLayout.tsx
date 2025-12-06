@@ -1,6 +1,7 @@
-import { Outlet, Navigate } from 'react-router-dom';
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { TopBar } from './TopBar';
 import { Navigation } from './Navigation';
+import { Footer } from './Footer';
 import { PageTransition } from './PageTransition';
 import { useAuth } from '@/contexts/AuthContext';
 import { AiChatAgent } from '@/components/ai/AiChatAgent';
@@ -9,6 +10,7 @@ import { useEffect, useState } from 'react';
 
 export function AppLayout() {
   const { user, isLoading } = useAuth();
+  const location = useLocation();
   const [showContent, setShowContent] = useState(false);
 
   // Initialize theme from localStorage or system preference
@@ -36,18 +38,21 @@ export function AppLayout() {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-background transition-colors duration-300">
       <TopBar />
       <Navigation />
-      <main className={`container py-6 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <main className={`flex-1 container py-6 px-4 md:px-6 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         <PageTransition>
           <Outlet />
         </PageTransition>
       </main>
+      
+      {/* Footer */}
+      <Footer />
       
       {/* AI Chat Agent - Global floating assistant */}
       <AiChatAgent />

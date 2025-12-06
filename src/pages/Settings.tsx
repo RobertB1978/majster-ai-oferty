@@ -1,23 +1,26 @@
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings as SettingsIcon, Key, Bell, Globe, CreditCard, Calendar, FileText, Shield, Puzzle } from 'lucide-react';
+import { Settings as SettingsIcon, Key, Bell, Globe, CreditCard, Calendar, FileText, Shield, Puzzle, Scale } from 'lucide-react';
 import { ApiKeysPanel } from '@/components/api/ApiKeysPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/settings/LanguageSwitcher';
 import { BillingDashboard } from '@/components/billing/BillingDashboard';
 import { CalendarSync } from '@/components/calendar/CalendarSync';
 import { CompanyDocuments } from '@/components/documents/CompanyDocuments';
 import { PushNotificationSettings } from '@/components/notifications/PushNotificationSettings';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
+import { AuditLogPanel } from '@/components/admin/AuditLogPanel';
 import { PluginsPanel } from '@/components/plugins/PluginsPanel';
 import { useUserSubscription } from '@/hooks/useSubscription';
 
 export default function Settings() {
   const { t } = useTranslation();
   const { data: subscription } = useUserSubscription();
-  const isAdmin = subscription?.plan_id === 'enterprise';
+  const isAdmin = subscription?.plan_id === 'enterprise' || subscription?.plan_id === 'business';
 
   return (
     <>
@@ -75,7 +78,7 @@ export default function Settings() {
             )}
           </TabsList>
 
-          <TabsContent value="general" className="mt-4">
+          <TabsContent value="general" className="mt-4 space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle>{t('settings.language')}</CardTitle>
@@ -92,6 +95,38 @@ export default function Settings() {
                     </p>
                   </div>
                   <LanguageSwitcher />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* RODO / Legal Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Scale className="h-5 w-5" />
+                  Prywatność i dane
+                </CardTitle>
+                <CardDescription>
+                  Zarządzaj swoimi danymi zgodnie z RODO
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/legal/gdpr">Centrum RODO</Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/legal/privacy">Polityka Prywatności</Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/legal/cookies">Polityka Cookies</Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/legal/terms">Regulamin</Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/legal/dpa">Umowa DPA</Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -122,8 +157,9 @@ export default function Settings() {
           </TabsContent>
 
           {isAdmin && (
-            <TabsContent value="admin" className="mt-4">
+            <TabsContent value="admin" className="mt-4 space-y-6">
               <AdminDashboard />
+              <AuditLogPanel />
             </TabsContent>
           )}
         </Tabs>
