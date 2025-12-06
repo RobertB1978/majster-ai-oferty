@@ -17,7 +17,19 @@
     "no": "Nie",
     "all": "Wszystkie",
     "none": "Brak",
-    "optional": "opcjonalnie"
+    "optional": "opcjonalnie",
+    "actions": "Akcje",
+    "details": "Szczegóły",
+    "filter": "Filtruj",
+    "export": "Eksport",
+    "import": "Import",
+    "refresh": "Odśwież",
+    "total": "Suma",
+    "status": "Status",
+    "date": "Data",
+    "name": "Nazwa",
+    "description": "Opis",
+    "notes": "Notatki"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -29,7 +41,9 @@
     "team": "Zespół",
     "marketplace": "Marketplace",
     "settings": "Ustawienia",
-    "templates": "Szablony"
+    "templates": "Szablony",
+    "billing": "Płatności",
+    "profile": "Profil firmy"
   },
   "auth": {
     "login": "Zaloguj się",
@@ -41,11 +55,16 @@
     "forgotPassword": "Zapomniałeś hasła?",
     "resetPassword": "Zresetuj hasło",
     "noAccount": "Nie masz konta?",
-    "hasAccount": "Masz już konto?"
+    "hasAccount": "Masz już konto?",
+    "loginTitle": "Zaloguj się do Majster.AI",
+    "registerTitle": "Zarejestruj się w Majster.AI",
+    "loginSubtitle": "Wprowadź swoje dane logowania",
+    "registerSubtitle": "Stwórz nowe konto"
   },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Przegląd Twojej działalności",
+    "welcome": "Witaj w Majster.AI",
     "totalProjects": "Wszystkie projekty",
     "activeProjects": "Aktywne projekty",
     "totalClients": "Klienci",
@@ -53,7 +72,17 @@
     "recentProjects": "Ostatnie projekty",
     "quickActions": "Szybkie akcje",
     "newProject": "Nowy projekt",
-    "newClient": "Nowy klient"
+    "newClient": "Nowy klient",
+    "viewAll": "Zobacz wszystkie",
+    "noProjects": "Brak projektów",
+    "noClients": "Brak klientów",
+    "createFirst": "Utwórz pierwszy",
+    "stats": {
+      "new": "Nowe",
+      "inProgress": "W toku",
+      "sent": "Wysłane",
+      "accepted": "Zaakceptowane"
+    }
   },
   "projects": {
     "title": "Projekty",
@@ -67,7 +96,11 @@
     "priority": "Priorytet",
     "statuses": {
       "draft": "Szkic",
+      "new": "Nowy",
       "active": "Aktywny",
+      "inProgress": "Wycena w toku",
+      "sent": "Oferta wysłana",
+      "accepted": "Zaakceptowany",
       "completed": "Zakończony",
       "cancelled": "Anulowany"
     },
@@ -75,7 +108,13 @@
       "low": "Niski",
       "medium": "Średni",
       "high": "Wysoki"
-    }
+    },
+    "noProjects": "Brak projektów",
+    "createFirst": "Utwórz swój pierwszy projekt",
+    "editQuote": "Edytuj wycenę",
+    "generatePdf": "Generuj PDF",
+    "sendEmail": "Wyślij mailem",
+    "exportExcel": "Eksport Excel"
   },
   "clients": {
     "title": "Klienci",
@@ -84,25 +123,44 @@
     "name": "Nazwa",
     "email": "Email",
     "phone": "Telefon",
-    "address": "Adres"
+    "address": "Adres",
+    "noClients": "Brak klientów",
+    "createFirst": "Dodaj swojego pierwszego klienta",
+    "editClient": "Edytuj klienta",
+    "deleteClient": "Usuń klienta",
+    "searchPlaceholder": "Szukaj klientów..."
   },
   "calendar": {
     "title": "Kalendarz",
     "subtitle": "Zarządzaj terminami i wydarzeniami",
-    "timeline": "Timeline",
+    "timeline": "Oś czasu",
     "addEvent": "Dodaj wydarzenie",
     "eventTitle": "Tytuł wydarzenia",
     "eventType": "Typ wydarzenia",
     "eventTime": "Godzina",
+    "eventDescription": "Opis wydarzenia",
     "eventTypes": {
       "deadline": "Termin",
       "meeting": "Spotkanie",
       "reminder": "Przypomnienie",
+      "work": "Praca",
       "other": "Inne"
     },
     "selectDate": "Wybierz datę",
     "noEvents": "Brak wydarzeń w tym dniu",
+    "today": "Dzisiaj",
+    "month": "Miesiąc",
+    "week": "Tydzień",
+    "day": "Dzień",
+    "agenda": "Agenda",
     "days": {
+      "monday": "Poniedziałek",
+      "tuesday": "Wtorek",
+      "wednesday": "Środa",
+      "thursday": "Czwartek",
+      "friday": "Piątek",
+      "saturday": "Sobota",
+      "sunday": "Niedziela",
       "mon": "Pn",
       "tue": "Wt",
       "wed": "Śr",
@@ -110,6 +168,20 @@
       "fri": "Pt",
       "sat": "Sb",
       "sun": "Nd"
+    },
+    "months": {
+      "january": "Styczeń",
+      "february": "Luty",
+      "march": "Marzec",
+      "april": "Kwiecień",
+      "may": "Maj",
+      "june": "Czerwiec",
+      "july": "Lipiec",
+      "august": "Sierpień",
+      "september": "Wrzesień",
+      "october": "Październik",
+      "november": "Listopad",
+      "december": "Grudzień"
     },
     "syncGoogle": "Synchronizuj z Google",
     "syncOutlook": "Synchronizuj z Outlook"
@@ -120,7 +192,16 @@
     "revenue": "Przychody",
     "costs": "Koszty",
     "profit": "Zysk",
-    "margin": "Marża"
+    "margin": "Marża",
+    "monthly": "Miesięczne",
+    "yearly": "Roczne",
+    "totalRevenue": "Całkowite przychody",
+    "totalCosts": "Całkowite koszty",
+    "netProfit": "Zysk netto",
+    "grossMargin": "Marża brutto",
+    "reports": "Raporty",
+    "invoices": "Faktury",
+    "expenses": "Wydatki"
   },
   "team": {
     "title": "Zespół",
@@ -128,31 +209,173 @@
     "addMember": "Dodaj członka",
     "name": "Imię i nazwisko",
     "role": "Rola",
-    "status": "Status"
+    "status": "Status",
+    "email": "Email",
+    "phone": "Telefon",
+    "roles": {
+      "admin": "Administrator",
+      "manager": "Manager",
+      "worker": "Pracownik"
+    },
+    "statuses": {
+      "active": "Aktywny",
+      "inactive": "Nieaktywny"
+    },
+    "noMembers": "Brak członków zespołu",
+    "addFirst": "Dodaj pierwszego członka zespołu"
+  },
+  "templates": {
+    "title": "Szablony pozycji",
+    "subtitle": "Zarządzaj szablonami wycen",
+    "addTemplate": "Dodaj szablon",
+    "name": "Nazwa",
+    "unit": "Jednostka",
+    "price": "Cena",
+    "category": "Kategoria",
+    "categories": {
+      "material": "Materiał",
+      "labor": "Robocizna"
+    },
+    "trades": {
+      "glazurnik": "Glazurnik",
+      "malarz": "Malarz",
+      "hydraulik": "Hydraulik",
+      "elektryk": "Elektryk",
+      "podlogarz": "Podłogarz",
+      "suchazabudowa": "Sucha zabudowa",
+      "dekarz": "Dekarz",
+      "elewacja": "Elewacja",
+      "stolarz": "Stolarz",
+      "murarz": "Murarz"
+    },
+    "importDefaults": "Importuj domyślne szablony",
+    "noTemplates": "Brak szablonów",
+    "addFirst": "Dodaj pierwszy szablon"
+  },
+  "quotes": {
+    "title": "Wycena",
+    "subtitle": "Edytuj pozycje kosztorysu",
+    "addPosition": "Dodaj pozycję",
+    "position": "Pozycja",
+    "quantity": "Ilość",
+    "unit": "Jednostka",
+    "unitPrice": "Cena jednostkowa",
+    "total": "Wartość",
+    "summary": "Podsumowanie",
+    "materials": "Materiały",
+    "labor": "Robocizna",
+    "margin": "Marża",
+    "totalAmount": "Kwota całkowita",
+    "saveQuote": "Zapisz wycenę",
+    "noPositions": "Brak pozycji",
+    "addFirst": "Dodaj pierwszą pozycję kosztorysu"
   },
   "settings": {
     "title": "Ustawienia",
     "subtitle": "Konfiguracja aplikacji",
     "language": "Język",
     "theme": "Motyw",
+    "themes": {
+      "light": "Jasny",
+      "dark": "Ciemny",
+      "system": "Systemowy"
+    },
     "notifications": "Powiadomienia",
     "company": "Firma",
-    "billing": "Płatności"
+    "billing": "Płatności",
+    "security": "Bezpieczeństwo",
+    "integrations": "Integracje",
+    "api": "Klucze API"
   },
   "billing": {
     "title": "Płatności i subskrypcje",
+    "subtitle": "Zarządzaj swoim planem",
     "currentPlan": "Aktualny plan",
     "upgrade": "Ulepsz plan",
     "manageBilling": "Zarządzaj płatnościami",
     "plans": {
-      "free": "Darmowy",
+      "free": "Free",
       "pro": "Pro",
-      "business": "Business"
+      "business": "Business",
+      "enterprise": "Enterprise"
     },
     "features": "Funkcje",
     "price": "Cena",
     "perMonth": "/miesiąc",
     "subscribe": "Subskrybuj",
-    "cancel": "Anuluj subskrypcję"
+    "cancel": "Anuluj subskrypcję",
+    "active": "Aktywny",
+    "mostPopular": "Najpopularniejszy",
+    "selectPlan": "Wybierz plan",
+    "startFree": "Rozpocznij za darmo"
+  },
+  "profile": {
+    "title": "Profil firmy",
+    "subtitle": "Dane Twojej firmy",
+    "companyName": "Nazwa firmy",
+    "ownerName": "Właściciel",
+    "nip": "NIP",
+    "phone": "Telefon",
+    "email": "Email",
+    "address": "Adres",
+    "street": "Ulica",
+    "city": "Miasto",
+    "postalCode": "Kod pocztowy",
+    "bankAccount": "Numer konta",
+    "logo": "Logo firmy",
+    "uploadLogo": "Prześlij logo",
+    "emailSettings": "Ustawienia email",
+    "emailGreeting": "Powitanie",
+    "emailSignature": "Podpis",
+    "emailSubject": "Temat wiadomości"
+  },
+  "pdf": {
+    "title": "Generator oferty PDF",
+    "subtitle": "Dostosuj i wygeneruj ofertę",
+    "offerTitle": "Tytuł oferty",
+    "offerText": "Tekst oferty",
+    "terms": "Warunki",
+    "deadline": "Termin ważności",
+    "version": "Wersja",
+    "generate": "Generuj PDF",
+    "download": "Pobierz PDF",
+    "preview": "Podgląd",
+    "standard": "Standard",
+    "premium": "Premium"
+  },
+  "ai": {
+    "title": "Asystent AI",
+    "subtitle": "Majster.AI",
+    "placeholder": "Napisz wiadomość...",
+    "listening": "Słucham...",
+    "processing": "Przetwarzam...",
+    "quickActions": {
+      "prepareOffer": "Przygotuj ofertę",
+      "calculateCosts": "Oblicz koszty",
+      "pricingAdvice": "Porady cenowe"
+    },
+    "voiceInput": "Wejście głosowe",
+    "newConversation": "Nowa rozmowa",
+    "history": "Historia rozmów"
+  },
+  "errors": {
+    "required": "To pole jest wymagane",
+    "invalidEmail": "Nieprawidłowy email",
+    "passwordMismatch": "Hasła nie są zgodne",
+    "minLength": "Minimum {{count}} znaków",
+    "maxLength": "Maksimum {{count}} znaków",
+    "generic": "Wystąpił błąd",
+    "networkError": "Błąd połączenia",
+    "unauthorized": "Brak autoryzacji",
+    "notFound": "Nie znaleziono",
+    "serverError": "Błąd serwera"
+  },
+  "success": {
+    "saved": "Zapisano pomyślnie",
+    "deleted": "Usunięto pomyślnie",
+    "updated": "Zaktualizowano pomyślnie",
+    "created": "Utworzono pomyślnie",
+    "sent": "Wysłano pomyślnie",
+    "copied": "Skopiowano do schowka"
   }
 }
