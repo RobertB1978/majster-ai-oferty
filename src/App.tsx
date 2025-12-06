@@ -10,10 +10,14 @@ import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { OfflineFallback } from "@/components/pwa/OfflineFallback";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsent } from "@/components/legal/CookieConsent";
+
+// Auth pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+
+// Main app pages
 import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import Projects from "./pages/Projects";
@@ -31,11 +35,29 @@ import Marketplace from "./pages/Marketplace";
 import Settings from "./pages/Settings";
 import Billing from "./pages/Billing";
 import OfferApproval from "./pages/OfferApproval";
+
+// Legal pages
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import TermsOfService from "./pages/legal/TermsOfService";
+import CookiesPolicy from "./pages/legal/CookiesPolicy";
+import DPA from "./pages/legal/DPA";
+import GDPRCenter from "./pages/legal/GDPRCenter";
+
+// Legacy redirects
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 30, // 30 minutes (renamed from cacheTime)
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <ErrorBoundary>
@@ -50,13 +72,27 @@ const App = () => (
               <InstallPrompt />
               <CookieConsent />
               <Routes>
+                {/* Public auth routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+                
+                {/* Public offer approval */}
                 <Route path="/offer/:token" element={<OfferApproval />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/terms" element={<Terms />} />
+                
+                {/* Legal pages - new structure */}
+                <Route path="/legal/privacy" element={<PrivacyPolicy />} />
+                <Route path="/legal/terms" element={<TermsOfService />} />
+                <Route path="/legal/cookies" element={<CookiesPolicy />} />
+                <Route path="/legal/dpa" element={<DPA />} />
+                <Route path="/legal/gdpr" element={<GDPRCenter />} />
+                
+                {/* Legacy redirects */}
+                <Route path="/privacy" element={<Navigate to="/legal/privacy" replace />} />
+                <Route path="/terms" element={<Navigate to="/legal/terms" replace />} />
+                
+                {/* Protected app routes */}
                 <Route element={<AppLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/clients" element={<Clients />} />
@@ -75,6 +111,8 @@ const App = () => (
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/billing" element={<Billing />} />
                 </Route>
+                
+                {/* Default and 404 */}
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

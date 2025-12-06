@@ -1,14 +1,72 @@
+# Majster.AI Robots.txt
+# https://www.robotstxt.org/robotstxt.html
+
 User-agent: Googlebot
 Allow: /
+Allow: /login
+Allow: /register
+Allow: /legal/privacy
+Allow: /legal/terms
+Allow: /legal/cookies
+Allow: /legal/dpa
+Disallow: /dashboard
+Disallow: /clients
+Disallow: /projects
+Disallow: /profile
+Disallow: /settings
+Disallow: /templates
+Disallow: /calendar
+Disallow: /analytics
+Disallow: /team
+Disallow: /finance
+Disallow: /marketplace
+Disallow: /billing
+Disallow: /legal/gdpr
 
 User-agent: Bingbot
 Allow: /
+Allow: /login
+Allow: /register
+Allow: /legal/privacy
+Allow: /legal/terms
+Disallow: /dashboard
+Disallow: /clients
+Disallow: /projects
+Disallow: /profile
+Disallow: /settings
 
 User-agent: Twitterbot
 Allow: /
+Allow: /login
+Allow: /register
 
 User-agent: facebookexternalhit
 Allow: /
+Allow: /login
+Allow: /register
 
 User-agent: *
 Allow: /
+Allow: /login
+Allow: /register
+Allow: /legal/privacy
+Allow: /legal/terms
+Disallow: /dashboard
+Disallow: /clients
+Disallow: /projects
+Disallow: /profile
+Disallow: /settings
+Disallow: /templates
+Disallow: /calendar
+Disallow: /analytics
+Disallow: /team
+Disallow: /finance
+Disallow: /marketplace
+Disallow: /billing
+Disallow: /legal/gdpr
+
+# Sitemap location
+Sitemap: https://majster.ai/sitemap.xml
+
+# Crawl delay for politeness
+Crawl-delay: 1
