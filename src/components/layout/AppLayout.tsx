@@ -3,10 +3,12 @@ import { TopBar } from './TopBar';
 import { Navigation } from './Navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { AiChatAgent } from '@/components/ai/AiChatAgent';
-import { useEffect } from 'react';
+import { LoadingScreen } from '@/components/ui/loading-screen';
+import { useEffect, useState } from 'react';
 
 export function AppLayout() {
   const { user, isLoading } = useAuth();
+  const [showContent, setShowContent] = useState(false);
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -20,20 +22,16 @@ export function AppLayout() {
     }
   }, []);
 
+  // Smooth transition after loading
+  useEffect(() => {
+    if (!isLoading && user) {
+      const timer = setTimeout(() => setShowContent(true), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, user]);
+
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative">
-            <div className="h-12 w-12 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="h-6 w-6 rounded-full bg-primary/20 animate-pulse" />
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground animate-pulse">Ładowanie...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Uruchamianie aplikacji" variant="fullscreen" />;
   }
 
   if (!user) {
@@ -44,7 +42,7 @@ export function AppLayout() {
     <div className="min-h-screen bg-background transition-colors duration-300">
       <TopBar />
       <Navigation />
-      <main className="container py-6 animate-fade-in">
+      <main className={`container py-6 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         <Outlet />
       </main>
       
