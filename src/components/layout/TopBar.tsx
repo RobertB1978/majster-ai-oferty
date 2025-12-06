@@ -1,9 +1,10 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { LogOut, Wrench, HelpCircle, Globe, ChevronDown } from 'lucide-react';
+import { LogOut, HelpCircle, Globe, ChevronDown, Moon, Sun } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { Logo } from '@/components/branding/Logo';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useState, useEffect } from 'react';
 
 const languages = [
   { code: 'pl', name: 'Polski', flag: '🇵🇱' },
@@ -22,6 +24,19 @@ export function TopBar() {
   const { user, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    setIsDark(isDarkMode);
+  }, []);
+
+  const toggleTheme = () => {
+    const newIsDark = !isDark;
+    setIsDark(newIsDark);
+    document.documentElement.classList.toggle('dark', newIsDark);
+    localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
+  };
 
   const handleLogout = () => {
     logout();
@@ -31,23 +46,27 @@ export function TopBar() {
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur-lg supports-[backdrop-filter]:bg-card/80 shadow-sm">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
-            <Wrench className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold text-foreground tracking-tight">Majster.AI</span>
-            <span className="text-[10px] text-muted-foreground font-medium -mt-0.5 hidden sm:block">
-              {t('app.tagline', 'Inteligentne wyceny')}
-            </span>
-          </div>
-        </div>
+        <Logo size="md" animated />
         
         {user && (
           <div className="flex items-center gap-1 sm:gap-2">
             <NotificationCenter />
+
+            {/* Theme Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="h-9 w-9"
+            >
+              {isDark ? (
+                <Sun className="h-4 w-4 transition-transform hover:rotate-45" />
+              ) : (
+                <Moon className="h-4 w-4 transition-transform hover:-rotate-12" />
+              )}
+            </Button>
             
             {/* Language Switcher */}
             <DropdownMenu>
