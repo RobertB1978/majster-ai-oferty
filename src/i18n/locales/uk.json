@@ -1,0 +1,158 @@
+{
+  "common": {
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "delete": "Видалити",
+    "edit": "Редагувати",
+    "add": "Додати",
+    "search": "Пошук",
+    "loading": "Завантаження...",
+    "error": "Помилка",
+    "success": "Успіх",
+    "confirm": "Підтвердити",
+    "back": "Назад",
+    "next": "Далі",
+    "close": "Закрити",
+    "yes": "Так",
+    "no": "Ні",
+    "all": "Усі",
+    "none": "Немає",
+    "optional": "необов'язково"
+  },
+  "nav": {
+    "dashboard": "Панель",
+    "projects": "Проєкти",
+    "clients": "Клієнти",
+    "calendar": "Календар",
+    "analytics": "Аналітика",
+    "finance": "Фінанси",
+    "team": "Команда",
+    "marketplace": "Маркетплейс",
+    "settings": "Налаштування",
+    "templates": "Шаблони"
+  },
+  "auth": {
+    "login": "Увійти",
+    "register": "Зареєструватися",
+    "logout": "Вийти",
+    "email": "Електронна пошта",
+    "password": "Пароль",
+    "confirmPassword": "Підтвердіть пароль",
+    "forgotPassword": "Забули пароль?",
+    "resetPassword": "Скинути пароль",
+    "noAccount": "Немає облікового запису?",
+    "hasAccount": "Вже маєте обліковий запис?"
+  },
+  "dashboard": {
+    "title": "Панель",
+    "subtitle": "Огляд вашого бізнесу",
+    "totalProjects": "Усі проєкти",
+    "activeProjects": "Активні проєкти",
+    "totalClients": "Клієнти",
+    "totalRevenue": "Дохід",
+    "recentProjects": "Останні проєкти",
+    "quickActions": "Швидкі дії",
+    "newProject": "Новий проєкт",
+    "newClient": "Новий клієнт"
+  },
+  "projects": {
+    "title": "Проєкти",
+    "subtitle": "Керуйте своїми проєктами",
+    "newProject": "Новий проєкт",
+    "projectName": "Назва проєкту",
+    "client": "Клієнт",
+    "status": "Статус",
+    "startDate": "Дата початку",
+    "endDate": "Дата завершення",
+    "priority": "Пріоритет",
+    "statuses": {
+      "draft": "Чернетка",
+      "active": "Активний",
+      "completed": "Завершений",
+      "cancelled": "Скасований"
+    },
+    "priorities": {
+      "low": "Низький",
+      "medium": "Середній",
+      "high": "Високий"
+    }
+  },
+  "clients": {
+    "title": "Клієнти",
+    "subtitle": "Керуйте базою клієнтів",
+    "newClient": "Новий клієнт",
+    "name": "Назва",
+    "email": "Електронна пошта",
+    "phone": "Телефон",
+    "address": "Адреса"
+  },
+  "calendar": {
+    "title": "Календар",
+    "subtitle": "Керуйте термінами та подіями",
+    "timeline": "Таймлайн",
+    "addEvent": "Додати подію",
+    "eventTitle": "Назва події",
+    "eventType": "Тип події",
+    "eventTime": "Час",
+    "eventTypes": {
+      "deadline": "Дедлайн",
+      "meeting": "Зустріч",
+      "reminder": "Нагадування",
+      "other": "Інше"
+    },
+    "selectDate": "Оберіть дату",
+    "noEvents": "Немає подій у цей день",
+    "days": {
+      "mon": "Пн",
+      "tue": "Вт",
+      "wed": "Ср",
+      "thu": "Чт",
+      "fri": "Пт",
+      "sat": "Сб",
+      "sun": "Нд"
+    },
+    "syncGoogle": "Синхронізувати з Google",
+    "syncOutlook": "Синхронізувати з Outlook"
+  },
+  "finance": {
+    "title": "Фінанси",
+    "subtitle": "Фінансовий огляд",
+    "revenue": "Дохід",
+    "costs": "Витрати",
+    "profit": "Прибуток",
+    "margin": "Маржа"
+  },
+  "team": {
+    "title": "Команда",
+    "subtitle": "Керуйте учасниками команди",
+    "addMember": "Додати учасника",
+    "name": "Повне ім'я",
+    "role": "Роль",
+    "status": "Статус"
+  },
+  "settings": {
+    "title": "Налаштування",
+    "subtitle": "Конфігурація додатку",
+    "language": "Мова",
+    "theme": "Тема",
+    "notifications": "Сповіщення",
+    "company": "Компанія",
+    "billing": "Платежі"
+  },
+  "billing": {
+    "title": "Платежі та підписки",
+    "currentPlan": "Поточний план",
+    "upgrade": "Оновити план",
+    "manageBilling": "Керувати платежами",
+    "plans": {
+      "free": "Безкоштовний",
+      "pro": "Про",
+      "business": "Бізнес"
+    },
+    "features": "Функції",
+    "price": "Ціна",
+    "perMonth": "/місяць",
+    "subscribe": "Підписатися",
+    "cancel": "Скасувати підписку"
+  }
+}

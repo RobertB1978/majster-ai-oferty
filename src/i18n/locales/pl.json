@@ -1,0 +1,158 @@
+{
+  "common": {
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "add": "Dodaj",
+    "search": "Szukaj",
+    "loading": "Ładowanie...",
+    "error": "Błąd",
+    "success": "Sukces",
+    "confirm": "Potwierdź",
+    "back": "Wróć",
+    "next": "Dalej",
+    "close": "Zamknij",
+    "yes": "Tak",
+    "no": "Nie",
+    "all": "Wszystkie",
+    "none": "Brak",
+    "optional": "opcjonalnie"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "projects": "Projekty",
+    "clients": "Klienci",
+    "calendar": "Kalendarz",
+    "analytics": "Analityka",
+    "finance": "Finanse",
+    "team": "Zespół",
+    "marketplace": "Marketplace",
+    "settings": "Ustawienia",
+    "templates": "Szablony"
+  },
+  "auth": {
+    "login": "Zaloguj się",
+    "register": "Zarejestruj się",
+    "logout": "Wyloguj się",
+    "email": "Email",
+    "password": "Hasło",
+    "confirmPassword": "Potwierdź hasło",
+    "forgotPassword": "Zapomniałeś hasła?",
+    "resetPassword": "Zresetuj hasło",
+    "noAccount": "Nie masz konta?",
+    "hasAccount": "Masz już konto?"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Przegląd Twojej działalności",
+    "totalProjects": "Wszystkie projekty",
+    "activeProjects": "Aktywne projekty",
+    "totalClients": "Klienci",
+    "totalRevenue": "Przychody",
+    "recentProjects": "Ostatnie projekty",
+    "quickActions": "Szybkie akcje",
+    "newProject": "Nowy projekt",
+    "newClient": "Nowy klient"
+  },
+  "projects": {
+    "title": "Projekty",
+    "subtitle": "Zarządzaj swoimi projektami",
+    "newProject": "Nowy projekt",
+    "projectName": "Nazwa projektu",
+    "client": "Klient",
+    "status": "Status",
+    "startDate": "Data rozpoczęcia",
+    "endDate": "Data zakończenia",
+    "priority": "Priorytet",
+    "statuses": {
+      "draft": "Szkic",
+      "active": "Aktywny",
+      "completed": "Zakończony",
+      "cancelled": "Anulowany"
+    },
+    "priorities": {
+      "low": "Niski",
+      "medium": "Średni",
+      "high": "Wysoki"
+    }
+  },
+  "clients": {
+    "title": "Klienci",
+    "subtitle": "Zarządzaj bazą klientów",
+    "newClient": "Nowy klient",
+    "name": "Nazwa",
+    "email": "Email",
+    "phone": "Telefon",
+    "address": "Adres"
+  },
+  "calendar": {
+    "title": "Kalendarz",
+    "subtitle": "Zarządzaj terminami i wydarzeniami",
+    "timeline": "Timeline",
+    "addEvent": "Dodaj wydarzenie",
+    "eventTitle": "Tytuł wydarzenia",
+    "eventType": "Typ wydarzenia",
+    "eventTime": "Godzina",
+    "eventTypes": {
+      "deadline": "Termin",
+      "meeting": "Spotkanie",
+      "reminder": "Przypomnienie",
+      "other": "Inne"
+    },
+    "selectDate": "Wybierz datę",
+    "noEvents": "Brak wydarzeń w tym dniu",
+    "days": {
+      "mon": "Pn",
+      "tue": "Wt",
+      "wed": "Śr",
+      "thu": "Cz",
+      "fri": "Pt",
+      "sat": "Sb",
+      "sun": "Nd"
+    },
+    "syncGoogle": "Synchronizuj z Google",
+    "syncOutlook": "Synchronizuj z Outlook"
+  },
+  "finance": {
+    "title": "Finanse",
+    "subtitle": "Przegląd finansów",
+    "revenue": "Przychody",
+    "costs": "Koszty",
+    "profit": "Zysk",
+    "margin": "Marża"
+  },
+  "team": {
+    "title": "Zespół",
+    "subtitle": "Zarządzaj członkami zespołu",
+    "addMember": "Dodaj członka",
+    "name": "Imię i nazwisko",
+    "role": "Rola",
+    "status": "Status"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "subtitle": "Konfiguracja aplikacji",
+    "language": "Język",
+    "theme": "Motyw",
+    "notifications": "Powiadomienia",
+    "company": "Firma",
+    "billing": "Płatności"
+  },
+  "billing": {
+    "title": "Płatności i subskrypcje",
+    "currentPlan": "Aktualny plan",
+    "upgrade": "Ulepsz plan",
+    "manageBilling": "Zarządzaj płatnościami",
+    "plans": {
+      "free": "Darmowy",
+      "pro": "Pro",
+      "business": "Business"
+    },
+    "features": "Funkcje",
+    "price": "Cena",
+    "perMonth": "/miesiąc",
+    "subscribe": "Subskrybuj",
+    "cancel": "Anuluj subskrypcję"
+  }
+}
