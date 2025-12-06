@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import { 
   TrendingUp, TrendingDown, Users, FolderOpen, 
-  DollarSign, CheckCircle, Calendar, Loader2 
+  DollarSign, CheckCircle, Calendar, Loader2, BarChart3 
 } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, parseISO, startOfWeek, endOfWeek, addWeeks, isSameWeek } from 'date-fns';
 import { pl } from 'date-fns/locale';
@@ -156,16 +156,26 @@ export default function Analytics() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Ładowanie analityki...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">Analityka</h1>
-        <p className="mt-1 text-muted-foreground">Szczegółowe statystyki Twojej działalności</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground sm:text-3xl flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+              <BarChart3 className="h-5 w-5 text-primary-foreground" />
+            </div>
+            Analityka
+          </h1>
+          <p className="mt-1 text-muted-foreground">Szczegółowe statystyki Twojej działalności</p>
+        </div>
       </div>
 
       {/* KPI Cards */}

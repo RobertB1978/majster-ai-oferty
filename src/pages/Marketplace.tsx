@@ -104,28 +104,33 @@ export default function Marketplace() {
         <meta name="description" content="Znajdź i zarządzaj podwykonawcami" />
       </Helmet>
 
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-6 animate-fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Store className="h-6 w-6" />
-              Marketplace podwykonawców
+            <h1 className="text-2xl font-bold sm:text-3xl flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+                <Store className="h-5 w-5 text-primary-foreground" />
+              </div>
+              Marketplace
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mt-1">
               Znajdź podwykonawców lub dodaj własnych
             </p>
           </div>
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button size="lg" className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300">
                 <Plus className="h-4 w-4 mr-2" />
                 Dodaj podwykonawcę
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Nowy podwykonawca</DialogTitle>
+                <DialogTitle className="flex items-center gap-2">
+                  <Store className="h-5 w-5 text-primary" />
+                  Nowy podwykonawca
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                 <div>
@@ -209,12 +214,12 @@ export default function Marketplace() {
         </div>
 
         <Tabs defaultValue="public">
-          <TabsList>
-            <TabsTrigger value="public" className="flex items-center gap-2">
+          <TabsList className="bg-muted/50">
+            <TabsTrigger value="public" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <Store className="h-4 w-4" />
               Marketplace ({publicSubcontractors.length})
             </TabsTrigger>
-            <TabsTrigger value="my" className="flex items-center gap-2">
+            <TabsTrigger value="my" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <Users className="h-4 w-4" />
               Moi podwykonawcy ({mySubcontractors.length})
             </TabsTrigger>

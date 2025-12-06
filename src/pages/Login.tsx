@@ -101,14 +101,22 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md animate-fade-in">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
+      {/* Background decorations */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+      </div>
+
+      <Card className="w-full max-w-md animate-fade-in relative shadow-xl border-border/50">
+        <CardHeader className="text-center pb-2">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-glow shadow-lg animate-float">
             <Wrench className="h-8 w-8 text-primary-foreground" />
           </div>
-          <CardTitle className="text-2xl font-bold">Majster.AI</CardTitle>
-          <CardDescription>Zaloguj się do swojego konta</CardDescription>
+          <CardTitle className="text-2xl font-bold gradient-text">Majster.AI</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            Zaloguj się do swojego konta
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -150,7 +158,7 @@ export default function Login() {
               </div>
               {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
             </div>
-            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300" size="lg" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -164,16 +172,16 @@ export default function Login() {
 
           {biometricAvailable && (
             <>
-              <div className="relative my-4">
-                <Separator />
-                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
+              <div className="relative my-5">
+                <Separator className="bg-border/50" />
+                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-muted-foreground">
                   lub
                 </span>
               </div>
               <Button
                 type="button"
                 variant="outline"
-                className="w-full"
+                className="w-full hover:bg-primary/5 transition-colors"
                 onClick={handleBiometricLogin}
                 disabled={isAuthenticating}
               >
