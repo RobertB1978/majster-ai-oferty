@@ -1,0 +1,158 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "none": "None",
+    "optional": "optional"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "clients": "Clients",
+    "calendar": "Calendar",
+    "analytics": "Analytics",
+    "finance": "Finance",
+    "team": "Team",
+    "marketplace": "Marketplace",
+    "settings": "Settings",
+    "templates": "Templates"
+  },
+  "auth": {
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset password",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your business",
+    "totalProjects": "Total projects",
+    "activeProjects": "Active projects",
+    "totalClients": "Clients",
+    "totalRevenue": "Revenue",
+    "recentProjects": "Recent projects",
+    "quickActions": "Quick actions",
+    "newProject": "New project",
+    "newClient": "New client"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Manage your projects",
+    "newProject": "New project",
+    "projectName": "Project name",
+    "client": "Client",
+    "status": "Status",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "priority": "Priority",
+    "statuses": {
+      "draft": "Draft",
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    }
+  },
+  "clients": {
+    "title": "Clients",
+    "subtitle": "Manage your client base",
+    "newClient": "New client",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "subtitle": "Manage deadlines and events",
+    "timeline": "Timeline",
+    "addEvent": "Add event",
+    "eventTitle": "Event title",
+    "eventType": "Event type",
+    "eventTime": "Time",
+    "eventTypes": {
+      "deadline": "Deadline",
+      "meeting": "Meeting",
+      "reminder": "Reminder",
+      "other": "Other"
+    },
+    "selectDate": "Select date",
+    "noEvents": "No events on this day",
+    "days": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "syncGoogle": "Sync with Google",
+    "syncOutlook": "Sync with Outlook"
+  },
+  "finance": {
+    "title": "Finance",
+    "subtitle": "Financial overview",
+    "revenue": "Revenue",
+    "costs": "Costs",
+    "profit": "Profit",
+    "margin": "Margin"
+  },
+  "team": {
+    "title": "Team",
+    "subtitle": "Manage team members",
+    "addMember": "Add member",
+    "name": "Full name",
+    "role": "Role",
+    "status": "Status"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "App configuration",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "company": "Company",
+    "billing": "Billing"
+  },
+  "billing": {
+    "title": "Payments & Subscriptions",
+    "currentPlan": "Current plan",
+    "upgrade": "Upgrade plan",
+    "manageBilling": "Manage billing",
+    "plans": {
+      "free": "Free",
+      "pro": "Pro",
+      "business": "Business"
+    },
+    "features": "Features",
+    "price": "Price",
+    "perMonth": "/month",
+    "subscribe": "Subscribe",
+    "cancel": "Cancel subscription"
+  }
+}

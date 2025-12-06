@@ -28,6 +28,7 @@ import Team from "./pages/Team";
 import Finance from "./pages/Finance";
 import Marketplace from "./pages/Marketplace";
 import Settings from "./pages/Settings";
+import Billing from "./pages/Billing";
 import OfferApproval from "./pages/OfferApproval";
 import NotFound from "./pages/NotFound";
 
@@ -66,6 +67,7 @@ const App = () => (
                   <Route path="/finance" element={<Finance />} />
                   <Route path="/marketplace" element={<Marketplace />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/billing" element={<Billing />} />
                 </Route>
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="*" element={<NotFound />} />
