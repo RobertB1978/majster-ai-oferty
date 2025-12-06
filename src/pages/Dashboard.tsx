@@ -12,8 +12,10 @@ import { RecentProjects } from '@/components/dashboard/RecentProjects';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 import { QuoteCreationHub } from '@/components/dashboard/QuoteCreationHub';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { usePlanFeatures } from '@/hooks/useSubscription';
 
 export default function Dashboard() {
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
@@ -22,6 +24,7 @@ export default function Dashboard() {
   const createOnboarding = useCreateOnboardingProgress();
   const navigate = useNavigate();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const { showAds, currentPlan } = usePlanFeatures();
 
   const recentProjects = [...projects]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -59,7 +62,6 @@ export default function Dashboard() {
 
   // Handle voice quote creation
   const handleVoiceQuoteCreated = (result: any) => {
-    // Navigate to new project with pre-filled data
     navigate('/projects/new', { state: { voiceQuote: result } });
   };
 
@@ -76,8 +78,25 @@ export default function Dashboard() {
     );
   }
 
+  const getPlanBadge = () => {
+    const badges = {
+      free: { label: 'Free', className: 'bg-muted text-muted-foreground' },
+      starter: { label: 'Starter', className: 'bg-blue-500/20 text-blue-500' },
+      business: { label: 'Business', className: 'bg-purple-500/20 text-purple-500' },
+      enterprise: { label: 'Enterprise', className: 'bg-primary/20 text-primary' },
+    };
+    return badges[currentPlan] || badges.free;
+  };
+
+  const planBadge = getPlanBadge();
+
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Ad Banner for Free users */}
+      {showAds && (
+        <AdBanner variant="inline" className="mb-2" />
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -85,9 +104,9 @@ export default function Dashboard() {
             <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
               Witaj w Majster.AI
             </h1>
-            <Badge variant="secondary" className="text-xs bg-primary/20 text-primary">
+            <Badge variant="secondary" className={`text-xs ${planBadge.className}`}>
               <Sparkles className="h-3 w-3 mr-1" />
-              Pro
+              {planBadge.label}
             </Badge>
           </div>
           <p className="text-muted-foreground">
@@ -119,19 +138,43 @@ export default function Dashboard() {
         recentCount={recentCount}
       />
 
-      {/* Status breakdown */}
-      <ProjectStatusBreakdown
-        newCount={stats.new}
-        inProgressCount={stats.inProgress}
-        sentCount={stats.sent}
-        acceptedCount={stats.accepted}
-      />
+      {/* Sidebar Ad for Free users */}
+      {showAds && (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-3">
+            <ProjectStatusBreakdown
+              newCount={stats.new}
+              inProgressCount={stats.inProgress}
+              sentCount={stats.sent}
+              acceptedCount={stats.accepted}
+            />
+          </div>
+          <div className="lg:col-span-1">
+            <AdBanner variant="vertical" showClose={false} />
+          </div>
+        </div>
+      )}
+
+      {/* Status breakdown without ads */}
+      {!showAds && (
+        <ProjectStatusBreakdown
+          newCount={stats.new}
+          inProgressCount={stats.inProgress}
+          sentCount={stats.sent}
+          acceptedCount={stats.accepted}
+        />
+      )}
 
       {/* Quick Actions */}
       <QuickActions />
 
       {/* Recent projects */}
       <RecentProjects projects={recentProjects} isLoading={isLoading} />
+
+      {/* Bottom Ad for Free users */}
+      {showAds && (
+        <AdBanner variant="horizontal" />
+      )}
 
       {/* Onboarding wizard */}
       <OnboardingWizard 
