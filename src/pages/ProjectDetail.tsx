@@ -4,11 +4,16 @@ import { useProject, useUpdateProject } from '@/hooks/useProjects';
 import { useQuote } from '@/hooks/useQuotes';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download, Mail } from 'lucide-react';
+import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download, Mail, Camera, Receipt, FileSignature, Eye } from 'lucide-react';
 import { exportQuoteToExcel } from '@/lib/exportUtils';
 import { OfferHistoryPanel } from '@/components/offers/OfferHistoryPanel';
 import { SendOfferModal } from '@/components/offers/SendOfferModal';
+import { PhotoEstimationPanel } from '@/components/photos/PhotoEstimationPanel';
+import { PurchaseCostsPanel } from '@/components/costs/PurchaseCostsPanel';
+import { OfferApprovalPanel } from '@/components/offers/OfferApprovalPanel';
+import { PdfPreviewPanel } from '@/components/offers/PdfPreviewPanel';
 
 const statuses = ['Nowy', 'Wycena w toku', 'Oferta wysłana', 'Zaakceptowany'] as const;
 
@@ -19,6 +24,7 @@ export default function ProjectDetail() {
   const updateProject = useUpdateProject();
   const navigate = useNavigate();
   const [sendModalOpen, setSendModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   if (projectLoading) {
     return (
@@ -49,6 +55,11 @@ export default function ProjectDetail() {
       id: project.id, 
       status: status as typeof statuses[number] 
     });
+  };
+
+  const handleAddToQuote = (items: any[]) => {
+    // Navigate to quote editor with items to add
+    navigate(`/projects/${id}/quote`, { state: { addItems: items } });
   };
 
   return (
@@ -135,55 +146,107 @@ export default function ProjectDetail() {
         clientName={project.clients?.name || ''}
       />
 
-      {/* Quote summary */}
-      {quoteLoading ? (
-        <Card>
-          <CardContent className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </CardContent>
-        </Card>
-      ) : quote ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Podsumowanie wyceny</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Materiały:</span>
-                <span className="font-medium">{Number(quote.summary_materials).toFixed(2)} zł</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Robocizna:</span>
-                <span className="font-medium">{Number(quote.summary_labor).toFixed(2)} zł</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Marża ({quote.margin_percent}%):</span>
-                <span className="font-medium">
-                  {((Number(quote.summary_materials) + Number(quote.summary_labor)) * Number(quote.margin_percent) / 100).toFixed(2)} zł
-                </span>
-              </div>
-              <div className="border-t border-border pt-3">
-                <div className="flex justify-between text-lg font-bold">
-                  <span>Kwota całkowita:</span>
-                  <span className="text-primary">{Number(quote.total).toFixed(2)} zł</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardContent className="py-8 text-center">
-            <p className="text-muted-foreground">
-              Brak wyceny. Kliknij "Edytuj wycenę" aby dodać pozycje kosztorysu.
-            </p>
-          </CardContent>
-        </Card>
-      )}
+      {/* Tabs for different sections */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="bg-muted/50">
+          <TabsTrigger value="overview" className="gap-2 data-[state=active]:bg-background">
+            <FileText className="h-4 w-4" />
+            Przegląd
+          </TabsTrigger>
+          <TabsTrigger value="photos" className="gap-2 data-[state=active]:bg-background">
+            <Camera className="h-4 w-4" />
+            Zdjęcia AI
+          </TabsTrigger>
+          <TabsTrigger value="costs" className="gap-2 data-[state=active]:bg-background">
+            <Receipt className="h-4 w-4" />
+            Koszty
+          </TabsTrigger>
+          <TabsTrigger value="approval" className="gap-2 data-[state=active]:bg-background">
+            <FileSignature className="h-4 w-4" />
+            E-Podpis
+          </TabsTrigger>
+          <TabsTrigger value="pdf" className="gap-2 data-[state=active]:bg-background">
+            <Eye className="h-4 w-4" />
+            Podgląd PDF
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Offer History */}
-      <OfferHistoryPanel projectId={id!} />
+        <TabsContent value="overview" className="mt-4 space-y-6">
+          {/* Quote summary */}
+          {quoteLoading ? (
+            <Card>
+              <CardContent className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </CardContent>
+            </Card>
+          ) : quote ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Podsumowanie wyceny</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Materiały:</span>
+                    <span className="font-medium">{Number(quote.summary_materials).toFixed(2)} zł</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Robocizna:</span>
+                    <span className="font-medium">{Number(quote.summary_labor).toFixed(2)} zł</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Marża ({quote.margin_percent}%):</span>
+                    <span className="font-medium">
+                      {((Number(quote.summary_materials) + Number(quote.summary_labor)) * Number(quote.margin_percent) / 100).toFixed(2)} zł
+                    </span>
+                  </div>
+                  <div className="border-t border-border pt-3">
+                    <div className="flex justify-between text-lg font-bold">
+                      <span>Kwota całkowita:</span>
+                      <span className="text-primary">{Number(quote.total).toFixed(2)} zł</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="py-8 text-center">
+                <p className="text-muted-foreground">
+                  Brak wyceny. Kliknij "Edytuj wycenę" aby dodać pozycje kosztorysu.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Offer History */}
+          <OfferHistoryPanel projectId={id!} />
+        </TabsContent>
+
+        <TabsContent value="photos" className="mt-4">
+          <PhotoEstimationPanel 
+            projectId={id!} 
+            projectName={project.project_name}
+            onAddToQuote={handleAddToQuote}
+          />
+        </TabsContent>
+
+        <TabsContent value="costs" className="mt-4">
+          <PurchaseCostsPanel projectId={id!} />
+        </TabsContent>
+
+        <TabsContent value="approval" className="mt-4">
+          <OfferApprovalPanel 
+            projectId={id!}
+            clientName={project.clients?.name}
+            clientEmail={project.clients?.email}
+          />
+        </TabsContent>
+
+        <TabsContent value="pdf" className="mt-4">
+          <PdfPreviewPanel projectId={id!} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
