@@ -5,3 +5,18 @@ verify_jwt = true
 
 [functions.ai-quote-suggestions]
 verify_jwt = true
+
+[functions.analyze-photo]
+verify_jwt = true
+
+[functions.ocr-invoice]
+verify_jwt = true
+
+[functions.finance-ai-analysis]
+verify_jwt = true
+
+[functions.public-api]
+verify_jwt = false
+
+[functions.approve-offer]
+verify_jwt = false
