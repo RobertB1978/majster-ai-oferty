@@ -1,6 +1,7 @@
 import { Outlet, Navigate } from 'react-router-dom';
 import { TopBar } from './TopBar';
 import { Navigation } from './Navigation';
+import { PageTransition } from './PageTransition';
 import { useAuth } from '@/contexts/AuthContext';
 import { AiChatAgent } from '@/components/ai/AiChatAgent';
 import { LoadingScreen } from '@/components/ui/loading-screen';
@@ -43,7 +44,9 @@ export function AppLayout() {
       <TopBar />
       <Navigation />
       <main className={`container py-6 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-        <Outlet />
+        <PageTransition>
+          <Outlet />
+        </PageTransition>
       </main>
       
       {/* AI Chat Agent - Global floating assistant */}
