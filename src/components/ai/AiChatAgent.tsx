@@ -16,12 +16,17 @@ import {
   Sparkles,
   FileText,
   Calculator,
-  HelpCircle
+  HelpCircle,
+  History,
+  Trash2,
+  Plus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useVoiceToText } from '@/hooks/useVoiceToText';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useAiChatHistory, useAiChatSessions, useSaveAiMessage, useDeleteChatSession } from '@/hooks/useAiChatHistory';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Message {
   id: string;
@@ -37,7 +42,10 @@ const quickActions = [
 ];
 
 export function AiChatAgent() {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID());
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -50,9 +58,27 @@ export function AiChatAgent() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   
+  const { data: chatHistory } = useAiChatHistory(sessionId);
+  const { data: sessions } = useAiChatSessions();
+  const saveMessage = useSaveAiMessage();
+  const deleteChatSession = useDeleteChatSession();
+  
   const { transcript, isListening, isSupported, startListening, stopListening, resetTranscript } = useVoiceToText({
     language: 'pl-PL',
   });
+
+  // Load chat history when session changes
+  useEffect(() => {
+    if (chatHistory && chatHistory.length > 0) {
+      const loadedMessages: Message[] = chatHistory.map(msg => ({
+        id: msg.id,
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content,
+        timestamp: new Date(msg.created_at),
+      }));
+      setMessages(loadedMessages);
+    }
+  }, [chatHistory]);
 
   useEffect(() => {
     if (transcript && !isListening) {
@@ -81,6 +107,11 @@ export function AiChatAgent() {
     setInput('');
     setIsLoading(true);
 
+    // Save user message to history
+    if (user) {
+      saveMessage.mutate({ sessionId, role: 'user', content: content.trim() });
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('ai-chat-agent', {
         body: { 
@@ -91,14 +122,20 @@ export function AiChatAgent() {
 
       if (error) throw error;
 
+      const assistantContent = data?.response || 'Przepraszam, nie udało się przetworzyć odpowiedzi.';
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: data?.response || 'Przepraszam, nie udało się przetworzyć odpowiedzi.',
+        content: assistantContent,
         timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+      
+      // Save assistant message to history
+      if (user) {
+        saveMessage.mutate({ sessionId, role: 'assistant', content: assistantContent });
+      }
     } catch (error: any) {
       console.error('AI Chat error:', error);
       toast.error('Błąd połączenia z AI');
@@ -125,6 +162,32 @@ export function AiChatAgent() {
       stopListening();
     } else {
       startListening();
+    }
+  };
+
+  const startNewSession = () => {
+    setSessionId(crypto.randomUUID());
+    setMessages([
+      {
+        id: '1',
+        role: 'assistant',
+        content: 'Cześć! Jestem Twoim asystentem Majster.AI. Jak mogę Ci dzisiaj pomóc?',
+        timestamp: new Date(),
+      },
+    ]);
+    setShowHistory(false);
+  };
+
+  const loadSession = (id: string) => {
+    setSessionId(id);
+    setShowHistory(false);
+  };
+
+  const handleDeleteSession = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    await deleteChatSession.mutateAsync(id);
+    if (id === sessionId) {
+      startNewSession();
     }
   };
 
@@ -168,13 +231,65 @@ export function AiChatAgent() {
                   <p className="text-xs text-muted-foreground">Majster.AI</p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-                <X className="h-5 w-5" />
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setShowHistory(!showHistory)}
+                  title="Historia rozmów"
+                >
+                  <History className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={startNewSession}
+                  title="Nowa rozmowa"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
           </CardHeader>
 
           <CardContent className="p-0">
+            {/* History Panel */}
+            {showHistory && (
+              <div className="border-b p-3 max-h-48 overflow-auto bg-muted/30">
+                <p className="text-xs text-muted-foreground mb-2">Historia rozmów</p>
+                {sessions && sessions.length > 0 ? (
+                  <div className="space-y-1">
+                    {sessions.slice(0, 10).map((session) => (
+                      <div
+                        key={session.session_id}
+                        onClick={() => loadSession(session.session_id)}
+                        className={cn(
+                          'flex items-center justify-between p-2 rounded-lg cursor-pointer text-sm',
+                          'hover:bg-muted transition-colors',
+                          session.session_id === sessionId && 'bg-primary/10'
+                        )}
+                      >
+                        <span className="truncate flex-1">{session.first_message || 'Nowa rozmowa'}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 shrink-0"
+                          onClick={(e) => handleDeleteSession(session.session_id, e)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-2">Brak historii rozmów</p>
+                )}
+              </div>
+            )}
+
             {/* Quick actions */}
             <div className="flex gap-2 p-3 border-b overflow-x-auto custom-scrollbar">
               {quickActions.map((action, i) => (

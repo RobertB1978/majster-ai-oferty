@@ -1,19 +1,23 @@
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings as SettingsIcon, Key, Bell, Globe, CreditCard, Calendar, FileText } from 'lucide-react';
+import { Settings as SettingsIcon, Key, Bell, Globe, CreditCard, Calendar, FileText, Shield, Puzzle } from 'lucide-react';
 import { ApiKeysPanel } from '@/components/api/ApiKeysPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { LanguageSwitcher } from '@/components/settings/LanguageSwitcher';
 import { BillingDashboard } from '@/components/billing/BillingDashboard';
 import { CalendarSync } from '@/components/calendar/CalendarSync';
 import { CompanyDocuments } from '@/components/documents/CompanyDocuments';
 import { PushNotificationSettings } from '@/components/notifications/PushNotificationSettings';
+import { AdminDashboard } from '@/components/admin/AdminDashboard';
+import { PluginsPanel } from '@/components/plugins/PluginsPanel';
+import { useUserSubscription } from '@/hooks/useSubscription';
 
 export default function Settings() {
   const { t } = useTranslation();
+  const { data: subscription } = useUserSubscription();
+  const isAdmin = subscription?.plan_id === 'enterprise';
 
   return (
     <>
@@ -59,6 +63,16 @@ export default function Settings() {
               <Bell className="h-4 w-4" />
               {t('settings.notifications')}
             </TabsTrigger>
+            <TabsTrigger value="plugins" className="flex items-center gap-2">
+              <Puzzle className="h-4 w-4" />
+              Integracje
+            </TabsTrigger>
+            {isAdmin && (
+              <TabsTrigger value="admin" className="flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Admin
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="general" className="mt-4">
@@ -102,6 +116,16 @@ export default function Settings() {
           <TabsContent value="notifications" className="mt-4">
             <PushNotificationSettings />
           </TabsContent>
+
+          <TabsContent value="plugins" className="mt-4">
+            <PluginsPanel />
+          </TabsContent>
+
+          {isAdmin && (
+            <TabsContent value="admin" className="mt-4">
+              <AdminDashboard />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </>
