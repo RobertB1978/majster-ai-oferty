@@ -1,5 +1,5 @@
 import { NavLink } from '@/components/NavLink';
-import { LayoutDashboard, Users, FolderKanban, Menu, X, Building2, Package, Calendar, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Users, FolderKanban, Menu, X, Building2, Package, Calendar, BarChart3, UsersRound, TrendingUp, Store, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -9,9 +9,13 @@ const navItems = [
   { to: '/clients', label: 'Klienci', icon: Users },
   { to: '/projects', label: 'Projekty', icon: FolderKanban },
   { to: '/calendar', label: 'Kalendarz', icon: Calendar },
+  { to: '/team', label: 'Zespół', icon: UsersRound },
+  { to: '/finance', label: 'Finanse', icon: TrendingUp },
+  { to: '/marketplace', label: 'Marketplace', icon: Store },
   { to: '/analytics', label: 'Analityka', icon: BarChart3 },
   { to: '/templates', label: 'Szablony', icon: Package },
-  { to: '/profile', label: 'Profil firmy', icon: Building2 },
+  { to: '/profile', label: 'Profil', icon: Building2 },
+  { to: '/settings', label: 'Ustawienia', icon: Settings },
 ];
 
 export function Navigation() {
