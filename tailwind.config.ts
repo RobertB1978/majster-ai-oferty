@@ -43,6 +43,10 @@ export default {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
@@ -69,6 +73,12 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Vibrant gradient colors
+        gradient: {
+          start: "hsl(var(--gradient-start))",
+          mid: "hsl(var(--gradient-mid))",
+          end: "hsl(var(--gradient-end))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -82,8 +92,16 @@ export default {
         'md': 'var(--shadow-md)',
         'lg': 'var(--shadow-lg)',
         'glow': 'var(--shadow-glow)',
+        'vibrant': 'var(--shadow-vibrant)',
         'card': '0 2px 8px -2px hsl(var(--foreground) / 0.08)',
         'card-hover': '0 16px 32px -8px hsl(var(--primary) / 0.12)',
+        'colored': '0 4px 14px -3px',
+      },
+      backgroundImage: {
+        'gradient-primary': 'linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-mid)), hsl(var(--gradient-end)))',
+        'gradient-subtle': 'linear-gradient(135deg, hsl(var(--primary) / 0.05), hsl(var(--accent) / 0.05))',
+        'gradient-card': 'linear-gradient(145deg, hsl(var(--card)), hsl(var(--background)))',
+        'mesh-gradient': 'radial-gradient(at 40% 20%, hsl(var(--primary) / 0.08) 0px, transparent 50%), radial-gradient(at 80% 0%, hsl(var(--accent) / 0.1) 0px, transparent 50%), radial-gradient(at 0% 50%, hsl(var(--gradient-mid) / 0.05) 0px, transparent 50%)',
       },
       keyframes: {
         "accordion-down": {

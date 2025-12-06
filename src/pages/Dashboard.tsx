@@ -91,40 +91,49 @@ export default function Dashboard() {
   const planBadge = getPlanBadge();
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in relative">
+      {/* Background mesh gradient */}
+      <div className="fixed inset-0 bg-mesh-gradient pointer-events-none opacity-30" />
+      
       {/* Ad Banner for Free users */}
       {showAds && (
         <AdBanner variant="inline" className="mb-2" />
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-              Witaj w Majster.AI
-            </h1>
-            <Badge variant="secondary" className={`text-xs ${planBadge.className}`}>
-              <Sparkles className="h-3 w-3 mr-1" />
-              {planBadge.label}
-            </Badge>
+      {/* Header with gradient background */}
+      <div className="relative rounded-2xl bg-gradient-to-r from-primary/10 via-purple-500/5 to-pink-500/10 p-6 overflow-hidden">
+        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-3xl" />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative">
+          <div>
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
+              <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+                Witaj w Majster.AI
+              </h1>
+              <Badge 
+                variant="secondary" 
+                className={`text-xs font-semibold ${planBadge.className} shadow-sm`}
+              >
+                <Sparkles className="h-3 w-3 mr-1" />
+                {planBadge.label}
+              </Badge>
+            </div>
+            <p className="text-muted-foreground">
+              Panel główny - przegląd projektów i szybkie akcje
+            </p>
           </div>
-          <p className="text-muted-foreground">
-            Panel główny - przegląd projektów i szybkie akcje
-          </p>
+          <Button 
+            size="lg" 
+            onClick={() => navigate('/projects/new')} 
+            className="shadow-xl bg-gradient-to-r from-primary via-purple-500 to-pink-500 hover:shadow-2xl hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
+          >
+            <Plus className="mr-2 h-5 w-5" />
+            Nowy projekt
+          </Button>
         </div>
-        <Button 
-          size="lg" 
-          onClick={() => navigate('/projects/new')} 
-          className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300"
-        >
-          <Plus className="mr-2 h-5 w-5" />
-          Nowy projekt
-        </Button>
       </div>
 
       {/* Quote Creation Hub - Main Feature */}
-      <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-background to-transparent overflow-hidden">
+      <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-purple-500/5 to-pink-500/5 overflow-hidden shadow-lg">
         <CardContent className="p-6 sm:p-8">
           <QuoteCreationHub onVoiceQuoteCreated={handleVoiceQuoteCreated} />
         </CardContent>
