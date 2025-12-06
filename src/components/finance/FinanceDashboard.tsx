@@ -6,10 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   TrendingUp, TrendingDown, DollarSign, Receipt, 
   BarChart3, Sparkles, AlertTriangle, Lightbulb,
-  ArrowUpRight, ArrowDownRight
+  ArrowUpRight, ArrowDownRight, Wallet, PiggyBank
 } from 'lucide-react';
 import { useFinancialSummary, useAIFinancialAnalysis } from '@/hooks/useFinancialReports';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LoadingCard } from '@/components/ui/loading-screen';
 
 export function FinanceDashboard() {
   const { data: summary, isLoading } = useFinancialSummary();
@@ -22,115 +23,155 @@ export function FinanceDashboard() {
   };
 
   if (isLoading || !summary) {
-    return <div className="animate-pulse h-96 bg-muted rounded-lg" />;
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <LoadingCard key={i} />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="h-[350px] bg-card border border-border/50 rounded-xl animate-pulse" />
+          <div className="h-[350px] bg-card border border-border/50 rounded-xl animate-pulse" />
+        </div>
+      </div>
+    );
   }
 
   const marginTrend = summary.monthly.length >= 2 
     ? summary.monthly[summary.monthly.length - 1].margin - summary.monthly[summary.monthly.length - 2].margin
     : 0;
 
+  const kpiCards = [
+    {
+      label: 'Przychody',
+      value: summary.totalRevenue,
+      icon: DollarSign,
+      gradient: 'from-emerald-500 to-green-600',
+      bgGradient: 'from-emerald-500/10 to-green-500/5',
+      iconBg: 'bg-gradient-to-br from-emerald-500 to-green-600',
+    },
+    {
+      label: 'Koszty',
+      value: summary.totalCosts,
+      icon: Receipt,
+      gradient: 'from-rose-500 to-red-600',
+      bgGradient: 'from-rose-500/10 to-red-500/5',
+      iconBg: 'bg-gradient-to-br from-rose-500 to-red-600',
+    },
+    {
+      label: 'Marża brutto',
+      value: summary.grossMargin,
+      icon: marginTrend >= 0 ? TrendingUp : TrendingDown,
+      gradient: 'from-blue-500 to-indigo-600',
+      bgGradient: 'from-blue-500/10 to-indigo-500/5',
+      iconBg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+      trend: marginTrend,
+    },
+    {
+      label: 'Marża %',
+      value: summary.marginPercent,
+      isPercent: true,
+      icon: PiggyBank,
+      gradient: 'from-violet-500 to-purple-600',
+      bgGradient: 'from-violet-500/10 to-purple-500/5',
+      iconBg: 'bg-gradient-to-br from-violet-500 to-purple-600',
+    },
+  ];
+
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Przychody</p>
-                <p className="text-2xl font-bold">{summary.totalRevenue.toLocaleString()} zł</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Koszty</p>
-                <p className="text-2xl font-bold">{summary.totalCosts.toLocaleString()} zł</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                <Receipt className="h-6 w-6 text-red-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Marża brutto</p>
-                <p className="text-2xl font-bold">{summary.grossMargin.toLocaleString()} zł</p>
-                <div className="flex items-center gap-1 mt-1">
-                  {marginTrend >= 0 ? (
-                    <ArrowUpRight className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <ArrowDownRight className="h-4 w-4 text-red-500" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {kpiCards.map((card, index) => (
+          <Card 
+            key={card.label}
+            className={`relative overflow-hidden border-0 bg-gradient-to-br ${card.bgGradient} backdrop-blur-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-xl`}
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+            <CardContent className="p-5 relative">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">{card.label}</p>
+                  <p className="text-2xl sm:text-3xl font-bold tracking-tight">
+                    {card.isPercent 
+                      ? `${card.value.toFixed(1)}%`
+                      : `${card.value.toLocaleString()} zł`
+                    }
+                  </p>
+                  {card.trend !== undefined && (
+                    <div className="flex items-center gap-1 mt-1">
+                      {card.trend >= 0 ? (
+                        <ArrowUpRight className="h-4 w-4 text-emerald-500" />
+                      ) : (
+                        <ArrowDownRight className="h-4 w-4 text-rose-500" />
+                      )}
+                      <span className={`text-sm font-medium ${card.trend >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                        {Math.abs(card.trend).toLocaleString()} zł
+                      </span>
+                    </div>
                   )}
-                  <span className={`text-sm ${marginTrend >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {Math.abs(marginTrend).toLocaleString()} zł
-                  </span>
+                </div>
+                <div className={`h-12 w-12 rounded-xl ${card.iconBg} flex items-center justify-center shadow-lg`}>
+                  <card.icon className="h-6 w-6 text-white" />
                 </div>
               </div>
-              <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                {marginTrend >= 0 ? (
-                  <TrendingUp className="h-6 w-6 text-blue-600" />
-                ) : (
-                  <TrendingDown className="h-6 w-6 text-blue-600" />
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Marża %</p>
-                <p className="text-2xl font-bold">{summary.marginPercent.toFixed(1)}%</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                <BarChart3 className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Przychody vs Koszty</CardTitle>
+        <Card className="border-border/50 shadow-lg overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent border-b border-border/50">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center">
+                <BarChart3 className="h-4 w-4 text-white" />
+              </div>
+              Przychody vs Koszty
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+          <CardContent className="pt-6">
+            <ResponsiveContainer width="100%" height={280}>
               <AreaChart data={summary.monthly}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value: number) => `${value.toLocaleString()} zł`} />
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(142, 76%, 36%)" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="hsl(142, 76%, 36%)" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorCosts" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <Tooltip 
+                  formatter={(value: number) => `${value.toLocaleString()} zł`}
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--card))', 
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)'
+                  }}
+                />
                 <Area 
                   type="monotone" 
                   dataKey="revenue" 
-                  stackId="1"
-                  stroke="hsl(var(--primary))" 
-                  fill="hsl(var(--primary)/0.3)" 
+                  stroke="hsl(142, 76%, 36%)"
+                  strokeWidth={2}
+                  fill="url(#colorRevenue)" 
                   name="Przychody"
                 />
                 <Area 
                   type="monotone" 
                   dataKey="costs" 
-                  stackId="2"
-                  stroke="hsl(var(--destructive))" 
-                  fill="hsl(var(--destructive)/0.3)" 
+                  stroke="hsl(0, 84%, 60%)"
+                  strokeWidth={2}
+                  fill="url(#colorCosts)" 
                   name="Koszty"
                 />
               </AreaChart>
@@ -138,22 +179,41 @@ export function FinanceDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Marża miesięczna</CardTitle>
+        <Card className="border-border/50 shadow-lg overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-violet-500/5 to-transparent border-b border-border/50">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                <TrendingUp className="h-4 w-4 text-white" />
+              </div>
+              Marża miesięczna
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+          <CardContent className="pt-6">
+            <ResponsiveContainer width="100%" height={280}>
               <BarChart data={summary.monthly}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value: number) => `${value.toLocaleString()} zł`} />
+                <defs>
+                  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={1}/>
+                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.6}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <Tooltip 
+                  formatter={(value: number) => `${value.toLocaleString()} zł`}
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--card))', 
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)'
+                  }}
+                />
                 <Bar 
                   dataKey="margin" 
-                  fill="hsl(var(--primary))" 
+                  fill="url(#barGradient)" 
                   name="Marża"
-                  radius={[4, 4, 0, 0]}
+                  radius={[6, 6, 0, 0]}
                 />
               </BarChart>
             </ResponsiveContainer>

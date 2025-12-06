@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,6 +6,7 @@
 
 @layer base {
   :root {
+    /* Premium color palette - inspired by world-class apps */
     --background: 220 20% 97%;
     --foreground: 222 47% 11%;
 
@@ -15,23 +16,23 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Vibrant primary - deep blue */
-    --primary: 225 84% 55%;
+    /* Primary - Rich indigo-blue */
+    --primary: 243 75% 59%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 225 84% 65%;
+    --primary-glow: 221 83% 53%;
 
-    /* Secondary - soft purple */
+    /* Secondary - Soft lavender */
     --secondary: 250 30% 96%;
     --secondary-foreground: 250 40% 25%;
 
     --muted: 220 14% 92%;
     --muted-foreground: 220 9% 46%;
 
-    /* Accent - vibrant teal */
-    --accent: 175 70% 94%;
-    --accent-foreground: 175 70% 30%;
+    /* Accent - Vibrant cyan */
+    --accent: 186 100% 42%;
+    --accent-foreground: 0 0% 100%;
 
-    /* Semantic colors */
+    /* Semantic colors - bold and distinctive */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
@@ -41,25 +42,29 @@
     --warning: 38 95% 52%;
     --warning-foreground: 38 100% 15%;
 
-    --info: 200 85% 55%;
+    --info: 199 89% 48%;
     --info-foreground: 0 0% 100%;
 
-    /* Gradient colors for vibrant UI */
-    --gradient-start: 225 84% 55%;
+    /* Vibrant gradient spectrum */
+    --gradient-start: 243 75% 59%;
     --gradient-mid: 280 70% 55%;
     --gradient-end: 330 75% 55%;
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 225 84% 55%;
+    --ring: 243 75% 59%;
 
     --radius: 0.75rem;
 
+    /* Modern shadows */
     --shadow-sm: 0 1px 2px 0 hsl(220 13% 11% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(220 13% 11% / 0.07), 0 2px 4px -2px hsl(220 13% 11% / 0.05);
-    --shadow-lg: 0 10px 15px -3px hsl(220 13% 11% / 0.08), 0 4px 6px -4px hsl(220 13% 11% / 0.05);
-    --shadow-glow: 0 0 25px hsl(225 84% 55% / 0.3);
-    --shadow-vibrant: 0 4px 24px -4px hsl(280 70% 55% / 0.25);
+    --shadow-md: 0 4px 12px -2px hsl(220 13% 11% / 0.08), 0 2px 4px -2px hsl(220 13% 11% / 0.04);
+    --shadow-lg: 0 12px 32px -8px hsl(220 13% 11% / 0.12), 0 4px 8px -4px hsl(220 13% 11% / 0.06);
+    --shadow-xl: 0 24px 48px -12px hsl(220 13% 11% / 0.18);
+    --shadow-glow: 0 0 30px hsl(243 75% 59% / 0.25);
+    --shadow-vibrant: 0 8px 32px -4px hsl(280 70% 55% / 0.2);
+    --shadow-card: 0 1px 3px 0 hsl(220 13% 11% / 0.04), 0 1px 2px -1px hsl(220 13% 11% / 0.04);
+    --shadow-card-hover: 0 10px 40px -10px hsl(243 75% 59% / 0.2);
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
@@ -72,32 +77,33 @@
   }
 
   .dark {
-    --background: 230 25% 7%;
+    /* Deep, rich dark theme */
+    --background: 230 30% 6%;
     --foreground: 210 40% 98%;
 
-    --card: 230 25% 11%;
+    --card: 230 30% 10%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 230 25% 11%;
+    --popover: 230 30% 10%;
     --popover-foreground: 210 40% 98%;
 
-    /* Vibrant primary in dark mode */
-    --primary: 225 80% 62%;
+    /* Primary - vibrant in dark */
+    --primary: 243 75% 65%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 225 80% 72%;
+    --primary-glow: 221 90% 68%;
 
-    /* Secondary - rich purple */
+    /* Secondary - deep purple */
     --secondary: 260 30% 18%;
     --secondary-foreground: 260 30% 90%;
 
     --muted: 230 25% 14%;
     --muted-foreground: 215 20% 55%;
 
-    /* Accent - vibrant teal */
-    --accent: 175 50% 22%;
-    --accent-foreground: 175 60% 80%;
+    /* Accent - electric cyan */
+    --accent: 186 100% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    /* Semantic colors */
+    /* Semantic colors - bright in dark */
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
@@ -107,32 +113,36 @@
     --warning: 38 92% 55%;
     --warning-foreground: 38 100% 10%;
 
-    --info: 200 85% 60%;
+    --info: 199 89% 55%;
     --info-foreground: 0 0% 100%;
 
     /* Gradient colors */
-    --gradient-start: 225 80% 62%;
+    --gradient-start: 243 75% 65%;
     --gradient-mid: 280 60% 58%;
     --gradient-end: 330 65% 58%;
 
     --border: 230 25% 18%;
     --input: 230 25% 18%;
-    --ring: 225 80% 62%;
+    --ring: 243 75% 65%;
 
+    /* Dark mode shadows with glow */
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.4), 0 2px 4px -2px hsl(0 0% 0% / 0.3);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.5), 0 4px 6px -4px hsl(0 0% 0% / 0.4);
-    --shadow-glow: 0 0 30px hsl(225 80% 62% / 0.35);
-    --shadow-vibrant: 0 4px 24px -4px hsl(280 60% 58% / 0.3);
+    --shadow-md: 0 4px 12px -2px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 12px 32px -8px hsl(0 0% 0% / 0.5);
+    --shadow-xl: 0 24px 48px -12px hsl(0 0% 0% / 0.6);
+    --shadow-glow: 0 0 40px hsl(243 75% 65% / 0.3);
+    --shadow-vibrant: 0 8px 32px -4px hsl(280 60% 58% / 0.25);
+    --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.2);
+    --shadow-card-hover: 0 10px 40px -10px hsl(243 75% 65% / 0.3);
 
-    --sidebar-background: 230 25% 9%;
+    --sidebar-background: 230 30% 8%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 225 80% 62%;
+    --sidebar-primary: 243 75% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 260 30% 18%;
     --sidebar-accent-foreground: 260 30% 85%;
     --sidebar-border: 230 25% 18%;
-    --sidebar-ring: 225 80% 62%;
+    --sidebar-ring: 243 75% 65%;
   }
 }
 
