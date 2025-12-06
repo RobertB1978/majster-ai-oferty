@@ -5,15 +5,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2, Loader2, Package, Download } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2, Package, Download, Filter } from 'lucide-react';
 import { SearchInput } from '@/components/ui/search-input';
 import { toast } from 'sonner';
-import { defaultTemplates } from '@/data/defaultTemplates';
+import { defaultTemplates, trades } from '@/data/defaultTemplates';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
 const categories = ['Materiał', 'Robocizna'] as const;
@@ -47,11 +48,16 @@ export default function ItemTemplates() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [selectedDefaults, setSelectedDefaults] = useState<Set<number>>(new Set());
+  const [importTradeFilter, setImportTradeFilter] = useState<string>('all');
   const [editingTemplate, setEditingTemplate] = useState<ItemTemplate | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [formData, setFormData] = useState<TemplateFormData>(initialFormData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isImporting, setIsImporting] = useState(false);
+
+  const filteredDefaultTemplates = defaultTemplates.filter(t => 
+    importTradeFilter === 'all' || t.trade === importTradeFilter
+  );
 
   const handleImportSelected = async () => {
     if (selectedDefaults.size === 0) {
@@ -62,7 +68,14 @@ export default function ItemTemplates() {
     try {
       const toImport = defaultTemplates.filter((_, i) => selectedDefaults.has(i));
       for (const template of toImport) {
-        await createTemplate.mutateAsync(template);
+        await createTemplate.mutateAsync({
+          name: template.name,
+          unit: template.unit,
+          default_qty: template.default_qty,
+          default_price: template.default_price,
+          category: template.category,
+          description: template.description,
+        });
       }
       toast.success(`Zaimportowano ${toImport.length} szablonów`);
       setIsImportDialogOpen(false);
@@ -84,11 +97,21 @@ export default function ItemTemplates() {
     setSelectedDefaults(newSet);
   };
 
-  const selectAllDefaults = () => {
-    if (selectedDefaults.size === defaultTemplates.length) {
-      setSelectedDefaults(new Set());
+  const selectAllFiltered = () => {
+    const filteredIndices = defaultTemplates
+      .map((t, i) => (importTradeFilter === 'all' || t.trade === importTradeFilter) ? i : -1)
+      .filter(i => i !== -1);
+    
+    const allSelected = filteredIndices.every(i => selectedDefaults.has(i));
+    
+    if (allSelected) {
+      const newSet = new Set(selectedDefaults);
+      filteredIndices.forEach(i => newSet.delete(i));
+      setSelectedDefaults(newSet);
     } else {
-      setSelectedDefaults(new Set(defaultTemplates.map((_, i) => i)));
+      const newSet = new Set(selectedDefaults);
+      filteredIndices.forEach(i => newSet.add(i));
+      setSelectedDefaults(newSet);
     }
   };
 
@@ -168,15 +191,15 @@ export default function ItemTemplates() {
             Szablony pozycji
           </h1>
           <p className="mt-1 text-muted-foreground">
-            Twórz szablony często używanych pozycji do szybszego tworzenia wycen.
+            {templates?.length || 0} szablonów • Gotowe pozycje do szybkiego tworzenia wycen
           </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setIsImportDialogOpen(true)}>
             <Download className="mr-2 h-4 w-4" />
-            Importuj gotowe
+            Importuj ({defaultTemplates.length})
           </Button>
-          <Button size="lg" onClick={() => handleOpenDialog()} className="bg-gradient-to-r from-primary to-primary-glow">
+          <Button onClick={() => handleOpenDialog()} className="bg-gradient-to-r from-primary to-primary-glow">
             <Plus className="mr-2 h-5 w-5" />
             Nowy szablon
           </Button>
@@ -219,31 +242,39 @@ export default function ItemTemplates() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredTemplates?.map((template) => (
-            <Card key={template.id}>
+            <Card key={template.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
-                <div className="flex items-start justify-between">
-                  <CardTitle className="text-base">{template.name}</CardTitle>
-                  <Badge variant={template.category === 'Materiał' ? 'default' : 'secondary'}>
+                <div className="flex items-start justify-between gap-2">
+                  <CardTitle className="text-sm font-medium leading-tight">{template.name}</CardTitle>
+                  <Badge 
+                    variant={template.category === 'Materiał' ? 'default' : 'secondary'}
+                    className="shrink-0 text-xs"
+                  >
                     {template.category}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-1 text-sm text-muted-foreground">
-                  <p>Ilość: {template.default_qty} {template.unit}</p>
-                  <p>Cena: {Number(template.default_price).toFixed(2)} zł</p>
-                  {template.description && <p className="text-xs">{template.description}</p>}
+                  <p>{template.default_qty} {template.unit} × {Number(template.default_price).toFixed(0)} zł</p>
+                  {template.description && (
+                    <p className="text-xs line-clamp-2">{template.description}</p>
+                  )}
                 </div>
-                <div className="mt-4 flex gap-2">
+                <div className="mt-3 flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => handleOpenDialog(template)}>
-                    <Edit className="mr-1 h-4 w-4" />
+                    <Edit className="mr-1 h-3 w-3" />
                     Edytuj
                   </Button>
-                  <Button variant="outline" size="sm" className="text-destructive" onClick={() => setDeleteConfirmId(template.id)}>
-                    <Trash2 className="mr-1 h-4 w-4" />
-                    Usuń
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-destructive hover:bg-destructive/10" 
+                    onClick={() => setDeleteConfirmId(template.id)}
+                  >
+                    <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
               </CardContent>
@@ -271,7 +302,7 @@ export default function ItemTemplates() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Domyślna ilość *</Label>
+                <Label>Ilość</Label>
                 <Input
                   type="number"
                   min="0.01"
@@ -296,7 +327,7 @@ export default function ItemTemplates() {
                 <Input
                   type="number"
                   min="0"
-                  step="0.01"
+                  step="1"
                   value={formData.default_price}
                   onChange={(e) => setFormData({ ...formData, default_price: parseFloat(e.target.value) || 0 })}
                 />
@@ -332,47 +363,80 @@ export default function ItemTemplates() {
 
       {/* Import Dialog */}
       <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-3xl max-h-[85vh]">
           <DialogHeader>
-            <DialogTitle>Importuj gotowe szablony</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Download className="h-5 w-5" />
+              Importuj gotowe szablony ({defaultTemplates.length})
+            </DialogTitle>
           </DialogHeader>
-          <div className="flex items-center justify-between py-2 border-b">
-            <span className="text-sm text-muted-foreground">
-              Wybrano: {selectedDefaults.size} z {defaultTemplates.length}
-            </span>
-            <Button variant="ghost" size="sm" onClick={selectAllDefaults}>
-              {selectedDefaults.size === defaultTemplates.length ? 'Odznacz wszystko' : 'Zaznacz wszystko'}
-            </Button>
+          
+          <div className="flex flex-wrap items-center gap-2 py-2 border-b">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Select value={importTradeFilter} onValueChange={setImportTradeFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filtruj po zawodzie" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Wszystkie zawody</SelectItem>
+                {trades.map(trade => (
+                  <SelectItem key={trade} value={trade}>{trade}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="ml-auto flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                Wybrano: {selectedDefaults.size}
+              </span>
+              <Button variant="ghost" size="sm" onClick={selectAllFiltered}>
+                Zaznacz widoczne
+              </Button>
+            </div>
           </div>
+          
           <ScrollArea className="h-[400px] pr-4">
-            <div className="space-y-2">
-              {defaultTemplates.map((template, index) => (
-                <div
-                  key={index}
-                  onClick={() => toggleDefaultTemplate(index)}
-                  className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                    selectedDefaults.has(index) ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50'
-                  }`}
-                >
-                  <Checkbox checked={selectedDefaults.has(index)} />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium truncate">{template.name}</span>
-                      <Badge variant={template.category === 'Materiał' ? 'default' : 'secondary'} className="text-xs">
-                        {template.category}
-                      </Badge>
+            <div className="space-y-1">
+              {filteredDefaultTemplates.map((template, index) => {
+                const originalIndex = defaultTemplates.indexOf(template);
+                return (
+                  <div
+                    key={originalIndex}
+                    onClick={() => toggleDefaultTemplate(originalIndex)}
+                    className={`flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                      selectedDefaults.has(originalIndex) ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50 border-transparent'
+                    }`}
+                  >
+                    <Checkbox checked={selectedDefaults.has(originalIndex)} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm truncate">{template.name}</span>
+                        <Badge variant={template.category === 'Materiał' ? 'default' : 'secondary'} className="text-xs shrink-0">
+                          {template.category}
+                        </Badge>
+                        {template.trade && (
+                          <Badge variant="outline" className="text-xs shrink-0">
+                            {template.trade}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {template.default_qty} {template.unit} × {template.default_price} zł
+                        {template.description && ` • ${template.description}`}
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      {template.default_qty} {template.unit} × {template.default_price} zł
-                    </p>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </ScrollArea>
+          
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsImportDialogOpen(false)}>Anuluj</Button>
-            <Button onClick={handleImportSelected} disabled={isImporting || selectedDefaults.size === 0}>
+            <Button 
+              onClick={handleImportSelected} 
+              disabled={isImporting || selectedDefaults.size === 0}
+              className="bg-gradient-to-r from-primary to-primary-glow"
+            >
               {isImporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Importuj ({selectedDefaults.size})
             </Button>
