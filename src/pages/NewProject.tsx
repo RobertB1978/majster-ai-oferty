@@ -95,7 +95,7 @@ export default function NewProject() {
     
     try {
       const { data, error } = await supabase.functions.invoke('voice-quote-processor', {
-        body: { voiceText: transcript }
+        body: { text: transcript }
       });
       
       if (error) throw error;
