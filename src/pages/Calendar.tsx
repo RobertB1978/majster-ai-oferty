@@ -89,16 +89,21 @@ export default function Calendar() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground sm:text-3xl">Kalendarz</h1>
+          <h1 className="text-2xl font-bold text-foreground sm:text-3xl flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+              <CalendarIcon className="h-5 w-5 text-primary-foreground" />
+            </div>
+            Kalendarz
+          </h1>
           <p className="mt-1 text-muted-foreground">Zarządzaj terminami i wydarzeniami</p>
         </div>
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'calendar' | 'timeline')}>
-          <TabsList>
-            <TabsTrigger value="calendar" className="gap-2">
+          <TabsList className="bg-muted/50">
+            <TabsTrigger value="calendar" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <CalendarIcon className="h-4 w-4" />
               Kalendarz
             </TabsTrigger>
-            <TabsTrigger value="timeline" className="gap-2">
+            <TabsTrigger value="timeline" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <GanttChart className="h-4 w-4" />
               Timeline
             </TabsTrigger>

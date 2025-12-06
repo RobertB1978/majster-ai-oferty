@@ -54,15 +54,23 @@ export default function Projects() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">Projekty</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground sm:text-3xl flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+              <FolderKanban className="h-5 w-5 text-primary-foreground" />
+            </div>
+            Projekty
+          </h1>
+          <p className="text-muted-foreground mt-1">Zarządzaj projektami i wycenami</p>
+        </div>
         <div className="flex gap-2">
           {projects.length > 0 && (
-            <Button variant="outline" onClick={() => exportProjectsToCSV(projects)}>
+            <Button variant="outline" onClick={() => exportProjectsToCSV(projects)} className="hover:bg-primary/5">
               <Download className="mr-2 h-4 w-4" />
-              Eksportuj CSV
+              Eksportuj
             </Button>
           )}
-          <Button size="lg" onClick={() => navigate('/projects/new')}>
+          <Button size="lg" onClick={() => navigate('/projects/new')} className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300">
             <Plus className="mr-2 h-5 w-5" />
             Nowy projekt
           </Button>
@@ -97,28 +105,38 @@ export default function Projects() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Ładowanie projektów...</p>
+          </div>
         </div>
       ) : projects.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <FolderKanban className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-            <p className="text-muted-foreground">Brak projektów. Utwórz pierwszy projekt!</p>
+        <Card className="border-dashed border-2">
+          <CardContent className="py-16 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+              <FolderKanban className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Brak projektów</h3>
+            <p className="text-muted-foreground mb-4">Utwórz pierwszy projekt, aby rozpocząć</p>
+            <Button onClick={() => navigate('/projects/new')} className="bg-gradient-to-r from-primary to-primary-glow">
+              <Plus className="mr-2 h-4 w-4" />
+              Nowy projekt
+            </Button>
           </CardContent>
         </Card>
       ) : filteredProjects.length === 0 ? (
-        <Card>
+        <Card className="border-dashed">
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">Nie znaleziono projektów pasujących do kryteriów.</p>
+            <p className="text-muted-foreground mb-2">Nie znaleziono projektów pasujących do kryteriów.</p>
             <div className="mt-2 flex justify-center gap-2">
               {searchQuery && (
-                <Button variant="link" onClick={() => setSearchQuery('')}>
+                <Button variant="outline" size="sm" onClick={() => setSearchQuery('')}>
                   Wyczyść wyszukiwanie
                 </Button>
               )}
               {statusFilter !== 'all' && (
-                <Button variant="link" onClick={() => setStatusFilter('all')}>
-                  Pokaż wszystkie statusy
+                <Button variant="outline" size="sm" onClick={() => setStatusFilter('all')}>
+                  Pokaż wszystkie
                 </Button>
               )}
             </div>
@@ -126,11 +144,11 @@ export default function Projects() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {filteredProjects.map((project) => (
-            <Card key={project.id} className="animate-slide-in">
+          {filteredProjects.map((project, index) => (
+            <Card key={project.id} className="group hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300" style={{ animationDelay: `${index * 30}ms` }}>
               <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-1">
-                  <p className="font-medium text-foreground">{project.project_name}</p>
+                <div className="space-y-1 flex-1">
+                  <p className="font-semibold text-foreground group-hover:text-primary transition-colors">{project.project_name}</p>
                   <p className="text-sm text-muted-foreground">
                     Klient: {project.clients?.name || 'Nieznany'}
                   </p>

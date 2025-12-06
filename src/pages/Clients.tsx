@@ -113,17 +113,26 @@ export default function Clients() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">Klienci</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground sm:text-3xl flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+              <Users className="h-5 w-5 text-primary-foreground" />
+            </div>
+            Klienci
+          </h1>
+          <p className="text-muted-foreground mt-1">Zarządzaj bazą klientów i kontaktami</p>
+        </div>
         <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
-            <Button size="lg" onClick={() => handleOpenDialog()}>
+            <Button size="lg" onClick={() => handleOpenDialog()} className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300">
               <Plus className="mr-2 h-5 w-5" />
               Dodaj klienta
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
                 {editingClient ? 'Edytuj klienta' : 'Nowy klient'}
               </DialogTitle>
             </DialogHeader>
@@ -202,28 +211,38 @@ export default function Clients() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Ładowanie klientów...</p>
+          </div>
         </div>
       ) : clients.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-            <p className="text-muted-foreground">Brak klientów. Dodaj pierwszego klienta!</p>
+        <Card className="border-dashed border-2">
+          <CardContent className="py-16 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+              <Users className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Brak klientów</h3>
+            <p className="text-muted-foreground mb-4">Dodaj pierwszego klienta, aby rozpocząć</p>
+            <Button onClick={() => handleOpenDialog()} className="bg-gradient-to-r from-primary to-primary-glow">
+              <Plus className="mr-2 h-4 w-4" />
+              Dodaj klienta
+            </Button>
           </CardContent>
         </Card>
       ) : filteredClients.length === 0 ? (
-        <Card>
+        <Card className="border-dashed">
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">Nie znaleziono klientów pasujących do wyszukiwania.</p>
-            <Button variant="link" onClick={() => setSearchQuery('')}>
+            <p className="text-muted-foreground mb-2">Nie znaleziono klientów pasujących do wyszukiwania.</p>
+            <Button variant="outline" onClick={() => setSearchQuery('')}>
               Wyczyść wyszukiwanie
             </Button>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredClients.map((client) => (
-            <Card key={client.id} className="animate-slide-in">
+          {filteredClients.map((client, index) => (
+            <Card key={client.id} className="group hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300" style={{ animationDelay: `${index * 50}ms` }}>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-start justify-between text-lg">
                   <span className="line-clamp-2">{client.name}</span>

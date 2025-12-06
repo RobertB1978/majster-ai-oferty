@@ -115,28 +115,33 @@ export default function Team() {
         <meta name="description" content="Zarządzaj zespołem i śledź lokalizację pracowników" />
       </Helmet>
 
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-6 animate-fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Users className="h-6 w-6" />
+            <h1 className="text-2xl font-bold sm:text-3xl flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+                <Users className="h-5 w-5 text-primary-foreground" />
+              </div>
               Zespół
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mt-1">
               Zarządzaj pracownikami i śledź ich lokalizację
             </p>
           </div>
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button size="lg" className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300">
                 <Plus className="h-4 w-4 mr-2" />
                 Dodaj pracownika
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Nowy pracownik</DialogTitle>
+                <DialogTitle className="flex items-center gap-2">
+                  <UserCheck className="h-5 w-5 text-primary" />
+                  Nowy pracownik
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
@@ -185,25 +190,27 @@ export default function Team() {
         </div>
 
         <Tabs defaultValue="map">
-          <TabsList>
-            <TabsTrigger value="map" className="flex items-center gap-2">
+          <TabsList className="bg-muted/50">
+            <TabsTrigger value="map" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <MapPin className="h-4 w-4" />
               Mapa
             </TabsTrigger>
-            <TabsTrigger value="list" className="flex items-center gap-2">
+            <TabsTrigger value="list" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <Users className="h-4 w-4" />
               Lista ({members.length})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="map" className="mt-4">
-            <TeamLocationMap />
+            <Card className="overflow-hidden">
+              <TeamLocationMap />
+            </Card>
           </TabsContent>
 
           <TabsContent value="list" className="mt-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {members.map((member) => (
-                <Card key={member.id}>
+              {members.map((member, index) => (
+                <Card key={member.id} className="group hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300" style={{ animationDelay: `${index * 50}ms` }}>
                   <CardHeader className="flex flex-row items-start justify-between pb-2">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -292,13 +299,19 @@ export default function Team() {
               ))}
 
               {members.length === 0 && !isLoading && (
-                <Card className="col-span-full">
-                  <CardContent className="flex flex-col items-center justify-center py-12">
-                    <Users className="h-12 w-12 text-muted-foreground/50 mb-3" />
-                    <p className="text-muted-foreground">Brak pracowników</p>
-                    <p className="text-sm text-muted-foreground">
+                <Card className="col-span-full border-dashed border-2">
+                  <CardContent className="flex flex-col items-center justify-center py-16">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                      <Users className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Brak pracowników</h3>
+                    <p className="text-muted-foreground mb-4">
                       Dodaj pierwszego pracownika do zespołu
                     </p>
+                    <Button onClick={() => setIsDialogOpen(true)} className="bg-gradient-to-r from-primary to-primary-glow">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Dodaj pracownika
+                    </Button>
                   </CardContent>
                 </Card>
               )}
