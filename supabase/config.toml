@@ -20,3 +20,9 @@ verify_jwt = false
 
 [functions.approve-offer]
 verify_jwt = false
+
+[functions.ai-chat-agent]
+verify_jwt = true
+
+[functions.voice-quote-processor]
+verify_jwt = true

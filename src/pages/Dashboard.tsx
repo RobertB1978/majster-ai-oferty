@@ -4,13 +4,16 @@ import { useProjects } from '@/hooks/useProjects';
 import { useClients } from '@/hooks/useClients';
 import { useOnboardingProgress, useCreateOnboardingProgress } from '@/hooks/useOnboarding';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Sparkles, TrendingUp, FileText, Users } from 'lucide-react';
 import { EmptyDashboard } from '@/components/dashboard/EmptyDashboard';
 import { DashboardStats } from '@/components/dashboard/DashboardStats';
 import { ProjectStatusBreakdown } from '@/components/dashboard/ProjectStatusBreakdown';
 import { RecentProjects } from '@/components/dashboard/RecentProjects';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
+import { VoiceQuoteCreator } from '@/components/voice/VoiceQuoteCreator';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 export default function Dashboard() {
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
@@ -54,6 +57,12 @@ export default function Dashboard() {
     }
   }, [onboardingProgress]);
 
+  // Handle voice quote creation
+  const handleVoiceQuoteCreated = (result: any) => {
+    // Navigate to new project with pre-filled data
+    navigate('/projects/new', { state: { voiceQuote: result } });
+  };
+
   // Show empty state for new users
   if (!isLoading && projects.length === 0 && clients.length === 0) {
     return (
@@ -72,18 +81,53 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-            Witaj w Majster.AI
-          </h1>
-          <p className="mt-1 text-muted-foreground">
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+              Witaj w Majster.AI
+            </h1>
+            <Badge variant="secondary" className="text-xs bg-primary/20 text-primary">
+              <Sparkles className="h-3 w-3 mr-1" />
+              Pro
+            </Badge>
+          </div>
+          <p className="text-muted-foreground">
             Panel główny - przegląd projektów i szybkie akcje
           </p>
         </div>
-        <Button size="lg" onClick={() => navigate('/projects/new')} className="shadow-md">
+        <Button 
+          size="lg" 
+          onClick={() => navigate('/projects/new')} 
+          className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300"
+        >
           <Plus className="mr-2 h-5 w-5" />
           Nowy projekt
         </Button>
       </div>
+
+      {/* Voice Quote Creator - Main Feature */}
+      <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+                <Sparkles className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <div>
+                <CardTitle className="text-lg">Stwórz wycenę głosowo</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Powiedz co chcesz wycenić, a AI przygotuje ofertę
+                </p>
+              </div>
+            </div>
+            <Badge variant="secondary">
+              Nowość
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <VoiceQuoteCreator onQuoteCreated={handleVoiceQuoteCreated} />
+        </CardContent>
+      </Card>
 
       {/* Main Stats */}
       <DashboardStats
