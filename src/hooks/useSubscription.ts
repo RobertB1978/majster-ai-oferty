@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export interface UserSubscription {
   id: string;
   user_id: string;
-  plan_id: 'free' | 'starter' | 'business' | 'enterprise';
+  plan_id: 'free' | 'pro' | 'starter' | 'business' | 'enterprise';
   status: 'active' | 'cancelled' | 'expired' | 'trial';
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
@@ -39,7 +39,7 @@ export function useCreateSubscription() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async (planId: 'free' | 'starter' | 'business' | 'enterprise') => {
+    mutationFn: async (planId: 'free' | 'pro' | 'starter' | 'business' | 'enterprise') => {
       const { data, error } = await supabase
         .from('user_subscriptions')
         .upsert({
@@ -66,7 +66,7 @@ export function usePlanFeatures() {
   const { data: subscription } = useUserSubscription();
   const currentPlan = subscription?.plan_id || 'free';
 
-  const features = {
+  const features: Record<string, any> = {
     free: {
       maxProjects: 3,
       maxClients: 5,
@@ -75,6 +75,19 @@ export function usePlanFeatures() {
       hasVoice: false,
       hasDocuments: false,
       hasExcelExport: false,
+      hasCalendarSync: false,
+      hasPrioritySupport: false,
+      hasApi: false,
+      hasCustomTemplates: false,
+    },
+    pro: {
+      maxProjects: 15,
+      maxClients: 30,
+      hasAds: false,
+      hasAI: false,
+      hasVoice: false,
+      hasDocuments: false,
+      hasExcelExport: true,
       hasCalendarSync: false,
       hasPrioritySupport: false,
       hasApi: false,
