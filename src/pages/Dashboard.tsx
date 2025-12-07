@@ -4,7 +4,7 @@ import { useProjects } from '@/hooks/useProjects';
 import { useClients } from '@/hooks/useClients';
 import { useOnboardingProgress, useCreateOnboardingProgress } from '@/hooks/useOnboarding';
 import { Button } from '@/components/ui/button';
-import { Plus, Sparkles } from 'lucide-react';
+import { Plus, Sparkles, AlertTriangle, Clock } from 'lucide-react';
 import { EmptyDashboard } from '@/components/dashboard/EmptyDashboard';
 import { DashboardStats } from '@/components/dashboard/DashboardStats';
 import { ProjectStatusBreakdown } from '@/components/dashboard/ProjectStatusBreakdown';
@@ -16,6 +16,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { usePlanFeatures } from '@/hooks/useSubscription';
+import { useExpirationMonitor } from '@/hooks/useExpirationMonitor';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function Dashboard() {
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
@@ -25,6 +27,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const { showAds, currentPlan } = usePlanFeatures();
+  const { expiringOffersCount, subscriptionExpiresIn, isSubscriptionExpiring } = useExpirationMonitor();
 
   const recentProjects = [...projects]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -98,6 +101,36 @@ export default function Dashboard() {
       {/* Ad Banner for Free users */}
       {showAds && (
         <AdBanner variant="inline" className="mb-2" />
+      )}
+
+      {/* Expiration Alerts */}
+      {(expiringOffersCount > 0 || isSubscriptionExpiring) && (
+        <div className="space-y-3">
+          {expiringOffersCount > 0 && (
+            <Alert variant="destructive" className="border-warning bg-warning/10">
+              <Clock className="h-4 w-4" />
+              <AlertTitle>Wygasające oferty</AlertTitle>
+              <AlertDescription>
+                Masz {expiringOffersCount} {expiringOffersCount === 1 ? 'ofertę wygasającą' : 'ofert wygasających'} w ciągu 7 dni. 
+                <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/projects')}>
+                  Zobacz szczegóły
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+          {isSubscriptionExpiring && subscriptionExpiresIn !== null && (
+            <Alert variant="destructive" className="border-destructive bg-destructive/10">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Plan wkrótce wygasa</AlertTitle>
+              <AlertDescription>
+                Twój plan wygasa za {subscriptionExpiresIn} dni. 
+                <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/billing')}>
+                  Odnów teraz
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
       )}
 
       {/* Header with gradient background */}
