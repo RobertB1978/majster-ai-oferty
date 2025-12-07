@@ -1,5 +1,13 @@
+// ============================================
+// VOICE QUOTE PROCESSOR - Security Enhanced
+// Security Pack Δ1
+// ============================================
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
+import { validateString, createValidationErrorResponse } from "../_shared/validation.ts";
+import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -48,28 +56,57 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const { text } = await req.json();
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const supabase = supabaseUrl && supabaseServiceKey 
+    ? createClient(supabaseUrl, supabaseServiceKey)
+    : null;
 
-    if (!text) {
+  try {
+    // Parse request body
+    let body: { text?: unknown };
+    try {
+      body = await req.json();
+    } catch {
       return new Response(
-        JSON.stringify({ error: 'Text is required' }),
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Processing voice text:', text);
+    const { text } = body;
+
+    // Validate input
+    const validation = validateString(text, 'text', { minLength: 5, maxLength: 5000 });
+    if (!validation.valid) {
+      return createValidationErrorResponse(validation.errors, corsHeaders);
+    }
+
+    // Rate limiting (stricter for AI endpoints)
+    if (supabase) {
+      const rateLimitResult = await checkRateLimit(
+        getIdentifier(req),
+        'voice-quote-processor',
+        supabase
+      );
+      
+      if (!rateLimitResult.allowed) {
+        return createRateLimitResponse(rateLimitResult, corsHeaders);
+      }
+    }
+
+    console.log('Processing voice text, length:', (text as string).length);
 
     const response = await completeAI({
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Stwórz wycenę na podstawie: "${text}"` }
+        { role: 'user', content: `Stwórz wycenę na podstawie: "${(text as string).substring(0, 5000)}"` }
       ],
       maxTokens: 2048,
     });
 
     let aiResponse = response.content || '';
-    console.log('AI raw response:', aiResponse);
+    console.log('AI raw response length:', aiResponse.length);
 
     // Clean up the response - remove markdown code blocks if present
     aiResponse = aiResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
@@ -97,20 +134,33 @@ serve(async (req) => {
     }
 
     // Validate and ensure correct structure
-    if (!quoteData.projectName) quoteData.projectName = "Nowa wycena";
-    if (!Array.isArray(quoteData.items)) quoteData.items = [];
-    if (!quoteData.summary) quoteData.summary = "";
+    if (!quoteData.projectName || typeof quoteData.projectName !== 'string') {
+      quoteData.projectName = "Nowa wycena";
+    }
+    quoteData.projectName = quoteData.projectName.substring(0, 200);
+    
+    if (!Array.isArray(quoteData.items)) {
+      quoteData.items = [];
+    }
+    
+    if (!quoteData.summary || typeof quoteData.summary !== 'string') {
+      quoteData.summary = "";
+    }
+    quoteData.summary = quoteData.summary.substring(0, 1000);
 
-    // Ensure each item has correct structure
-    quoteData.items = quoteData.items.map((item: any) => ({
-      name: item.name || "Pozycja",
-      qty: Number(item.qty) || 1,
-      unit: item.unit || "szt.",
-      price: Number(item.price) || 0,
-      category: item.category === 'Robocizna' ? 'Robocizna' : 'Materiał'
-    }));
+    // Ensure each item has correct structure and sanitize
+    quoteData.items = quoteData.items.slice(0, 50).map((item: unknown) => {
+      const i = item as Record<string, unknown>;
+      return {
+        name: (typeof i.name === 'string' ? i.name : "Pozycja").substring(0, 200),
+        qty: Math.min(Math.max(Number(i.qty) || 1, 0.01), 99999),
+        unit: (typeof i.unit === 'string' ? i.unit : "szt.").substring(0, 20),
+        price: Math.min(Math.max(Number(i.price) || 0, 0), 9999999),
+        category: i.category === 'Robocizna' ? 'Robocizna' : 'Materiał'
+      };
+    });
 
-    console.log('Processed quote data:', quoteData);
+    console.log('Processed quote data, items:', quoteData.items.length);
 
     return new Response(
       JSON.stringify(quoteData),
