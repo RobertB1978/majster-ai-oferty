@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Fingerprint, Loader2 } from 'lucide-react';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
+import { useTranslation } from 'react-i18next';
 
 interface BiometricLoginButtonProps {
   email: string;
@@ -10,16 +11,19 @@ interface BiometricLoginButtonProps {
 }
 
 export function BiometricLoginButton({ email, onSuccess, onError }: BiometricLoginButtonProps) {
+  const { t } = useTranslation();
   const { isSupported, isAuthenticating, checkIfEnabled, authenticateWithBiometric } = useBiometricAuth();
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
 
   // Check if biometric is available for this email
-  useState(() => {
+  useEffect(() => {
     if (email && isSupported) {
       const enabled = checkIfEnabled(email);
       setIsAvailable(enabled);
+    } else {
+      setIsAvailable(false);
     }
-  });
+  }, [email, isSupported, checkIfEnabled]);
 
   if (!isSupported || !email || !isAvailable) {
     return null;

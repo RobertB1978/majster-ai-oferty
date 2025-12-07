@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useProjects } from '@/hooks/useProjects';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,19 +17,20 @@ const statusColors: Record<string, string> = {
   'Zaakceptowany': 'bg-success/10 text-success',
 };
 
-const statusOptions = [
-  { value: 'all', label: 'Wszystkie statusy' },
-  { value: 'Nowy', label: 'Nowy' },
-  { value: 'Wycena w toku', label: 'Wycena w toku' },
-  { value: 'Oferta wysłana', label: 'Oferta wysłana' },
-  { value: 'Zaakceptowany', label: 'Zaakceptowany' },
-];
-
 export default function Projects() {
+  const { t } = useTranslation();
   const { data: projects = [], isLoading } = useProjects();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+
+  const statusOptions = [
+    { value: 'all', label: t('projects.allStatuses') },
+    { value: 'Nowy', label: t('projects.statuses.new') },
+    { value: 'Wycena w toku', label: t('projects.statuses.inProgress') },
+    { value: 'Oferta wysłana', label: t('projects.statuses.sent') },
+    { value: 'Zaakceptowany', label: t('projects.statuses.accepted') },
+  ];
 
   // Filter projects
   const filteredProjects = useMemo(() => {
@@ -59,20 +61,20 @@ export default function Projects() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
               <FolderKanban className="h-5 w-5 text-primary-foreground" />
             </div>
-            Projekty
+            {t('projects.title')}
           </h1>
-          <p className="text-muted-foreground mt-1">Zarządzaj projektami i wycenami</p>
+          <p className="text-muted-foreground mt-1">{t('projects.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           {projects.length > 0 && (
             <Button variant="outline" onClick={() => exportProjectsToCSV(projects)} className="hover:bg-primary/5">
               <Download className="mr-2 h-4 w-4" />
-              Eksportuj
+              {t('projects.exportBtn')}
             </Button>
           )}
           <Button size="lg" onClick={() => navigate('/projects/new')} className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300">
             <Plus className="mr-2 h-5 w-5" />
-            Nowy projekt
+            {t('projects.newProject')}
           </Button>
         </div>
       </div>
@@ -82,7 +84,7 @@ export default function Projects() {
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="flex-1 max-w-md">
             <SearchInput
-              placeholder="Szukaj projektu lub klienta..."
+              placeholder={t('projects.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onClear={() => setSearchQuery('')}
@@ -90,7 +92,7 @@ export default function Projects() {
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="Filtruj po statusie" />
+              <SelectValue placeholder={t('projects.filterByStatus')} />
             </SelectTrigger>
             <SelectContent>
               {statusOptions.map((option) => (
@@ -107,7 +109,7 @@ export default function Projects() {
         <div className="flex items-center justify-center py-12">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">Ładowanie projektów...</p>
+            <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
           </div>
         </div>
       ) : projects.length === 0 ? (
@@ -116,27 +118,27 @@ export default function Projects() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <FolderKanban className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Brak projektów</h3>
-            <p className="text-muted-foreground mb-4">Utwórz pierwszy projekt, aby rozpocząć</p>
+            <h3 className="text-lg font-semibold mb-2">{t('projects.noProjects')}</h3>
+            <p className="text-muted-foreground mb-4">{t('projects.createFirst')}</p>
             <Button onClick={() => navigate('/projects/new')} className="bg-gradient-to-r from-primary to-primary-glow">
               <Plus className="mr-2 h-4 w-4" />
-              Nowy projekt
+              {t('projects.newProject')}
             </Button>
           </CardContent>
         </Card>
       ) : filteredProjects.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-2">Nie znaleziono projektów pasujących do kryteriów.</p>
+            <p className="text-muted-foreground mb-2">{t('common.none')}</p>
             <div className="mt-2 flex justify-center gap-2">
               {searchQuery && (
                 <Button variant="outline" size="sm" onClick={() => setSearchQuery('')}>
-                  Wyczyść wyszukiwanie
+                  {t('common.search')}
                 </Button>
               )}
               {statusFilter !== 'all' && (
                 <Button variant="outline" size="sm" onClick={() => setStatusFilter('all')}>
-                  Pokaż wszystkie
+                  {t('common.all')}
                 </Button>
               )}
             </div>
@@ -150,7 +152,7 @@ export default function Projects() {
                 <div className="space-y-1 flex-1">
                   <p className="font-semibold text-foreground group-hover:text-primary transition-colors">{project.project_name}</p>
                   <p className="text-sm text-muted-foreground">
-                    Klient: {project.clients?.name || 'Nieznany'}
+                    {t('projects.client')}: {project.clients?.name || t('common.none')}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -161,7 +163,7 @@ export default function Projects() {
                     variant="outline"
                     onClick={() => navigate(`/projects/${project.id}`)}
                   >
-                    Otwórz
+                    {t('projects.open')}
                   </Button>
                 </div>
               </CardContent>
@@ -173,7 +175,7 @@ export default function Projects() {
       {/* Results count */}
       {(searchQuery || statusFilter !== 'all') && filteredProjects.length > 0 && (
         <p className="text-sm text-muted-foreground">
-          Znaleziono: {filteredProjects.length} z {projects.length} projektów
+          {filteredProjects.length} / {projects.length}
         </p>
       )}
     </div>
