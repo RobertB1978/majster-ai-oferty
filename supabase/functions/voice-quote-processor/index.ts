@@ -1,11 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
 const systemPrompt = `Jesteś ekspertem od tworzenia wycen budowlanych. Przetwarzasz tekst głosowy użytkownika i tworzysz strukturyzowaną wycenę.
 
@@ -59,55 +58,17 @@ serve(async (req) => {
       );
     }
 
-    if (!LOVABLE_API_KEY) {
-      console.error('LOVABLE_API_KEY is not configured');
-      return new Response(
-        JSON.stringify({ error: 'AI service not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     console.log('Processing voice text:', text);
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Stwórz wycenę na podstawie: "${text}"` }
-        ],
-        max_tokens: 2048,
-      }),
+    const response = await completeAI({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `Stwórz wycenę na podstawie: "${text}"` }
+      ],
+      maxTokens: 2048,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('AI Gateway error:', response.status, errorText);
-      
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Rate limit exceeded' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'Payment required' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      throw new Error(`AI Gateway error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    let aiResponse = data.choices?.[0]?.message?.content || '';
-
+    let aiResponse = response.content || '';
     console.log('AI raw response:', aiResponse);
 
     // Clean up the response - remove markdown code blocks if present
@@ -157,10 +118,12 @@ serve(async (req) => {
     );
 
   } catch (error: unknown) {
+    if (error instanceof Error) {
+      return handleAIError(error);
+    }
     console.error('Error in voice-quote-processor:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
