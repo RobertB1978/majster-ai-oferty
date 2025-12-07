@@ -111,6 +111,7 @@ const App = () => (
                   <Route path="/marketplace" element={<Marketplace />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/billing" element={<Billing />} />
+                  <Route path="/admin" element={<Admin />} />
                 </Route>
                 
                 {/* Default and 404 */}
