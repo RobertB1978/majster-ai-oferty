@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { stripExifData } from '@/lib/exifUtils';
+import { compressImage } from '@/lib/imageCompression';
 
 export interface ProjectPhoto {
   id: string;
@@ -75,15 +76,20 @@ export function useUploadProjectPhoto() {
 
   return useMutation({
     mutationFn: async ({ projectId, file }: { projectId: string; file: File }) => {
-      // Strip EXIF metadata for privacy
+      // Strip EXIF metadata for privacy, then compress
       const cleanFile = await stripExifData(file);
+      const compressedFile = await compressImage(cleanFile, {
+        maxWidth: 1920,
+        maxHeight: 1920,
+        quality: 0.85,
+      });
       
-      const fileExt = cleanFile.name.split('.').pop();
+      const fileExt = compressedFile.name.split('.').pop();
       const fileName = `${user!.id}/${projectId}/${crypto.randomUUID()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('project-photos')
-        .upload(fileName, cleanFile);
+        .upload(fileName, compressedFile);
 
       if (uploadError) throw uploadError;
 
