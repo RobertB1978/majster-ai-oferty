@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,6 @@ import {
   Mail, 
   MoreVertical,
   Play,
-  Pause,
   Coffee,
   UserCheck
 } from 'lucide-react';
@@ -48,13 +48,8 @@ import {
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 
-const roleLabels: Record<string, string> = {
-  worker: 'Pracownik',
-  foreman: 'Brygadzista',
-  manager: 'Kierownik',
-};
-
 export default function Team() {
+  const { t } = useTranslation();
   const { data: members = [], isLoading } = useTeamMembers();
   const addMember = useAddTeamMember();
   const updateMember = useUpdateTeamMember();
@@ -69,9 +64,22 @@ export default function Team() {
     role: 'worker',
   });
 
+  const roleLabels: Record<string, string> = {
+    worker: t('team.roles.worker'),
+    foreman: t('team.roles.foreman'),
+    manager: t('team.roles.manager'),
+  };
+
+  const statusLabels: Record<string, string> = {
+    working: t('team.statuses.working'),
+    traveling: t('team.statuses.traveling'),
+    break: t('team.statuses.break'),
+    idle: t('team.statuses.idle'),
+  };
+
   const handleAddMember = async () => {
     if (!newMember.name.trim()) {
-      toast.error('Podaj imię i nazwisko');
+      toast.error(t('errors.required'));
       return;
     }
     
@@ -97,22 +105,22 @@ export default function Team() {
             longitude: position.coords.longitude,
             status,
           });
-          toast.success(`Status zmieniony na: ${status === 'working' ? 'Pracuje' : status === 'traveling' ? 'W drodze' : status === 'break' ? 'Przerwa' : 'Bezczynny'}`);
+          toast.success(`${t('common.status')}: ${statusLabels[status]}`);
         },
         (error) => {
-          toast.error('Nie można uzyskać lokalizacji');
+          toast.error(t('errors.networkError'));
         }
       );
     } else {
-      toast.error('Geolokalizacja nie jest obsługiwana');
+      toast.error(t('errors.networkError'));
     }
   };
 
   return (
     <>
       <Helmet>
-        <title>Zespół | Majster.AI</title>
-        <meta name="description" content="Zarządzaj zespołem i śledź lokalizację pracowników" />
+        <title>{t('team.title')} | Majster.AI</title>
+        <meta name="description" content={t('team.subtitle')} />
       </Helmet>
 
       <div className="space-y-6 animate-fade-in">
@@ -122,10 +130,10 @@ export default function Team() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
                 <Users className="h-5 w-5 text-primary-foreground" />
               </div>
-              Zespół
+              {t('team.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              Zarządzaj pracownikami i śledź ich lokalizację
+              {t('team.subtitle')}
             </p>
           </div>
           
@@ -133,19 +141,19 @@ export default function Team() {
             <DialogTrigger asChild>
               <Button size="lg" className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300">
                 <Plus className="h-4 w-4 mr-2" />
-                Dodaj pracownika
+                {t('team.addMember')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   <UserCheck className="h-5 w-5 text-primary" />
-                  Nowy pracownik
+                  {t('team.addMember')}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label>Imię i nazwisko *</Label>
+                  <Label>{t('team.name')} *</Label>
                   <Input
                     value={newMember.name}
                     onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
@@ -153,7 +161,7 @@ export default function Team() {
                   />
                 </div>
                 <div>
-                  <Label>Telefon</Label>
+                  <Label>{t('team.phone')}</Label>
                   <Input
                     value={newMember.phone}
                     onChange={(e) => setNewMember({ ...newMember, phone: e.target.value })}
@@ -161,7 +169,7 @@ export default function Team() {
                   />
                 </div>
                 <div>
-                  <Label>Email</Label>
+                  <Label>{t('team.email')}</Label>
                   <Input
                     value={newMember.email}
                     onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
@@ -169,20 +177,20 @@ export default function Team() {
                   />
                 </div>
                 <div>
-                  <Label>Stanowisko</Label>
+                  <Label>{t('team.role')}</Label>
                   <Select value={newMember.role} onValueChange={(v) => setNewMember({ ...newMember, role: v })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="worker">Pracownik</SelectItem>
-                      <SelectItem value="foreman">Brygadzista</SelectItem>
-                      <SelectItem value="manager">Kierownik</SelectItem>
+                      <SelectItem value="worker">{t('team.roles.worker')}</SelectItem>
+                      <SelectItem value="foreman">{t('team.roles.foreman')}</SelectItem>
+                      <SelectItem value="manager">{t('team.roles.manager')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <Button onClick={handleAddMember} className="w-full" disabled={addMember.isPending}>
-                  Dodaj pracownika
+                  {t('team.addMember')}
                 </Button>
               </div>
             </DialogContent>
@@ -193,11 +201,11 @@ export default function Team() {
           <TabsList className="bg-muted/50">
             <TabsTrigger value="map" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <MapPin className="h-4 w-4" />
-              Mapa
+              {t('team.mapView')}
             </TabsTrigger>
             <TabsTrigger value="list" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <Users className="h-4 w-4" />
-              Lista ({members.length})
+              {t('team.listView')} ({members.length})
             </TabsTrigger>
           </TabsList>
 
@@ -233,13 +241,13 @@ export default function Team() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => updateMember.mutate({ id: member.id, is_active: !member.is_active })}>
-                          {member.is_active ? 'Dezaktywuj' : 'Aktywuj'}
+                          {member.is_active ? t('common.inactive') : t('common.active')}
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           className="text-destructive"
                           onClick={() => deleteMember.mutate(member.id)}
                         >
-                          Usuń
+                          {t('common.delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -264,7 +272,7 @@ export default function Team() {
                     
                     <div className="flex items-center gap-2 pt-2 border-t">
                       <Badge variant={member.is_active ? 'default' : 'secondary'}>
-                        {member.is_active ? 'Aktywny' : 'Nieaktywny'}
+                        {member.is_active ? t('common.active') : t('common.inactive')}
                       </Badge>
                     </div>
 
@@ -275,7 +283,7 @@ export default function Team() {
                         onClick={() => handleStartWork(member.id, 'working')}
                       >
                         <Play className="h-3 w-3 mr-1" />
-                        Praca
+                        {t('team.startWork')}
                       </Button>
                       <Button 
                         size="sm" 
@@ -283,7 +291,7 @@ export default function Team() {
                         onClick={() => handleStartWork(member.id, 'traveling')}
                       >
                         <MapPin className="h-3 w-3 mr-1" />
-                        Dojazd
+                        {t('team.traveling')}
                       </Button>
                       <Button 
                         size="sm" 
@@ -291,7 +299,7 @@ export default function Team() {
                         onClick={() => handleStartWork(member.id, 'break')}
                       >
                         <Coffee className="h-3 w-3 mr-1" />
-                        Przerwa
+                        {t('team.onBreak')}
                       </Button>
                     </div>
                   </CardContent>
@@ -304,13 +312,13 @@ export default function Team() {
                     <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                       <Users className="h-8 w-8 text-primary" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">Brak pracowników</h3>
+                    <h3 className="text-lg font-semibold mb-2">{t('team.noMembers')}</h3>
                     <p className="text-muted-foreground mb-4">
-                      Dodaj pierwszego pracownika do zespołu
+                      {t('team.noMembersDesc')}
                     </p>
                     <Button onClick={() => setIsDialogOpen(true)} className="bg-gradient-to-r from-primary to-primary-glow">
                       <Plus className="mr-2 h-4 w-4" />
-                      Dodaj pracownika
+                      {t('team.addMember')}
                     </Button>
                   </CardContent>
                 </Card>
