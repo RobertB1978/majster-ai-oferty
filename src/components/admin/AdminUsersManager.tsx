@@ -357,10 +357,16 @@ export function AdminUsersManager() {
                 <Button
                   variant="outline"
                   className="flex flex-col items-center gap-2 h-auto py-4"
-                  onClick={() => selectedUser && removeRoleMutation.mutate({ 
-                    userId: selectedUser.user_id, 
-                    role: getUserRole(selectedUser.user_id) || '' 
-                  })}
+                  onClick={() => {
+                    const currentRole = selectedUser ? getUserRole(selectedUser.user_id) : null;
+                    if (selectedUser && currentRole) {
+                      removeRoleMutation.mutate({ 
+                        userId: selectedUser.user_id, 
+                        role: currentRole 
+                      });
+                    }
+                  }}
+                  disabled={!selectedUser || !getUserRole(selectedUser?.user_id || '')}
                 >
                   <UserX className="h-6 w-6 text-muted-foreground" />
                   <span>Usuń rolę</span>
