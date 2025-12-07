@@ -1,4 +1,18 @@
+// ============================================
+// SEND OFFER EMAIL - Security Enhanced
+// Security Pack Δ1
+// ============================================
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { 
+  validateEmail, 
+  validateString, 
+  createValidationErrorResponse,
+  combineValidations,
+  sanitizeString
+} from "../_shared/validation.ts";
+import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,7 +20,7 @@ const corsHeaders = {
 };
 
 interface SendOfferRequest {
-  offerSendId: string;
+  offerSendId?: string;
   to: string;
   subject: string;
   message: string;
@@ -14,28 +28,79 @@ interface SendOfferRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  
+  // Create client for rate limiting
+  const supabase = supabaseUrl && supabaseServiceKey 
+    ? createClient(supabaseUrl, supabaseServiceKey)
+    : null;
+
   try {
+    // Check RESEND_API_KEY
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     
     if (!resendApiKey) {
       console.error("RESEND_API_KEY is not configured");
       return new Response(
-        JSON.stringify({ error: "Email service is not configured. Please add RESEND_API_KEY." }),
+        JSON.stringify({ 
+          error: "Email service is not configured", 
+          details: "Please add RESEND_API_KEY to your secrets" 
+        }),
         { 
-          status: 500, 
+          status: 503, 
           headers: { "Content-Type": "application/json", ...corsHeaders } 
         }
       );
     }
 
-    const { to, subject, message, projectName }: SendOfferRequest = await req.json();
+    // Parse and validate request body
+    let body: SendOfferRequest;
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON in request body" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
-    console.log(`Sending offer email to: ${to}, subject: ${subject}`);
+    const { to, subject, message, projectName } = body;
+
+    // Validate all inputs
+    const validation = combineValidations(
+      validateEmail(to),
+      validateString(subject, 'subject', { maxLength: 200 }),
+      validateString(message, 'message', { maxLength: 10000 }),
+      validateString(projectName, 'projectName', { maxLength: 200 })
+    );
+
+    if (!validation.valid) {
+      return createValidationErrorResponse(validation.errors, corsHeaders);
+    }
+
+    // Rate limiting (by IP since this might be called without auth)
+    if (supabase) {
+      const rateLimitResult = await checkRateLimit(
+        getIdentifier(req),
+        'send-offer-email',
+        supabase
+      );
+      
+      if (!rateLimitResult.allowed) {
+        return createRateLimitResponse(rateLimitResult, corsHeaders);
+      }
+    }
+
+    console.log(`Sending offer email to: ${to.substring(0, 3)}***@***, subject: ${subject.substring(0, 30)}...`);
+
+    // Sanitize inputs for HTML
+    const safeProjectName = sanitizeString(projectName);
+    const safeMessage = message.replace(/\n/g, '<br>');
 
     // Format HTML email
     const htmlContent = `
@@ -65,7 +130,6 @@ const handler = async (req: Request): Promise<Response> => {
               background: #f9fafb;
               padding: 25px;
               border-radius: 8px;
-              white-space: pre-wrap;
             }
             .footer {
               text-align: center;
@@ -89,10 +153,10 @@ const handler = async (req: Request): Promise<Response> => {
         <body>
           <div class="header">
             <h1 style="margin: 0;">Majster.AI</h1>
-            <span class="project-badge">${projectName}</span>
+            <span class="project-badge">${safeProjectName}</span>
           </div>
           <div class="content">
-            ${message.replace(/\n/g, '<br>')}
+            ${safeMessage}
           </div>
           <div class="footer">
             <p>Ta wiadomość została wysłana przez Majster.AI</p>
@@ -101,41 +165,69 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
-    // Send email via Resend API
-    const resendResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "Majster.AI <onboarding@resend.dev>",
-        to: [to],
-        subject: subject,
-        html: htmlContent,
-      }),
-    });
+    // Send email via Resend API with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
-    const responseData = await resendResponse.json();
+    try {
+      const resendResponse = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${resendApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "Majster.AI <onboarding@resend.dev>",
+          to: [to.trim()],
+          subject: subject.trim(),
+          html: htmlContent,
+        }),
+        signal: controller.signal,
+      });
 
-    if (!resendResponse.ok) {
-      console.error("Resend API error:", responseData);
-      throw new Error(responseData.message || "Failed to send email");
+      clearTimeout(timeoutId);
+
+      const responseData = await resendResponse.json();
+
+      if (!resendResponse.ok) {
+        console.error("Resend API error:", responseData);
+        return new Response(
+          JSON.stringify({ 
+            error: "Failed to send email",
+            details: responseData.message || "Email service error"
+          }),
+          { 
+            status: 502, 
+            headers: { "Content-Type": "application/json", ...corsHeaders } 
+          }
+        );
+      }
+
+      console.log("Email sent successfully:", responseData.id);
+
+      return new Response(
+        JSON.stringify({ success: true, id: responseData.id }),
+        { 
+          status: 200, 
+          headers: { "Content-Type": "application/json", ...corsHeaders } 
+        }
+      );
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+        console.error("Resend API timeout");
+        return new Response(
+          JSON.stringify({ error: "Email service timeout" }),
+          { status: 504, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      throw fetchError;
     }
 
-    console.log("Email sent successfully:", responseData);
-
-    return new Response(
-      JSON.stringify({ success: true, id: responseData.id }),
-      { 
-        status: 200, 
-        headers: { "Content-Type": "application/json", ...corsHeaders } 
-      }
-    );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in send-offer-email function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Internal server error" }),
       { 
         status: 500, 
         headers: { "Content-Type": "application/json", ...corsHeaders } 

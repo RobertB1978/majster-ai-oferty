@@ -1,5 +1,18 @@
+// ============================================
+// AI CHAT AGENT - Security Enhanced
+// Security Pack Δ1
+// ============================================
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
+import { 
+  validateString, 
+  validateArray,
+  createValidationErrorResponse,
+  combineValidations 
+} from "../_shared/validation.ts";
+import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -60,15 +73,47 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const { message, history = [], context } = await req.json();
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const supabase = supabaseUrl && supabaseServiceKey 
+    ? createClient(supabaseUrl, supabaseServiceKey)
+    : null;
 
-    if (!message) {
-      console.error('No message provided');
+  try {
+    // Parse request body
+    let body: { message?: unknown; history?: unknown; context?: unknown };
+    try {
+      body = await req.json();
+    } catch {
       return new Response(
-        JSON.stringify({ error: 'Wiadomość jest wymagana' }),
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    const { message, history = [], context } = body;
+
+    // Validate inputs
+    const validation = combineValidations(
+      validateString(message, 'message', { maxLength: 5000 }),
+      validateArray(history, 'history', { maxItems: 50 })
+    );
+
+    if (!validation.valid) {
+      return createValidationErrorResponse(validation.errors, corsHeaders);
+    }
+
+    // Rate limiting
+    if (supabase) {
+      const rateLimitResult = await checkRateLimit(
+        getIdentifier(req),
+        'ai-chat-agent',
+        supabase
+      );
+      
+      if (!rateLimitResult.allowed) {
+        return createRateLimitResponse(rateLimitResult, corsHeaders);
+      }
     }
 
     // Build context-aware system prompt
@@ -77,17 +122,30 @@ serve(async (req) => {
       contextualPrompt += `\n\nKontekst: Użytkownik tworzy nowy projekt/wycenę. Pomagaj mu w określeniu zakresu prac i szacowaniu kosztów.`;
     }
 
+    // Validate and sanitize history items
+    const safeHistory = Array.isArray(history) 
+      ? history
+          .filter((m: unknown) => 
+            m && typeof m === 'object' && 
+            'role' in m && 'content' in m &&
+            (m.role === 'user' || m.role === 'assistant') &&
+            typeof m.content === 'string' &&
+            m.content.length <= 5000
+          )
+          .slice(-10)
+          .map((m: { role: string; content: string }) => ({ 
+            role: m.role as 'user' | 'assistant', 
+            content: m.content.substring(0, 5000)
+          }))
+      : [];
+
     const messages = [
       { role: 'system' as const, content: contextualPrompt },
-      ...history.slice(-10).map((m: any) => ({ 
-        role: m.role as 'user' | 'assistant', 
-        content: m.content as string 
-      })),
-      { role: 'user' as const, content: message }
+      ...safeHistory,
+      { role: 'user' as const, content: (message as string).substring(0, 5000) }
     ];
 
-    console.log('Processing AI chat request...');
-    console.log('Message:', message.substring(0, 100));
+    console.log('Processing AI chat request, message length:', (message as string).length);
 
     const response = await completeAI({
       messages,
