@@ -285,7 +285,14 @@
     "billing": "Płatności",
     "security": "Bezpieczeństwo",
     "integrations": "Integracje",
-    "api": "Klucze API"
+    "api": "Klucze API",
+    "biometric": "Logowanie biometryczne",
+    "biometricDescription": "Używaj odcisku palca lub Face ID do logowania",
+    "documents": "Dokumenty firmowe",
+    "documentsDescription": "Zarządzaj dokumentami i plikami firmy",
+    "calendarSync": "Synchronizacja kalendarza",
+    "plugins": "Integracje i wtyczki",
+    "admin": "Panel administratora"
   },
   "billing": {
     "title": "Płatności i subskrypcje",
@@ -357,6 +364,63 @@
     "voiceInput": "Wejście głosowe",
     "newConversation": "Nowa rozmowa",
     "history": "Historia rozmów"
+  },
+  "analytics": {
+    "title": "Analityka",
+    "subtitle": "Szczegółowe statystyki biznesowe",
+    "projectsByStatus": "Projekty wg statusu",
+    "revenueChart": "Przychody w czasie",
+    "topClients": "Top klienci",
+    "performance": "Wydajność",
+    "conversion": "Konwersja ofert",
+    "trends": "Trendy",
+    "export": "Eksportuj raport"
+  },
+  "admin": {
+    "title": "Panel administratora",
+    "subtitle": "Zarządzanie systemem",
+    "dashboard": "Pulpit",
+    "users": "Użytkownicy",
+    "theme": "Motyw",
+    "content": "Treści",
+    "database": "Baza danych",
+    "system": "System",
+    "api": "API",
+    "logs": "Logi",
+    "userManagement": "Zarządzanie użytkownikami",
+    "systemStatus": "Status systemu",
+    "active": "System aktywny",
+    "noAccess": "Brak dostępu",
+    "noAccessDescription": "Nie masz uprawnień do wyświetlenia tej strony"
+  },
+  "organizations": {
+    "title": "Organizacje",
+    "subtitle": "Zarządzaj zespołami i firmami",
+    "create": "Utwórz organizację",
+    "name": "Nazwa organizacji",
+    "slug": "Identyfikator URL",
+    "members": "Członkowie",
+    "invite": "Zaproś członka",
+    "roles": {
+      "owner": "Właściciel",
+      "admin": "Administrator",
+      "manager": "Manager",
+      "member": "Członek"
+    },
+    "noOrganizations": "Brak organizacji",
+    "createFirst": "Utwórz swoją pierwszą organizację"
+  },
+  "marketplace": {
+    "title": "Marketplace",
+    "subtitle": "Znajdź podwykonawców",
+    "search": "Szukaj podwykonawców",
+    "filters": "Filtry",
+    "location": "Lokalizacja",
+    "specialty": "Specjalizacja",
+    "rating": "Ocena",
+    "hourlyRate": "Stawka godzinowa",
+    "contact": "Kontakt",
+    "reviews": "Opinie"
   },
   "errors": {
     "required": "To pole jest wymagane",

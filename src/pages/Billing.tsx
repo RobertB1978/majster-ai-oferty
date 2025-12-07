@@ -60,17 +60,17 @@ export default function Billing() {
 
   const handleSelectPlan = (planId: string) => {
     if (planId === 'free') {
-      toast.info('Plan darmowy jest już aktywny');
+      toast.info(t('billing.alreadyFree', 'Plan darmowy jest już aktywny'));
       return;
     }
-    toast.info('Dodaj klucz API Stripe w ustawieniach, aby aktywować płatności');
+    toast.info(t('billing.addStripeKey', 'Dodaj klucz API Stripe w ustawieniach, aby aktywować płatności'));
   };
 
   return (
     <>
       <Helmet>
         <title>{t('billing.title')} | Majster.AI</title>
-        <meta name="description" content="Zarządzaj swoją subskrypcją i płatnościami" />
+        <meta name="description" content={t('billing.subtitle')} />
       </Helmet>
 
       <div className="space-y-6 animate-fade-in">
@@ -81,7 +81,7 @@ export default function Billing() {
               {t('billing.title')}
             </h1>
             <p className="text-muted-foreground">
-              Zarządzaj swoją subskrypcją i płatnościami
+              {t('billing.subtitle')}
             </p>
           </div>
         </div>
@@ -90,44 +90,44 @@ export default function Billing() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Aktualny plan</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('billing.currentPlan')}</CardTitle>
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold">Free</span>
-                <Badge variant="secondary">Aktywny</Badge>
+                <span className="text-2xl font-bold">{t('billing.plans.free')}</span>
+                <Badge variant="secondary">{t('billing.active')}</Badge>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Następna płatność</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('billing.nextPayment', 'Następna płatność')}</CardTitle>
               <Receipt className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground">Plan darmowy</p>
+              <p className="text-xs text-muted-foreground">{t('billing.freePlan', 'Plan darmowy')}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Wykorzystanie</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('billing.usage', 'Wykorzystanie')}</CardTitle>
               <AlertCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">2/3</div>
-              <p className="text-xs text-muted-foreground">projektów</p>
+              <p className="text-xs text-muted-foreground">{t('billing.projects', 'projektów')}</p>
             </CardContent>
           </Card>
         </div>
 
         <Tabs defaultValue="plans" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="plans">Plany cenowe</TabsTrigger>
-            <TabsTrigger value="history">Historia</TabsTrigger>
+            <TabsTrigger value="plans">{t('billing.pricingPlans', 'Plany cenowe')}</TabsTrigger>
+            <TabsTrigger value="history">{t('billing.history', 'Historia')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="plans">
@@ -143,7 +143,7 @@ export default function Billing() {
                   {plan.popular && (
                     <div className="absolute top-0 right-0">
                       <Badge className="rounded-tl-none rounded-br-none">
-                        Popularny
+                        {t('billing.mostPopular')}
                       </Badge>
                     </div>
                   )}

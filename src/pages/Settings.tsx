@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings as SettingsIcon, Key, Bell, Globe, CreditCard, Calendar, FileText, Shield, Puzzle, Scale } from 'lucide-react';
+import { Settings as SettingsIcon, Key, Bell, Globe, CreditCard, Calendar, FileText, Shield, Puzzle, Scale, Fingerprint } from 'lucide-react';
 import { ApiKeysPanel } from '@/components/api/ApiKeysPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,7 @@ import { PushNotificationSettings } from '@/components/notifications/PushNotific
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import { AuditLogPanel } from '@/components/admin/AuditLogPanel';
 import { PluginsPanel } from '@/components/plugins/PluginsPanel';
+import { BiometricSettings } from '@/components/settings/BiometricSettings';
 import { useUserSubscription } from '@/hooks/useSubscription';
 
 export default function Settings() {
@@ -68,12 +69,16 @@ export default function Settings() {
             </TabsTrigger>
             <TabsTrigger value="plugins" className="flex items-center gap-2">
               <Puzzle className="h-4 w-4" />
-              Integracje
+              {t('settings.plugins', 'Integracje')}
+            </TabsTrigger>
+            <TabsTrigger value="biometric" className="flex items-center gap-2">
+              <Fingerprint className="h-4 w-4" />
+              {t('settings.biometric', 'Biometria')}
             </TabsTrigger>
             {isAdmin && (
               <TabsTrigger value="admin" className="flex items-center gap-2">
                 <Shield className="h-4 w-4" />
-                Admin
+                {t('settings.admin', 'Admin')}
               </TabsTrigger>
             )}
           </TabsList>
@@ -154,6 +159,10 @@ export default function Settings() {
 
           <TabsContent value="plugins" className="mt-4">
             <PluginsPanel />
+          </TabsContent>
+
+          <TabsContent value="biometric" className="mt-4">
+            <BiometricSettings />
           </TabsContent>
 
           {isAdmin && (
