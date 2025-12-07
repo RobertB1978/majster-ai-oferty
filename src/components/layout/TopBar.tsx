@@ -1,10 +1,11 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { LogOut, HelpCircle, Globe, ChevronDown, Moon, Sun } from 'lucide-react';
+import { LogOut, HelpCircle, Globe, ChevronDown, Moon, Sun, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import { Logo } from '@/components/branding/Logo';
+import { useAdminRole } from '@/hooks/useAdminRole';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +25,7 @@ export function TopBar() {
   const { user, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { isAdmin, isModerator } = useAdminRole();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme');
@@ -105,6 +107,18 @@ export function TopBar() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Admin Panel Access */}
+            {(isAdmin || isModerator) && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => navigate('/admin')}
+                className="h-9 w-9 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-500/10"
+              >
+                <Shield className="h-5 w-5" />
+              </Button>
+            )}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
