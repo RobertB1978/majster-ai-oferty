@@ -359,6 +359,7 @@ export type Database = {
           client_email: string | null
           client_name: string | null
           created_at: string
+          expires_at: string | null
           id: string
           project_id: string
           public_token: string
@@ -372,6 +373,7 @@ export type Database = {
           client_email?: string | null
           client_name?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           project_id: string
           public_token?: string
@@ -385,6 +387,7 @@ export type Database = {
           client_email?: string | null
           client_name?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           project_id?: string
           public_token?: string
