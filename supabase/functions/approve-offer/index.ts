@@ -60,7 +60,7 @@ serve(async (req) => {
     // Get offer approval by token
     const { data: approval, error: fetchError } = await supabase
       .from('offer_approvals')
-      .select('id, project_id, user_id, status, public_token')
+      .select('id, project_id, user_id, status, public_token, expires_at')
       .eq('public_token', token)
       .single();
 
@@ -68,6 +68,17 @@ serve(async (req) => {
       console.warn('Offer not found for token');
       return new Response(JSON.stringify({ error: "Offer not found" }), {
         status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Check if token has expired
+    if (approval.expires_at && new Date(approval.expires_at) < new Date()) {
+      console.log(`Offer ${approval.id} token expired at ${approval.expires_at}`);
+      return new Response(JSON.stringify({ 
+        error: "Link do akceptacji wygasł. Skontaktuj się z wykonawcą w celu uzyskania nowego linku." 
+      }), {
+        status: 410,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

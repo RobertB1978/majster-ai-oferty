@@ -15,6 +15,7 @@ export interface OfferApproval {
   client_comment: string | null;
   approved_at: string | null;
   created_at: string;
+  expires_at: string | null;
 }
 
 export function useOfferApprovals(projectId: string) {
