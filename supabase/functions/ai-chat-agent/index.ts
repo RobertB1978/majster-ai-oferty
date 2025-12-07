@@ -1,11 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
 const systemPrompt = `Jesteś Majster.AI - profesjonalnym asystentem dla firm budowlanych i remontowych w Polsce.
 
@@ -72,14 +71,6 @@ serve(async (req) => {
       );
     }
 
-    if (!LOVABLE_API_KEY) {
-      console.error('LOVABLE_API_KEY is not configured');
-      return new Response(
-        JSON.stringify({ error: 'Usługa AI nie jest skonfigurowana. Skontaktuj się z administratorem.' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     // Build context-aware system prompt
     let contextualPrompt = systemPrompt;
     if (context === 'quote_creation') {
@@ -87,50 +78,23 @@ serve(async (req) => {
     }
 
     const messages = [
-      { role: 'system', content: contextualPrompt },
-      ...history.slice(-10), // Keep last 10 messages for context
-      { role: 'user', content: message }
+      { role: 'system' as const, content: contextualPrompt },
+      ...history.slice(-10).map((m: any) => ({ 
+        role: m.role as 'user' | 'assistant', 
+        content: m.content as string 
+      })),
+      { role: 'user' as const, content: message }
     ];
 
-    console.log('Sending request to Lovable AI Gateway...');
+    console.log('Processing AI chat request...');
     console.log('Message:', message.substring(0, 100));
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages,
-        max_tokens: 2048,
-      }),
+    const response = await completeAI({
+      messages,
+      maxTokens: 2048,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('AI Gateway error:', response.status, errorText);
-      
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Zbyt wiele zapytań. Poczekaj chwilę i spróbuj ponownie.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'Limit zapytań AI wyczerpany. Skontaktuj się z administratorem.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      throw new Error(`AI Gateway error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const aiResponse = data.choices?.[0]?.message?.content || 'Przepraszam, nie udało się wygenerować odpowiedzi. Spróbuj ponownie.';
-
+    const aiResponse = response.content || 'Przepraszam, nie udało się wygenerować odpowiedzi. Spróbuj ponownie.';
     console.log('AI response received, length:', aiResponse.length);
 
     return new Response(
@@ -142,10 +106,12 @@ serve(async (req) => {
     );
 
   } catch (error: unknown) {
+    if (error instanceof Error) {
+      return handleAIError(error);
+    }
     console.error('Error in ai-chat-agent:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Nieznany błąd serwera';
     return new Response(
-      JSON.stringify({ error: `Błąd AI: ${errorMessage}` }),
+      JSON.stringify({ error: 'Nieznany błąd serwera' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

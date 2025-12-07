@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -16,11 +17,6 @@ serve(async (req) => {
   }
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
-
     const { projectName, existingPositions }: SuggestionRequest = await req.json();
 
     const existingItems = existingPositions.map(p => `- ${p.name} (${p.category})`).join('\n');
@@ -40,88 +36,80 @@ Zasugeruj 5-8 dodatkowych pozycji do wyceny. Dla każdej podaj:
 - Sugerowaną cenę jednostkową w PLN
 - Jednostkę (szt., m², m, godz., itp.)`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "suggest_quote_items",
-              description: "Zwraca sugerowane pozycje do wyceny",
-              parameters: {
-                type: "object",
-                properties: {
-                  suggestions: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        name: { type: "string", description: "Nazwa pozycji" },
-                        category: { type: "string", enum: ["Materiał", "Robocizna"] },
-                        price: { type: "number", description: "Cena jednostkowa w PLN" },
-                        unit: { type: "string", description: "Jednostka (szt., m², m, godz.)" },
-                        reasoning: { type: "string", description: "Krótkie uzasadnienie" }
-                      },
-                      required: ["name", "category", "price", "unit"]
-                    }
+    console.log('Processing quote suggestions for:', projectName);
+
+    const response = await completeAI({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      maxTokens: 2048,
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "suggest_quote_items",
+            description: "Zwraca sugerowane pozycje do wyceny",
+            parameters: {
+              type: "object",
+              properties: {
+                suggestions: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      name: { type: "string", description: "Nazwa pozycji" },
+                      category: { type: "string", enum: ["Materiał", "Robocizna"] },
+                      price: { type: "number", description: "Cena jednostkowa w PLN" },
+                      unit: { type: "string", description: "Jednostka (szt., m², m, godz.)" },
+                      reasoning: { type: "string", description: "Krótkie uzasadnienie" }
+                    },
+                    required: ["name", "category", "price", "unit"]
                   }
-                },
-                required: ["suggestions"]
-              }
+                }
+              },
+              required: ["suggestions"]
             }
           }
-        ],
-        tool_choice: { type: "function", function: { name: "suggest_quote_items" } }
-      }),
+        }
+      ],
+      toolChoice: { type: "function", function: { name: "suggest_quote_items" } }
     });
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Przekroczono limit zapytań. Spróbuj później." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Brak kredytów AI. Doładuj konto." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const errorText = await response.text();
-      console.error("AI Gateway error:", response.status, errorText);
-      throw new Error("AI Gateway error");
-    }
-
-    const data = await response.json();
-    
     // Extract tool call result
-    const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-    if (toolCall?.function?.arguments) {
-      const suggestions = JSON.parse(toolCall.function.arguments);
+    if (response.toolCalls?.[0]?.function?.arguments) {
+      const suggestions = JSON.parse(response.toolCalls[0].function.arguments);
+      console.log('Suggestions generated:', suggestions.suggestions?.length || 0);
       return new Response(JSON.stringify(suggestions), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Fallback to content
+    // Fallback to content parsing if no tool call
+    if (response.content) {
+      try {
+        const jsonMatch = response.content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const suggestions = JSON.parse(jsonMatch[0]);
+          return new Response(JSON.stringify(suggestions), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      } catch (e) {
+        console.error('Failed to parse content as JSON:', e);
+      }
+    }
+
     return new Response(JSON.stringify({ suggestions: [] }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return handleAIError(error);
+    }
     console.error("Error in ai-quote-suggestions:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: "Unknown error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
