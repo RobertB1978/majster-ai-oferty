@@ -577,7 +577,7 @@ export default function Calendar() {
           </TabsContent>
 
           <TabsContent value="timeline" className="mt-4">
-            <ProjectTimeline />
+            <ProjectTimeline currentMonth={currentDate} onMonthChange={setCurrentDate} />
           </TabsContent>
         </Tabs>
 
