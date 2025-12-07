@@ -77,15 +77,101 @@ export const profileSchema = z.object({
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
 
-// Auth validation
+// ============================================
+// PASSWORD SECURITY VALIDATION
+// ============================================
+
+// Password strength requirements
+export const PASSWORD_REQUIREMENTS = {
+  minLength: 8,
+  requireUppercase: true,
+  requireLowercase: true,
+  requireNumber: true,
+  requireSpecialChar: false, // Opcjonalne, ale dodaje punkty siły
+};
+
+export const validatePasswordStrength = (password: string): { 
+  isValid: boolean; 
+  score: number; 
+  errors: string[];
+  suggestions: string[];
+} => {
+  const errors: string[] = [];
+  const suggestions: string[] = [];
+  let score = 0;
+  
+  // Minimum length check
+  if (password.length < PASSWORD_REQUIREMENTS.minLength) {
+    errors.push(`Hasło musi mieć minimum ${PASSWORD_REQUIREMENTS.minLength} znaków`);
+  } else {
+    score += 1;
+    if (password.length >= 12) score += 1;
+    if (password.length >= 16) score += 1;
+  }
+  
+  // Uppercase check
+  if (PASSWORD_REQUIREMENTS.requireUppercase && !/[A-Z]/.test(password)) {
+    errors.push('Hasło musi zawierać co najmniej jedną wielką literę');
+  } else if (/[A-Z]/.test(password)) {
+    score += 1;
+  }
+  
+  // Lowercase check
+  if (PASSWORD_REQUIREMENTS.requireLowercase && !/[a-z]/.test(password)) {
+    errors.push('Hasło musi zawierać co najmniej jedną małą literę');
+  } else if (/[a-z]/.test(password)) {
+    score += 1;
+  }
+  
+  // Number check
+  if (PASSWORD_REQUIREMENTS.requireNumber && !/\d/.test(password)) {
+    errors.push('Hasło musi zawierać co najmniej jedną cyfrę');
+  } else if (/\d/.test(password)) {
+    score += 1;
+  }
+  
+  // Special character (optional but adds strength)
+  if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    score += 2;
+  } else {
+    suggestions.push('Dodaj znak specjalny (!@#$%^&*) aby wzmocnić hasło');
+  }
+  
+  // Common password patterns to avoid
+  const commonPatterns = ['123456', 'password', 'qwerty', 'abc123', 'letmein', 'admin', 'welcome'];
+  if (commonPatterns.some(pattern => password.toLowerCase().includes(pattern))) {
+    errors.push('Hasło zawiera zbyt popularny wzorzec');
+    score = Math.max(0, score - 2);
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    score: Math.min(score, 7), // Max score 7
+    errors,
+    suggestions
+  };
+};
+
+export const getPasswordStrengthLabel = (score: number): { label: string; color: string } => {
+  if (score <= 2) return { label: 'Słabe', color: 'text-destructive' };
+  if (score <= 4) return { label: 'Średnie', color: 'text-yellow-500' };
+  if (score <= 5) return { label: 'Dobre', color: 'text-blue-500' };
+  return { label: 'Silne', color: 'text-green-500' };
+};
+
+// Auth validation schemas
 export const loginSchema = z.object({
   email: z.string().min(1, 'Email jest wymagany').email('Nieprawidłowy format email'),
-  password: z.string().min(6, 'Hasło musi mieć min. 6 znaków'),
+  password: z.string().min(1, 'Hasło jest wymagane'),
 });
 
 export const registerSchema = z.object({
   email: z.string().min(1, 'Email jest wymagany').email('Nieprawidłowy format email'),
-  password: z.string().min(6, 'Hasło musi mieć min. 6 znaków'),
+  password: z.string()
+    .min(PASSWORD_REQUIREMENTS.minLength, `Hasło musi mieć min. ${PASSWORD_REQUIREMENTS.minLength} znaków`)
+    .refine(val => /[A-Z]/.test(val), 'Hasło musi zawierać wielką literę')
+    .refine(val => /[a-z]/.test(val), 'Hasło musi zawierać małą literę')
+    .refine(val => /\d/.test(val), 'Hasło musi zawierać cyfrę'),
   confirmPassword: z.string().min(1, 'Potwierdź hasło'),
 }).refine(data => data.password === data.confirmPassword, {
   message: 'Hasła nie są identyczne',
@@ -97,7 +183,11 @@ export const forgotPasswordSchema = z.object({
 });
 
 export const resetPasswordSchema = z.object({
-  password: z.string().min(6, 'Hasło musi mieć min. 6 znaków'),
+  password: z.string()
+    .min(PASSWORD_REQUIREMENTS.minLength, `Hasło musi mieć min. ${PASSWORD_REQUIREMENTS.minLength} znaków`)
+    .refine(val => /[A-Z]/.test(val), 'Hasło musi zawierać wielką literę')
+    .refine(val => /[a-z]/.test(val), 'Hasło musi zawierać małą literę')
+    .refine(val => /\d/.test(val), 'Hasło musi zawierać cyfrę'),
   confirmPassword: z.string().min(1, 'Potwierdź hasło'),
 }).refine(data => data.password === data.confirmPassword, {
   message: 'Hasła nie są identyczne',

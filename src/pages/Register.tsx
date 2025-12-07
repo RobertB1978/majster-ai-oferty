@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
+import { validatePasswordStrength } from '@/lib/validations';
 import { Wrench, Mail, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -35,8 +37,10 @@ export default function Register() {
       return;
     }
 
-    if (password.length < 6) {
-      toast.error('Hasło musi mieć co najmniej 6 znaków');
+    // Strong password validation
+    const passwordAnalysis = validatePasswordStrength(password);
+    if (!passwordAnalysis.isValid) {
+      toast.error(passwordAnalysis.errors[0] || 'Hasło nie spełnia wymagań bezpieczeństwa');
       return;
     }
 
@@ -91,6 +95,7 @@ export default function Register() {
                   className="pl-10"
                 />
               </div>
+              <PasswordStrengthIndicator password={password} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Potwierdź hasło</Label>
