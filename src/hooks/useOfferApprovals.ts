@@ -71,6 +71,40 @@ export function useCreateOfferApproval() {
   });
 }
 
+export function useExtendOfferApproval() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ approvalId, projectId, daysToExtend = 30 }: { 
+      approvalId: string; 
+      projectId: string;
+      daysToExtend?: number;
+    }) => {
+      const newExpiresAt = new Date();
+      newExpiresAt.setDate(newExpiresAt.getDate() + daysToExtend);
+
+      const { data, error } = await supabase
+        .from('offer_approvals')
+        .update({
+          expires_at: newExpiresAt.toISOString(),
+        })
+        .eq('id', approvalId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as OfferApproval;
+    },
+    onSuccess: (_, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: ['offer_approvals', projectId] });
+      toast.success('Ważność oferty przedłużona o 30 dni');
+    },
+    onError: () => {
+      toast.error('Błąd podczas przedłużania oferty');
+    },
+  });
+}
+
 export function usePublicOfferApproval(token: string) {
   return useQuery({
     queryKey: ['public_offer_approval', token],
