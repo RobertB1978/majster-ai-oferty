@@ -37,8 +37,8 @@ export function Navigation() {
     { to: '/marketplace', label: t('nav.marketplace'), icon: Store },
     { to: '/analytics', label: t('nav.analytics'), icon: BarChart3 },
     { to: '/templates', label: t('nav.templates'), icon: Package },
-    { to: '/billing', label: 'Płatności', icon: CreditCard, badge: 'Pro', badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500' },
-    { to: '/profile', label: 'Profil', icon: Building2 },
+    { to: '/billing', label: t('nav.billing'), icon: CreditCard, badge: 'Pro', badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500' },
+    { to: '/profile', label: t('nav.profile'), icon: Building2 },
     { to: '/settings', label: t('nav.settings'), icon: Settings },
   ];
 

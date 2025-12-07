@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useClients, useAddClient, useUpdateClient, useDeleteClient, Client } from '@/hooks/useClients';
 import { clientSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Loader2, Users } from 'lucid
 import { toast } from 'sonner';
 
 export default function Clients() {
+  const { t } = useTranslation();
   const { data: clients = [], isLoading } = useClients();
   const addClient = useAddClient();
   const updateClient = useUpdateClient();
@@ -105,7 +107,7 @@ export default function Clients() {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Czy na pewno chcesz usunąć klienta "${name}"?`)) {
+    if (confirm(`${t('clients.confirmDelete')} "${name}"?`)) {
       await deleteClient.mutateAsync(id);
     }
   };
@@ -118,27 +120,27 @@ export default function Clients() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
               <Users className="h-5 w-5 text-primary-foreground" />
             </div>
-            Klienci
+            {t('clients.title')}
           </h1>
-          <p className="text-muted-foreground mt-1">Zarządzaj bazą klientów i kontaktami</p>
+          <p className="text-muted-foreground mt-1">{t('clients.subtitle')}</p>
         </div>
         <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
             <Button size="lg" onClick={() => handleOpenDialog()} className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300">
               <Plus className="mr-2 h-5 w-5" />
-              Dodaj klienta
+              {t('clients.addClient')}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-primary" />
-                {editingClient ? 'Edytuj klienta' : 'Nowy klient'}
+                {editingClient ? t('clients.editClient') : t('clients.newClient')}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Imię i nazwisko / Nazwa firmy *</Label>
+                <Label htmlFor="name">{t('clients.name')} *</Label>
                 <Input
                   id="name"
                   value={formData.name}
@@ -149,7 +151,7 @@ export default function Clients() {
                 {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Telefon</Label>
+                <Label htmlFor="phone">{t('clients.phone')}</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
@@ -160,7 +162,7 @@ export default function Clients() {
                 {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('clients.email')}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -172,7 +174,7 @@ export default function Clients() {
                 {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="address">Adres</Label>
+                <Label htmlFor="address">{t('clients.address')}</Label>
                 <Input
                   id="address"
                   value={formData.address}
@@ -190,7 +192,7 @@ export default function Clients() {
                 {(addClient.isPending || updateClient.isPending) && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {editingClient ? 'Zapisz zmiany' : 'Dodaj klienta'}
+                {editingClient ? t('clients.saveChanges') : t('clients.addClient')}
               </Button>
             </form>
           </DialogContent>
@@ -201,7 +203,7 @@ export default function Clients() {
       {clients.length > 0 && (
         <div className="max-w-md">
           <SearchInput
-            placeholder="Szukaj klienta (nazwa, email, telefon)..."
+            placeholder={t('clients.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onClear={() => setSearchQuery('')}
@@ -213,7 +215,7 @@ export default function Clients() {
         <div className="flex items-center justify-center py-12">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">Ładowanie klientów...</p>
+            <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
           </div>
         </div>
       ) : clients.length === 0 ? (
@@ -222,20 +224,20 @@ export default function Clients() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <Users className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Brak klientów</h3>
-            <p className="text-muted-foreground mb-4">Dodaj pierwszego klienta, aby rozpocząć</p>
+            <h3 className="text-lg font-semibold mb-2">{t('clients.noClients')}</h3>
+            <p className="text-muted-foreground mb-4">{t('clients.createFirst')}</p>
             <Button onClick={() => handleOpenDialog()} className="bg-gradient-to-r from-primary to-primary-glow">
               <Plus className="mr-2 h-4 w-4" />
-              Dodaj klienta
+              {t('clients.addClient')}
             </Button>
           </CardContent>
         </Card>
       ) : filteredClients.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-2">Nie znaleziono klientów pasujących do wyszukiwania.</p>
+            <p className="text-muted-foreground mb-2">{t('common.none')}</p>
             <Button variant="outline" onClick={() => setSearchQuery('')}>
-              Wyczyść wyszukiwanie
+              {t('common.search')}
             </Button>
           </CardContent>
         </Card>
@@ -294,7 +296,7 @@ export default function Clients() {
       {/* Results count */}
       {searchQuery && filteredClients.length > 0 && (
         <p className="text-sm text-muted-foreground">
-          Znaleziono: {filteredClients.length} z {clients.length} klientów
+          {filteredClients.length} / {clients.length}
         </p>
       )}
     </div>

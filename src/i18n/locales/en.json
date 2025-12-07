@@ -17,7 +17,19 @@
     "no": "No",
     "all": "All",
     "none": "None",
-    "optional": "optional"
+    "optional": "optional",
+    "actions": "Actions",
+    "details": "Details",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "refresh": "Refresh",
+    "total": "Total",
+    "status": "Status",
+    "date": "Date",
+    "name": "Name",
+    "description": "Description",
+    "notes": "Notes"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -29,7 +41,9 @@
     "team": "Team",
     "marketplace": "Marketplace",
     "settings": "Settings",
-    "templates": "Templates"
+    "templates": "Templates",
+    "billing": "Billing",
+    "profile": "Company Profile"
   },
   "auth": {
     "login": "Log in",
@@ -41,11 +55,18 @@
     "forgotPassword": "Forgot password?",
     "resetPassword": "Reset password",
     "noAccount": "Don't have an account?",
-    "hasAccount": "Already have an account?"
+    "hasAccount": "Already have an account?",
+    "loginTitle": "Log in to Majster.AI",
+    "registerTitle": "Register at Majster.AI",
+    "loginSubtitle": "Enter your credentials",
+    "registerSubtitle": "Create a new account",
+    "biometricLogin": "Log in with fingerprint",
+    "biometricVerifying": "Verifying..."
   },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Overview of your business",
+    "welcome": "Welcome to Majster.AI",
     "totalProjects": "Total projects",
     "activeProjects": "Active projects",
     "totalClients": "Clients",
@@ -53,7 +74,17 @@
     "recentProjects": "Recent projects",
     "quickActions": "Quick actions",
     "newProject": "New project",
-    "newClient": "New client"
+    "newClient": "New client",
+    "viewAll": "View all",
+    "noProjects": "No projects",
+    "noClients": "No clients",
+    "createFirst": "Create first",
+    "stats": {
+      "new": "New",
+      "inProgress": "In progress",
+      "sent": "Sent",
+      "accepted": "Accepted"
+    }
   },
   "projects": {
     "title": "Projects",
@@ -67,7 +98,11 @@
     "priority": "Priority",
     "statuses": {
       "draft": "Draft",
+      "new": "New",
       "active": "Active",
+      "inProgress": "Quote in progress",
+      "sent": "Offer sent",
+      "accepted": "Accepted",
       "completed": "Completed",
       "cancelled": "Cancelled"
     },
@@ -75,16 +110,35 @@
       "low": "Low",
       "medium": "Medium",
       "high": "High"
-    }
+    },
+    "noProjects": "No projects",
+    "createFirst": "Create your first project",
+    "editQuote": "Edit quote",
+    "generatePdf": "Generate PDF",
+    "sendEmail": "Send by email",
+    "exportExcel": "Export Excel",
+    "searchPlaceholder": "Search project or client...",
+    "filterByStatus": "Filter by status",
+    "allStatuses": "All statuses",
+    "open": "Open",
+    "exportBtn": "Export"
   },
   "clients": {
     "title": "Clients",
     "subtitle": "Manage your client base",
     "newClient": "New client",
+    "addClient": "Add client",
     "name": "Name",
     "email": "Email",
     "phone": "Phone",
-    "address": "Address"
+    "address": "Address",
+    "noClients": "No clients",
+    "createFirst": "Add your first client",
+    "editClient": "Edit client",
+    "deleteClient": "Delete client",
+    "searchPlaceholder": "Search client (name, email, phone)...",
+    "confirmDelete": "Are you sure you want to delete client",
+    "saveChanges": "Save changes"
   },
   "calendar": {
     "title": "Calendar",
@@ -94,15 +148,29 @@
     "eventTitle": "Event title",
     "eventType": "Event type",
     "eventTime": "Time",
+    "eventDescription": "Event description",
     "eventTypes": {
       "deadline": "Deadline",
       "meeting": "Meeting",
       "reminder": "Reminder",
+      "work": "Work",
       "other": "Other"
     },
     "selectDate": "Select date",
     "noEvents": "No events on this day",
+    "today": "Today",
+    "month": "Month",
+    "week": "Week",
+    "day": "Day",
+    "agenda": "Agenda",
     "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
       "mon": "Mon",
       "tue": "Tue",
       "wed": "Wed",
@@ -110,6 +178,20 @@
       "fri": "Fri",
       "sat": "Sat",
       "sun": "Sun"
+    },
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
     },
     "syncGoogle": "Sync with Google",
     "syncOutlook": "Sync with Outlook"
@@ -120,7 +202,16 @@
     "revenue": "Revenue",
     "costs": "Costs",
     "profit": "Profit",
-    "margin": "Margin"
+    "margin": "Margin",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "totalRevenue": "Total revenue",
+    "totalCosts": "Total costs",
+    "netProfit": "Net profit",
+    "grossMargin": "Gross margin",
+    "reports": "Reports",
+    "invoices": "Invoices",
+    "expenses": "Expenses"
   },
   "team": {
     "title": "Team",
@@ -128,31 +219,179 @@
     "addMember": "Add member",
     "name": "Full name",
     "role": "Role",
-    "status": "Status"
+    "status": "Status",
+    "email": "Email",
+    "phone": "Phone",
+    "roles": {
+      "admin": "Administrator",
+      "manager": "Manager",
+      "worker": "Worker"
+    },
+    "statuses": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "noMembers": "No team members",
+    "addFirst": "Add your first team member"
+  },
+  "templates": {
+    "title": "Item Templates",
+    "subtitle": "Manage quote templates",
+    "addTemplate": "Add template",
+    "name": "Name",
+    "unit": "Unit",
+    "price": "Price",
+    "category": "Category",
+    "categories": {
+      "material": "Material",
+      "labor": "Labor"
+    },
+    "trades": {
+      "glazurnik": "Tiler",
+      "malarz": "Painter",
+      "hydraulik": "Plumber",
+      "elektryk": "Electrician",
+      "podlogarz": "Flooring",
+      "suchazabudowa": "Drywall",
+      "dekarz": "Roofer",
+      "elewacja": "Facade",
+      "stolarz": "Carpenter",
+      "murarz": "Mason"
+    },
+    "importDefaults": "Import default templates",
+    "noTemplates": "No templates",
+    "addFirst": "Add your first template"
+  },
+  "quotes": {
+    "title": "Quote",
+    "subtitle": "Edit estimate items",
+    "addPosition": "Add position",
+    "position": "Position",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "unitPrice": "Unit price",
+    "total": "Total",
+    "summary": "Summary",
+    "materials": "Materials",
+    "labor": "Labor",
+    "margin": "Margin",
+    "totalAmount": "Total amount",
+    "saveQuote": "Save quote",
+    "noPositions": "No positions",
+    "addFirst": "Add your first estimate position"
   },
   "settings": {
     "title": "Settings",
     "subtitle": "App configuration",
     "language": "Language",
     "theme": "Theme",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
     "notifications": "Notifications",
     "company": "Company",
-    "billing": "Billing"
+    "billing": "Billing",
+    "security": "Security",
+    "integrations": "Integrations",
+    "api": "API Keys",
+    "legal": "Legal & Privacy",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "cookiesPolicy": "Cookies Policy",
+    "gdprCenter": "GDPR Center",
+    "dpa": "Data Processing Agreement"
   },
   "billing": {
     "title": "Payments & Subscriptions",
+    "subtitle": "Manage your plan",
     "currentPlan": "Current plan",
     "upgrade": "Upgrade plan",
     "manageBilling": "Manage billing",
     "plans": {
       "free": "Free",
       "pro": "Pro",
-      "business": "Business"
+      "business": "Business",
+      "enterprise": "Enterprise"
     },
     "features": "Features",
     "price": "Price",
     "perMonth": "/month",
     "subscribe": "Subscribe",
-    "cancel": "Cancel subscription"
+    "cancel": "Cancel subscription",
+    "active": "Active",
+    "mostPopular": "Most Popular",
+    "selectPlan": "Select plan",
+    "startFree": "Start for free"
+  },
+  "profile": {
+    "title": "Company Profile",
+    "subtitle": "Your company information",
+    "companyName": "Company name",
+    "ownerName": "Owner",
+    "nip": "Tax ID",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "street": "Street",
+    "city": "City",
+    "postalCode": "Postal code",
+    "bankAccount": "Bank account",
+    "logo": "Company logo",
+    "uploadLogo": "Upload logo",
+    "emailSettings": "Email settings",
+    "emailGreeting": "Greeting",
+    "emailSignature": "Signature",
+    "emailSubject": "Subject template"
+  },
+  "pdf": {
+    "title": "PDF Offer Generator",
+    "subtitle": "Customize and generate offer",
+    "offerTitle": "Offer title",
+    "offerText": "Offer text",
+    "terms": "Terms",
+    "deadline": "Validity period",
+    "version": "Version",
+    "generate": "Generate PDF",
+    "download": "Download PDF",
+    "preview": "Preview",
+    "standard": "Standard",
+    "premium": "Premium"
+  },
+  "ai": {
+    "title": "AI Assistant",
+    "subtitle": "Majster.AI",
+    "placeholder": "Type a message...",
+    "listening": "Listening...",
+    "processing": "Processing...",
+    "quickActions": {
+      "prepareOffer": "Prepare offer",
+      "calculateCosts": "Calculate costs",
+      "pricingAdvice": "Pricing advice"
+    },
+    "voiceInput": "Voice input",
+    "newConversation": "New conversation",
+    "history": "Conversation history"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email",
+    "passwordMismatch": "Passwords don't match",
+    "minLength": "Minimum {{count}} characters",
+    "maxLength": "Maximum {{count}} characters",
+    "generic": "An error occurred",
+    "networkError": "Connection error",
+    "unauthorized": "Unauthorized",
+    "notFound": "Not found",
+    "serverError": "Server error"
+  },
+  "success": {
+    "saved": "Saved successfully",
+    "deleted": "Deleted successfully",
+    "updated": "Updated successfully",
+    "created": "Created successfully",
+    "sent": "Sent successfully",
+    "copied": "Copied to clipboard"
   }
 }
