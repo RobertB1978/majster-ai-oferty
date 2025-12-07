@@ -1,6 +1,10 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, addWeeks, subWeeks, addDays, isToday } from 'date-fns';
 import { pl } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
+import { uk } from 'date-fns/locale';
 import { useCalendarEvents, useAddCalendarEvent, useDeleteCalendarEvent, useUpdateCalendarEvent, CalendarEvent } from '@/hooks/useCalendarEvents';
 import { useProjects } from '@/hooks/useProjects';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,13 +28,6 @@ const eventTypeColors: Record<string, { bg: string; dot: string; border: string 
   other: { bg: 'bg-gray-500/10', dot: 'bg-gray-500', border: 'border-gray-500/30' },
 };
 
-const eventTypeLabels: Record<string, string> = {
-  deadline: 'Termin',
-  meeting: 'Spotkanie',
-  reminder: 'Przypomnienie',
-  other: 'Inne',
-};
-
 type ViewMode = 'month' | 'week' | 'day' | 'agenda';
 
 interface EventFormData {
@@ -51,7 +48,18 @@ const initialEventData: EventFormData = {
   project_id: '',
 };
 
+const getDateLocale = (lang: string) => {
+  switch (lang) {
+    case 'uk': return uk;
+    case 'en': return enUS;
+    default: return pl;
+  }
+};
+
 export default function Calendar() {
+  const { t, i18n } = useTranslation();
+  const dateLocale = getDateLocale(i18n.language);
+  
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
@@ -79,6 +87,16 @@ export default function Calendar() {
   const updateEvent = useUpdateCalendarEvent();
   const deleteEvent = useDeleteCalendarEvent();
 
+  const dayNames = [
+    t('calendar.days.mon'),
+    t('calendar.days.tue'),
+    t('calendar.days.wed'),
+    t('calendar.days.thu'),
+    t('calendar.days.fri'),
+    t('calendar.days.sat'),
+    t('calendar.days.sun'),
+  ];
+
   const eventsByDate = useMemo(() => {
     const map: Record<string, CalendarEvent[]> = {};
     events.forEach(event => {
@@ -86,7 +104,6 @@ export default function Calendar() {
       if (!map[dateKey]) map[dateKey] = [];
       map[dateKey].push(event);
     });
-    // Sort events by time
     Object.keys(map).forEach(key => {
       map[key].sort((a, b) => {
         if (!a.event_time) return 1;
@@ -141,7 +158,7 @@ export default function Calendar() {
 
   const handleSaveEvent = async () => {
     if (!eventData.title.trim()) {
-      toast.error('Podaj tytuł wydarzenia');
+      toast.error(t('errors.required'));
       return;
     }
 
@@ -181,32 +198,29 @@ export default function Calendar() {
   const getNavigationTitle = () => {
     switch (viewMode) {
       case 'month':
-        return format(currentDate, 'LLLL yyyy', { locale: pl });
+        return format(currentDate, 'LLLL yyyy', { locale: dateLocale });
       case 'week':
-        return `${format(weekStart, 'd MMM', { locale: pl })} - ${format(weekEnd, 'd MMM yyyy', { locale: pl })}`;
+        return `${format(weekStart, 'd MMM', { locale: dateLocale })} - ${format(weekEnd, 'd MMM yyyy', { locale: dateLocale })}`;
       case 'day':
-        return format(selectedDate, 'EEEE, d MMMM yyyy', { locale: pl });
+        return format(selectedDate, 'EEEE, d MMMM yyyy', { locale: dateLocale });
       case 'agenda':
-        return 'Agenda';
+        return t('calendar.agenda');
     }
   };
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
-  // Render month view
   const renderMonthView = () => (
     <div className="bg-card rounded-xl border overflow-hidden">
-      {/* Header */}
       <div className="grid grid-cols-7 border-b bg-muted/30">
-        {['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Ndz'].map(day => (
+        {dayNames.map(day => (
           <div key={day} className="px-2 py-3 text-center text-sm font-medium text-muted-foreground border-r last:border-r-0">
             {day}
           </div>
         ))}
       </div>
-      {/* Days grid */}
       <div className="grid grid-cols-7">
-        {calendarDays.map((day, index) => {
+        {calendarDays.map((day) => {
           const dateKey = format(day, 'yyyy-MM-dd');
           const dayEvents = eventsByDate[dateKey] || [];
           const isSelected = isSameDay(day, selectedDate);
@@ -252,7 +266,7 @@ export default function Calendar() {
                 ))}
                 {dayEvents.length > 3 && (
                   <div className="text-xs text-muted-foreground px-1.5">
-                    +{dayEvents.length - 3} więcej
+                    +{dayEvents.length - 3} {t('common.more')}
                   </div>
                 )}
               </div>
@@ -263,17 +277,15 @@ export default function Calendar() {
     </div>
   );
 
-  // Render week view
   const renderWeekView = () => (
     <div className="bg-card rounded-xl border overflow-hidden">
-      {/* Header */}
       <div className="grid grid-cols-8 border-b bg-muted/30">
         <div className="px-2 py-3 text-center text-xs font-medium text-muted-foreground border-r" />
         {weekDays.map(day => {
           const isTodayDate = isToday(day);
           return (
             <div key={day.toISOString()} className="px-2 py-3 text-center border-r last:border-r-0">
-              <div className="text-xs text-muted-foreground">{format(day, 'EEE', { locale: pl })}</div>
+              <div className="text-xs text-muted-foreground">{format(day, 'EEE', { locale: dateLocale })}</div>
               <div className={cn(
                 'text-lg font-semibold mt-1 w-8 h-8 mx-auto flex items-center justify-center rounded-full',
                 isTodayDate && 'bg-primary text-primary-foreground'
@@ -284,7 +296,6 @@ export default function Calendar() {
           );
         })}
       </div>
-      {/* Time grid */}
       <div className="max-h-[600px] overflow-y-auto">
         {hours.map(hour => (
           <div key={hour} className="grid grid-cols-8 border-b min-h-[60px]">
@@ -328,7 +339,6 @@ export default function Calendar() {
     </div>
   );
 
-  // Render day view
   const renderDayView = () => {
     const dateKey = format(selectedDate, 'yyyy-MM-dd');
     const dayEvents = eventsByDate[dateKey] || [];
@@ -336,8 +346,8 @@ export default function Calendar() {
     return (
       <div className="bg-card rounded-xl border overflow-hidden">
         <div className="p-4 border-b bg-muted/30">
-          <h3 className="text-lg font-semibold">{format(selectedDate, 'EEEE, d MMMM yyyy', { locale: pl })}</h3>
-          <p className="text-sm text-muted-foreground">{dayEvents.length} wydarzeń</p>
+          <h3 className="text-lg font-semibold">{format(selectedDate, 'EEEE, d MMMM yyyy', { locale: dateLocale })}</h3>
+          <p className="text-sm text-muted-foreground">{dayEvents.length} {t('analytics.allEvents').toLowerCase()}</p>
         </div>
         <div className="max-h-[600px] overflow-y-auto">
           {hours.map(hour => {
@@ -388,7 +398,6 @@ export default function Calendar() {
     );
   };
 
-  // Render agenda view
   const renderAgendaView = () => {
     const sortedDates = Object.keys(eventsByDate).sort();
     
@@ -398,7 +407,7 @@ export default function Calendar() {
           {sortedDates.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">
               <CalendarIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p>Brak wydarzeń w tym miesiącu</p>
+              <p>{t('calendar.noEvents')}</p>
             </div>
           ) : (
             sortedDates.map(dateKey => {
@@ -416,12 +425,12 @@ export default function Calendar() {
                       'w-12 h-12 rounded-lg flex flex-col items-center justify-center',
                       isTodayDate ? 'bg-primary text-primary-foreground' : 'bg-muted'
                     )}>
-                      <span className="text-xs uppercase">{format(date, 'EEE', { locale: pl })}</span>
+                      <span className="text-xs uppercase">{format(date, 'EEE', { locale: dateLocale })}</span>
                       <span className="text-lg font-bold">{format(date, 'd')}</span>
                     </div>
                     <div>
-                      <p className="font-medium">{format(date, 'EEEE', { locale: pl })}</p>
-                      <p className="text-sm text-muted-foreground">{format(date, 'd MMMM yyyy', { locale: pl })}</p>
+                      <p className="font-medium">{format(date, 'EEEE', { locale: dateLocale })}</p>
+                      <p className="text-sm text-muted-foreground">{format(date, 'd MMMM yyyy', { locale: dateLocale })}</p>
                     </div>
                   </div>
                   <div className="space-y-2 pl-15">
@@ -436,25 +445,18 @@ export default function Calendar() {
                           eventTypeColors[event.event_type]?.border || eventTypeColors.other.border
                         )}
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className={cn('w-2 h-2 rounded-full', eventTypeColors[event.event_type]?.dot)} />
-                            <span className="font-medium">{event.title}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            {event.event_time && (
-                              <span className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {event.event_time.slice(0, 5)}
-                              </span>
-                            )}
+                        <div className="flex items-center gap-2">
+                          <div className={cn('w-2 h-2 rounded-full', eventTypeColors[event.event_type]?.dot)} />
+                          <span className="font-medium">{event.title}</span>
+                          {event.event_time && (
                             <Badge variant="secondary" className="text-xs">
-                              {eventTypeLabels[event.event_type]}
+                              <Clock className="h-3 w-3 mr-1" />
+                              {event.event_time.slice(0, 5)}
                             </Badge>
-                          </div>
+                          )}
                         </div>
                         {event.description && (
-                          <p className="text-sm text-muted-foreground mt-2">{event.description}</p>
+                          <p className="text-sm text-muted-foreground mt-1 pl-4">{event.description}</p>
                         )}
                       </div>
                     ))}
@@ -468,229 +470,205 @@ export default function Calendar() {
     );
   };
 
-  return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground sm:text-3xl flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
-              <CalendarIcon className="h-5 w-5 text-primary-foreground" />
-            </div>
-            Kalendarz
-          </h1>
-          <p className="mt-1 text-muted-foreground">Zarządzaj terminami i wydarzeniami</p>
-        </div>
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'calendar' | 'timeline')}>
-          <TabsList className="bg-muted/50">
-            <TabsTrigger value="calendar" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
-              <CalendarIcon className="h-4 w-4" />
-              Kalendarz
-            </TabsTrigger>
-            <TabsTrigger value="timeline" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
-              <GanttChart className="h-4 w-4" />
-              Timeline
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
+    );
+  }
 
-      {activeTab === 'timeline' ? (
-        <ProjectTimeline currentMonth={currentDate} onMonthChange={setCurrentDate} />
-      ) : (
-        <>
-          {/* Toolbar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-card rounded-xl border p-3">
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => handleNavigate('today')}>
-                Dziś
-              </Button>
-              <div className="flex items-center border rounded-lg">
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleNavigate('prev')}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleNavigate('next')}>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+  return (
+    <>
+      <Helmet>
+        <title>{t('calendar.title')} | Majster.AI</title>
+        <meta name="description" content={t('calendar.subtitle')} />
+      </Helmet>
+
+      <div className="space-y-6 animate-fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold sm:text-3xl flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+                <CalendarIcon className="h-5 w-5 text-primary-foreground" />
               </div>
-              <h2 className="text-lg font-semibold min-w-[200px] capitalize">{getNavigationTitle()}</h2>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex border rounded-lg overflow-hidden">
-                {([
-                  { mode: 'month', icon: LayoutGrid, label: 'Miesiąc' },
-                  { mode: 'week', icon: List, label: 'Tydzień' },
-                  { mode: 'day', icon: Clock, label: 'Dzień' },
-                  { mode: 'agenda', icon: List, label: 'Agenda' },
-                ] as const).map(({ mode, icon: Icon, label }) => (
-                  <Button
-                    key={mode}
-                    variant={viewMode === mode ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className="rounded-none px-3"
-                    onClick={() => setViewMode(mode)}
-                  >
-                    <Icon className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">{label}</span>
-                  </Button>
-                ))}
-              </div>
-              <Button onClick={() => openEventDialog(selectedDate)} className="bg-gradient-to-r from-primary to-primary-glow">
-                <Plus className="h-4 w-4 mr-2" />
-                Nowe wydarzenie
-              </Button>
-            </div>
+              {t('calendar.title')}
+            </h1>
+            <p className="text-muted-foreground mt-1">{t('calendar.subtitle')}</p>
           </div>
 
-          {/* Calendar content */}
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
-          ) : (
-            <>
-              {viewMode === 'month' && renderMonthView()}
-              {viewMode === 'week' && renderWeekView()}
-              {viewMode === 'day' && renderDayView()}
-              {viewMode === 'agenda' && renderAgendaView()}
-            </>
-          )}
-        </>
-      )}
+          <Button 
+            onClick={() => openEventDialog(selectedDate)} 
+            size="lg" 
+            className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            {t('calendar.addEvent')}
+          </Button>
+        </div>
 
-      {/* Event Dialog */}
-      <Dialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {editingEvent ? <Edit2 className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
-              {editingEvent ? 'Edytuj wydarzenie' : 'Nowe wydarzenie'}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>Tytuł *</Label>
-              <Input
-                value={eventData.title}
-                onChange={(e) => setEventData({ ...eventData, title: e.target.value })}
-                placeholder="Nazwa wydarzenia"
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Typ wydarzenia</Label>
-                <Select
-                  value={eventData.event_type}
-                  onValueChange={(v) => setEventData({ ...eventData, event_type: v })}
-                >
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'calendar' | 'timeline')}>
+          <TabsList className="bg-muted/50">
+            <TabsTrigger value="calendar" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              <CalendarIcon className="h-4 w-4" />
+              {t('calendar.title')}
+            </TabsTrigger>
+            <TabsTrigger value="timeline" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+              <GanttChart className="h-4 w-4" />
+              {t('calendar.timeline')}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="calendar" className="mt-4 space-y-4">
+            <Card className="p-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="icon" onClick={() => handleNavigate('prev')}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" onClick={() => handleNavigate('today')}>
+                    {t('calendar.today')}
+                  </Button>
+                  <Button variant="outline" size="icon" onClick={() => handleNavigate('next')}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                  <h2 className="text-lg font-semibold ml-2 capitalize">{getNavigationTitle()}</h2>
+                </div>
+                
+                <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg">
+                  <Button
+                    variant={viewMode === 'month' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('month')}
+                  >
+                    <LayoutGrid className="h-4 w-4 mr-1" />
+                    {t('calendar.month')}
+                  </Button>
+                  <Button
+                    variant={viewMode === 'week' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('week')}
+                  >
+                    {t('calendar.week')}
+                  </Button>
+                  <Button
+                    variant={viewMode === 'day' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('day')}
+                  >
+                    {t('calendar.day')}
+                  </Button>
+                  <Button
+                    variant={viewMode === 'agenda' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('agenda')}
+                  >
+                    <List className="h-4 w-4 mr-1" />
+                    {t('calendar.agenda')}
+                  </Button>
+                </div>
+              </div>
+            </Card>
+
+            {viewMode === 'month' && renderMonthView()}
+            {viewMode === 'week' && renderWeekView()}
+            {viewMode === 'day' && renderDayView()}
+            {viewMode === 'agenda' && renderAgendaView()}
+          </TabsContent>
+
+          <TabsContent value="timeline" className="mt-4">
+            <ProjectTimeline />
+          </TabsContent>
+        </Tabs>
+
+        <Dialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CalendarIcon className="h-5 w-5 text-primary" />
+                {editingEvent ? t('common.edit') : t('calendar.addEvent')}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>{t('calendar.eventTitle')} *</Label>
+                <Input
+                  value={eventData.title}
+                  onChange={(e) => setEventData({ ...eventData, title: e.target.value })}
+                  placeholder={t('calendar.eventTitle')}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>{t('calendar.eventType')}</Label>
+                  <Select value={eventData.event_type} onValueChange={(v) => setEventData({ ...eventData, event_type: v })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="deadline">{t('calendar.eventTypes.deadline')}</SelectItem>
+                      <SelectItem value="meeting">{t('calendar.eventTypes.meeting')}</SelectItem>
+                      <SelectItem value="reminder">{t('calendar.eventTypes.reminder')}</SelectItem>
+                      <SelectItem value="other">{t('calendar.eventTypes.other')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>{t('calendar.eventTime')}</Label>
+                  <Input
+                    type="time"
+                    value={eventData.event_time}
+                    onChange={(e) => setEventData({ ...eventData, event_time: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>{t('calendar.linkedProject')}</Label>
+                <Select value={eventData.project_id} onValueChange={(v) => setEventData({ ...eventData, project_id: v })}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder={t('common.none')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="deadline">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-red-500" />
-                        Termin
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="meeting">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500" />
-                        Spotkanie
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="reminder">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-amber-500" />
-                        Przypomnienie
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="other">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-gray-500" />
-                        Inne
-                      </div>
-                    </SelectItem>
+                    <SelectItem value="">({t('common.none')})</SelectItem>
+                    {projects.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>{p.project_name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
-              
-              <div className="space-y-2">
-                <Label>Godzina</Label>
-                <Input
-                  type="time"
-                  value={eventData.event_time}
-                  onChange={(e) => setEventData({ ...eventData, event_time: e.target.value })}
+              <div>
+                <Label>{t('calendar.eventDescription')}</Label>
+                <Textarea
+                  value={eventData.description}
+                  onChange={(e) => setEventData({ ...eventData, description: e.target.value })}
+                  rows={3}
                 />
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label>Data</Label>
-              <Input
-                type="date"
-                value={format(selectedDate, 'yyyy-MM-dd')}
-                onChange={(e) => setSelectedDate(new Date(e.target.value))}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Projekt (opcjonalnie)</Label>
-              <Select
-                value={eventData.project_id}
-                onValueChange={(v) => setEventData({ ...eventData, project_id: v === 'none' ? '' : v })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Wybierz projekt" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Brak</SelectItem>
-                  {projects.map(p => (
-                    <SelectItem key={p.id} value={p.id}>{p.project_name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Opis</Label>
-              <Textarea
-                value={eventData.description}
-                onChange={(e) => setEventData({ ...eventData, description: e.target.value })}
-                placeholder="Szczegóły wydarzenia..."
-                rows={3}
-              />
-            </div>
-          </div>
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            {editingEvent && (
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  handleDeleteEvent(editingEvent.id);
-                  setIsEventDialogOpen(false);
-                }}
-                className="sm:mr-auto"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Usuń
+            <DialogFooter className="flex gap-2">
+              {editingEvent && (
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    handleDeleteEvent(editingEvent.id);
+                    setIsEventDialogOpen(false);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t('common.delete')}
+                </Button>
+              )}
+              <Button variant="outline" onClick={() => setIsEventDialogOpen(false)}>
+                {t('common.cancel')}
               </Button>
-            )}
-            <Button variant="outline" onClick={() => setIsEventDialogOpen(false)}>
-              Anuluj
-            </Button>
-            <Button
-              onClick={handleSaveEvent}
-              disabled={!eventData.title.trim() || addEvent.isPending || updateEvent.isPending}
-              className="bg-gradient-to-r from-primary to-primary-glow"
-            >
-              {(addEvent.isPending || updateEvent.isPending) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-              {editingEvent ? 'Zapisz zmiany' : 'Dodaj wydarzenie'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+              <Button onClick={handleSaveEvent} disabled={addEvent.isPending || updateEvent.isPending}>
+                {(addEvent.isPending || updateEvent.isPending) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {t('common.save')}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </>
   );
 }
