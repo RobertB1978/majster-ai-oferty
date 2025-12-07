@@ -6,16 +6,17 @@ export type AppRole = 'admin' | 'moderator' | 'user';
 
 export function useAdminRole() {
   const { user } = useAuth();
+  const userId = user?.id;
 
   const { data: roles, isLoading, refetch } = useQuery({
-    queryKey: ['user-roles', user?.id],
+    queryKey: ['user-roles', userId],
     queryFn: async () => {
-      if (!user) return [];
+      if (!userId) return [];
       
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', user.id);
+        .eq('user_id', userId);
 
       if (error) {
         console.error('Error fetching roles:', error);
@@ -24,7 +25,9 @@ export function useAdminRole() {
 
       return data?.map(r => r.role as AppRole) || [];
     },
-    enabled: !!user,
+    enabled: !!userId,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
   const isAdmin = roles?.includes('admin') || false;

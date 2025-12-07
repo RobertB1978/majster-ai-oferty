@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -46,7 +46,7 @@ export function BiometricSettings() {
   const [isSupported, setIsSupported] = useState<boolean | null>(null);
 
   // Check WebAuthn support
-  useState(() => {
+  useEffect(() => {
     const checkSupport = async () => {
       if (window.PublicKeyCredential) {
         try {
@@ -60,7 +60,7 @@ export function BiometricSettings() {
       }
     };
     checkSupport();
-  });
+  }, []);
 
   const handleRegister = async () => {
     await registerBiometric.mutateAsync(deviceName || undefined);
