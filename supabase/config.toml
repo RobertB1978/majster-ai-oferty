@@ -26,3 +26,6 @@ verify_jwt = true
 
 [functions.voice-quote-processor]
 verify_jwt = true
+
+[functions.send-expiring-offer-reminders]
+verify_jwt = false
