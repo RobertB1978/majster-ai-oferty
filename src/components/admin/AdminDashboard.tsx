@@ -13,9 +13,11 @@ import {
   Server,
   Clock,
   DollarSign,
-  BarChart3
+  BarChart3,
+  Timer
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { AdminCronManager } from './AdminCronManager';
 
 interface AdminStats {
   totalUsers: number;
@@ -135,6 +137,10 @@ export function AdminDashboard() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="overview">Przegląd</TabsTrigger>
+          <TabsTrigger value="cron" className="flex items-center gap-1">
+            <Timer className="h-3 w-3" />
+            CRON
+          </TabsTrigger>
           <TabsTrigger value="users">Użytkownicy</TabsTrigger>
           <TabsTrigger value="system">System</TabsTrigger>
           <TabsTrigger value="logs">Logi</TabsTrigger>
@@ -244,6 +250,10 @@ export function AdminDashboard() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="cron" className="mt-4">
+          <AdminCronManager />
         </TabsContent>
 
         <TabsContent value="users" className="mt-4">
