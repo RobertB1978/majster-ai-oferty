@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,9 +16,10 @@ import {
   Send
 } from 'lucide-react';
 import { usePdfData, useSavePdfData, PdfData } from '@/hooks/usePdfData';
-import { useQuote } from '@/hooks/useQuotes';
+import { useQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useProject } from '@/hooks/useProjects';
 import { useProfile } from '@/hooks/useProfile';
+import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
 
 interface PdfPreviewPanelProps {
@@ -44,7 +45,7 @@ export function PdfPreviewPanel({ projectId }: PdfPreviewPanelProps) {
   });
 
   // Initialize form when data loads
-  useState(() => {
+  useEffect(() => {
     if (pdfData) {
       setFormData({
         version: pdfData.version,
@@ -62,7 +63,7 @@ export function PdfPreviewPanel({ projectId }: PdfPreviewPanelProps) {
         deadline_text: 'Termin realizacji: do uzgodnienia.',
       });
     }
-  });
+  }, [pdfData, project]);
 
   const handleSave = async () => {
     await savePdfData.mutateAsync({
@@ -71,10 +72,6 @@ export function PdfPreviewPanel({ projectId }: PdfPreviewPanelProps) {
     });
     setIsEditMode(false);
     toast.success('Dane oferty zapisane');
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(amount);
   };
 
   if (pdfLoading) {
@@ -179,7 +176,7 @@ export function PdfPreviewPanel({ projectId }: PdfPreviewPanelProps) {
                               </tr>
                             </thead>
                             <tbody>
-                              {(quote.positions as any[]).map((pos, idx) => (
+                              {(quote.positions as QuotePosition[]).map((pos, idx) => (
                                 <tr key={idx}>
                                   <td className="border p-2">{idx + 1}</td>
                                   <td className="border p-2">{pos.name}</td>

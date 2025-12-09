@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Send, AlertCircle } from 'lucide-react';
 import { useProfile } from '@/hooks/useProfile';
 import { useCreateOfferSend, useUpdateOfferSend } from '@/hooks/useOfferSends';
+import { generateOfferEmailSubject, generateOfferEmailBody } from '@/lib/emailTemplates';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -38,22 +39,22 @@ export function SendOfferModal({
 
   useEffect(() => {
     if (open && profile) {
-      // Initialize with template values
-      const subjectTemplate = profile.email_subject_template || 'Oferta od {company_name}';
-      const greeting = profile.email_greeting || 'Szanowny Kliencie,';
-      const signature = profile.email_signature || 'Z poważaniem';
-      
-      setSubject(subjectTemplate.replace('{company_name}', profile.company_name || 'Majster.AI'));
-      setMessage(`${greeting}
+      // Use centralized email template logic (Phase 5A)
+      const subject = generateOfferEmailSubject(projectName, {
+        companyName: profile.company_name,
+        emailSubjectTemplate: profile.email_subject_template,
+      });
 
-W załączeniu przesyłamy ofertę na projekt: ${projectName}.
+      const message = generateOfferEmailBody(projectName, {
+        companyName: profile.company_name,
+        emailGreeting: profile.email_greeting,
+        emailSignature: profile.email_signature,
+        phone: profile.phone,
+      });
 
-Prosimy o zapoznanie się z ofertą i kontakt w razie pytań.
+      setSubject(subject);
+      setMessage(message);
 
-${signature}
-${profile.company_name || ''}
-${profile.phone ? `Tel: ${profile.phone}` : ''}`);
-      
       if (clientEmail) {
         setEmail(clientEmail);
       }
@@ -160,8 +161,8 @@ ${profile.phone ? `Tel: ${profile.phone}` : ''}`);
             <div className="flex items-start gap-2">
               <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
               <p>
-                Link do oferty PDF zostanie automatycznie dołączony do wiadomości.
-                Możesz edytować szablon w profilu firmy.
+                Możesz edytować szablon wiadomości w profilu firmy.
+                W przyszłości będzie możliwość dołączenia PDF oferty.
               </p>
             </div>
           </div>
