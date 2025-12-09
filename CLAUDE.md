@@ -70,22 +70,34 @@ majster-ai-oferty/
 ├── src/                          # Frontend source code
 │   ├── components/               # React components (organized by feature)
 │   │   ├── admin/                # Admin panel components
+│   │   ├── ads/                  # Advertisement components
 │   │   ├── ai/                   # AI-related components
+│   │   ├── api/                  # API integration components
 │   │   ├── auth/                 # Authentication components
 │   │   ├── billing/              # Billing & payments
+│   │   ├── branding/             # Branding & company identity
 │   │   ├── calendar/             # Calendar & scheduling
-│   │   ├── clients/              # Client management
+│   │   ├── costs/                # Cost management components
 │   │   ├── dashboard/            # Dashboard views
 │   │   ├── documents/            # Document handling
 │   │   ├── finance/              # Financial components
+│   │   ├── layout/               # Layout components
+│   │   ├── legal/                # Legal documents (terms, privacy)
+│   │   ├── map/                  # Map integration components
 │   │   ├── marketplace/          # Marketplace features
 │   │   ├── notifications/        # Notifications system
 │   │   ├── offers/               # Offer/quote generation
+│   │   ├── onboarding/           # User onboarding flows
 │   │   ├── organizations/        # Organization management
-│   │   ├── projects/             # Project management
+│   │   ├── photos/               # Photo management components
+│   │   ├── plugins/              # Plugin system
+│   │   ├── pwa/                  # Progressive Web App features
+│   │   ├── quotes/               # Quote-related components
+│   │   ├── seo/                  # SEO components
 │   │   ├── settings/             # Settings panels
-│   │   ├── tasks/                # Task management
-│   │   └── ui/                   # Reusable UI components (shadcn)
+│   │   ├── team/                 # Team management
+│   │   ├── ui/                   # Reusable UI components (shadcn)
+│   │   └── voice/                # Voice input components
 │   ├── pages/                    # Page-level components (routes)
 │   ├── hooks/                    # Custom React hooks
 │   ├── contexts/                 # React contexts
@@ -108,6 +120,7 @@ majster-ai-oferty/
 │   │   ├── finance-ai-analysis/  # Financial AI analysis
 │   │   ├── ocr-invoice/          # Invoice OCR processing
 │   │   ├── public-api/           # Public API endpoints
+│   │   ├── send-expiring-offer-reminders/ # Scheduled reminders for expiring offers
 │   │   ├── send-offer-email/     # Email notifications
 │   │   ├── voice-quote-processor/# Voice input processing
 │   │   └── _shared/              # Shared utilities for functions
@@ -115,6 +128,8 @@ majster-ai-oferty/
 │
 ├── public/                       # Static assets
 ├── docs/                         # Documentation
+│   ├── AI_PROVIDERS_REFERENCE.md # Detailed AI provider documentation
+│   └── MIGRATION_GUIDE.md        # Migration guide for self-hosting
 ├── .env                          # Environment variables (NOT in git)
 ├── capacitor.config.ts           # Capacitor mobile config
 ├── vite.config.ts                # Vite build configuration
@@ -449,9 +464,17 @@ majster-ai-oferty/
 - [shadcn/ui](https://ui.shadcn.com)
 
 ### Project-Specific
-- Check `/docs` folder for project-specific documentation
+- Check `/docs` folder for project-specific documentation:
+  - **AI_PROVIDERS_REFERENCE.md** - Comprehensive guide to AI provider configuration (OpenAI, Anthropic, Gemini)
+  - **MIGRATION_GUIDE.md** - Step-by-step guide for migrating from Lovable to self-hosted infrastructure
 - Review recent PRs to understand coding patterns
 - Ask owner for domain knowledge (construction industry specifics)
+
+### Recent Development Context
+- **Phase 5a** (December 2024) - Offer PDF generation and email delivery system
+- **Phase 4** - PDF preview panel improvements and currency formatting
+- **Phase 3** - UX improvements and comprehensive upload flow testing
+- **Phase 2** - File validation and quote save stability improvements
 
 ---
 
@@ -462,8 +485,12 @@ majster-ai-oferty/
 # Development
 npm run dev              # Start dev server
 npm run build            # Build for production
+npm run build:dev        # Build in development mode
 npm run preview          # Preview production build
 npm run lint             # Run ESLint
+
+# Testing
+npm test                 # Run tests with Vitest
 
 # Supabase (if running locally)
 npx supabase start       # Start local Supabase
