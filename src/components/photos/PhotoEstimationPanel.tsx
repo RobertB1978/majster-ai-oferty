@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Camera, Upload, Sparkles, Trash2, Plus, Eye } from 'lucide-react';
+import { Camera, Upload, Sparkles, Trash2, Plus, Eye, Loader2 } from 'lucide-react';
 import { useProjectPhotos, useUploadProjectPhoto, useAnalyzePhoto, useDeleteProjectPhoto } from '@/hooks/useProjectPhotos';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -94,9 +94,17 @@ export function PhotoEstimationPanel({ projectId, projectName, onAddToQuote }: P
             <Camera className="h-5 w-5" />
             Wycena ze zdjęć AI
           </span>
-          <Button onClick={() => fileInputRef.current?.click()} size="sm">
-            <Upload className="h-4 w-4 mr-2" />
-            Dodaj zdjęcia
+          <Button
+            onClick={() => fileInputRef.current?.click()}
+            size="sm"
+            disabled={uploadPhoto.isPending}
+          >
+            {uploadPhoto.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4 mr-2" />
+            )}
+            {uploadPhoto.isPending ? 'Przesyłanie...' : 'Dodaj zdjęcia'}
           </Button>
         </CardTitle>
       </CardHeader>
