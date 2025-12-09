@@ -6,21 +6,25 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { 
-  FileText, 
-  Eye, 
-  Download, 
-  Edit, 
+import {
+  FileText,
+  Eye,
+  Download,
+  Edit,
   Loader2,
   CheckCircle,
-  Send
+  Send,
+  FileDown
 } from 'lucide-react';
 import { usePdfData, useSavePdfData, PdfData } from '@/hooks/usePdfData';
 import { useQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useProject } from '@/hooks/useProjects';
 import { useProfile } from '@/hooks/useProfile';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
+import { buildOfferData } from '@/lib/offerDataBuilder';
+import { generateOfferPdf, uploadOfferPdf } from '@/lib/offerPdfGenerator';
 
 interface PdfPreviewPanelProps {
   projectId: string;
@@ -29,7 +33,10 @@ interface PdfPreviewPanelProps {
 export function PdfPreviewPanel({ projectId }: PdfPreviewPanelProps) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
+
+  const { user } = useAuth();
   const { data: pdfData, isLoading: pdfLoading } = usePdfData(projectId);
   const { data: quote } = useQuote(projectId);
   const { data: project } = useProject(projectId);
@@ -74,6 +81,77 @@ export function PdfPreviewPanel({ projectId }: PdfPreviewPanelProps) {
     toast.success('Dane oferty zapisane');
   };
 
+  const handleGeneratePdf = async () => {
+    if (!user) {
+      toast.error('Musisz być zalogowany');
+      return;
+    }
+
+    if (!project) {
+      toast.error('Nie znaleziono projektu');
+      return;
+    }
+
+    try {
+      setIsGeneratingPdf(true);
+      setGeneratedPdfUrl(null);
+
+      // Build offer data using Phase 5A builder
+      const offerPayload = buildOfferData({
+        projectId,
+        projectName: project.project_name,
+        profile: profile ? {
+          company_name: profile.company_name,
+          nip: profile.nip,
+          street: profile.street,
+          postal_code: profile.postal_code,
+          city: profile.city,
+          logo_url: profile.logo_url,
+          phone: profile.phone,
+          email: profile.email,
+        } : undefined,
+        client: project.clients ? {
+          name: project.clients.name,
+          email: project.clients.email,
+          address: project.clients.address,
+          phone: project.clients.phone,
+        } : null,
+        quote: quote ? {
+          positions: quote.positions,
+          summary_materials: quote.summary_materials,
+          summary_labor: quote.summary_labor,
+          margin_percent: quote.margin_percent,
+          total: quote.total,
+        } : null,
+        pdfData: pdfData ? {
+          version: pdfData.version,
+          title: pdfData.title,
+          offer_text: pdfData.offer_text,
+          terms: pdfData.terms,
+          deadline_text: pdfData.deadline_text,
+        } : undefined,
+      });
+
+      // Generate PDF
+      const pdfBlob = await generateOfferPdf(offerPayload);
+
+      // Upload to Supabase Storage
+      const { publicUrl } = await uploadOfferPdf({
+        projectId,
+        pdfBlob,
+        userId: user.id,
+      });
+
+      setGeneratedPdfUrl(publicUrl);
+      toast.success('PDF oferty został wygenerowany i zapisany');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Nie udało się wygenerować PDF');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
   if (pdfLoading) {
     return (
       <Card>
@@ -109,6 +187,24 @@ export function PdfPreviewPanel({ projectId }: PdfPreviewPanelProps) {
                 <Button variant="outline" onClick={() => setIsEditMode(true)}>
                   <Edit className="h-4 w-4 mr-2" />
                   Edytuj
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleGeneratePdf}
+                  disabled={isGeneratingPdf || !quote}
+                  title={!quote ? 'Najpierw utwórz wycenę' : 'Generuj PDF'}
+                >
+                  {isGeneratingPdf ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Generowanie...
+                    </>
+                  ) : (
+                    <>
+                      <FileDown className="h-4 w-4 mr-2" />
+                      Generuj PDF
+                    </>
+                  )}
                 </Button>
                 <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
                   <DialogTrigger asChild>
@@ -329,6 +425,27 @@ export function PdfPreviewPanel({ projectId }: PdfPreviewPanelProps) {
                 <span className="text-xl font-bold text-primary">
                   {formatCurrency(Number(quote.total))}
                 </span>
+              </div>
+            )}
+
+            {generatedPdfUrl && (
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    <span className="text-sm font-medium text-green-800 dark:text-green-200">
+                      PDF oferty został wygenerowany
+                    </span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => window.open(generatedPdfUrl, '_blank')}
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Otwórz PDF
+                  </Button>
+                </div>
               </div>
             )}
           </div>
