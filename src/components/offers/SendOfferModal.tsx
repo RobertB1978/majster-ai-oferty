@@ -4,10 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Send, AlertCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Loader2, Send, AlertCircle, FileText } from 'lucide-react';
 import { useProfile } from '@/hooks/useProfile';
+import { useQuote } from '@/hooks/useQuotes';
 import { useCreateOfferSend, useUpdateOfferSend } from '@/hooks/useOfferSends';
 import { generateOfferEmailSubject, generateOfferEmailBody } from '@/lib/emailTemplates';
+import { OFFER_EMAIL_TEMPLATES, renderOfferEmailTemplate } from '@/lib/offerEmailTemplates';
+import { formatCurrency } from '@/lib/formatters';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -31,16 +35,23 @@ export function SendOfferModal({
   pdfUrl
 }: SendOfferModalProps) {
   const { data: profile } = useProfile();
+  const { data: quote } = useQuote(projectId);
   const createOfferSend = useCreateOfferSend();
   const updateOfferSend = useUpdateOfferSend();
-  
+
   const [email, setEmail] = useState(clientEmail);
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('');
+  const [messageManuallyEdited, setMessageManuallyEdited] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     if (open && profile) {
+      // Reset template selection and manual edit flag
+      setSelectedTemplate('');
+      setMessageManuallyEdited(false);
+
       // Use centralized email template logic (Phase 5A)
       const subject = generateOfferEmailSubject(projectName, {
         companyName: profile.company_name,
@@ -62,6 +73,47 @@ export function SendOfferModal({
       }
     }
   }, [open, profile, projectName, clientEmail]);
+
+  // Phase 6B: Handle template selection
+  const handleTemplateChange = (templateId: string) => {
+    if (!templateId) {
+      setSelectedTemplate('');
+      return;
+    }
+
+    // Warn if message was manually edited
+    if (messageManuallyEdited && message.trim()) {
+      const confirmChange = window.confirm(
+        'Zmiana szablonu nadpisze obecną treść wiadomości. Kontynuować?'
+      );
+      if (!confirmChange) {
+        return;
+      }
+    }
+
+    setSelectedTemplate(templateId);
+
+    // Render template with available data
+    const renderedMessage = renderOfferEmailTemplate(templateId, {
+      client_name: clientName,
+      project_name: projectName,
+      total_price: quote?.total ? formatCurrency(quote.total) : undefined,
+      deadline: undefined, // Not available in current data model
+      company_name: profile?.company_name,
+      company_phone: profile?.phone,
+    });
+
+    setMessage(renderedMessage);
+    setMessageManuallyEdited(false); // Reset manual edit flag after template change
+  };
+
+  // Track manual edits to message
+  const handleMessageChange = (newMessage: string) => {
+    setMessage(newMessage);
+    if (!messageManuallyEdited && newMessage !== message) {
+      setMessageManuallyEdited(true);
+    }
+  };
 
   const handleSend = async () => {
     if (!email.trim()) {
@@ -150,13 +202,43 @@ export function SendOfferModal({
             />
           </div>
 
+          {/* Phase 6B: Template selector */}
+          <div className="space-y-2">
+            <Label htmlFor="template">
+              <FileText className="inline h-4 w-4 mr-1 -mt-0.5" />
+              Szablon wiadomości (opcjonalnie)
+            </Label>
+            <Select value={selectedTemplate} onValueChange={handleTemplateChange}>
+              <SelectTrigger id="template">
+                <SelectValue placeholder="Wybierz szablon dla branży..." />
+              </SelectTrigger>
+              <SelectContent>
+                {OFFER_EMAIL_TEMPLATES.map((template) => (
+                  <SelectItem key={template.id} value={template.id}>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{template.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {template.description}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedTemplate && (
+              <p className="text-xs text-muted-foreground">
+                ✓ Szablon zastosowany. Możesz dalej edytować treść poniżej.
+              </p>
+            )}
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="message">Treść wiadomości</Label>
             <Textarea
               id="message"
               rows={8}
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={(e) => handleMessageChange(e.target.value)}
             />
           </div>
 
