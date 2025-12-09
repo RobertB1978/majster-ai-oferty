@@ -35,6 +35,16 @@ vi.mock('@/hooks/useOfferSends', () => ({
   }),
 }));
 
+// Mock useQuote hook
+vi.mock('@/hooks/useQuotes', () => ({
+  useQuote: () => ({
+    data: {
+      total: 15000,
+      positions: [],
+    },
+  }),
+}));
+
 // Mock Supabase client
 const mockInvoke = vi.fn(() => Promise.resolve({ data: { success: true }, error: null }));
 vi.mock('@/integrations/supabase/client', () => ({
@@ -184,6 +194,116 @@ describe('SendOfferModal - PDF URL Integration', () => {
           }),
         })
       );
+    });
+  });
+
+  // Phase 6B: Email Templates Tests
+  describe('Email Templates (Phase 6B)', () => {
+    it('should display template selector', () => {
+      renderModal();
+      expect(screen.getByText(/Szablon wiadomości/i)).toBeInTheDocument();
+      expect(screen.getByText(/opcjonalnie/i)).toBeInTheDocument();
+    });
+
+    it('should list all available templates', async () => {
+      const user = userEvent.setup();
+      renderModal();
+
+      const templateSelect = screen.getByRole('combobox', {
+        name: /Szablon wiadomości/i,
+      });
+      await user.click(templateSelect);
+
+      // Check for template names
+      await waitFor(() => {
+        expect(screen.getByText('Budowlanka ogólna')).toBeInTheDocument();
+        expect(screen.getByText('Remont / Wykończenie')).toBeInTheDocument();
+        expect(screen.getByText('Hydraulika')).toBeInTheDocument();
+        expect(screen.getByText('Elektryka')).toBeInTheDocument();
+      });
+    });
+
+    it('should apply selected template to message', async () => {
+      const user = userEvent.setup();
+      renderModal();
+
+      const templateSelect = screen.getByRole('combobox', {
+        name: /Szablon wiadomości/i,
+      });
+      await user.click(templateSelect);
+
+      // Select "Budowlanka ogólna" template
+      const generalTemplate = await screen.findByText('Budowlanka ogólna');
+      await user.click(generalTemplate);
+
+      // Check that message textarea contains template content
+      const messageTextarea = screen.getByLabelText(/Treść wiadomości/i);
+      expect(messageTextarea).toHaveValue(expect.stringContaining('Test Project'));
+      expect(messageTextarea).toHaveValue(expect.stringContaining('Jan Kowalski'));
+    });
+
+    it('should show confirmation indicator when template is selected', async () => {
+      const user = userEvent.setup();
+      renderModal();
+
+      const templateSelect = screen.getByRole('combobox', {
+        name: /Szablon wiadomości/i,
+      });
+      await user.click(templateSelect);
+
+      const generalTemplate = await screen.findByText('Budowlanka ogólna');
+      await user.click(generalTemplate);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Szablon zastosowany. Możesz dalej edytować treść/i)
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should allow manual editing after template selection', async () => {
+      const user = userEvent.setup();
+      renderModal();
+
+      // Select a template
+      const templateSelect = screen.getByRole('combobox', {
+        name: /Szablon wiadomości/i,
+      });
+      await user.click(templateSelect);
+      const generalTemplate = await screen.findByText('Budowlanka ogólna');
+      await user.click(generalTemplate);
+
+      // Edit the message
+      const messageTextarea = screen.getByLabelText(/Treść wiadomości/i);
+      await user.clear(messageTextarea);
+      await user.type(messageTextarea, 'Custom message after template');
+
+      expect(messageTextarea).toHaveValue('Custom message after template');
+    });
+
+    it('should work without selecting template (backward compatibility)', () => {
+      renderModal();
+
+      // Message should have default content from Phase 5A
+      const messageTextarea = screen.getByLabelText(/Treść wiadomości/i);
+      expect(messageTextarea).toHaveValue(expect.stringContaining('Szanowny Kliencie'));
+      expect(messageTextarea).toHaveValue(expect.stringContaining('Test Project'));
+    });
+
+    it('should include quote total in template when available', async () => {
+      const user = userEvent.setup();
+      renderModal();
+
+      const templateSelect = screen.getByRole('combobox', {
+        name: /Szablon wiadomości/i,
+      });
+      await user.click(templateSelect);
+      const generalTemplate = await screen.findByText('Budowlanka ogólna');
+      await user.click(generalTemplate);
+
+      const messageTextarea = screen.getByLabelText(/Treść wiadomości/i);
+      // Should contain formatted price from mocked quote (15000 PLN)
+      expect(messageTextarea).toHaveValue(expect.stringContaining('15'));
     });
   });
 });
