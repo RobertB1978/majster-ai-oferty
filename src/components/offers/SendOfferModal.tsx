@@ -116,6 +116,12 @@ export function SendOfferModal({
   };
 
   const handleSend = async () => {
+    // Phase 7A: Validate that quote exists before sending
+    if (!quote || !quote.positions || quote.positions.length === 0) {
+      toast.error('Najpierw utwórz wycenę dla tego projektu');
+      return;
+    }
+
     if (!email.trim()) {
       toast.error('Podaj adres e-mail odbiorcy');
       return;
@@ -267,7 +273,11 @@ export function SendOfferModal({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSending}
+          >
             Anuluj
           </Button>
           <Button onClick={handleSend} disabled={isSending}>

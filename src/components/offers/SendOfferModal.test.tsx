@@ -197,6 +197,118 @@ describe('SendOfferModal - PDF URL Integration', () => {
     });
   });
 
+  // Phase 7A: UX Improvements Tests
+  describe('UX Improvements (Phase 7A)', () => {
+    it('should disable "Anuluj" button while sending', async () => {
+      const user = userEvent.setup();
+
+      // Mock slow edge function to keep isSending=true
+      mockInvoke.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 1000)));
+
+      renderModal();
+
+      const emailInput = screen.getByLabelText(/Adres e-mail odbiorcy/i);
+      await user.clear(emailInput);
+      await user.type(emailInput, 'test@example.com');
+
+      const sendButton = screen.getByRole('button', { name: /Wyślij/i });
+      await user.click(sendButton);
+
+      // Cancel button should be disabled during sending
+      const cancelButton = screen.getByRole('button', { name: /Anuluj/i });
+      expect(cancelButton).toBeDisabled();
+
+      // Send button should also be disabled
+      expect(sendButton).toBeDisabled();
+    });
+
+    it('should show loading indicator on Send button while sending', async () => {
+      const user = userEvent.setup();
+
+      // Mock slow edge function
+      mockInvoke.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 500)));
+
+      renderModal();
+
+      const emailInput = screen.getByLabelText(/Adres e-mail odbiorcy/i);
+      await user.clear(emailInput);
+      await user.type(emailInput, 'test@example.com');
+
+      const sendButton = screen.getByRole('button', { name: /Wyślij/i });
+      await user.click(sendButton);
+
+      // Should show loading spinner (Loader2 component is rendered)
+      await waitFor(() => {
+        expect(sendButton).toHaveTextContent('');
+        expect(sendButton.querySelector('svg')).toBeInTheDocument();
+      });
+    });
+  });
+
+  // Phase 7A: Quote Validation Tests
+  describe('Quote Validation (Phase 7A)', () => {
+    it('should prevent sending offer when quote is missing', async () => {
+      const user = userEvent.setup();
+      const { toast } = await import('sonner');
+
+      // Mock useQuote to return null (no quote)
+      vi.doMock('@/hooks/useQuotes', () => ({
+        useQuote: () => ({
+          data: null,
+        }),
+      }));
+
+      renderModal();
+
+      const emailInput = screen.getByLabelText(/Adres e-mail odbiorcy/i);
+      await user.clear(emailInput);
+      await user.type(emailInput, 'test@example.com');
+
+      const sendButton = screen.getByRole('button', { name: /Wyślij/i });
+      await user.click(sendButton);
+
+      // Should show error toast
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith('Najpierw utwórz wycenę dla tego projektu');
+      });
+
+      // Edge function should NOT be called
+      expect(mockInvoke).not.toHaveBeenCalled();
+    });
+
+    it('should prevent sending offer when quote has no positions', async () => {
+      const user = userEvent.setup();
+      const { toast } = await import('sonner');
+
+      // Mock useQuote to return quote with empty positions
+      vi.doMock('@/hooks/useQuotes', () => ({
+        useQuote: () => ({
+          data: {
+            total: 0,
+            positions: [], // Empty array
+          },
+        }),
+      }));
+
+      renderModal();
+
+      const emailInput = screen.getByLabelText(/Adres e-mail odbiorcy/i);
+      await user.clear(emailInput);
+      await user.type(emailInput, 'test@example.com');
+
+      const sendButton = screen.getByRole('button', { name: /Wyślij/i });
+      await user.click(sendButton);
+
+      // Should show error toast
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith('Najpierw utwórz wycenę dla tego projektu');
+      });
+
+      // Edge function should NOT be called
+      expect(mockInvoke).not.toHaveBeenCalled();
+    });
+  });
+
   // Phase 6B: Email Templates Tests
   describe('Email Templates (Phase 6B)', () => {
     it('should display template selector', () => {
