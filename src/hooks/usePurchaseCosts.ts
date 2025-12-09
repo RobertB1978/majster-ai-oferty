@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
 export interface PurchaseCostItem {
   name: string;
@@ -79,12 +78,6 @@ export function useUploadInvoice() {
 
   return useMutation({
     mutationFn: async ({ projectId, file }: { projectId: string; file: File }) => {
-      // Validate file
-      const validation = validateFile(file, FILE_VALIDATION_CONFIGS.invoice);
-      if (!validation.valid) {
-        throw new Error(validation.error);
-      }
-
       const fileExt = file.name.split('.').pop();
       const fileName = `${user!.id}/${projectId}/invoices/${crypto.randomUUID()}.${fileExt}`;
 
@@ -116,9 +109,8 @@ export function useUploadInvoice() {
       queryClient.invalidateQueries({ queryKey: ['purchase_costs', projectId] });
       toast.success('Faktura przesłana');
     },
-    onError: (error) => {
-      const message = error instanceof Error ? error.message : 'Błąd podczas przesyłania faktury';
-      toast.error(message);
+    onError: () => {
+      toast.error('Błąd podczas przesyłania faktury');
     },
   });
 }
