@@ -1,8 +1,14 @@
-import { useOfferSends } from '@/hooks/useOfferSends';
+import { useOfferSends, useUpdateOfferSend, type OfferTrackingStatus } from '@/hooks/useOfferSends';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Mail, Loader2, CheckCircle, XCircle, Clock, FileText } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Mail, Loader2, CheckCircle, XCircle, Clock, FileText, Eye, ThumbsUp, ThumbsDown, MoreVertical } from 'lucide-react';
 
 interface OfferHistoryPanelProps {
   projectId: string;
@@ -14,8 +20,25 @@ const statusConfig = {
   failed: { label: 'Błąd', icon: XCircle, className: 'bg-destructive/10 text-destructive' },
 };
 
+const trackingStatusConfig = {
+  sent: { label: 'Wysłano', icon: Mail, className: 'bg-blue-500/10 text-blue-500' },
+  opened: { label: 'Otwarto', icon: Eye, className: 'bg-purple-500/10 text-purple-500' },
+  pdf_viewed: { label: 'Obejrzano PDF', icon: FileText, className: 'bg-indigo-500/10 text-indigo-500' },
+  accepted: { label: 'Zaakceptowano', icon: ThumbsUp, className: 'bg-green-500/10 text-green-500' },
+  rejected: { label: 'Odrzucono', icon: ThumbsDown, className: 'bg-red-500/10 text-red-500' },
+};
+
 export function OfferHistoryPanel({ projectId }: OfferHistoryPanelProps) {
   const { data: sends, isLoading } = useOfferSends(projectId);
+  const updateOfferSend = useUpdateOfferSend();
+
+  const handleStatusChange = (sendId: string, newStatus: OfferTrackingStatus) => {
+    updateOfferSend.mutate({
+      id: sendId,
+      projectId,
+      tracking_status: newStatus,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -44,9 +67,14 @@ export function OfferHistoryPanel({ projectId }: OfferHistoryPanelProps) {
           {sends.map((send) => {
             const status = statusConfig[send.status as keyof typeof statusConfig] || statusConfig.pending;
             const StatusIcon = status.icon;
-            
+
+            // Phase 6A: Use tracking_status for business status, default to 'sent' if null
+            const trackingStatus = send.tracking_status || 'sent';
+            const trackingConfig = trackingStatusConfig[trackingStatus as keyof typeof trackingStatusConfig];
+            const TrackingIcon = trackingConfig.icon;
+
             return (
-              <div 
+              <div
                 key={send.id}
                 className="flex flex-col gap-2 rounded-lg border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
               >
@@ -74,10 +102,38 @@ export function OfferHistoryPanel({ projectId }: OfferHistoryPanelProps) {
                       PDF
                     </Button>
                   )}
-                  <Badge className={status.className}>
-                    <StatusIcon className="mr-1 h-3 w-3" />
-                    {status.label}
+
+                  {/* Phase 6A: Show tracking status with dropdown to change */}
+                  <Badge className={trackingConfig.className}>
+                    <TrackingIcon className="mr-1 h-3 w-3" />
+                    {trackingConfig.label}
                   </Badge>
+
+                  {/* Phase 6A: Dropdown menu for status changes */}
+                  {send.status === 'sent' && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                          title="Zmień status"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleStatusChange(send.id, 'accepted')}>
+                          <ThumbsUp className="mr-2 h-4 w-4" />
+                          Zaakceptowano
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleStatusChange(send.id, 'rejected')}>
+                          <ThumbsDown className="mr-2 h-4 w-4" />
+                          Odrzucono
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
                 {send.error_message && (
                   <p className="w-full text-xs text-destructive">{send.error_message}</p>

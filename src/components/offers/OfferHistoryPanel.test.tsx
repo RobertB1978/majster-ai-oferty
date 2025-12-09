@@ -1,6 +1,6 @@
 /**
- * Tests for OfferHistoryPanel - Phase 5C
- * Tests PDF link display in offer send history
+ * Tests for OfferHistoryPanel - Phase 5C & 6A
+ * Tests PDF link display and tracking status in offer send history
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -10,10 +10,16 @@ import { OfferHistoryPanel } from './OfferHistoryPanel';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { OfferSend } from '@/hooks/useOfferSends';
 
-// Mock the useOfferSends hook
+// Mock the hooks
 const mockUseOfferSends = vi.fn();
+const mockUpdateMutate = vi.fn();
+const mockUseUpdateOfferSend = vi.fn(() => ({
+  mutate: mockUpdateMutate,
+}));
+
 vi.mock('@/hooks/useOfferSends', () => ({
   useOfferSends: (projectId: string) => mockUseOfferSends(projectId),
+  useUpdateOfferSend: () => mockUseUpdateOfferSend(),
 }));
 
 describe('OfferHistoryPanel - PDF Link Display', () => {
@@ -39,6 +45,7 @@ describe('OfferHistoryPanel - PDF Link Display', () => {
     subject: 'Oferta - Test Project',
     message: 'Test message',
     status: 'sent',
+    tracking_status: null, // Phase 6A: null defaults to 'sent' in UI
     error_message: null,
     sent_at: '2024-01-15T10:00:00Z',
     pdf_url: null,
@@ -169,5 +176,181 @@ describe('OfferHistoryPanel - PDF Link Display', () => {
     // Should show loader (Loader2 icon is rendered)
     const loader = screen.getByRole('generic'); // Card content with loader
     expect(loader).toBeInTheDocument();
+  });
+});
+
+describe('OfferHistoryPanel - Phase 6A Tracking Status', () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+    },
+  });
+
+  const renderPanel = (projectId: string = 'project-1') => {
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <OfferHistoryPanel projectId={projectId} />
+      </QueryClientProvider>
+    );
+  };
+
+  const createMockSend = (overrides?: Partial<OfferSend>): OfferSend => ({
+    id: 'send-1',
+    project_id: 'project-1',
+    user_id: 'user-1',
+    client_email: 'client@example.com',
+    subject: 'Oferta - Test Project',
+    message: 'Test message',
+    status: 'sent',
+    tracking_status: null,
+    error_message: null,
+    sent_at: '2024-01-15T10:00:00Z',
+    pdf_url: null,
+    pdf_generated_at: null,
+    ...overrides,
+  });
+
+  it('should display "Wysłano" badge when tracking_status is null (default)', () => {
+    const sendWithNullStatus = createMockSend({
+      tracking_status: null,
+    });
+
+    mockUseOfferSends.mockReturnValue({
+      data: [sendWithNullStatus],
+      isLoading: false,
+    });
+
+    renderPanel();
+
+    const badge = screen.getByText('Wysłano');
+    expect(badge).toBeInTheDocument();
+  });
+
+  it('should display "Zaakceptowano" badge when tracking_status is "accepted"', () => {
+    const acceptedSend = createMockSend({
+      tracking_status: 'accepted',
+    });
+
+    mockUseOfferSends.mockReturnValue({
+      data: [acceptedSend],
+      isLoading: false,
+    });
+
+    renderPanel();
+
+    const badge = screen.getByText('Zaakceptowano');
+    expect(badge).toBeInTheDocument();
+  });
+
+  it('should display "Odrzucono" badge when tracking_status is "rejected"', () => {
+    const rejectedSend = createMockSend({
+      tracking_status: 'rejected',
+    });
+
+    mockUseOfferSends.mockReturnValue({
+      data: [rejectedSend],
+      isLoading: false,
+    });
+
+    renderPanel();
+
+    const badge = screen.getByText('Odrzucono');
+    expect(badge).toBeInTheDocument();
+  });
+
+  it('should show dropdown menu button for status changes when status is "sent"', () => {
+    const send = createMockSend({
+      status: 'sent',
+      tracking_status: 'sent',
+    });
+
+    mockUseOfferSends.mockReturnValue({
+      data: [send],
+      isLoading: false,
+    });
+
+    renderPanel();
+
+    const dropdownButton = screen.getByTitle('Zmień status');
+    expect(dropdownButton).toBeInTheDocument();
+  });
+
+  it('should NOT show dropdown menu button when status is "failed"', () => {
+    const failedSend = createMockSend({
+      status: 'failed',
+      tracking_status: 'sent',
+    });
+
+    mockUseOfferSends.mockReturnValue({
+      data: [failedSend],
+      isLoading: false,
+    });
+
+    renderPanel();
+
+    const dropdownButton = screen.queryByTitle('Zmień status');
+    expect(dropdownButton).not.toBeInTheDocument();
+  });
+
+  it('should call update mutation with "accepted" when user clicks accept option', async () => {
+    const user = userEvent.setup();
+    const send = createMockSend({
+      id: 'test-send-123',
+      status: 'sent',
+      tracking_status: 'sent',
+    });
+
+    mockUseOfferSends.mockReturnValue({
+      data: [send],
+      isLoading: false,
+    });
+
+    renderPanel('project-1');
+
+    // Open dropdown
+    const dropdownButton = screen.getByTitle('Zmień status');
+    await user.click(dropdownButton);
+
+    // Click "Zaakceptowano" option
+    const acceptOption = screen.getByText('Zaakceptowano');
+    await user.click(acceptOption);
+
+    // Verify mutation was called with correct parameters
+    expect(mockUpdateMutate).toHaveBeenCalledWith({
+      id: 'test-send-123',
+      projectId: 'project-1',
+      tracking_status: 'accepted',
+    });
+  });
+
+  it('should call update mutation with "rejected" when user clicks reject option', async () => {
+    const user = userEvent.setup();
+    const send = createMockSend({
+      id: 'test-send-456',
+      status: 'sent',
+      tracking_status: 'sent',
+    });
+
+    mockUseOfferSends.mockReturnValue({
+      data: [send],
+      isLoading: false,
+    });
+
+    renderPanel('project-1');
+
+    // Open dropdown
+    const dropdownButton = screen.getByTitle('Zmień status');
+    await user.click(dropdownButton);
+
+    // Click "Odrzucono" option
+    const rejectOption = screen.getByText('Odrzucono');
+    await user.click(rejectOption);
+
+    // Verify mutation was called with correct parameters
+    expect(mockUpdateMutate).toHaveBeenCalledWith({
+      id: 'test-send-456',
+      projectId: 'project-1',
+      tracking_status: 'rejected',
+    });
   });
 });

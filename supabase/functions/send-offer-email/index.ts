@@ -206,22 +206,28 @@ const handler = async (req: Request): Promise<Response> => {
 
       console.log("Email sent successfully:", responseData.id);
 
-      // Phase 5C: Update offer_sends record with PDF URL if provided
-      if (offerSendId && pdfUrl && supabase) {
+      // Phase 5C/6A: Update offer_sends record with PDF URL and tracking status if provided
+      if (offerSendId && supabase) {
         try {
+          const updateData: Record<string, string> = {
+            tracking_status: 'sent', // Phase 6A: Set business tracking status
+          };
+
+          if (pdfUrl) {
+            updateData.pdf_url = pdfUrl;
+            updateData.pdf_generated_at = new Date().toISOString();
+          }
+
           const { error: updateError } = await supabase
             .from('offer_sends')
-            .update({
-              pdf_url: pdfUrl,
-              pdf_generated_at: new Date().toISOString(),
-            })
+            .update(updateData)
             .eq('id', offerSendId);
 
           if (updateError) {
-            console.error("Failed to update offer_sends with PDF URL:", updateError);
+            console.error("Failed to update offer_sends:", updateError);
             // Don't fail the request - email was sent successfully
           } else {
-            console.log("Updated offer_sends with PDF URL:", offerSendId);
+            console.log("Updated offer_sends with tracking status:", offerSendId);
           }
         } catch (dbError) {
           console.error("Error updating offer_sends:", dbError);
