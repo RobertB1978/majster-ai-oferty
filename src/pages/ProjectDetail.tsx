@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download, Mail, Camera, Receipt, FileSignature, Eye } from 'lucide-react';
 import { exportQuoteToExcel } from '@/lib/exportUtils';
 import { OfferHistoryPanel } from '@/components/offers/OfferHistoryPanel';
+import { OfferStatsPanel } from '@/components/offers/OfferStatsPanel';
 import { SendOfferModal } from '@/components/offers/SendOfferModal';
 import { PhotoEstimationPanel } from '@/components/photos/PhotoEstimationPanel';
 import { PurchaseCostsPanel } from '@/components/costs/PurchaseCostsPanel';
@@ -221,8 +222,16 @@ export default function ProjectDetail() {
             </Card>
           )}
 
+          {/* Phase 6A: Offer Statistics */}
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold mb-4">Statystyki ofert</h3>
+            <OfferStatsPanel />
+          </div>
+
           {/* Offer History */}
-          <OfferHistoryPanel projectId={id!} />
+          <div className="mt-6">
+            <OfferHistoryPanel projectId={id!} />
+          </div>
         </TabsContent>
 
         <TabsContent value="photos" className="mt-4">

@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+export type OfferTrackingStatus = 'sent' | 'opened' | 'pdf_viewed' | 'accepted' | 'rejected';
+
 export interface OfferSend {
   id: string;
   project_id: string;
@@ -11,6 +13,7 @@ export interface OfferSend {
   subject: string;
   message: string;
   status: 'pending' | 'sent' | 'failed';
+  tracking_status: OfferTrackingStatus | null;
   error_message: string | null;
   sent_at: string;
   pdf_url?: string | null;
