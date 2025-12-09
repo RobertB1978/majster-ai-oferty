@@ -1,11 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { classifyOfferSendForFollowup } from '@/lib/offerFollowupUtils';
 
 export interface OfferStats {
   sentCount: number;
   acceptedCount: number;
   conversionRate: number;
+  // Phase 6C: Follow-up statistics
+  followupCount: number;
+  followupNotOpened: number;
+  followupOpenedNoDecision: number;
 }
 
 /**
@@ -25,14 +30,14 @@ export function useOfferStats() {
       // Fetch all offer_sends from last 30 days for current user
       const { data, error } = await supabase
         .from('offer_sends')
-        .select('tracking_status, status')
+        .select('tracking_status, status, sent_at, id')
         .eq('user_id', user!.id)
         .gte('sent_at', thirtyDaysAgo.toISOString())
         .eq('status', 'sent'); // Only count successfully sent emails
 
       if (error) throw error;
 
-      // Calculate statistics
+      // Calculate basic statistics
       const sentCount = data?.length || 0;
       const acceptedCount = data?.filter(
         (send) => send.tracking_status === 'accepted'
@@ -42,10 +47,33 @@ export function useOfferStats() {
         ? Math.round((acceptedCount / sentCount) * 100)
         : 0;
 
+      // Phase 6C: Calculate follow-up statistics
+      let followupNotOpened = 0;
+      let followupOpenedNoDecision = 0;
+
+      data?.forEach((send) => {
+        const category = classifyOfferSendForFollowup({
+          id: send.id,
+          sent_at: send.sent_at,
+          tracking_status: send.tracking_status,
+        });
+
+        if (category === 'followup_not_opened') {
+          followupNotOpened++;
+        } else if (category === 'followup_opened_no_decision') {
+          followupOpenedNoDecision++;
+        }
+      });
+
+      const followupCount = followupNotOpened + followupOpenedNoDecision;
+
       return {
         sentCount,
         acceptedCount,
         conversionRate,
+        followupCount,
+        followupNotOpened,
+        followupOpenedNoDecision,
       };
     },
     enabled: !!user,
