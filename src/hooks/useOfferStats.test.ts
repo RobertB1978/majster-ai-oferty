@@ -46,7 +46,7 @@ describe('useOfferStats', () => {
       { tracking_status: 'accepted', status: 'sent' },
       { tracking_status: 'accepted', status: 'sent' },
       { tracking_status: 'rejected', status: 'sent' },
-      { tracking_status: null, status: 'sent' }, // counts as sent
+      { tracking_status: 'sent', status: 'sent' }, // Phase 7B: tracking_status is now always non-null
     ];
 
     const mockSelect = vi.fn().mockReturnThis();
