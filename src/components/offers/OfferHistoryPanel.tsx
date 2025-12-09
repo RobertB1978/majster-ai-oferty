@@ -1,7 +1,8 @@
 import { useOfferSends } from '@/hooks/useOfferSends';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Mail, Loader2, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Mail, Loader2, CheckCircle, XCircle, Clock, FileText } from 'lucide-react';
 
 interface OfferHistoryPanelProps {
   projectId: string;
@@ -61,6 +62,18 @@ export function OfferHistoryPanel({ projectId }: OfferHistoryPanelProps) {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Phase 5C: PDF link if available */}
+                  {send.pdf_url && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => window.open(send.pdf_url!, '_blank', 'noopener,noreferrer')}
+                      title="Otwórz PDF oferty"
+                    >
+                      <FileText className="h-3.5 w-3.5 mr-1" />
+                      PDF
+                    </Button>
+                  )}
                   <Badge className={status.className}>
                     <StatusIcon className="mr-1 h-3 w-3" />
                     {status.label}

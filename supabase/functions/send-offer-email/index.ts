@@ -25,6 +25,7 @@ interface SendOfferRequest {
   subject: string;
   message: string;
   projectName: string;
+  pdfUrl?: string; // Phase 5C: Optional PDF URL to save in database
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -69,7 +70,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const { to, subject, message, projectName } = body;
+    const { to, subject, message, projectName, pdfUrl, offerSendId } = body;
 
     // Validate all inputs
     const validation = combineValidations(
@@ -205,11 +206,34 @@ const handler = async (req: Request): Promise<Response> => {
 
       console.log("Email sent successfully:", responseData.id);
 
+      // Phase 5C: Update offer_sends record with PDF URL if provided
+      if (offerSendId && pdfUrl && supabase) {
+        try {
+          const { error: updateError } = await supabase
+            .from('offer_sends')
+            .update({
+              pdf_url: pdfUrl,
+              pdf_generated_at: new Date().toISOString(),
+            })
+            .eq('id', offerSendId);
+
+          if (updateError) {
+            console.error("Failed to update offer_sends with PDF URL:", updateError);
+            // Don't fail the request - email was sent successfully
+          } else {
+            console.log("Updated offer_sends with PDF URL:", offerSendId);
+          }
+        } catch (dbError) {
+          console.error("Error updating offer_sends:", dbError);
+          // Don't fail the request - email was sent successfully
+        }
+      }
+
       return new Response(
         JSON.stringify({ success: true, id: responseData.id }),
-        { 
-          status: 200, 
-          headers: { "Content-Type": "application/json", ...corsHeaders } 
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
         }
       );
     } catch (fetchError) {

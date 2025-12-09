@@ -28,9 +28,10 @@ import { generateOfferPdf, uploadOfferPdf } from '@/lib/offerPdfGenerator';
 
 interface PdfPreviewPanelProps {
   projectId: string;
+  onPdfGenerated?: (url: string | null) => void; // Phase 5C: Callback when PDF is generated
 }
 
-export function PdfPreviewPanel({ projectId }: PdfPreviewPanelProps) {
+export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelProps) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
@@ -95,6 +96,7 @@ export function PdfPreviewPanel({ projectId }: PdfPreviewPanelProps) {
     try {
       setIsGeneratingPdf(true);
       setGeneratedPdfUrl(null);
+      onPdfGenerated?.(null); // Phase 5C: Clear PDF URL in parent
 
       // Build offer data using Phase 5A builder
       const offerPayload = buildOfferData({
@@ -143,6 +145,7 @@ export function PdfPreviewPanel({ projectId }: PdfPreviewPanelProps) {
       });
 
       setGeneratedPdfUrl(publicUrl);
+      onPdfGenerated?.(publicUrl); // Phase 5C: Notify parent of new PDF URL
       toast.success('PDF oferty został wygenerowany i zapisany');
     } catch (error) {
       console.error('Error generating PDF:', error);
