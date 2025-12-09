@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { stripExifData } from '@/lib/exifUtils';
 import { compressImage } from '@/lib/imageCompression';
+import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
 export interface ProjectPhoto {
   id: string;
@@ -76,6 +77,12 @@ export function useUploadProjectPhoto() {
 
   return useMutation({
     mutationFn: async ({ projectId, file }: { projectId: string; file: File }) => {
+      // Validate file
+      const validation = validateFile(file, FILE_VALIDATION_CONFIGS.photo);
+      if (!validation.valid) {
+        throw new Error(validation.error);
+      }
+
       // Strip EXIF metadata for privacy, then compress
       const cleanFile = await stripExifData(file);
       const compressedFile = await compressImage(cleanFile, {
@@ -83,7 +90,7 @@ export function useUploadProjectPhoto() {
         maxHeight: 1920,
         quality: 0.85,
       });
-      
+
       const fileExt = compressedFile.name.split('.').pop();
       const fileName = `${user!.id}/${projectId}/${crypto.randomUUID()}.${fileExt}`;
 
@@ -114,8 +121,9 @@ export function useUploadProjectPhoto() {
       queryClient.invalidateQueries({ queryKey: ['project_photos', projectId] });
       toast.success('Zdjęcie przesłane (metadane EXIF usunięte)');
     },
-    onError: () => {
-      toast.error('Błąd podczas przesyłania zdjęcia');
+    onError: (error) => {
+      const message = error instanceof Error ? error.message : 'Błąd podczas przesyłania zdjęcia';
+      toast.error(message);
     },
   });
 }

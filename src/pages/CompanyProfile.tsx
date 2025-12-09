@@ -11,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Building2, Upload, Loader2, Save, User, Phone, Mail, MapPin, CreditCard, FileText, MessageSquare, ChevronDown, Image } from 'lucide-react';
 import { toast } from 'sonner';
 import { BiometricSetup } from '@/components/auth/BiometricSetup';
+import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
 export default function CompanyProfile() {
   const { user } = useAuth();
@@ -91,13 +92,9 @@ export default function CompanyProfile() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      toast.error('Wybierz plik graficzny');
-      return;
-    }
-
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error('Logo max 2MB');
+    const validation = validateFile(file, FILE_VALIDATION_CONFIGS.logo);
+    if (!validation.valid) {
+      toast.error(validation.error);
       return;
     }
 
