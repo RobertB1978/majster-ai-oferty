@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Receipt, Upload, FileText, Sparkles, Trash2, Download } from 'lucide-react';
+import { Receipt, Upload, FileText, Sparkles, Trash2, Download, Loader2 } from 'lucide-react';
 import { usePurchaseCosts, useUploadInvoice, useProcessInvoiceOCR, useDeletePurchaseCost } from '@/hooks/usePurchaseCosts';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
@@ -77,9 +77,17 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
               <Download className="h-4 w-4 mr-2" />
               CSV
             </Button>
-            <Button onClick={() => fileInputRef.current?.click()} size="sm">
-              <Upload className="h-4 w-4 mr-2" />
-              Dodaj fakturę
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              size="sm"
+              disabled={uploadInvoice.isPending}
+            >
+              {uploadInvoice.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4 mr-2" />
+              )}
+              {uploadInvoice.isPending ? 'Przesyłanie...' : 'Dodaj fakturę'}
             </Button>
           </div>
         </CardTitle>
