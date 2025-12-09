@@ -13,6 +13,8 @@ export interface OfferSend {
   status: 'pending' | 'sent' | 'failed';
   error_message: string | null;
   sent_at: string;
+  pdf_url?: string | null;
+  pdf_generated_at?: string | null;
 }
 
 export function useOfferSends(projectId: string) {

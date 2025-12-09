@@ -18,15 +18,17 @@ interface SendOfferModalProps {
   projectName: string;
   clientEmail?: string;
   clientName?: string;
+  pdfUrl?: string; // Phase 5C: Optional PDF URL to attach to email
 }
 
-export function SendOfferModal({ 
-  open, 
-  onOpenChange, 
-  projectId, 
-  projectName, 
-  clientEmail = '', 
-  clientName = '' 
+export function SendOfferModal({
+  open,
+  onOpenChange,
+  projectId,
+  projectName,
+  clientEmail = '',
+  clientName = '',
+  pdfUrl
 }: SendOfferModalProps) {
   const { data: profile } = useProfile();
   const createOfferSend = useCreateOfferSend();
@@ -83,7 +85,7 @@ export function SendOfferModal({
         status: 'pending',
       });
 
-      // Call edge function to send email
+      // Call edge function to send email (Phase 5C: include PDF URL if available)
       const { data, error } = await supabase.functions.invoke('send-offer-email', {
         body: {
           offerSendId: offerSend.id,
@@ -91,6 +93,7 @@ export function SendOfferModal({
           subject,
           message,
           projectName,
+          pdfUrl: pdfUrl || undefined, // Only include if available
         },
       });
 
@@ -157,13 +160,26 @@ export function SendOfferModal({
             />
           </div>
 
-          <div className="rounded-lg bg-muted p-3 text-sm text-muted-foreground">
+          <div className={`rounded-lg p-3 text-sm ${pdfUrl ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' : 'bg-muted'}`}>
             <div className="flex items-start gap-2">
-              <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
-              <p>
-                Możesz edytować szablon wiadomości w profilu firmy.
-                W przyszłości będzie możliwość dołączenia PDF oferty.
-              </p>
+              <AlertCircle className={`mt-0.5 h-4 w-4 flex-shrink-0 ${pdfUrl ? 'text-green-600 dark:text-green-400' : ''}`} />
+              <div>
+                {pdfUrl ? (
+                  <>
+                    <p className="font-medium text-green-800 dark:text-green-200">
+                      ✓ PDF oferty zostanie dołączony do wiadomości
+                    </p>
+                    <p className="mt-1 text-xs text-green-700 dark:text-green-300">
+                      Możesz edytować szablon wiadomości w profilu firmy.
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-muted-foreground">
+                    Możesz edytować szablon wiadomości w profilu firmy.
+                    Aby dołączyć PDF, najpierw wygeneruj go w panelu "Podgląd oferty PDF".
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -25,6 +25,7 @@ export default function ProjectDetail() {
   const navigate = useNavigate();
   const [sendModalOpen, setSendModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null); // Phase 5C: Track generated PDF URL
 
   if (projectLoading) {
     return (
@@ -136,7 +137,7 @@ export default function ProjectDetail() {
         )}
       </div>
 
-      {/* Send Offer Modal */}
+      {/* Send Offer Modal - Phase 5C: Include PDF URL if generated */}
       <SendOfferModal
         open={sendModalOpen}
         onOpenChange={setSendModalOpen}
@@ -144,6 +145,7 @@ export default function ProjectDetail() {
         projectName={project.project_name}
         clientEmail={project.clients?.email || ''}
         clientName={project.clients?.name || ''}
+        pdfUrl={generatedPdfUrl || undefined}
       />
 
       {/* Tabs for different sections */}
@@ -244,7 +246,10 @@ export default function ProjectDetail() {
         </TabsContent>
 
         <TabsContent value="pdf" className="mt-4">
-          <PdfPreviewPanel projectId={id!} />
+          <PdfPreviewPanel
+            projectId={id!}
+            onPdfGenerated={setGeneratedPdfUrl}
+          />
         </TabsContent>
       </Tabs>
     </div>

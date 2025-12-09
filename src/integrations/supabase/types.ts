@@ -411,6 +411,8 @@ export type Database = {
           error_message: string | null
           id: string
           message: string | null
+          pdf_generated_at: string | null
+          pdf_url: string | null
           project_id: string
           sent_at: string
           status: string
@@ -422,6 +424,8 @@ export type Database = {
           error_message?: string | null
           id?: string
           message?: string | null
+          pdf_generated_at?: string | null
+          pdf_url?: string | null
           project_id: string
           sent_at?: string
           status?: string
@@ -433,6 +437,8 @@ export type Database = {
           error_message?: string | null
           id?: string
           message?: string | null
+          pdf_generated_at?: string | null
+          pdf_url?: string | null
           project_id?: string
           sent_at?: string
           status?: string
