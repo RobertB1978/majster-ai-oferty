@@ -19,6 +19,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
 
 interface OfferData {
@@ -179,10 +180,6 @@ export default function OfferApproval() {
       </div>
     );
   }
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(amount);
-  };
 
   return (
     <>
