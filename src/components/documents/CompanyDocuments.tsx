@@ -9,13 +9,14 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { 
-  FileText, Upload, Trash2, Download, Plus, Award, FileCheck, Shield, 
+import {
+  FileText, Upload, Trash2, Download, Plus, Award, FileCheck, Shield,
   Loader2, AlertCircle, Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
+import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
 interface CompanyDocument {
   id: string;
@@ -143,8 +144,9 @@ export function CompanyDocuments() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error('Plik max 10MB');
+    const validation = validateFile(file, FILE_VALIDATION_CONFIGS.document);
+    if (!validation.valid) {
+      toast.error(validation.error);
       return;
     }
 

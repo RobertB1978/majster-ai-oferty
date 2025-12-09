@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
 export interface Profile {
   id: string;
@@ -101,6 +102,12 @@ export function useUploadLogo() {
     mutationFn: async (file: File) => {
       if (!user?.id) throw new Error('Nie jesteś zalogowany');
 
+      // Validate file
+      const validation = validateFile(file, FILE_VALIDATION_CONFIGS.logo);
+      if (!validation.valid) {
+        throw new Error(validation.error);
+      }
+
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/logo.${fileExt}`;
 
@@ -132,7 +139,8 @@ export function useUploadLogo() {
     },
     onError: (error) => {
       console.error('Error uploading logo:', error);
-      toast.error('Nie udało się przesłać logo');
+      const message = error instanceof Error ? error.message : 'Nie udało się przesłać logo';
+      toast.error(message);
     },
   });
 }

@@ -57,13 +57,13 @@ export function useSaveQuote() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async ({ 
-      projectId, 
-      positions, 
-      marginPercent 
-    }: { 
-      projectId: string; 
-      positions: QuotePosition[]; 
+    mutationFn: async ({
+      projectId,
+      positions,
+      marginPercent
+    }: {
+      projectId: string;
+      positions: QuotePosition[];
       marginPercent: number;
     }) => {
       const summaryMaterials = positions
@@ -75,51 +75,29 @@ export function useSaveQuote() {
       const subtotal = summaryMaterials + summaryLabor;
       const total = subtotal * (1 + marginPercent / 100);
 
-      // Check if quote exists
-      const { data: existing } = await supabase
-        .from('quotes')
-        .select('id')
-        .eq('project_id', projectId)
-        .maybeSingle();
-
       const positionsJson = JSON.parse(JSON.stringify(positions)) as Json;
 
-      if (existing) {
-        // Update existing quote
-        const { data, error } = await supabase
-          .from('quotes')
-          .update({
-            positions: positionsJson,
-            summary_materials: summaryMaterials,
-            summary_labor: summaryLabor,
-            margin_percent: marginPercent,
-            total,
-          })
-          .eq('project_id', projectId)
-          .select()
-          .single();
+      // Use UPSERT to handle both insert and update atomically
+      // This prevents race conditions when multiple saves happen concurrently
+      const { data, error } = await supabase
+        .from('quotes')
+        .upsert({
+          project_id: projectId,
+          user_id: user!.id,
+          positions: positionsJson,
+          summary_materials: summaryMaterials,
+          summary_labor: summaryLabor,
+          margin_percent: marginPercent,
+          total,
+        }, {
+          onConflict: 'project_id',
+          ignoreDuplicates: false,
+        })
+        .select()
+        .single();
 
-        if (error) throw error;
-        return data;
-      } else {
-        // Create new quote
-        const { data, error } = await supabase
-          .from('quotes')
-          .insert({
-            project_id: projectId,
-            user_id: user!.id,
-            positions: positionsJson,
-            summary_materials: summaryMaterials,
-            summary_labor: summaryLabor,
-            margin_percent: marginPercent,
-            total,
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-        return data;
-      }
+      if (error) throw error;
+      return data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['quotes', variables.projectId] });
