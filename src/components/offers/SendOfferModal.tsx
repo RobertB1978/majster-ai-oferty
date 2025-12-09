@@ -273,7 +273,11 @@ export function SendOfferModal({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSending}
+          >
             Anuluj
           </Button>
           <Button onClick={handleSend} disabled={isSending}>
