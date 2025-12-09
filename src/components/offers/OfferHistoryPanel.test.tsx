@@ -354,3 +354,208 @@ describe('OfferHistoryPanel - Phase 6A Tracking Status', () => {
     });
   });
 });
+
+describe('OfferHistoryPanel - Phase 6C Follow-up', () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+    },
+  });
+
+  const renderPanel = (projectId: string = 'project-1') => {
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <OfferHistoryPanel projectId={projectId} />
+      </QueryClientProvider>
+    );
+  };
+
+  const createMockSend = (overrides?: Partial<OfferSend>): OfferSend => ({
+    id: 'send-1',
+    project_id: 'project-1',
+    user_id: 'user-1',
+    client_email: 'client@example.com',
+    subject: 'Oferta - Test Project',
+    message: 'Test message',
+    status: 'sent',
+    tracking_status: null,
+    error_message: null,
+    sent_at: '2024-01-15T10:00:00Z',
+    pdf_url: null,
+    pdf_generated_at: null,
+    ...overrides,
+  });
+
+  it('should display follow-up legend with all categories', () => {
+    const send = createMockSend();
+
+    mockUseOfferSends.mockReturnValue({
+      data: [send],
+      isLoading: false,
+    });
+
+    renderPanel();
+
+    // Sprawdź nagłówek legendy
+    expect(screen.getByText('Legenda follow-up')).toBeInTheDocument();
+
+    // Sprawdź wszystkie kategorie w legendzie
+    const zamknieta = screen.getAllByText('Zamknięta');
+    expect(zamknieta.length).toBeGreaterThan(0);
+
+    const nowa = screen.getAllByText('Nowa');
+    expect(nowa.length).toBeGreaterThan(0);
+
+    const nieotwarta = screen.getAllByText('Do follow-up (nieotwarta)');
+    expect(nieotwarta.length).toBeGreaterThan(0);
+
+    const brakDecyzji = screen.getAllByText('Do follow-up (brak decyzji)');
+    expect(brakDecyzji.length).toBeGreaterThan(0);
+  });
+
+  it('should display "Tylko follow-up" filter button', () => {
+    const send = createMockSend();
+
+    mockUseOfferSends.mockReturnValue({
+      data: [send],
+      isLoading: false,
+    });
+
+    renderPanel();
+
+    // Przycisk filtra powinien być widoczny
+    const filterButton = screen.getByText('Tylko follow-up');
+    expect(filterButton).toBeInTheDocument();
+  });
+
+  it('should change filter button text to "Wszystkie" when clicked', async () => {
+    const user = userEvent.setup();
+    const send = createMockSend();
+
+    mockUseOfferSends.mockReturnValue({
+      data: [send],
+      isLoading: false,
+    });
+
+    renderPanel();
+
+    // Kliknij przycisk filtra
+    const filterButton = screen.getByText('Tylko follow-up');
+    await user.click(filterButton);
+
+    // Tekst powinien się zmienić
+    expect(screen.getByText('Wszystkie')).toBeInTheDocument();
+    expect(screen.queryByText('Tylko follow-up')).not.toBeInTheDocument();
+  });
+
+  it('should filter sends to show only follow-up when filter is active', async () => {
+    const user = userEvent.setup();
+    const now = new Date('2025-12-09T12:00:00Z');
+
+    // Utwórz 4 różne wysyłki z różnymi kategoriami follow-up
+    const freshSend = createMockSend({
+      id: 'fresh-1',
+      client_email: 'fresh@test.com',
+      tracking_status: 'sent',
+      sent_at: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 dzień temu
+    });
+
+    const notOpenedSend = createMockSend({
+      id: 'not-opened-1',
+      client_email: 'notopened@test.com',
+      tracking_status: 'sent',
+      sent_at: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 dni temu
+    });
+
+    const noDecisionSend = createMockSend({
+      id: 'no-decision-1',
+      client_email: 'nodecision@test.com',
+      tracking_status: 'opened',
+      sent_at: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 dni temu
+    });
+
+    const acceptedSend = createMockSend({
+      id: 'accepted-1',
+      client_email: 'accepted@test.com',
+      tracking_status: 'accepted',
+      sent_at: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 dni temu
+    });
+
+    mockUseOfferSends.mockReturnValue({
+      data: [freshSend, notOpenedSend, noDecisionSend, acceptedSend],
+      isLoading: false,
+    });
+
+    renderPanel();
+
+    // Na początku wszystkie 4 wysyłki są widoczne
+    expect(screen.getByText('fresh@test.com')).toBeInTheDocument();
+    expect(screen.getByText('notopened@test.com')).toBeInTheDocument();
+    expect(screen.getByText('nodecision@test.com')).toBeInTheDocument();
+    expect(screen.getByText('accepted@test.com')).toBeInTheDocument();
+
+    // Kliknij filtr
+    const filterButton = screen.getByText('Tylko follow-up');
+    await user.click(filterButton);
+
+    // Po filtrowaniu tylko 2 wysyłki wymagające follow-up są widoczne
+    expect(screen.queryByText('fresh@test.com')).not.toBeInTheDocument();
+    expect(screen.getByText('notopened@test.com')).toBeInTheDocument();
+    expect(screen.getByText('nodecision@test.com')).toBeInTheDocument();
+    expect(screen.queryByText('accepted@test.com')).not.toBeInTheDocument();
+  });
+
+  it('should show "Brak ofert wymagających follow-up" when filter active and no follow-up sends', async () => {
+    const user = userEvent.setup();
+    const now = new Date('2025-12-09T12:00:00Z');
+
+    // Tylko świeże i zamknięte wysyłki (żadna nie wymaga follow-up)
+    const freshSend = createMockSend({
+      id: 'fresh-1',
+      tracking_status: 'sent',
+      sent_at: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    });
+
+    const acceptedSend = createMockSend({
+      id: 'accepted-1',
+      tracking_status: 'accepted',
+      sent_at: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    });
+
+    mockUseOfferSends.mockReturnValue({
+      data: [freshSend, acceptedSend],
+      isLoading: false,
+    });
+
+    renderPanel();
+
+    // Kliknij filtr
+    const filterButton = screen.getByText('Tylko follow-up');
+    await user.click(filterButton);
+
+    // Powinien pokazać komunikat
+    expect(screen.getByText('Brak ofert wymagających follow-up')).toBeInTheDocument();
+  });
+
+  it('should display follow-up badge for each send', () => {
+    const now = new Date('2025-12-09T12:00:00Z');
+
+    const notOpenedSend = createMockSend({
+      id: 'not-opened-1',
+      client_email: 'notopened@test.com',
+      tracking_status: 'sent',
+      sent_at: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 dni temu = followup_not_opened
+    });
+
+    mockUseOfferSends.mockReturnValue({
+      data: [notOpenedSend],
+      isLoading: false,
+    });
+
+    renderPanel();
+
+    // Badge follow-up powinien być widoczny (oprócz legendy)
+    const badges = screen.getAllByText('Do follow-up (nieotwarta)');
+    expect(badges.length).toBeGreaterThan(1); // W legendzie i przy wysyłce
+  });
+});
