@@ -27,8 +27,7 @@ Przygotowanie aplikacji do produkcyjnego wdrożenia z pełnymi testami E2E i zab
 | Zmienna | Wymagana | Opis |
 |---------|----------|------|
 | `VITE_SUPABASE_URL` | ✅ TAK | URL projektu Supabase |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | ✅ TAK | Public/Anon key z Supabase |
-| `VITE_SUPABASE_PROJECT_ID` | ❌ Opcjonalne | ID projektu (do celów pomocniczych) |
+| `VITE_SUPABASE_ANON_KEY` | ✅ TAK | Public/Anon key z Supabase |
 
 #### Dla Edge Functions (Supabase)
 

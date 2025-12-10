@@ -500,11 +500,53 @@ npx supabase functions serve  # Run Edge Functions locally
 ```
 
 ### Environment Variables
-Required in `.env`:
+
+#### Frontend Environment Variables (`.env` / Vercel)
+
+Required in `.env` or Vercel Environment Variables:
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGci...  # anon/public key (NOT service_role!)
 ```
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
+
+**⚠️ Important:**
+- Always use `VITE_` prefix for Vite environment variables
+- Use `ANON_KEY` (public key), never `service_role` key in frontend
+- These variables are exposed to the browser - no secrets!
+
+#### Backend Environment Variables (Supabase Secrets)
+
+Set in Supabase Dashboard → Edge Functions → Secrets:
+```bash
+# Auto-injected by Supabase (usually don't need to set manually)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGci...  # service_role key (PRIVATE!)
+
+# Required for email sending
+RESEND_API_KEY=re_...
+
+# Required for frontend URLs in emails
+FRONTEND_URL=https://your-app.vercel.app
+
+# AI Provider (choose ONE)
+OPENAI_API_KEY=sk-...           # OpenAI GPT-4
+# OR
+ANTHROPIC_API_KEY=sk-ant-...    # Anthropic Claude
+# OR
+GEMINI_API_KEY=AIza...          # Google Gemini (free tier available)
 ```
+
+**Environment Variable Mapping:**
+
+| Location | Variable Name | Purpose | Secret? |
+|----------|--------------|---------|---------|
+| Frontend | `VITE_SUPABASE_URL` | Supabase project URL | No |
+| Frontend | `VITE_SUPABASE_ANON_KEY` | Public API key | No |
+| Edge Functions | `SUPABASE_URL` | Supabase project URL | No |
+| Edge Functions | `SUPABASE_SERVICE_ROLE_KEY` | Private admin key | YES |
+| Edge Functions | `RESEND_API_KEY` | Email service | YES |
+| Edge Functions | `FRONTEND_URL` | Frontend app URL | No |
+| Edge Functions | `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` | AI provider | YES |
 
 ---
 
