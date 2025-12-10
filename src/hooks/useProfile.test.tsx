@@ -1,12 +1,12 @@
 // ============================================
-// USEUPLOADLOGO TESTS
-// Phase 3 - UX & Reliability Polish
+// USEPROFILE TESTS
+// Sprint 1 - Account & Company Profile
 // ============================================
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useUploadLogo } from '@/hooks/useProfile';
+import { useProfile, useUpdateProfile, useUploadLogo } from '@/hooks/useProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
@@ -45,6 +45,227 @@ vi.mock('@/lib/fileValidation', () => ({
     },
   },
 }));
+
+describe('useProfile', () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
+    vi.clearAllMocks();
+  });
+
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+
+  it('should fetch profile data successfully', async () => {
+    const mockProfile = {
+      id: 'profile-1',
+      user_id: 'test-user-id',
+      company_name: 'Test Company',
+      owner_name: 'Jan Kowalski',
+      nip: '1234567890',
+      phone: '+48123456789',
+      email_for_offers: 'test@company.pl',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
+    };
+
+    (supabase as any).from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: mockProfile,
+            error: null,
+          }),
+        }),
+      }),
+    });
+
+    const { result } = renderHook(() => useProfile(), { wrapper });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual(mockProfile);
+    expect(result.current.data?.company_name).toBe('Test Company');
+  });
+
+  it('should return null when profile does not exist', async () => {
+    (supabase as any).from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: null,
+            error: null,
+          }),
+        }),
+      }),
+    });
+
+    const { result } = renderHook(() => useProfile(), { wrapper });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toBeNull();
+  });
+
+  it('should handle database errors gracefully', async () => {
+    const mockError = { message: 'Database connection failed' };
+
+    (supabase as any).from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: null,
+            error: mockError,
+          }),
+        }),
+      }),
+    });
+
+    const { result } = renderHook(() => useProfile(), { wrapper });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error).toEqual(mockError);
+  });
+
+  it('should not fetch when user is not authenticated', () => {
+    // Mock useAuth to return null user
+    vi.mock('@/contexts/AuthContext', () => ({
+      useAuth: () => ({ user: null }),
+    }));
+
+    const { result } = renderHook(() => useProfile(), { wrapper });
+
+    expect(result.current.data).toBeUndefined();
+    expect(result.current.isLoading).toBe(false);
+  });
+});
+
+describe('useUpdateProfile', () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        mutations: { retry: false },
+      },
+    });
+    vi.clearAllMocks();
+  });
+
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+
+  it('should update existing profile successfully', async () => {
+    const mockUpdatedProfile = {
+      id: 'profile-1',
+      user_id: 'test-user-id',
+      company_name: 'Updated Company',
+      nip: '9876543210',
+    };
+
+    // Mock existing profile check
+    (supabase as any).from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: { id: 'profile-1' },
+            error: null,
+          }),
+        }),
+      }),
+      update: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockUpdatedProfile,
+              error: null,
+            }),
+          }),
+        }),
+      }),
+    });
+
+    const { result } = renderHook(() => useUpdateProfile(), { wrapper });
+
+    result.current.mutate({ company_name: 'Updated Company', nip: '9876543210' });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual(mockUpdatedProfile);
+  });
+
+  it('should create new profile when profile does not exist', async () => {
+    const mockNewProfile = {
+      id: 'profile-new',
+      user_id: 'test-user-id',
+      company_name: 'New Company',
+    };
+
+    // Mock no existing profile
+    (supabase as any).from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: null,
+            error: null,
+          }),
+        }),
+      }),
+      insert: vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({
+            data: mockNewProfile,
+            error: null,
+          }),
+        }),
+      }),
+    });
+
+    const { result } = renderHook(() => useUpdateProfile(), { wrapper });
+
+    result.current.mutate({ company_name: 'New Company' });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual(mockNewProfile);
+  });
+
+  it('should handle update errors and show toast', async () => {
+    const mockError = { message: 'Update failed' };
+
+    (supabase as any).from = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: { id: 'profile-1' },
+            error: null,
+          }),
+        }),
+      }),
+      update: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: mockError,
+            }),
+          }),
+        }),
+      }),
+    });
+
+    const { result } = renderHook(() => useUpdateProfile(), { wrapper });
+
+    result.current.mutate({ company_name: 'Test' });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error).toEqual(mockError);
+  });
+});
 
 describe('useUploadLogo', () => {
   let queryClient: QueryClient;

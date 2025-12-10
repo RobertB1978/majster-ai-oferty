@@ -6,6 +6,7 @@ import { BackToDashboard } from './BackToDashboard';
 import { PageTransition } from './PageTransition';
 import { useAuth } from '@/contexts/AuthContext';
 import { AiChatAgent } from '@/components/ai/AiChatAgent';
+import { OnboardingModal } from '@/components/onboarding/OnboardingModal';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { useEffect, useState } from 'react';
 
@@ -54,12 +55,15 @@ export function AppLayout() {
       
       {/* Footer */}
       <Footer />
-      
+
       {/* Back to Dashboard floating button */}
       <BackToDashboard />
-      
+
       {/* AI Chat Agent - Global floating assistant */}
       <AiChatAgent />
+
+      {/* Onboarding Modal - shown on first login */}
+      <OnboardingModal />
     </div>
   );
 }
