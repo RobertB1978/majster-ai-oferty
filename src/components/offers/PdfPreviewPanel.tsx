@@ -110,7 +110,7 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
           city: profile.city,
           logo_url: profile.logo_url,
           phone: profile.phone,
-          email: profile.email,
+          email: profile.email_for_offers,
         } : undefined,
         client: project.clients ? {
           name: project.clients.name,
