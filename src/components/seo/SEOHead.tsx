@@ -99,7 +99,7 @@ export function SEOHead({
       {/* Performance */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link rel="dns-prefetch" href="https://zpawgcecwqvypodzvlzy.supabase.co" />
+      <link rel="dns-prefetch" href={import.meta.env.VITE_SUPABASE_URL} />
       
       {/* Structured Data */}
       <script type="application/ld+json">

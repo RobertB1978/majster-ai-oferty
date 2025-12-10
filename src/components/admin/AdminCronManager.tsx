@@ -240,7 +240,7 @@ export function AdminCronManager() {
   '0 9 * * *',
   $$
   SELECT net.http_post(
-    url := 'https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/send-expiring-offer-reminders',
+    url := '${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-expiring-offer-reminders',
     headers := '{"Authorization": "Bearer <ANON_KEY>"}'::jsonb,
     body := '{}'::jsonb
   );
