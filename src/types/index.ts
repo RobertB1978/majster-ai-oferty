@@ -4,16 +4,6 @@ export interface User {
   created_at: string;
 }
 
-export interface Client {
-  id: string;
-  user_id: string;
-  name: string;
-  phone: string;
-  email: string;
-  address: string;
-  created_at: string;
-}
-
 export type ProjectStatus = 'Nowy' | 'Wycena w toku' | 'Oferta wysłana' | 'Zaakceptowany';
 export type ProjectPriority = 'low' | 'normal' | 'high';
 
@@ -27,7 +17,6 @@ export interface Project {
   start_date?: string;
   end_date?: string;
   created_at: string;
-  clients?: Client;
 }
 
 export interface QuotePosition {
