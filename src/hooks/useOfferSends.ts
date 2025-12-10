@@ -13,7 +13,7 @@ export interface OfferSend {
   subject: string;
   message: string;
   status: 'pending' | 'sent' | 'failed';
-  tracking_status: OfferTrackingStatus | null;
+  tracking_status: OfferTrackingStatus;
   error_message: string | null;
   sent_at: string;
   pdf_url?: string | null;

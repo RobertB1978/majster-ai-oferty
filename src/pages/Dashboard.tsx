@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects } from '@/hooks/useProjects';
 import { useClients } from '@/hooks/useClients';
@@ -29,25 +29,30 @@ export default function Dashboard() {
   const { showAds, currentPlan } = usePlanFeatures();
   const { expiringOffersCount, subscriptionExpiresIn, isSubscriptionExpiring } = useExpirationMonitor();
 
-  const recentProjects = [...projects]
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 5);
+  const recentProjects = useMemo(() =>
+    [...projects]
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 5),
+    [projects]
+  );
 
   const isLoading = projectsLoading || clientsLoading;
 
   // Statistics
-  const stats = {
+  const stats = useMemo(() => ({
     total: projects.length,
     new: projects.filter(p => p.status === 'Nowy').length,
     inProgress: projects.filter(p => p.status === 'Wycena w toku').length,
     sent: projects.filter(p => p.status === 'Oferta wysłana').length,
     accepted: projects.filter(p => p.status === 'Zaakceptowany').length,
-  };
+  }), [projects]);
 
   // Projects from last week
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-  const recentCount = projects.filter(p => new Date(p.created_at) > oneWeekAgo).length;
+  const recentCount = useMemo(() => {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    return projects.filter(p => new Date(p.created_at) > oneWeekAgo).length;
+  }, [projects]);
 
   // Initialize onboarding for new users
   useEffect(() => {
