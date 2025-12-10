@@ -160,7 +160,7 @@ export async function handleSendOfferEmail(
       html: htmlContent,
     });
 
-    console.log("Email sent successfully:", emailResult.id);
+    console.log(`[send-offer-email] Email sent successfully: ${emailResult.id} to ${to.substring(0, 3)}***`);
 
     // Update database record if offerSendId provided and updateOfferSend available
     if (offerSendId && deps.updateOfferSend) {
@@ -170,11 +170,11 @@ export async function handleSendOfferEmail(
           pdfUrl,
           tracking_status: normalizeTrackingStatus(tracking_status),
         });
-        console.log("Updated offer_sends record:", offerSendId);
+        console.log(`[send-offer-email] Updated offer_sends record: ${offerSendId}`);
       } catch (dbError) {
         // Email was sent successfully, but DB update failed
         // Don't fail the whole operation, but return a warning
-        console.error("Failed to update offer_sends:", dbError);
+        console.error(`[send-offer-email] Failed to update offer_sends ${offerSendId}:`, dbError);
         return {
           ok: true,
           emailId: emailResult.id,
@@ -188,7 +188,7 @@ export async function handleSendOfferEmail(
       emailId: emailResult.id,
     };
   } catch (error) {
-    console.error("Error in handleSendOfferEmail:", error);
+    console.error("[send-offer-email] Error in handleSendOfferEmail:", error);
 
     // Distinguish between email service errors and other errors
     if (error instanceof Error) {

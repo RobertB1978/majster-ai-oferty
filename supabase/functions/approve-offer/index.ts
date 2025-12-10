@@ -5,12 +5,13 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { 
-  validateUUID, 
+import {
+  validateUUID,
   validateString,
-  createValidationErrorResponse 
+  createValidationErrorResponse
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
+import { sanitizeUserInput } from "../_shared/sanitization.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -141,8 +142,8 @@ serve(async (req) => {
         });
       }
 
-      // Validate optional fields
-      const safeComment = comment ? String(comment).substring(0, 1000) : null;
+      // Sanitize and validate optional fields
+      const safeComment = comment ? sanitizeUserInput(String(comment), 1000) : null;
       const safeSignature = signatureData ? String(signatureData).substring(0, 50000) : null; // Base64 signature
 
       const updateData: Record<string, unknown> = {
@@ -184,7 +185,8 @@ serve(async (req) => {
           action_url: `/projects/${approval.project_id}`
         });
 
-      console.log(`Offer ${approval.id} ${action}d successfully`);
+      console.log(`[approve-offer] Offer ${approval.id} ${action}d successfully by token ${token}`);
+      console.log(`[approve-offer] Project ${approval.project_id} status updated`);
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

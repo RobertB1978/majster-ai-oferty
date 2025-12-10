@@ -47,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     
     if (!resendApiKey) {
-      console.error("RESEND_API_KEY is not configured");
+      console.error("[send-offer-email] RESEND_API_KEY is not configured");
       return new Response(
         JSON.stringify({ 
           error: "Email service is not configured", 
@@ -98,7 +98,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    console.log(`Sending offer email to: ${to.substring(0, 3)}***@***, subject: ${subject.substring(0, 30)}...`);
+    console.log(`[send-offer-email] Sending offer email to: ${to.substring(0, 3)}***@***, subject: ${subject.substring(0, 30)}...`);
 
     // Create dependencies for email handler
     const deps: EmailDeps = {
@@ -202,7 +202,7 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
   } catch (error: unknown) {
-    console.error("Error in send-offer-email function:", error);
+    console.error("[send-offer-email] Error in send-offer-email function:", error);
     return new Response(
       JSON.stringify({ error: "Internal server error" }),
       { 
