@@ -26,7 +26,7 @@ export function OnboardingModal() {
   const uploadLogo = useUploadLogo();
 
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState(STEPS.COMPANY_NAME);
+  const [step, setStep] = useState<number>(STEPS.COMPANY_NAME);
   const [skipped, setSkipped] = useState(false);
 
   const [companyName, setCompanyName] = useState('');

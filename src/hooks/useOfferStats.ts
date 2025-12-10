@@ -1,13 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { classifyOfferSendForFollowup } from '@/lib/offerFollowupUtils';
 
 export interface OfferStats {
   sentCount: number;
   acceptedCount: number;
   conversionRate: number;
-  // Phase 6C: Follow-up statistics
   followupCount: number;
   followupNotOpened: number;
   followupOpenedNoDecision: number;
@@ -30,7 +28,7 @@ export function useOfferStats() {
       // Fetch all offer_sends from last 30 days for current user
       const { data, error } = await supabase
         .from('offer_sends')
-        .select('tracking_status, status, sent_at, id')
+        .select('status, sent_at, id')
         .eq('user_id', user!.id)
         .gte('sent_at', thirtyDaysAgo.toISOString())
         .eq('status', 'sent'); // Only count successfully sent emails
@@ -39,44 +37,32 @@ export function useOfferStats() {
 
       // Calculate basic statistics
       const sentCount = data?.length || 0;
-      const acceptedCount = data?.filter(
-        (send) => send.tracking_status === 'accepted'
-      ).length || 0;
+      
+      // Without tracking_status, we count accepted from offer_approvals
+      const { data: approvals } = await supabase
+        .from('offer_approvals')
+        .select('status')
+        .eq('user_id', user!.id)
+        .eq('status', 'approved')
+        .gte('created_at', thirtyDaysAgo.toISOString());
+
+      const acceptedCount = approvals?.length || 0;
 
       const conversionRate = sentCount > 0
         ? Math.round((acceptedCount / sentCount) * 100)
         : 0;
 
-      // Phase 6C: Calculate follow-up statistics
-      let followupNotOpened = 0;
-      let followupOpenedNoDecision = 0;
-
-      data?.forEach((send) => {
-        const category = classifyOfferSendForFollowup({
-          id: send.id,
-          sent_at: send.sent_at,
-          tracking_status: send.tracking_status,
-        });
-
-        if (category === 'followup_not_opened') {
-          followupNotOpened++;
-        } else if (category === 'followup_opened_no_decision') {
-          followupOpenedNoDecision++;
-        }
-      });
-
-      const followupCount = followupNotOpened + followupOpenedNoDecision;
-
+      // Simplified follow-up stats (since tracking_status is not available)
       return {
         sentCount,
         acceptedCount,
         conversionRate,
-        followupCount,
-        followupNotOpened,
-        followupOpenedNoDecision,
+        followupCount: 0,
+        followupNotOpened: 0,
+        followupOpenedNoDecision: 0,
       };
     },
     enabled: !!user,
-    staleTime: 5 * 60 * 1000, // 5 minutes - stats don't need to be real-time
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

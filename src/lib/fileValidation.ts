@@ -5,9 +5,9 @@
 
 export interface FileValidationConfig {
   maxSizeBytes: number;
-  allowedMimeTypes: string[];
-  allowedExtensions: string[];
-  label: string; // User-friendly label for error messages
+  allowedMimeTypes: readonly string[];
+  allowedExtensions: readonly string[];
+  label: string;
 }
 
 export interface FileValidationResult {
