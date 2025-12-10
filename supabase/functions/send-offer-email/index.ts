@@ -5,14 +5,15 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { 
-  validateEmail, 
-  validateString, 
+import {
+  validateEmail,
+  validateString,
   createValidationErrorResponse,
   combineValidations,
   sanitizeString
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
+import { normalizeTrackingStatus } from "../_shared/tracking-status.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -26,6 +27,7 @@ interface SendOfferRequest {
   message: string;
   projectName: string;
   pdfUrl?: string; // Phase 5C: Optional PDF URL to save in database
+  tracking_status?: string; // Phase 7B: Optional tracking status (normalized to 'sent' if invalid/missing)
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -70,7 +72,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const { to, subject, message, projectName, pdfUrl, offerSendId } = body;
+    const { to, subject, message, projectName, pdfUrl, offerSendId, tracking_status } = body;
 
     // Validate all inputs
     const validation = combineValidations(
@@ -206,11 +208,11 @@ const handler = async (req: Request): Promise<Response> => {
 
       console.log("Email sent successfully:", responseData.id);
 
-      // Phase 5C/6A: Update offer_sends record with PDF URL and tracking status if provided
+      // Phase 5C/6A/7B: Update offer_sends record with PDF URL and tracking status if provided
       if (offerSendId && supabase) {
         try {
           const updateData: Record<string, string> = {
-            tracking_status: 'sent', // Phase 6A: Set business tracking status
+            tracking_status: normalizeTrackingStatus(tracking_status), // Phase 7B: Normalize to valid status
           };
 
           if (pdfUrl) {

@@ -417,7 +417,7 @@ export type Database = {
           sent_at: string
           status: string
           subject: string
-          tracking_status: string | null
+          tracking_status: string
           user_id: string
         }
         Insert: {
@@ -431,7 +431,7 @@ export type Database = {
           sent_at?: string
           status?: string
           subject: string
-          tracking_status?: string | null
+          tracking_status?: string
           user_id: string
         }
         Update: {
@@ -445,7 +445,7 @@ export type Database = {
           sent_at?: string
           status?: string
           subject?: string
-          tracking_status?: string | null
+          tracking_status?: string
           user_id?: string
         }
         Relationships: []
