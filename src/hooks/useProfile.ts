@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
+import { normalizeProfileData } from '@/lib/dataValidation';
 
 export interface Profile {
   id: string;
@@ -53,6 +54,9 @@ export function useUpdateProfile() {
     mutationFn: async (profileData: Partial<Omit<Profile, 'id' | 'user_id' | 'created_at' | 'updated_at'>>) => {
       if (!user?.id) throw new Error('Nie jesteś zalogowany');
 
+      // Normalize data before saving (defensive data protection)
+      const normalizedData = normalizeProfileData(profileData);
+
       // Check if profile exists
       const { data: existingProfile } = await supabase
         .from('profiles')
@@ -64,7 +68,7 @@ export function useUpdateProfile() {
         // Update existing profile
         const { data, error } = await supabase
           .from('profiles')
-          .update(profileData)
+          .update(normalizedData)
           .eq('user_id', user.id)
           .select()
           .single();
@@ -75,7 +79,7 @@ export function useUpdateProfile() {
         // Create new profile
         const { data, error } = await supabase
           .from('profiles')
-          .insert({ user_id: user.id, ...profileData })
+          .insert({ user_id: user.id, ...normalizedData })
           .select()
           .single();
 

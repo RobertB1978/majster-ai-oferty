@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Json } from '@/integrations/supabase/types';
+import { normalizeQuantity, normalizePrice, normalizeString, normalizePercentage } from '@/lib/dataValidation';
 
 export interface QuotePosition {
   id: string;
@@ -66,16 +67,29 @@ export function useSaveQuote() {
       positions: QuotePosition[];
       marginPercent: number;
     }) => {
-      const summaryMaterials = positions
+      // Normalize all positions to ensure data integrity
+      const normalizedPositions = positions.map(p => ({
+        ...p,
+        name: normalizeString(p.name, '', 200),
+        qty: normalizeQuantity(p.qty),
+        price: normalizePrice(p.price),
+        unit: normalizeString(p.unit, 'szt.', 20),
+        notes: p.notes ? normalizeString(p.notes, '', 500) : undefined,
+      }));
+
+      // Normalize margin percentage
+      const normalizedMargin = normalizePercentage(marginPercent);
+
+      const summaryMaterials = normalizedPositions
         .filter(p => p.category === 'Materiał')
         .reduce((sum, p) => sum + p.qty * p.price, 0);
-      const summaryLabor = positions
+      const summaryLabor = normalizedPositions
         .filter(p => p.category === 'Robocizna')
         .reduce((sum, p) => sum + p.qty * p.price, 0);
       const subtotal = summaryMaterials + summaryLabor;
-      const total = subtotal * (1 + marginPercent / 100);
+      const total = subtotal * (1 + normalizedMargin / 100);
 
-      const positionsJson = JSON.parse(JSON.stringify(positions)) as Json;
+      const positionsJson = JSON.parse(JSON.stringify(normalizedPositions)) as Json;
 
       // Use UPSERT to handle both insert and update atomically
       // This prevents race conditions when multiple saves happen concurrently
@@ -87,7 +101,7 @@ export function useSaveQuote() {
           positions: positionsJson,
           summary_materials: summaryMaterials,
           summary_labor: summaryLabor,
-          margin_percent: marginPercent,
+          margin_percent: normalizedMargin,
           total,
         }, {
           onConflict: 'project_id',

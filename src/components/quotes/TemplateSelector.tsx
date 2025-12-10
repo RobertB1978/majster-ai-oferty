@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useItemTemplates, ItemTemplate } from '@/hooks/useItemTemplates';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -15,13 +15,28 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
   const { data: templates, isLoading } = useItemTemplates();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  const filteredTemplates = templates?.filter(t => {
-    const matchesSearch = t.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || t.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
+  // Debounce search input (300ms delay)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [search]);
+
+  // Memoize filtered templates for performance with large datasets
+  const filteredTemplates = useMemo(() => {
+    if (!templates) return [];
+
+    return templates.filter(t => {
+      const matchesSearch = t.name.toLowerCase().includes(debouncedSearch.toLowerCase());
+      const matchesCategory = categoryFilter === 'all' || t.category === categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+  }, [templates, debouncedSearch, categoryFilter]);
 
   const handleSelect = (template: ItemTemplate) => {
     onSelectTemplate(template);
@@ -66,16 +81,18 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
-          ) : filteredTemplates?.length === 0 ? (
+          ) : filteredTemplates.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
-              {templates?.length === 0 
+              {templates?.length === 0
                 ? 'Brak szablonów. Utwórz szablony w zakładce "Szablony pozycji".'
+                : search.length > 0 && debouncedSearch !== search
+                ? 'Wyszukiwanie...'
                 : 'Brak wyników.'
               }
             </div>
           ) : (
             <div className="space-y-2">
-              {filteredTemplates?.map((template) => (
+              {filteredTemplates.map((template) => (
                 <Card 
                   key={template.id} 
                   className="cursor-pointer transition-colors hover:bg-accent"
