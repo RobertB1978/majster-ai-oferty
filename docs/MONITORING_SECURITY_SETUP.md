@@ -350,9 +350,8 @@ W przyszłości można dodać:
 ### Frontend (.env)
 ```env
 # Supabase (required)
-VITE_SUPABASE_PROJECT_ID=zpawgcecwqvypodzvlzy
-VITE_SUPABASE_URL=https://zpawgcecwqvypodzvlzy.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
 
 # Sentry (optional - dla error trackingu)
 VITE_SENTRY_DSN=https://your-dsn@sentry.io/project-id

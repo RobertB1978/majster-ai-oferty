@@ -825,8 +825,7 @@ Utwórz plik `.env.local` w projekcie:
 
 ```env
 VITE_SUPABASE_URL=https://[twoj-project-id].supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=[twoj-anon-key]
-VITE_SUPABASE_PROJECT_ID=[twoj-project-id]
+VITE_SUPABASE_ANON_KEY=[twoj-anon-key]
 ```
 
 ## 7. Zaktualizuj klienta Supabase
@@ -838,7 +837,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);
 ```

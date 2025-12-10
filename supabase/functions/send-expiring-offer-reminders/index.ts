@@ -26,14 +26,15 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    const frontendUrl = Deno.env.get('FRONTEND_URL') || Deno.env.get('VERCEL_URL') || 'https://your-app.vercel.app';
 
     if (!resendApiKey) {
       console.log('RESEND_API_KEY not configured - skipping email sending');
       return new Response(
-        JSON.stringify({ 
-          success: false, 
+        JSON.stringify({
+          success: false,
           message: 'RESEND_API_KEY not configured',
-          skipped: true 
+          skipped: true
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -126,7 +127,7 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        const approvalUrl = `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/offer/${offer.public_token}`;
+        const approvalUrl = `${frontendUrl}/offer/${offer.public_token}`;
         const expiresDate = new Date(offer.expires_at).toLocaleDateString('pl-PL', {
           weekday: 'long',
           year: 'numeric',

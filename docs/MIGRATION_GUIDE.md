@@ -175,7 +175,7 @@ vercel --prod
 
 Dodaj zmienne środowiskowe w Vercel Dashboard:
 - `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_SUPABASE_ANON_KEY`
 
 ### Opcja 2: Docker
 
@@ -249,8 +249,7 @@ supabase functions deploy send-offer-email
 
 ```env
 VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=eyJ...
-VITE_SUPABASE_PROJECT_ID=your-project-id
+VITE_SUPABASE_ANON_KEY=eyJ...
 ```
 
 ### Backend (Supabase Secrets)
@@ -323,7 +322,7 @@ const corsHeaders = {
 
 ### Błędy autentykacji
 
-1. Sprawdź czy `VITE_SUPABASE_PUBLISHABLE_KEY` jest poprawny
+1. Sprawdź czy `VITE_SUPABASE_ANON_KEY` jest poprawny
 2. Zweryfikuj RLS policies w Supabase
 
 ---
