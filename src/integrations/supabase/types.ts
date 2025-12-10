@@ -411,13 +411,10 @@ export type Database = {
           error_message: string | null
           id: string
           message: string | null
-          pdf_generated_at: string | null
-          pdf_url: string | null
           project_id: string
           sent_at: string
           status: string
           subject: string
-          tracking_status: string
           user_id: string
         }
         Insert: {
@@ -425,13 +422,10 @@ export type Database = {
           error_message?: string | null
           id?: string
           message?: string | null
-          pdf_generated_at?: string | null
-          pdf_url?: string | null
           project_id: string
           sent_at?: string
           status?: string
           subject: string
-          tracking_status?: string
           user_id: string
         }
         Update: {
@@ -439,13 +433,10 @@ export type Database = {
           error_message?: string | null
           id?: string
           message?: string | null
-          pdf_generated_at?: string | null
-          pdf_url?: string | null
           project_id?: string
           sent_at?: string
           status?: string
           subject?: string
-          tracking_status?: string
           user_id?: string
         }
         Relationships: []
