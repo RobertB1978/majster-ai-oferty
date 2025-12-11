@@ -1,7 +1,6 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useProjects } from '@/hooks/useProjects';
-import { useClients } from '@/hooks/useClients';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useOnboardingProgress, useCreateOnboardingProgress } from '@/hooks/useOnboarding';
 import { Button } from '@/components/ui/button';
 import { Plus, Sparkles, AlertTriangle, Clock } from 'lucide-react';
@@ -20,8 +19,19 @@ import { useExpirationMonitor } from '@/hooks/useExpirationMonitor';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function Dashboard() {
-  const { data: projects = [], isLoading: projectsLoading } = useProjects();
-  const { data: clients = [], isLoading: clientsLoading } = useClients();
+  // Optimized: Single hook with server-side aggregations
+  const {
+    totalProjects,
+    totalClients,
+    newCount,
+    inProgressCount,
+    sentCount,
+    acceptedCount,
+    recentWeekCount,
+    recentProjects,
+    isLoading,
+  } = useDashboardStats();
+
   const { data: onboardingProgress, isLoading: onboardingLoading } = useOnboardingProgress();
   const createOnboarding = useCreateOnboardingProgress();
   const navigate = useNavigate();
@@ -29,37 +39,12 @@ export default function Dashboard() {
   const { showAds, currentPlan } = usePlanFeatures();
   const { expiringOffersCount, subscriptionExpiresIn, isSubscriptionExpiring } = useExpirationMonitor();
 
-  const recentProjects = useMemo(() =>
-    [...projects]
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(0, 5),
-    [projects]
-  );
-
-  const isLoading = projectsLoading || clientsLoading;
-
-  // Statistics
-  const stats = useMemo(() => ({
-    total: projects.length,
-    new: projects.filter(p => p.status === 'Nowy').length,
-    inProgress: projects.filter(p => p.status === 'Wycena w toku').length,
-    sent: projects.filter(p => p.status === 'Oferta wysłana').length,
-    accepted: projects.filter(p => p.status === 'Zaakceptowany').length,
-  }), [projects]);
-
-  // Projects from last week
-  const recentCount = useMemo(() => {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    return projects.filter(p => new Date(p.created_at) > oneWeekAgo).length;
-  }, [projects]);
-
   // Initialize onboarding for new users
   useEffect(() => {
-    if (!onboardingLoading && !onboardingProgress && projects.length === 0 && clients.length === 0) {
+    if (!onboardingLoading && !onboardingProgress && totalProjects === 0 && totalClients === 0) {
       createOnboarding.mutate();
     }
-  }, [onboardingLoading, onboardingProgress, projects.length, clients.length]);
+  }, [onboardingLoading, onboardingProgress, totalProjects, totalClients]);
 
   // Show onboarding wizard for new users
   useEffect(() => {
@@ -74,13 +59,13 @@ export default function Dashboard() {
   };
 
   // Show empty state for new users
-  if (!isLoading && projects.length === 0 && clients.length === 0) {
+  if (!isLoading && totalProjects === 0 && totalClients === 0) {
     return (
       <>
         <EmptyDashboard />
-        <OnboardingWizard 
-          open={showOnboarding} 
-          onClose={() => setShowOnboarding(false)} 
+        <OnboardingWizard
+          open={showOnboarding}
+          onClose={() => setShowOnboarding(false)}
         />
       </>
     );
@@ -179,10 +164,10 @@ export default function Dashboard() {
 
       {/* Main Stats */}
       <DashboardStats
-        projectsCount={stats.total}
-        clientsCount={clients.length}
-        acceptedCount={stats.accepted}
-        recentCount={recentCount}
+        projectsCount={totalProjects}
+        clientsCount={totalClients}
+        acceptedCount={acceptedCount}
+        recentCount={recentWeekCount}
       />
 
       {/* Sidebar Ad for Free users */}
@@ -190,10 +175,10 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-3">
             <ProjectStatusBreakdown
-              newCount={stats.new}
-              inProgressCount={stats.inProgress}
-              sentCount={stats.sent}
-              acceptedCount={stats.accepted}
+              newCount={newCount}
+              inProgressCount={inProgressCount}
+              sentCount={sentCount}
+              acceptedCount={acceptedCount}
             />
           </div>
           <div className="lg:col-span-1">
@@ -205,10 +190,10 @@ export default function Dashboard() {
       {/* Status breakdown without ads */}
       {!showAds && (
         <ProjectStatusBreakdown
-          newCount={stats.new}
-          inProgressCount={stats.inProgress}
-          sentCount={stats.sent}
-          acceptedCount={stats.accepted}
+          newCount={newCount}
+          inProgressCount={inProgressCount}
+          sentCount={sentCount}
+          acceptedCount={acceptedCount}
         />
       )}
 
