@@ -160,14 +160,52 @@ export function useAddProject() {
       if (error) throw error;
       return data as Project;
     },
+    // Optimistic update for instant feedback
+    onMutate: async (newProject) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: projectsKeys.all });
+
+      // Snapshot the previous value
+      const previousProjects = queryClient.getQueryData(['projects', user!.id]);
+
+      // Get client name for optimistic update (if available in cache)
+      const clientData = queryClient.getQueryData(['clients', user!.id]) as any[] | undefined;
+      const client = clientData?.find(c => c.id === newProject.client_id);
+
+      // Optimistically add new project
+      queryClient.setQueryData(['projects', user!.id], (old: Project[] | undefined) => {
+        if (!old) return old;
+
+        const optimisticProject: Project = {
+          id: `temp-${Date.now()}`,
+          user_id: user!.id,
+          client_id: newProject.client_id,
+          project_name: newProject.project_name,
+          status: newProject.status || 'Nowy',
+          priority: null,
+          created_at: new Date().toISOString(),
+          clients: client ? { id: client.id, name: client.name } : undefined,
+        };
+
+        return [optimisticProject, ...old];
+      });
+
+      return { previousProjects };
+    },
+    onError: (err, newProject, context) => {
+      // Rollback on error
+      if (context?.previousProjects) {
+        queryClient.setQueryData(['projects', user!.id], context.previousProjects);
+      }
+      toast.error('Błąd przy tworzeniu projektu');
+      console.error(err);
+    },
     onSuccess: () => {
-      // Invalidate all projects queries (both paginated and non-paginated)
-      queryClient.invalidateQueries({ queryKey: projectsKeys.all });
       toast.success('Projekt utworzony');
     },
-    onError: (error) => {
-      toast.error('Błąd przy tworzeniu projektu');
-      console.error(error);
+    onSettled: () => {
+      // Always refetch to ensure sync with server
+      queryClient.invalidateQueries({ queryKey: projectsKeys.all });
     },
   });
 }
@@ -201,6 +239,7 @@ export function useUpdateProject() {
 
 export function useDeleteProject() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -211,14 +250,36 @@ export function useDeleteProject() {
 
       if (error) throw error;
     },
+    // Optimistic update for instant feedback
+    onMutate: async (deletedId) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: projectsKeys.all });
+
+      // Snapshot the previous value
+      const previousProjects = queryClient.getQueryData(['projects', user!.id]);
+
+      // Optimistically remove the project
+      queryClient.setQueryData(['projects', user!.id], (old: Project[] | undefined) => {
+        if (!old) return old;
+        return old.filter(project => project.id !== deletedId);
+      });
+
+      return { previousProjects };
+    },
+    onError: (err, deletedId, context) => {
+      // Rollback on error
+      if (context?.previousProjects) {
+        queryClient.setQueryData(['projects', user!.id], context.previousProjects);
+      }
+      toast.error('Błąd przy usuwaniu projektu');
+      console.error(err);
+    },
     onSuccess: () => {
-      // Invalidate all projects queries (both paginated and non-paginated)
-      queryClient.invalidateQueries({ queryKey: projectsKeys.all });
       toast.success('Projekt usunięty');
     },
-    onError: (error) => {
-      toast.error('Błąd przy usuwaniu projektu');
-      console.error(error);
+    onSettled: () => {
+      // Always refetch to ensure sync with server
+      queryClient.invalidateQueries({ queryKey: projectsKeys.all });
     },
   });
 }

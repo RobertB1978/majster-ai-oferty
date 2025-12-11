@@ -140,14 +140,49 @@ export function useAddClient() {
       if (error) throw error;
       return data as Client;
     },
+    // Optimistic update for instant feedback
+    onMutate: async (newClient) => {
+      // Cancel outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: clientsKeys.all });
+
+      // Snapshot the previous value
+      const previousClients = queryClient.getQueryData(['clients', user!.id]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(['clients', user!.id], (old: Client[] | undefined) => {
+        if (!old) return old;
+
+        // Add optimistic client at the beginning (newest first)
+        const optimisticClient: Client = {
+          id: `temp-${Date.now()}`, // Temporary ID
+          user_id: user!.id,
+          name: newClient.name,
+          phone: newClient.phone || null,
+          email: newClient.email || null,
+          address: newClient.address || null,
+          created_at: new Date().toISOString(),
+        };
+
+        return [optimisticClient, ...old];
+      });
+
+      // Return context object with the snapshot
+      return { previousClients };
+    },
+    onError: (err, newClient, context) => {
+      // Rollback to the previous value on error
+      if (context?.previousClients) {
+        queryClient.setQueryData(['clients', user!.id], context.previousClients);
+      }
+      toast.error('Błąd przy dodawaniu klienta');
+      console.error(err);
+    },
     onSuccess: () => {
-      // Invalidate all clients queries (both paginated and non-paginated)
-      queryClient.invalidateQueries({ queryKey: clientsKeys.all });
       toast.success('Klient dodany');
     },
-    onError: (error) => {
-      toast.error('Błąd przy dodawaniu klienta');
-      console.error(error);
+    onSettled: () => {
+      // Always refetch after error or success to ensure sync with server
+      queryClient.invalidateQueries({ queryKey: clientsKeys.all });
     },
   });
 }
@@ -181,6 +216,7 @@ export function useUpdateClient() {
 
 export function useDeleteClient() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -191,14 +227,37 @@ export function useDeleteClient() {
 
       if (error) throw error;
     },
+    // Optimistic update for instant feedback
+    onMutate: async (deletedId) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: clientsKeys.all });
+
+      // Snapshot the previous value
+      const previousClients = queryClient.getQueryData(['clients', user!.id]);
+
+      // Optimistically remove the client
+      queryClient.setQueryData(['clients', user!.id], (old: Client[] | undefined) => {
+        if (!old) return old;
+        return old.filter(client => client.id !== deletedId);
+      });
+
+      // Return context with the snapshot
+      return { previousClients };
+    },
+    onError: (err, deletedId, context) => {
+      // Rollback on error
+      if (context?.previousClients) {
+        queryClient.setQueryData(['clients', user!.id], context.previousClients);
+      }
+      toast.error('Błąd przy usuwaniu klienta');
+      console.error(err);
+    },
     onSuccess: () => {
-      // Invalidate all clients queries (both paginated and non-paginated)
-      queryClient.invalidateQueries({ queryKey: clientsKeys.all });
       toast.success('Klient usunięty');
     },
-    onError: (error) => {
-      toast.error('Błąd przy usuwaniu klienta');
-      console.error(error);
+    onSettled: () => {
+      // Always refetch to ensure sync with server
+      queryClient.invalidateQueries({ queryKey: clientsKeys.all });
     },
   });
 }
