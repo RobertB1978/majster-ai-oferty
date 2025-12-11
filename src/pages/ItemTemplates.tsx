@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useItemTemplatesPaginated, useItemTemplates, useCreateItemTemplate, useUpdateItemTemplate, useDeleteItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
+import { useDebounce } from '@/hooks/useDebounce';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -45,6 +46,9 @@ export default function ItemTemplates() {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'Materiał' | 'Robocizna'>('all');
 
+  // Debounce search to avoid excessive API calls
+  const debouncedSearch = useDebounce(search, 300);
+
   // Paginated query with server-side filtering
   const {
     data: paginatedResult,
@@ -52,7 +56,7 @@ export default function ItemTemplates() {
   } = useItemTemplatesPaginated({
     page,
     pageSize: PAGE_SIZE,
-    search,
+    search: debouncedSearch,
     category: categoryFilter,
   });
 

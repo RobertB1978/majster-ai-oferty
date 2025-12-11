@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClientsPaginated, useAddClient, useUpdateClient, useDeleteClient, Client } from '@/hooks/useClients';
+import { useDebounce } from '@/hooks/useDebounce';
 import { clientSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,6 +27,9 @@ export default function Clients() {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Debounce search to avoid excessive API calls
+  const debouncedSearch = useDebounce(searchQuery, 300);
+
   // Paginated query with server-side search
   const {
     data: paginatedResult,
@@ -33,7 +37,7 @@ export default function Clients() {
   } = useClientsPaginated({
     page,
     pageSize: PAGE_SIZE,
-    search: searchQuery,
+    search: debouncedSearch,
   });
 
   const addClient = useAddClient();

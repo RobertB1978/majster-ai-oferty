@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useProjectsPaginated, useProjects } from '@/hooks/useProjects';
+import { useDebounce } from '@/hooks/useDebounce';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +28,9 @@ export default function Projects() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'Nowy' | 'Wycena w toku' | 'Oferta wysłana' | 'Zaakceptowany'>('all');
 
+  // Debounce search to avoid excessive API calls
+  const debouncedSearch = useDebounce(searchQuery, 300);
+
   // Paginated query with server-side filtering
   const {
     data: paginatedResult,
@@ -34,7 +38,7 @@ export default function Projects() {
   } = useProjectsPaginated({
     page,
     pageSize: PAGE_SIZE,
-    search: searchQuery,
+    search: debouncedSearch,
     status: statusFilter,
   });
 
