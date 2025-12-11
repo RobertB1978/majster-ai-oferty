@@ -122,8 +122,10 @@ const App = () => (
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
-        {/* React Query Devtools - only in development */}
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* React Query Devtools - ONLY in development, not in production */}
+        {import.meta.env.MODE === 'development' && (
+          <ReactQueryDevtools initialIsOpen={false} />
+        )}
       </QueryClientProvider>
     </HelmetProvider>
   </ErrorBoundary>

@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/react";
+import { onCLS, onFID, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals';
 
 /**
  * Inicjalizacja Sentry dla monitoringu błędów i wydajności
@@ -68,7 +69,7 @@ export function initSentry() {
         'chrome-extension://',
         'moz-extension://',
 
-        // Błędy sieciowe
+        // Błędy sieciowe (transient errors)
         'Failed to fetch',
         'NetworkError',
         'Network request failed',
@@ -78,10 +79,40 @@ export function initSentry() {
       ],
     });
 
+    // Inicjalizuj Web Vitals monitoring
+    initWebVitals();
+
     console.log(`✅ Sentry zainicjalizowane (${environment})`);
   } else {
     console.log('ℹ️ Sentry nie jest skonfigurowane (brak VITE_SENTRY_DSN)');
   }
+}
+
+/**
+ * Web Vitals monitoring - wysyła metryki wydajności do Sentry
+ * Metryki: CLS, FID, FCP, LCP, TTFB
+ */
+function initWebVitals() {
+  const sendToSentry = (metric: Metric) => {
+    // Wysyłaj tylko w produkcji aby nie zaśmiecać danych dev
+    if (import.meta.env.MODE === 'production') {
+      Sentry.setMeasurement(metric.name, metric.value, metric.unit);
+    }
+
+    // Log do konsoli w dev mode
+    if (import.meta.env.MODE === 'development') {
+      console.log(`[Web Vitals] ${metric.name}:`, metric.value, metric.unit);
+    }
+  };
+
+  // Core Web Vitals (Google)
+  onCLS(sendToSentry); // Cumulative Layout Shift - stabilność wizualna
+  onFID(sendToSentry); // First Input Delay - interaktywność (deprecated, zastąpiony przez INP)
+  onLCP(sendToSentry); // Largest Contentful Paint - szybkość ładowania
+
+  // Dodatkowe metryki
+  onFCP(sendToSentry); // First Contentful Paint - pierwsze renderowanie
+  onTTFB(sendToSentry); // Time to First Byte - szybkość odpowiedzi serwera
 }
 
 /**
@@ -129,3 +160,9 @@ export function clearSentryUser() {
     Sentry.setUser(null);
   }
 }
+
+/**
+ * Error Boundary Component - opakowuje część aplikacji aby łapać błędy React
+ * Używaj: <SentryErrorBoundary><YourComponent /></SentryErrorBoundary>
+ */
+export const SentryErrorBoundary = Sentry.ErrorBoundary;
