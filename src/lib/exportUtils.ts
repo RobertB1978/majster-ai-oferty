@@ -111,22 +111,33 @@ interface ProjectForExport {
   total?: number;
 }
 
-export function exportProjectsToCSV(projects: ProjectForExport[]) {
-  // Limit to 500 records for free tier performance protection
-  const MAX_EXPORT_LIMIT = 500;
+/**
+ * Export projects to CSV with subscription-based limits
+ * @param projects - Array of projects to export
+ * @param maxLimit - Maximum number of records (based on subscription plan)
+ */
+export function exportProjectsToCSV(
+  projects: ProjectForExport[],
+  maxLimit: number = 500
+) {
+  if (projects.length > maxLimit) {
+    const isUnlimited = maxLimit === Infinity;
 
-  if (projects.length > MAX_EXPORT_LIMIT) {
-    toast.warning(
-      `Eksport ograniczony do ${MAX_EXPORT_LIMIT} rekordów`,
-      {
-        description: `Próbujesz wyeksportować ${projects.length} projektów. W planie Free eksport jest ograniczony do ${MAX_EXPORT_LIMIT} rekordów. Upgrade do planu Business, aby usunąć ograniczenia.`,
-        duration: 6000,
-      }
-    );
+    if (!isUnlimited) {
+      toast.warning(
+        `Eksport ograniczony do ${maxLimit} rekordów`,
+        {
+          description: `Próbujesz wyeksportować ${projects.length} projektów. Twój plan pozwala na eksport maksymalnie ${maxLimit} rekordów. Upgrade do wyższego planu, aby zwiększyć limit.`,
+          duration: 6000,
+        }
+      );
+    }
   }
 
-  // Take only first 500 projects
-  const projectsToExport = projects.slice(0, MAX_EXPORT_LIMIT);
+  // Take only allowed number of projects
+  const projectsToExport = maxLimit === Infinity
+    ? projects
+    : projects.slice(0, maxLimit);
 
   const rows = [
     ['Nazwa projektu', 'Klient', 'Status', 'Data utworzenia', 'Kwota (zł)'],
