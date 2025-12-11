@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import { QuotePosition } from '@/hooks/useQuotes';
+import { toast } from 'sonner';
 
 interface ExportQuoteData {
   projectName: string;
@@ -111,9 +112,25 @@ interface ProjectForExport {
 }
 
 export function exportProjectsToCSV(projects: ProjectForExport[]) {
+  // Limit to 500 records for free tier performance protection
+  const MAX_EXPORT_LIMIT = 500;
+
+  if (projects.length > MAX_EXPORT_LIMIT) {
+    toast.warning(
+      `Eksport ograniczony do ${MAX_EXPORT_LIMIT} rekordów`,
+      {
+        description: `Próbujesz wyeksportować ${projects.length} projektów. W planie Free eksport jest ograniczony do ${MAX_EXPORT_LIMIT} rekordów. Upgrade do planu Business, aby usunąć ograniczenia.`,
+        duration: 6000,
+      }
+    );
+  }
+
+  // Take only first 500 projects
+  const projectsToExport = projects.slice(0, MAX_EXPORT_LIMIT);
+
   const rows = [
     ['Nazwa projektu', 'Klient', 'Status', 'Data utworzenia', 'Kwota (zł)'],
-    ...projects.map(p => [
+    ...projectsToExport.map(p => [
       p.project_name,
       p.clients?.name || '-',
       p.status,

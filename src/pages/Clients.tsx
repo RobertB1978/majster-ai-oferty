@@ -1,11 +1,17 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useClients, useAddClient, useUpdateClient, useDeleteClient, Client } from '@/hooks/useClients';
+import { useClientsPaginated, useAddClient, useUpdateClient, useDeleteClient, Client } from '@/hooks/useClients';
+import { useDebounce } from '@/hooks/useDebounce';
 import { clientSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { SearchInput } from '@/components/ui/search-input';
+import { PaginationControls } from '@/components/ui/pagination-controls';
+import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Loader2, Users } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ClientFormData {
   name: string;
@@ -13,21 +19,33 @@ interface ClientFormData {
   email: string;
   address: string;
 }
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { SearchInput } from '@/components/ui/search-input';
-import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Loader2, Users } from 'lucide-react';
-import { toast } from 'sonner';
+
+const PAGE_SIZE = 20;
 
 export default function Clients() {
   const { t } = useTranslation();
-  const { data: clients = [], isLoading } = useClients();
+  const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Debounce search to avoid excessive API calls
+  const debouncedSearch = useDebounce(searchQuery, 300);
+
+  // Paginated query with server-side search
+  const {
+    data: paginatedResult,
+    isLoading
+  } = useClientsPaginated({
+    page,
+    pageSize: PAGE_SIZE,
+    search: debouncedSearch,
+  });
+
   const addClient = useAddClient();
   const updateClient = useUpdateClient();
   const deleteClient = useDeleteClient();
-  
+
   const [isOpen, setIsOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [formData, setFormData] = useState<ClientFormData>({
     name: '',
     phone: '',
@@ -36,17 +54,15 @@ export default function Clients() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Filter clients based on search
-  const filteredClients = useMemo(() => {
-    if (!searchQuery.trim()) return clients;
-    
-    const query = searchQuery.toLowerCase();
-    return clients.filter(client => 
-      client.name.toLowerCase().includes(query) ||
-      client.email?.toLowerCase().includes(query) ||
-      client.phone?.toLowerCase().includes(query)
-    );
-  }, [clients, searchQuery]);
+  const clients = paginatedResult?.data || [];
+  const totalPages = paginatedResult?.totalPages || 1;
+  const totalCount = paginatedResult?.totalCount || 0;
+
+  // Reset to page 1 when search changes
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setPage(1);
+  };
 
   const resetForm = () => {
     setFormData({ name: '', phone: '', email: '', address: '' });
@@ -87,7 +103,7 @@ export default function Clients() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast.error('Popraw błędy w formularzu');
       return;
@@ -111,6 +127,9 @@ export default function Clients() {
       await deleteClient.mutateAsync(id);
     }
   };
+
+  const showEmptyState = !isLoading && totalCount === 0 && !searchQuery;
+  const showNoResults = !isLoading && clients.length === 0 && searchQuery;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -184,8 +203,8 @@ export default function Clients() {
                 />
                 {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
               </div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full"
                 disabled={addClient.isPending || updateClient.isPending}
               >
@@ -200,13 +219,13 @@ export default function Clients() {
       </div>
 
       {/* Search */}
-      {clients.length > 0 && (
+      {!showEmptyState && (
         <div className="max-w-md">
           <SearchInput
             placeholder={t('clients.searchPlaceholder')}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onClear={() => setSearchQuery('')}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            onClear={() => handleSearchChange('')}
           />
         </div>
       )}
@@ -218,7 +237,7 @@ export default function Clients() {
             <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
           </div>
         </div>
-      ) : clients.length === 0 ? (
+      ) : showEmptyState ? (
         <Card className="border-dashed border-2">
           <CardContent className="py-16 text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
@@ -232,72 +251,76 @@ export default function Clients() {
             </Button>
           </CardContent>
         </Card>
-      ) : filteredClients.length === 0 ? (
+      ) : showNoResults ? (
         <Card className="border-dashed">
           <CardContent className="py-12 text-center">
             <p className="text-muted-foreground mb-2">{t('common.none')}</p>
-            <Button variant="outline" onClick={() => setSearchQuery('')}>
-              {t('common.search')}
+            <Button variant="outline" onClick={() => handleSearchChange('')}>
+              Wyczyść wyszukiwanie
             </Button>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredClients.map((client, index) => (
-            <Card key={client.id} className="group hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300" style={{ animationDelay: `${index * 50}ms` }}>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-start justify-between text-lg">
-                  <span className="line-clamp-2">{client.name}</span>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => handleOpenDialog(client)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive"
-                      onClick={() => handleDelete(client.id, client.name)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {client.phone && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Phone className="h-4 w-4" />
-                    <span>{client.phone}</span>
-                  </div>
-                )}
-                {client.email && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Mail className="h-4 w-4" />
-                    <span className="truncate">{client.email}</span>
-                  </div>
-                )}
-                {client.address && (
-                  <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-                    <span className="line-clamp-2">{client.address}</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {clients.map((client, index) => (
+              <Card key={client.id} className="group hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300" style={{ animationDelay: `${index * 50}ms` }}>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-start justify-between text-lg">
+                    <span className="line-clamp-2">{client.name}</span>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleOpenDialog(client)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        onClick={() => handleDelete(client.id, client.name)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {client.phone && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Phone className="h-4 w-4" />
+                      <span>{client.phone}</span>
+                    </div>
+                  )}
+                  {client.email && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Mail className="h-4 w-4" />
+                      <span className="truncate">{client.email}</span>
+                    </div>
+                  )}
+                  {client.address && (
+                    <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+                      <span className="line-clamp-2">{client.address}</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-      {/* Results count */}
-      {searchQuery && filteredClients.length > 0 && (
-        <p className="text-sm text-muted-foreground">
-          {filteredClients.length} / {clients.length}
-        </p>
+          {/* Pagination Controls */}
+          <PaginationControls
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            pageSize={PAGE_SIZE}
+            totalItems={totalCount}
+          />
+        </>
       )}
     </div>
   );

@@ -13,6 +13,79 @@ export interface Client {
   created_at: string;
 }
 
+interface ClientsQueryParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+}
+
+interface ClientsQueryResult {
+  data: Client[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+/**
+ * Query key factory for clients
+ */
+export const clientsKeys = {
+  all: ['clients'] as const,
+  lists: () => [...clientsKeys.all, 'list'] as const,
+  list: (params: ClientsQueryParams) => [...clientsKeys.lists(), params] as const,
+  details: () => [...clientsKeys.all, 'detail'] as const,
+  detail: (id: string) => [...clientsKeys.details(), id] as const,
+};
+
+/**
+ * Paginated clients query with search
+ * Optimized: Only fetches necessary columns, supports server-side filtering
+ */
+export function useClientsPaginated(params: ClientsQueryParams = {}) {
+  const { page = 1, pageSize = 20, search } = params;
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: clientsKeys.list(params),
+    queryFn: async (): Promise<ClientsQueryResult> => {
+      let query = supabase
+        .from('clients')
+        // Only select columns needed for list view (not SELECT *)
+        .select('id, name, email, phone, created_at', { count: 'exact' });
+
+      // Server-side search filter
+      if (search?.trim()) {
+        query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
+      }
+
+      // Pagination using range
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      const { data, error, count } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+
+      const totalCount = count || 0;
+      const totalPages = Math.ceil(totalCount / pageSize);
+
+      return {
+        data: (data as Client[]) || [],
+        totalCount,
+        totalPages,
+        currentPage: page,
+      };
+    },
+    enabled: !!user,
+  });
+}
+
+/**
+ * @deprecated Use useClientsPaginated instead for better performance
+ * Kept for backward compatibility with Dashboard and other components
+ */
 export function useClients() {
   const { user } = useAuth();
 
@@ -21,7 +94,8 @@ export function useClients() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('clients')
-        .select('*')
+        // Optimized: removed SELECT * - only necessary columns
+        .select('id, name, email, phone, created_at')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -35,11 +109,12 @@ export function useClient(id: string) {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['clients', id],
+    queryKey: clientsKeys.detail(id),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('clients')
-        .select('*')
+        // Detail view: fetch all columns including address
+        .select('id, name, phone, email, address, created_at')
         .eq('id', id)
         .maybeSingle();
 
@@ -59,14 +134,15 @@ export function useAddClient() {
       const { data, error } = await supabase
         .from('clients')
         .insert({ ...client, user_id: user!.id })
-        .select()
+        .select('id, name, email, phone, created_at')
         .single();
 
       if (error) throw error;
       return data as Client;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      // Invalidate all clients queries (both paginated and non-paginated)
+      queryClient.invalidateQueries({ queryKey: clientsKeys.all });
       toast.success('Klient dodany');
     },
     onError: (error) => {
@@ -85,14 +161,15 @@ export function useUpdateClient() {
         .from('clients')
         .update(client)
         .eq('id', id)
-        .select()
+        .select('id, name, email, phone, created_at')
         .single();
 
       if (error) throw error;
       return data as Client;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      // Invalidate all clients queries (both paginated and non-paginated)
+      queryClient.invalidateQueries({ queryKey: clientsKeys.all });
       toast.success('Klient zaktualizowany');
     },
     onError: (error) => {
@@ -115,7 +192,8 @@ export function useDeleteClient() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      // Invalidate all clients queries (both paginated and non-paginated)
+      queryClient.invalidateQueries({ queryKey: clientsKeys.all });
       toast.success('Klient usunięty');
     },
     onError: (error) => {

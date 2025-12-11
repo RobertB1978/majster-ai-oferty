@@ -15,6 +15,85 @@ export interface ItemTemplate {
   created_at: string;
 }
 
+interface ItemTemplatesQueryParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  category?: 'all' | 'Materiał' | 'Robocizna';
+}
+
+interface ItemTemplatesQueryResult {
+  data: ItemTemplate[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+/**
+ * Query key factory for item templates
+ */
+export const itemTemplatesKeys = {
+  all: ['itemTemplates'] as const,
+  lists: () => [...itemTemplatesKeys.all, 'list'] as const,
+  list: (params: ItemTemplatesQueryParams) => [...itemTemplatesKeys.lists(), params] as const,
+  details: () => [...itemTemplatesKeys.all, 'detail'] as const,
+  detail: (id: string) => [...itemTemplatesKeys.details(), id] as const,
+};
+
+/**
+ * Paginated item templates query with search and filters
+ * Optimized: Only fetches necessary columns, supports server-side filtering
+ */
+export function useItemTemplatesPaginated(params: ItemTemplatesQueryParams = {}) {
+  const { page = 1, pageSize = 20, search, category } = params;
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: itemTemplatesKeys.list(params),
+    queryFn: async (): Promise<ItemTemplatesQueryResult> => {
+      let query = supabase
+        .from('item_templates')
+        // Only select columns needed for list view (not SELECT *)
+        .select('id, name, unit, default_qty, default_price, category, created_at', { count: 'exact' });
+
+      // Server-side search filter
+      if (search?.trim()) {
+        query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+      }
+
+      // Server-side category filter
+      if (category && category !== 'all') {
+        query = query.eq('category', category);
+      }
+
+      // Pagination using range
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      const { data, error, count } = await query
+        .order('name')
+        .range(from, to);
+
+      if (error) throw error;
+
+      const totalCount = count || 0;
+      const totalPages = Math.ceil(totalCount / pageSize);
+
+      return {
+        data: (data as ItemTemplate[]) || [],
+        totalCount,
+        totalPages,
+        currentPage: page,
+      };
+    },
+    enabled: !!user,
+  });
+}
+
+/**
+ * @deprecated Use useItemTemplatesPaginated instead for better performance
+ * Kept for backward compatibility with import dialogs and other components
+ */
 export function useItemTemplates() {
   const { user } = useAuth();
 
@@ -23,7 +102,8 @@ export function useItemTemplates() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('item_templates')
-        .select('*')
+        // Optimized: removed SELECT * - only necessary columns
+        .select('id, name, unit, default_qty, default_price, category, description, created_at')
         .order('name');
 
       if (error) throw error;
@@ -45,14 +125,15 @@ export function useCreateItemTemplate() {
           ...template,
           user_id: user!.id,
         })
-        .select()
+        .select('id, name, unit, default_qty, default_price, category, created_at')
         .single();
 
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['item_templates'] });
+      // Invalidate all item templates queries (both paginated and non-paginated)
+      queryClient.invalidateQueries({ queryKey: itemTemplatesKeys.all });
       toast.success('Szablon utworzony');
     },
     onError: () => {
@@ -70,14 +151,15 @@ export function useUpdateItemTemplate() {
         .from('item_templates')
         .update(updates)
         .eq('id', id)
-        .select()
+        .select('id, name, unit, default_qty, default_price, category, created_at')
         .single();
 
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['item_templates'] });
+      // Invalidate all item templates queries (both paginated and non-paginated)
+      queryClient.invalidateQueries({ queryKey: itemTemplatesKeys.all });
       toast.success('Szablon zaktualizowany');
     },
     onError: () => {
@@ -99,7 +181,8 @@ export function useDeleteItemTemplate() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['item_templates'] });
+      // Invalidate all item templates queries (both paginated and non-paginated)
+      queryClient.invalidateQueries({ queryKey: itemTemplatesKeys.all });
       toast.success('Szablon usunięty');
     },
     onError: () => {

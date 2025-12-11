@@ -17,9 +17,91 @@ export interface Project {
   start_date?: string | null;
   end_date?: string | null;
   created_at: string;
-  clients?: Client;
+  clients?: Pick<Client, 'id' | 'name'>; // Only needed fields for list view
 }
 
+interface ProjectsQueryParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  status?: ProjectStatus | 'all';
+}
+
+interface ProjectsQueryResult {
+  data: Project[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+/**
+ * Query key factory for projects
+ */
+export const projectsKeys = {
+  all: ['projects'] as const,
+  lists: () => [...projectsKeys.all, 'list'] as const,
+  list: (params: ProjectsQueryParams) => [...projectsKeys.lists(), params] as const,
+  details: () => [...projectsKeys.all, 'detail'] as const,
+  detail: (id: string) => [...projectsKeys.details(), id] as const,
+};
+
+/**
+ * Paginated projects query with search and filters
+ * Optimized: Only fetches necessary columns, supports server-side filtering
+ */
+export function useProjectsPaginated(params: ProjectsQueryParams = {}) {
+  const { page = 1, pageSize = 20, search, status } = params;
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: projectsKeys.list(params),
+    queryFn: async (): Promise<ProjectsQueryResult> => {
+      let query = supabase
+        .from('projects')
+        // Only select columns needed for list view (not SELECT *)
+        .select(
+          'id, project_name, status, priority, created_at, client_id, clients(id, name)',
+          { count: 'exact' }
+        );
+
+      // Server-side search filter
+      if (search?.trim()) {
+        query = query.or(`project_name.ilike.%${search}%,clients.name.ilike.%${search}%`);
+      }
+
+      // Server-side status filter
+      if (status && status !== 'all') {
+        query = query.eq('status', status);
+      }
+
+      // Pagination using range
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      const { data, error, count } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+
+      const totalCount = count || 0;
+      const totalPages = Math.ceil(totalCount / pageSize);
+
+      return {
+        data: (data as Project[]) || [],
+        totalCount,
+        totalPages,
+        currentPage: page,
+      };
+    },
+    enabled: !!user,
+  });
+}
+
+/**
+ * @deprecated Use useProjectsPaginated instead for better performance
+ * Kept for backward compatibility with Dashboard and other components
+ */
 export function useProjects() {
   const { user } = useAuth();
 
@@ -28,7 +110,8 @@ export function useProjects() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('*, clients(*)')
+        // Optimized: removed SELECT * - only necessary columns
+        .select('id, project_name, status, priority, created_at, client_id, clients(id, name)')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -42,11 +125,12 @@ export function useProject(id: string) {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['projects', id],
+    queryKey: projectsKeys.detail(id),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('*, clients(*)')
+        // Detail view: fetch more columns than list view, but still selective
+        .select('id, user_id, client_id, project_name, status, priority, start_date, end_date, created_at, clients(id, name, email, phone)')
         .eq('id', id)
         .maybeSingle();
 
@@ -65,19 +149,20 @@ export function useAddProject() {
     mutationFn: async (project: { project_name: string; client_id: string; status?: ProjectStatus }) => {
       const { data, error } = await supabase
         .from('projects')
-        .insert({ 
-          ...project, 
+        .insert({
+          ...project,
           user_id: user!.id,
           status: project.status || 'Nowy'
         })
-        .select('*, clients(*)')
+        .select('id, project_name, status, priority, created_at, client_id, clients(id, name)')
         .single();
 
       if (error) throw error;
       return data as Project;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      // Invalidate all projects queries (both paginated and non-paginated)
+      queryClient.invalidateQueries({ queryKey: projectsKeys.all });
       toast.success('Projekt utworzony');
     },
     onError: (error) => {
@@ -96,14 +181,15 @@ export function useUpdateProject() {
         .from('projects')
         .update(project)
         .eq('id', id)
-        .select('*, clients(*)')
+        .select('id, project_name, status, priority, created_at, client_id, clients(id, name)')
         .single();
 
       if (error) throw error;
       return data as Project;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      // Invalidate all projects queries (both paginated and non-paginated)
+      queryClient.invalidateQueries({ queryKey: projectsKeys.all });
       toast.success('Projekt zaktualizowany');
     },
     onError: (error) => {
@@ -126,7 +212,8 @@ export function useDeleteProject() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      // Invalidate all projects queries (both paginated and non-paginated)
+      queryClient.invalidateQueries({ queryKey: projectsKeys.all });
       toast.success('Projekt usunięty');
     },
     onError: (error) => {

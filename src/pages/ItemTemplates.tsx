@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useItemTemplates, useCreateItemTemplate, useUpdateItemTemplate, useDeleteItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
+import { useItemTemplatesPaginated, useItemTemplates, useCreateItemTemplate, useUpdateItemTemplate, useDeleteItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
+import { useDebounce } from '@/hooks/useDebounce';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2, Loader2, Package, Download, Filter } from 'lucide-react';
 import { SearchInput } from '@/components/ui/search-input';
+import { PaginationControls } from '@/components/ui/pagination-controls';
 import { toast } from 'sonner';
 import { defaultTemplates, trades } from '@/data/defaultTemplates';
 import { Badge } from '@/components/ui/badge';
@@ -37,14 +39,31 @@ const initialFormData: TemplateFormData = {
   description: '',
 };
 
+const PAGE_SIZE = 20;
+
 export default function ItemTemplates() {
-  const { data: templates, isLoading } = useItemTemplates();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'Materiał' | 'Robocizna'>('all');
+
+  // Debounce search to avoid excessive API calls
+  const debouncedSearch = useDebounce(search, 300);
+
+  // Paginated query with server-side filtering
+  const {
+    data: paginatedResult,
+    isLoading
+  } = useItemTemplatesPaginated({
+    page,
+    pageSize: PAGE_SIZE,
+    search: debouncedSearch,
+    category: categoryFilter,
+  });
+
   const createTemplate = useCreateItemTemplate();
   const updateTemplate = useUpdateItemTemplate();
   const deleteTemplate = useDeleteItemTemplate();
 
-  const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [selectedDefaults, setSelectedDefaults] = useState<Set<number>>(new Set());
@@ -54,6 +73,10 @@ export default function ItemTemplates() {
   const [formData, setFormData] = useState<TemplateFormData>(initialFormData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isImporting, setIsImporting] = useState(false);
+
+  const templates = paginatedResult?.data || [];
+  const totalPages = paginatedResult?.totalPages || 1;
+  const totalCount = paginatedResult?.totalCount || 0;
 
   const filteredDefaultTemplates = defaultTemplates.filter(t => 
     importTradeFilter === 'all' || t.trade === importTradeFilter
@@ -115,12 +138,16 @@ export default function ItemTemplates() {
     }
   };
 
-  const filteredTemplates = templates?.filter(t => {
-    const matchesSearch = t.name.toLowerCase().includes(search.toLowerCase()) ||
-                          (t.description || '').toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || t.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
+  // Reset to page 1 when filters change
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategoryFilter(value as typeof categoryFilter);
+    setPage(1);
+  };
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -191,7 +218,7 @@ export default function ItemTemplates() {
             Szablony pozycji
           </h1>
           <p className="mt-1 text-muted-foreground">
-            {templates?.length || 0} szablonów • Gotowe pozycje do szybkiego tworzenia wycen
+            {totalCount} szablonów • Gotowe pozycje do szybkiego tworzenia wycen
           </p>
         </div>
         <div className="flex gap-2">
@@ -209,12 +236,12 @@ export default function ItemTemplates() {
       <div className="flex flex-col gap-4 sm:flex-row">
         <SearchInput
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onClear={() => setSearch('')}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          onClear={() => handleSearchChange('')}
           placeholder="Szukaj szablonu..."
           className="sm:w-64"
         />
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+        <Select value={categoryFilter} onValueChange={handleCategoryChange}>
           <SelectTrigger className="sm:w-40">
             <SelectValue placeholder="Kategoria" />
           </SelectTrigger>
@@ -226,14 +253,14 @@ export default function ItemTemplates() {
         </Select>
       </div>
 
-      {filteredTemplates?.length === 0 ? (
+      {templates.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <p className="text-muted-foreground mb-4">
-              {templates?.length === 0 ? 'Brak szablonów.' : 'Brak wyników dla podanych filtrów.'}
+              {totalCount === 0 && !search && categoryFilter === 'all' ? 'Brak szablonów.' : 'Brak wyników dla podanych filtrów.'}
             </p>
-            {templates?.length === 0 && (
+            {totalCount === 0 && !search && categoryFilter === 'all' && (
               <Button onClick={() => setIsImportDialogOpen(true)}>
                 <Download className="mr-2 h-4 w-4" />
                 Importuj gotowe szablony
@@ -242,8 +269,9 @@ export default function ItemTemplates() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredTemplates?.map((template) => (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {templates.map((template) => (
             <Card key={template.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
@@ -279,8 +307,18 @@ export default function ItemTemplates() {
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+
+          {/* Pagination Controls */}
+          <PaginationControls
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            pageSize={PAGE_SIZE}
+            totalItems={totalCount}
+          />
+        </>
       )}
 
       {/* Create/Edit Dialog */}
