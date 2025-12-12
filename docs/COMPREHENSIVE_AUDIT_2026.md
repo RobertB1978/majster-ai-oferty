@@ -270,10 +270,10 @@ npx vite-bundle-visualizer
 **Recommendation:** Add Real User Monitoring (RUM)
 ```typescript
 // Option 1: Web Vitals
-import { onCLS, onFID, onLCP, onTTFB, onFCP } from 'web-vitals';
+import { onCLS, onINP, onLCP, onTTFB, onFCP } from 'web-vitals';
 
 onCLS(sendToAnalytics);
-onFID(sendToAnalytics);
+onINP(sendToAnalytics);
 onLCP(sendToAnalytics);
 
 // Option 2: Sentry Performance
@@ -943,7 +943,7 @@ Sentry.init({
 });
 
 // 2. Real User Monitoring (Web Vitals)
-import { onCLS, onFID, onLCP } from 'web-vitals';
+import { onCLS, onINP, onLCP } from 'web-vitals';
 
 function sendToAnalytics({ name, value }) {
   // Send to your analytics service
@@ -954,7 +954,7 @@ function sendToAnalytics({ name, value }) {
 }
 
 onCLS(sendToAnalytics);
-onFID(sendToAnalytics);
+onINP(sendToAnalytics);
 onLCP(sendToAnalytics);
 
 // 3. Database Monitoring

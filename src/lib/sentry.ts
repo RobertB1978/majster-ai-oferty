@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/react";
-import { onCLS, onFID, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals';
+import { onCLS, onINP, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals';
 
 /**
  * Inicjalizacja Sentry dla monitoringu błędów i wydajności
@@ -90,29 +90,37 @@ export function initSentry() {
 
 /**
  * Web Vitals monitoring - wysyła metryki wydajności do Sentry
- * Metryki: CLS, FID, FCP, LCP, TTFB
+ * Metryki: CLS, INP, FCP, LCP, TTFB
  */
 function initWebVitals() {
-  const sendToSentry = (metric: Metric) => {
-    // Wysyłaj tylko w produkcji aby nie zaśmiecać danych dev
-    if (import.meta.env.MODE === 'production') {
-      Sentry.setMeasurement(metric.name, metric.value, metric.unit);
-    }
+  try {
+    const sendToSentry = (metric: Metric) => {
+      try {
+        // Wysyłaj tylko w produkcji aby nie zaśmiecać danych dev
+        if (import.meta.env.MODE === 'production') {
+          Sentry.setMeasurement(metric.name, metric.value, metric.unit);
+        }
 
-    // Log do konsoli w dev mode
-    if (import.meta.env.MODE === 'development') {
-      console.log(`[Web Vitals] ${metric.name}:`, metric.value, metric.unit);
-    }
-  };
+        // Log do konsoli w dev mode
+        if (import.meta.env.MODE === 'development') {
+          console.log(`[Web Vitals] ${metric.name}:`, metric.value, metric.unit);
+        }
+      } catch (error) {
+        console.warn(`Failed to report web vital ${metric.name}:`, error);
+      }
+    };
 
-  // Core Web Vitals (Google)
-  onCLS(sendToSentry); // Cumulative Layout Shift - stabilność wizualna
-  onFID(sendToSentry); // First Input Delay - interaktywność (deprecated, zastąpiony przez INP)
-  onLCP(sendToSentry); // Largest Contentful Paint - szybkość ładowania
+    // Core Web Vitals (Google)
+    onCLS(sendToSentry); // Cumulative Layout Shift - stabilność wizualna
+    onINP(sendToSentry); // Interaction to Next Paint - interaktywność (zastępuje przestarzały FID)
+    onLCP(sendToSentry); // Largest Contentful Paint - szybkość ładowania
 
-  // Dodatkowe metryki
-  onFCP(sendToSentry); // First Contentful Paint - pierwsze renderowanie
-  onTTFB(sendToSentry); // Time to First Byte - szybkość odpowiedzi serwera
+    // Dodatkowe metryki
+    onFCP(sendToSentry); // First Contentful Paint - pierwsze renderowanie
+    onTTFB(sendToSentry); // Time to First Byte - szybkość odpowiedzi serwera
+  } catch (error) {
+    console.warn('Failed to initialize Web Vitals monitoring:', error);
+  }
 }
 
 /**
