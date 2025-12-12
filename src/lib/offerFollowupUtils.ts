@@ -82,22 +82,23 @@ export function classifyOfferSendForFollowup(
     return 'no_action_needed';
   }
 
-  // REGUŁA 2: Świeża oferta (≤ 2 dni)
-  if (daysSinceSent <= 2) {
-    return 'fresh_recent';
-  }
-
-  // REGUŁA 3: Oferta nie została otwarta (status: sent, > X dni)
+  // REGUŁA 2: Oferta nie została otwarta (status: sent, > X dni)
+  // Sprawdzamy PRZED regułą fresh_recent żeby niestandardowe progi działały
   if (send.tracking_status === 'sent' && daysSinceSent > daysNotOpened) {
     return 'followup_not_opened';
   }
 
-  // REGUŁA 4: Oferta otwarta, ale brak decyzji (status: opened/pdf_viewed, > Y dni)
+  // REGUŁA 3: Oferta otwarta, ale brak decyzji (status: opened/pdf_viewed, > Y dni)
   if (
     (send.tracking_status === 'opened' || send.tracking_status === 'pdf_viewed') &&
     daysSinceSent > daysOpenedNoDecision
   ) {
     return 'followup_opened_no_decision';
+  }
+
+  // REGUŁA 4: Świeża oferta (≤ 2 dni lub nie przekroczyła progów)
+  if (daysSinceSent <= 2) {
+    return 'fresh_recent';
   }
 
   // Domyślnie: świeża oferta (fallback dla innych przypadków)

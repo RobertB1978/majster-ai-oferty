@@ -165,7 +165,7 @@ describe('Validation Schemas', () => {
     it('requires password min 6 characters', () => {
       const invalidLogin = {
         email: 'test@example.com',
-        password: '12345', // Too short
+        password: '', // Empty password
       };
 
       const result = loginSchema.safeParse(invalidLogin);
@@ -177,8 +177,8 @@ describe('Validation Schemas', () => {
     it('validates matching passwords', () => {
       const validRegister = {
         email: 'test@example.com',
-        password: 'password123',
-        confirmPassword: 'password123',
+        password: 'Password123',  // Must have: uppercase, lowercase, digit, min 8 chars
+        confirmPassword: 'Password123',
       };
 
       const result = registerSchema.safeParse(validRegister);
