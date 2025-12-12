@@ -11,6 +11,7 @@ import { Wrench, Mail, Lock, Loader2, Fingerprint } from 'lucide-react';
 import { toast } from 'sonner';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 import { useQueryClient } from '@tanstack/react-query';
+import { AuthDiagnostics } from '@/components/auth/AuthDiagnostics';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -117,14 +118,15 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
-      {/* Background decorations */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
-      </div>
+    <>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
+        {/* Background decorations */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+        </div>
 
-      <Card className="w-full max-w-md animate-fade-in relative shadow-xl border-border/50">
+        <Card className="w-full max-w-md animate-fade-in relative shadow-xl border-border/50">
         <CardHeader className="text-center pb-2">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-glow shadow-lg animate-float">
             <Wrench className="h-8 w-8 text-primary-foreground" />
@@ -225,5 +227,9 @@ export default function Login() {
         </CardContent>
       </Card>
     </div>
+
+    {/* Dev-only diagnostics panel */}
+    <AuthDiagnostics />
+  </>
   );
 }
