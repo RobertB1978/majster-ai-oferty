@@ -70,6 +70,7 @@ export function usePlanFeatures() {
     free: {
       maxProjects: 3,
       maxClients: 5,
+      maxExportRecords: 500,
       hasAds: true,
       hasAI: false,
       hasVoice: false,
@@ -83,6 +84,7 @@ export function usePlanFeatures() {
     pro: {
       maxProjects: 15,
       maxClients: 30,
+      maxExportRecords: 500,
       hasAds: false,
       hasAI: false,
       hasVoice: false,
@@ -96,6 +98,7 @@ export function usePlanFeatures() {
     starter: {
       maxProjects: 15,
       maxClients: 30,
+      maxExportRecords: 500,
       hasAds: false,
       hasAI: false,
       hasVoice: false,
@@ -109,6 +112,7 @@ export function usePlanFeatures() {
     business: {
       maxProjects: Infinity,
       maxClients: Infinity,
+      maxExportRecords: 2000,
       hasAds: false,
       hasAI: true,
       hasVoice: true,
@@ -122,6 +126,7 @@ export function usePlanFeatures() {
     enterprise: {
       maxProjects: Infinity,
       maxClients: Infinity,
+      maxExportRecords: Infinity,
       hasAds: false,
       hasAI: true,
       hasVoice: true,
@@ -137,6 +142,7 @@ export function usePlanFeatures() {
   return {
     currentPlan,
     features: features[currentPlan],
+    maxExportRecords: features[currentPlan].maxExportRecords,
     isPremium: currentPlan !== 'free',
     canUseAI: features[currentPlan].hasAI,
     canUseVoice: features[currentPlan].hasVoice,

@@ -3,6 +3,7 @@ import Admin from "./pages/Admin";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -121,6 +122,10 @@ const App = () => (
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
+        {/* React Query Devtools - ONLY in development, not in production */}
+        {import.meta.env.MODE === 'development' && (
+          <ReactQueryDevtools initialIsOpen={false} />
+        )}
       </QueryClientProvider>
     </HelmetProvider>
   </ErrorBoundary>

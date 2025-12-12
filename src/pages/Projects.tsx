@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useProjectsPaginated, useProjects } from '@/hooks/useProjects';
 import { useDebounce } from '@/hooks/useDebounce';
+import { usePlanFeatures } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +25,7 @@ const PAGE_SIZE = 20;
 export default function Projects() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { maxExportRecords } = usePlanFeatures();
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'Nowy' | 'Wycena w toku' | 'Oferta wysłana' | 'Zaakceptowany'>('all');
@@ -86,7 +88,7 @@ export default function Projects() {
         </div>
         <div className="flex gap-2">
           {totalCount > 0 && (
-            <Button variant="outline" onClick={() => exportProjectsToCSV(allProjects)} className="hover:bg-primary/5">
+            <Button variant="outline" onClick={() => exportProjectsToCSV(allProjects, maxExportRecords)} className="hover:bg-primary/5">
               <Download className="mr-2 h-4 w-4" />
               {t('projects.exportBtn')}
             </Button>

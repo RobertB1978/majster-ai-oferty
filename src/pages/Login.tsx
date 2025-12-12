@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Wrench, Mail, Lock, Loader2, Fingerprint } from 'lucide-react';
 import { toast } from 'sonner';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -18,6 +19,7 @@ export default function Login() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { login, user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { isSupported, checkIfEnabled, authenticateWithBiometric, isAuthenticating } = useBiometricAuth();
   const [biometricAvailable, setBiometricAvailable] = useState(false);
 
@@ -66,7 +68,7 @@ export default function Login() {
     }
 
     setIsLoading(true);
-    const { error } = await login(email, password);
+    const { error, data } = await login(email, password);
     setIsLoading(false);
 
     if (error) {
@@ -80,6 +82,20 @@ export default function Login() {
     } else {
       localStorage.setItem('majster_last_email', email);
       toast.success('Zalogowano pomyślnie');
+
+      // Prefetch Dashboard data while navigating for instant load
+      if (data?.user?.id) {
+        queryClient.prefetchQuery({
+          queryKey: ['dashboard-project-stats', data.user.id],
+        });
+        queryClient.prefetchQuery({
+          queryKey: ['dashboard-recent-projects', data.user.id],
+        });
+        queryClient.prefetchQuery({
+          queryKey: ['dashboard-clients-count', data.user.id],
+        });
+      }
+
       navigate('/dashboard');
     }
   };
