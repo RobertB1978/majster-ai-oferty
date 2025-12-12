@@ -3,8 +3,8 @@ import Admin from "./pages/Admin";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -49,6 +49,11 @@ import GDPRCenter from "./pages/legal/GDPRCenter";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
+
+// Lazy load React Query Devtools only in development to avoid bundling in production
+const ReactQueryDevtools = import.meta.env.MODE === 'development'
+  ? lazy(() => import('@tanstack/react-query-devtools').then(module => ({ default: module.ReactQueryDevtools })))
+  : null;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -123,8 +128,10 @@ const App = () => (
           </BrowserRouter>
         </TooltipProvider>
         {/* React Query Devtools - ONLY in development, not in production */}
-        {import.meta.env.MODE === 'development' && (
-          <ReactQueryDevtools initialIsOpen={false} />
+        {ReactQueryDevtools && (
+          <Suspense fallback={null}>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </Suspense>
         )}
       </QueryClientProvider>
     </HelmetProvider>

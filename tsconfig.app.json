@@ -15,11 +15,10 @@
     "jsx": "react-jsx",
 
     /* Linting */
-    "strict": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noImplicitAny": false,
-    "noFallthroughCasesInSwitch": false,
+    "strict": true,  // Phase 2: Enable full strict mode 🎯
+    "noUnusedLocals": true,  // Catch unused variables
+    "noUnusedParameters": false,  // Keep false - params often unused in callbacks
+    "noFallthroughCasesInSwitch": true,  // Prevent common switch bugs
 
     "baseUrl": ".",
     "paths": {
