@@ -39,6 +39,9 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       sourcemap: mode === "production",
+      target: "esnext",
+      minify: "esbuild",
+      cssMinify: true,
       rollupOptions: {
         output: {
           manualChunks: {
@@ -54,8 +57,22 @@ export default defineConfig(({ mode }) => {
             'form-vendor': ['react-hook-form', 'zod', '@hookform/resolvers'],
             'charts-vendor': ['recharts'],
           },
+          // Optimize chunk file naming for better caching
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: ({ name }) => {
+            if (/\.(gif|jpe?g|png|svg|webp)$/.test(name ?? '')) {
+              return 'assets/images/[name]-[hash][extname]';
+            }
+            if (/\.css$/.test(name ?? '')) {
+              return 'assets/css/[name]-[hash][extname]';
+            }
+            return 'assets/[name]-[hash][extname]';
+          },
         },
       },
+      // Increase chunk size warning limit (default is 500kb)
+      chunkSizeWarningLimit: 1000,
     },
   };
 });

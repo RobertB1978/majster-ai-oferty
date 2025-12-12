@@ -1,0 +1,43 @@
+# Build outputs
+dist
+build
+.next
+out
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Generated files
+.turbo
+.vercel
+.supabase
+
+# Coverage
+coverage
+*.lcov
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.*
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+test-results/
+playwright-report/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
