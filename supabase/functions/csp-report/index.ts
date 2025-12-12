@@ -2,14 +2,21 @@
 // CSP REPORT ENDPOINT
 // Zbieranie raportów naruszeń Content Security Policy
 // ============================================
+// SERVICE ROLE KEY: Not used - This endpoint accepts public CSP reports
+// SECURITY: Request size limited to 100KB to prevent DoS attacks
+// ============================================
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { logMessageToSentry } from "../_shared/sentry.ts";
+import { readAndValidateBody, validateString } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'content-type',
 };
+
+// CSP reports are typically small, limit to 100KB
+const MAX_CSP_REPORT_SIZE = 100_000;
 
 interface CSPReport {
   'csp-report': {
@@ -46,8 +53,42 @@ serve(async (req) => {
   }
 
   try {
-    const report: CSPReport = await req.json();
+    // Validate request size and parse body
+    const bodyResult = await readAndValidateBody<CSPReport>(req, corsHeaders, MAX_CSP_REPORT_SIZE);
+    if (!bodyResult.success) {
+      return bodyResult.response;
+    }
+
+    const report = bodyResult.data;
     const cspReport = report['csp-report'];
+
+    // Validate required fields
+    if (!cspReport || typeof cspReport !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid CSP report structure' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Validate critical fields
+    const violatedDirectiveValidation = validateString(
+      cspReport['violated-directive'],
+      'violated-directive',
+      { maxLength: 500 }
+    );
+
+    if (!violatedDirectiveValidation.valid) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid CSP report data', details: violatedDirectiveValidation.errors }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
 
     console.log('🚨 CSP Violation Report:', {
       directive: cspReport['violated-directive'],

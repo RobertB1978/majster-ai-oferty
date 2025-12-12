@@ -189,3 +189,120 @@ export function combineValidations(...results: ValidationResult[]): ValidationRe
     errors: allErrors
   };
 }
+
+// Request body size limit (1MB default - prevents DoS attacks)
+export const MAX_REQUEST_SIZE = 1_000_000; // 1MB
+
+export interface RequestSizeCheckResult {
+  ok: boolean;
+  size: number;
+  maxSize: number;
+  errorResponse?: Response;
+}
+
+/**
+ * Check request body size to prevent DoS attacks via large payloads
+ * Returns result with optional error Response
+ */
+export async function checkRequestSize(
+  req: Request,
+  corsHeaders: Record<string, string>,
+  maxSize: number = MAX_REQUEST_SIZE
+): Promise<RequestSizeCheckResult> {
+  const contentLength = req.headers.get('content-length');
+
+  // Check Content-Length header first (fast path)
+  if (contentLength) {
+    const size = parseInt(contentLength, 10);
+    if (size > maxSize) {
+      console.error(`Request too large: ${size} bytes (max: ${maxSize})`);
+      return {
+        ok: false,
+        size,
+        maxSize,
+        errorResponse: new Response(
+          JSON.stringify({
+            error: 'Payload too large',
+            details: [`Request size ${size} bytes exceeds maximum ${maxSize} bytes`]
+          }),
+          {
+            status: 413, // HTTP 413 Payload Too Large
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          }
+        )
+      };
+    }
+  }
+
+  return { ok: true, size: contentLength ? parseInt(contentLength, 10) : 0, maxSize };
+}
+
+/**
+ * Read and validate request body with size limit
+ * Returns parsed JSON or error Response
+ */
+export async function readAndValidateBody<T = unknown>(
+  req: Request,
+  corsHeaders: Record<string, string>,
+  maxSize: number = MAX_REQUEST_SIZE
+): Promise<{ success: true; data: T } | { success: false; response: Response }> {
+  // Check size first
+  const sizeCheck = await checkRequestSize(req, corsHeaders, maxSize);
+  if (!sizeCheck.ok && sizeCheck.errorResponse) {
+    return { success: false, response: sizeCheck.errorResponse };
+  }
+
+  // Read body as text
+  let bodyText: string;
+  try {
+    bodyText = await req.text();
+  } catch (error) {
+    console.error('Failed to read request body:', error);
+    return {
+      success: false,
+      response: new Response(
+        JSON.stringify({ error: 'Failed to read request body' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        }
+      )
+    };
+  }
+
+  // Check actual body size (in case Content-Length was missing)
+  if (bodyText.length > maxSize) {
+    console.error(`Request body too large: ${bodyText.length} bytes (max: ${maxSize})`);
+    return {
+      success: false,
+      response: new Response(
+        JSON.stringify({
+          error: 'Payload too large',
+          details: [`Request body ${bodyText.length} bytes exceeds maximum ${maxSize} bytes`]
+        }),
+        {
+          status: 413,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        }
+      )
+    };
+  }
+
+  // Parse JSON
+  try {
+    const data = JSON.parse(bodyText) as T;
+    return { success: true, data };
+  } catch (error) {
+    console.error('Invalid JSON:', error);
+    return {
+      success: false,
+      response: new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        }
+      )
+    };
+  }
+}

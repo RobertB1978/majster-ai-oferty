@@ -56,6 +56,8 @@ export default defineConfig(({ mode }) => {
             'supabase-vendor': ['@supabase/supabase-js'],
             'form-vendor': ['react-hook-form', 'zod', '@hookform/resolvers'],
             'charts-vendor': ['recharts'],
+            'pdf-vendor': ['jspdf', 'jspdf-autotable', 'html2canvas'],
+            'maps-vendor': ['leaflet', 'react-leaflet'],
           },
           // Optimize chunk file naming for better caching
           chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -71,8 +73,8 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-      // Increase chunk size warning limit (default is 500kb)
-      chunkSizeWarningLimit: 1000,
+      // Chunk size warning limit - alert for chunks > 500KB
+      chunkSizeWarningLimit: 500,
     },
   };
 });
