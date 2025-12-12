@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<{ error: string | null }>;
+  login: (email: string, password: string) => Promise<{ error: string | null; data?: { user: User | null; session: Session | null } }>;
   register: (email: string, password: string) => Promise<{ error: string | null }>;
   logout: () => Promise<void>;
 }
@@ -40,19 +40,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string): Promise<{ error: string | null }> => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      if (error.message.includes('Invalid login credentials')) {
-        return { error: 'Nieprawidłowy email lub hasło' };
+      // Enhanced logging in dev mode
+      if (import.meta.env.MODE === 'development') {
+        console.log('🔐 Login attempt:', {
+          email,
+          success: !error,
+          error: error?.message || null,
+          hasSession: !!data?.session,
+          hasUser: !!data?.user,
+        });
       }
-      return { error: error.message };
-    }
 
-    return { error: null };
+      if (error) {
+        // Log full error in dev
+        if (import.meta.env.MODE === 'development') {
+          console.error('❌ Login error details:', error);
+        }
+
+        // User-friendly error messages
+        if (error.message.includes('Invalid login credentials')) {
+          return { error: 'Nieprawidłowy email lub hasło', data: undefined };
+        }
+        if (error.message.includes('Email not confirmed')) {
+          return { error: 'Email nie został potwierdzony. Sprawdź skrzynkę pocztową.', data: undefined };
+        }
+        if (error.message.includes('network') || error.message.includes('fetch')) {
+          return { error: 'Błąd połączenia. Sprawdź konfigurację Supabase w .env', data: undefined };
+        }
+
+        return { error: error.message, data: undefined };
+      }
+
+      return { error: null, data: { user: data.user, session: data.session } };
+    } catch (err) {
+      // Catch network errors or other unexpected errors
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+
+      if (import.meta.env.MODE === 'development') {
+        console.error('❌ Login exception:', err);
+      }
+
+      return {
+        error: `Błąd logowania: ${errorMessage}. Sprawdź czy Supabase jest poprawnie skonfigurowany.`,
+        data: undefined
+      };
+    }
   };
 
   const register = async (email: string, password: string): Promise<{ error: string | null }> => {

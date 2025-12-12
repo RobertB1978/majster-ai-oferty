@@ -5,13 +5,75 @@ import type { Database } from './types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Validate environment variables
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error('❌ Missing Supabase configuration!');
-  console.error('Please set the following environment variables:');
-  console.error('- VITE_SUPABASE_URL');
-  console.error('- VITE_SUPABASE_ANON_KEY');
-  throw new Error('Missing Supabase environment variables. Check console for details.');
+// Enhanced validation: detect missing AND placeholder values
+function validateSupabaseConfig(): { isValid: boolean; errors: string[] } {
+  const errors: string[] = [];
+
+  // Check if variables exist
+  if (!SUPABASE_URL) {
+    errors.push('VITE_SUPABASE_URL is not set');
+  }
+  if (!SUPABASE_ANON_KEY) {
+    errors.push('VITE_SUPABASE_ANON_KEY is not set');
+  }
+
+  // Check for placeholder/dummy values
+  if (SUPABASE_URL && (
+    SUPABASE_URL.includes('your-project') ||
+    SUPABASE_URL === 'https://your-project.supabase.co' ||
+    SUPABASE_URL.includes('example') ||
+    SUPABASE_URL.includes('placeholder')
+  )) {
+    errors.push('VITE_SUPABASE_URL contains placeholder value. You need to set your REAL Supabase project URL.');
+  }
+
+  if (SUPABASE_ANON_KEY && (
+    SUPABASE_ANON_KEY.includes('your-anon') ||
+    SUPABASE_ANON_KEY === 'your-anon-public-key-here' ||
+    SUPABASE_ANON_KEY.includes('example') ||
+    SUPABASE_ANON_KEY.includes('placeholder') ||
+    SUPABASE_ANON_KEY.length < 100 // Real JWT tokens are much longer
+  )) {
+    errors.push('VITE_SUPABASE_ANON_KEY contains placeholder value. You need to set your REAL Supabase anon key.');
+  }
+
+  return { isValid: errors.length === 0, errors };
+}
+
+const validation = validateSupabaseConfig();
+
+if (!validation.isValid) {
+  console.error('╔════════════════════════════════════════════════════════════╗');
+  console.error('║  ❌ SUPABASE CONFIGURATION ERROR                          ║');
+  console.error('╚════════════════════════════════════════════════════════════╝');
+  console.error('');
+  console.error('Your .env file contains placeholder/dummy values!');
+  console.error('');
+  console.error('Problems found:');
+  validation.errors.forEach(err => console.error(`  • ${err}`));
+  console.error('');
+  console.error('📖 HOW TO FIX:');
+  console.error('');
+  console.error('1. Go to https://supabase.com/dashboard');
+  console.error('2. Open your project (or create one if you don\'t have it)');
+  console.error('3. Go to Settings → API');
+  console.error('4. Copy the following values:');
+  console.error('   • Project URL (starts with https://xxx.supabase.co)');
+  console.error('   • anon/public key (long JWT token starting with eyJ...)');
+  console.error('');
+  console.error('5. Update your .env file with REAL values:');
+  console.error('');
+  console.error('   VITE_SUPABASE_URL=https://YOUR-ACTUAL-PROJECT-ID.supabase.co');
+  console.error('   VITE_SUPABASE_ANON_KEY=eyJhbGci...YOUR-ACTUAL-KEY...');
+  console.error('');
+  console.error('6. Restart the dev server: npm run dev');
+  console.error('');
+  console.error('📚 For detailed setup instructions, see:');
+  console.error('   docs/SUPABASE_SETUP_GUIDE.md');
+  console.error('   docs/ENVIRONMENT_VARIABLES_CHECKLIST.md');
+  console.error('');
+
+  throw new Error('Invalid Supabase configuration. See console for details.');
 }
 
 // Import the supabase client like this:
