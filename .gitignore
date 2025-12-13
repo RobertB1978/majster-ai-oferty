@@ -12,6 +12,13 @@ node_modules
 .pnp
 .pnp.js
 
+# Package manager lock files - npm only!
+# We use npm as the canonical package manager.
+# Other lock files should not be committed.
+bun.lockb
+pnpm-lock.yaml
+yarn.lock
+
 # Build outputs
 dist
 dist-ssr

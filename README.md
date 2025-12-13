@@ -121,7 +121,7 @@
 ### Wymagania
 
 - Node.js 20+ (sprawdź: `node --version`)
-- npm lub yarn
+- npm 10+ (⚠️ **NIE** używaj bun, pnpm ani yarn)
 - Konto Supabase (darmowe)
 - Konto Vercel (darmowe) - tylko do wdrożenia
 
@@ -132,8 +132,8 @@
 git clone https://github.com/RobertB1978/majster-ai-oferty.git
 cd majster-ai-oferty
 
-# 2. Zainstaluj zależności
-npm install --legacy-peer-deps
+# 2. Zainstaluj zależności (TYLKO npm!)
+npm install
 
 # 3. Skopiuj i skonfiguruj .env
 cp .env.example .env
@@ -215,6 +215,33 @@ supabase functions deploy
 ---
 
 ## 💻 Development
+
+### ⚠️ Package Manager Policy
+
+**This project uses npm as the canonical package manager.**
+
+**✅ ALWAYS use:**
+- `npm install`
+- `npm run dev`
+- `npm run build`
+
+**❌ DO NOT use:**
+- `bun install`
+- `pnpm install`
+- `yarn install`
+
+**Why npm only?**
+1. **Consistency** - All developers and CI use the same dependency resolution
+2. **Single lock file** - Only `package-lock.json` is maintained
+3. **Easier debugging** - Fewer variables when troubleshooting issues
+
+The `preinstall` script will automatically block non-npm package managers.
+
+If you accidentally created `bun.lockb`, `pnpm-lock.yaml`, or `yarn.lock`:
+```bash
+rm -f bun.lockb pnpm-lock.yaml yarn.lock
+npm install
+```
 
 ### Przydatne komendy
 

@@ -79,8 +79,16 @@ export function initSentry() {
       ],
     });
 
-    // Inicjalizuj Web Vitals monitoring
-    initWebVitals();
+    // Inicjalizuj Web Vitals monitoring ASYNCHRONOUSLY during idle time
+    // This prevents blocking the main thread during startup
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(() => {
+        initWebVitals();
+      }, { timeout: 2000 });
+    } else {
+      // Fallback for browsers without requestIdleCallback
+      setTimeout(initWebVitals, 100);
+    }
 
     console.log(`✅ Sentry zainicjalizowane (${environment})`);
   } else {
