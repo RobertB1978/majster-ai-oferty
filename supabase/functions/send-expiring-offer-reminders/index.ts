@@ -1,9 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders, isPreflight, requireBearerToken } from "../_shared/security.ts";
 
 interface ExpiringOffer {
   id: string;
@@ -18,11 +14,15 @@ interface ExpiringOffer {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+  const corsHeaders = getCorsHeaders(req);
+  if (isPreflight(req)) {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    const authCheck = requireBearerToken(req, corsHeaders);
+    if (authCheck.errorResponse) return authCheck.errorResponse;
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
