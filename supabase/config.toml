@@ -16,10 +16,10 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.public-api]
-verify_jwt = false
+verify_jwt = true
 
 [functions.approve-offer]
-verify_jwt = false
+verify_jwt = true
 
 [functions.ai-chat-agent]
 verify_jwt = true
@@ -28,4 +28,4 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.send-expiring-offer-reminders]
-verify_jwt = false
+verify_jwt = true
