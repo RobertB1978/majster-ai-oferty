@@ -11,22 +11,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Majster.AI" />
 
-    <!-- Content Security Policy (Report-Only Mode) -->
-    <meta http-equiv="Content-Security-Policy-Report-Only"
-          content="default-src 'self';
-                   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://esm.sh https://cdn.jsdelivr.net;
-                   style-src 'self' 'unsafe-inline';
-                   img-src 'self' data: https: blob:;
-                   font-src 'self' data:;
-                   connect-src 'self' https://*.supabase.co https://sentry.io https://*.sentry.io wss://*.supabase.co;
-                   media-src 'self' blob:;
-                   object-src 'none';
-                   base-uri 'self';
-                   form-action 'self';
-                   frame-ancestors 'none';
-                   upgrade-insecure-requests;
-                   report-uri https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/csp-report;" />
-
     <meta property="og:title" content="Majster.AI — Wyceny i oferty PDF" />
     <meta property="og:description" content="Proste narzędzie dla fachowców do tworzenia wycen i generowania profesjonalnych ofert PDF." />
     <meta property="og:type" content="website" />
@@ -38,12 +22,6 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js');
-        });
-      }
-    </script>
+    <script src="/sw-register.js"></script>
   </body>
 </html>
