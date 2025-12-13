@@ -3,7 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "npm@10.9.2",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
+    "preinstall": "node -e \"if (process.env.npm_execpath && (process.env.npm_execpath.indexOf('pnpm') !== -1 || process.env.npm_execpath.indexOf('bun') !== -1 || process.env.npm_execpath.indexOf('yarn') !== -1)) { console.error('\\n❌ ERROR: Please use npm install\\n\\nThis project uses npm as the canonical package manager.\\nDo not use pnpm, bun, or yarn.\\n'); process.exit(1); }\"",
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
