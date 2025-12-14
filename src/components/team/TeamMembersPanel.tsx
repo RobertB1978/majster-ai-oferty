@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Users, Plus, Phone, Mail, Trash2, Edit, MapPin } from 'lucide-react';
-import { useTeamMembers, useAddTeamMember, useUpdateTeamMember, useDeleteTeamMember } from '@/hooks/useTeamMembers';
+import { useTeamMembers, useAddTeamMember, useUpdateTeamMember, useDeleteTeamMember, TeamMember } from '@/hooks/useTeamMembers';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export function TeamMembersPanel() {
@@ -43,7 +43,7 @@ export function TeamMembersPanel() {
     resetForm();
   };
 
-  const handleEdit = (member: any) => {
+  const handleEdit = (member: TeamMember) => {
     setFormData({
       name: member.name,
       phone: member.phone || '',

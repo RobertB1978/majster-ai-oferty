@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { FileSignature, Link2, Copy, Clock, XCircle, CheckCircle, RefreshCw, Mail, AlertTriangle } from 'lucide-react';
-import { useOfferApprovals, useCreateOfferApproval, useExtendOfferApproval } from '@/hooks/useOfferApprovals';
+import { useOfferApprovals, useCreateOfferApproval, useExtendOfferApproval, OfferApproval } from '@/hooks/useOfferApprovals';
 import { format, differenceInDays, parseISO, isBefore } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -43,7 +43,7 @@ export function OfferApprovalPanel({ projectId, clientName = '', clientEmail = '
     await extendApproval.mutateAsync({ approvalId, projectId });
   };
 
-  const handleSendReminder = async (approval: any) => {
+  const handleSendReminder = async (approval: OfferApproval) => {
     if (!approval.client_email) {
       toast.error('Brak adresu email klienta');
       return;

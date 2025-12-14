@@ -30,6 +30,8 @@ interface CompanyDocument {
   created_at: string;
 }
 
+type NewDocumentState = Pick<CompanyDocument, 'name' | 'document_type'> & { description: string };
+
 const documentTypeConfig = {
   uprawnienia: { label: 'Uprawnienia', icon: Award, color: 'bg-blue-500' },
   referencje: { label: 'Referencje', icon: FileCheck, color: 'bg-green-500' },
@@ -44,7 +46,7 @@ export function CompanyDocuments() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [newDoc, setNewDoc] = useState({
+  const [newDoc, setNewDoc] = useState<NewDocumentState>({
     name: '',
     document_type: 'uprawnienia' as const,
     description: '',
@@ -202,7 +204,7 @@ export function CompanyDocuments() {
                   <Label>Typ dokumentu</Label>
                   <Select
                     value={newDoc.document_type}
-                    onValueChange={(val: any) => setNewDoc({ ...newDoc, document_type: val })}
+                    onValueChange={(val) => setNewDoc({ ...newDoc, document_type: val as CompanyDocument['document_type'] })}
                   >
                     <SelectTrigger>
                       <SelectValue />
