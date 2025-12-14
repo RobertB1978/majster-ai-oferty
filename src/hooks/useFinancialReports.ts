@@ -11,8 +11,22 @@ export interface FinancialReport {
   total_costs: number;
   gross_margin: number;
   project_count: number;
-  report_data: any;
+  report_data: unknown;
   created_at: string;
+}
+
+export interface PricingRecommendation {
+  category: string;
+  currentAvgPrice: number;
+  recommendedPrice: number;
+  reason: string;
+}
+
+export interface FinancialAnalysisResult {
+  keyInsights?: string[];
+  actionItems?: string[];
+  pricingRecommendations?: PricingRecommendation[];
+  riskFactors?: string[];
 }
 
 export function useFinancialReports() {
@@ -106,7 +120,7 @@ export function useFinancialSummary() {
 export function useAIFinancialAnalysis() {
   const { user } = useAuth();
 
-  return useMutation({
+  return useMutation<FinancialAnalysisResult>({
     mutationFn: async () => {
       // Get data for analysis
       const { data: projects } = await supabase
