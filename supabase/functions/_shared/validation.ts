@@ -189,3 +189,174 @@ export function combineValidations(...results: ValidationResult[]): ValidationRe
     errors: allErrors
   };
 }
+
+// Validate boolean
+export function validateBoolean(
+  value: unknown,
+  fieldName: string,
+  options: { required?: boolean } = {}
+): ValidationResult {
+  const { required = true } = options;
+  const errors: string[] = [];
+
+  if (value === undefined || value === null) {
+    if (required) {
+      errors.push(`${fieldName} is required`);
+    }
+    return { valid: errors.length === 0, errors };
+  }
+
+  if (typeof value !== 'boolean') {
+    errors.push(`${fieldName} must be a boolean`);
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+// Validate enum value
+export function validateEnum<T extends string>(
+  value: unknown,
+  fieldName: string,
+  allowedValues: readonly T[],
+  options: { required?: boolean } = {}
+): ValidationResult {
+  const { required = true } = options;
+  const errors: string[] = [];
+
+  if (value === undefined || value === null) {
+    if (required) {
+      errors.push(`${fieldName} is required`);
+    }
+    return { valid: errors.length === 0, errors };
+  }
+
+  if (typeof value !== 'string') {
+    errors.push(`${fieldName} must be a string`);
+    return { valid: false, errors };
+  }
+
+  if (!allowedValues.includes(value as T)) {
+    errors.push(`${fieldName} must be one of: ${allowedValues.join(', ')}`);
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+// Validate base64 encoded data
+export function validateBase64(
+  value: unknown,
+  fieldName: string,
+  options: { maxSize?: number; required?: boolean } = {}
+): ValidationResult {
+  const { maxSize = 100000, required = true } = options; // 100KB default
+  const errors: string[] = [];
+
+  if (value === undefined || value === null) {
+    if (required) {
+      errors.push(`${fieldName} is required`);
+    }
+    return { valid: errors.length === 0, errors };
+  }
+
+  if (typeof value !== 'string') {
+    errors.push(`${fieldName} must be a string`);
+    return { valid: false, errors };
+  }
+
+  // Check base64 format (basic regex)
+  const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+  if (!base64Regex.test(value)) {
+    errors.push(`${fieldName} must be valid base64 encoded data`);
+    return { valid: false, errors };
+  }
+
+  // Check size
+  if (value.length > maxSize) {
+    errors.push(`${fieldName} exceeds maximum size of ${maxSize} bytes`);
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+// Validate payload size (total request body)
+export function validatePayloadSize(
+  payload: unknown,
+  maxSize = 1048576 // 1MB default
+): ValidationResult {
+  const errors: string[] = [];
+
+  try {
+    const payloadSize = JSON.stringify(payload).length;
+    if (payloadSize > maxSize) {
+      errors.push(`Request payload exceeds maximum size of ${Math.floor(maxSize / 1024)}KB`);
+    }
+  } catch {
+    errors.push('Invalid payload format');
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+// Validate JSON structure
+export function validateJson(
+  value: unknown,
+  fieldName: string,
+  options: { maxSize?: number; required?: boolean } = {}
+): ValidationResult {
+  const { maxSize = 10000, required = true } = options;
+  const errors: string[] = [];
+
+  if (value === undefined || value === null) {
+    if (required) {
+      errors.push(`${fieldName} is required`);
+    }
+    return { valid: errors.length === 0, errors };
+  }
+
+  if (typeof value !== 'string') {
+    errors.push(`${fieldName} must be a JSON string`);
+    return { valid: false, errors };
+  }
+
+  if (value.length > maxSize) {
+    errors.push(`${fieldName} exceeds maximum size of ${maxSize} characters`);
+    return { valid: false, errors };
+  }
+
+  try {
+    JSON.parse(value);
+  } catch {
+    errors.push(`${fieldName} must be valid JSON`);
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+// Validate ISO date string
+export function validateDate(
+  value: unknown,
+  fieldName: string,
+  options: { required?: boolean } = {}
+): ValidationResult {
+  const { required = true } = options;
+  const errors: string[] = [];
+
+  if (value === undefined || value === null) {
+    if (required) {
+      errors.push(`${fieldName} is required`);
+    }
+    return { valid: errors.length === 0, errors };
+  }
+
+  if (typeof value !== 'string') {
+    errors.push(`${fieldName} must be a date string`);
+    return { valid: false, errors };
+  }
+
+  const date = new Date(value);
+  if (isNaN(date.getTime())) {
+    errors.push(`${fieldName} must be a valid ISO date`);
+  }
+
+  return { valid: errors.length === 0, errors };
+}
