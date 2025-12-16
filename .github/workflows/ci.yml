@@ -91,6 +91,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check critical environment variables
+        run: |
+          node -e "
+            const required = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
+            const missing = required.filter(k => !process.env[k]);
+            if (missing.length) {
+              console.error('❌ Missing critical ENV variables:', missing.join(', '));
+              console.error('Configure these in GitHub Settings → Secrets and variables → Actions');
+              process.exit(1);
+            }
+            console.log('✅ All critical ENV variables present');
+          "
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
       - name: Build application
         run: npm run build
         env:
@@ -129,3 +145,32 @@ jobs:
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  # ========================================
+  # JOB 5: CodeQL Security Analysis
+  # ========================================
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          queries: security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"
