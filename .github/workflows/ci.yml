@@ -53,6 +53,15 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: Verify test runner installation
+        run: |
+          echo "Checking vitest installation..."
+          npx vitest --version || {
+            echo "ERROR: vitest not found after npm ci"
+            echo "This is CRITICAL-01 from audit report"
+            exit 1
+          }
+
       - name: Run tests with coverage
         run: npm test -- --coverage
 
@@ -103,6 +112,29 @@ jobs:
           name: dist
           path: dist/
           retention-days: 7
+
+      - name: Smoke Test - Build Output
+        run: |
+          echo "Running basic smoke tests on build output..."
+
+          # Check if index.html exists
+          if [ ! -f "dist/index.html" ]; then
+            echo "ERROR: dist/index.html not found!"
+            exit 1
+          fi
+
+          # Check if main JS bundle exists
+          if ! ls dist/assets/js/*.js >/dev/null 2>&1; then
+            echo "ERROR: No JS bundles found in dist/assets/js/"
+            exit 1
+          fi
+
+          # Check if CSS exists
+          if ! ls dist/assets/css/*.css >/dev/null 2>&1; then
+            echo "WARNING: No CSS files found in dist/assets/css/"
+          fi
+
+          echo "✅ Smoke tests passed - build output looks healthy"
 
   # ========================================
   # JOB 4: Security Audit
