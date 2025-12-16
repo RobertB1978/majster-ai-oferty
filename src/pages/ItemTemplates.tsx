@@ -189,7 +189,9 @@ export default function ItemTemplates() {
         await createTemplate.mutateAsync(formData);
       }
       setIsDialogOpen(false);
-    } catch {}
+    } catch {
+      // Error is handled by mutation onError callback
+    }
   };
 
   const handleDelete = async () => {

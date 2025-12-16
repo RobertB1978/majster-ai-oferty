@@ -15,14 +15,15 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { CheckCircle2, XCircle, AlertCircle, ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
 
 export function AuthDiagnostics() {
+  // Call hooks first (before any conditional returns) per React Rules of Hooks
+  const { user, session, isLoading } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   // Only render in development
   if (import.meta.env.MODE !== 'development') {
     return null;
   }
-
-  const { user, session, isLoading } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const diagnostics = {
     environment: {
