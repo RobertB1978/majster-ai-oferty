@@ -1,9 +1,9 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import Admin from "./pages/Admin";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -123,8 +123,13 @@ const App = () => (
           </BrowserRouter>
         </TooltipProvider>
         {/* React Query Devtools - ONLY in development, not in production */}
-        {import.meta.env.MODE === 'development' && (
-          <ReactQueryDevtools initialIsOpen={false} />
+        {import.meta.env.DEV && (
+          <React.Suspense fallback={null}>
+            {React.createElement(
+              React.lazy(() => import('@tanstack/react-query-devtools').then(m => ({ default: m.ReactQueryDevtools }))),
+              { initialIsOpen: false }
+            )}
+          </React.Suspense>
         )}
       </QueryClientProvider>
     </HelmetProvider>
