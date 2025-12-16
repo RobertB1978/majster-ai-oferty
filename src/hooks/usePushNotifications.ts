@@ -50,7 +50,7 @@ export function usePushNotifications() {
       setState(prev => ({ ...prev, isRegistered: true, token: token.value }));
     });
 
-    PushNotifications.addListener('registrationError', (error: any) => {
+    PushNotifications.addListener('registrationError', (error: unknown) => {
       console.error('Push registration error:', error);
       toast.error('Błąd rejestracji powiadomień push');
     });

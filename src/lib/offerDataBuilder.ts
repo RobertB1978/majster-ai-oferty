@@ -108,7 +108,7 @@ export function buildOfferData(params: {
     phone?: string;
   } | null;
   quote?: {
-    positions: any[];
+    positions: unknown[];
     summary_materials: number;
     summary_labor: number;
     margin_percent: number;
@@ -147,7 +147,7 @@ export function buildOfferData(params: {
   // Quote data
   const quote: QuoteData | null = params.quote
     ? {
-        positions: params.quote.positions.map((pos: any, index: number) => ({
+        positions: params.quote.positions.map((pos: unknown, index: number) => ({
           id: pos.id || `pos-${index}`,
           name: pos.name,
           qty: pos.qty,

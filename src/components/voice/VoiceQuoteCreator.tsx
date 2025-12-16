@@ -94,7 +94,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
 
       setResult(data);
       setMode('editing');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Voice processing error:', error);
       toast.error('Błąd przetwarzania. Spróbuj ponownie.');
       setMode('idle');

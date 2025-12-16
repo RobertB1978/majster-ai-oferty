@@ -43,7 +43,7 @@ export function OfferApprovalPanel({ projectId, clientName = '', clientEmail = '
     await extendApproval.mutateAsync({ approvalId, projectId });
   };
 
-  const handleSendReminder = async (approval: any) => {
+  const handleSendReminder = async (approval: unknown) => {
     if (!approval.client_email) {
       toast.error('Brak adresu email klienta');
       return;

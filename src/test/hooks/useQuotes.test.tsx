@@ -67,7 +67,7 @@ describe('useSaveQuote UPSERT', () => {
       }),
     });
 
-    (supabase.from as any).mockReturnValue({
+    (supabase.from as unknown).mockReturnValue({
       upsert: mockUpsert,
     });
 
@@ -116,7 +116,7 @@ describe('useSaveQuote UPSERT', () => {
       }),
     });
 
-    (supabase.from as any).mockReturnValue({
+    (supabase.from as unknown).mockReturnValue({
       upsert: mockUpsert,
     });
 
@@ -170,7 +170,7 @@ describe('useSaveQuote UPSERT', () => {
       }),
     });
 
-    (supabase.from as any).mockReturnValue({
+    (supabase.from as unknown).mockReturnValue({
       upsert: mockUpsert,
     });
 
@@ -224,7 +224,7 @@ describe('useSaveQuote UPSERT', () => {
       }),
     });
 
-    (supabase.from as any).mockReturnValue({
+    (supabase.from as unknown).mockReturnValue({
       upsert: mockUpsert,
     });
 

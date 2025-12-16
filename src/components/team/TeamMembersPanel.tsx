@@ -43,7 +43,7 @@ export function TeamMembersPanel() {
     resetForm();
   };
 
-  const handleEdit = (member: any) => {
+  const handleEdit = (member: unknown) => {
     setFormData({
       name: member.name,
       phone: member.phone || '',

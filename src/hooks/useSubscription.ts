@@ -66,7 +66,7 @@ export function usePlanFeatures() {
   const { data: subscription } = useUserSubscription();
   const currentPlan = subscription?.plan_id || 'free';
 
-  const features: Record<string, any> = {
+  const features: Record<string, unknown> = {
     free: {
       maxProjects: 3,
       maxClients: 5,

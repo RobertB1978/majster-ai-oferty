@@ -202,7 +202,7 @@ export function CompanyDocuments() {
                   <Label>Typ dokumentu</Label>
                   <Select
                     value={newDoc.document_type}
-                    onValueChange={(val: any) => setNewDoc({ ...newDoc, document_type: val })}
+                    onValueChange={(val: string) => setNewDoc({ ...newDoc, document_type: val })}
                   >
                     <SelectTrigger>
                       <SelectValue />

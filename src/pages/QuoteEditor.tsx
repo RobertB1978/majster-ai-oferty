@@ -109,7 +109,7 @@ export default function QuoteEditor() {
     });
   };
 
-  const updatePosition = (positionId: string, field: keyof QuotePosition, value: any) => {
+  const updatePosition = (positionId: string, field: keyof QuotePosition, value: unknown) => {
     setPositions(positions.map(p => 
       p.id === positionId ? { ...p, [field]: value } : p
     ));

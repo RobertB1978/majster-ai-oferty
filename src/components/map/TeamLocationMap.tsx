@@ -8,7 +8,7 @@ import { MapPin, Navigation, RefreshCw, Users } from 'lucide-react';
 import { useTeamLocations, TeamLocation } from '@/hooks/useTeamMembers';
 
 // Fix Leaflet default marker icons
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+delete (L.Icon.Default.prototype as Record<string, unknown>)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
@@ -76,8 +76,8 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     if (locations.length === 0) return;
 
     // Group locations by team member (get latest for each)
-    const latestLocations = new Map<string, any>();
-    locations.forEach((loc: any) => {
+    const latestLocations = new Map<string, TeamLocation>();
+    locations.forEach((loc: TeamLocation) => {
       const existing = latestLocations.get(loc.team_member_id);
       if (!existing || new Date(loc.recorded_at) > new Date(existing.recorded_at)) {
         latestLocations.set(loc.team_member_id, loc);
@@ -139,7 +139,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     }
   }, [locations]);
 
-  const activeWorkers = new Set(locations.map((l: any) => l.team_member_id)).size;
+  const activeWorkers = new Set(locations.map((l: TeamLocation) => l.team_member_id)).size;
 
   return (
     <Card className={className}>

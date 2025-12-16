@@ -11,7 +11,7 @@ export interface FinancialReport {
   total_costs: number;
   gross_margin: number;
   project_count: number;
-  report_data: any;
+  report_data: unknown;
   created_at: string;
 }
 

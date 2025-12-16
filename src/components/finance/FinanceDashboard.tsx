@@ -12,10 +12,24 @@ import { useFinancialSummary, useAIFinancialAnalysis } from '@/hooks/useFinancia
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { LoadingCard } from '@/components/ui/loading-screen';
 
+interface PricingRecommendation {
+  category: string;
+  currentAvgPrice: number;
+  recommendedPrice: number;
+  reason: string;
+}
+
+interface AIAnalysisResult {
+  summary?: string;
+  actionableInsights?: string[];
+  pricingRecommendations?: PricingRecommendation[];
+  riskFactors?: string[];
+}
+
 export function FinanceDashboard() {
   const { data: summary, isLoading } = useFinancialSummary();
   const aiAnalysis = useAIFinancialAnalysis();
-  const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
 
   const handleRunAnalysis = async () => {
     const result = await aiAnalysis.mutateAsync();
@@ -267,7 +281,7 @@ export function FinanceDashboard() {
               </TabsContent>
               
               <TabsContent value="pricing" className="space-y-4 mt-4">
-                {analysisResult.pricingRecommendations?.map((rec: any, i: number) => (
+                {analysisResult.pricingRecommendations?.map((rec: PricingRecommendation, i: number) => (
                   <div key={i} className="p-3 border rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium">{rec.category}</span>

@@ -39,7 +39,7 @@ export function useAiSuggestions() {
 
       return data?.suggestions || [];
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       if (error.message?.includes('429') || error.message?.includes('limit')) {
         toast.error('Przekroczono limit zapytań AI. Spróbuj później.');
       } else if (error.message?.includes('402')) {

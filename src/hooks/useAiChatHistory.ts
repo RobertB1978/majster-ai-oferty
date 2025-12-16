@@ -54,7 +54,7 @@ export function useAiChatSessions() {
       // Group by session_id and get first message
       const sessions = new Map<string, { session_id: string; first_message: string; created_at: string }>();
       
-      data.forEach((msg: any) => {
+      data.forEach((msg: unknown) => {
         if (!sessions.has(msg.session_id)) {
           sessions.set(msg.session_id, {
             session_id: msg.session_id,

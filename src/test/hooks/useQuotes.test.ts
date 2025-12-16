@@ -39,7 +39,7 @@ describe('Quotes Hook', () => {
     });
 
     it('should handle empty positions', () => {
-      const positions: any[] = [];
+      const positions: unknown[] = [];
       const total = positions.reduce((sum, p) => sum + (p.qty * p.price), 0);
       expect(total).toBe(0);
     });

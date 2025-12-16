@@ -28,16 +28,16 @@ describe('Biometric Authentication', () => {
 
   describe('WebAuthn support detection', () => {
     it('should detect WebAuthn support', async () => {
-      const isSupported = await (window.PublicKeyCredential as any)
+      const isSupported = await (window.PublicKeyCredential as unknown)
         .isUserVerifyingPlatformAuthenticatorAvailable();
       expect(isSupported).toBe(true);
     });
 
     it('should handle unsupported devices', async () => {
-      (window.PublicKeyCredential as any).isUserVerifyingPlatformAuthenticatorAvailable
+      (window.PublicKeyCredential as unknown).isUserVerifyingPlatformAuthenticatorAvailable
         .mockResolvedValueOnce(false);
 
-      const isSupported = await (window.PublicKeyCredential as any)
+      const isSupported = await (window.PublicKeyCredential as unknown)
         .isUserVerifyingPlatformAuthenticatorAvailable();
       expect(isSupported).toBe(false);
     });
@@ -54,7 +54,7 @@ describe('Biometric Authentication', () => {
         },
       };
 
-      (navigator.credentials.create as any).mockResolvedValueOnce(mockCredential);
+      (navigator.credentials.create as unknown).mockResolvedValueOnce(mockCredential);
 
       const credential = await navigator.credentials.create({
         publicKey: {
@@ -70,7 +70,7 @@ describe('Biometric Authentication', () => {
       });
 
       expect(credential).toBeDefined();
-      expect((navigator.credentials.create as any)).toHaveBeenCalled();
+      expect((navigator.credentials.create as unknown)).toHaveBeenCalled();
     });
 
     it('should store credential in database', async () => {
@@ -105,7 +105,7 @@ describe('Biometric Authentication', () => {
         },
       };
 
-      (navigator.credentials.get as any).mockResolvedValueOnce(mockAssertion);
+      (navigator.credentials.get as unknown).mockResolvedValueOnce(mockAssertion);
 
       const assertion = await navigator.credentials.get({
         publicKey: {

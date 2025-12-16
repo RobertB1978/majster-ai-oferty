@@ -59,7 +59,7 @@ export function AdminDatabaseManager() {
       for (const { table, name, icon, desc } of tables) {
         try {
           const { count } = await supabase
-            .from(table as any)
+            .from(table)
             .select('*', { count: 'exact', head: true });
           
           stats.push({

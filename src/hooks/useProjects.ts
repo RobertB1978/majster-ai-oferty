@@ -169,7 +169,7 @@ export function useAddProject() {
       const previousProjects = queryClient.getQueryData(['projects', user!.id]);
 
       // Get client name for optimistic update (if available in cache)
-      const clientData = queryClient.getQueryData(['clients', user!.id]) as any[] | undefined;
+      const clientData = queryClient.getQueryData(['clients', user!.id]) as unknown[] | undefined;
       const client = clientData?.find(c => c.id === newProject.client_id);
 
       // Optimistically add new project

@@ -166,7 +166,7 @@ export function SendOfferModal({
 
       toast.success('Oferta została wysłana!');
       onOpenChange(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error sending offer:', error);
       
       // Check if it's an API key error
