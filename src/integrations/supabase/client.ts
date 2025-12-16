@@ -76,13 +76,35 @@ if (!validation.isValid) {
   throw new Error('Invalid Supabase configuration. See console for details.');
 }
 
+// SSR-safe storage adapter
+// Prevents crashes when localStorage is not available (SSR, tests)
+function getStorageAdapter() {
+  // Check if we're in a browser environment with localStorage
+  if (typeof window !== 'undefined' && window.localStorage) {
+    return localStorage;
+  }
+
+  // Fallback: in-memory storage for SSR/test environments
+  // This prevents crashes but sessions won't persist (which is fine for SSR/tests)
+  const memoryStorage: Storage = {
+    getItem: () => null,
+    setItem: () => {},
+    removeItem: () => {},
+    clear: () => {},
+    key: () => null,
+    length: 0,
+  };
+
+  return memoryStorage;
+}
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
+    storage: getStorageAdapter(),
+    persistSession: typeof window !== 'undefined', // Only persist in browser
+    autoRefreshToken: typeof window !== 'undefined', // Only auto-refresh in browser
   }
 });
