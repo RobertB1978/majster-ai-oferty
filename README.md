@@ -176,6 +176,7 @@ npm run dev
 
 - 📊 **[Performance Notes](./docs/PERFORMANCE_NOTES.md)** - Optymalizacja wydajności
 - 🎓 **[Comprehensive Audit 2026](./docs/COMPREHENSIVE_AUDIT_2026.md)** - Pełny audyt aplikacji
+- 🟡 **[Known Issues](./docs/KNOWN_ISSUES.md)** - Znane problemy i monitoring
 
 ---
 
