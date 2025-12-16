@@ -1,5 +1,6 @@
 /**
  * GDPR-compliant User Account Deletion
+ * Security Pack Δ1 - Enhanced Validation
  *
  * Edge Function do całkowitego usunięcia konta użytkownika i wszystkich powiązanych danych
  * zgodnie z Art. 17 RODO (Right to Erasure).
@@ -17,6 +18,12 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  validateString,
+  createValidationErrorResponse,
+  combineValidations
+} from '../_shared/validation.ts';
+import { checkRateLimit, createRateLimitResponse, getIdentifier } from '../_shared/rate-limiter.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -27,6 +34,17 @@ serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
+  }
+
+  // Only accept POST requests
+  if (req.method !== 'POST') {
+    return new Response(
+      JSON.stringify({ error: 'Method not allowed' }),
+      {
+        status: 405,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 
   try {
@@ -43,7 +61,17 @@ serve(async (req) => {
     );
 
     // Get user from request
-    const authHeader = req.headers.get('Authorization')!;
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Missing or invalid authorization header' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     const token = authHeader.replace('Bearer ', '');
     const {
       data: { user },
@@ -51,10 +79,72 @@ serve(async (req) => {
     } = await supabaseAdmin.auth.getUser(token);
 
     if (authError || !user) {
-      throw new Error('Unauthorized');
+      console.warn('Delete account: Invalid auth token');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     const userId = user.id;
+
+    // Rate limiting (strict for delete operations)
+    const rateLimitResult = await checkRateLimit(
+      getIdentifier(req, userId),
+      'delete-user-account',
+      supabaseAdmin,
+      { maxRequests: 3, windowMs: 3600000 } // 3 requests per hour
+    );
+
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult, corsHeaders);
+    }
+
+    // Parse and validate request body
+    let body: { confirmationPhrase?: unknown };
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    const { confirmationPhrase } = body;
+
+    // Validate confirmation phrase
+    const validation = combineValidations(
+      validateString(confirmationPhrase, 'confirmationPhrase', {
+        minLength: 1,
+        maxLength: 100
+      })
+    );
+
+    if (!validation.valid) {
+      return createValidationErrorResponse(validation.errors, corsHeaders);
+    }
+
+    // Check exact confirmation phrase (case-sensitive)
+    const expectedPhrase = 'DELETE MY ACCOUNT';
+    if (confirmationPhrase !== expectedPhrase) {
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid confirmation phrase',
+          details: [`Confirmation phrase must be exactly: "${expectedPhrase}"`]
+        }),
+        {
+          status: 422,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
 
     console.log(`Starting account deletion for user: ${userId}`);
 
@@ -62,104 +152,216 @@ serve(async (req) => {
     // KROK 1: Usuń wszystkie powiązane dane
     // ========================================
 
-    // Quotes items (cascade delete przez FK, ale dla pewności)
-    const { error: quoteItemsError } = await supabaseAdmin
-      .from('quote_items')
-      .delete()
-      .eq('user_id', userId);
+    const deletionResults: Record<string, { success: boolean; count?: number; error?: string }> = {};
 
-    if (quoteItemsError) {
-      console.error('Error deleting quote items:', quoteItemsError);
+    // Quotes items (cascade delete przez FK, ale dla pewności)
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('quote_items')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
+
+      deletionResults.quoteItems = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting quote items:', error);
+    } catch (error) {
+      deletionResults.quoteItems = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
 
     // Quotes
-    const { error: quotesError } = await supabaseAdmin
-      .from('quotes')
-      .delete()
-      .eq('user_id', userId);
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('quotes')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
 
-    if (quotesError) {
-      console.error('Error deleting quotes:', quotesError);
+      deletionResults.quotes = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting quotes:', error);
+    } catch (error) {
+      deletionResults.quotes = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
 
     // Projects
-    const { error: projectsError } = await supabaseAdmin
-      .from('projects')
-      .delete()
-      .eq('user_id', userId);
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('projects')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
 
-    if (projectsError) {
-      console.error('Error deleting projects:', projectsError);
+      deletionResults.projects = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting projects:', error);
+    } catch (error) {
+      deletionResults.projects = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
 
     // Clients
-    const { error: clientsError } = await supabaseAdmin
-      .from('clients')
-      .delete()
-      .eq('user_id', userId);
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('clients')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
 
-    if (clientsError) {
-      console.error('Error deleting clients:', clientsError);
+      deletionResults.clients = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting clients:', error);
+    } catch (error) {
+      deletionResults.clients = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
 
     // Calendar events
-    const { error: eventsError } = await supabaseAdmin
-      .from('calendar_events')
-      .delete()
-      .eq('user_id', userId);
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('calendar_events')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
 
-    if (eventsError) {
-      console.error('Error deleting calendar events:', eventsError);
+      deletionResults.calendarEvents = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting calendar events:', error);
+    } catch (error) {
+      deletionResults.calendarEvents = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
 
     // Item templates
-    const { error: templatesError } = await supabaseAdmin
-      .from('item_templates')
-      .delete()
-      .eq('user_id', userId);
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('item_templates')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
 
-    if (templatesError) {
-      console.error('Error deleting item templates:', templatesError);
+      deletionResults.itemTemplates = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting item templates:', error);
+    } catch (error) {
+      deletionResults.itemTemplates = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
 
     // Notifications
-    const { error: notificationsError } = await supabaseAdmin
-      .from('notifications')
-      .delete()
-      .eq('user_id', userId);
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('notifications')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
 
-    if (notificationsError) {
-      console.error('Error deleting notifications:', notificationsError);
+      deletionResults.notifications = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting notifications:', error);
+    } catch (error) {
+      deletionResults.notifications = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
 
     // Offer approvals
-    const { error: offersError } = await supabaseAdmin
-      .from('offer_approvals')
-      .delete()
-      .eq('user_id', userId);
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('offer_approvals')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
 
-    if (offersError) {
-      console.error('Error deleting offer approvals:', offersError);
+      deletionResults.offerApprovals = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting offer approvals:', error);
+    } catch (error) {
+      deletionResults.offerApprovals = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
 
     // User profile
-    const { error: profileError } = await supabaseAdmin
-      .from('user_profiles')
-      .delete()
-      .eq('user_id', userId);
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('user_profiles')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
 
-    if (profileError) {
-      console.error('Error deleting user profile:', profileError);
+      deletionResults.userProfiles = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting user profile:', error);
+    } catch (error) {
+      deletionResults.userProfiles = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
 
     // Subscription
-    const { error: subscriptionError } = await supabaseAdmin
-      .from('user_subscriptions')
-      .delete()
-      .eq('user_id', userId);
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('user_subscriptions')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
 
-    if (subscriptionError) {
-      console.error('Error deleting subscription:', subscriptionError);
+      deletionResults.userSubscriptions = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting subscription:', error);
+    } catch (error) {
+      deletionResults.userSubscriptions = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
 
     // ========================================
@@ -170,26 +372,49 @@ serve(async (req) => {
 
     if (deleteAuthError) {
       console.error('Error deleting auth user:', deleteAuthError);
-      throw deleteAuthError;
+      // Don't throw - log the partial success
+      deletionResults.authAccount = {
+        success: false,
+        error: deleteAuthError.message
+      };
+    } else {
+      deletionResults.authAccount = { success: true };
     }
 
-    console.log(`Account deletion completed successfully for user: ${userId}`);
+    console.log(`Account deletion completed for user: ${userId}`);
 
     // ========================================
-    // KROK 3: Log deletion for audit trail
+    // KROK 3: Audit log (without sensitive data)
     // ========================================
+
+    const totalDeleted = Object.values(deletionResults)
+      .filter(r => r.success)
+      .reduce((sum, r) => sum + (r.count || 0), 0);
+
+    const hasErrors = Object.values(deletionResults).some(r => !r.success);
 
     console.log({
       event: 'account_deleted',
-      userId,
+      userId: userId.substring(0, 8) + '***', // Obfuscate in logs
       timestamp: new Date().toISOString(),
       gdpr_article: 'Art. 17 RODO',
+      totalRecordsDeleted: totalDeleted,
+      hadErrors: hasErrors,
+      deletionSummary: Object.entries(deletionResults).map(([table, result]) => ({
+        table,
+        success: result.success,
+        count: result.count
+      }))
     });
 
     return new Response(
       JSON.stringify({
-        success: true,
+        success: !hasErrors,
         message: 'Konto i wszystkie dane zostały trwale usunięte',
+        details: {
+          totalRecordsDeleted: totalDeleted,
+          deletionResults: hasErrors ? deletionResults : undefined
+        }
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -199,10 +424,11 @@ serve(async (req) => {
   } catch (error: unknown) {
     console.error('Error in delete-user-account function:', error);
 
+    // Don't leak internal error details to client
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: error.message || 'Nie udało się usunąć konta',
+        error: 'Internal server error',
+        message: 'Nie udało się usunąć konta. Skontaktuj się z pomocą techniczną.',
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -12,6 +12,11 @@ export default defineConfig({
       'src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
       'supabase/functions/**/*.test.ts', // Phase 7C: Include Edge Function tests
     ],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      'supabase/functions/_shared/validation.test.ts', // Deno test - run separately with Deno runtime
+    ],
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [

@@ -1,10 +1,20 @@
 // ============================================
-// CSP REPORT ENDPOINT
+// CSP REPORT ENDPOINT - Security Enhanced
+// Security Pack Δ1 - Enhanced Validation
 // Zbieranie raportów naruszeń Content Security Policy
 // ============================================
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { logMessageToSentry } from "../_shared/sentry.ts";
+import {
+  validateString,
+  validateNumber,
+  validatePayloadSize,
+  combineValidations
+} from "../_shared/validation.ts";
+import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
+import { sanitizeString } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -45,36 +55,156 @@ serve(async (req) => {
     );
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const supabase = supabaseUrl && supabaseServiceKey
+    ? createClient(supabaseUrl, supabaseServiceKey)
+    : null;
+
   try {
-    const report: CSPReport = await req.json();
+    // Rate limiting (prevent spam attacks)
+    if (supabase) {
+      const rateLimitResult = await checkRateLimit(
+        getIdentifier(req),
+        'csp-report',
+        supabase,
+        { maxRequests: 100, windowMs: 60000 } // 100 reports per minute per IP
+      );
+
+      if (!rateLimitResult.allowed) {
+        console.warn('CSP report rate limit exceeded');
+        return createRateLimitResponse(rateLimitResult, corsHeaders);
+      }
+    }
+
+    // Parse request body with size limit
+    let rawBody: string;
+    try {
+      rawBody = await req.text();
+    } catch {
+      console.warn('CSP report: Failed to read body');
+      return new Response(
+        JSON.stringify({ error: 'Failed to read request body' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Check payload size (10KB limit for CSP reports)
+    if (rawBody.length > 10240) {
+      console.warn(`CSP report: Payload too large (${rawBody.length} bytes)`);
+      return new Response(
+        JSON.stringify({ error: 'Payload too large' }),
+        {
+          status: 413,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Parse JSON
+    let report: CSPReport;
+    try {
+      report = JSON.parse(rawBody);
+    } catch {
+      console.warn('CSP report: Invalid JSON');
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON format' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Validate CSP report structure
+    if (!report['csp-report']) {
+      console.warn('CSP report: Missing csp-report field');
+      return new Response(
+        JSON.stringify({ error: 'Invalid CSP report format' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     const cspReport = report['csp-report'];
 
-    console.log('🚨 CSP Violation Report:', {
-      directive: cspReport['violated-directive'],
-      blockedUri: cspReport['blocked-uri'],
-      documentUri: cspReport['document-uri'],
-      sourceFile: cspReport['source-file'],
-      lineNumber: cspReport['line-number'],
-    });
+    // Validate required fields
+    const validation = combineValidations(
+      validateString(cspReport['document-uri'], 'document-uri', { maxLength: 2048 }),
+      validateString(cspReport['violated-directive'], 'violated-directive', { maxLength: 500 }),
+      validateString(cspReport['effective-directive'], 'effective-directive', { maxLength: 500 }),
+      validateString(cspReport['blocked-uri'], 'blocked-uri', { maxLength: 2048 }),
+      validateString(cspReport.disposition, 'disposition', { maxLength: 50 })
+    );
 
-    // Log do Sentry jeśli jest skonfigurowane
+    if (!validation.valid) {
+      console.warn('CSP report: Validation failed', validation.errors);
+      return new Response(
+        JSON.stringify({ error: 'Invalid CSP report fields' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Validate optional numeric fields
+    if (cspReport['line-number'] !== undefined) {
+      const lineValidation = validateNumber(cspReport['line-number'], 'line-number', {
+        required: false,
+        min: 0,
+        max: 999999
+      });
+      if (!lineValidation.valid) {
+        console.warn('CSP report: Invalid line-number');
+      }
+    }
+
+    if (cspReport['column-number'] !== undefined) {
+      const colValidation = validateNumber(cspReport['column-number'], 'column-number', {
+        required: false,
+        min: 0,
+        max: 999999
+      });
+      if (!colValidation.valid) {
+        console.warn('CSP report: Invalid column-number');
+      }
+    }
+
+    // Sanitize and truncate string fields before logging
+    const sanitizedReport = {
+      directive: sanitizeString(cspReport['violated-directive']).substring(0, 200),
+      blockedUri: sanitizeString(cspReport['blocked-uri']).substring(0, 500),
+      documentUri: sanitizeString(cspReport['document-uri']).substring(0, 500),
+      sourceFile: cspReport['source-file']
+        ? sanitizeString(cspReport['source-file']).substring(0, 500)
+        : undefined,
+      lineNumber: cspReport['line-number'],
+    };
+
+    console.log('🚨 CSP Violation Report:', sanitizedReport);
+
+    // Log do Sentry jeśli jest skonfigurowane (with sanitized data)
     await logMessageToSentry(
-      `CSP Violation: ${cspReport['violated-directive']} - ${cspReport['blocked-uri']}`,
+      `CSP Violation: ${sanitizedReport.directive} - ${sanitizedReport.blockedUri}`,
       'warning',
       {
         functionName: 'csp-report',
         tags: {
-          violation: cspReport['effective-directive'],
+          violation: sanitizedReport.directive.substring(0, 50),
           disposition: cspReport.disposition,
         },
         extra: {
-          documentUri: cspReport['document-uri'],
-          blockedUri: cspReport['blocked-uri'],
-          sourceFile: cspReport['source-file'],
-          lineNumber: cspReport['line-number'],
+          documentUri: sanitizedReport.documentUri,
+          blockedUri: sanitizedReport.blockedUri,
+          sourceFile: sanitizedReport.sourceFile,
+          lineNumber: sanitizedReport.lineNumber,
           columnNumber: cspReport['column-number'],
-          violatedDirective: cspReport['violated-directive'],
-          originalPolicy: cspReport['original-policy'],
         },
       }
     );
@@ -89,7 +219,7 @@ serve(async (req) => {
     console.error('Error processing CSP report:', error);
 
     // Nie loguj do Sentry - to może być spam lub atak
-    // Zwróć 400 Bad Request
+    // Zwróć 400 Bad Request bez szczegółów
     return new Response(
       JSON.stringify({ error: 'Invalid report format' }),
       {
