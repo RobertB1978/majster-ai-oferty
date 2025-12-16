@@ -177,8 +177,8 @@ describe('Validation Schemas', () => {
     it('validates matching passwords', () => {
       const validRegister = {
         email: 'test@example.com',
-        password: 'password123',
-        confirmPassword: 'password123',
+        password: 'Password123',
+        confirmPassword: 'Password123',
       };
 
       const result = registerSchema.safeParse(validRegister);
@@ -188,7 +188,7 @@ describe('Validation Schemas', () => {
     it('fails when passwords do not match', () => {
       const invalidRegister = {
         email: 'test@example.com',
-        password: 'password123',
+        password: 'Password123',
         confirmPassword: 'different',
       };
 
