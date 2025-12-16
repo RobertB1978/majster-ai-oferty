@@ -38,5 +38,5 @@ export default defineConfig({
   },
 
   // Global setup to wait for server
-  globalSetup: require.resolve('./e2e/global-setup.ts'),
+  globalSetup: './e2e/global-setup.ts',
 });
