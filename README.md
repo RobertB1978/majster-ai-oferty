@@ -120,10 +120,15 @@
 
 ### Wymagania
 
-- Node.js 20+ (sprawdź: `node --version`)
-- npm 10+ (⚠️ **NIE** używaj bun, pnpm ani yarn)
-- Konto Supabase (darmowe)
-- Konto Vercel (darmowe) - tylko do wdrożenia
+- **Node.js 20+** (rekomendowana: 20.19.5) - sprawdź: `node --version`
+- **npm 10+** (⚠️ **NIE** używaj bun, pnpm ani yarn)
+- **Konto Supabase** (darmowe tier wystarczy) - [supabase.com](https://supabase.com)
+- **Konto Vercel** (darmowe) - tylko do wdrożenia - [vercel.com](https://vercel.com)
+
+**📝 Zmienne środowiskowe:**
+- Lokalne: skopiuj [`.env.example`](./.env.example) → `.env` i wypełnij wartości
+- Vercel: ustaw w Dashboard → Settings → Environment Variables (Production, Preview, Development)
+- Szczegóły: [Environment Variables Checklist](./docs/ENVIRONMENT_VARIABLES_CHECKLIST.md)
 
 ### Lokalne uruchomienie (5 minut)
 
