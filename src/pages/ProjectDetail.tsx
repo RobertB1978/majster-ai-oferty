@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download, Mail, Camera, Receipt, FileSignature, Eye } from 'lucide-react';
+import { toast } from 'sonner';
 import { exportQuoteToExcel } from '@/lib/exportUtils';
 import { OfferHistoryPanel } from '@/components/offers/OfferHistoryPanel';
 import { OfferStatsPanel } from '@/components/offers/OfferStatsPanel';
@@ -121,16 +122,23 @@ export default function ProjectDetail() {
           Wyślij mailem
         </Button>
         {quote && (
-          <Button 
-            variant="outline" 
-            onClick={() => exportQuoteToExcel({
-              projectName: project.project_name,
-              positions: quote.positions,
-              summaryMaterials: Number(quote.summary_materials),
-              summaryLabor: Number(quote.summary_labor),
-              marginPercent: Number(quote.margin_percent),
-              total: Number(quote.total),
-            })}
+          <Button
+            variant="outline"
+            onClick={async () => {
+              try {
+                await exportQuoteToExcel({
+                  projectName: project.project_name,
+                  positions: quote.positions,
+                  summaryMaterials: Number(quote.summary_materials),
+                  summaryLabor: Number(quote.summary_labor),
+                  marginPercent: Number(quote.margin_percent),
+                  total: Number(quote.total),
+                });
+              } catch (error) {
+                console.error('Failed to export Excel:', error);
+                toast.error('Błąd podczas eksportu do Excel');
+              }
+            }}
           >
             <Download className="mr-2 h-4 w-4" />
             Eksport Excel

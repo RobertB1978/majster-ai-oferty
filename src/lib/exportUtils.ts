@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { QuotePosition } from '@/hooks/useQuotes';
 import { toast } from 'sonner';
 
@@ -11,55 +11,66 @@ interface ExportQuoteData {
   total: number;
 }
 
-export function exportQuoteToExcel(data: ExportQuoteData) {
+export async function exportQuoteToExcel(data: ExportQuoteData) {
   const { projectName, positions, summaryMaterials, summaryLabor, marginPercent, total } = data;
-  
-  // Prepare positions data
-  const positionsData = positions.map((pos, idx) => ({
-    'Lp.': idx + 1,
-    'Nazwa': pos.name,
-    'Ilość': pos.qty,
-    'Jednostka': pos.unit,
-    'Cena jedn. (zł)': pos.price,
-    'Suma (zł)': pos.qty * pos.price,
-    'Kategoria': pos.category,
-  }));
 
-  // Create worksheet from positions
-  const ws = XLSX.utils.json_to_sheet(positionsData);
+  // Create workbook and worksheet
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Wycena');
 
-  // Add summary rows
-  const summaryStartRow = positionsData.length + 3;
-  XLSX.utils.sheet_add_aoa(ws, [
-    [],
-    ['', '', '', '', 'Suma materiałów:', summaryMaterials],
-    ['', '', '', '', 'Suma robocizny:', summaryLabor],
-    ['', '', '', '', `Marża (${marginPercent}%):`, (summaryMaterials + summaryLabor) * marginPercent / 100],
-    ['', '', '', '', 'RAZEM:', total],
-  ], { origin: `A${summaryStartRow}` });
-
-  // Set column widths
-  ws['!cols'] = [
-    { wch: 5 },   // Lp.
-    { wch: 40 },  // Nazwa
-    { wch: 10 },  // Ilość
-    { wch: 12 },  // Jednostka
-    { wch: 15 },  // Cena
-    { wch: 15 },  // Suma
-    { wch: 12 },  // Kategoria
+  // Set column definitions with widths
+  worksheet.columns = [
+    { header: 'Lp.', key: 'lp', width: 5 },
+    { header: 'Nazwa', key: 'nazwa', width: 40 },
+    { header: 'Ilość', key: 'ilosc', width: 10 },
+    { header: 'Jednostka', key: 'jednostka', width: 12 },
+    { header: 'Cena jedn. (zł)', key: 'cena', width: 15 },
+    { header: 'Suma (zł)', key: 'suma', width: 15 },
+    { header: 'Kategoria', key: 'kategoria', width: 12 },
   ];
 
-  // Create workbook
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Wycena');
+  // Add position rows with sanitized data
+  positions.forEach((pos, idx) => {
+    // Whitelist only safe properties to prevent prototype pollution
+    worksheet.addRow({
+      lp: idx + 1,
+      nazwa: String(pos.name),
+      ilosc: Number(pos.qty),
+      jednostka: String(pos.unit),
+      cena: Number(pos.price),
+      suma: Number(pos.qty) * Number(pos.price),
+      kategoria: String(pos.category),
+    });
+  });
 
-  // Generate filename with date
+  // Add summary section
+  const summaryStartRow = positions.length + 3;
+  worksheet.addRow([]);
+  worksheet.addRow(['', '', '', '', 'Suma materiałów:', summaryMaterials]);
+  worksheet.addRow(['', '', '', '', 'Suma robocizny:', summaryLabor]);
+  worksheet.addRow(['', '', '', '', `Marża (${marginPercent}%):`, (summaryMaterials + summaryLabor) * marginPercent / 100]);
+  worksheet.addRow(['', '', '', '', 'RAZEM:', total]);
+
+  // Generate buffer
+  const buffer = await workbook.xlsx.writeBuffer();
+
+  // Create blob and download
+  const blob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  });
+  const url = URL.createObjectURL(blob);
+
   const date = new Date().toISOString().split('T')[0];
   const sanitizedName = projectName.replace(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s-]/g, '').trim();
   const filename = `wycena_${sanitizedName}_${date}.xlsx`;
 
-  // Download
-  XLSX.writeFile(wb, filename);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 export function exportQuoteToCSV(data: ExportQuoteData) {
