@@ -1,10 +1,12 @@
 // ============================================
-// HEALTHCHECK ENDPOINT
+// HEALTHCHECK ENDPOINT - Security Enhanced
+// Security Pack Δ1 - PROMPT 6/10
 // Uptime monitoring i weryfikacja stanu systemu
 // ============================================
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { validateString } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -39,6 +41,32 @@ serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Parse query parameters (for future extensions like ?verbose=true)
+  const url = new URL(req.url);
+  const formatParam = url.searchParams.get('format');
+  const verboseParam = url.searchParams.get('verbose');
+
+  // Validate query parameters
+  if (formatParam) {
+    const validation = validateString(formatParam, 'format', { maxLength: 20, required: false });
+    if (!validation.valid || !['json', 'text'].includes(formatParam)) {
+      return new Response(JSON.stringify({ error: 'Invalid format parameter' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+  }
+
+  if (verboseParam) {
+    const validation = validateString(verboseParam, 'verbose', { maxLength: 10, required: false });
+    if (!validation.valid || !['true', 'false'].includes(verboseParam)) {
+      return new Response(JSON.stringify({ error: 'Invalid verbose parameter' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
   }
 
   const startTime = Date.now();
