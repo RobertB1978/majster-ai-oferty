@@ -203,6 +203,7 @@ export function AiChatAgent() {
           isOpen && 'hidden'
         )}
         size="icon"
+        aria-label="Otwórz asystenta AI"
       >
         <MessageCircle className="h-6 w-6" />
         <span className="absolute -top-1 -right-1 flex h-4 w-4">
@@ -232,23 +233,23 @@ export function AiChatAgent() {
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setShowHistory(!showHistory)}
-                  title="Historia rozmów"
+                  aria-label={showHistory ? "Ukryj historię rozmów" : "Pokaż historię rozmów"}
                 >
                   <History className="h-4 w-4" />
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={startNewSession}
-                  title="Nowa rozmowa"
+                  aria-label="Rozpocznij nową rozmowę"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} aria-label="Zamknij asystenta AI">
                   <X className="h-5 w-5" />
                 </Button>
               </div>
@@ -277,6 +278,7 @@ export function AiChatAgent() {
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6 shrink-0"
+                          aria-label="Usuń rozmowę"
                           onClick={(e) => handleDeleteSession(session.session_id, e)}
                         >
                           <Trash2 className="h-3 w-3" />
@@ -361,6 +363,7 @@ export function AiChatAgent() {
                     size="icon"
                     onClick={handleVoiceToggle}
                     className={cn(isListening && 'animate-pulse')}
+                    aria-label={isListening ? 'Zatrzymaj nagrywanie' : 'Rozpocznij nagrywanie głosowe'}
                   >
                     {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                   </Button>
@@ -372,11 +375,12 @@ export function AiChatAgent() {
                   disabled={isLoading}
                   className="flex-1"
                 />
-                <Button 
-                  type="submit" 
-                  size="icon" 
+                <Button
+                  type="submit"
+                  size="icon"
                   disabled={isLoading || !input.trim()}
                   className="bg-gradient-to-br from-primary to-primary-glow hover:opacity-90"
+                  aria-label="Wyślij wiadomość"
                 >
                   <Send className="h-4 w-4" />
                 </Button>

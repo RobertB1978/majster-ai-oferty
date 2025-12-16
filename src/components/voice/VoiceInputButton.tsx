@@ -48,7 +48,7 @@ export function VoiceInputButton({ onTranscript, className, disabled }: VoiceInp
         isListening && 'animate-pulse',
         className
       )}
-      title={isListening ? 'Zatrzymaj nagrywanie' : 'Mów...'}
+      aria-label={isListening ? 'Zatrzymaj nagrywanie' : 'Rozpocznij nagrywanie głosowe'}
     >
       {isListening ? (
         <MicOff className="h-4 w-4" />
