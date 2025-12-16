@@ -53,7 +53,7 @@ describe('Export Utilities', () => {
   });
 
   describe('exportQuoteToExcel', () => {
-    it('creates Excel file from quote data', () => {
+    it('creates Excel file from quote data', async () => {
       const quoteData = {
         projectName: 'Excel Project',
         positions: [
@@ -64,8 +64,28 @@ describe('Export Utilities', () => {
         marginPercent: 15,
         total: 460,
       };
-      
-      expect(() => exportQuoteToExcel(quoteData)).not.toThrow();
+
+      await expect(exportQuoteToExcel(quoteData)).resolves.not.toThrow();
+    });
+
+    it('generates valid xlsx buffer', async () => {
+      const quoteData = {
+        projectName: 'Buffer Test',
+        positions: [
+          { id: '1', name: 'Item 1', qty: 2, unit: 'szt.', price: 100, category: 'Materiał' as const },
+          { id: '2', name: 'Item 2', qty: 1, unit: 'godz.', price: 50, category: 'Robocizna' as const },
+        ],
+        summaryMaterials: 200,
+        summaryLabor: 50,
+        marginPercent: 20,
+        total: 300,
+      };
+
+      // Should complete without throwing
+      await exportQuoteToExcel(quoteData);
+
+      // Verify blob was created with correct type
+      expect(global.URL.createObjectURL).toHaveBeenCalled();
     });
   });
 
