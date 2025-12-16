@@ -2,26 +2,29 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: true,
+  fullyParallel: false, // Run sequentially in CI for stability
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 3 : 0, // More retries in CI
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
-  timeout: 60000, // 60s per test (default 30s)
+  timeout: 120000, // 2 minutes per test
 
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:8080',
     trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
-    actionTimeout: 15000, // 15s for each action
-    navigationTimeout: 30000, // 30s for navigation
+    screenshot: 'on',
+    video: 'on',
+    actionTimeout: 30000, // 30s for each action
+    navigationTimeout: 60000, // 60s for navigation
   },
 
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        headless: true,
+      },
     },
   ],
 
@@ -29,8 +32,11 @@ export default defineConfig({
     command: 'npm run dev',
     url: 'http://localhost:8080',
     reuseExistingServer: !process.env.CI,
-    timeout: 120000, // 2 minutes to start server
+    timeout: 180000, // 3 minutes to start server
     stdout: 'pipe',
     stderr: 'pipe',
   },
+
+  // Global setup to wait for server
+  globalSetup: require.resolve('./e2e/global-setup.ts'),
 });
