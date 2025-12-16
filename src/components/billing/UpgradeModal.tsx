@@ -9,16 +9,17 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Sparkles, 
-  Check, 
-  Zap, 
-  Building2, 
-  Users, 
+import {
+  Sparkles,
+  Check,
+  Zap,
+  Building2,
+  Users,
   BarChart3,
   Mic,
   Bot,
-  FileText
+  FileText,
+  type LucideIcon
 } from 'lucide-react';
 import { usePlanGate, PlanFeature } from '@/hooks/usePlanGate';
 
@@ -76,7 +77,7 @@ const PLANS = [
   },
 ];
 
-const featureIcons: Record<string, any> = {
+const featureIcons: Record<string, LucideIcon> = {
   ai: Bot,
   voice: Mic,
   documents: FileText,

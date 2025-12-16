@@ -59,7 +59,7 @@ export default function ProjectDetail() {
     });
   };
 
-  const handleAddToQuote = (items: any[]) => {
+  const handleAddToQuote = (items: unknown[]) => {
     // Navigate to quote editor with items to add
     navigate(`/projects/${id}/quote`, { state: { addItems: items } });
   };

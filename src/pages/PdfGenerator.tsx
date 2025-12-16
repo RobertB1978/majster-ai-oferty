@@ -287,7 +287,7 @@ export default function PdfGenerator() {
                     </tr>
                   </thead>
                   <tbody>
-                    {quote.positions.map((pos: any) => (
+                    {quote.positions.map((pos: unknown) => (
                       <tr key={pos.id} className="border-b border-border">
                         <td className="p-3">{pos.name}</td>
                         <td className="p-3">{pos.qty} {pos.unit}</td>

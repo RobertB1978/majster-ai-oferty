@@ -32,13 +32,13 @@ export interface AIRequestOptions {
   messages: AIMessage[];
   maxTokens?: number;
   temperature?: number;
-  tools?: any[];
-  toolChoice?: any;
+  tools?: unknown[];
+  toolChoice?: unknown;
 }
 
 export interface AIResponse {
   content: string;
-  toolCalls?: any[];
+  toolCalls?: unknown[];
   usage?: {
     promptTokens: number;
     completionTokens: number;
@@ -98,7 +98,7 @@ export function detectAIProvider(): AIProviderConfig {
 /**
  * Converts messages to Anthropic format
  */
-function convertToAnthropicFormat(messages: AIMessage[]): { system: string; messages: any[] } {
+function convertToAnthropicFormat(messages: AIMessage[]): { system: string; messages: unknown[] } {
   const systemMessage = messages.find(m => m.role === 'system');
   const otherMessages = messages.filter(m => m.role !== 'system');
 
@@ -128,7 +128,7 @@ function convertToAnthropicFormat(messages: AIMessage[]): { system: string; mess
 /**
  * Converts messages to Gemini format
  */
-function convertToGeminiFormat(messages: AIMessage[]): { contents: any[]; systemInstruction?: any } {
+function convertToGeminiFormat(messages: AIMessage[]): { contents: unknown[]; systemInstruction?: unknown } {
   const systemMessage = messages.find(m => m.role === 'system');
   const otherMessages = messages.filter(m => m.role !== 'system');
 
@@ -172,7 +172,7 @@ async function callOpenAICompatible(
   const model = config.model || DEFAULT_MODELS[config.provider];
   const endpoint = config.baseUrl || API_ENDPOINTS[config.provider];
 
-  const body: any = {
+  const body: unknown = {
     model,
     messages: options.messages,
     max_tokens: options.maxTokens || 2048,
@@ -234,7 +234,7 @@ async function callAnthropic(
   const model = config.model || DEFAULT_MODELS.anthropic;
   const { system, messages } = convertToAnthropicFormat(options.messages);
 
-  const body: any = {
+  const body: unknown = {
     model,
     max_tokens: options.maxTokens || 2048,
     system,
@@ -276,7 +276,7 @@ async function callAnthropic(
   
   // Extract content from Anthropic response
   let content = '';
-  const toolCalls: any[] = [];
+  const toolCalls: unknown[] = [];
 
   for (const block of data.content || []) {
     if (block.type === 'text') {
@@ -317,7 +317,7 @@ async function callGemini(
 
   const endpoint = `${API_ENDPOINTS.gemini}/${model}:generateContent?key=${config.apiKey}`;
 
-  const body: any = {
+  const body: unknown = {
     contents,
     generationConfig: {
       maxOutputTokens: options.maxTokens || 2048,
@@ -362,7 +362,7 @@ async function callGemini(
   const candidate = data.candidates?.[0];
   
   let content = '';
-  const toolCalls: any[] = [];
+  const toolCalls: unknown[] = [];
 
   for (const part of candidate?.content?.parts || []) {
     if (part.text) {

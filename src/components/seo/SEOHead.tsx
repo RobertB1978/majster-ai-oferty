@@ -8,7 +8,7 @@ interface SEOHeadProps {
   ogType?: 'website' | 'article' | 'product';
   canonicalUrl?: string;
   noIndex?: boolean;
-  structuredData?: Record<string, any>;
+  structuredData?: Record<string, unknown>;
   lang?: string;
   alternateLanguages?: { lang: string; url: string }[];
 }

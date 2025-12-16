@@ -31,7 +31,7 @@ interface SentryEvent {
   environment: string;
   server_name?: string;
   tags?: Record<string, string>;
-  extra?: Record<string, any>;
+  extra?: Record<string, unknown>;
   request?: {
     url?: string;
     method?: string;
@@ -88,7 +88,7 @@ export async function logErrorToSentry(
     functionName?: string;
     userId?: string;
     tags?: Record<string, string>;
-    extra?: Record<string, any>;
+    extra?: Record<string, unknown>;
     request?: Request;
   }
 ): Promise<void> {
@@ -143,7 +143,7 @@ export async function logMessageToSentry(
   context?: {
     functionName?: string;
     tags?: Record<string, string>;
-    extra?: Record<string, any>;
+    extra?: Record<string, unknown>;
   }
 ): Promise<void> {
   const dsn = Deno.env.get('SENTRY_DSN');

@@ -29,6 +29,7 @@ export interface OfferSendLike {
 export interface FollowupOptions {
   daysNotOpened?: number;           // Ile dni czekamy na otwarcie (domyślnie 3)
   daysOpenedNoDecision?: number;    // Ile dni czekamy na decyzję po otwarciu (domyślnie 7)
+  daysFresh?: number;               // Ile dni uznajemy ofertę za świeżą (domyślnie 2)
   now?: Date;                       // Data "teraz" (do testów, domyślnie Date.now())
 }
 
@@ -67,6 +68,7 @@ export function classifyOfferSendForFollowup(
   // Domyślne wartości
   const daysNotOpened = options?.daysNotOpened ?? 3;
   const daysOpenedNoDecision = options?.daysOpenedNoDecision ?? 7;
+  const daysFresh = options?.daysFresh ?? 2;
   const now = options?.now ?? new Date();
 
   // Bezpieczeństwo: jeśli brak sent_at, traktuj jako zamkniętą
@@ -82,11 +84,6 @@ export function classifyOfferSendForFollowup(
     return 'no_action_needed';
   }
 
-  // REGUŁA 2: Świeża oferta (≤ 2 dni)
-  if (daysSinceSent <= 2) {
-    return 'fresh_recent';
-  }
-
   // REGUŁA 3: Oferta nie została otwarta (status: sent, > X dni)
   if (send.tracking_status === 'sent' && daysSinceSent > daysNotOpened) {
     return 'followup_not_opened';
@@ -98,6 +95,11 @@ export function classifyOfferSendForFollowup(
     daysSinceSent > daysOpenedNoDecision
   ) {
     return 'followup_opened_no_decision';
+  }
+
+  // REGUŁA 2: Świeża oferta (≤ daysFresh dni)
+  if (daysSinceSent <= daysFresh) {
+    return 'fresh_recent';
   }
 
   // Domyślnie: świeża oferta (fallback dla innych przypadków)

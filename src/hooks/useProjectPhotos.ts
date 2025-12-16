@@ -13,7 +13,7 @@ export interface ProjectPhoto {
   photo_url: string;
   file_name: string;
   analysis_status: 'pending' | 'analyzing' | 'completed' | 'failed';
-  analysis_result: any;
+  analysis_result: unknown;
   created_at: string;
 }
 

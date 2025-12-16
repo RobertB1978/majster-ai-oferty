@@ -35,11 +35,11 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
   const [isSupported, setIsSupported] = useState(false);
   const [browserSupport, setBrowserSupport] = useState<'full' | 'partial' | 'none'>('none');
   
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<unknown>(null);
   const isListeningRef = useRef(false);
 
   useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = (window as unknown).SpeechRecognition || (window as unknown).webkitSpeechRecognition;
     const supported = !!SpeechRecognition;
     setIsSupported(supported);
 
@@ -68,7 +68,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
         isListeningRef.current = true;
       };
 
-      recognition.onresult = (event: any) => {
+      recognition.onresult = (event: unknown) => {
         let finalTranscript = '';
         let currentInterim = '';
 
@@ -92,7 +92,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
         }
       };
 
-      recognition.onerror = (event: any) => {
+      recognition.onerror = (event: unknown) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
         isListeningRef.current = false;

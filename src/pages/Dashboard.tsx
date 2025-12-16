@@ -54,7 +54,7 @@ export default function Dashboard() {
   }, [onboardingProgress]);
 
   // Handle voice quote creation
-  const handleVoiceQuoteCreated = (result: any) => {
+  const handleVoiceQuoteCreated = (result: unknown) => {
     navigate('/projects/new', { state: { voiceQuote: result } });
   };
 

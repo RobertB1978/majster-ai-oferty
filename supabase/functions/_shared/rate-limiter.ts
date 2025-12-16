@@ -38,7 +38,7 @@ const DEFAULT_CONFIG: RateLimitConfig = {
 export async function checkRateLimit(
   identifier: string,
   endpoint: string,
-  supabaseClient?: any
+  supabaseClient?: unknown
 ): Promise<RateLimitResult> {
   const config = RATE_LIMIT_CONFIGS[endpoint] || DEFAULT_CONFIG;
   const windowStart = new Date(Date.now() - config.windowMs);

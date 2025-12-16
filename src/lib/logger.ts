@@ -111,7 +111,7 @@ function maskString(value: string): string {
 /**
  * Recursively masks PII in any value
  */
-function maskPII(value: any, depth = 0): any {
+function maskPII(value: unknown, depth = 0): unknown {
   // Prevent infinite recursion
   if (depth > 10) {
     return '[MAX_DEPTH_EXCEEDED]';
@@ -152,7 +152,7 @@ function maskPII(value: any, depth = 0): any {
   }
 
   // Handle Objects
-  const masked: Record<string, any> = {};
+  const masked: Record<string, unknown> = {};
   for (const [key, val] of Object.entries(value)) {
     const lowerKey = key.toLowerCase();
 
@@ -208,7 +208,7 @@ export const logger = {
   /**
    * Log general information (masked)
    */
-  log: (...args: any[]) => {
+  log: (...args: unknown[]) => {
     if (shouldLog()) {
       console.log(...args.map(maskPII));
     }
@@ -217,7 +217,7 @@ export const logger = {
   /**
    * Log warnings (masked)
    */
-  warn: (...args: any[]) => {
+  warn: (...args: unknown[]) => {
     if (shouldLog()) {
       console.warn(...args.map(maskPII));
     }
@@ -227,7 +227,7 @@ export const logger = {
    * Log errors (masked)
    * Note: Always logs errors even in production for debugging
    */
-  error: (...args: any[]) => {
+  error: (...args: unknown[]) => {
     // Always log errors, even in production
     console.error(...args.map(maskPII));
   },
@@ -235,7 +235,7 @@ export const logger = {
   /**
    * Log informational messages (masked)
    */
-  info: (...args: any[]) => {
+  info: (...args: unknown[]) => {
     if (shouldLog()) {
       console.info(...args.map(maskPII));
     }
@@ -244,7 +244,7 @@ export const logger = {
   /**
    * Log debug information (masked, dev-only)
    */
-  debug: (...args: any[]) => {
+  debug: (...args: unknown[]) => {
     if (import.meta.env.MODE === 'development') {
       console.debug(...args.map(maskPII));
     }

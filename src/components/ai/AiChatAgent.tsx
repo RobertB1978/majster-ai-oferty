@@ -136,7 +136,7 @@ export function AiChatAgent() {
       if (user) {
         saveMessage.mutate({ sessionId, role: 'assistant', content: assistantContent });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('AI Chat error:', error);
       toast.error('Błąd połączenia z AI');
       

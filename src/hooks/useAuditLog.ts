@@ -41,11 +41,11 @@ export interface AuditLogEntry {
   action: AuditAction;
   entity_type: string;
   entity_id: string | null;
-  old_values: Record<string, any> | null;
-  new_values: Record<string, any> | null;
+  old_values: Record<string, unknown> | null;
+  new_values: Record<string, unknown> | null;
   ip_address: string | null;
   user_agent: string | null;
-  metadata: Record<string, any> | null;
+  metadata: Record<string, unknown> | null;
   created_at: string;
 }
 
@@ -67,9 +67,9 @@ export function useLogAuditEvent() {
       action: AuditAction;
       entityType: string;
       entityId?: string;
-      oldValues?: Record<string, any>;
-      newValues?: Record<string, any>;
-      metadata?: Record<string, any>;
+      oldValues?: Record<string, unknown>;
+      newValues?: Record<string, unknown>;
+      metadata?: Record<string, unknown>;
     }) => {
       if (!user) return;
 
@@ -119,7 +119,7 @@ export function useAuditLogs(options?: {
   return useQuery({
     queryKey: ['audit-logs', options],
     queryFn: async () => {
-      let query = supabase
+      const query = supabase
         .from('notifications')
         .select('*')
         .eq('user_id', user!.id)
@@ -132,7 +132,7 @@ export function useAuditLogs(options?: {
       if (error) throw error;
 
       // Parse audit logs from notifications
-      return data.map((n: any) => {
+      return data.map((n: unknown) => {
         const parsed = JSON.parse(n.message);
         return {
           id: n.id,

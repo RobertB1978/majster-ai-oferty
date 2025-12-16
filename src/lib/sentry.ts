@@ -134,7 +134,7 @@ function initWebVitals() {
 /**
  * Helper do logowania błędów do Sentry
  */
-export function logError(error: Error, context?: Record<string, any>) {
+export function logError(error: Error, context?: Record<string, unknown>) {
   if (import.meta.env.VITE_SENTRY_DSN) {
     Sentry.captureException(error, { extra: context });
   } else {
@@ -145,7 +145,7 @@ export function logError(error: Error, context?: Record<string, any>) {
 /**
  * Helper do logowania custom eventów do Sentry
  */
-export function logEvent(message: string, level: Sentry.SeverityLevel = 'info', context?: Record<string, any>) {
+export function logEvent(message: string, level: Sentry.SeverityLevel = 'info', context?: Record<string, unknown>) {
   if (import.meta.env.VITE_SENTRY_DSN) {
     Sentry.captureMessage(message, {
       level,

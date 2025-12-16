@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
           .single();
 
         const companyName = profile?.company_name || 'Firma';
-        const projectName = (offer.projects as any)?.project_name || 'Projekt';
+        const projectName = (offer.projects as unknown)?.project_name || 'Projekt';
         const clientEmail = offer.client_email;
         const clientName = offer.client_name || 'Szanowny Kliencie';
 

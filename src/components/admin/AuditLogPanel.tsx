@@ -6,17 +6,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Shield, 
-  Search, 
-  Download, 
+import {
+  Shield,
+  Search,
+  Download,
   Filter,
   User,
   FileText,
   Settings,
   Mail,
   Key,
-  Loader2
+  Loader2,
+  type LucideIcon
 } from 'lucide-react';
 import { useAuditLogs, AuditAction } from '@/hooks/useAuditLog';
 import { format } from 'date-fns';
@@ -56,7 +57,7 @@ const actionLabels: Record<string, string> = {
   'document.delete': 'Usunięcie dokumentu',
 };
 
-const actionIcons: Record<string, any> = {
+const actionIcons: Record<string, LucideIcon> = {
   'user': User,
   'client': User,
   'project': FileText,

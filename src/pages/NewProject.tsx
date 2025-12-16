@@ -63,7 +63,7 @@ export default function NewProject() {
   const [transcript, setTranscript] = useState('');
   const [voiceResult, setVoiceResult] = useState<VoiceQuoteResult | null>(null);
   const [isProcessingVoice, setIsProcessingVoice] = useState(false);
-  const [recognition, setRecognition] = useState<any>(null);
+  const [recognition, setRecognition] = useState<unknown>(null);
   
   // AI state
   const [aiInput, setAiInput] = useState('');
@@ -72,14 +72,14 @@ export default function NewProject() {
 
   // Initialize speech recognition
   useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = (window as unknown).SpeechRecognition || (window as unknown).webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognitionInstance = new SpeechRecognition();
       recognitionInstance.lang = 'pl-PL';
       recognitionInstance.continuous = true;
       recognitionInstance.interimResults = true;
       
-      recognitionInstance.onresult = (event: any) => {
+      recognitionInstance.onresult = (event: unknown) => {
         let finalTranscript = '';
         let interimTranscript = '';
         
@@ -97,7 +97,7 @@ export default function NewProject() {
         }
       };
       
-      recognitionInstance.onerror = (event: any) => {
+      recognitionInstance.onerror = (event: unknown) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
         if (event.error === 'not-allowed') {
@@ -231,7 +231,7 @@ export default function NewProject() {
     navigate(`/projects/${project.id}`);
   };
 
-  const isVoiceSupported = !!(window as any).SpeechRecognition || !!(window as any).webkitSpeechRecognition;
+  const isVoiceSupported = !!(window as unknown).SpeechRecognition || !!(window as unknown).webkitSpeechRecognition;
 
   return (
     <div className="space-y-6 animate-fade-in">

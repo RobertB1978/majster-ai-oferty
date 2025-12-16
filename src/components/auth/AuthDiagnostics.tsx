@@ -14,12 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { CheckCircle2, XCircle, AlertCircle, ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
 
-export function AuthDiagnostics() {
-  // Only render in development
-  if (import.meta.env.MODE !== 'development') {
-    return null;
-  }
-
+function AuthDiagnosticsContent() {
   const { user, session, isLoading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -200,4 +195,13 @@ export function AuthDiagnostics() {
       </Collapsible>
     </div>
   );
+}
+
+export function AuthDiagnostics() {
+  // Only render in development
+  if (import.meta.env.MODE !== 'development') {
+    return null;
+  }
+
+  return <AuthDiagnosticsContent />;
 }

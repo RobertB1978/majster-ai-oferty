@@ -162,7 +162,7 @@ export const getPasswordStrengthLabel = (score: number): { label: string; color:
 // Auth validation schemas
 export const loginSchema = z.object({
   email: z.string().min(1, 'Email jest wymagany').email('Nieprawidłowy format email'),
-  password: z.string().min(1, 'Hasło jest wymagane'),
+  password: z.string().min(6, 'Hasło musi mieć min. 6 znaków'),
 });
 
 export const registerSchema = z.object({

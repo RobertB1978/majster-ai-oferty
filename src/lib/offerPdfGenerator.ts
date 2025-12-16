@@ -193,7 +193,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     });
 
     // Update yPosition after table
-    yPosition = (doc as any).lastAutoTable.finalY + 10;
+    yPosition = (doc as unknown).lastAutoTable.finalY + 10;
 
     // ========================================
     // SUMMARY SECTION

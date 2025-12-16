@@ -11,7 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 interface PhotoEstimationPanelProps {
   projectId: string;
   projectName: string;
-  onAddToQuote?: (items: any[]) => void;
+  onAddToQuote?: (items: unknown[]) => void;
 }
 
 export function PhotoEstimationPanel({ projectId, projectName, onAddToQuote }: PhotoEstimationPanelProps) {
@@ -36,7 +36,7 @@ export function PhotoEstimationPanel({ projectId, projectName, onAddToQuote }: P
     }
   };
 
-  const handleAnalyze = async (photo: any) => {
+  const handleAnalyze = async (photo: unknown) => {
     await analyzePhoto.mutateAsync({
       photoId: photo.id,
       projectId,
@@ -45,11 +45,11 @@ export function PhotoEstimationPanel({ projectId, projectName, onAddToQuote }: P
     });
   };
 
-  const handleAddToQuote = (analysis: any) => {
+  const handleAddToQuote = (analysis: unknown) => {
     if (!onAddToQuote) return;
     
     const items = [
-      ...(analysis.works || []).map((w: any) => ({
+      ...(analysis.works || []).map((w: unknown) => ({
         name: w.name,
         category: w.category,
         unit: w.unit,
@@ -57,7 +57,7 @@ export function PhotoEstimationPanel({ projectId, projectName, onAddToQuote }: P
         price: w.estimatedPrice,
         notes: w.notes
       })),
-      ...(analysis.materials || []).map((m: any) => ({
+      ...(analysis.materials || []).map((m: unknown) => ({
         name: m.name,
         category: m.category,
         unit: m.unit,
@@ -172,7 +172,7 @@ export function PhotoEstimationPanel({ projectId, projectName, onAddToQuote }: P
                               <div>
                                 <h4 className="font-medium mb-2">Prace ({photo.analysis_result.works.length})</h4>
                                 <div className="space-y-2">
-                                  {photo.analysis_result.works.map((work: any, i: number) => (
+                                  {photo.analysis_result.works.map((work: unknown, i: number) => (
                                     <div key={i} className="p-2 bg-muted rounded text-sm">
                                       <div className="flex justify-between">
                                         <span>{work.name}</span>
@@ -188,7 +188,7 @@ export function PhotoEstimationPanel({ projectId, projectName, onAddToQuote }: P
                               <div>
                                 <h4 className="font-medium mb-2">Materiały ({photo.analysis_result.materials.length})</h4>
                                 <div className="space-y-2">
-                                  {photo.analysis_result.materials.map((mat: any, i: number) => (
+                                  {photo.analysis_result.materials.map((mat: unknown, i: number) => (
                                     <div key={i} className="p-2 bg-muted rounded text-sm">
                                       <div className="flex justify-between">
                                         <span>{mat.name}</span>

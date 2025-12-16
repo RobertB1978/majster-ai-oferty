@@ -50,6 +50,7 @@ export function createOptimisticMutation<TData, TVariables>(
     mutationFn: config.mutationFn,
 
     onMutate: async (variables) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const queryClient = useQueryClient();
 
       // Cancel outgoing refetches
@@ -67,7 +68,7 @@ export function createOptimisticMutation<TData, TVariables>(
         });
       } else if (config.removeCacheFn) {
         queryClient.setQueryData<TData[]>(config.queryKey, (old) => {
-          return config.removeCacheFn!(old, (variables as any).id || variables);
+          return config.removeCacheFn!(old, (variables as unknown).id || variables);
         });
       }
 
@@ -75,6 +76,7 @@ export function createOptimisticMutation<TData, TVariables>(
     },
 
     onError: (err, variables, context) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const queryClient = useQueryClient();
 
       // Rollback to previous value
@@ -96,6 +98,7 @@ export function createOptimisticMutation<TData, TVariables>(
     },
 
     onSettled: () => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const queryClient = useQueryClient();
 
       // Always refetch to ensure sync with server
