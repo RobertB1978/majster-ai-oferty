@@ -2,12 +2,43 @@ import * as Sentry from "@sentry/react";
 import { onCLS, onINP, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals';
 
 /**
+ * Check if Sentry is properly configured
+ * Security Pack Δ1 - PROMPT 2/10
+ */
+export function isSentryConfigured(): boolean {
+  return !!import.meta.env.VITE_SENTRY_DSN;
+}
+
+/**
+ * Self-check for Sentry configuration
+ * Warns if monitoring is not configured in production
+ */
+function sentryConfigSelfCheck() {
+  const environment = import.meta.env.MODE;
+  const isConfigured = isSentryConfigured();
+
+  if (environment === 'production' && !isConfigured) {
+    console.warn(
+      '⚠️ SENTRY NOT CONFIGURED IN PRODUCTION\n' +
+      '   Monitoring and error tracking is disabled.\n' +
+      '   Set VITE_SENTRY_DSN in Vercel environment variables.\n' +
+      '   See: /docs/SENTRY_SETUP.md'
+    );
+  } else if (environment === 'development' && !isConfigured) {
+    console.info('ℹ️ Sentry not configured (dev mode - this is OK)');
+  }
+}
+
+/**
  * Inicjalizacja Sentry dla monitoringu błędów i wydajności
  * Sentry będzie aktywne tylko w produkcji (gdy VITE_SENTRY_DSN jest ustawione)
  */
 export function initSentry() {
   const dsn = import.meta.env.VITE_SENTRY_DSN;
   const environment = import.meta.env.MODE;
+
+  // Run self-check first
+  sentryConfigSelfCheck();
 
   // Inicjalizuj Sentry tylko jeśli DSN jest ustawiony
   if (dsn) {
