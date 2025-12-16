@@ -66,12 +66,18 @@ export function NotificationCenter() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative"
+          aria-label={unreadCount > 0 ? `Powiadomienia (${unreadCount} nieprzeczytanych)` : 'Powiadomienia'}
+        >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <Badge 
+            <Badge
               className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
               variant="destructive"
+              aria-live="polite"
             >
               {unreadCount > 9 ? '9+' : unreadCount}
             </Badge>
@@ -139,6 +145,7 @@ export function NotificationCenter() {
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6"
+                            aria-label="Oznacz jako przeczytane"
                             onClick={(e) => {
                               e.stopPropagation();
                               markRead.mutate(notification.id);
@@ -151,6 +158,7 @@ export function NotificationCenter() {
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6 text-destructive hover:text-destructive"
+                          aria-label="Usuń powiadomienie"
                           onClick={(e) => {
                             e.stopPropagation();
                             deleteNotification.mutate(notification.id);

@@ -77,6 +77,7 @@ export function TopBar() {
               size="icon"
               onClick={toggleTheme}
               className="h-9 w-9"
+              aria-label={isDark ? t('theme.switchToLight', 'Przełącz na jasny motyw') : t('theme.switchToDark', 'Przełącz na ciemny motyw')}
             >
               {isDark ? (
                 <Sun className="h-4 w-4 transition-transform hover:rotate-45" />
@@ -110,11 +111,12 @@ export function TopBar() {
 
             {/* Admin Panel Access */}
             {(isAdmin || isModerator) && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => navigate('/admin')}
                 className="h-9 w-9 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-500/10"
+                aria-label={t('admin.panelAccess', 'Panel administracyjny')}
               >
                 <Shield className="h-5 w-5" />
               </Button>
@@ -122,7 +124,7 @@ export function TopBar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Button variant="ghost" size="icon" className="h-9 w-9" aria-label={t('help.menu', 'Menu pomocy')}>
                   <HelpCircle className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -147,11 +149,12 @@ export function TopBar() {
               </Button>
             </div>
             
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={handleLogout} 
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleLogout}
               className="sm:hidden h-9 w-9 text-muted-foreground"
+              aria-label={t('auth.logout', 'Wyloguj')}
             >
               <LogOut className="h-5 w-5" />
             </Button>

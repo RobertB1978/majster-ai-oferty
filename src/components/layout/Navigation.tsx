@@ -68,7 +68,8 @@ export function Navigation() {
                 to={item.to}
                 className={cn(
                   "group flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300 whitespace-nowrap",
-                  "text-muted-foreground hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 hover:text-foreground"
+                  "text-muted-foreground hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 hover:text-foreground",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 )}
                 activeClassName="bg-gradient-to-r from-primary/15 to-accent/10 text-primary shadow-sm"
               >
@@ -103,7 +104,8 @@ export function Navigation() {
                   className={cn(
                     "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300",
                     "bg-muted/30 text-muted-foreground hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 hover:text-foreground active:scale-[0.98]",
-                    "animate-fade-in"
+                    "animate-fade-in",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   )}
                   style={{ animationDelay: `${index * 0.03}s` }}
                   activeClassName="bg-gradient-to-r from-primary/15 to-accent/10 text-primary"

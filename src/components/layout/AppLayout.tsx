@@ -45,9 +45,16 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background transition-colors duration-300">
+      {/* Skip to main content link for keyboard navigation */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      >
+        Przejdź do treści głównej
+      </a>
       <TopBar />
       <Navigation />
-      <main className={`flex-1 container py-6 px-4 md:px-6 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <main id="main-content" className={`flex-1 container py-6 px-4 md:px-6 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         <PageTransition>
           <Outlet />
         </PageTransition>
