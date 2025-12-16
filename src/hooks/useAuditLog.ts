@@ -119,7 +119,7 @@ export function useAuditLogs(options?: {
   return useQuery({
     queryKey: ['audit-logs', options],
     queryFn: async () => {
-      let query = supabase
+      const query = supabase
         .from('notifications')
         .select('*')
         .eq('user_id', user!.id)

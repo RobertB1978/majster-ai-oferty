@@ -13,7 +13,7 @@
  * - Invalidation po zakończeniu
  */
 
-import { useQueryClient, type UseMutationOptions } from '@tanstack/react-query';
+import { type QueryClient, type UseMutationOptions } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 export interface OptimisticMutationConfig<TData, TVariables> {
@@ -42,15 +42,18 @@ export interface OptimisticMutationConfig<TData, TVariables> {
 /**
  * Factory function dla optimistic mutations
  * Eliminuje duplikację kodu dla add/delete/update operations
+ *
+ * @param queryClient - QueryClient instance from useQueryClient() hook
+ * @param config - Mutation configuration
  */
 export function createOptimisticMutation<TData, TVariables>(
+  queryClient: QueryClient,
   config: OptimisticMutationConfig<TData, TVariables>
 ): UseMutationOptions<TData, Error, TVariables, { previousData: unknown }> {
   return {
     mutationFn: config.mutationFn,
 
     onMutate: async (variables) => {
-      const queryClient = useQueryClient();
 
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: config.queryKey });
@@ -75,8 +78,6 @@ export function createOptimisticMutation<TData, TVariables>(
     },
 
     onError: (err, variables, context) => {
-      const queryClient = useQueryClient();
-
       // Rollback to previous value
       if (context?.previousData) {
         queryClient.setQueryData(config.queryKey, context.previousData);
@@ -96,8 +97,6 @@ export function createOptimisticMutation<TData, TVariables>(
     },
 
     onSettled: () => {
-      const queryClient = useQueryClient();
-
       // Always refetch to ensure sync with server
       queryClient.invalidateQueries({ queryKey: config.queryKey });
     },
