@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -23,6 +24,16 @@ export default defineConfig(({ mode }) => {
         assets: "./dist/**",
       },
       telemetry: false,
+    }));
+  }
+
+  // Bundle analysis - Security Pack Δ1 - PROMPT 7/10
+  if (process.env.ANALYZE_BUNDLE === 'true') {
+    plugins.push(visualizer({
+      filename: './dist/stats.html',
+      open: true,
+      gzipSize: true,
+      brotliSize: true,
     }));
   }
 
