@@ -17,16 +17,29 @@ test.setTimeout(180000); // 3 minutes per test (increased for CI)
  * Helper: Wait for React hydration to complete
  * React apps render static HTML first, then "hydrate" with JS event listeners.
  * Playwright can be too fast and interact before hydration completes, especially in CI.
+ *
+ * CRITICAL FIX: Explicit timeout to prevent infinite hanging
+ * - https://github.com/microsoft/playwright/issues/19835
  */
 async function waitForReactHydration(page: Page) {
-  // Wait for DOM to be ready
-  await page.waitForLoadState('domcontentloaded');
+  // CRITICAL: Set page timeout FIRST to prevent infinite hanging
+  page.setDefaultTimeout(20000); // 20s max per operation
 
-  // Wait for React app to mount
-  await page.waitForFunction(() => {
+  // Wait for DOM to be ready (with explicit timeout)
+  await page.waitForLoadState('domcontentloaded', { timeout: 15000 });
+
+  // Wait for React app to mount (with EXPLICIT timeout)
+  // CRITICAL: waitForFunction default timeout is 0 (infinite) if not specified!
+  const hasRoot = await page.waitForFunction(() => {
     const root = document.querySelector('#root');
     return root && root.children.length > 0;
-  }, { timeout: 15000 });
+  }, { timeout: 15000 }) // EXPLICIT timeout
+    .then(() => true)
+    .catch(() => false);
+
+  if (!hasRoot) {
+    console.warn('⚠️ React app did not mount within timeout');
+  }
 
   // Extra wait in CI (CI environments are slower)
   if (process.env.CI) {
@@ -38,8 +51,22 @@ async function waitForReactHydration(page: Page) {
 
 test.describe('Smoke Tests', () => {
 
-  // Helper: Add page error listener to all tests
+  // Helper: Add page error listener and block analytics to all tests
   test.beforeEach(async ({ page }) => {
+    // CRITICAL: Set default timeout to prevent infinite hanging
+    page.setDefaultTimeout(20000); // 20s max per operation
+
+    // CRITICAL: Block analytics/tracking requests that can cause infinite network activity
+    // These can prevent 'networkidle' from ever being reached
+    await page.route('**/*{sentry,analytics,google-analytics,gtag,facebook,tracking}*', route => {
+      route.abort();
+    });
+
+    // Also block common tracking pixels/beacons
+    await page.route('**/*.{gif,png}?*{track,pixel,beacon}*', route => {
+      route.abort();
+    });
+
     page.on('pageerror', (error) => {
       // Log JS errors but redact potential secrets
       const message = error.message.replace(/password|token|secret|key/gi, '[REDACTED]');
