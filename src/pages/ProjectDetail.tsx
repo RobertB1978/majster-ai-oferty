@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download, Mail, Camera, Receipt, FileSignature, Eye } from 'lucide-react';
 import { toast } from 'sonner';
-import { exportQuoteToExcel } from '@/lib/exportUtils';
+// Lazy load exportUtils (940KB) - only load when export button clicked
 import { OfferHistoryPanel } from '@/components/offers/OfferHistoryPanel';
 import { OfferStatsPanel } from '@/components/offers/OfferStatsPanel';
 import { SendOfferModal } from '@/components/offers/SendOfferModal';
@@ -126,6 +126,8 @@ export default function ProjectDetail() {
             variant="outline"
             onClick={async () => {
               try {
+                // Lazy load exportUtils only when needed (saves 940KB from initial bundle)
+                const { exportQuoteToExcel } = await import('@/lib/exportUtils');
                 await exportQuoteToExcel({
                   projectName: project.project_name,
                   positions: quote.positions,

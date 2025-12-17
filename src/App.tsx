@@ -26,17 +26,18 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
-// Frequently used pages (static import for better UX)
-import Clients from "./pages/Clients";
-import Projects from "./pages/Projects";
-import NewProject from "./pages/NewProject";
-import ProjectDetail from "./pages/ProjectDetail";
-import QuoteEditor from "./pages/QuoteEditor";
-import CompanyProfile from "./pages/CompanyProfile";
-import ItemTemplates from "./pages/ItemTemplates";
-import Settings from "./pages/Settings";
+// All other pages lazy-loaded (route-based code splitting for optimal performance)
+// Research 2025: Route-based splitting = biggest bundle reduction ROI
+const Clients = lazy(() => import("./pages/Clients"));
+const Projects = lazy(() => import("./pages/Projects"));
+const NewProject = lazy(() => import("./pages/NewProject"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
+const QuoteEditor = lazy(() => import("./pages/QuoteEditor"));
+const CompanyProfile = lazy(() => import("./pages/CompanyProfile"));
+const ItemTemplates = lazy(() => import("./pages/ItemTemplates"));
+const Settings = lazy(() => import("./pages/Settings"));
 
-// Lazy-loaded pages (code splitting for better initial load)
+// Heavy feature pages (already lazy-loaded)
 const PdfGenerator = lazy(() => import("./pages/PdfGenerator"));
 const Calendar = lazy(() => import("./pages/Calendar"));
 const Analytics = lazy(() => import("./pages/Analytics"));

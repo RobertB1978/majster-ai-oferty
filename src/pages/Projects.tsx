@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { SearchInput } from '@/components/ui/search-input';
 import { PaginationControls } from '@/components/ui/pagination-controls';
 import { Plus, Loader2, FolderKanban, Download } from 'lucide-react';
-import { exportProjectsToCSV } from '@/lib/exportUtils';
+// Lazy load exportUtils (940KB) - only load when export button clicked
 
 const statusColors: Record<string, string> = {
   'Nowy': 'bg-muted text-muted-foreground',
@@ -88,7 +88,15 @@ export default function Projects() {
         </div>
         <div className="flex gap-2">
           {totalCount > 0 && (
-            <Button variant="outline" onClick={() => exportProjectsToCSV(allProjects, maxExportRecords)} className="hover:bg-primary/5">
+            <Button
+              variant="outline"
+              onClick={async () => {
+                // Lazy load exportUtils only when needed (saves 940KB from initial bundle)
+                const { exportProjectsToCSV } = await import('@/lib/exportUtils');
+                exportProjectsToCSV(allProjects, maxExportRecords);
+              }}
+              className="hover:bg-primary/5"
+            >
               <Download className="mr-2 h-4 w-4" />
               {t('projects.exportBtn')}
             </Button>
