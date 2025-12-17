@@ -4,10 +4,13 @@ const config: CapacitorConfig = {
   appId: 'app.lovable.6d17f3c07bf04294af962822a3d027a8',
   appName: 'Majster.AI',
   webDir: 'dist',
-  server: {
-    url: 'https://6d17f3c0-7bf0-4294-af96-2822a3d027a8.lovableproject.com?forceHideBadge=true',
-    cleartext: true
-  },
+  // TIER 1.5: Production server configuration
+  // For development: comment out server block and use local build
+  // For production: uncomment and set to your production URL
+  // server: {
+  //   url: 'https://your-production-url.vercel.app',
+  //   cleartext: true
+  // },
   plugins: {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert']
