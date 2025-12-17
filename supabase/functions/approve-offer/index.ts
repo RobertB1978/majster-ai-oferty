@@ -185,7 +185,8 @@ serve(async (req) => {
           action_url: `/projects/${approval.project_id}`
         });
 
-      console.log(`[approve-offer] Offer ${approval.id} ${action}d successfully by token ${token}`);
+      // Don't log full token - it's a one-time sensitive approval token
+      console.log(`[approve-offer] Offer ${approval.id} ${action}d successfully by token ${token.substring(0, 8)}...[REDACTED]`);
       console.log(`[approve-offer] Project ${approval.project_id} status updated`);
 
       return new Response(JSON.stringify({ success: true }), {
