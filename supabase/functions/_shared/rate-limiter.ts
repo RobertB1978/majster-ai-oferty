@@ -26,6 +26,9 @@ export const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
   'finance-ai-analysis': { endpoint: 'finance-ai-analysis', maxRequests: 10, windowMs: 60 * 1000 },
   'send-offer-email': { endpoint: 'send-offer-email', maxRequests: 10, windowMs: 60 * 1000 },
   'approve-offer': { endpoint: 'approve-offer', maxRequests: 30, windowMs: 60 * 1000 },
+  // TIER 1 - Stripe payment endpoints (SECURITY CRITICAL)
+  'stripe-webhook': { endpoint: 'stripe-webhook', maxRequests: 100, windowMs: 60 * 1000 }, // High limit for legitimate webhook bursts
+  'create-checkout-session': { endpoint: 'create-checkout-session', maxRequests: 30, windowMs: 60 * 1000 }, // Authenticated, but still rate-limited
 };
 
 const DEFAULT_CONFIG: RateLimitConfig = {

@@ -11,6 +11,7 @@
 import Stripe from 'https://esm.sh/stripe@14.10.0?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import { corsHeaders } from '../_shared/cors.ts';
+import { checkRateLimit, createRateLimitResponse, getIdentifier } from '../_shared/rate-limiter.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
   apiVersion: '2024-06-20',
@@ -51,6 +52,15 @@ Deno.serve(async (req) => {
 
     if (userError || !user) {
       throw new Error('User not authenticated');
+    }
+
+    // TIER 1 - Rate limiting (prevent abuse, protect Stripe API costs)
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await checkRateLimit(identifier, 'create-checkout-session', supabase);
+
+    if (!rateLimitResult.allowed) {
+      console.warn(`[create-checkout-session] Rate limit exceeded for user ${user.id}`);
+      return createRateLimitResponse(rateLimitResult, corsHeaders);
     }
 
     // Parse request body

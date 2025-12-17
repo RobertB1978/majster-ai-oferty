@@ -12,6 +12,7 @@
 
 import Stripe from 'https://esm.sh/stripe@14.10.0?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { checkRateLimit, createRateLimitResponse, getIdentifier } from '../_shared/rate-limiter.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
   apiVersion: '2024-06-20',
@@ -29,6 +30,15 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const cryptoProvider = Stripe.createSubtleCryptoProvider();
 
 Deno.serve(async (req) => {
+  // TIER 1 - Rate limiting (SECURITY: prevent webhook abuse)
+  const identifier = getIdentifier(req);
+  const rateLimitResult = await checkRateLimit(identifier, 'stripe-webhook', supabase);
+
+  if (!rateLimitResult.allowed) {
+    console.warn(`[stripe-webhook] Rate limit exceeded for ${identifier}`);
+    return createRateLimitResponse(rateLimitResult, {});
+  }
+
   const signature = req.headers.get('Stripe-Signature');
 
   if (!signature) {
