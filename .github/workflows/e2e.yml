@@ -9,6 +9,9 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -16,6 +19,23 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+
+      - name: Validate E2E environment variables
+        run: |
+          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
+            echo "❌ ERROR: Required E2E secrets are not configured!"
+            echo ""
+            echo "Please configure the following GitHub secrets:"
+            echo "  1. Go to: Settings → Secrets and variables → Actions"
+            echo "  2. Click: New repository secret"
+            echo "  3. Add these secrets:"
+            echo "     - VITE_SUPABASE_URL (your Supabase project URL)"
+            echo "     - VITE_SUPABASE_ANON_KEY (your Supabase anon/public key)"
+            echo ""
+            echo "Documentation: https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions"
+            exit 1
+          fi
+          echo "✅ E2E environment variables validated successfully"
 
       - name: Install dependencies
         run: npm ci
