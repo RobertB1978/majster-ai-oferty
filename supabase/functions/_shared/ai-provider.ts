@@ -411,6 +411,116 @@ export async function completeAI(options: AIRequestOptions): Promise<AIResponse>
 }
 
 /**
+ * Detects all available AI providers from environment variables
+ */
+export function detectAllAIProviders(): AIProviderConfig[] {
+  const providers: AIProviderConfig[] = [];
+
+  const openaiKey = Deno.env.get('OPENAI_API_KEY');
+  if (openaiKey) {
+    providers.push({ provider: 'openai', apiKey: openaiKey });
+  }
+
+  const anthropicKey = Deno.env.get('ANTHROPIC_API_KEY');
+  if (anthropicKey) {
+    providers.push({ provider: 'anthropic', apiKey: anthropicKey });
+  }
+
+  const geminiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_AI_API_KEY');
+  if (geminiKey) {
+    providers.push({ provider: 'gemini', apiKey: geminiKey });
+  }
+
+  const lovableKey = Deno.env.get('LOVABLE_API_KEY');
+  if (lovableKey) {
+    providers.push({ provider: 'lovable', apiKey: lovableKey });
+  }
+
+  return providers;
+}
+
+/**
+ * Universal AI completion with automatic fallback
+ *
+ * Tries all available AI providers in order until one succeeds.
+ * Primary provider is detected automatically based on env vars.
+ *
+ * Priority: OpenAI > Anthropic > Gemini > Lovable
+ *
+ * Example usage:
+ * ```typescript
+ * const response = await completeAIWithFallback({
+ *   messages: [
+ *     { role: 'system', content: 'You are a helpful assistant.' },
+ *     { role: 'user', content: 'Hello!' }
+ *   ]
+ * });
+ * ```
+ *
+ * @param options AI request options
+ * @param enableFallback If true, will try other providers if primary fails (default: true)
+ * @returns AI response from the first successful provider
+ */
+export async function completeAIWithFallback(
+  options: AIRequestOptions,
+  enableFallback = true
+): Promise<AIResponse> {
+  const allProviders = detectAllAIProviders();
+
+  if (allProviders.length === 0) {
+    throw new Error('No AI API key configured. Set one of: OPENAI_API_KEY, ANTHROPIC_API_KEY, GEMINI_API_KEY, or LOVABLE_API_KEY');
+  }
+
+  const errors: Array<{ provider: AIProvider; error: Error }> = [];
+
+  for (const config of allProviders) {
+    try {
+      console.log(`Attempting AI completion with ${config.provider}...`);
+
+      let response: AIResponse;
+      switch (config.provider) {
+        case 'lovable':
+        case 'openai':
+          response = await callOpenAICompatible(config, options);
+          break;
+        case 'anthropic':
+          response = await callAnthropic(config, options);
+          break;
+        case 'gemini':
+          response = await callGemini(config, options);
+          break;
+        default:
+          throw new Error(`Unknown AI provider: ${config.provider}`);
+      }
+
+      console.log(`✅ AI completion successful with ${config.provider}`);
+      return response;
+
+    } catch (error) {
+      console.error(`❌ ${config.provider} failed:`, error.message);
+      errors.push({ provider: config.provider, error: error as Error });
+
+      // If fallback is disabled, throw immediately
+      if (!enableFallback) {
+        throw error;
+      }
+
+      // Don't fallback for rate limit or payment errors (user needs to fix these)
+      if (error.message === 'RATE_LIMIT_EXCEEDED' || error.message === 'PAYMENT_REQUIRED') {
+        throw error;
+      }
+
+      // Continue to next provider
+      console.log(`Trying next provider... (${allProviders.indexOf(config) + 1}/${allProviders.length})`);
+    }
+  }
+
+  // All providers failed
+  const errorSummary = errors.map(e => `${e.provider}: ${e.error.message}`).join('; ');
+  throw new Error(`All AI providers failed. ${errorSummary}`);
+}
+
+/**
  * Helper to handle common AI error codes
  */
 export function handleAIError(error: Error): Response {
