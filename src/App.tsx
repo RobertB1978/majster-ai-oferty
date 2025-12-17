@@ -17,6 +17,7 @@ import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { OfflineFallback } from "@/components/pwa/OfflineFallback";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsent } from "@/components/legal/CookieConsent";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 
 // Critical pages (loaded immediately - auth flow & landing)
 import Login from "./pages/Login";
@@ -78,6 +79,7 @@ const App = () => (
               <OfflineFallback />
               <InstallPrompt />
               <CookieConsent />
+              <GoogleAnalytics />
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   {/* Public auth routes */}
