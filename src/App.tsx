@@ -11,6 +11,7 @@ const ReactQueryDevtools = import.meta.env.MODE === 'development'
   ? lazy(() => import('@tanstack/react-query-devtools').then(module => ({ default: module.ReactQueryDevtools })))
   : null;
 import { AuthProvider } from "@/contexts/AuthContext";
+import { PostHogProvider } from "@/contexts/PostHogContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageLoader } from "@/components/layout/PageLoader";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
@@ -71,9 +72,10 @@ const App = () => (
   <ErrorBoundary>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <BrowserRouter>
-            <AuthProvider>
+        <PostHogProvider>
+          <TooltipProvider>
+            <BrowserRouter>
+              <AuthProvider>
               <Toaster />
               <Sonner />
               <OfflineFallback />
@@ -131,6 +133,7 @@ const App = () => (
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
+      </PostHogProvider>
         {/* React Query Devtools - ONLY in development, not in production */}
         {ReactQueryDevtools && (
           <Suspense fallback={null}>
