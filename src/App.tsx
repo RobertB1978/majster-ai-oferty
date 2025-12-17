@@ -18,25 +18,24 @@ import { OfflineFallback } from "@/components/pwa/OfflineFallback";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsent } from "@/components/legal/CookieConsent";
 
-// Critical pages (loaded immediately - auth flow & landing)
+// Critical pages (loaded immediately - auth flow only)
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
-// Frequently used pages (static import for better UX)
-import Clients from "./pages/Clients";
-import Projects from "./pages/Projects";
-import NewProject from "./pages/NewProject";
-import ProjectDetail from "./pages/ProjectDetail";
-import QuoteEditor from "./pages/QuoteEditor";
-import CompanyProfile from "./pages/CompanyProfile";
-import ItemTemplates from "./pages/ItemTemplates";
-import Settings from "./pages/Settings";
-
 // Lazy-loaded pages (code splitting for better initial load)
+// Dashboard and all app pages are lazy-loaded to reduce initial bundle size
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Clients = lazy(() => import("./pages/Clients"));
+const Projects = lazy(() => import("./pages/Projects"));
+const NewProject = lazy(() => import("./pages/NewProject"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
+const QuoteEditor = lazy(() => import("./pages/QuoteEditor"));
+const CompanyProfile = lazy(() => import("./pages/CompanyProfile"));
+const ItemTemplates = lazy(() => import("./pages/ItemTemplates"));
+const Settings = lazy(() => import("./pages/Settings"));
 const PdfGenerator = lazy(() => import("./pages/PdfGenerator"));
 const Calendar = lazy(() => import("./pages/Calendar"));
 const Analytics = lazy(() => import("./pages/Analytics"));
