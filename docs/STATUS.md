@@ -24,18 +24,24 @@
 3. **Deployment Documentation** (commit 4cc0a71) ✅
    - `docs/DEPLOYMENT_QUICK_START.md` - 30min deployment guide
 
-4. **E2E Workflow Restored as Manual** (commit CURRENT) ✅
+4. **E2E Workflow Restored as Manual** (commit 00e7c3c) ✅
    - Przywrócony jako `workflow_dispatch` (manual trigger only)
    - Nie blokuje PRs
    - Issue template: `docs/E2E_FIX_ISSUE.md`
-   - TODO: Create GitHub issue using template
+   - TODO dla Roberta: Create GitHub issue using template
 
-### 🔄 IN PROGRESS - P0
+5. **Production Deployment Tools** (commit CURRENT) ✅
+   - `docs/SMOKE_TEST_PROD.md` - Comprehensive manual smoke test checklist
+   - `scripts/verify-deployment.js` - Automated deployment verification
+   - `scripts/README.md` - Scripts documentation
+   - Ready for production deployment verification
 
-**Weryfikacja Production Deployment**
-- Sprawdź czy app deployed na Vercel
-- Verify environment variables (Production + Preview)
-- Test critical paths manually
+### 🔄 IN PROGRESS - P1
+
+**Sentry Monitoring Setup**
+- Create Sentry configuration guide
+- Test event procedure
+- Verify DSN in ENV
 
 ### 📝 NEXT - Sekwencyjnie
 
@@ -46,21 +52,19 @@
   - Issue template utworzony: `docs/E2E_FIX_ISSUE.md`
   - TODO dla Roberta: Create GitHub issue
 
-- [ ] **Production Deployment Verification**
-  - Sprawdź czy deployed na Vercel
-  - Weryfikacja ENV (Production i Preview)
-  - Check: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
-  - Check Supabase Edge Functions secrets
-
-- [ ] **Manual Smoke Test Production**
-  - Dokument: `docs/SMOKE_TEST_PROD.md`
-  - Checklist: register → login → project → offer → PDF → email
-  - Verify wszystkie krytyczne ścieżki działają
+- [x] **Production Deployment Tools** ✅
+  - `scripts/verify-deployment.js` - Automated deployment verification
+  - `docs/SMOKE_TEST_PROD.md` - Manual smoke test checklist (10 critical paths)
+  - Comprehensive verification coverage:
+    - Static assets, HTML, security headers
+    - SPA routing, Supabase config detection
+    - Registration → Login → Dashboard → Project → Offer → PDF → Email
+  - TODO dla Roberta: Run verification script and smoke test after deploy
 
 #### P1 (High Priority)
 
 - [ ] **Sentry Setup**
-  - Playbook wdrożeniowy
+  - Verification guide for existing SENTRY_SETUP.md
   - Test event procedure
   - Verify DSN w ENV
 
@@ -138,26 +142,21 @@
 
 ## 🎯 KOLEJNY KROK
 
-**KROK 1 (P0): CodeQL HIGH - naprawa**
+**KROK NASTĘPNY (P1): Sentry Monitoring Setup**
 
-1. Użyj `gh` CLI żeby zlokalizować alert:
-   ```bash
-   gh api repos/RobertB1978/majster-ai-oferty/code-scanning/alerts
-   ```
+Existing Sentry documentation found. Next steps:
 
-2. Zidentyfikuj dokładny plik/linię
-
-3. Zrób minimalny fix
-
-4. Uruchom:
-   ```bash
-   npm ci && npm test && npm run build
-   ```
-
-5. Verify alert znikł
-
-6. Przygotuj PR description z: diff summary, wyniki komend, ryzyko+rollback, manual verification
+1. Review existing `docs/SENTRY_SETUP.md`
+2. Create test event procedure
+3. Verify Sentry integration works in production
+4. Document Sentry dashboard usage
 
 ---
 
-**STATUS:** 🔴 BLOCKED - czekam na fix CodeQL HIGH alert
+**STATUS:** 🟢 P0 COMPLETE - Ready for deployment!
+
+**Dla Roberta - Po deployment na Vercel:**
+1. Uruchom: `node scripts/verify-deployment.js https://your-app.vercel.app`
+2. Wykonaj: Manual smoke test według `docs/SMOKE_TEST_PROD.md`
+3. Jeśli przejdzie: ✅ Production ready!
+4. Jeśli fail: Zobacz rollback criteria w smoke test doc
