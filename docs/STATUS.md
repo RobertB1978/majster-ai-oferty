@@ -10,41 +10,41 @@
 
 ### ✅ DONE
 
-1. **E2E workflow disabled** (commit f16c0df)
-   - ❌ **PROBLEM:** Workflow został skasowany zamiast przełączony na manual
-   - 🔄 **DO NAPRAWY:** Przywróć workflow i zmień na `workflow_dispatch`
+1. **CodeQL HIGH Alert Fixed** (commit a0b451b) ✅
+   - Fixed sensitive token logging in 2 places
+   - Push device tokens redacted
+   - Approval tokens redacted
+   - All tests pass, build successful
 
-2. **AI Provider Fallback** (commit 4cc0a71)
-   - ✅ Implementacja `completeAIWithFallback()`
-   - ✅ Automatyczny fallback: OpenAI → Anthropic → Gemini → Lovable
-   - ✅ Detailed logging
+2. **AI Provider Fallback** (commit 4cc0a71) ✅
+   - Implementacja `completeAIWithFallback()`
+   - Automatyczny fallback: OpenAI → Anthropic → Gemini → Lovable
+   - Detailed logging
 
-3. **Deployment Documentation** (commit 4cc0a71)
-   - ✅ `docs/DEPLOYMENT_QUICK_START.md` - 30min deployment guide
+3. **Deployment Documentation** (commit 4cc0a71) ✅
+   - `docs/DEPLOYMENT_QUICK_START.md` - 30min deployment guide
 
-### 🔴 IN PROGRESS - P0 BLOCKER
+4. **E2E Workflow Restored as Manual** (commit CURRENT) ✅
+   - Przywrócony jako `workflow_dispatch` (manual trigger only)
+   - Nie blokuje PRs
+   - Issue template: `docs/E2E_FIX_ISSUE.md`
+   - TODO: Create GitHub issue using template
 
-**CodeQL HIGH Alert w PR #48**
-- 🔍 **Status:** DO ZLOKALIZOWANIA
-- 📍 **Lokalizacja:** Nieznana (trzeba otworzyć alert w GitHub)
-- ⚠️ **Blocker:** Bez fix tego alertu nie ma merge PR #48
-- 📋 **Plan:**
-  1. Otwórz alert w GitHub i zlokalizuj plik/linię
-  2. Zrób minimalny fix (usuń/zmień logowanie wrażliwych danych)
-  3. Jeśli false-positive: dodaj uzasadnienie w PR + komentarz w kodzie
-  4. Uruchom: `npm ci && npm test && npm run build`
-  5. Verify alert znikł
+### 🔄 IN PROGRESS - P0
+
+**Weryfikacja Production Deployment**
+- Sprawdź czy app deployed na Vercel
+- Verify environment variables (Production + Preview)
+- Test critical paths manually
 
 ### 📝 NEXT - Sekwencyjnie
 
 #### P0 (Critical - przed production)
 
-- [ ] **E2E Workflow Fix** (zamiast kasowania)
-  - Przywróć `.github/workflows/e2e.yml`
-  - Zmień na `workflow_dispatch` (manual trigger) LUB
-  - Dodaj warunek żeby nie blokował PR (np. tylko nightly)
-  - Stwórz issue: "Fix E2E tests in CI (root/login/redirect)"
-  - Oznacz w tym dokumencie jako "technical debt"
+- [x] **E2E Workflow Fix** ✅
+  - Przywrócony jako `workflow_dispatch` (manual only)
+  - Issue template utworzony: `docs/E2E_FIX_ISSUE.md`
+  - TODO dla Roberta: Create GitHub issue
 
 - [ ] **Production Deployment Verification**
   - Sprawdź czy deployed na Vercel

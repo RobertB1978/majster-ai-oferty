@@ -1,0 +1,58 @@
+name: E2E Tests (Manual)
+
+# Manual trigger only - E2E tests are flaky in CI
+# Run manually when needed, doesn't block PRs
+# Issue: https://github.com/RobertB1978/majster-ai-oferty/issues/TBD
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        required: false
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: npx playwright test
+        env:
+          # Optional: Set BASE_URL based on environment input
+          BASE_URL: ${{ github.event.inputs.environment == 'production' && 'https://majster-ai.vercel.app' || 'http://localhost:8080' }}
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: playwright-report/
+          retention-days: 7
+
+      - name: Upload test video
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-videos-${{ github.run_id }}
+          path: test-results/
+          retention-days: 7
