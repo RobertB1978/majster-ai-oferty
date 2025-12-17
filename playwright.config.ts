@@ -36,7 +36,4 @@ export default defineConfig({
     stdout: 'pipe',
     stderr: 'pipe',
   },
-
-  // Global setup to wait for server
-  globalSetup: './e2e/global-setup.ts',
 });

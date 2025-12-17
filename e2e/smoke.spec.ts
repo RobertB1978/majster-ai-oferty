@@ -1,6 +1,7 @@
 /**
  * E2E Smoke Tests - Security Pack Δ1 - PROMPT 3/10
- * ULTRA-SIMPLIFIED for CI reliability
+ * Rewritten for CI stability and CodeQL compliance
+ * Uses role-based selectors (Playwright best practices)
  */
 
 import { test, expect } from '@playwright/test';
@@ -10,124 +11,117 @@ test.setTimeout(120000); // 2 minutes per test
 
 test.describe('Smoke Tests', () => {
 
-  test('server is running and responds', async ({ page }) => {
-    console.log('🧪 Test: Server health check');
-
-    const response = await page.goto('/', {
-      waitUntil: 'domcontentloaded',
-      timeout: 60000
+  // Helper: Add page error listener to all tests
+  test.beforeEach(async ({ page }) => {
+    page.on('pageerror', (error) => {
+      // Log JS errors but redact potential secrets
+      const message = error.message.replace(/password|token|secret|key/gi, '[REDACTED]');
+      console.error('❌ Page JavaScript Error:', message);
+      throw new Error(`Page error: ${message}`);
     });
 
-    console.log('Response status:', response?.status());
-    expect(response?.status()).toBe(200);
-
-    console.log('✅ Server responds with 200');
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        const text = msg.text().replace(/password|token|secret|key/gi, '[REDACTED]');
+        console.error('Console error:', text);
+      }
+    });
   });
 
-  test('root element exists and is visible', async ({ page }) => {
-    console.log('🧪 Test: Root element visibility');
+  test('unauthenticated user is redirected to login', async ({ page }) => {
+    console.log('🧪 Test: Redirect to login for unauthenticated user');
 
+    // Go to root - should redirect to /login (via /dashboard → AppLayout auth guard)
     await page.goto('/', {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'networkidle',
       timeout: 60000
     });
 
-    // Take screenshot for debugging
-    await page.screenshot({ path: 'test-results/homepage.png', fullPage: true });
+    // Wait for redirect to complete
+    await page.waitForURL(/\/login/, { timeout: 30000 });
 
-    // Wait for root
-    await page.waitForSelector('#root', { timeout: 30000 });
+    console.log('Current URL:', page.url());
+    expect(page.url()).toMatch(/\/login/);
 
-    const root = page.locator('#root');
-    await expect(root).toBeVisible({ timeout: 10000 });
+    // Verify login page loaded by checking for login-specific UI
+    const heading = page.getByRole('heading', { name: /majster\.ai/i });
+    await expect(heading).toBeVisible({ timeout: 10000 });
 
-    const rootHTML = await root.innerHTML();
-    console.log('Root HTML length:', rootHTML.length);
-    expect(rootHTML.length).toBeGreaterThan(50);
-
-    console.log('✅ Root element is visible and has content');
+    console.log('✅ Unauthenticated user redirected to login');
   });
 
-  test('login page loads and renders form', async ({ page }) => {
-    console.log('🧪 Test: Login page form');
+  test('login page renders with accessible form', async ({ page }) => {
+    console.log('🧪 Test: Login page accessibility');
 
     await page.goto('/login', {
       waitUntil: 'networkidle',
       timeout: 60000
     });
 
-    // Extra wait for React hydration
-    await page.waitForTimeout(5000);
-
-    // Take screenshot
+    // Take screenshot for debugging (safe - no form values captured)
     await page.screenshot({ path: 'test-results/login-page.png', fullPage: true });
 
-    // Save HTML for debugging
-    const html = await page.content();
-    console.log('Page HTML length:', html.length);
-    console.log('Page HTML preview:', html.substring(0, 500));
+    // Check for heading
+    const heading = page.getByRole('heading', { name: /majster\.ai/i });
+    await expect(heading).toBeVisible({ timeout: 10000 });
 
-    // Check if form exists
-    const form = page.locator('form');
-    const formCount = await form.count();
-    console.log('Forms found:', formCount);
+    // Check for email input using label (WCAG compliant)
+    const emailInput = page.getByLabel(/email/i);
+    await expect(emailInput).toBeVisible({ timeout: 10000 });
+    await expect(emailInput).toHaveAttribute('type', 'email');
 
-    if (formCount === 0) {
-      console.error('❌ No forms found on login page!');
-      throw new Error('Login form not found');
-    }
+    // Check for password input using label (WCAG compliant)
+    const passwordInput = page.getByLabel(/hasło/i);
+    await expect(passwordInput).toBeVisible({ timeout: 10000 });
+    await expect(passwordInput).toHaveAttribute('type', 'password');
 
-    // Check for inputs
-    const allInputs = page.locator('input');
-    const inputCount = await allInputs.count();
-    console.log('Total inputs:', inputCount);
+    // Check for submit button
+    const submitButton = page.getByRole('button', { name: /zaloguj się/i });
+    await expect(submitButton).toBeVisible({ timeout: 10000 });
+    await expect(submitButton).toHaveAttribute('type', 'submit');
 
-    // List all inputs with details
-    for (let i = 0; i < inputCount; i++) {
-      const input = allInputs.nth(i);
-      const id = await input.getAttribute('id');
-      const type = await input.getAttribute('type');
-      const name = await input.getAttribute('name');
-      console.log(`  Input ${i}: id="${id}", type="${type}", name="${name}"`);
-    }
-
-    // Try to find email input
-    const emailInput = page.locator('input#email, input[type="email"]').first();
-    const emailVisible = await emailInput.isVisible().catch(() => false);
-    console.log('Email input visible:', emailVisible);
-
-    if (!emailVisible) {
-      console.error('❌ Email input not visible!');
-      throw new Error('Email input not found');
-    }
-
-    // Try to find password input
-    const passwordInput = page.locator('input#password, input[type="password"]').first();
-    const passwordVisible = await passwordInput.isVisible().catch(() => false);
-    console.log('Password input visible:', passwordVisible);
-
-    if (!passwordVisible) {
-      console.error('❌ Password input not visible!');
-      throw new Error('Password input not found');
-    }
-
-    console.log('✅ Login form renders correctly');
+    console.log('✅ Login page renders with accessible form');
   });
 
-  test('redirects to login when accessing protected route', async ({ page }) => {
+  test('protected route redirects to login', async ({ page }) => {
     console.log('🧪 Test: Protected route redirect');
 
     await page.goto('/dashboard', {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'networkidle',
       timeout: 60000
     });
 
-    // Wait for redirect
-    await page.waitForURL(/\/(login|auth)/, { timeout: 30000 });
+    // Wait for redirect to login (AppLayout auth guard)
+    await page.waitForURL(/\/login/, { timeout: 30000 });
 
     console.log('Current URL:', page.url());
-    expect(page.url()).toMatch(/\/(login|auth)/);
+    expect(page.url()).toMatch(/\/login/);
 
-    console.log('✅ Redirect works correctly');
+    // Verify we're on login page
+    const heading = page.getByRole('heading', { name: /majster\.ai/i });
+    await expect(heading).toBeVisible({ timeout: 10000 });
+
+    console.log('✅ Protected route redirects to login');
+  });
+
+  test('app serves static assets correctly', async ({ page }) => {
+    console.log('🧪 Test: Static assets');
+
+    const response = await page.goto('/login', {
+      waitUntil: 'networkidle',
+      timeout: 60000
+    });
+
+    expect(response?.status()).toBe(200);
+
+    // Check that React app mounted by verifying root element exists
+    const root = page.locator('#root');
+    await expect(root).toBeAttached({ timeout: 10000 });
+
+    // Verify root has content (React rendered)
+    const rootHTML = await root.innerHTML();
+    expect(rootHTML.length).toBeGreaterThan(100);
+
+    console.log('✅ App serves static assets correctly');
   });
 });
