@@ -2,20 +2,22 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: false, // Run sequentially in CI for stability
+  fullyParallel: process.env.CI ? false : true, // Sequential in CI, parallel locally
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 5 : 0, // More retries in CI (increased from 3)
+  retries: process.env.CI ? 1 : 0, // Single retry in CI to catch real flakes
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
-  timeout: 180000, // 3 minutes per test (increased for CI)
+  timeout: 30000, // 30s per test - forces test stability
+  expect: {
+    timeout: 5000, // 5s for assertions - fail fast on issues
+  },
 
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:8080',
-    trace: 'on-first-retry',
-    screenshot: 'on',
-    video: 'on',
-    actionTimeout: 45000, // 45s for each action (increased for CI)
-    navigationTimeout: 90000, // 90s for navigation (increased for CI)
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    // Removed actionTimeout and navigationTimeout - rely on global timeout
   },
 
   projects: [
@@ -32,7 +34,7 @@ export default defineConfig({
     command: 'npm run dev',
     url: 'http://localhost:8080',
     reuseExistingServer: !process.env.CI,
-    timeout: 300000, // 5 minutes to start server (increased for CI)
+    timeout: 120000, // 2 minutes to start server
     stdout: 'pipe',
     stderr: 'pipe',
   },
