@@ -5,6 +5,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.10.0?target=deno";
 
 const corsHeaders = {
@@ -186,7 +187,7 @@ const handler = async (req: Request): Promise<Response> => {
 // Helper functions
 
 async function handleSubscriptionUpdate(
-  supabase: any,
+  supabase: SupabaseClient,
   subscription: Stripe.Subscription,
   event: Stripe.Event
 ) {
@@ -238,7 +239,7 @@ async function handleSubscriptionUpdate(
 }
 
 async function handleSubscriptionDeleted(
-  supabase: any,
+  supabase: SupabaseClient,
   subscription: Stripe.Subscription,
   event: Stripe.Event
 ) {
@@ -280,7 +281,7 @@ async function handleSubscriptionDeleted(
 }
 
 async function handleCheckoutSessionCompleted(
-  supabase: any,
+  supabase: SupabaseClient,
   stripe: Stripe,
   session: Stripe.Checkout.Session,
   event: Stripe.Event
@@ -301,7 +302,7 @@ async function handleCheckoutSessionCompleted(
 }
 
 async function handlePaymentFailed(
-  supabase: any,
+  supabase: SupabaseClient,
   invoice: Stripe.Invoice,
   event: Stripe.Event
 ) {

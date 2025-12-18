@@ -12,8 +12,8 @@ export type { ChartConfig } from "./chart-internal";
 export const ChartContainer = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
-    config: any;
-    children: any;
+    config: Record<string, unknown>;
+    children: React.ReactNode;
   }
 >((props, ref) => (
   <Suspense fallback={<div className="flex aspect-video justify-center items-center text-sm text-muted-foreground">Loading chart...</div>}>
@@ -22,33 +22,33 @@ export const ChartContainer = React.forwardRef<
 ));
 ChartContainer.displayName = "ChartContainer";
 
-export const ChartTooltip = (props: any) => (
+export const ChartTooltip = (props: Record<string, unknown>) => (
   <Suspense fallback={null}>
     <ChartInternal.ChartTooltip {...props} />
   </Suspense>
 );
 
-export const ChartTooltipContent = React.forwardRef<HTMLDivElement, any>((props, ref) => (
+export const ChartTooltipContent = React.forwardRef<HTMLDivElement, Record<string, unknown>>((props, ref) => (
   <Suspense fallback={null}>
     <ChartInternal.ChartTooltipContent {...props} ref={ref} />
   </Suspense>
 ));
 ChartTooltipContent.displayName = "ChartTooltipContent";
 
-export const ChartLegend = (props: any) => (
+export const ChartLegend = (props: Record<string, unknown>) => (
   <Suspense fallback={null}>
     <ChartInternal.ChartLegend {...props} />
   </Suspense>
 );
 
-export const ChartLegendContent = React.forwardRef<HTMLDivElement, any>((props, ref) => (
+export const ChartLegendContent = React.forwardRef<HTMLDivElement, Record<string, unknown>>((props, ref) => (
   <Suspense fallback={null}>
     <ChartInternal.ChartLegendContent {...props} ref={ref} />
   </Suspense>
 ));
 ChartLegendContent.displayName = "ChartLegendContent";
 
-export const ChartStyle = (props: any) => (
+export const ChartStyle = (props: Record<string, unknown>) => (
   <Suspense fallback={null}>
     <ChartInternal.ChartStyle {...props} />
   </Suspense>
