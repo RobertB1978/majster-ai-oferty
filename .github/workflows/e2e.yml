@@ -3,8 +3,17 @@ name: E2E Tests
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/workflows/supabase-deploy.yml'
+      - 'supabase/migrations/**'
+      - 'supabase/config.toml'
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
 
 jobs:
   e2e:

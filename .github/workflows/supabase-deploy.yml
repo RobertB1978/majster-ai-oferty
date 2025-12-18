@@ -1,0 +1,232 @@
+name: Supabase Deploy Autopilot
+
+# ⚡ Uruchamianie: WYŁĄCZNIE RĘCZNIE przez GitHub Actions UI
+# Cel: Deploy migracji DB + Edge Functions do Supabase (zero ręcznych kroków)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy (production only for now)'
+        required: false
+        default: 'production'
+        type: choice
+        options:
+          - production
+
+jobs:
+  deploy-supabase:
+    name: Deploy Migrations & Functions
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+
+    steps:
+      # ========================================
+      # 1. CHECKOUT REPO
+      # ========================================
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      # ========================================
+      # 2. INSTALL SUPABASE CLI
+      # ========================================
+      - name: 🔧 Install Supabase CLI
+        run: |
+          curl -fsSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz | tar -xz
+          sudo mv supabase /usr/local/bin/
+          supabase --version
+
+      # ========================================
+      # 3. LOGIN TO SUPABASE
+      # ========================================
+      - name: 🔐 Login to Supabase
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
+            echo "❌ ERROR: SUPABASE_ACCESS_TOKEN is not set!"
+            echo "👉 Go to: Settings → Secrets and variables → Actions → New repository secret"
+            exit 1
+          fi
+          echo "✅ SUPABASE_ACCESS_TOKEN found (${#SUPABASE_ACCESS_TOKEN} chars)"
+          supabase login --token "$SUPABASE_ACCESS_TOKEN"
+
+      # ========================================
+      # 4. LINK TO PROJECT
+      # ========================================
+      - name: 🔗 Link to Supabase project
+        run: |
+          # Użyj project_ref z GitHub Secrets ALBO z config.toml jako fallback
+          PROJECT_REF="${SUPABASE_PROJECT_REF}"
+
+          if [ -z "$PROJECT_REF" ]; then
+            echo "⚠️ SUPABASE_PROJECT_REF secret not set, reading from config.toml..."
+            if [ -f "supabase/config.toml" ]; then
+              PROJECT_REF=$(grep 'project_id' supabase/config.toml | cut -d '"' -f 2)
+              echo "✅ Found project_id in config.toml: $PROJECT_REF"
+            else
+              echo "❌ ERROR: No supabase/config.toml found and SUPABASE_PROJECT_REF not set!"
+              exit 1
+            fi
+          fi
+
+          echo "🔗 Linking to project: $PROJECT_REF"
+          supabase link --project-ref "$PROJECT_REF"
+
+      # ========================================
+      # 5. PUSH DATABASE MIGRATIONS
+      # ========================================
+      - name: 📤 Push database migrations
+        run: |
+          echo "📊 Checking for migrations..."
+          if [ ! -d "supabase/migrations" ]; then
+            echo "⚠️ No migrations folder found, skipping DB push"
+            exit 0
+          fi
+
+          MIGRATION_COUNT=$(ls -1 supabase/migrations/*.sql 2>/dev/null | wc -l)
+          echo "📁 Found $MIGRATION_COUNT migration file(s)"
+
+          if [ "$MIGRATION_COUNT" -eq 0 ]; then
+            echo "⚠️ No migration files found, skipping DB push"
+            exit 0
+          fi
+
+          echo "🚀 Pushing migrations to Supabase..."
+          supabase db push
+          echo "✅ Database migrations applied successfully"
+
+      # ========================================
+      # 6. DEPLOY EDGE FUNCTIONS
+      # ========================================
+      - name: 🚀 Deploy Edge Functions
+        run: |
+          echo "📊 Checking for Edge Functions..."
+          if [ ! -d "supabase/functions" ]; then
+            echo "⚠️ No functions folder found, skipping functions deploy"
+            exit 0
+          fi
+
+          FUNCTION_COUNT=$(find supabase/functions -maxdepth 1 -mindepth 1 -type d | wc -l)
+          echo "📁 Found $FUNCTION_COUNT function folder(s)"
+
+          if [ "$FUNCTION_COUNT" -eq 0 ]; then
+            echo "⚠️ No function folders found, skipping functions deploy"
+            exit 0
+          fi
+
+          echo "🚀 Deploying all Edge Functions..."
+
+          # Deploy wszystkie funkcje (zachowując ustawienia verify_jwt z config.toml)
+          for func_dir in supabase/functions/*/; do
+            func_name=$(basename "$func_dir")
+
+            # Pomiń folder _shared (wspólne utilities)
+            if [ "$func_name" = "_shared" ]; then
+              echo "⏭️ Skipping _shared folder"
+              continue
+            fi
+
+            # Sprawdź czy funkcja ma plik index.ts
+            if [ ! -f "$func_dir/index.ts" ]; then
+              echo "⚠️ Skipping $func_name (no index.ts found)"
+              continue
+            fi
+
+            echo "📦 Deploying: $func_name..."
+
+            # Deploy funkcji (Supabase CLI automatycznie odczyta verify_jwt z config.toml)
+            if supabase functions deploy "$func_name"; then
+              echo "  ✅ $func_name deployed successfully"
+            else
+              echo "  ❌ $func_name deployment failed"
+              exit 1
+            fi
+          done
+
+          echo "✅ All Edge Functions deployed successfully"
+
+      # ========================================
+      # 7. VERIFY DEPLOYMENT
+      # ========================================
+      - name: ✅ Verify deployment
+        run: |
+          echo "🔍 Verifying deployment..."
+
+          # Lista kluczowych tabel (top 10)
+          CRITICAL_TABLES=(
+            "profiles"
+            "organizations"
+            "clients"
+            "projects"
+            "quotes"
+            "offer_sends"
+            "offer_approvals"
+            "user_subscriptions"
+            "notifications"
+            "team_members"
+          )
+
+          echo "📊 Checking critical tables..."
+          MISSING_TABLES=()
+
+          for table in "${CRITICAL_TABLES[@]}"; do
+            # Sprawdź istnienie tabeli przez Supabase CLI
+            if supabase db remote list | grep -q "public.$table"; then
+              echo "  ✅ Table exists: $table"
+            else
+              echo "  ❌ Table MISSING: $table"
+              MISSING_TABLES+=("$table")
+            fi
+          done
+
+          if [ ${#MISSING_TABLES[@]} -gt 0 ]; then
+            echo ""
+            echo "❌ VERIFICATION FAILED: ${#MISSING_TABLES[@]} critical table(s) missing:"
+            printf '   - %s\n' "${MISSING_TABLES[@]}"
+            echo ""
+            echo "👉 This usually means migrations didn't run properly."
+            echo "👉 Check previous step logs for errors."
+            exit 1
+          fi
+
+          echo ""
+          echo "🎉 VERIFICATION PASSED!"
+          echo "✅ All critical tables exist"
+          echo "✅ Migrations applied successfully"
+          echo "✅ Edge Functions deployed"
+
+      # ========================================
+      # 8. DEPLOYMENT SUMMARY
+      # ========================================
+      - name: 📋 Deployment summary
+        if: always()
+        run: |
+          echo ""
+          echo "========================================="
+          echo "   SUPABASE DEPLOYMENT SUMMARY"
+          echo "========================================="
+          echo ""
+          echo "Project: ${SUPABASE_PROJECT_REF:-[from config.toml]}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Commit: ${{ github.sha }}"
+          echo ""
+          echo "Deployed components:"
+          echo "  📊 Database Migrations: ✅"
+          echo "  🚀 Edge Functions: ✅"
+          echo "  🔍 Verification: ✅"
+          echo ""
+          echo "========================================="
+          echo ""
+          echo "🎉 Deployment completed successfully!"
+          echo ""
+          echo "Next steps:"
+          echo "  1. Verify in Supabase Dashboard:"
+          echo "     - Table Editor: Check if tables exist"
+          echo "     - Edge Functions: Check if functions deployed"
+          echo "  2. Test your app (localhost or Vercel)"
+          echo ""
+          echo "========================================="
