@@ -24,6 +24,12 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E tests
+        env:
+          # E2E tests only test UI/UX flow, not backend connectivity
+          # Using official Supabase demo credentials (same as used by Supabase CLI for local dev)
+          # Source: https://supabase.com/docs/guides/local-development
+          VITE_SUPABASE_URL: https://demo.supabase.co
+          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
         run: npx playwright test
 
       - name: Upload test results
