@@ -30,7 +30,7 @@ export default defineConfig({
 
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:8080',
+    port: 8080, // CRITICAL: Use 'port' not 'url' - faster and more reliable in CI
     reuseExistingServer: !process.env.CI,
     timeout: 300000, // 5 minutes to start server (increased for CI)
     stdout: 'pipe',
