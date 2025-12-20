@@ -36,11 +36,12 @@ jobs:
       # ========================================
       - name: 🔧 Install Supabase CLI
         run: |
-          # Remove old binary if exists (idempotent install)
-          rm -rf supabase || true
+          # Remove old binary if exists (idempotent install) without touching repo's supabase/ folder
           sudo rm -f /usr/local/bin/supabase || true
-          curl -fsSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz | tar -xz
-          sudo mv supabase /usr/local/bin/
+          TMP_CLI_DIR=$(mktemp -d)
+          curl -fsSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz | tar -xz -C "$TMP_CLI_DIR"
+          sudo mv "$TMP_CLI_DIR/supabase" /usr/local/bin/
+          rm -rf "$TMP_CLI_DIR"
           supabase --version
 
       # ========================================
