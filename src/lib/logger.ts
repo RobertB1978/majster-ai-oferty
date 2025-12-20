@@ -9,7 +9,7 @@
  *   import { logger } from '@/lib/logger';
  *   logger.log('User logged in:', { email, userId });  // email will be masked
  *
- * @see RUNTIME_HARDENING_REPORT_DELTA2.md - PATCH 7
+ * @see docs/reports/RUNTIME_HARDENING_REPORT_DELTA2.md - PATCH 7
  */
 
 type LogLevel = 'log' | 'warn' | 'error' | 'info';

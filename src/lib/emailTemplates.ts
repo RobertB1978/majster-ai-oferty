@@ -66,7 +66,7 @@ export function generateOfferEmailBody(
 
 /**
  * Generate email body with PDF link (for Phase 5C)
- * TODO: Add PDF link when Storage integration is ready
+ * Note: The PDF link is provided via `pdfUrl`; storage-backed generation is tracked separately.
  */
 export function generateOfferEmailBodyWithPdf(
   projectName: string,
