@@ -18,6 +18,9 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      BASE_URL: http://127.0.0.1:8080
     steps:
       - uses: actions/checkout@v4
 
@@ -32,7 +35,34 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Start dev server
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 8080 --strictPort > devserver.log 2>&1 &
+          echo $! > devserver.pid
+
+      - name: Preflight healthcheck
+        run: |
+          for i in {1..60}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$BASE_URL") || status=""
+            if [ -n "$status" ] && [ "$status" -lt 400 ]; then
+              echo "Server healthy with HTTP $status"
+              exit 0
+            fi
+            if [ -f devserver.pid ] && ! ps -p "$(cat devserver.pid)" > /dev/null 2>&1; then
+              echo "::error::Dev server process is not running"
+              break
+            fi
+            sleep 1
+          done
+          echo "::error::Server did not become healthy at $BASE_URL"
+          if [ -f devserver.log ]; then
+            echo "--- devserver.log ---"
+            cat devserver.log
+          fi
+          exit 1
+
       - name: Run E2E tests
+        timeout-minutes: 15
         env:
           # E2E tests only test UI/UX flow, not backend connectivity
           # Using official Supabase demo credentials (same as used by Supabase CLI for local dev)
@@ -41,10 +71,22 @@ jobs:
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
         run: npx playwright test
 
-      - name: Upload test results
-        if: failure()
+      - name: Upload test artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: e2e-artifacts
+          path: |
+            playwright-report/
+            test-results/
+            **/*trace.zip
+            devserver.log
+          if-no-files-found: ignore
           retention-days: 7
+
+      - name: Stop dev server
+        if: always()
+        run: |
+          if [ -f devserver.pid ]; then
+            kill "$(cat devserver.pid)" 2>/dev/null || true
+          fi

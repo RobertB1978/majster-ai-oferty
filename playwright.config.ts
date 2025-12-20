@@ -4,18 +4,23 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: false, // Run sequentially in CI for stability
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 5 : 0, // More retries in CI (increased from 3)
+  retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: [['line'], ['html']],
   timeout: 180000, // 3 minutes per test (increased for CI)
+  globalTimeout: process.env.CI ? 10 * 60 * 1000 : 5 * 60 * 1000,
+  outputDir: 'test-results',
 
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:8080',
+    baseURL: process.env.BASE_URL || 'http://127.0.0.1:8080',
     trace: 'on-first-retry',
-    screenshot: 'on',
-    video: 'on',
+    screenshot: 'on-first-retry',
+    video: 'on-first-retry',
     actionTimeout: 45000, // 45s for each action (increased for CI)
     navigationTimeout: 90000, // 90s for navigation (increased for CI)
+    expect: {
+      timeout: process.env.CI ? 10000 : 5000,
+    },
   },
 
   projects: [
@@ -29,10 +34,10 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run dev -- --host 127.0.0.1 --port 8080 --strictPort',
     port: 8080, // CRITICAL: Use 'port' not 'url' - faster and more reliable in CI
-    reuseExistingServer: !process.env.CI,
-    timeout: 300000, // 5 minutes to start server (increased for CI)
+    reuseExistingServer: true,
+    timeout: process.env.CI ? 120000 : 300000,
     stdout: 'pipe',
     stderr: 'pipe',
   },
