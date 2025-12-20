@@ -10,7 +10,7 @@ export default defineConfig({
   timeout: 180000, // 3 minutes per test (increased for CI)
 
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:8080',
+    baseURL: process.env.BASE_URL || 'http://127.0.0.1:8080',
     trace: 'on-first-retry',
     screenshot: 'on',
     video: 'on',
@@ -31,7 +31,7 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     port: 8080, // CRITICAL: Use 'port' not 'url' - faster and more reliable in CI
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true, // Reuse dev server when already running (e.g., CI prestart) to avoid port conflicts
     timeout: 300000, // 5 minutes to start server (increased for CI)
     stdout: 'pipe',
     stderr: 'pipe',
