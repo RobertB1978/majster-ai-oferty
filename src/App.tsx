@@ -6,9 +6,13 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Suspense, lazy } from "react";
 
-// Lazy load React Query Devtools only in development
-const ReactQueryDevtools = import.meta.env.MODE === 'development'
-  ? lazy(() => import('@tanstack/react-query-devtools').then(module => ({ default: module.ReactQueryDevtools })))
+const enableReactQueryDevtools = import.meta.env.DEV && !import.meta.env.CI;
+const ReactQueryDevtools = enableReactQueryDevtools
+  ? lazy(() =>
+      import("@tanstack/react-query-devtools").then(module => ({
+        default: module.ReactQueryDevtools,
+      }))
+    )
   : null;
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
