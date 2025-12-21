@@ -39,8 +39,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     server: {
-      host: "::",
-      port: 8080,
+      host: process.env.HOST || "::",
+      port: Number(process.env.PORT) || 8080,
     },
     plugins,
     resolve: {

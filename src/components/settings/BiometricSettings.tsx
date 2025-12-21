@@ -55,7 +55,7 @@ export function BiometricSettings() {
     if (isRegistering && !deviceName) {
       setDeviceName(deviceInfo.deviceName);
     }
-  }, [isRegistering, deviceInfo.deviceName]);
+  }, [isRegistering, deviceInfo.deviceName, deviceName]);
 
   // Check WebAuthn support
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -49,35 +49,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
     continuous: true,
   });
 
-  useEffect(() => {
-    if (transcript) {
-      setVoiceText(prev => prev + ' ' + transcript);
-    }
-  }, [transcript]);
-
-  useEffect(() => {
-    if (!isListening && mode === 'listening') {
-      if (voiceText.trim().length > 10) {
-        processVoiceInput();
-      } else {
-        setMode('idle');
-      }
-    }
-  }, [isListening]);
-
-  const handleStartListening = () => {
-    setVoiceText('');
-    resetTranscript();
-    setResult(null);
-    setMode('listening');
-    startListening();
-  };
-
-  const handleStopListening = () => {
-    stopListening();
-  };
-
-  const processVoiceInput = async () => {
+  const processVoiceInput = useCallback(async () => {
     if (!voiceText.trim()) {
       setMode('idle');
       return;
@@ -99,6 +71,34 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
       toast.error('Błąd przetwarzania. Spróbuj ponownie.');
       setMode('idle');
     }
+  }, [voiceText]);
+
+  useEffect(() => {
+    if (transcript) {
+      setVoiceText(prev => prev + ' ' + transcript);
+    }
+  }, [transcript]);
+
+  useEffect(() => {
+    if (!isListening && mode === 'listening') {
+      if (voiceText.trim().length > 10) {
+        processVoiceInput();
+      } else {
+        setMode('idle');
+      }
+    }
+  }, [isListening, mode, processVoiceInput, voiceText]);
+
+  const handleStartListening = () => {
+    setVoiceText('');
+    resetTranscript();
+    setResult(null);
+    setMode('listening');
+    startListening();
+  };
+
+  const handleStopListening = () => {
+    stopListening();
   };
 
   const handleEditSubmit = () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useClients } from '@/hooks/useClients';
 import { useAddProject } from '@/hooks/useProjects';
@@ -63,7 +63,7 @@ export default function NewProject() {
   const [transcript, setTranscript] = useState('');
   const [voiceResult, setVoiceResult] = useState<VoiceQuoteResult | null>(null);
   const [isProcessingVoice, setIsProcessingVoice] = useState(false);
-  const [recognition, setRecognition] = useState<unknown>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   
   // AI state
   const [aiInput, setAiInput] = useState('');
@@ -72,14 +72,16 @@ export default function NewProject() {
 
   // Initialize speech recognition
   useEffect(() => {
-    const SpeechRecognition = (window as unknown).SpeechRecognition || (window as unknown).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognitionInstance = new SpeechRecognition();
+    const globalWithRecognition = window as typeof window & { webkitSpeechRecognition?: typeof window.SpeechRecognition };
+    const SpeechRecognitionCtor = globalWithRecognition.SpeechRecognition || globalWithRecognition.webkitSpeechRecognition;
+
+    if (SpeechRecognitionCtor) {
+      const recognitionInstance = new SpeechRecognitionCtor();
       recognitionInstance.lang = 'pl-PL';
       recognitionInstance.continuous = true;
       recognitionInstance.interimResults = true;
       
-      recognitionInstance.onresult = (event: unknown) => {
+      recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
         let finalTranscript = '';
         let interimTranscript = '';
         
@@ -97,7 +99,7 @@ export default function NewProject() {
         }
       };
       
-      recognitionInstance.onerror = (event: unknown) => {
+      recognitionInstance.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
         if (event.error === 'not-allowed') {
@@ -109,29 +111,27 @@ export default function NewProject() {
         setIsListening(false);
       };
       
-      setRecognition(recognitionInstance);
+      recognitionRef.current = recognitionInstance;
     }
     
     return () => {
-      if (recognition) {
-        recognition.abort();
-      }
+      recognitionRef.current?.abort();
     };
   }, []);
 
   const handleVoiceToggle = () => {
-    if (!recognition) {
+    if (!recognitionRef.current) {
       toast.error('Rozpoznawanie mowy nie jest obsługiwane w tej przeglądarce. Użyj Chrome.');
       return;
     }
     
     if (isListening) {
-      recognition.stop();
+      recognitionRef.current.stop();
       setIsListening(false);
     } else {
       setTranscript('');
       try {
-        recognition.start();
+        recognitionRef.current.start();
         setIsListening(true);
         toast.info('Nagrywanie rozpoczęte. Mów wyraźnie...');
       } catch (error) {

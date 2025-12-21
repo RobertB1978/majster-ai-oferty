@@ -31,6 +31,13 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     port: 8080, // CRITICAL: Use 'port' not 'url' - faster and more reliable in CI
+    env: {
+      HOST: '127.0.0.1',
+      PORT: '8080',
+      // Safe demo defaults to avoid Supabase client throwing during CI/local runs without .env
+      VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || 'https://demo.supabase.co',
+      VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+    },
     reuseExistingServer: !process.env.CI,
     timeout: 300000, // 5 minutes to start server (increased for CI)
     stdout: 'pipe',
