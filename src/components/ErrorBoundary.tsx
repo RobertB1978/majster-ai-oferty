@@ -7,12 +7,19 @@ import { logError } from '@/lib/sentry';
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  /**
+   * Optional override used in tests to control whether error details are rendered.
+   * If undefined, the component will rely on the Vite mode.
+   */
+  showDetails?: boolean;
 }
 
 interface State {
   hasError: boolean;
   error: Error | null;
 }
+
+const isDevMode = () => import.meta.env.MODE === 'development' && !import.meta.env.TEST;
 
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
@@ -48,6 +55,8 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
 
+      const showDetails = typeof this.props.showDetails === 'boolean' ? this.props.showDetails : isDevMode();
+
       return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
           <Card className="max-w-md w-full">
@@ -61,10 +70,10 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-muted-foreground text-center text-sm">
                 Wystąpił nieoczekiwany błąd. Spróbuj odświeżyć stronę lub wrócić do poprzedniej strony.
               </p>
-              {this.state.error && (
+              {this.state.error && showDetails && (
                 <details className="text-xs text-muted-foreground bg-muted p-3 rounded-md">
-                  <summary className="cursor-pointer font-medium">Szczegóły błędu</summary>
-                  <pre className="mt-2 whitespace-pre-wrap break-words">
+                  <summary className="cursor-pointer font-medium">Szczegóły (tryb deweloperski)</summary>
+                  <pre className="mt-2 whitespace-pre-wrap break-words" aria-label="Error message (dev only)">
                     {this.state.error.message}
                   </pre>
                 </details>

@@ -10,8 +10,12 @@
 
 import { test, expect, Page } from '@playwright/test';
 
-// Increase timeout for all tests
-test.setTimeout(180000); // 3 minutes per test (increased for CI)
+const missingSupabaseEnv = !process.env.VITE_SUPABASE_URL || !process.env.VITE_SUPABASE_ANON_KEY;
+
+test.skip(missingSupabaseEnv, 'Supabase env missing (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY) - skipping E2E.');
+
+// Keep tests lean to avoid masking flakes
+test.setTimeout(60000);
 
 /**
  * Helper: Wait for React hydration to complete
@@ -23,17 +27,17 @@ test.setTimeout(180000); // 3 minutes per test (increased for CI)
  */
 async function waitForReactHydration(page: Page) {
   // CRITICAL: Set page timeout FIRST to prevent infinite hanging
-  page.setDefaultTimeout(20000); // 20s max per operation
+  page.setDefaultTimeout(15000); // 15s max per operation
 
   // Wait for DOM to be ready (with explicit timeout)
-  await page.waitForLoadState('domcontentloaded', { timeout: 15000 });
+  await page.waitForLoadState('domcontentloaded', { timeout: 12000 });
 
   // Wait for React app to mount (with EXPLICIT timeout)
   // CRITICAL: waitForFunction default timeout is 0 (infinite) if not specified!
   const hasRoot = await page.waitForFunction(() => {
     const root = document.querySelector('#root');
     return root && root.children.length > 0;
-  }, { timeout: 15000 }) // EXPLICIT timeout
+  }, { timeout: 12000 }) // EXPLICIT timeout
     .then(() => true)
     .catch(() => false);
 
@@ -42,11 +46,7 @@ async function waitForReactHydration(page: Page) {
   }
 
   // Extra wait in CI (CI environments are slower)
-  if (process.env.CI) {
-    await page.waitForTimeout(2000);
-  } else {
-    await page.waitForTimeout(500);
-  }
+  await page.waitForTimeout(process.env.CI ? 1500 : 400);
 }
 
 test.describe('Smoke Tests', () => {
@@ -88,21 +88,21 @@ test.describe('Smoke Tests', () => {
     // Go to root - should redirect to /login (via /dashboard → AppLayout auth guard)
     await page.goto('/', {
       waitUntil: 'domcontentloaded', // Changed from networkidle (faster in CI)
-      timeout: 90000
+      timeout: 30000
     });
 
     // Wait for React hydration
     await waitForReactHydration(page);
 
     // Wait for redirect to complete
-    await page.waitForURL(/\/login/, { timeout: 45000 });
+    await page.waitForURL(/\/login/, { timeout: 25000 });
 
     console.log('Current URL:', page.url());
     expect(page.url()).toMatch(/\/login/);
 
     // Verify login page loaded by checking for login-specific UI
     const heading = page.getByRole('heading', { name: /majster\.ai/i });
-    await expect(heading).toBeVisible({ timeout: 15000 });
+    await expect(heading).toBeVisible({ timeout: 10000 });
 
     console.log('✅ Unauthenticated user redirected to login');
   });
@@ -112,7 +112,7 @@ test.describe('Smoke Tests', () => {
 
     await page.goto('/login', {
       waitUntil: 'domcontentloaded', // Changed from networkidle
-      timeout: 90000
+      timeout: 30000
     });
 
     // Wait for React hydration (CRITICAL for CI)
@@ -123,21 +123,21 @@ test.describe('Smoke Tests', () => {
 
     // Check for heading first (proves page loaded)
     const heading = page.getByRole('heading', { name: /majster\.ai/i });
-    await expect(heading).toBeVisible({ timeout: 15000 });
+    await expect(heading).toBeVisible({ timeout: 10000 });
 
     // Check for email input using label (WCAG compliant)
     const emailInput = page.getByLabel(/email/i);
-    await expect(emailInput).toBeVisible({ timeout: 15000 });
+    await expect(emailInput).toBeVisible({ timeout: 10000 });
     await expect(emailInput).toHaveAttribute('type', 'email');
 
     // Check for password input using label (WCAG compliant)
     const passwordInput = page.getByLabel(/hasło/i);
-    await expect(passwordInput).toBeVisible({ timeout: 15000 });
+    await expect(passwordInput).toBeVisible({ timeout: 10000 });
     await expect(passwordInput).toHaveAttribute('type', 'password');
 
     // Check for submit button
     const submitButton = page.getByRole('button', { name: /zaloguj się/i });
-    await expect(submitButton).toBeVisible({ timeout: 15000 });
+    await expect(submitButton).toBeVisible({ timeout: 10000 });
     await expect(submitButton).toHaveAttribute('type', 'submit');
 
     console.log('✅ Login page renders with accessible form');
@@ -148,21 +148,21 @@ test.describe('Smoke Tests', () => {
 
     await page.goto('/dashboard', {
       waitUntil: 'domcontentloaded', // Changed from networkidle
-      timeout: 90000
+      timeout: 30000
     });
 
     // Wait for React hydration
     await waitForReactHydration(page);
 
     // Wait for redirect to login (AppLayout auth guard)
-    await page.waitForURL(/\/login/, { timeout: 45000 });
+    await page.waitForURL(/\/login/, { timeout: 25000 });
 
     console.log('Current URL:', page.url());
     expect(page.url()).toMatch(/\/login/);
 
     // Verify we're on login page
     const heading = page.getByRole('heading', { name: /majster\.ai/i });
-    await expect(heading).toBeVisible({ timeout: 15000 });
+    await expect(heading).toBeVisible({ timeout: 10000 });
 
     console.log('✅ Protected route redirects to login');
   });
@@ -172,7 +172,7 @@ test.describe('Smoke Tests', () => {
 
     const response = await page.goto('/login', {
       waitUntil: 'domcontentloaded', // Changed from networkidle
-      timeout: 90000
+      timeout: 30000
     });
 
     expect(response?.status()).toBe(200);
@@ -182,7 +182,7 @@ test.describe('Smoke Tests', () => {
 
     // Check that React app mounted by verifying root element exists
     const root = page.locator('#root');
-    await expect(root).toBeAttached({ timeout: 15000 });
+    await expect(root).toBeAttached({ timeout: 10000 });
 
     // Verify root has content (React rendered)
     const rootHTML = await root.innerHTML();

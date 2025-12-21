@@ -69,6 +69,26 @@ Lokalizacja: **Supabase Dashboard → Edge Functions → Secrets**
 - ❌ Nie będzie działała wysyłka ofert emailem
 - ✅ Reszta aplikacji zadziała normalnie
 
+### Stripe (Edge Functions)
+
+| Sekret | Format | Przykład | Gdzie uzyskać | Funkcja |
+|--------|--------|----------|---------------|---------|
+| `STRIPE_SECRET_KEY` | sk_live... / sk_test... | sk_test_123 | https://dashboard.stripe.com/apikeys | `stripe-webhook`, `create-checkout-session` |
+| `STRIPE_WEBHOOK_SECRET` | whsec_... | whsec_123 | Stripe → Developers → Webhooks | `stripe-webhook` |
+| `STRIPE_PRICE_PLAN_MAP` | JSON | {"price_123":"pro","price_456":"starter"} | Stripe → Products → Prices (skopiuj IDs) | `stripe-webhook` |
+
+`STRIPE_PRICE_PLAN_MAP` pozwala zmienić mapowanie planów **bez redeployu** – edytujesz sekret w Supabase i gotowe.
+
+### GitHub Actions (Secrets)
+
+Lokalizacja: **Repository → Settings → Secrets and variables → Actions**
+
+| Sekret | Do czego potrzebne | Wymagane? |
+|--------|--------------------|-----------|
+| `VITE_SUPABASE_URL` | Build + E2E | ✅ |
+| `VITE_SUPABASE_ANON_KEY` | Build + E2E | ✅ |
+| `SNYK_TOKEN` | Skan Snyk w `ci.yml` | ⚠️ (opcjonalne) |
+
 ### ✅ Wymagane dla AI Features (wybierz JEDEN)
 
 **OPCJA 1: OpenAI (najpopularniejszy)**
@@ -219,7 +239,7 @@ console.log(import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 20))
 4. Jeśli działa → sekrety OK!
 5. Jeśli błąd → sprawdź logi i sekrety
 
----
+--- 
 
 ## 🆘 Częste problemy
 
@@ -272,7 +292,7 @@ console.log(import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 20))
 2. Nie trzeba redeployować funkcji
 3. Poczekaj chwilę i przetestuj ponownie
 
----
+--- 
 
 ## 📚 Dodatkowe zasoby
 
@@ -280,6 +300,7 @@ console.log(import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 20))
 - [VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md) - Kompletny przewodnik wdrożenia
 - [AI_PROVIDERS_REFERENCE.md](./AI_PROVIDERS_REFERENCE.md) - Szczegóły konfiguracji AI
 - [SUPABASE_SETUP_GUIDE.md](./SUPABASE_SETUP_GUIDE.md) - Setup Supabase
+- [GITHUB_SETTINGS.md](./GITHUB_SETTINGS.md) - Jak ustawić branch protection i sekrety w Actions
 
 ---
 

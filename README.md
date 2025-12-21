@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF)](https://vitejs.dev/)
+[![Vite](https://img.shields.io/badge/Vite-7.3-646CFF)](https://vitejs.dev/)
 [![Supabase](https://img.shields.io/badge/Supabase-Latest-3ECF8E)](https://supabase.com/)
 
 ---
@@ -264,6 +264,11 @@ npm run type-check       # TypeScript check
 npm test                 # Run tests
 npm run test:watch       # Watch mode
 npm run test:coverage    # With coverage
+npm run e2e              # Playwright (uses npm run preview on 127.0.0.1:4173)
+npm run size:check       # Enforce bundle budgets (needs dist/ from build)
+
+# Playwright will skip gracefully if VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are missing.
+# In CI set them as GitHub Secrets; locally place them in your .env file.
 
 # Cleaning
 npm run clean            # Clean build artifacts
