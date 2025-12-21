@@ -13,7 +13,7 @@ const corsHeaders = {
 };
 
 // Map Stripe price IDs to plan IDs
-const PRICE_TO_PLAN_MAP: Record<string, string> = {
+const DEFAULT_PRICE_TO_PLAN_MAP: Record<string, string> = {
   // Replace with actual Stripe Price IDs
   "price_pro_monthly": "pro",
   "price_pro_yearly": "pro",
@@ -24,6 +24,31 @@ const PRICE_TO_PLAN_MAP: Record<string, string> = {
   "price_enterprise_monthly": "enterprise",
   "price_enterprise_yearly": "enterprise",
 };
+
+function getPlanFromPriceId(priceId: string | undefined | null): string {
+  if (!priceId) {
+    return "free";
+  }
+
+  const envMap = Deno.env.get("STRIPE_PRICE_PLAN_MAP");
+  if (envMap) {
+    try {
+      const parsed = JSON.parse(envMap) as Record<string, string>;
+      if (parsed[priceId]) {
+        return parsed[priceId];
+      }
+    } catch (error) {
+      console.error("[stripe-webhook] Unable to parse STRIPE_PRICE_PLAN_MAP env:", error);
+    }
+  }
+
+  if (DEFAULT_PRICE_TO_PLAN_MAP[priceId]) {
+    return DEFAULT_PRICE_TO_PLAN_MAP[priceId];
+  }
+
+  console.warn("[stripe-webhook] Unknown priceId encountered, falling back to free tier", { priceId });
+  return "free";
+}
 
 // Map Stripe subscription status to our status
 function mapSubscriptionStatus(stripeStatus: string): string {
@@ -198,7 +223,7 @@ async function handleSubscriptionUpdate(
 
   // Get plan from price ID
   const priceId = subscription.items.data[0]?.price.id;
-  const planId = PRICE_TO_PLAN_MAP[priceId] || "free";
+  const planId = getPlanFromPriceId(priceId);
   const status = mapSubscriptionStatus(subscription.status);
 
   console.log("[stripe-webhook] Updating subscription:", {

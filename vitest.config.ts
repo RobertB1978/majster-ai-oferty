@@ -25,6 +25,12 @@ export default defineConfig({
         '**/*.d.ts',
         'src/integrations/supabase/types.ts',
       ],
+      thresholds: {
+        statements: 55,
+        branches: 35,
+        functions: 55,
+        lines: 55,
+      },
     },
   },
   resolve: {

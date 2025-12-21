@@ -11,7 +11,12 @@
 import { chromium, FullConfig } from '@playwright/test';
 
 async function globalSetup(config: FullConfig) {
-  const baseURL = config.use?.baseURL || 'http://localhost:8080';
+  const baseURL = config.use?.baseURL || 'http://127.0.0.1:4173';
+
+  if (!process.env.VITE_SUPABASE_URL || !process.env.VITE_SUPABASE_ANON_KEY) {
+    console.warn('⚠️  Supabase env vars missing (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY). E2E suite will skip.');
+  }
+
   const browser = await chromium.launch();
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -31,7 +36,7 @@ async function globalSetup(config: FullConfig) {
       // CRITICAL: Explicit timeout on goto (even though setDefaultTimeout is set)
       const response = await page.goto(baseURL, {
         waitUntil: 'domcontentloaded', // Faster than 'load' or 'networkidle'
-        timeout: 10000
+        timeout: 8000
       });
 
       if (response && response.ok()) {

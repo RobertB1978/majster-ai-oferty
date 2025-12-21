@@ -1,21 +1,28 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const DEFAULT_BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:4173';
+
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: false, // Run sequentially in CI for stability
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 5 : 0, // More retries in CI (increased from 3)
-  workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
-  timeout: 180000, // 3 minutes per test (increased for CI)
+  retries: process.env.CI ? 1 : 0,
+  workers: process.env.CI ? 1 : 2,
+  reporter: [
+    ['list'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+  ],
+  timeout: 90000,
+  outputDir: 'playwright-artifacts',
 
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:8080',
-    trace: 'on-first-retry',
-    screenshot: 'on',
-    video: 'on',
-    actionTimeout: 45000, // 45s for each action (increased for CI)
-    navigationTimeout: 90000, // 90s for navigation (increased for CI)
+    baseURL: DEFAULT_BASE_URL,
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    actionTimeout: 20000,
+    navigationTimeout: 45000,
+    headless: true,
   },
 
   projects: [
@@ -23,20 +30,18 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        headless: true,
       },
     },
   ],
 
   webServer: {
-    command: 'npm run dev',
-    port: 8080, // CRITICAL: Use 'port' not 'url' - faster and more reliable in CI
+    command: 'npm run build && npm run preview -- --host 127.0.0.1 --port 4173',
+    port: 4173,
     reuseExistingServer: !process.env.CI,
-    timeout: 300000, // 5 minutes to start server (increased for CI)
+    timeout: 180000,
     stdout: 'pipe',
     stderr: 'pipe',
   },
 
-  // Global setup - ensures server is ready and React hydrated
   globalSetup: './e2e/global-setup.ts',
 });

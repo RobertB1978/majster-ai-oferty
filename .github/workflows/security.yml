@@ -29,7 +29,7 @@ jobs:
 
       - name: Check for known vulnerabilities
         run: npm audit --production --audit-level=moderate
-        continue-on-error: true
+        continue-on-error: false
 
   codeql:
     runs-on: ubuntu-latest
