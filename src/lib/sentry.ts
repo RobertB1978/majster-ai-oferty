@@ -164,10 +164,20 @@ function initWebVitals() {
 
 /**
  * Helper do logowania błędów do Sentry
+ * @param error - Error object to log
+ * @param context - Additional context (errorId will be extracted as tag)
  */
 export function logError(error: Error, context?: Record<string, unknown>) {
   if (import.meta.env.VITE_SENTRY_DSN) {
-    Sentry.captureException(error, { extra: context });
+    // Extract errorId from context to use as tag for easier filtering
+    const errorId = context?.errorId as string | undefined;
+    const restContext = { ...context };
+    delete restContext.errorId;
+
+    Sentry.captureException(error, {
+      tags: errorId ? { errorId } : undefined,
+      extra: restContext
+    });
   } else {
     console.error('Error:', error, context);
   }
