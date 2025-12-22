@@ -5,8 +5,8 @@
   "type": "module",
   "packageManager": "npm@10.9.2",
   "engines": {
-    "node": ">=20",
-    "npm": ">=10.0.0"
+    "node": "20.x",
+    "npm": "10.x"
   },
   "scripts": {
     "preinstall": "node -e \"if (process.env.npm_execpath && (process.env.npm_execpath.indexOf('pnpm') !== -1 || process.env.npm_execpath.indexOf('bun') !== -1 || process.env.npm_execpath.indexOf('yarn') !== -1)) { console.error('\\n❌ ERROR: Please use npm install\\n\\nThis project uses npm as the canonical package manager.\\nDo not use pnpm, bun, or yarn.\\n'); process.exit(1); }\"",
@@ -112,9 +112,9 @@
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-query-devtools": "5.83.0",
     "@testing-library/dom": "^10.4.1",
-    "@types/node": "^22.16.5",
-    "@types/react": "^18.3.23",
-    "@types/react-dom": "^18.3.7",
+    "@types/node": "^20.19.27",
+    "@types/react": "18.3.27",
+    "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react-swc": "^3.11.0",
     "@vitest/coverage-v8": "^4.0.15",
     "autoprefixer": "^10.4.21",
@@ -129,5 +129,9 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
     "vite": "^5.4.19"
+  },
+  "overrides": {
+    "@types/react": "18.3.27",
+    "@types/react-dom": "18.3.7"
   }
 }
