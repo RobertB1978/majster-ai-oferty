@@ -17,19 +17,27 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20.19.5'
           cache: 'npm'
+
+      - name: Use npm@10.9.2
+        run: npm install -g npm@10.9.2
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run npm audit (high/critical only)
-        run: npm audit --audit-level=high
-        continue-on-error: false
+        env:
+          AUDIT_LEVEL: high
+          AUDIT_REGISTRY: https://registry.npmjs.org/
+        run: bash scripts/run-audit.sh
 
-      - name: Check for known vulnerabilities
-        run: npm audit --production --audit-level=moderate
-        continue-on-error: true
+      - name: Check production dependencies (moderate+)
+        env:
+          AUDIT_LEVEL: moderate
+          AUDIT_REGISTRY: https://registry.npmjs.org/
+          AUDIT_ARGS: --omit=dev
+        run: bash scripts/run-audit.sh
 
   codeql:
     runs-on: ubuntu-latest
