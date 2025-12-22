@@ -42,7 +42,7 @@ export default function PdfGenerator() {
       setTitle(`Oferta - ${project.project_name}`);
       setIsInitialized(true);
     }
-  }, [existingPdfData, pdfDataLoading, project, isInitialized]);
+  }, [deadlineText, existingPdfData, isInitialized, offerText, pdfDataLoading, project, terms]);
 
   if (projectLoading || quoteLoading || pdfDataLoading) {
     return (
