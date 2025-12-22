@@ -12,6 +12,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Download, Wrench, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+ 
+const DEFAULT_OFFER_TEXT = 'Szanowni Państwo,\\n\\nZ przyjemnością przedstawiamy ofertę na realizację prac.';
+const DEFAULT_DEADLINE_TEXT = 'Do ustalenia';
+const DEFAULT_TERMS = 'Płatność: 50% zaliczki, 50% po wykonaniu prac.\\nGwarancja: 24 miesiące na wykonane prace.';
 
 export default function PdfGenerator() {
   const { id } = useParams<{ id: string }>();
@@ -25,18 +29,18 @@ export default function PdfGenerator() {
 
   const [version, setVersion] = useState<'standard' | 'premium'>('standard');
   const [title, setTitle] = useState('');
-  const [offerText, setOfferText] = useState('Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na realizację prac.');
-  const [deadlineText, setDeadlineText] = useState('Do ustalenia');
-  const [terms, setTerms] = useState('Płatność: 50% zaliczki, 50% po wykonaniu prac.\nGwarancja: 24 miesiące na wykonane prace.');
+  const [offerText, setOfferText] = useState(DEFAULT_OFFER_TEXT);
+  const [deadlineText, setDeadlineText] = useState(DEFAULT_DEADLINE_TEXT);
+  const [terms, setTerms] = useState(DEFAULT_TERMS);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     if (existingPdfData && !isInitialized) {
       setVersion(existingPdfData.version as 'standard' | 'premium');
       setTitle(existingPdfData.title);
-      setOfferText(existingPdfData.offer_text || offerText);
-      setDeadlineText(existingPdfData.deadline_text || deadlineText);
-      setTerms(existingPdfData.terms || terms);
+      setOfferText(existingPdfData.offer_text || DEFAULT_OFFER_TEXT);
+      setDeadlineText(existingPdfData.deadline_text || DEFAULT_DEADLINE_TEXT);
+      setTerms(existingPdfData.terms || DEFAULT_TERMS);
       setIsInitialized(true);
     } else if (!pdfDataLoading && !existingPdfData && project && !isInitialized) {
       setTitle(`Oferta - ${project.project_name}`);

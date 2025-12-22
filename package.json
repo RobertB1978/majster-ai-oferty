@@ -5,8 +5,8 @@
   "type": "module",
   "packageManager": "npm@10.9.2",
   "engines": {
-    "node": "20.x",
-    "npm": "10.x"
+    "node": "20.19.5",
+    "npm": "10.9.2"
   },
   "scripts": {
     "preinstall": "node -e \"if (process.env.npm_execpath && (process.env.npm_execpath.indexOf('pnpm') !== -1 || process.env.npm_execpath.indexOf('bun') !== -1 || process.env.npm_execpath.indexOf('yarn') !== -1)) { console.error('\\n❌ ERROR: Please use npm install\\n\\nThis project uses npm as the canonical package manager.\\nDo not use pnpm, bun, or yarn.\\n'); process.exit(1); }\"",
@@ -29,7 +29,8 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "clean": "rm -rf dist node_modules/.vite",
     "clean:all": "rm -rf dist node_modules",
-    "prepare": "node -e \"try { require('husky').install() } catch (e) {}\""
+    "prepare": "node -e \"try { require('husky').install() } catch (e) {}\"",
+    "security:audit": "node ./scripts/security-audit.mjs"
   },
   "dependencies": {
     "@capacitor/cli": "^7.4.4",
@@ -117,6 +118,7 @@
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react-swc": "^3.11.0",
     "@vitest/coverage-v8": "4.0.16",
+    "auditjs": "4.0.47",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "^5.2.0",
