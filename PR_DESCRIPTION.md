@@ -184,6 +184,7 @@ See `docs/BUNDLE_OPTIMIZATION.md` for full comparison
 - **No breaking changes:** Safe to merge and deploy
 - **Ready for beta launch:** After Stripe configuration
 - **Documentation complete:** All guides included
+- **TODO:** Plan a dedicated PR to upgrade Vite/esbuild tooling and re-evaluate npm audit without dev omissions, ensuring compatibility is verified.
 
 ## Checklist
 
