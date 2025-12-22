@@ -56,10 +56,25 @@ test.describe('Smoke Tests', () => {
     // CRITICAL: Set default timeout to prevent infinite hanging
     page.setDefaultTimeout(20000); // 20s max per operation
 
-    // CRITICAL: Block analytics/tracking requests that can cause infinite network activity
-    // These can prevent 'networkidle' from ever being reached
-    await page.route('**/*{sentry,analytics,google-analytics,gtag,facebook,tracking}*', route => {
-      route.abort();
+    // CRITICAL: Block external analytics/tracking requests that can cause infinite network activity
+    // Only block non-localhosts to avoid killing local assets like /src/lib/sentry.ts
+    await page.route('**/*', (route) => {
+      const url = route.request().url();
+      const { hostname } = new URL(url);
+      const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+      const shouldBlock = !isLocal && /(sentry|analytics|google-analytics|gtag|facebook|tracking)/i.test(url);
+
+      if (shouldBlock) {
+        route.abort();
+      } else {
+        route.continue();
+      }
+    });
+    await page.route('https://fonts.googleapis.com/**', route => {
+      route.fulfill({ status: 200, contentType: 'text/css', body: '' });
+    });
+    await page.route('https://fonts.gstatic.com/**', route => {
+      route.fulfill({ status: 200, body: '' });
     });
 
     // Also block common tracking pixels/beacons
@@ -95,7 +110,7 @@ test.describe('Smoke Tests', () => {
     await waitForReactHydration(page);
 
     // Wait for redirect to complete
-    await page.waitForURL(/\/login/, { timeout: 45000 });
+    await page.waitForFunction(() => window.location.pathname.includes('/login'), { timeout: 45000 });
 
     console.log('Current URL:', page.url());
     expect(page.url()).toMatch(/\/login/);
@@ -155,7 +170,7 @@ test.describe('Smoke Tests', () => {
     await waitForReactHydration(page);
 
     // Wait for redirect to login (AppLayout auth guard)
-    await page.waitForURL(/\/login/, { timeout: 45000 });
+    await page.waitForFunction(() => window.location.pathname.includes('/login'), { timeout: 45000 });
 
     console.log('Current URL:', page.url());
     expect(page.url()).toMatch(/\/login/);

@@ -4,18 +4,18 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: false, // Run sequentially in CI for stability
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 5 : 0, // More retries in CI (increased from 3)
+  retries: process.env.CI ? 1 : 0, // Hard cap retries to avoid long CI hangs
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
-  timeout: 180000, // 3 minutes per test (increased for CI)
+  timeout: 120000, // 2 minutes per test to enforce a hard cap
 
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:8080',
     trace: 'on-first-retry',
-    screenshot: 'on',
-    video: 'on',
-    actionTimeout: 45000, // 45s for each action (increased for CI)
-    navigationTimeout: 90000, // 90s for navigation (increased for CI)
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    actionTimeout: 10000, // 10s per action to prevent hangs
+    navigationTimeout: 30000, // 30s for navigation
   },
 
   projects: [
@@ -32,7 +32,7 @@ export default defineConfig({
     command: 'npm run dev',
     port: 8080, // CRITICAL: Use 'port' not 'url' - faster and more reliable in CI
     reuseExistingServer: !process.env.CI,
-    timeout: 300000, // 5 minutes to start server (increased for CI)
+    timeout: 120000, // 2 minutes to start server to fail fast
     stdout: 'pipe',
     stderr: 'pipe',
   },

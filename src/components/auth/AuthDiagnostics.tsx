@@ -71,19 +71,24 @@ function AuthDiagnosticsContent() {
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <Card className="shadow-lg border-2 border-primary/20">
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-sm">Auth Diagnostics</CardTitle>
-                  <Badge variant="outline" className="text-xs">DEV</Badge>
+            <button
+              type="button"
+              className="w-full text-left bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <CardHeader className="hover:bg-accent/50 transition-colors pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-sm">Auth Diagnostics</CardTitle>
+                    <Badge variant="outline" className="text-xs">DEV</Badge>
+                  </div>
+                  {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </div>
-                {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              </div>
-              <CardDescription className="text-xs mt-1">
-                {user ? '✅ Authenticated' : '⚠️ Not authenticated'}
-              </CardDescription>
-            </CardHeader>
+                <CardDescription className="text-xs mt-1">
+                  {user ? '✅ Authenticated' : '⚠️ Not authenticated'}
+                </CardDescription>
+              </CardHeader>
+            </button>
           </CollapsibleTrigger>
 
           <CollapsibleContent>

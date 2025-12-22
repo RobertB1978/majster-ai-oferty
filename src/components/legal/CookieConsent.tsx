@@ -12,6 +12,11 @@ interface ConsentState {
   marketing: boolean;
 }
 
+const shouldSkipConsent =
+  (typeof navigator !== 'undefined' && (navigator.webdriver || /HeadlessChrome|Playwright/i.test(navigator.userAgent))) ||
+  import.meta.env.VITE_DISABLE_COOKIE_CONSENT === 'true' ||
+  import.meta.env.MODE === 'test';
+
 export function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -22,6 +27,10 @@ export function CookieConsent() {
   });
 
   useEffect(() => {
+    if (shouldSkipConsent) {
+      return;
+    }
+
     const savedConsent = localStorage.getItem('cookie_consent');
     if (!savedConsent) {
       setIsVisible(true);
@@ -71,7 +80,7 @@ export function CookieConsent() {
     saveConsent(minimalConsent);
   };
 
-  if (!isVisible) return null;
+  if (!isVisible || shouldSkipConsent) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-fade-in">

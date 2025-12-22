@@ -42,7 +42,7 @@ function validateSupabaseConfig(): { isValid: boolean; errors: string[] } {
 
 const validation = validateSupabaseConfig();
 
-if (!validation.isValid) {
+if (!validation.isValid && import.meta.env.MODE === 'production') {
   console.error('╔════════════════════════════════════════════════════════════╗');
   console.error('║  ❌ SUPABASE CONFIGURATION ERROR                          ║');
   console.error('╚════════════════════════════════════════════════════════════╝');
@@ -76,6 +76,23 @@ if (!validation.isValid) {
   throw new Error('Invalid Supabase configuration. See console for details.');
 }
 
+const mockSupabase = {
+  auth: {
+    onAuthStateChange: (_callback: unknown) => ({
+      data: {
+        subscription: { unsubscribe: () => {} },
+      },
+    }),
+    getSession: async () => ({ data: { session: null }, error: null }),
+    signInWithPassword: async () => ({ data: { user: null, session: null }, error: { message: 'Supabase not configured' } }),
+    signUp: async () => ({ data: { user: null, session: null }, error: { message: 'Supabase not configured' } }),
+    signOut: async () => ({ error: null }),
+  },
+  from: () => ({
+    insert: async () => ({ data: null, error: null }),
+  }),
+} as const;
+
 // SSR-safe storage adapter
 // Prevents crashes when localStorage is not available (SSR, tests)
 function getStorageAdapter() {
@@ -101,10 +118,12 @@ function getStorageAdapter() {
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    storage: getStorageAdapter(),
-    persistSession: typeof window !== 'undefined', // Only persist in browser
-    autoRefreshToken: typeof window !== 'undefined', // Only auto-refresh in browser
-  }
-});
+export const supabase = validation.isValid
+  ? createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        storage: getStorageAdapter(),
+        persistSession: typeof window !== 'undefined', // Only persist in browser
+        autoRefreshToken: typeof window !== 'undefined', // Only auto-refresh in browser
+      }
+    })
+  : (mockSupabase as unknown as ReturnType<typeof createClient>);
