@@ -120,9 +120,20 @@ jobs:
         with:
           node-version: '20.19.5'
 
-      - name: Run npm audit
-        run: npm audit --audit-level=moderate
-        continue-on-error: true
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Show npm environment
+        run: |
+          node -v
+          npm -v
+          npm config get registry
+
+      - name: Run npm audit (moderate, registry pinned)
+        run: npm run audit:ci
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+        continue-on-error: false
 
       - name: Run Snyk security scan
         uses: snyk/actions/node@master

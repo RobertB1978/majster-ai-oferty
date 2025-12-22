@@ -1,53 +1,18 @@
+/* eslint-disable react-refresh/only-export-components -- Test utilities intentionally re-export testing helpers. */
 import React from 'react';
-import { render, RenderOptions } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
-import { Toaster } from '@/components/ui/sonner';
+import { render, type RenderOptions } from '@testing-library/react';
+import { TestProviders } from './TestProviders';
+import { createTestQueryClient } from './queryClient';
 
-// Create a new QueryClient for each test
-function createTestQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        gcTime: 0,
-        staleTime: 0,
-      },
-      mutations: {
-        retry: false,
-      },
-    },
-  });
-}
-
-interface WrapperProps {
-  children: React.ReactNode;
-}
-
-function AllProviders({ children }: WrapperProps) {
+function customRender(ui: React.ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
   const queryClient = createTestQueryClient();
-  
-  return (
-    <QueryClientProvider client={queryClient}>
-      <HelmetProvider>
-        <BrowserRouter>
-          {children}
-          <Toaster />
-        </BrowserRouter>
-      </HelmetProvider>
-    </QueryClientProvider>
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <TestProviders queryClient={queryClient}>{children}</TestProviders>
   );
+
+  return render(ui, { wrapper: Wrapper, ...options });
 }
 
-function customRender(
-  ui: React.ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>
-) {
-  return render(ui, { wrapper: AllProviders, ...options });
-}
-
-// Re-export everything from testing-library
 export * from '@testing-library/react';
 export { customRender as render };
 export { createTestQueryClient };

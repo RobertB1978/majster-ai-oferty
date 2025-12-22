@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useClients } from '@/hooks/useClients';
 import { useAddProject } from '@/hooks/useProjects';
@@ -63,7 +63,7 @@ export default function NewProject() {
   const [transcript, setTranscript] = useState('');
   const [voiceResult, setVoiceResult] = useState<VoiceQuoteResult | null>(null);
   const [isProcessingVoice, setIsProcessingVoice] = useState(false);
-  const [recognition, setRecognition] = useState<unknown>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   
   // AI state
   const [aiInput, setAiInput] = useState('');
@@ -109,17 +109,19 @@ export default function NewProject() {
         setIsListening(false);
       };
       
-      setRecognition(recognitionInstance);
+      recognitionRef.current = recognitionInstance;
     }
     
     return () => {
-      if (recognition) {
-        recognition.abort();
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
       }
     };
   }, []);
 
   const handleVoiceToggle = () => {
+    const recognition = recognitionRef.current;
+
     if (!recognition) {
       toast.error('Rozpoznawanie mowy nie jest obsługiwane w tej przeglądarce. Użyj Chrome.');
       return;

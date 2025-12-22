@@ -26,7 +26,7 @@ import { AdminContentEditor } from '@/components/admin/AdminContentEditor';
 import { AuditLogPanel } from '@/components/admin/AuditLogPanel';
 import { ApiKeysPanel } from '@/components/api/ApiKeysPanel';
 import { useAdminRole } from '@/hooks/useAdminRole';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/useAuth';
 
 export default function Admin() {
   const navigate = useNavigate();

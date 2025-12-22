@@ -20,7 +20,7 @@ import { usePdfData, useSavePdfData, PdfData } from '@/hooks/usePdfData';
 import { useQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useProject } from '@/hooks/useProjects';
 import { useProfile } from '@/hooks/useProfile';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/useAuth';
 import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { buildOfferData } from '@/lib/offerDataBuilder';

@@ -26,7 +26,7 @@ import { useVoiceToText } from '@/hooks/useVoiceToText';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAiChatHistory, useAiChatSessions, useSaveAiMessage, useDeleteChatSession } from '@/hooks/useAiChatHistory';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/useAuth';
 
 interface Message {
   id: string;
