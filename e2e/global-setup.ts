@@ -15,6 +15,18 @@ async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch();
   const context = await browser.newContext();
   const page = await context.newPage();
+  await page.route('**/*', (route) => {
+    const url = route.request().url();
+    const { hostname } = new URL(url);
+    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+    const shouldBlock = !isLocal && /(sentry|analytics|google-analytics|gtag|facebook|tracking)/i.test(url);
+
+    if (shouldBlock) {
+      route.abort();
+    } else {
+      route.continue();
+    }
+  });
 
   // CRITICAL: Set default timeout to prevent infinite hanging
   // Playwright default is 30s, but page.waitForFunction default is 0 (infinite)!
