@@ -132,6 +132,20 @@ jobs:
           supabase db push
           echo "✅ Database migrations applied successfully"
 
+          # Verify critical extensions are enabled
+          echo ""
+          echo "🔍 Verifying critical database extensions..."
+
+          # Check pgcrypto extension (required for gen_random_uuid)
+          if supabase db remote exec "SELECT 1 FROM pg_extension WHERE extname = 'pgcrypto'" | grep -q "1"; then
+            echo "  ✅ pgcrypto extension enabled"
+          else
+            echo "  ❌ ERROR: pgcrypto extension not enabled!"
+            echo "  👉 Migrations using gen_random_uuid() will fail"
+            echo "  👉 Run migration: 20251205000000_enable_pgcrypto_extension.sql"
+            exit 1
+          fi
+
       # ========================================
       # 7. DEPLOY EDGE FUNCTIONS
       # ========================================
