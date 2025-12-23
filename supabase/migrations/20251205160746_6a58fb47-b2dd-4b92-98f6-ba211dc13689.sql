@@ -1,3 +1,6 @@
+-- Enable pgcrypto extension for gen_random_uuid() and gen_random_bytes()
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- Create clients table
 CREATE TABLE public.clients (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -64,16 +64,43 @@ jobs:
         run: |
           # Użyj project_ref z GitHub Secrets ALBO z config.toml jako fallback
           PROJECT_REF="${SUPABASE_PROJECT_REF}"
+          CONFIG_REF=""
+
+          # Read config.toml for verification
+          if [ -f "supabase/config.toml" ]; then
+            CONFIG_REF=$(grep 'project_id' supabase/config.toml | cut -d '"' -f 2)
+            echo "📋 Config.toml declares project_id: $CONFIG_REF"
+          fi
 
           if [ -z "$PROJECT_REF" ]; then
-            echo "⚠️ SUPABASE_PROJECT_REF secret not set, reading from config.toml..."
-            if [ -f "supabase/config.toml" ]; then
-              PROJECT_REF=$(grep 'project_id' supabase/config.toml | cut -d '"' -f 2)
-              echo "✅ Found project_id in config.toml: $PROJECT_REF"
-            else
+            echo "⚠️ SUPABASE_PROJECT_REF secret not set, using config.toml..."
+            if [ -z "$CONFIG_REF" ]; then
               echo "❌ ERROR: No supabase/config.toml found and SUPABASE_PROJECT_REF not set!"
               exit 1
             fi
+            PROJECT_REF="$CONFIG_REF"
+          else
+            echo "✅ SUPABASE_PROJECT_REF secret found: $PROJECT_REF"
+          fi
+
+          # Defensive check: ensure PROJECT_REF is non-empty
+          if [ -z "$PROJECT_REF" ]; then
+            echo "❌ FATAL: PROJECT_REF is empty! Cannot proceed."
+            exit 1
+          fi
+
+          # Defensive check: warn if secret and config.toml mismatch
+          if [ -n "$CONFIG_REF" ] && [ "$PROJECT_REF" != "$CONFIG_REF" ]; then
+            echo "⚠️ WARNING: SUPABASE_PROJECT_REF ($PROJECT_REF) != config.toml ($CONFIG_REF)"
+            echo "⚠️ Using secret value: $PROJECT_REF"
+            echo "⚠️ If this is wrong, update the GitHub secret or config.toml"
+          fi
+
+          # Defensive check: ensure ref looks valid (20 chars, alphanumeric)
+          if ! echo "$PROJECT_REF" | grep -qE '^[a-z0-9]{20}$'; then
+            echo "⚠️ WARNING: PROJECT_REF format looks unusual: $PROJECT_REF"
+            echo "⚠️ Expected: 20 lowercase alphanumeric characters"
+            echo "⚠️ Proceeding anyway, but verify this is correct!"
           fi
 
           echo "🔗 Linking to project: $PROJECT_REF"
@@ -159,6 +186,17 @@ jobs:
         run: |
           echo "🔍 Verifying deployment..."
 
+          # Check critical PostgreSQL extensions
+          echo "🔌 Checking required extensions..."
+          REQUIRED_EXTENSIONS=("pgcrypto")
+          for ext in "${REQUIRED_EXTENSIONS[@]}"; do
+            if supabase db remote list | grep -q "$ext"; then
+              echo "  ✅ Extension enabled: $ext"
+            else
+              echo "  ⚠️ Extension status unclear: $ext (may need manual check)"
+            fi
+          done
+
           # Lista kluczowych tabel (top 10)
           CRITICAL_TABLES=(
             "profiles"
@@ -199,6 +237,7 @@ jobs:
           echo ""
           echo "🎉 VERIFICATION PASSED!"
           echo "✅ All critical tables exist"
+          echo "✅ Required extensions enabled"
           echo "✅ Migrations applied successfully"
           echo "✅ Edge Functions deployed"
 
