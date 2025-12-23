@@ -56,13 +56,13 @@ SUPABASE_ACCESS_TOKEN: sbp_abc123def456ghi789...
 3. Kliknij **"Settings"** (ikona ⚙️ na dole lewego menu)
 4. Kliknij **"General"**
 5. W sekcji **"General settings"** znajdź pole **"Reference ID"**
-6. Skopiuj wartość (np. `zpawgcecwqvypodzvlzy`)
+6. Skopiuj wartość (np. `xwvxqhhnozfrjcjmcltv`)
 
 **Alternatywna metoda (z URL):**
 - Otwórz swój projekt w Supabase
 - Spójrz na URL w pasku przeglądarki:
   ```
-  https://supabase.com/dashboard/project/zpawgcecwqvypodzvlzy
+  https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv
                                         ^^^^^^^^^^^^^^^^^^^^
                                         TO JEST TWÓJ PROJECT_REF
   ```
@@ -74,7 +74,7 @@ Supabase Dashboard → [Twój Projekt] → Settings → General → Reference ID
 
 **Co zapisać:**
 ```
-SUPABASE_PROJECT_REF: zpawgcecwqvypodzvlzy
+SUPABASE_PROJECT_REF: xwvxqhhnozfrjcjmcltv
 ```
 
 ---
@@ -97,7 +97,7 @@ SUPABASE_PROJECT_REF: zpawgcecwqvypodzvlzy
 **Dodaj DRUGI secret:**
 - Kliknij ponownie **"New repository secret"**
 - **Name:** `SUPABASE_PROJECT_REF`
-- **Secret:** `zpawgcecwqvypodzvlzy` (project ref z KROKU 2)
+- **Secret:** `xwvxqhhnozfrjcjmcltv` (project ref z KROKU 2)
 - Kliknij **"Add secret"**
 
 **Screenshot ścieżki:**

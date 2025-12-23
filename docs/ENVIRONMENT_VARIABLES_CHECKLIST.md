@@ -19,7 +19,7 @@ Lokalizacja: **Vercel Dashboard → Settings → Environment Variables**
 
 | Zmienna | Format | Przykład | Gdzie uzyskać |
 |---------|--------|----------|---------------|
-| `VITE_SUPABASE_URL` | https://[project-id].supabase.co | https://zpawgcecwqvypodzvlzy.supabase.co | Supabase → Settings → API → Project URL |
+| `VITE_SUPABASE_URL` | https://[project-id].supabase.co | https://xwvxqhhnozfrjcjmcltv.supabase.co | Supabase → Settings → API → Project URL |
 | `VITE_SUPABASE_ANON_KEY` | eyJhbGci... (JWT token) | eyJhbGciOiJIUzI1NiIsInR5cCI... | Supabase → Settings → API → anon/public key |
 
 **Środowiska:** Production, Preview, Development (wszystkie trzy!)
@@ -50,7 +50,7 @@ Lokalizacja: **Supabase Dashboard → Edge Functions → Secrets**
 
 | Sekret | Format | Przykład | Gdzie uzyskać | Wymagane dla |
 |--------|--------|----------|---------------|--------------|
-| `SUPABASE_URL` | https://[project-id].supabase.co | https://zpawgcecwqvypodzvlzy.supabase.co | Supabase → Settings → API → Project URL | Wszystkie funkcje |
+| `SUPABASE_URL` | https://[project-id].supabase.co | https://xwvxqhhnozfrjcjmcltv.supabase.co | Supabase → Settings → API → Project URL | Wszystkie funkcje |
 | `SUPABASE_SERVICE_ROLE_KEY` | eyJhbGci... (JWT token) | eyJhbGciOiJIUzI1NiIsInR5cCI... | Supabase → Settings → API → **service_role** key | Wszystkie funkcje |
 | `FRONTEND_URL` | https://twoja-domena.vercel.app | https://majster-ai-oferty.vercel.app | URL z Vercel po pierwszym wdrożeniu | CORS, emaile |
 
