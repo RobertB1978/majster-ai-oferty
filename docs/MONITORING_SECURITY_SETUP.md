@@ -104,7 +104,7 @@ Monitoring dostępności i statusu systemu dla zewnętrznych narzędzi uptime mo
 
 ### 🔧 Endpoint
 ```
-GET https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/healthcheck
+GET https://xwvxqhhnozfrjcjmcltv.supabase.co/functions/v1/healthcheck
 ```
 
 ### 📊 Response Format
@@ -144,7 +144,7 @@ GET https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/healthcheck
 
 #### UptimeRobot (Zalecane - darmowe)
 1. Dodaj nowy monitor (HTTP(s))
-2. URL: `https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/healthcheck`
+2. URL: `https://xwvxqhhnozfrjcjmcltv.supabase.co/functions/v1/healthcheck`
 3. Interval: 5 minut
 4. Alert Contacts: Twój email/Slack
 
@@ -184,7 +184,7 @@ supabase secrets set CRON_SECRET="your-random-secret-key-here"
 
 #### Endpoint
 ```
-POST https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/cleanup-expired-data
+POST https://xwvxqhhnozfrjcjmcltv.supabase.co/functions/v1/cleanup-expired-data
 Authorization: Bearer your-cron-secret-key
 ```
 
@@ -209,7 +209,7 @@ jobs:
         run: |
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/cleanup-expired-data
+            https://xwvxqhhnozfrjcjmcltv.supabase.co/functions/v1/cleanup-expired-data
 ```
 
 Dodaj secret `CRON_SECRET` w GitHub repo settings.
@@ -217,7 +217,7 @@ Dodaj secret `CRON_SECRET` w GitHub repo settings.
 #### Zewnętrzny Cron Service (np. cron-job.org)
 1. Utwórz darmowe konto na cron-job.org
 2. Dodaj nowy job:
-   - URL: `https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/cleanup-expired-data`
+   - URL: `https://xwvxqhhnozfrjcjmcltv.supabase.co/functions/v1/cleanup-expired-data`
    - Method: POST
    - Header: `Authorization: Bearer your-cron-secret-key`
    - Schedule: Codziennie o 2:00 AM
@@ -265,7 +265,7 @@ base-uri 'self';
 form-action 'self';
 frame-ancestors 'none';
 upgrade-insecure-requests;
-report-uri https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/csp-report;
+report-uri https://xwvxqhhnozfrjcjmcltv.supabase.co/functions/v1/csp-report;
 ```
 
 ### 📊 Monitoring Naruszeń
@@ -395,7 +395,7 @@ npm run preview
 
 #### Healthcheck
 ```bash
-curl https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/healthcheck
+curl https://xwvxqhhnozfrjcjmcltv.supabase.co/functions/v1/healthcheck
 ```
 
 Expected: Status 200, JSON z "status": "healthy"
@@ -405,7 +405,7 @@ Expected: Status 200, JSON z "status": "healthy"
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{"csp-report":{"violated-directive":"script-src","blocked-uri":"https://evil.com/script.js","document-uri":"https://yourapp.com/"}}' \
-  https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/csp-report
+  https://xwvxqhhnozfrjcjmcltv.supabase.co/functions/v1/csp-report
 ```
 
 Expected: Status 204 No Content
@@ -414,7 +414,7 @@ Expected: Status 204 No Content
 ```bash
 curl -X POST \
   -H "Authorization: Bearer your-cron-secret-key" \
-  https://zpawgcecwqvypodzvlzy.supabase.co/functions/v1/cleanup-expired-data
+  https://xwvxqhhnozfrjcjmcltv.supabase.co/functions/v1/cleanup-expired-data
 ```
 
 Expected: Status 200, JSON z podsumowaniem czyszczenia

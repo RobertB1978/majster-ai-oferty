@@ -58,29 +58,59 @@ jobs:
           supabase login --token "$SUPABASE_ACCESS_TOKEN"
 
       # ========================================
-      # 4. LINK TO PROJECT
+      # 4. VALIDATE PROJECT REF MATCH
+      # ========================================
+      - name: 🔍 Validate project ref matches config.toml
+        run: |
+          # Read project_id from config.toml (source of truth)
+          if [ ! -f "supabase/config.toml" ]; then
+            echo "❌ ERROR: supabase/config.toml not found!"
+            exit 1
+          fi
+
+          CONFIG_PROJECT_ID=$(grep 'project_id' supabase/config.toml | cut -d '"' -f 2)
+          echo "📋 config.toml project_id: $CONFIG_PROJECT_ID"
+
+          # Check if SUPABASE_PROJECT_REF secret is set
+          if [ -z "$SUPABASE_PROJECT_REF" ]; then
+            echo "⚠️ WARNING: SUPABASE_PROJECT_REF secret not set!"
+            echo "📝 Using project_id from config.toml: $CONFIG_PROJECT_ID"
+            echo "💡 TIP: Set SUPABASE_PROJECT_REF in GitHub Secrets for validation"
+          else
+            echo "🔐 GitHub Secret SUPABASE_PROJECT_REF: $SUPABASE_PROJECT_REF"
+
+            # Validate match
+            if [ "$CONFIG_PROJECT_ID" != "$SUPABASE_PROJECT_REF" ]; then
+              echo ""
+              echo "❌ ERROR: Project ref mismatch detected!"
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+              echo "config.toml:          $CONFIG_PROJECT_ID"
+              echo "SUPABASE_PROJECT_REF: $SUPABASE_PROJECT_REF"
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+              echo ""
+              echo "🛠️ HOW TO FIX:"
+              echo "1. Check which project ref is correct (production Supabase project)"
+              echo "2. Update supabase/config.toml OR GitHub Secret to match"
+              echo "3. See docs/SINGLE_SOURCE_OF_TRUTH.md for details"
+              echo ""
+              exit 1
+            fi
+
+            echo "✅ Project ref validation passed: $CONFIG_PROJECT_ID"
+          fi
+
+      # ========================================
+      # 5. LINK TO PROJECT
       # ========================================
       - name: 🔗 Link to Supabase project
         run: |
-          # Użyj project_ref z GitHub Secrets ALBO z config.toml jako fallback
-          PROJECT_REF="${SUPABASE_PROJECT_REF}"
-
-          if [ -z "$PROJECT_REF" ]; then
-            echo "⚠️ SUPABASE_PROJECT_REF secret not set, reading from config.toml..."
-            if [ -f "supabase/config.toml" ]; then
-              PROJECT_REF=$(grep 'project_id' supabase/config.toml | cut -d '"' -f 2)
-              echo "✅ Found project_id in config.toml: $PROJECT_REF"
-            else
-              echo "❌ ERROR: No supabase/config.toml found and SUPABASE_PROJECT_REF not set!"
-              exit 1
-            fi
-          fi
-
+          # Use project_id from config.toml (validated in previous step)
+          PROJECT_REF=$(grep 'project_id' supabase/config.toml | cut -d '"' -f 2)
           echo "🔗 Linking to project: $PROJECT_REF"
           supabase link --project-ref "$PROJECT_REF"
 
       # ========================================
-      # 5. PUSH DATABASE MIGRATIONS
+      # 6. PUSH DATABASE MIGRATIONS
       # ========================================
       - name: 📤 Push database migrations
         run: |
@@ -103,7 +133,7 @@ jobs:
           echo "✅ Database migrations applied successfully"
 
       # ========================================
-      # 6. DEPLOY EDGE FUNCTIONS
+      # 7. DEPLOY EDGE FUNCTIONS
       # ========================================
       - name: 🚀 Deploy Edge Functions
         run: |
@@ -153,7 +183,7 @@ jobs:
           echo "✅ All Edge Functions deployed successfully"
 
       # ========================================
-      # 7. VERIFY DEPLOYMENT
+      # 8. VERIFY DEPLOYMENT
       # ========================================
       - name: ✅ Verify deployment
         run: |
@@ -203,7 +233,7 @@ jobs:
           echo "✅ Edge Functions deployed"
 
       # ========================================
-      # 8. DEPLOYMENT SUMMARY
+      # 9. DEPLOYMENT SUMMARY
       # ========================================
       - name: 📋 Deployment summary
         if: always()

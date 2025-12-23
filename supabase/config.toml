@@ -1,4 +1,4 @@
-project_id = "zpawgcecwqvypodzvlzy"
+project_id = "xwvxqhhnozfrjcjmcltv"
 
 [functions.send-offer-email]
 verify_jwt = true
