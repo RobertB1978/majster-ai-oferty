@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -63,7 +63,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
         setMode('idle');
       }
     }
-  }, [isListening]);
+  }, [isListening, mode, processVoiceInput, voiceText]);
 
   const handleStartListening = () => {
     setVoiceText('');
@@ -77,7 +77,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
     stopListening();
   };
 
-  const processVoiceInput = async () => {
+  const processVoiceInput = useCallback(async () => {
     if (!voiceText.trim()) {
       setMode('idle');
       return;
@@ -99,7 +99,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
       toast.error('Błąd przetwarzania. Spróbuj ponownie.');
       setMode('idle');
     }
-  };
+  }, [voiceText]);
 
   const handleEditSubmit = () => {
     if (result) {

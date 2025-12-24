@@ -1,4 +1,4 @@
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/useAuth';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { LogOut, HelpCircle, Globe, ChevronDown, Moon, Sun, Shield } from 'lucide-react';

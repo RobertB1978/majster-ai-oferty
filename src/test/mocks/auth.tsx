@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- Test mocks bundle fixtures with provider for convenience. */
 import React from 'react';
 import { vi } from 'vitest';
 

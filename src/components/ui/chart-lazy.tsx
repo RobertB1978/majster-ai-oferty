@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- Module only exports lazy component wrappers; rule mis-detects these exports. */
 import * as React from "react";
 import { lazy, Suspense } from "react";
 import type * as RechartsPrimitive from "recharts";
@@ -6,9 +7,8 @@ import type * as RechartsPrimitive from "recharts";
 // Recharts is 410KB - only load it when charts are actually rendered
 const ChartInternal = lazy(() => import("./chart-internal"));
 
-// Import and re-export chart config type
+// Import chart config type for props
 import type { ChartConfig } from "./chart-internal";
-export type { ChartConfig };
 
 // Wrapper components that lazy-load the real implementation
 export const ChartContainer = React.forwardRef<

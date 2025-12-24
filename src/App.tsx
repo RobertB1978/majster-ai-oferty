@@ -10,7 +10,7 @@ import { Suspense, lazy } from "react";
 const ReactQueryDevtools = import.meta.env.MODE === 'development'
   ? lazy(() => import('@tanstack/react-query-devtools').then(module => ({ default: module.ReactQueryDevtools })))
   : null;
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider } from "@/contexts/AuthProvider";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageLoader } from "@/components/layout/PageLoader";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
