@@ -120,9 +120,8 @@ jobs:
         with:
           node-version: '20.19.5'
 
-      - name: Run npm audit
-        run: npm audit --audit-level=moderate
-        continue-on-error: true
+      - name: Run security audit script
+        run: ./scripts/run-audit.sh
 
       - name: Run Snyk security scan
         uses: snyk/actions/node@master
