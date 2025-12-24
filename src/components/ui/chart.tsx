@@ -1,3 +1,10 @@
-// Re-export from lazy-loaded chart components
-// This maintains backward compatibility while enabling code splitting
-export * from "./chart-lazy";
+// Re-export from lazy-loaded chart components to keep tree-shaking predictable.
+export {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartStyle,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "./chart-lazy";
+export type { ChartConfig } from "./chart-internal";

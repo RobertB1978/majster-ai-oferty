@@ -72,9 +72,10 @@ export default function NewProject() {
 
   // Initialize speech recognition
   useEffect(() => {
+    let recognitionInstance: { abort?: () => void } | null = null;
     const SpeechRecognition = (window as unknown).SpeechRecognition || (window as unknown).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognitionInstance = new SpeechRecognition();
+    if (!recognition && SpeechRecognition) {
+      recognitionInstance = new SpeechRecognition();
       recognitionInstance.lang = 'pl-PL';
       recognitionInstance.continuous = true;
       recognitionInstance.interimResults = true;
@@ -113,11 +114,12 @@ export default function NewProject() {
     }
     
     return () => {
-      if (recognition) {
-        recognition.abort();
+      const instance = recognitionInstance ?? recognition;
+      if (instance && typeof instance.abort === 'function') {
+        instance.abort();
       }
     };
-  }, []);
+  }, [recognition]);
 
   const handleVoiceToggle = () => {
     if (!recognition) {

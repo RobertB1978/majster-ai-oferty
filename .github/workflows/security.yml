@@ -17,19 +17,31 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify npm registry
+        run: |
+          node -v
+          npm -v
+          npm config get registry
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run npm audit (high/critical only)
-        run: npm audit --audit-level=high
-        continue-on-error: false
+        env:
+          AUDIT_LEVEL: high
+          NPM_AUDIT_REGISTRY: https://registry.npmjs.org/
+        run: npm run security:audit
 
       - name: Check for known vulnerabilities
-        run: npm audit --production --audit-level=moderate
-        continue-on-error: true
+        env:
+          AUDIT_LEVEL: moderate
+          AUDIT_ARGS: "--omit=dev"
+          NPM_AUDIT_REGISTRY: https://registry.npmjs.org/
+        run: npm run security:audit
 
   codeql:
     runs-on: ubuntu-latest
