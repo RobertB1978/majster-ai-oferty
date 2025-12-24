@@ -46,7 +46,8 @@ export function usePushNotifications() {
 
     // Listeners
     PushNotifications.addListener('registration', (token: Token) => {
-      console.log('Push registration success, token:', token.value);
+      // SECURITY: Do not log the full token value (sensitive data)
+      console.log('Push registration success');
       setState(prev => ({ ...prev, isRegistered: true, token: token.value }));
     });
 
