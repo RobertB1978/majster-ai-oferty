@@ -72,14 +72,15 @@ export default function NewProject() {
 
   // Initialize speech recognition
   useEffect(() => {
-    const SpeechRecognition = (window as unknown).SpeechRecognition || (window as unknown).webkitSpeechRecognition;
+    const SpeechRecognition = (window as typeof window & { webkitSpeechRecognition?: unknown }).SpeechRecognition
+      || (window as typeof window & { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognitionInstance = new SpeechRecognition();
       recognitionInstance.lang = 'pl-PL';
       recognitionInstance.continuous = true;
       recognitionInstance.interimResults = true;
       
-      recognitionInstance.onresult = (event: unknown) => {
+      recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
         let finalTranscript = '';
         let interimTranscript = '';
         
@@ -97,7 +98,7 @@ export default function NewProject() {
         }
       };
       
-      recognitionInstance.onerror = (event: unknown) => {
+      recognitionInstance.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
         if (event.error === 'not-allowed') {
@@ -110,13 +111,13 @@ export default function NewProject() {
       };
       
       setRecognition(recognitionInstance);
+
+      return () => {
+        recognitionInstance.abort();
+      };
     }
-    
-    return () => {
-      if (recognition) {
-        recognition.abort();
-      }
-    };
+
+    return undefined;
   }, []);
 
   const handleVoiceToggle = () => {
