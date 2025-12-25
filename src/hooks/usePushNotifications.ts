@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications, Token, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export interface PushNotificationState {
   isSupported: boolean;
@@ -46,7 +47,8 @@ export function usePushNotifications() {
 
     // Listeners
     PushNotifications.addListener('registration', (token: Token) => {
-      console.log('Push registration success, token:', token.value);
+      // Use safe logger with automatic PII/token masking (see @/lib/logger.ts)
+      logger.info('Push registration success, token:', token.value);
       setState(prev => ({ ...prev, isRegistered: true, token: token.value }));
     });
 
@@ -56,14 +58,14 @@ export function usePushNotifications() {
     });
 
     PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
-      console.log('Push notification received:', notification);
+      logger.info('Push notification received:', notification);
       toast(notification.title || 'Powiadomienie', {
         description: notification.body,
       });
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
-      console.log('Push notification action performed:', notification);
+      logger.info('Push notification action performed:', notification);
     });
 
     registerPush();
