@@ -135,7 +135,7 @@ export function createAddMutation<TData extends { id: string }>(
 /**
  * Helper dla DELETE operations
  */
-export function createDeleteMutation<TData extends { id: string }>(
+export function createDeleteMutation<_TData extends { id: string }>(
   queryKey: unknown[],
   mutationFn: (id: string) => Promise<void>,
   messages: { success: string; error: string }

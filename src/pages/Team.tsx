@@ -107,7 +107,7 @@ export default function Team() {
           });
           toast.success(`${t('common.status')}: ${statusLabels[status]}`);
         },
-        (error) => {
+        (_error) => {
           toast.error(t('errors.networkError'));
         }
       );

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useItemTemplatesPaginated, useItemTemplates, useCreateItemTemplate, useUpdateItemTemplate, useDeleteItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
+import { useItemTemplatesPaginated, useCreateItemTemplate, useUpdateItemTemplate, useDeleteItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -189,7 +189,7 @@ export default function ItemTemplates() {
         await createTemplate.mutateAsync(formData);
       }
       setIsDialogOpen(false);
-    } catch (error) {
+    } catch (_error) {
       // Error is already handled by the mutation hook's onError callback
       console.error('Failed to save template:', error);
     }
