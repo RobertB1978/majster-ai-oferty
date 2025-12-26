@@ -1,38 +1,66 @@
-# Dependabot configuration - Security Pack Δ1 - PROMPT 8/10
-# Automatically checks for dependency updates and security vulnerabilities
-
 version: 2
 updates:
-  # npm dependencies
+  # NPM dependencies
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "06:00"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
+    groups:
+      # Group React ecosystem updates
+      react:
+        patterns:
+          - "react*"
+          - "@types/react*"
+      # Group Radix UI components
+      radix-ui:
+        patterns:
+          - "@radix-ui/*"
+      # Group testing dependencies
+      testing:
+        patterns:
+          - "vitest*"
+          - "@vitest/*"
+          - "@testing-library/*"
+          - "@playwright/*"
+      # Group build tools
+      build-tools:
+        patterns:
+          - "vite*"
+          - "@vitejs/*"
+          - "typescript"
+          - "eslint*"
+      # Group Supabase
+      supabase:
+        patterns:
+          - "@supabase/*"
+      # Group TanStack
+      tanstack:
+        patterns:
+          - "@tanstack/*"
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
     reviewers:
       - "RobertB1978"
-    commit-message:
-      prefix: "chore(deps)"
-      include: "scope"
-    # Group minor/patch updates
-    groups:
-      development-dependencies:
-        dependency-type: "development"
-        update-types:
-          - "minor"
-          - "patch"
-      production-dependencies:
-        dependency-type: "production"
-        update-types:
-          - "patch"
-
+    
   # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "06:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
     commit-message:
-      prefix: "chore(ci)"
+      prefix: "ci"
+    reviewers:
+      - "RobertB1978"
