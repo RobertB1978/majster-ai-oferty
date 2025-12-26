@@ -26,7 +26,7 @@ interface ExpiringSubscription {
  */
 export function useExpirationMonitor() {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
   const createNotification = useCreateNotification();
 
   // Fetch offers expiring within 7 days

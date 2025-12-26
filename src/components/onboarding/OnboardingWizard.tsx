@@ -32,7 +32,7 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
   const { data: progress, isLoading } = useOnboardingProgress();
   const skipOnboarding = useSkipOnboarding();
   const [currentStep, setCurrentStep] = useState(1);
-  const [showCongrats, setShowCongrats] = useState(false);
+  const [showCongrats, _setShowCongrats] = useState(false);
 
   const progressPercent = progress 
     ? (progress.completed_steps.length / ONBOARDING_STEPS.length) * 100 

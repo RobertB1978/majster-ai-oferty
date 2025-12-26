@@ -16,7 +16,7 @@ import {
   Send,
   FileDown
 } from 'lucide-react';
-import { usePdfData, useSavePdfData, PdfData } from '@/hooks/usePdfData';
+import { usePdfData, useSavePdfData } from '@/hooks/usePdfData';
 import { useQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useProject } from '@/hooks/useProjects';
 import { useProfile } from '@/hooks/useProfile';

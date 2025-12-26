@@ -47,7 +47,7 @@ export function DeleteAccountSection() {
 
     try {
       // Wywołaj Edge Function do usunięcia konta i wszystkich danych
-      const { data, error } = await supabase.functions.invoke('delete-user-account', {
+      const { data: _data, error } = await supabase.functions.invoke('delete-user-account', {
         body: { userId: user.id },
       });
 

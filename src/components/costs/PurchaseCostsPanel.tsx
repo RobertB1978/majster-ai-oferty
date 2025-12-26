@@ -15,7 +15,7 @@ interface PurchaseCostsPanelProps {
 export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const { data: costs = [], isLoading } = usePurchaseCosts(projectId);
+  const { data: costs = [] } = usePurchaseCosts(projectId);
   const uploadInvoice = useUploadInvoice();
   const processOCR = useProcessInvoiceOCR();
   const deleteCost = useDeletePurchaseCost();

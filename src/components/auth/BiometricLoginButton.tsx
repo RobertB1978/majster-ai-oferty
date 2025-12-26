@@ -11,7 +11,7 @@ interface BiometricLoginButtonProps {
 }
 
 export function BiometricLoginButton({ email, onSuccess, onError }: BiometricLoginButtonProps) {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const { isSupported, isAuthenticating, checkIfEnabled, authenticateWithBiometric } = useBiometricAuth();
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
 

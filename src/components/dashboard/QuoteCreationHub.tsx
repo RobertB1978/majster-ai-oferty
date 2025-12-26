@@ -3,19 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { Mic, Bot, PenTool, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+// import { supabase } from '@/integrations/supabase/client';
 
 interface QuoteCreationHubProps {
-  onVoiceQuoteCreated?: (result: unknown) => void;
+  _onVoiceQuoteCreated?: (result: unknown) => void;
 }
 
 type CreationMode = 'idle' | 'voice' | 'ai' | 'manual';
 
-export function QuoteCreationHub({ onVoiceQuoteCreated }: QuoteCreationHubProps) {
+export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps) {
   const navigate = useNavigate();
   const [mode, setMode] = useState<CreationMode>('idle');
-  const [isRecording, setIsRecording] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [_isRecording, _setIsRecording] = useState(false);
+  const [_isProcessing, _setIsProcessing] = useState(false);
 
   const handleVoiceClick = () => {
     setMode('voice');

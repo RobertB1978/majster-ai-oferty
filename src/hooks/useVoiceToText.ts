@@ -132,7 +132,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
                 recognition.start();
               }
             }, 100);
-          } catch (e) {
+          } catch (_e) {
             // Ignore restart errors
           }
         }
@@ -146,7 +146,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
       if (recognitionRef.current) {
         try {
           recognitionRef.current.abort();
-        } catch (e) {
+        } catch (_e) {
           // Ignore abort errors
         }
       }
@@ -186,7 +186,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
     if (recognitionRef.current && isListening) {
       try {
         recognitionRef.current.stop();
-      } catch (e) {
+      } catch (_e) {
         // Ignore stop errors
       }
       setIsListening(false);

@@ -15,9 +15,9 @@ interface AiSuggestion {
   reasoning?: string;
 }
 
-interface SuggestionsResponse {
-  suggestions: AiSuggestion[];
-}
+// interface SuggestionsResponse {
+//   suggestions: AiSuggestion[];
+// }
 
 export function useAiSuggestions() {
   return useMutation({

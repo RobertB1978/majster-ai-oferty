@@ -18,7 +18,7 @@ export async function stripExifData(file: File): Promise<File> {
     return file;
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     const reader = new FileReader();
     
     reader.onload = (event) => {

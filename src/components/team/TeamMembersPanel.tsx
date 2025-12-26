@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Users, Plus, Phone, Mail, Trash2, Edit, MapPin } from 'lucide-react';
+import { Users, Plus, Phone, Mail, Trash2, Edit } from 'lucide-react';
 import { useTeamMembers, useAddTeamMember, useUpdateTeamMember, useDeleteTeamMember } from '@/hooks/useTeamMembers';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -20,7 +20,7 @@ export function TeamMembersPanel() {
     is_active: true
   });
 
-  const { data: members = [], isLoading } = useTeamMembers();
+  const { data: members = [], _isLoading } = useTeamMembers();
   const addMember = useAddTeamMember();
   const updateMember = useUpdateTeamMember();
   const deleteMember = useDeleteTeamMember();

@@ -68,7 +68,7 @@ export function AdminDatabaseManager() {
             icon,
             description: desc,
           });
-        } catch (e) {
+        } catch (_e) {
           stats.push({
             name,
             count: 0,

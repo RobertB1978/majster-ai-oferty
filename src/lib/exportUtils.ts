@@ -44,7 +44,7 @@ export async function exportQuoteToExcel(data: ExportQuoteData) {
   });
 
   // Add summary section
-  const summaryStartRow = positions.length + 3;
+  const _summaryStartRow = positions.length + 3;
   worksheet.addRow([]);
   worksheet.addRow(['', '', '', '', 'Suma materiałów:', summaryMaterials]);
   worksheet.addRow(['', '', '', '', 'Suma robocizny:', summaryLabor]);

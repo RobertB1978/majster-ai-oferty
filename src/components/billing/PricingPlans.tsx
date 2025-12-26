@@ -109,7 +109,7 @@ interface PricingPlansProps {
 }
 
 export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: PricingPlansProps) {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
 
   return (
     <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">

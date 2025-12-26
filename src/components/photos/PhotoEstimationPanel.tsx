@@ -16,7 +16,7 @@ interface PhotoEstimationPanelProps {
 
 export function PhotoEstimationPanel({ projectId, projectName, onAddToQuote }: PhotoEstimationPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [_selectedPhoto, _setSelectedPhoto] = useState<string | null>(null);
 
   const { data: photos = [], isLoading } = useProjectPhotos(projectId);
   const uploadPhoto = useUploadProjectPhoto();
