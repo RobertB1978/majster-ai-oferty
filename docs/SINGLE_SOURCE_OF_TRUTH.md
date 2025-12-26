@@ -47,7 +47,7 @@ The GitHub Actions workflow (`.github/workflows/supabase-deploy.yml`) includes a
 
 ### What Happened Before?
 
-**OLD (Wrong):** Repository contained references to `zpawgcecwqvypodzvlzy` (Lovable project)
+**OLD (Wrong):** Repository contained references to `zpawgcecwqvypodzvlzy` (development project)
 **NEW (Correct):** All references updated to `xwvxqhhnozfrjcjmcltv` (production project)
 
 ### Files Updated (2024-12-23):

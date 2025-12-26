@@ -36,7 +36,7 @@
 - ⚠️ **No error monitoring** (Sentry configured but not fully utilized)
 - ⚠️ **Limited accessibility** (A11y not prioritized)
 - ⚠️ **No performance monitoring** (no RUM/APM)
-- ⚠️ **CI/CD not visible** (may exist in Lovable platform)
+- ⚠️ **CI/CD should be configured** (GitHub Actions or Vercel auto-deploy)
 
 ---
 
@@ -882,7 +882,7 @@ const queryClient = new QueryClient({
 
 #### 6.4 CI/CD Pipeline
 
-**Current:** Unknown (may be in Lovable platform)
+**Current:** Should be configured (GitHub Actions or Vercel auto-deploy recommended)
 
 **Recommendation:** GitHub Actions workflow
 ```yaml
