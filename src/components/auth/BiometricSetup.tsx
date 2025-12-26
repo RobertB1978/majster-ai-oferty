@@ -11,13 +11,13 @@ interface BiometricSetupProps {
 }
 
 export function BiometricSetup({ email }: BiometricSetupProps) {
-  const { 
-    isSupported, 
-    isEnabled, 
-    isAuthenticating, 
+  const {
+    isSupported,
+    isEnabled: _isEnabled,
+    isAuthenticating,
     checkIfEnabled,
-    registerBiometric, 
-    disableBiometric 
+    registerBiometric,
+    disableBiometric
   } = useBiometricAuth();
   const [enabled, setEnabled] = useState(() => checkIfEnabled(email));
 

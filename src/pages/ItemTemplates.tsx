@@ -16,7 +16,6 @@ import { defaultTemplates, trades } from '@/data/defaultTemplates';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
 const categories = ['Materiał', 'Robocizna'] as const;
@@ -437,7 +436,7 @@ export default function ItemTemplates() {
           
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-1">
-              {filteredDefaultTemplates.map((template, index) => {
+              {filteredDefaultTemplates.map((template, _index) => {
                 const originalIndex = defaultTemplates.indexOf(template);
                 return (
                   <div

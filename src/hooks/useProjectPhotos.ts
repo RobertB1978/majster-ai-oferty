@@ -166,7 +166,7 @@ export function useAnalyzePhoto() {
       queryClient.invalidateQueries({ queryKey: ['project_photos', result.projectId] });
       toast.success('Analiza zakończona');
     },
-    onError: async (_, { photoId, projectId }) => {
+    onError: async (_, { photoId, projectId: _projectId }) => {
       await supabase
         .from('project_photos')
         .update({ analysis_status: 'failed' })

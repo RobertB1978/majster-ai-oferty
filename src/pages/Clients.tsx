@@ -117,7 +117,7 @@ export default function Clients() {
       }
       setIsOpen(false);
       resetForm();
-    } catch (error) {
+    } catch (_error) {
       // Error handled by hook
     }
   };

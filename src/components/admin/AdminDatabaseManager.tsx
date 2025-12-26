@@ -12,19 +12,18 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { 
-  Database, 
-  Table2, 
-  Users, 
-  FolderOpen, 
-  FileText, 
+import {
+  Database,
+  Table2,
+  Users,
+  FolderOpen,
+  FileText,
   Calendar,
   HardDrive,
   RefreshCw,
   Download,
   Trash2,
-  BarChart3,
-  TrendingUp
+  BarChart3
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

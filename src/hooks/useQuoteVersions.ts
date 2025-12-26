@@ -152,7 +152,7 @@ export function useDeleteQuoteVersion() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ projectId, versionId }: { projectId: string; versionId: string }) => {
+    mutationFn: async ({ projectId: _projectId, versionId }: { projectId: string; versionId: string }) => {
       const { error } = await supabase
         .from('quote_versions')
         .delete()

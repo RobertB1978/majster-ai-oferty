@@ -75,8 +75,8 @@ export function useExtendOfferApproval() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ approvalId, projectId, daysToExtend = 30 }: { 
-      approvalId: string; 
+    mutationFn: async ({ approvalId, projectId: _projectId, daysToExtend = 30 }: {
+      approvalId: string;
       projectId: string;
       daysToExtend?: number;
     }) => {

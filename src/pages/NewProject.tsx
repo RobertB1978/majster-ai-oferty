@@ -81,14 +81,13 @@ export default function NewProject() {
       
       recognitionInstance.onresult = (event: unknown) => {
         let finalTranscript = '';
-        let interimTranscript = '';
-        
+
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const result = event.results[i];
           if (result.isFinal) {
             finalTranscript += result[0].transcript;
           } else {
-            interimTranscript += result[0].transcript;
+            const _interimTranscript = result[0].transcript;
           }
         }
         
