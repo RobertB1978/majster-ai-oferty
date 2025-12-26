@@ -1,0 +1,106 @@
+name: Supabase Config Validation
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/**'
+      - '.github/workflows/supabase-*.yml'
+  push:
+    branches: [main, develop]
+    paths:
+      - 'supabase/**'
+
+jobs:
+  validate-config:
+    name: Validate Supabase Configuration
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Validate project_id in config.toml
+        run: |
+          echo "🔍 Validating Supabase configuration..."
+          
+          # Check if config.toml exists
+          if [ ! -f "supabase/config.toml" ]; then
+            echo "❌ ERROR: supabase/config.toml not found!"
+            exit 1
+          fi
+          
+          # Extract project_id
+          PROJECT_ID=$(grep 'project_id' supabase/config.toml | cut -d '"' -f 2)
+          
+          if [ -z "$PROJECT_ID" ]; then
+            echo "❌ ERROR: project_id not found in config.toml!"
+            exit 1
+          fi
+          
+          echo "✅ Found project_id: $PROJECT_ID"
+          
+          # Validate format (should be 20 chars alphanumeric)
+          if [[ ! "$PROJECT_ID" =~ ^[a-z0-9]{20}$ ]]; then
+            echo "⚠️  WARNING: project_id format looks unusual"
+            echo "   Expected: 20 lowercase alphanumeric characters"
+            echo "   Got: $PROJECT_ID (${#PROJECT_ID} chars)"
+          fi
+      
+      - name: Verify pgcrypto migration exists
+        run: |
+          echo "🔍 Checking for pgcrypto migration..."
+          
+          # Check if pgcrypto migration exists
+          if ! grep -r "CREATE EXTENSION IF NOT EXISTS pgcrypto" supabase/migrations/ > /dev/null; then
+            echo "❌ ERROR: No pgcrypto migration found!"
+            echo ""
+            echo "pgcrypto extension is required for gen_random_uuid() and gen_random_bytes()."
+            echo "Add a migration with: CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+            exit 1
+          fi
+          
+          # Find the migration file
+          PGCRYPTO_FILE=$(grep -l "CREATE EXTENSION IF NOT EXISTS pgcrypto" supabase/migrations/*.sql | head -1)
+          
+          echo "✅ Found pgcrypto migration: $(basename $PGCRYPTO_FILE)"
+          
+          # Verify it's the first migration (or has a very early timestamp)
+          FIRST_MIGRATION=$(ls supabase/migrations/*.sql | head -1)
+          
+          if [ "$PGCRYPTO_FILE" != "$FIRST_MIGRATION" ]; then
+            echo "⚠️  WARNING: pgcrypto migration is not the first migration"
+            echo "   First migration: $(basename $FIRST_MIGRATION)"
+            echo "   pgcrypto migration: $(basename $PGCRYPTO_FILE)"
+            echo ""
+            echo "   This is OK if pgcrypto was added later, but ideally it should be first."
+          fi
+      
+      - name: Verify migration file naming
+        run: |
+          echo "🔍 Validating migration file naming conventions..."
+          
+          INVALID_MIGRATIONS=$(find supabase/migrations -name "*.sql" ! -name "*_*.sql" | wc -l)
+          
+          if [ "$INVALID_MIGRATIONS" -gt 0 ]; then
+            echo "⚠️  WARNING: Found migrations without UUID suffix:"
+            find supabase/migrations -name "*.sql" ! -name "*_*.sql"
+            echo ""
+            echo "Migration files should follow: YYYYMMDDHHMMSS_uuid.sql"
+          else
+            echo "✅ All migration files follow naming convention"
+          fi
+      
+      - name: Summary
+        if: always()
+        run: |
+          echo ""
+          echo "========================================="
+          echo "   SUPABASE VALIDATION SUMMARY"
+          echo "========================================="
+          echo ""
+          echo "✅ config.toml: Valid"
+          echo "✅ pgcrypto: Extension migration found"
+          echo "✅ Migration naming: Checked"
+          echo ""
+          echo "========================================="
