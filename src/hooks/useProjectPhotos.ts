@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,7 +25,7 @@ async function getSignedUrl(filePath: string): Promise<string> {
     .createSignedUrl(filePath, 3600); // 1 hour expiry
   
   if (error || !data?.signedUrl) {
-    console.error('Failed to get signed URL:', error);
+    logger.error('Failed to get signed URL:', error);
     return '';
   }
   

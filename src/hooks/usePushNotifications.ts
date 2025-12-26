@@ -34,14 +34,14 @@ export function usePushNotifications() {
         }
 
         if (permStatus.receive !== 'granted') {
-          console.log('Push notification permission not granted');
+          logger.log('Push notification permission not granted');
           return;
         }
 
         // Register with Apple / Google
         await PushNotifications.register();
       } catch (error) {
-        console.error('Error registering push notifications:', error);
+        logger.error('Error registering push notifications:', error);
       }
     };
 
@@ -53,7 +53,7 @@ export function usePushNotifications() {
     });
 
     PushNotifications.addListener('registrationError', (error: unknown) => {
-      console.error('Push registration error:', error);
+      logger.error('Push registration error:', error);
       toast.error('Błąd rejestracji powiadomień push');
     });
 
@@ -89,7 +89,7 @@ export function usePushNotifications() {
       }
       return false;
     } catch (error) {
-      console.error('Error requesting push permission:', error);
+      logger.error('Error requesting push permission:', error);
       return false;
     }
   };

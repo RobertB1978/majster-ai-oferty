@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -198,7 +199,7 @@ export function useAddProject() {
         queryClient.setQueryData(['projects', user!.id], context.previousProjects);
       }
       toast.error('Błąd przy tworzeniu projektu');
-      console.error(err);
+      logger.error(err);
     },
     onSuccess: () => {
       toast.success('Projekt utworzony');
@@ -232,7 +233,7 @@ export function useUpdateProject() {
     },
     onError: (error) => {
       toast.error('Błąd przy aktualizacji projektu');
-      console.error(error);
+      logger.error(error);
     },
   });
 }
@@ -272,7 +273,7 @@ export function useDeleteProject() {
         queryClient.setQueryData(['projects', user!.id], context.previousProjects);
       }
       toast.error('Błąd przy usuwaniu projektu');
-      console.error(err);
+      logger.error(err);
     },
     onSuccess: () => {
       toast.success('Projekt usunięty');

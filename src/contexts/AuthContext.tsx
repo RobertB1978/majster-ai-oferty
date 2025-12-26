@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
@@ -48,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Enhanced logging in dev mode
       if (import.meta.env.MODE === 'development') {
-        console.log('🔐 Login attempt:', {
+        logger.log('🔐 Login attempt:', {
           email,
           success: !error,
           error: error?.message || null,
@@ -60,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         // Log full error in dev
         if (import.meta.env.MODE === 'development') {
-          console.error('❌ Login error details:', error);
+          logger.error('❌ Login error details:', error);
         }
 
         // User-friendly error messages
@@ -83,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 
       if (import.meta.env.MODE === 'development') {
-        console.error('❌ Login exception:', err);
+        logger.error('❌ Login exception:', err);
       }
 
       return {

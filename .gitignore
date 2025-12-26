@@ -89,3 +89,4 @@ yarn-error.log*
 # Local Supabase files
 **/supabase/.branches
 **/supabase/.temp
+/capacitor.config.local.ts

@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -93,7 +94,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
       };
 
       recognition.onerror = (event: unknown) => {
-        console.error('Speech recognition error:', event.error);
+        logger.error('Speech recognition error:', event.error);
         setIsListening(false);
         isListeningRef.current = false;
 
@@ -175,7 +176,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
         });
       }
     } catch (error) {
-      console.error('Error starting speech recognition:', error);
+      logger.error('Error starting speech recognition:', error);
       setIsListening(false);
       isListeningRef.current = false;
     }

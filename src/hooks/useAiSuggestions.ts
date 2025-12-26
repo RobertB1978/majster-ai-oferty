@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -33,7 +34,7 @@ export function useAiSuggestions() {
       });
 
       if (error) {
-        console.error('AI suggestions error:', error);
+        logger.error('AI suggestions error:', error);
         throw new Error(error.message || 'Błąd podczas generowania sugestii');
       }
 

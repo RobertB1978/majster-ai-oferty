@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -142,7 +143,7 @@ export function useRegisterBiometric() {
       toast.success('Biometria została zarejestrowana');
     },
     onError: (error) => {
-      console.error('Biometric registration error:', error);
+      logger.error('Biometric registration error:', error);
       toast.error(error instanceof Error ? error.message : 'Błąd rejestracji biometrii');
     },
   });
@@ -213,7 +214,7 @@ export function useAuthenticateBiometric() {
       toast.success('Autentykacja biometryczna udana');
     },
     onError: (error) => {
-      console.error('Biometric auth error:', error);
+      logger.error('Biometric auth error:', error);
       toast.error(error instanceof Error ? error.message : 'Błąd autentykacji biometrycznej');
     },
   });
@@ -236,7 +237,7 @@ export function useDeleteBiometricCredential() {
       toast.success('Poświadczenie biometryczne zostało usunięte');
     },
     onError: (error) => {
-      console.error('Delete credential error:', error);
+      logger.error('Delete credential error:', error);
       toast.error('Błąd podczas usuwania poświadczenia');
     },
   });

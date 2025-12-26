@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -175,7 +176,7 @@ export function useAddClient() {
         queryClient.setQueryData(['clients', user!.id], context.previousClients);
       }
       toast.error('Błąd przy dodawaniu klienta');
-      console.error(err);
+      logger.error(err);
     },
     onSuccess: () => {
       toast.success('Klient dodany');
@@ -209,7 +210,7 @@ export function useUpdateClient() {
     },
     onError: (error) => {
       toast.error('Błąd przy aktualizacji klienta');
-      console.error(error);
+      logger.error(error);
     },
   });
 }
@@ -250,7 +251,7 @@ export function useDeleteClient() {
         queryClient.setQueryData(['clients', user!.id], context.previousClients);
       }
       toast.error('Błąd przy usuwaniu klienta');
-      console.error(err);
+      logger.error(err);
     },
     onSuccess: () => {
       toast.success('Klient usunięty');

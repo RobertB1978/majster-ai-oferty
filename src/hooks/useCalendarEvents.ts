@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -63,7 +64,7 @@ export function useAddCalendarEvent() {
     },
     onError: (error) => {
       toast.error('Błąd przy dodawaniu wydarzenia');
-      console.error(error);
+      logger.error(error);
     },
   });
 }
@@ -89,7 +90,7 @@ export function useUpdateCalendarEvent() {
     },
     onError: (error) => {
       toast.error('Błąd przy aktualizacji wydarzenia');
-      console.error(error);
+      logger.error(error);
     },
   });
 }
@@ -112,7 +113,7 @@ export function useDeleteCalendarEvent() {
     },
     onError: (error) => {
       toast.error('Błąd przy usuwaniu wydarzenia');
-      console.error(error);
+      logger.error(error);
     },
   });
 }
