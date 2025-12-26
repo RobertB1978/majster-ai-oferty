@@ -4,7 +4,7 @@ import { useClientsPaginated, useAddClient, useUpdateClient, useDeleteClient, Cl
 import { useDebounce } from '@/hooks/useDebounce';
 import { clientSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -117,7 +117,7 @@ export default function Clients() {
       }
       setIsOpen(false);
       resetForm();
-    } catch (error) {
+    } catch (_error) {
       // Error handled by hook
     }
   };

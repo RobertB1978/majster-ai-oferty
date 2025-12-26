@@ -19,7 +19,7 @@ interface CreateCheckoutRequest {
 }
 
 // Price ID mapping for plans
-const PRICE_IDS: Record<string, { monthly: string; yearly: string }> = {
+const _PRICE_IDS: Record<string, { monthly: string; yearly: string }> = {
   pro: {
     monthly: "price_pro_monthly", // Replace with actual Stripe Price IDs
     yearly: "price_pro_yearly",

@@ -336,10 +336,7 @@ vercel --prod
    - OpenAI, Anthropic, Gemini setup
    - API keys configuration
 
-6. **[MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)**
-   - Self-hosting migration z Lovable
-
-7. **[CLAUDE.md](./CLAUDE.md)**
+6. **[CLAUDE.md](./CLAUDE.md)**
    - Project overview
    - Coding standards
    - Critical rules

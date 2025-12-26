@@ -17,7 +17,7 @@ interface CalendarConnection {
 }
 
 export function CalendarSync() {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const [connections, setConnections] = useState<CalendarConnection[]>([
     { id: 'google', name: 'Google Calendar', icon: '📅', connected: false },
     { id: 'outlook', name: 'Microsoft Outlook', icon: '📧', connected: false },

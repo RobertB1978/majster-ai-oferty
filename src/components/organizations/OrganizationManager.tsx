@@ -62,7 +62,7 @@ export function OrganizationManager() {
     }
   };
 
-  const getRoleBadgeVariant = (role: string) => {
+  const _getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case 'owner': return 'default';
       case 'admin': return 'secondary';

@@ -5,17 +5,17 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface ExpiringOffer {
-  id: string;
-  project_id: string;
-  client_email: string;
-  client_name: string;
-  expires_at: string;
-  public_token: string;
-  project_name: string;
-  company_name: string;
-  owner_email: string;
-}
+// interface ExpiringOffer {
+//   id: string;
+//   project_id: string;
+//   client_email: string;
+//   client_name: string;
+//   expires_at: string;
+//   public_token: string;
+//   project_name: string;
+//   company_name: string;
+//   owner_email: string;
+// }
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {

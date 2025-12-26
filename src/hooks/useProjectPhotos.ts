@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,7 +25,7 @@ async function getSignedUrl(filePath: string): Promise<string> {
     .createSignedUrl(filePath, 3600); // 1 hour expiry
   
   if (error || !data?.signedUrl) {
-    console.error('Failed to get signed URL:', error);
+    logger.error('Failed to get signed URL:', error);
     return '';
   }
   
@@ -39,7 +40,7 @@ function extractFilePath(photoUrl: string): string {
   return match ? match[1].split('?')[0] : '';
 }
 
-export function useProjectPhotos(projectId: string) {
+export function useProjectPhotos(_projectId: string) {
   const { user } = useAuth();
 
   return useQuery({
@@ -165,7 +166,7 @@ export function useAnalyzePhoto() {
       queryClient.invalidateQueries({ queryKey: ['project_photos', result.projectId] });
       toast.success('Analiza zakończona');
     },
-    onError: async (_, { photoId, projectId }) => {
+    onError: async (_, { photoId, projectId: _projectId }) => {
       await supabase
         .from('project_photos')
         .update({ analysis_status: 'failed' })

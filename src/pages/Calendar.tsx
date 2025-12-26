@@ -7,7 +7,7 @@ import { enUS } from 'date-fns/locale';
 import { uk } from 'date-fns/locale';
 import { useCalendarEvents, useAddCalendarEvent, useDeleteCalendarEvent, useUpdateCalendarEvent, CalendarEvent } from '@/hooks/useCalendarEvents';
 import { useProjects } from '@/hooks/useProjects';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, ChevronRight, Plus, Trash2, Calendar as CalendarIcon, Loader2, GanttChart, LayoutGrid, List, Clock, MapPin, Edit2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Trash2, Calendar as CalendarIcon, Loader2, GanttChart, LayoutGrid, List, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProjectTimeline } from '@/components/calendar/ProjectTimeline';
 import { toast } from 'sonner';
@@ -191,7 +191,7 @@ export default function Calendar() {
     }
   };
 
-  const handleDeleteEvent = async (eventId: string) => {
+  const handleDeleteEvent = async (_eventId: string) => {
     await deleteEvent.mutateAsync(eventId);
   };
 

@@ -107,7 +107,7 @@ describe('Multi-Tenant Organizations', () => {
 
   describe('role permissions', () => {
     it('should check admin permissions', () => {
-      const roles = ['owner', 'admin', 'manager', 'member'];
+      const _roles = ['owner', 'admin', 'manager', 'member'];
       const adminRoles = ['owner', 'admin'];
 
       const canManageMembers = (role: string) => adminRoles.includes(role);

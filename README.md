@@ -168,7 +168,6 @@ npm run dev
 
 - 📘 **[CLAUDE.md](./CLAUDE.md)** - Główny przewodnik projektu, architektura, zasady
 - 🗄️ **[Supabase Setup Guide](./docs/SUPABASE_SETUP_GUIDE.md)** - Konfiguracja Supabase
-- 🔄 **[Migration Guide](./docs/MIGRATION_GUIDE.md)** - Migracja z Lovable
 - 🤖 **[AI Providers Reference](./docs/AI_PROVIDERS_REFERENCE.md)** - Konfiguracja OpenAI/Claude/Gemini
 - 🔒 **[Monitoring & Security Setup](./docs/MONITORING_SECURITY_SETUP.md)** - Security best practices
 

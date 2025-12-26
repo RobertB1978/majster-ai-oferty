@@ -1,5 +1,6 @@
+import { logger } from '@/lib/logger';
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+// import { supabase } from '@/integrations/supabase/client';
 
 interface BiometricCredential {
   credentialId: string;
@@ -72,7 +73,7 @@ export function useBiometricAuth() {
           setIsSupported(available);
           setBrowserInfo({ name: browserName, supportsWebAuthn: available });
         } catch (e) {
-          console.warn('WebAuthn check failed:', e);
+          logger.warn('WebAuthn check failed:', e);
           setIsSupported(false);
           setBrowserInfo({ name: browserName, supportsWebAuthn: false });
         }
@@ -93,7 +94,7 @@ export function useBiometricAuth() {
 
   const registerBiometric = useCallback(async (email: string): Promise<boolean> => {
     if (!isSupported) {
-      console.warn('Biometric auth not supported on this device');
+      logger.warn('Biometric auth not supported on this device');
       return false;
     }
 
@@ -146,12 +147,12 @@ export function useBiometricAuth() {
         });
         
         setIsEnabled(true);
-        console.log('Biometric registration successful');
+        logger.log('Biometric registration successful');
         return true;
       }
       return false;
     } catch (error) {
-      console.error('Biometric registration failed:', error);
+      logger.error('Biometric registration failed:', error);
       return false;
     } finally {
       setIsAuthenticating(false);
@@ -160,7 +161,7 @@ export function useBiometricAuth() {
 
   const authenticateWithBiometric = useCallback(async (email: string): Promise<boolean> => {
     if (!isSupported) {
-      console.warn('Biometric auth not supported');
+      logger.warn('Biometric auth not supported');
       return false;
     }
 
@@ -168,7 +169,7 @@ export function useBiometricAuth() {
     const storedCredential = credentials.find(c => c.email === email);
     
     if (!storedCredential) {
-      console.warn('No biometric credential found for this email');
+      logger.warn('No biometric credential found for this email');
       return false;
     }
 
@@ -200,7 +201,7 @@ export function useBiometricAuth() {
       }) as PublicKeyCredential | null;
 
       if (assertion) {
-        console.log('Biometric authentication successful');
+        logger.log('Biometric authentication successful');
         // Here you would normally send the assertion to your server for verification
         // For now, we just verify locally that the credential matches
         return true;
@@ -208,7 +209,7 @@ export function useBiometricAuth() {
       
       return false;
     } catch (error) {
-      console.error('Biometric authentication failed:', error);
+      logger.error('Biometric authentication failed:', error);
       return false;
     } finally {
       setIsAuthenticating(false);
@@ -218,7 +219,7 @@ export function useBiometricAuth() {
   const disableBiometric = useCallback((email: string) => {
     removeCredential(email);
     setIsEnabled(false);
-    console.log('Biometric disabled for', email);
+    logger.log('Biometric disabled for', email);
   }, []);
 
   return {

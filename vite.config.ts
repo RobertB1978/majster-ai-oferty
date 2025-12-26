@@ -1,7 +1,6 @@
 import { defineConfig, PluginOption } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { visualizer } from "rollup-plugin-visualizer";
 
@@ -10,10 +9,6 @@ export default defineConfig(({ mode }) => {
   const plugins: PluginOption[] = [
     react(),
   ];
-
-  if (mode === "development") {
-    plugins.push(componentTagger());
-  }
 
   if (mode === "production" && process.env.VITE_SENTRY_AUTH_TOKEN) {
     plugins.push(sentryVitePlugin({

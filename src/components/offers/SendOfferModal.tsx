@@ -144,7 +144,7 @@ export function SendOfferModal({
       });
 
       // Call edge function to send email (Phase 5C: include PDF URL if available)
-      const { data, error } = await supabase.functions.invoke('send-offer-email', {
+      const { data: _data, error } = await supabase.functions.invoke('send-offer-email', {
         body: {
           offerSendId: offerSend.id,
           to: email,

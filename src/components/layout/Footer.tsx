@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Shield, FileText, Cookie, Building2, Mail, Phone } from 'lucide-react';
+import { Shield, FileText, Cookie, Building2, Mail } from 'lucide-react';
 
 export function Footer() {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const currentYear = new Date().getFullYear();
 
   return (

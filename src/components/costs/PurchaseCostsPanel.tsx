@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,7 +15,7 @@ interface PurchaseCostsPanelProps {
 export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const { data: costs = [], isLoading } = usePurchaseCosts(projectId);
+  const { data: costs = [] } = usePurchaseCosts(projectId);
   const uploadInvoice = useUploadInvoice();
   const processOCR = useProcessInvoiceOCR();
   const deleteCost = useDeletePurchaseCost();

@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   TrendingUp, TrendingDown, DollarSign, Receipt, 
   BarChart3, Sparkles, AlertTriangle, Lightbulb,
-  ArrowUpRight, ArrowDownRight, Wallet, PiggyBank
+  ArrowUpRight, ArrowDownRight, PiggyBank
 } from 'lucide-react';
 import { useFinancialSummary, useAIFinancialAnalysis } from '@/hooks/useFinancialReports';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';

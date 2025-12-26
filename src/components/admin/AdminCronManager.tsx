@@ -5,13 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { 
-  Clock, 
-  Play, 
-  Pause, 
-  RefreshCw, 
-  Mail, 
-  Calendar, 
+import {
+  Clock,
+  Play,
+  Mail,
+  Calendar,
   Database,
   Loader2,
   CheckCircle,
@@ -38,7 +36,7 @@ interface CronJob {
 }
 
 export function AdminCronManager() {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const [isRunning, setIsRunning] = useState<string | null>(null);
   const [jobResults, setJobResults] = useState<Record<string, { success: boolean; message: string }>>({});
 

@@ -12,7 +12,7 @@ import {
   Edit3,
   Volume2,
   RefreshCw,
-  ArrowRight,
+  // ArrowRight,
   Wand2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';

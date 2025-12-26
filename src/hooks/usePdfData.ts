@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -89,7 +90,7 @@ export function useSavePdfData() {
     },
     onError: (error) => {
       toast.error('Błąd przy zapisywaniu danych PDF');
-      console.error(error);
+      logger.error(error);
     },
   });
 }

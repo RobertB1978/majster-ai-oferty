@@ -10,7 +10,7 @@ import { logMessageToSentry } from "../_shared/sentry.ts";
 import {
   validateString,
   validateNumber,
-  validatePayloadSize,
+  // validatePayloadSize,
   combineValidations
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";

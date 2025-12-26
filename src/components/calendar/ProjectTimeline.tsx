@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addMonths, subMonths, isSameMonth } from 'date-fns';
+import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addMonths, subMonths } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { useProjects } from '@/hooks/useProjects';
 import { useClients } from '@/hooks/useClients';

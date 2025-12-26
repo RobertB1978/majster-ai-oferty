@@ -68,7 +68,7 @@ async function globalSetup(config: FullConfig) {
           }
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignore errors during warmup - server may still be starting
       // Only log every 10 attempts to reduce noise
       if (attempts > 0 && attempts % 10 === 0) {

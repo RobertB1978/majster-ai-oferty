@@ -70,7 +70,7 @@ export default function PdfGenerator() {
 
   // Profile data with fallbacks
   const companyName = profile?.company_name || 'Majster.AI';
-  const ownerName = profile?.owner_name || '';
+  const _ownerName = profile?.owner_name || '';
   const nip = profile?.nip || '';
   const street = profile?.street || '';
   const city = profile?.city || '';

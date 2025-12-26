@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -103,7 +104,7 @@ export function useCreateOrganization() {
       toast.success('Organizacja została utworzona');
     },
     onError: (error) => {
-      console.error('Create organization error:', error);
+      logger.error('Create organization error:', error);
       toast.error('Błąd podczas tworzenia organizacji');
     },
   });
@@ -137,7 +138,7 @@ export function useInviteMember() {
       toast.success('Zaproszenie zostało wysłane');
     },
     onError: (error) => {
-      console.error('Invite member error:', error);
+      logger.error('Invite member error:', error);
       toast.error('Błąd podczas zapraszania członka');
     },
   });
@@ -160,7 +161,7 @@ export function useRemoveMember() {
       toast.success('Członek został usunięty');
     },
     onError: (error) => {
-      console.error('Remove member error:', error);
+      logger.error('Remove member error:', error);
       toast.error('Błąd podczas usuwania członka');
     },
   });
@@ -187,7 +188,7 @@ export function useUpdateMemberRole() {
       toast.success('Rola została zaktualizowana');
     },
     onError: (error) => {
-      console.error('Update role error:', error);
+      logger.error('Update role error:', error);
       toast.error('Błąd podczas aktualizacji roli');
     },
   });

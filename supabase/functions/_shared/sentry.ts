@@ -233,7 +233,7 @@ function filterSensitiveHeaders(headers: Headers): Record<string, string> {
 /**
  * Wrapper dla Edge Function z automatycznym error tracking
  */
-export function withSentryErrorTracking<T>(
+export function withSentryErrorTracking<_T>(
   functionName: string,
   handler: (req: Request) => Promise<Response>
 ): (req: Request) => Promise<Response> {

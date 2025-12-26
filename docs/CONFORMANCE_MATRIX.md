@@ -183,7 +183,6 @@ This audit compares **actual implementation** against **documented requirements*
 | **Quick Start** | docs/QUICK_START.md | ✅ 5-minute guide | ✅ DONE | P3 | - |
 | **Deployment guides** | docs/VERCEL_DEPLOYMENT_GUIDE.md<br>docs/SUPABASE_SETUP_GUIDE.md | ✅ Step-by-step | ✅ DONE | P2 | - |
 | **Environment variables** | docs/ENVIRONMENT_VARIABLES_CHECKLIST.md | ✅ Complete list | ✅ DONE | P2 | - |
-| **Migration guide** | docs/MIGRATION_GUIDE.md | ✅ From Lovable | ✅ DONE | P2 | - |
 | **AI providers** | docs/AI_PROVIDERS_REFERENCE.md | ✅ OpenAI/Claude/Gemini | ✅ DONE | P2 | - |
 | **Known issues** | docs/KNOWN_ISSUES.md | ✅ Tracked | ✅ DONE | P3 | - |
 | **Comprehensive audit** | docs/COMPREHENSIVE_AUDIT_2026.md | ✅ 1420 lines | ✅ DONE | P2 | - |

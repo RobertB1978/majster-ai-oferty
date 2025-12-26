@@ -13,6 +13,7 @@ jobs:
   lint:
     name: Lint & Type Check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout code
@@ -26,12 +27,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        timeout-minutes: 5
 
       - name: Run ESLint
         run: npm run lint
+        timeout-minutes: 5
 
       - name: TypeScript type check
         run: npx tsc --noEmit
+        timeout-minutes: 5
 
   # ========================================
   # JOB 2: Unit & Integration Tests
@@ -39,6 +43,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
@@ -55,9 +60,12 @@ jobs:
 
       - name: Run tests with coverage
         run: npm test -- --coverage
+        timeout-minutes: 10
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
+        continue-on-error: true
+        timeout-minutes: 5
         with:
           files: ./coverage/coverage-final.json
           fail_ci_if_error: false
@@ -65,6 +73,8 @@ jobs:
       - name: Comment PR with coverage
         if: github.event_name == 'pull_request'
         uses: romeovs/lcov-reporter-action@v0.3.1
+        continue-on-error: true
+        timeout-minutes: 3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lcov-file: ./coverage/lcov.info
@@ -76,6 +86,7 @@ jobs:
   build:
     name: Build Application
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [lint, test]
 
     steps:
@@ -110,6 +121,7 @@ jobs:
   security:
     name: Security Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout code

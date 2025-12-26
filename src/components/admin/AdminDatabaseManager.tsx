@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import { Progress } from '@/components/ui/progress';
 import { 
   Table, 
@@ -12,19 +12,18 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { 
-  Database, 
-  Table2, 
-  Users, 
-  FolderOpen, 
-  FileText, 
+import {
+  Database,
+  Table2,
+  Users,
+  FolderOpen,
+  FileText,
   Calendar,
   HardDrive,
   RefreshCw,
   Download,
   Trash2,
-  BarChart3,
-  TrendingUp
+  BarChart3
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -68,7 +67,7 @@ export function AdminDatabaseManager() {
             icon,
             description: desc,
           });
-        } catch (e) {
+        } catch (_e) {
           stats.push({
             name,
             count: 0,

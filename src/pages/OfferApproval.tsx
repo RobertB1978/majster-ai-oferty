@@ -6,17 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { SignatureCanvas } from '@/components/offers/SignatureCanvas';
-import { 
-  CheckCircle, 
-  XCircle, 
-  FileText, 
+import {
+  CheckCircle,
+  XCircle,
+  FileText,
   Loader2,
   Building,
   Calendar,
-  DollarSign,
-  MessageSquare
+  DollarSign
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency } from '@/lib/formatters';

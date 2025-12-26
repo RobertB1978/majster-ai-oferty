@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Mic, MicOff, Loader2 } from 'lucide-react';
+import { Mic, MicOff } from 'lucide-react';
 import { useVoiceToText } from '@/hooks/useVoiceToText';
 import { cn } from '@/lib/utils';
 

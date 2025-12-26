@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -136,6 +137,6 @@ export function useDashboardStats() {
 export function useLegacyDashboard() {
   // This function exists only for backward compatibility
   // Components should migrate to useDashboardStats
-  console.warn('useLegacyDashboard is deprecated. Please use useDashboardStats instead.');
+  logger.warn('useLegacyDashboard is deprecated. Please use useDashboardStats instead.');
   return useDashboardStats();
 }

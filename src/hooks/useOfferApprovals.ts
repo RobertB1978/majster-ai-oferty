@@ -18,7 +18,7 @@ export interface OfferApproval {
   expires_at: string | null;
 }
 
-export function useOfferApprovals(projectId: string) {
+export function useOfferApprovals(_projectId: string) {
   const { user } = useAuth();
 
   return useQuery({
@@ -75,8 +75,8 @@ export function useExtendOfferApproval() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ approvalId, projectId, daysToExtend = 30 }: { 
-      approvalId: string; 
+    mutationFn: async ({ approvalId, projectId: _projectId, daysToExtend = 30 }: {
+      approvalId: string;
       projectId: string;
       daysToExtend?: number;
     }) => {

@@ -19,7 +19,7 @@
    - Gotowy do wykonania w Supabase SQL Editor (jeden klik!)
 
 ✅ **3. Naprawiono Edge Functions**
-   - Usunięto twardo wpisany adres `.lovable.app`
+   - Usunięto wszystkie hardcoded URLs
    - Dodano zmienną `FRONTEND_URL` dla przypomniedeń o ofertach
    - Wszystkie funkcje używają `Deno.env.get()` - brak hardcoded secrets
 

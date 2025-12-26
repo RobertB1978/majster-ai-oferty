@@ -23,7 +23,7 @@ export interface QuoteVersion {
   created_at: string;
 }
 
-export function useQuoteVersions(projectId: string) {
+export function useQuoteVersions(_projectId: string) {
   const { user } = useAuth();
 
   return useQuery({
@@ -45,7 +45,7 @@ export function useQuoteVersions(projectId: string) {
   });
 }
 
-export function useActiveQuoteVersion(projectId: string) {
+export function useActiveQuoteVersion(_projectId: string) {
   const { user } = useAuth();
 
   return useQuery({
@@ -152,7 +152,7 @@ export function useDeleteQuoteVersion() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ projectId, versionId }: { projectId: string; versionId: string }) => {
+    mutationFn: async ({ projectId: _projectId, versionId }: { projectId: string; versionId: string }) => {
       const { error } = await supabase
         .from('quote_versions')
         .delete()

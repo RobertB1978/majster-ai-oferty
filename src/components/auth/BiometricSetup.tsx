@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -12,13 +11,13 @@ interface BiometricSetupProps {
 }
 
 export function BiometricSetup({ email }: BiometricSetupProps) {
-  const { 
-    isSupported, 
-    isEnabled, 
-    isAuthenticating, 
+  const {
+    isSupported,
+    isEnabled: _isEnabled,
+    isAuthenticating,
     checkIfEnabled,
-    registerBiometric, 
-    disableBiometric 
+    registerBiometric,
+    disableBiometric
   } = useBiometricAuth();
   const [enabled, setEnabled] = useState(() => checkIfEnabled(email));
 

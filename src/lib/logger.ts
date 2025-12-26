@@ -12,7 +12,7 @@
  * @see RUNTIME_HARDENING_REPORT_DELTA2.md - PATCH 7
  */
 
-type LogLevel = 'log' | 'warn' | 'error' | 'info';
+// type LogLevel = 'log' | 'warn' | 'error' | 'info';
 
 /**
  * Regex patterns for detecting PII in strings

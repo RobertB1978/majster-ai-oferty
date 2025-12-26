@@ -26,7 +26,7 @@ export function useDeviceDetection(): DeviceInfo {
 
 function detectDevice(): DeviceInfo {
   const ua = navigator.userAgent;
-  const platform = navigator.platform || '';
+  const _platform = navigator.platform || '';
   
   // Detect OS
   let os = 'Unknown';

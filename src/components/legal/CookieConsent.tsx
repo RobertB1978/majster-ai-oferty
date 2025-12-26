@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Cookie, Shield, BarChart, Megaphone, X } from 'lucide-react';
+import { Cookie, Shield, BarChart, Megaphone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ConsentState {

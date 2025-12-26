@@ -19,7 +19,7 @@ import {
   Loader2,
   type LucideIcon
 } from 'lucide-react';
-import { useAuditLogs, AuditAction } from '@/hooks/useAuditLog';
+import { useAuditLogs } from '@/hooks/useAuditLog';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 

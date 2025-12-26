@@ -15,7 +15,7 @@ export interface OfferSend {
   sent_at: string;
 }
 
-export function useOfferSends(projectId: string) {
+export function useOfferSends(_projectId: string) {
   const { user } = useAuth();
 
   return useQuery({
@@ -65,7 +65,7 @@ export function useUpdateOfferSend() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, projectId, ...updates }: Partial<OfferSend> & { id: string; projectId: string }) => {
+    mutationFn: async ({ id, projectId: _projectId, ...updates }: Partial<OfferSend> & { id: string; projectId: string }) => {
       const { data, error } = await supabase
         .from('offer_sends')
         .update(updates)

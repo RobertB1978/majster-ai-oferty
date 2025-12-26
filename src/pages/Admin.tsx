@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
+// import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
@@ -30,7 +30,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function Admin() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { isAdmin, isModerator, isLoading } = useAdminRole();
   const [activeTab, setActiveTab] = useState('dashboard');
 
