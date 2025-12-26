@@ -3,6 +3,8 @@
  * Compresses images before upload to reduce storage costs and improve performance
  */
 
+import { logger } from './logger';
+
 interface CompressionOptions {
   maxWidth?: number;
   maxHeight?: number;
@@ -97,7 +99,7 @@ export async function compressImage(
 
             // Only use compressed version if it's smaller
             if (blob.size >= file.size) {
-              console.log('Compression did not reduce size, using original');
+              logger.log('Compression did not reduce size, using original');
               resolve(file);
               return;
             }
@@ -114,7 +116,7 @@ export async function compressImage(
             });
 
             const reduction = ((1 - blob.size / file.size) * 100).toFixed(1);
-            console.log(`Image compressed: ${formatFileSize(file.size)} → ${formatFileSize(blob.size)} (${reduction}% reduction)`);
+            logger.log(`Image compressed: ${formatFileSize(file.size)} → ${formatFileSize(blob.size)} (${reduction}% reduction)`);
 
             resolve(compressedFile);
           },

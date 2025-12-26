@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { CheckCircle2, XCircle, AlertCircle, ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 function AuthDiagnosticsContent() {
   const { user, session, isLoading } = useAuth();
@@ -50,10 +51,10 @@ function AuthDiagnosticsContent() {
   const testConnection = async () => {
     try {
       const { data, error } = await supabase.auth.getSession();
-      console.log('🔍 Connection Test Result:', { data, error });
+      logger.log('🔍 Connection Test Result:', { data, error });
       alert(error ? `❌ Error: ${error.message}` : '✅ Connection successful!');
     } catch (err) {
-      console.error('🔍 Connection Test Failed:', err);
+      logger.error('🔍 Connection Test Failed:', err);
       alert(`❌ Connection failed: ${err}`);
     }
   };

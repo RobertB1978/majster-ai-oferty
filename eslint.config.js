@@ -27,4 +27,12 @@ export default tseslint.config(
       }],
     },
   },
+  // Enforce no console.log in src/ (except logger.ts and sentry.ts)
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/lib/logger.ts", "src/lib/sentry.ts"],
+    rules: {
+      "no-console": ["error", { allow: ["warn", "error"] }],
+    },
+  },
 );

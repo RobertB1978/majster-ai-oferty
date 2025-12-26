@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { logger } from '@/lib/logger';
 
 export type AuditAction = 
   | 'user.login'
@@ -74,7 +75,7 @@ export function useLogAuditEvent() {
       if (!user) return;
 
       // Log to console for debugging
-      console.log('[AUDIT]', {
+      logger.log('[AUDIT]', {
         action,
         entityType,
         entityId,
