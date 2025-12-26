@@ -749,7 +749,7 @@ src/hooks/useQuotes.ts       - Dodano normalizację pozycji i margin
 ### Deployment do BETA
 
 1. **Merge PR** - Zmerguj branch `claude/setup-code-access-01E7UnWc6szhC3mgLvgiLyfn` do `main`
-2. **Deploy** - Lovable auto-deploy lub CI/CD
+2. **Deploy** - CI/CD auto-deploy
 3. **Testy Manualne** - Smoke test pełnego flow
 4. **Monitoring** - Obserwuj logi, błędy, wydajność
 5. **User Feedback** - Zbierz feedback od pierwszych użytkowników BETA
@@ -816,8 +816,8 @@ c265982 - feat(sprint-2): dodano debouncing do TemplateSelector i testy dla useI
 ### Środowisko
 
 - **Node:** Compatible with Node 18+
-- **Package Manager:** npm / Bun
-- **Deploy:** Lovable.dev auto-deploy
+- **Package Manager:** npm
+- **Deploy:** CI/CD auto-deploy
 - **Branch:** `claude/setup-code-access-01E7UnWc6szhC3mgLvgiLyfn`
 
 ### Nowe Zależności
