@@ -1,14 +1,13 @@
 /**
  * Universal AI Provider Module for Majster.AI
- * 
+ *
  * Supports multiple AI providers:
- * - Lovable AI Gateway (default, works in Lovable environment)
  * - OpenAI API (GPT-4, GPT-4o, GPT-3.5-turbo)
  * - Anthropic Claude API (claude-3-opus, claude-3-sonnet, claude-3-haiku)
  * - Google Gemini API (gemini-2.5-flash, gemini-2.5-pro)
  */
 
-export type AIProvider = 'lovable' | 'openai' | 'anthropic' | 'gemini';
+export type AIProvider = 'openai' | 'anthropic' | 'gemini';
 
 export interface AIProviderConfig {
   provider: AIProvider;
@@ -48,7 +47,6 @@ export interface AIResponse {
 
 // Default models for each provider
 const DEFAULT_MODELS: Record<AIProvider, string> = {
-  lovable: 'google/gemini-2.5-flash',
   openai: 'gpt-4o-mini',
   anthropic: 'claude-3-5-sonnet-20241022',
   gemini: 'gemini-2.5-flash',
@@ -56,7 +54,6 @@ const DEFAULT_MODELS: Record<AIProvider, string> = {
 
 // API endpoints for each provider
 const API_ENDPOINTS: Record<AIProvider, string> = {
-  lovable: 'https://ai.gateway.lovable.dev/v1/chat/completions',
   openai: 'https://api.openai.com/v1/chat/completions',
   anthropic: 'https://api.anthropic.com/v1/messages',
   gemini: 'https://generativelanguage.googleapis.com/v1beta/models',
@@ -66,8 +63,8 @@ const API_ENDPOINTS: Record<AIProvider, string> = {
  * Detects the AI provider configuration from environment variables
  */
 export function detectAIProvider(): AIProviderConfig {
-  // Priority: OpenAI > Anthropic > Gemini > Lovable (default)
-  
+  // Priority: OpenAI > Anthropic > Gemini
+
   const openaiKey = Deno.env.get('OPENAI_API_KEY');
   if (openaiKey) {
     console.log('AI Provider: OpenAI detected');
@@ -86,13 +83,7 @@ export function detectAIProvider(): AIProviderConfig {
     return { provider: 'gemini', apiKey: geminiKey };
   }
 
-  const lovableKey = Deno.env.get('LOVABLE_API_KEY');
-  if (lovableKey) {
-    console.log('AI Provider: Lovable AI Gateway detected');
-    return { provider: 'lovable', apiKey: lovableKey };
-  }
-
-  throw new Error('No AI API key configured. Set one of: OPENAI_API_KEY, ANTHROPIC_API_KEY, GEMINI_API_KEY, or LOVABLE_API_KEY');
+  throw new Error('No AI API key configured. Set one of: OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY');
 }
 
 /**
@@ -163,7 +154,7 @@ function convertToGeminiFormat(messages: AIMessage[]): { contents: unknown[]; sy
 }
 
 /**
- * Makes a request to OpenAI-compatible API (OpenAI, Lovable)
+ * Makes a request to OpenAI-compatible API
  */
 async function callOpenAICompatible(
   config: AIProviderConfig,
@@ -398,7 +389,6 @@ export async function completeAI(options: AIRequestOptions): Promise<AIResponse>
   const config = detectAIProvider();
   
   switch (config.provider) {
-    case 'lovable':
     case 'openai':
       return callOpenAICompatible(config, options);
     case 'anthropic':

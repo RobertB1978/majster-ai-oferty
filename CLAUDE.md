@@ -58,8 +58,7 @@
 ### Build & Development
 - **ESLint 9** - Linting
 - **TypeScript ESLint** - TypeScript-specific linting
-- **Bun/npm** - Package management
-- **Lovable.dev** - Visual development platform integration
+- **npm** - Package management
 
 ---
 
@@ -407,7 +406,7 @@ majster-ai-oferty/
 - **Keep PR updated** - rebase or merge main if needed
 
 ### Deployment
-- **Auto-deploy** - main branch auto-deploys (via Lovable or CI/CD)
+- **Auto-deploy** - main branch auto-deploys via CI/CD
 - **Test before merge** - ensure tests pass
 - **Database migrations** - run migrations before deploying code changes
 
@@ -466,7 +465,6 @@ majster-ai-oferty/
 ### Project-Specific
 - Check `/docs` folder for project-specific documentation:
   - **AI_PROVIDERS_REFERENCE.md** - Comprehensive guide to AI provider configuration (OpenAI, Anthropic, Gemini)
-  - **MIGRATION_GUIDE.md** - Step-by-step guide for migrating from Lovable to self-hosted infrastructure
 - Review recent PRs to understand coding patterns
 - Ask owner for domain knowledge (construction industry specifics)
 

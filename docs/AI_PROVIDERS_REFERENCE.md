@@ -50,7 +50,7 @@ Automatycznie wykrywa skonfigurowanego providera na podstawie zmiennych środowi
 import { detectAIProvider } from '../_shared/ai-provider.ts';
 
 const config = detectAIProvider();
-console.log(config.provider); // 'openai' | 'anthropic' | 'gemini' | 'lovable'
+console.log(config.provider); // 'openai' | 'anthropic' | 'gemini'
 ```
 
 #### `completeAI(options: AIRequestOptions): Promise<AIResponse>`
@@ -88,7 +88,7 @@ try {
 ### Typy
 
 ```typescript
-type AIProvider = 'lovable' | 'openai' | 'anthropic' | 'gemini';
+type AIProvider = 'openai' | 'anthropic' | 'gemini';
 
 interface AIProviderConfig {
   provider: AIProvider;
@@ -256,28 +256,7 @@ if (response.toolCalls?.[0]) {
 
 ---
 
-## Migracja istniejących Edge Functions
-
-### Przed (z Lovable AI Gateway)
-
-```typescript
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-
-const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-  method: 'POST',
-  headers: {
-    'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    model: 'google/gemini-2.5-flash',
-    messages,
-    max_tokens: 2048,
-  }),
-});
-```
-
-### Po (z uniwersalnym ai-provider)
+## Przykład użycia w Edge Functions
 
 ```typescript
 import { completeAI, handleAIError } from '../_shared/ai-provider.ts';
