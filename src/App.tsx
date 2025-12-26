@@ -24,6 +24,7 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import EnvCheck from "./pages/EnvCheck"; // Environment diagnostic page
 
 // Lazy-loaded pages (code splitting for better initial load)
 // Dashboard and all app pages are lazy-loaded to reduce initial bundle size
@@ -78,6 +79,9 @@ const App = () => (
               <CookieConsent />
               <Suspense fallback={<PageLoader />}>
                 <Routes>
+                  {/* Environment diagnostic (public) */}
+                  <Route path="/env-check" element={<EnvCheck />} />
+
                   {/* Public auth routes */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
