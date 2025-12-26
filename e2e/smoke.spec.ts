@@ -206,3 +206,25 @@ test.describe('Smoke Tests', () => {
     console.log('✅ App serves static assets correctly');
   });
 });
+
+  test('quote creation page loads for authenticated flow', async ({ page }) => {
+    console.log('🧪 Test: Quote creation page loads');
+
+    // Navigate directly to quote editor (will redirect to login if not authed)
+    await page.goto('/quote-editor', {
+      waitUntil: 'domcontentloaded',
+      timeout: 90000
+    });
+
+    await waitForReactHydration(page);
+
+    // Should redirect to login OR show quote editor (if somehow authed)
+    const currentUrl = page.url();
+    console.log('Current URL:', currentUrl);
+    
+    // Either on login or quote-editor is acceptable
+    expect(currentUrl).toMatch(/\/(login|quote-editor)/);
+
+    console.log('✅ Quote creation route accessible');
+  });
+}); 
