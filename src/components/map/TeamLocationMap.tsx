@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { // MapPin, Navigation, RefreshCw, Users } from 'lucide-react';
+// import { MapPin, Navigation, RefreshCw, Users } from 'lucide-react';
 import { useTeamLocations, TeamLocation } from '@/hooks/useTeamMembers';
 
 // Fix Leaflet default marker icons

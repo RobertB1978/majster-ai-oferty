@@ -191,7 +191,7 @@ export default function Calendar() {
     }
   };
 
-  const handleDeleteEvent = async (eventId: string) => {
+  const handleDeleteEvent = async (_eventId: string) => {
     await deleteEvent.mutateAsync(eventId);
   };
 
