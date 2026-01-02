@@ -1,0 +1,46 @@
+MAJSTER.AI - DEPLOYMENT CHECKLIST
+==================================
+
+□ STEP 1: DATABASE (10 min)
+   □ Open: https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv/sql
+   □ Copy: supabase/DEPLOYMENT_READY_MIGRATION.sql
+   □ Paste in SQL Editor
+   □ Click "Run"
+   □ Verify: 33 tables created
+
+□ STEP 2: EDGE FUNCTIONS (30 min)
+   □ Run: npm install -g supabase
+   □ Run: supabase login
+   □ Run: ./supabase/DEPLOY_EDGE_FUNCTIONS.sh
+   □ Verify: 16 functions deployed
+
+□ STEP 3: SECRETS (10 min)
+   □ Open: https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv/settings/functions
+   □ Add: FRONTEND_URL (your Vercel URL)
+   □ Add: RESEND_API_KEY (from resend.com)
+   □ Add: GEMINI_API_KEY (FREE from makersuite.google.com)
+   □ Optional: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
+
+□ STEP 4: VERCEL (5 min)
+   □ Open: https://vercel.com/dashboard
+   □ Add env var: VITE_SUPABASE_URL = https://xwvxqhhnozfrjcjmcltv.supabase.co
+   □ Add env var: VITE_SUPABASE_ANON_KEY (from Supabase → Settings → API)
+   □ Deploy: git push origin main
+   □ Copy deployment URL
+
+□ STEP 5: UPDATE SECRETS
+   □ Update FRONTEND_URL in Supabase with your Vercel URL
+
+□ STEP 6: VERIFY (5 min)
+   □ Test: curl https://xwvxqhhnozfrjcjmcltv.supabase.co/functions/v1/healthcheck
+   □ Test: Register on your app
+   □ Test: Create client/project/quote
+   □ Test: Send email (if Resend configured)
+
+DONE! 🎉
+
+For detailed instructions, see:
+- DEPLOYMENT_GUIDE.md
+- PRODUCTION_DEPLOYMENT_AUDIT.md
+- supabase/SECRETS_CHECKLIST.md
+- VERCEL_ENV_CHECKLIST.md
