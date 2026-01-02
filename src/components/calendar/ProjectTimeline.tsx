@@ -83,7 +83,7 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
         };
       })
       .filter(Boolean);
-  }, [projects, clients, currentMonth, monthStart, monthEnd, totalDays]);
+  }, [projects, clients, monthStart, monthEnd, totalDays]);
 
   // Week markers
   const weekMarkers = useMemo(() => {

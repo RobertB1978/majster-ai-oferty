@@ -44,7 +44,7 @@ export default function Dashboard() {
     if (!onboardingLoading && !onboardingProgress && totalProjects === 0 && totalClients === 0) {
       createOnboarding.mutate();
     }
-  }, [onboardingLoading, onboardingProgress, totalProjects, totalClients]);
+  }, [onboardingLoading, onboardingProgress, totalProjects, totalClients, createOnboarding]);
 
   // Show onboarding wizard for new users
   useEffect(() => {

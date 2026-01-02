@@ -170,6 +170,7 @@ npm run dev
 - 🗄️ **[Supabase Setup Guide](./docs/SUPABASE_SETUP_GUIDE.md)** - Konfiguracja Supabase
 - 🤖 **[AI Providers Reference](./docs/AI_PROVIDERS_REFERENCE.md)** - Konfiguracja OpenAI/Claude/Gemini
 - 🔒 **[Monitoring & Security Setup](./docs/MONITORING_SECURITY_SETUP.md)** - Security best practices
+- 🛠️ **[CI Troubleshooting](./docs/CI_TROUBLESHOOTING.md)** - Jak naprawić lint/typy/testy/e2e w CI
 
 ### Inne
 
