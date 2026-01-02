@@ -162,6 +162,13 @@ npm audit fix --force
 
 ---
 
+## Follow-up Remediation: Vite/Esbuild Upgrade
+
+- **Context:** npm audit currently reports a moderate advisory for `esbuild` via `vite` (dev tooling). CI enforces production-only audits to keep pipelines green while still surfacing full diagnostics.
+- **Action:** Plan a dedicated PR to upgrade Vite (and transitively esbuild) to the latest compatible major version. Validate dev server, build, and test runs in CI, and verify bundle output before tightening audit thresholds.
+
+---
+
 ## Banned Dependencies
 
 These dependencies are NOT allowed due to security concerns:
