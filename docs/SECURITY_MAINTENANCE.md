@@ -47,6 +47,10 @@ npm audit fix
 npm audit fix --force
 ```
 
+> Note: CI audits omit dev-only dependencies so that moderate tooling advisories (e.g., Vite/esbuild GHSA-67mh-4wv8-2f99) do not block the pipeline while production dependencies remain enforced at the configured `AUDIT_LEVEL`.
+
+- [ ] TODO: Schedule a dedicated PR to upgrade Vite/esbuild to the patched line and revalidate build/tests for compatibility.
+
 ---
 
 ### CodeQL Analysis
