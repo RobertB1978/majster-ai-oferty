@@ -12,14 +12,11 @@ import {
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
 import { sanitizeUserInput } from "../_shared/sanitization.ts";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders, isPreflight, requireBearerToken } from "../_shared/security.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+  const corsHeaders = getCorsHeaders(req);
+  if (isPreflight(req)) {
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -206,3 +203,6 @@ serve(async (req) => {
     });
   }
 });
+    const authCheck = requireBearerToken(req, corsHeaders);
+    if (authCheck.errorResponse) return authCheck.errorResponse;
+

@@ -5,21 +5,18 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { 
-  validateString, 
-  validateUUID, 
+import {
+  validateString,
+  validateUUID,
   createValidationErrorResponse,
-  combineValidations 
+  combineValidations
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
-};
+import { getCorsHeaders, isPreflight, getUserFromRequest } from "../_shared/security.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+  const corsHeaders = getCorsHeaders(req);
+  if (isPreflight(req)) {
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -28,6 +25,11 @@ serve(async (req) => {
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   try {
+    // Require authenticated Supabase user
+    const { userId, errorResponse: authError } = await getUserFromRequest(req, corsHeaders);
+    if (authError || !userId) return authError!;
+    const sessionUserId = userId;
+
     // Validate API key header
     const apiKey = req.headers.get('x-api-key');
     if (!apiKey) {
@@ -63,11 +65,19 @@ serve(async (req) => {
       });
     }
 
-    const userId = keyData.user_id;
+    if (keyData.user_id !== sessionUserId) {
+      console.warn('Public API: API key user mismatch');
+      return new Response(JSON.stringify({ error: "Invalid API key for user" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const apiUserId = keyData.user_id;
     
     // Rate limiting
     const rateLimitResult = await checkRateLimit(
-      getIdentifier(req, userId),
+      getIdentifier(req, apiUserId),
       'public-api',
       supabase
     );
@@ -86,7 +96,7 @@ serve(async (req) => {
     const path = url.pathname.replace('/public-api', '');
     const permissions = (keyData.permissions as string[]) || ['read'];
 
-    console.log(`Public API: ${req.method} ${path} by user ${userId}`);
+    console.log(`Public API: ${req.method} ${path} by user ${apiUserId}`);
 
     // Route: /projects
     if (path === '/projects' || path === '/projects/') {
@@ -101,7 +111,7 @@ serve(async (req) => {
         const { data, error } = await supabase
           .from('projects')
           .select('id, project_name, status, priority, start_date, end_date, created_at, clients(id, name)')
-          .eq('user_id', userId)
+          .eq('user_id', apiUserId)
           .order('created_at', { ascending: false })
           .limit(100);
 
@@ -136,7 +146,7 @@ serve(async (req) => {
           .from('clients')
           .select('id')
           .eq('id', body.client_id)
-          .eq('user_id', userId)
+          .eq('user_id', apiUserId)
           .single();
 
         if (!clientCheck) {
@@ -151,7 +161,7 @@ serve(async (req) => {
           .insert({
             project_name: body.project_name.trim(),
             client_id: body.client_id,
-            user_id: userId,
+            user_id: apiUserId,
             status: body.status || 'Nowy',
             priority: body.priority || 'normal'
           })
@@ -179,7 +189,7 @@ serve(async (req) => {
         const { data, error } = await supabase
           .from('clients')
           .select('id, name, email, phone, address, created_at')
-          .eq('user_id', userId)
+          .eq('user_id', apiUserId)
           .order('created_at', { ascending: false })
           .limit(100);
 
@@ -211,7 +221,7 @@ serve(async (req) => {
             email: body.email?.trim() || '',
             phone: body.phone?.trim() || '',
             address: body.address?.trim() || '',
-            user_id: userId
+            user_id: apiUserId
           })
           .select('id, name, email, phone, created_at')
           .single();
@@ -237,7 +247,7 @@ serve(async (req) => {
         const { data, error } = await supabase
           .from('quotes')
           .select('id, project_id, total, margin_percent, summary_labor, summary_materials, created_at')
-          .eq('user_id', userId)
+          .eq('user_id', apiUserId)
           .order('created_at', { ascending: false })
           .limit(100);
 
