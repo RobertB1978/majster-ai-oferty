@@ -1,42 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAdminTheme } from '@/hooks/useAdminTheme';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-// import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Palette, 
-  Type, 
-  Layout, 
+import {
+  Palette,
+  Type,
+  Layout,
   Sparkles,
   RotateCcw,
   Save,
-  Eye
+  Eye,
+  Loader
 } from 'lucide-react';
-import { toast } from 'sonner';
 
-interface ThemeConfig {
-  primaryHue: number;
-  primarySaturation: number;
-  primaryLightness: number;
-  accentHue: number;
-  borderRadius: number;
-  fontSize: number;
-  fontFamily: string;
+interface DisplayTheme {
+  primary_hue: number;
+  primary_saturation: number;
+  primary_lightness: number;
+  accent_hue: number;
+  border_radius: number;
+  font_size: number;
+  font_family: string;
   spacing: number;
 }
-
-const defaultTheme: ThemeConfig = {
-  primaryHue: 222,
-  primarySaturation: 47,
-  primaryLightness: 11,
-  accentHue: 221,
-  borderRadius: 8,
-  fontSize: 16,
-  fontFamily: 'Inter',
-  spacing: 4,
-};
 
 const fontOptions = [
   'Inter',
@@ -52,61 +42,72 @@ const fontOptions = [
 ];
 
 export function AdminThemeEditor() {
-  const [theme, setTheme] = useState<ThemeConfig>(() => {
-    const saved = localStorage.getItem('admin-theme-config');
-    return saved ? JSON.parse(saved) : defaultTheme;
-  });
+  const { session } = useAuth();
+  const organizationId = session?.user?.user_metadata?.organization_id;
+  const { theme: dbTheme, loading, error, updateTheme: updateDbTheme, applyTheme: applyDbTheme, resetTheme: resetDbTheme } = useAdminTheme(organizationId);
+  const [displayTheme, setDisplayTheme] = useState<DisplayTheme | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
 
-  const updateTheme = (key: keyof ThemeConfig, value: number | string) => {
-    setTheme(prev => ({ ...prev, [key]: value }));
+  // Initialize display theme from database
+  useEffect(() => {
+    if (dbTheme) {
+      setDisplayTheme({
+        primary_hue: dbTheme.primary_hue ?? 210,
+        primary_saturation: dbTheme.primary_saturation ?? 100,
+        primary_lightness: dbTheme.primary_lightness ?? 50,
+        accent_hue: dbTheme.accent_hue ?? 265,
+        border_radius: dbTheme.border_radius ?? 8,
+        font_size: dbTheme.font_size ?? 14,
+        font_family: dbTheme.font_family ?? 'Inter',
+        spacing: dbTheme.spacing ?? 4,
+      });
+    }
+  }, [dbTheme]);
+
+  const updateTheme = (key: keyof DisplayTheme, value: number | string) => {
+    setDisplayTheme(prev => prev ? { ...prev, [key]: value } : null);
   };
 
-  const applyTheme = () => {
-    const root = document.documentElement;
-    
-    // Primary color
-    root.style.setProperty('--primary', `${theme.primaryHue} ${theme.primarySaturation}% ${theme.primaryLightness}%`);
-    
-    // Accent color
-    root.style.setProperty('--accent', `${theme.accentHue} 83% 54%`);
-    
-    // Border radius
-    root.style.setProperty('--radius', `${theme.borderRadius}px`);
-    
-    // Font size
-    root.style.fontSize = `${theme.fontSize}px`;
-    
-    // Font family
-    root.style.fontFamily = `${theme.fontFamily}, system-ui, sans-serif`;
-  };
-
-  const saveTheme = () => {
-    localStorage.setItem('admin-theme-config', JSON.stringify(theme));
-    applyTheme();
-    toast.success('Motyw zapisany i zastosowany');
+  const saveTheme = async () => {
+    if (displayTheme) {
+      await updateDbTheme(displayTheme);
+    }
   };
 
   const resetTheme = () => {
-    setTheme(defaultTheme);
-    localStorage.removeItem('admin-theme-config');
-    document.documentElement.style.cssText = '';
-    toast.info('Przywrócono domyślny motyw');
+    resetDbTheme();
   };
 
   const togglePreview = () => {
-    if (!previewMode) {
-      applyTheme();
-    } else {
+    if (!previewMode && displayTheme) {
+      applyDbTheme(displayTheme);
+    } else if (previewMode && dbTheme) {
       document.documentElement.style.cssText = '';
-      const saved = localStorage.getItem('admin-theme-config');
-      if (saved) {
-        const savedTheme = JSON.parse(saved);
-        setTheme(savedTheme);
-      }
+      applyDbTheme(dbTheme);
     }
     setPreviewMode(!previewMode);
   };
+
+  if (loading || !displayTheme) {
+    return (
+      <Card>
+        <CardContent className="pt-6 flex items-center justify-center">
+          <Loader className="h-5 w-5 animate-spin" />
+          <span className="ml-2">Wczytywanie motywu...</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="pt-6 text-red-600">
+          Błąd wczytywania motywu: {error?.message || 'Nieznany błąd'}
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -145,51 +146,51 @@ export function AdminThemeEditor() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-base font-medium">Kolor główny (Primary)</Label>
-                <div 
+                <div
                   className="w-12 h-12 rounded-lg border-2 border-border"
-                  style={{ 
-                    backgroundColor: `hsl(${theme.primaryHue}, ${theme.primarySaturation}%, ${theme.primaryLightness}%)` 
+                  style={{
+                    backgroundColor: `hsl(${displayTheme.primary_hue}, ${displayTheme.primary_saturation}%, ${displayTheme.primary_lightness}%)`
                   }}
                 />
               </div>
-              
+
               <div className="space-y-3">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Odcień (Hue)</span>
-                    <span>{theme.primaryHue}°</span>
+                    <span>{displayTheme.primary_hue}°</span>
                   </div>
                   <Slider
-                    value={[theme.primaryHue]}
-                    onValueChange={([v]) => updateTheme('primaryHue', v)}
+                    value={[displayTheme.primary_hue]}
+                    onValueChange={([v]) => updateTheme('primary_hue', v)}
                     max={360}
                     step={1}
                     className="w-full"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Nasycenie (Saturation)</span>
-                    <span>{theme.primarySaturation}%</span>
+                    <span>{displayTheme.primary_saturation}%</span>
                   </div>
                   <Slider
-                    value={[theme.primarySaturation]}
-                    onValueChange={([v]) => updateTheme('primarySaturation', v)}
+                    value={[displayTheme.primary_saturation]}
+                    onValueChange={([v]) => updateTheme('primary_saturation', v)}
                     max={100}
                     step={1}
                     className="w-full"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Jasność (Lightness)</span>
-                    <span>{theme.primaryLightness}%</span>
+                    <span>{displayTheme.primary_lightness}%</span>
                   </div>
                   <Slider
-                    value={[theme.primaryLightness]}
-                    onValueChange={([v]) => updateTheme('primaryLightness', v)}
+                    value={[displayTheme.primary_lightness]}
+                    onValueChange={([v]) => updateTheme('primary_lightness', v)}
                     max={100}
                     step={1}
                     className="w-full"
@@ -202,22 +203,22 @@ export function AdminThemeEditor() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-base font-medium">Kolor akcentu</Label>
-                <div 
+                <div
                   className="w-12 h-12 rounded-lg border-2 border-border"
-                  style={{ 
-                    backgroundColor: `hsl(${theme.accentHue}, 83%, 54%)` 
+                  style={{
+                    backgroundColor: `hsl(${displayTheme.accent_hue}, 83%, 54%)`
                   }}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Odcień akcentu</span>
-                  <span>{theme.accentHue}°</span>
+                  <span>{displayTheme.accent_hue}°</span>
                 </div>
                 <Slider
-                  value={[theme.accentHue]}
-                  onValueChange={([v]) => updateTheme('accentHue', v)}
+                  value={[displayTheme.accent_hue]}
+                  onValueChange={([v]) => updateTheme('accent_hue', v)}
                   max={360}
                   step={1}
                   className="w-full"
@@ -265,10 +266,10 @@ export function AdminThemeEditor() {
                 {fontOptions.map((font) => (
                   <button
                     key={font}
-                    onClick={() => updateTheme('fontFamily', font)}
+                    onClick={() => updateTheme('font_family', font)}
                     className={`p-3 rounded-lg border text-center transition-all ${
-                      theme.fontFamily === font 
-                        ? 'border-primary bg-primary/10' 
+                      displayTheme.font_family === font
+                        ? 'border-primary bg-primary/10'
                         : 'border-border hover:border-primary/50'
                     }`}
                     style={{ fontFamily: font }}
@@ -283,21 +284,21 @@ export function AdminThemeEditor() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-base font-medium">Rozmiar bazowy</Label>
-                <span className="text-sm text-muted-foreground">{theme.fontSize}px</span>
+                <span className="text-sm text-muted-foreground">{displayTheme.font_size}px</span>
               </div>
               <Slider
-                value={[theme.fontSize]}
-                onValueChange={([v]) => updateTheme('fontSize', v)}
+                value={[displayTheme.font_size]}
+                onValueChange={([v]) => updateTheme('font_size', v)}
                 min={12}
                 max={20}
                 step={1}
                 className="w-full"
               />
               <div className="p-4 rounded-lg bg-muted">
-                <p style={{ fontSize: `${theme.fontSize}px`, fontFamily: theme.fontFamily }}>
+                <p style={{ fontSize: `${displayTheme.font_size}px`, fontFamily: displayTheme.font_family }}>
                   Przykładowy tekst - Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 </p>
-                <p className="mt-2" style={{ fontSize: `${theme.fontSize * 0.875}px`, fontFamily: theme.fontFamily }}>
+                <p className="mt-2" style={{ fontSize: `${displayTheme.font_size * 0.875}px`, fontFamily: displayTheme.font_family }}>
                   Mniejszy tekst - Ut enim ad minim veniam.
                 </p>
               </div>
@@ -309,28 +310,28 @@ export function AdminThemeEditor() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-base font-medium">Zaokrąglenie rogów</Label>
-                <span className="text-sm text-muted-foreground">{theme.borderRadius}px</span>
+                <span className="text-sm text-muted-foreground">{displayTheme.border_radius}px</span>
               </div>
               <Slider
-                value={[theme.borderRadius]}
-                onValueChange={([v]) => updateTheme('borderRadius', v)}
+                value={[displayTheme.border_radius]}
+                onValueChange={([v]) => updateTheme('border_radius', v)}
                 min={0}
                 max={24}
                 step={1}
                 className="w-full"
               />
               <div className="flex gap-4">
-                <div 
+                <div
                   className="w-24 h-16 bg-primary"
-                  style={{ borderRadius: `${theme.borderRadius}px` }}
+                  style={{ borderRadius: `${displayTheme.border_radius}px` }}
                 />
-                <div 
+                <div
                   className="w-24 h-16 bg-secondary border"
-                  style={{ borderRadius: `${theme.borderRadius}px` }}
+                  style={{ borderRadius: `${displayTheme.border_radius}px` }}
                 />
-                <div 
+                <div
                   className="w-24 h-16 bg-muted border"
-                  style={{ borderRadius: `${theme.borderRadius}px` }}
+                  style={{ borderRadius: `${displayTheme.border_radius}px` }}
                 />
               </div>
             </div>
@@ -339,10 +340,10 @@ export function AdminThemeEditor() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-base font-medium">Bazowy spacing</Label>
-                <span className="text-sm text-muted-foreground">{theme.spacing}px</span>
+                <span className="text-sm text-muted-foreground">{displayTheme.spacing}px</span>
               </div>
               <Slider
-                value={[theme.spacing]}
+                value={[displayTheme.spacing]}
                 onValueChange={([v]) => updateTheme('spacing', v)}
                 min={2}
                 max={8}
