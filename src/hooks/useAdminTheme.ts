@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -41,9 +42,11 @@ const DEFAULT_THEME = {
 };
 
 export function useAdminTheme(organizationId: string | null): UseAdminThemeResult {
+  const { t } = useTranslation();
   const [theme, setTheme] = useState<Partial<AdminThemeConfig> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const subscriptionRef = useRef<any>(null);
 
   // Fetch theme from database
@@ -105,7 +108,7 @@ export function useAdminTheme(organizationId: string | null): UseAdminThemeResul
         supabase.removeSubscription(subscription);
       }
     };
-  }, [organizationId, fetchTheme]);
+  }, [organizationId, fetchTheme, t]);
 
   // Apply theme to DOM
   const applyTheme = useCallback((themeData: Partial<AdminThemeConfig>) => {
@@ -158,22 +161,22 @@ export function useAdminTheme(organizationId: string | null): UseAdminThemeResul
 
         setTheme((prev) => (prev ? { ...prev, ...updates } : updates));
         applyTheme({ ...theme, ...updates });
-        toast.success('Motyw został zapisany i zastosowany');
+        toast.success(t('messages.themeSaved'));
       } catch (err) {
         const error = err instanceof Error ? err : new Error('Failed to update theme');
         setError(error);
         console.error('Error updating admin theme:', error);
-        toast.error('Nie udało się zapisać motywu');
+        toast.error(t('errors.themeSaveFailed'));
       }
     },
-    [organizationId, theme, applyTheme]
+    [organizationId, theme, applyTheme, t]
   );
 
   const resetTheme = useCallback(() => {
     setTheme(DEFAULT_THEME);
     document.documentElement.style.cssText = '';
-    toast.info('Przywrócono domyślny motyw');
-  }, []);
+    toast.info(t('success.updated'));
+  }, [t]);
 
   return {
     theme,

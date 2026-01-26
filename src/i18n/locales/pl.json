@@ -432,7 +432,62 @@
     "networkError": "Błąd połączenia",
     "unauthorized": "Brak autoryzacji",
     "notFound": "Nie znaleziono",
-    "serverError": "Błąd serwera"
+    "serverError": "Błąd serwera",
+    "themeSaveFailed": "Nie udało się zapisać motywu",
+    "importFailed": "Błąd podczas importu",
+    "saveSendFailed": "Błąd przy zapisywaniu wysyłki",
+    "processingFailed": "Błąd przetwarzania. Spróbuj ponownie.",
+    "settingsSaveFailed": "Nie udało się zapisać ustawień",
+    "exportDataFailed": "Błąd podczas eksportu danych",
+    "sendRequestFailed": "Błąd podczas wysyłania żądania",
+    "createLinkFailed": "Błąd podczas tworzenia linku",
+    "extendOfferFailed": "Błąd podczas przedłużania oferty",
+    "processingError": "Błąd podczas przetwarzania",
+    "addClientFailed": "Błąd przy dodawaniu klienta",
+    "updateClientFailed": "Błąd przy aktualizacji klienta",
+    "sendOfferFailed": "Nie udało się wysłać oferty",
+    "pdfGenerationFailed": "Nie udało się wygenerować PDF",
+    "microphoneAccessDenied": "Brak dostępu do mikrofonu. Włącz mikrofon w ustawieniach przeglądarki.",
+    "speechRecognitionNotSupported": "Rozpoznawanie mowy nie jest obsługiwane w tej przeglądarce. Użyj Chrome.",
+    "invalidCredentials": "Nieprawidłowy email lub hasło",
+    "invalidEmailFormat": "Nieprawidłowy format email",
+    "invalidFileType": "Nieprawidłowy typ pliku"
+  },
+  "messages": {
+    "themeSaved": "Motyw został zapisany i zastosowany",
+    "approvalLinkCreated": "Link do akceptacji utworzony",
+    "offerExtended": "Ważność oferty przedłużona o 30 dni",
+    "offerApproved": "Oferta zaakceptowana!",
+    "settingsSaved": "Ustawienia zostały zapisane",
+    "invoiceUploaded": "Faktura przesłana",
+    "ocrCompleted": "OCR zakończony",
+    "quoteSaved": "Wycena zapisana",
+    "quoteVersionSaved": "Wersja wyceny zapisana",
+    "projectCreated": "Projekt utworzony",
+    "projectUpdated": "Projekt zaktualizowany",
+    "uploading": "Przesyłanie...",
+    "recordingStarted": "Nagrywanie rozpoczęte. Mów wyraźnie..."
+  },
+  "validation": {
+    "nameRequired": "Nazwa jest wymagana",
+    "quantityMustBePositive": "Ilość musi być > 0",
+    "priceCannotBeNegative": "Cena nie może być ujemna",
+    "addAtLeastOnePosition": "Dodaj przynajmniej jedną pozycję",
+    "signatureRequired": "Dodaj podpis",
+    "projectNameRequired": "Podaj nazwę projektu",
+    "clientRequired": "Wybierz klienta",
+    "companyNameRequired": "Podaj nazwę firmy"
+  },
+  "dialogs": {
+    "deleteTemplate": "Usunąć szablon?",
+    "irreversibleOperation": "Ta operacja jest nieodwracalna.",
+    "confirmAccountDeletion": "Czy na pewno chcesz zażądać usunięcia swojego konta i wszystkich danych?",
+    "deleteAccountTitle": "Czy na pewno chcesz usunąć konto?",
+    "deleteBiometricCredential": "Usuń poświadczenie biometryczne?"
+  },
+  "emptyStates": {
+    "noQuotePositions": "Brak pozycji. Kliknij \"Dodaj pozycję\" lub wybierz szablon.",
+    "noQuote": "Brak wyceny. Kliknij \"Edytuj wycenę\" aby dodać pozycje kosztorysu."
   },
   "success": {
     "saved": "Zapisano pomyślnie",
