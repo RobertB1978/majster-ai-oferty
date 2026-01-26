@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -61,6 +62,7 @@ const DEFAULT_SETTINGS = {
 };
 
 export function useAdminSettings(organizationId: string | null): UseAdminSettingsResult {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState<Partial<AdminSystemSettings> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -100,7 +102,7 @@ export function useAdminSettings(organizationId: string | null): UseAdminSetting
     } finally {
       setLoading(false);
     }
-  }, [organizationId]);
+  }, [organizationId, t]);
 
   // Set up realtime subscription
   useEffect(() => {
@@ -147,21 +149,21 @@ export function useAdminSettings(organizationId: string | null): UseAdminSetting
         if (updateError) throw updateError;
 
         setSettings((prev) => (prev ? { ...prev, ...updates } : updates));
-        toast.success('Ustawienia zostały zapisane');
+        toast.success(t('messages.settingsSaved'));
       } catch (err) {
         const error = err instanceof Error ? err : new Error('Failed to update settings');
         setError(error);
         console.error('Error updating admin settings:', error);
-        toast.error('Nie udało się zapisać ustawień');
+        toast.error(t('errors.settingsSaveFailed'));
       }
     },
-    [organizationId, settings]
+    [organizationId, settings, t]
   );
 
   const resetSettings = useCallback(() => {
     setSettings(DEFAULT_SETTINGS);
-    toast.info('Przywrócono domyślne ustawienia');
-  }, []);
+    toast.info(t('success.updated'));
+  }, [t]);
 
   return {
     settings,

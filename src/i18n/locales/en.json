@@ -399,7 +399,62 @@
     "networkError": "Network error. Please try again.",
     "unauthorized": "Unauthorized. Please log in.",
     "notFound": "Resource not found",
-    "serverError": "Server error. Please try again later."
+    "serverError": "Server error. Please try again later.",
+    "themeSaveFailed": "Failed to save theme",
+    "importFailed": "Import error",
+    "saveSendFailed": "Error saving send",
+    "processingFailed": "Processing error. Please try again.",
+    "settingsSaveFailed": "Failed to save settings",
+    "exportDataFailed": "Error during data export",
+    "sendRequestFailed": "Error sending request",
+    "createLinkFailed": "Error creating link",
+    "extendOfferFailed": "Error extending offer",
+    "processingError": "Error during processing",
+    "addClientFailed": "Error adding client",
+    "updateClientFailed": "Error updating client",
+    "sendOfferFailed": "Failed to send offer",
+    "pdfGenerationFailed": "Failed to generate PDF",
+    "microphoneAccessDenied": "Microphone access denied. Please enable microphone in browser settings.",
+    "speechRecognitionNotSupported": "Speech recognition is not supported in this browser. Please use Chrome.",
+    "invalidCredentials": "Invalid email or password",
+    "invalidEmailFormat": "Invalid email format",
+    "invalidFileType": "Invalid file type"
+  },
+  "messages": {
+    "themeSaved": "Theme saved and applied successfully",
+    "approvalLinkCreated": "Approval link created",
+    "offerExtended": "Offer validity extended for 30 days",
+    "offerApproved": "Offer approved!",
+    "settingsSaved": "Settings saved",
+    "invoiceUploaded": "Invoice uploaded",
+    "ocrCompleted": "OCR processing completed",
+    "quoteSaved": "Quote saved",
+    "quoteVersionSaved": "Quote version saved",
+    "projectCreated": "Project created",
+    "projectUpdated": "Project updated",
+    "uploading": "Uploading...",
+    "recordingStarted": "Recording started. Speak clearly..."
+  },
+  "validation": {
+    "nameRequired": "Name is required",
+    "quantityMustBePositive": "Quantity must be greater than 0",
+    "priceCannotBeNegative": "Price cannot be negative",
+    "addAtLeastOnePosition": "Add at least one position",
+    "signatureRequired": "Add signature",
+    "projectNameRequired": "Enter project name",
+    "clientRequired": "Select a client",
+    "companyNameRequired": "Enter company name"
+  },
+  "dialogs": {
+    "deleteTemplate": "Delete template?",
+    "irreversibleOperation": "This operation cannot be undone.",
+    "confirmAccountDeletion": "Are you sure you want to request deletion of your account and all data?",
+    "deleteAccountTitle": "Are you sure you want to delete your account?",
+    "deleteBiometricCredential": "Delete biometric credential?"
+  },
+  "emptyStates": {
+    "noQuotePositions": "No positions. Click \"Add Position\" or select a template.",
+    "noQuote": "No quote. Click \"Edit Quote\" to add items to the quote."
   },
   "success": {
     "saved": "Saved successfully",
