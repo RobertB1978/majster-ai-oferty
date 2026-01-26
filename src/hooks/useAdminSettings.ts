@@ -66,6 +66,7 @@ export function useAdminSettings(organizationId: string | null): UseAdminSetting
   const [settings, setSettings] = useState<Partial<AdminSystemSettings> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const subscriptionRef = useRef<any>(null);
 
   // Fetch settings from database
@@ -102,7 +103,7 @@ export function useAdminSettings(organizationId: string | null): UseAdminSetting
     } finally {
       setLoading(false);
     }
-  }, [organizationId, t]);
+  }, [organizationId]);
 
   // Set up realtime subscription
   useEffect(() => {
