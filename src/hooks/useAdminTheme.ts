@@ -46,6 +46,7 @@ export function useAdminTheme(organizationId: string | null): UseAdminThemeResul
   const [theme, setTheme] = useState<Partial<AdminThemeConfig> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const subscriptionRef = useRef<any>(null);
 
   // Fetch theme from database
