@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAdminSettings } from '@/hooks/useAdminSettings';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,87 +21,107 @@ import {
   Save,
   RefreshCw,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  Loader
 } from 'lucide-react';
-import { toast } from 'sonner';
 
-interface SystemSettings {
-  // Email
-  emailEnabled: boolean;
-  smtpHost: string;
-  smtpPort: string;
-  emailFromName: string;
-  emailFromAddress: string;
-  
-  // Features
-  registrationEnabled: boolean;
-  maintenanceMode: boolean;
-  apiEnabled: boolean;
-  aiEnabled: boolean;
-  voiceEnabled: boolean;
-  ocrEnabled: boolean;
-  
-  // Limits
-  maxClientsPerUser: number;
-  maxProjectsPerUser: number;
-  maxStoragePerUser: number;
-  sessionTimeout: number;
-  
-  // Security
-  requireEmailVerification: boolean;
-  twoFactorEnabled: boolean;
-  rateLimitRequests: number;
-  rateLimitWindow: number;
+interface DisplaySettings {
+  email_enabled: boolean;
+  smtp_host: string;
+  smtp_port: number;
+  email_from_name: string;
+  email_from_address: string;
+  registration_enabled: boolean;
+  maintenance_mode: boolean;
+  api_enabled: boolean;
+  ai_enabled: boolean;
+  voice_enabled: boolean;
+  ocr_enabled: boolean;
+  max_clients_per_user: number;
+  max_projects_per_user: number;
+  max_storage_per_user: number;
+  session_timeout_minutes: number;
+  require_email_verification: boolean;
+  two_factor_enabled: boolean;
+  rate_limit_requests: number;
+  rate_limit_window_seconds: number;
 }
 
-const defaultSettings: SystemSettings = {
-  emailEnabled: true,
-  smtpHost: '',
-  smtpPort: '587',
-  emailFromName: 'Majster.AI',
-  emailFromAddress: 'noreply@majster.ai',
-  registrationEnabled: true,
-  maintenanceMode: false,
-  apiEnabled: true,
-  aiEnabled: true,
-  voiceEnabled: true,
-  ocrEnabled: true,
-  maxClientsPerUser: 100,
-  maxProjectsPerUser: 500,
-  maxStoragePerUser: 1024,
-  sessionTimeout: 60,
-  requireEmailVerification: false,
-  twoFactorEnabled: false,
-  rateLimitRequests: 1000,
-  rateLimitWindow: 60,
-};
-
 export function AdminSystemSettings() {
-  const [settings, setSettings] = useState<SystemSettings>(() => {
-    const saved = localStorage.getItem('admin-system-settings');
-    return saved ? JSON.parse(saved) : defaultSettings;
-  });
+  const { session } = useAuth();
+  const organizationId = session?.user?.user_metadata?.organization_id;
+  const { settings: dbSettings, loading, error, updateSettings, resetSettings: resetDbSettings } = useAdminSettings(organizationId);
+  const [displaySettings, setDisplaySettings] = useState<DisplaySettings | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const updateSetting = <K extends keyof SystemSettings>(
-    key: K, 
-    value: SystemSettings[K]
+  // Initialize display settings from database
+  useEffect(() => {
+    if (dbSettings) {
+      setDisplaySettings({
+        email_enabled: dbSettings.email_enabled ?? true,
+        smtp_host: dbSettings.smtp_host ?? '',
+        smtp_port: dbSettings.smtp_port ?? 587,
+        email_from_name: dbSettings.email_from_name ?? 'Majster.AI',
+        email_from_address: dbSettings.email_from_address ?? 'noreply@majster.ai',
+        registration_enabled: dbSettings.registration_enabled ?? true,
+        maintenance_mode: dbSettings.maintenance_mode ?? false,
+        api_enabled: dbSettings.api_enabled ?? true,
+        ai_enabled: dbSettings.ai_enabled ?? true,
+        voice_enabled: dbSettings.voice_enabled ?? true,
+        ocr_enabled: dbSettings.ocr_enabled ?? true,
+        max_clients_per_user: dbSettings.max_clients_per_user ?? 1000,
+        max_projects_per_user: dbSettings.max_projects_per_user ?? 500,
+        max_storage_per_user: dbSettings.max_storage_per_user ?? 10737418240,
+        session_timeout_minutes: dbSettings.session_timeout_minutes ?? 30,
+        require_email_verification: dbSettings.require_email_verification ?? true,
+        two_factor_enabled: dbSettings.two_factor_enabled ?? false,
+        rate_limit_requests: dbSettings.rate_limit_requests ?? 100,
+        rate_limit_window_seconds: dbSettings.rate_limit_window_seconds ?? 60,
+      });
+      setHasChanges(false);
+    }
+  }, [dbSettings]);
+
+  const updateSetting = <K extends keyof DisplaySettings>(
+    key: K,
+    value: DisplaySettings[K]
   ) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+    setDisplaySettings(prev => prev ? { ...prev, [key]: value } : null);
     setHasChanges(true);
   };
 
-  const saveSettings = () => {
-    localStorage.setItem('admin-system-settings', JSON.stringify(settings));
-    setHasChanges(false);
-    toast.success('Ustawienia zapisane');
+  const saveSettings = async () => {
+    if (displaySettings) {
+      await updateSettings(displaySettings);
+      setHasChanges(false);
+    }
   };
 
   const resetSettings = () => {
-    setSettings(defaultSettings);
-    setHasChanges(true);
-    toast.info('Przywrócono domyślne ustawienia');
+    resetDbSettings();
+    setHasChanges(false);
   };
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="pt-6 flex items-center justify-center">
+          <Loader className="h-5 w-5 animate-spin" />
+          <span className="ml-2">Wczytywanie ustawień...</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error || !displaySettings) {
+    return (
+      <Card>
+        <CardContent className="pt-6 text-red-600">
+          Błąd wczytywania ustawień: {error?.message || 'Nieznany błąd'}
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -114,9 +136,9 @@ export function AdminSystemSettings() {
               Konfiguracja globalna aplikacji
             </CardDescription>
           </div>
-          {hasChanges && (
-            <Badge variant="outline" className="text-orange-600 border-orange-600">
-              Niezapisane zmiany
+          {(hasChanges || error) && (
+            <Badge variant="outline" className={`${error ? 'text-red-600 border-red-600' : 'text-orange-600 border-orange-600'}`}>
+              {error ? 'Błąd' : 'Niezapisane zmiany'}
             </Badge>
           )}
         </div>
@@ -135,21 +157,21 @@ export function AdminSystemSettings() {
             {/* Maintenance Mode */}
             <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-full ${settings.maintenanceMode ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'}`}>
-                  {settings.maintenanceMode ? <AlertTriangle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5" />}
+                <div className={`p-2 rounded-full ${displaySettings.maintenance_mode ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'}`}>
+                  {displaySettings.maintenance_mode ? <AlertTriangle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5" />}
                 </div>
                 <div>
                   <Label className="text-base">Tryb konserwacji</Label>
                   <p className="text-sm text-muted-foreground">
-                    {settings.maintenanceMode 
-                      ? 'Aplikacja niedostępna dla użytkowników' 
+                    {displaySettings.maintenance_mode
+                      ? 'Aplikacja niedostępna dla użytkowników'
                       : 'Aplikacja działa normalnie'}
                   </p>
                 </div>
               </div>
               <Switch
-                checked={settings.maintenanceMode}
-                onCheckedChange={(v) => updateSetting('maintenanceMode', v)}
+                checked={displaySettings.maintenance_mode}
+                onCheckedChange={(v) => updateSetting('maintenance_mode', v)}
               />
             </div>
 
@@ -165,8 +187,8 @@ export function AdminSystemSettings() {
                 </div>
               </div>
               <Switch
-                checked={settings.registrationEnabled}
-                onCheckedChange={(v) => updateSetting('registrationEnabled', v)}
+                checked={displaySettings.registration_enabled}
+                onCheckedChange={(v) => updateSetting('registration_enabled', v)}
               />
             </div>
 
@@ -175,8 +197,8 @@ export function AdminSystemSettings() {
               <Label>Czas sesji (minuty)</Label>
               <Input
                 type="number"
-                value={settings.sessionTimeout}
-                onChange={(e) => updateSetting('sessionTimeout', parseInt(e.target.value) || 60)}
+                value={displaySettings.session_timeout_minutes}
+                onChange={(e) => updateSetting('session_timeout_minutes', parseInt(e.target.value) || 30)}
                 min={5}
                 max={1440}
               />
@@ -198,8 +220,8 @@ export function AdminSystemSettings() {
                 </div>
               </div>
               <Switch
-                checked={settings.emailEnabled}
-                onCheckedChange={(v) => updateSetting('emailEnabled', v)}
+                checked={displaySettings.email_enabled}
+                onCheckedChange={(v) => updateSetting('email_enabled', v)}
               />
             </div>
 
@@ -207,8 +229,8 @@ export function AdminSystemSettings() {
               <div className="space-y-2">
                 <Label>Nazwa nadawcy</Label>
                 <Input
-                  value={settings.emailFromName}
-                  onChange={(e) => updateSetting('emailFromName', e.target.value)}
+                  value={displaySettings.email_from_name}
+                  onChange={(e) => updateSetting('email_from_name', e.target.value)}
                   placeholder="Majster.AI"
                 />
               </div>
@@ -216,8 +238,8 @@ export function AdminSystemSettings() {
                 <Label>Adres nadawcy</Label>
                 <Input
                   type="email"
-                  value={settings.emailFromAddress}
-                  onChange={(e) => updateSetting('emailFromAddress', e.target.value)}
+                  value={displaySettings.email_from_address}
+                  onChange={(e) => updateSetting('email_from_address', e.target.value)}
                   placeholder="noreply@majster.ai"
                 />
               </div>
@@ -233,10 +255,10 @@ export function AdminSystemSettings() {
 
           <TabsContent value="features" className="space-y-4 mt-4">
             {[
-              { key: 'apiEnabled', label: 'API publiczne', icon: Server, desc: 'Dostęp do API dla zewnętrznych integracji' },
-              { key: 'aiEnabled', label: 'Funkcje AI', icon: Zap, desc: 'Sugestie AI, analiza zdjęć, generowanie wycen' },
-              { key: 'voiceEnabled', label: 'Voice-to-Quote', icon: Bell, desc: 'Dyktowanie pozycji wyceny głosem' },
-              { key: 'ocrEnabled', label: 'OCR Faktur', icon: HardDrive, desc: 'Automatyczne rozpoznawanie faktur' },
+              { key: 'api_enabled', label: 'API publiczne', icon: Server, desc: 'Dostęp do API dla zewnętrznych integracji' },
+              { key: 'ai_enabled', label: 'Funkcje AI', icon: Zap, desc: 'Sugestie AI, analiza zdjęć, generowanie wycen' },
+              { key: 'voice_enabled', label: 'Voice-to-Quote', icon: Bell, desc: 'Dyktowanie pozycji wyceny głosem' },
+              { key: 'ocr_enabled', label: 'OCR Faktur', icon: HardDrive, desc: 'Automatyczne rozpoznawanie faktur' },
             ].map(({ key, label, icon: Icon, desc }) => (
               <div key={key} className="flex items-center justify-between p-4 rounded-lg border">
                 <div className="flex items-center gap-3">
@@ -247,8 +269,8 @@ export function AdminSystemSettings() {
                   </div>
                 </div>
                 <Switch
-                  checked={settings[key as keyof SystemSettings] as boolean}
-                  onCheckedChange={(v) => updateSetting(key as keyof SystemSettings, v)}
+                  checked={displaySettings[key as keyof DisplaySettings] as boolean}
+                  onCheckedChange={(v) => updateSetting(key as keyof DisplaySettings, v)}
                 />
               </div>
             ))}
@@ -260,8 +282,8 @@ export function AdminSystemSettings() {
                 <Label>Max klientów na użytkownika</Label>
                 <Input
                   type="number"
-                  value={settings.maxClientsPerUser}
-                  onChange={(e) => updateSetting('maxClientsPerUser', parseInt(e.target.value) || 100)}
+                  value={displaySettings.max_clients_per_user}
+                  onChange={(e) => updateSetting('max_clients_per_user', parseInt(e.target.value) || 1000)}
                   min={1}
                 />
               </div>
@@ -269,18 +291,18 @@ export function AdminSystemSettings() {
                 <Label>Max projektów na użytkownika</Label>
                 <Input
                   type="number"
-                  value={settings.maxProjectsPerUser}
-                  onChange={(e) => updateSetting('maxProjectsPerUser', parseInt(e.target.value) || 500)}
+                  value={displaySettings.max_projects_per_user}
+                  onChange={(e) => updateSetting('max_projects_per_user', parseInt(e.target.value) || 500)}
                   min={1}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Max storage (MB)</Label>
+                <Label>Max storage (GB)</Label>
                 <Input
                   type="number"
-                  value={settings.maxStoragePerUser}
-                  onChange={(e) => updateSetting('maxStoragePerUser', parseInt(e.target.value) || 1024)}
-                  min={10}
+                  value={Math.round(displaySettings.max_storage_per_user / 1073741824)}
+                  onChange={(e) => updateSetting('max_storage_per_user', parseInt(e.target.value) * 1073741824 || 10737418240)}
+                  min={1}
                 />
               </div>
             </div>
@@ -298,8 +320,8 @@ export function AdminSystemSettings() {
                 </div>
               </div>
               <Switch
-                checked={settings.requireEmailVerification}
-                onCheckedChange={(v) => updateSetting('requireEmailVerification', v)}
+                checked={displaySettings.require_email_verification}
+                onCheckedChange={(v) => updateSetting('require_email_verification', v)}
               />
             </div>
 
@@ -314,8 +336,8 @@ export function AdminSystemSettings() {
                 </div>
               </div>
               <Switch
-                checked={settings.twoFactorEnabled}
-                onCheckedChange={(v) => updateSetting('twoFactorEnabled', v)}
+                checked={displaySettings.two_factor_enabled}
+                onCheckedChange={(v) => updateSetting('two_factor_enabled', v)}
               />
             </div>
 
@@ -324,8 +346,8 @@ export function AdminSystemSettings() {
                 <Label>Rate limit (requestów)</Label>
                 <Input
                   type="number"
-                  value={settings.rateLimitRequests}
-                  onChange={(e) => updateSetting('rateLimitRequests', parseInt(e.target.value) || 1000)}
+                  value={displaySettings.rate_limit_requests}
+                  onChange={(e) => updateSetting('rate_limit_requests', parseInt(e.target.value) || 100)}
                   min={10}
                 />
               </div>
@@ -333,8 +355,8 @@ export function AdminSystemSettings() {
                 <Label>Okno czasowe (sekundy)</Label>
                 <Input
                   type="number"
-                  value={settings.rateLimitWindow}
-                  onChange={(e) => updateSetting('rateLimitWindow', parseInt(e.target.value) || 60)}
+                  value={displaySettings.rate_limit_window_seconds}
+                  onChange={(e) => updateSetting('rate_limit_window_seconds', parseInt(e.target.value) || 60)}
                   min={1}
                 />
               </div>
