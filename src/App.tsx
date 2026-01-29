@@ -45,6 +45,7 @@ const Finance = lazy(() => import("./pages/Finance"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Billing = lazy(() => import("./pages/Billing"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Invoices = lazy(() => import("./pages/Invoices"));
 const OfferApproval = lazy(() => import("./pages/OfferApproval"));
 
 // Legal pages (lazy - rarely visited)
@@ -120,6 +121,7 @@ const App = () => (
                     <Route path="/marketplace" element={<Marketplace />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/billing" element={<Billing />} />
+                    <Route path="/invoices" element={<Invoices />} />
                     <Route path="/admin" element={<Admin />} />
                   </Route>
 

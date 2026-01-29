@@ -6,8 +6,8 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '../integrations/supabaseClient';
-import { useToast } from '../hooks/useToast';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from './use-toast';
 
 import type {
   Invoice,

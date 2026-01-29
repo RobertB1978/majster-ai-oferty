@@ -1,21 +1,22 @@
 import { useTranslation } from 'react-i18next';
 import { NavLink } from '@/components/NavLink';
 import { 
-  LayoutDashboard, 
-  Users, 
-  FolderKanban, 
-  Menu, 
-  X, 
-  Building2, 
-  Package, 
-  Calendar, 
-  BarChart3, 
-  UsersRound, 
-  TrendingUp, 
-  Store, 
+  LayoutDashboard,
+  Users,
+  FolderKanban,
+  Menu,
+  X,
+  Building2,
+  Package,
+  Calendar,
+  BarChart3,
+  UsersRound,
+  TrendingUp,
+  Store,
   Settings,
   CreditCard,
-  ChevronDown
+  ChevronDown,
+  FileText
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,7 @@ export function Navigation() {
     { to: '/calendar', label: t('nav.calendar'), icon: Calendar },
     { to: '/team', label: t('nav.team'), icon: UsersRound },
     { to: '/finance', label: t('nav.finance'), icon: TrendingUp },
+    { to: '/invoices', label: t('nav.invoices'), icon: FileText },
     { to: '/marketplace', label: t('nav.marketplace'), icon: Store },
     { to: '/analytics', label: t('nav.analytics'), icon: BarChart3 },
     { to: '/templates', label: t('nav.templates'), icon: Package },
