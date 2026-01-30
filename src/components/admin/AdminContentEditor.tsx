@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Loader } from 'lucide-react';
 import {
   FileText,
   Home,
@@ -16,6 +17,8 @@ import {
   Link2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAdminContentConfig } from '@/hooks/useAdminContentConfig';
 
 interface ContentConfig {
   // Landing Page
@@ -71,24 +74,78 @@ const defaultContent: ContentConfig = {
 };
 
 export function AdminContentEditor() {
-  const [content, setContent] = useState<ContentConfig>(() => {
-    const saved = localStorage.getItem('admin-content-config');
-    return saved ? JSON.parse(saved) : defaultContent;
-  });
+  const { session } = useAuth();
+  const organizationId = session?.user?.user_metadata?.organization_id;
+  const { contentConfig: dbContent, isLoading, error, updateContentConfig, isUpdating } = useAdminContentConfig(organizationId);
+
+  const [content, setContent] = useState<ContentConfig>(defaultContent);
   const [hasChanges, setHasChanges] = useState(false);
 
+  // Sync from database on load
+  useEffect(() => {
+    if (dbContent) {
+      setContent({
+        heroTitle: dbContent.hero_title || defaultContent.heroTitle,
+        heroSubtitle: dbContent.hero_subtitle || defaultContent.heroSubtitle,
+        heroCtaText: dbContent.hero_cta_text || defaultContent.heroCtaText,
+        heroCtaLink: dbContent.hero_cta_link || defaultContent.heroCtaLink,
+        feature1Title: dbContent.feature1_title || defaultContent.feature1Title,
+        feature1Desc: dbContent.feature1_desc || defaultContent.feature1Desc,
+        feature2Title: dbContent.feature2_title || defaultContent.feature2Title,
+        feature2Desc: dbContent.feature2_desc || defaultContent.feature2Desc,
+        feature3Title: dbContent.feature3_title || defaultContent.feature3Title,
+        feature3Desc: dbContent.feature3_desc || defaultContent.feature3Desc,
+        footerCompanyName: dbContent.footer_company_name || defaultContent.footerCompanyName,
+        footerCopyright: dbContent.footer_copyright || defaultContent.footerCopyright,
+        footerDescription: dbContent.footer_description || defaultContent.footerDescription,
+        supportEmail: dbContent.support_email || defaultContent.supportEmail,
+        phoneNumber: dbContent.phone_number || defaultContent.phoneNumber,
+        address: dbContent.address || defaultContent.address,
+        metaTitle: dbContent.meta_title || defaultContent.metaTitle,
+        metaDescription: dbContent.meta_description || defaultContent.metaDescription,
+        ogImage: dbContent.og_image || defaultContent.ogImage,
+      });
+      setHasChanges(false);
+    }
+  }, [dbContent]);
+
   const updateContent = <K extends keyof ContentConfig>(
-    key: K, 
+    key: K,
     value: ContentConfig[K]
   ) => {
     setContent(prev => ({ ...prev, [key]: value }));
     setHasChanges(true);
   };
 
-  const saveContent = () => {
-    localStorage.setItem('admin-content-config', JSON.stringify(content));
-    setHasChanges(false);
-    toast.success('Treści zapisane');
+  const saveContent = async () => {
+    try {
+      // Convert camelCase to snake_case for database
+      await updateContentConfig({
+        hero_title: content.heroTitle,
+        hero_subtitle: content.heroSubtitle,
+        hero_cta_text: content.heroCtaText,
+        hero_cta_link: content.heroCtaLink,
+        feature1_title: content.feature1Title,
+        feature1_desc: content.feature1Desc,
+        feature2_title: content.feature2Title,
+        feature2_desc: content.feature2Desc,
+        feature3_title: content.feature3Title,
+        feature3_desc: content.feature3Desc,
+        footer_company_name: content.footerCompanyName,
+        footer_copyright: content.footerCopyright,
+        footer_description: content.footerDescription,
+        support_email: content.supportEmail,
+        phone_number: content.phoneNumber,
+        address: content.address,
+        meta_title: content.metaTitle,
+        meta_description: content.metaDescription,
+        og_image: content.ogImage,
+      } as any);
+      setHasChanges(false);
+      toast.success('Treści zapisane w bazie danych');
+    } catch (err) {
+      toast.error('Błąd przy zapisywaniu treści');
+    }
   };
 
   const resetContent = () => {
@@ -96,6 +153,27 @@ export function AdminContentEditor() {
     setHasChanges(true);
     toast.info('Przywrócono domyślne treści');
   };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="pt-6 flex items-center justify-center">
+          <Loader className="h-5 w-5 animate-spin" />
+          <span className="ml-2">Wczytywanie treści...</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="pt-6 text-red-600">
+          Błąd wczytywania treści: {error.message}
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -286,18 +364,18 @@ export function AdminContentEditor() {
 
         {/* Actions */}
         <div className="flex items-center justify-between mt-6 pt-4 border-t">
-          <Button variant="outline" onClick={resetContent}>
+          <Button variant="outline" onClick={resetContent} disabled={isUpdating}>
             <RotateCcw className="h-4 w-4 mr-2" />
             Resetuj
           </Button>
           <div className="flex gap-2">
-            <Button variant="outline">
+            <Button variant="outline" disabled={isUpdating}>
               <Eye className="h-4 w-4 mr-2" />
               Podgląd
             </Button>
-            <Button onClick={saveContent} disabled={!hasChanges}>
-              <Save className="h-4 w-4 mr-2" />
-              Zapisz treści
+            <Button onClick={saveContent} disabled={!hasChanges || isUpdating}>
+              {isUpdating ? <Loader className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+              {isUpdating ? 'Zapisywanie...' : 'Zapisz treści'}
             </Button>
           </div>
         </div>
