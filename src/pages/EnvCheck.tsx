@@ -2,14 +2,46 @@
  * Environment Variables Diagnostic Page
  *
  * This page helps diagnose white screen issues by showing
- * which environment variables are missing or misconfigured.
+ * which environment variables are missing or misconfigured,
+ * and testing Supabase connectivity.
  */
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, Loader } from 'lucide-react';
+import { checkSupabaseHealth } from '@/integrations/supabase/client';
+
+interface SupabaseHealthStatus {
+  isConnected: boolean;
+  configurationValid: boolean;
+  tablesAccessible: { [key: string]: boolean };
+  errors: string[];
+  loading: boolean;
+}
 
 export default function EnvCheck() {
+  const [supabaseHealth, setSupabaseHealth] = useState<SupabaseHealthStatus>({
+    isConnected: false,
+    configurationValid: false,
+    tablesAccessible: {},
+    errors: [],
+    loading: true,
+  });
+
+  useEffect(() => {
+    checkSupabaseHealth().then(health => {
+      setSupabaseHealth({ ...health, loading: false });
+    }).catch(err => {
+      setSupabaseHealth({
+        isConnected: false,
+        configurationValid: false,
+        tablesAccessible: {},
+        errors: [err instanceof Error ? err.message : 'Unknown error checking Supabase'],
+        loading: false,
+      });
+    });
+  }, []);
   const checks = [
     {
       name: 'VITE_SUPABASE_URL',
@@ -166,6 +198,75 @@ export default function EnvCheck() {
                 );
               })}
             </div>
+
+            {/* Supabase Health Check */}
+            {hasAllRequired && (
+              <div className="space-y-3">
+                <h3 className="font-bold text-lg">Supabase Health Check:</h3>
+                <div className={`p-4 rounded-lg border-2 ${
+                  supabaseHealth.loading
+                    ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950'
+                    : supabaseHealth.isConnected
+                    ? 'border-green-500 bg-green-50 dark:bg-green-950'
+                    : 'border-red-500 bg-red-50 dark:bg-red-950'
+                }`}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        {supabaseHealth.loading ? (
+                          <Loader className="h-5 w-5 text-yellow-500 animate-spin" />
+                        ) : supabaseHealth.isConnected ? (
+                          <CheckCircle className="h-5 w-5 text-green-500" />
+                        ) : (
+                          <XCircle className="h-5 w-5 text-red-500" />
+                        )}
+                        <span className="font-bold">
+                          {supabaseHealth.loading
+                            ? 'Testing Supabase Connection...'
+                            : supabaseHealth.isConnected
+                            ? 'Supabase Connected'
+                            : 'Supabase Connection Failed'}
+                        </span>
+                      </div>
+                      {!supabaseHealth.loading && (
+                        <div className="space-y-2 mt-3">
+                          <div className="text-sm">
+                            <strong>Configuration Valid:</strong> {supabaseHealth.configurationValid ? '✅' : '❌'}
+                          </div>
+                          {Object.keys(supabaseHealth.tablesAccessible).length > 0 && (
+                            <div>
+                              <strong className="text-sm">Table Access:</strong>
+                              <div className="grid grid-cols-2 gap-2 mt-2">
+                                {Object.entries(supabaseHealth.tablesAccessible).map(([table, accessible]) => (
+                                  <div key={table} className="text-sm flex items-center gap-2">
+                                    {accessible ? (
+                                      <CheckCircle className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                      <XCircle className="h-4 w-4 text-red-500" />
+                                    )}
+                                    <code className="text-xs">{table}</code>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {supabaseHealth.errors.length > 0 && (
+                            <div>
+                              <strong className="text-sm text-red-600 dark:text-red-400">Errors:</strong>
+                              <ul className="list-disc list-inside space-y-1 text-xs text-red-600 dark:text-red-400 mt-1">
+                                {supabaseHealth.errors.map((err, idx) => (
+                                  <li key={idx}>{err}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Fix Instructions */}
             {!hasAllRequired && (

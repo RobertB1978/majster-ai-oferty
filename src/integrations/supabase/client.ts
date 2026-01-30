@@ -128,3 +128,65 @@ export const supabase = validation.isValid
       }
     })
   : (mockSupabase as unknown as ReturnType<typeof createClient>);
+
+/**
+ * Health check for Supabase connectivity and essential tables
+ * Returns status of connection and which tables are accessible
+ */
+export async function checkSupabaseHealth(): Promise<{
+  isConnected: boolean;
+  configurationValid: boolean;
+  tablesAccessible: { [key: string]: boolean };
+  errors: string[];
+}> {
+  const errors: string[] = [];
+  const tablesAccessible: { [key: string]: boolean } = {};
+
+  // Check configuration
+  if (!validation.isValid) {
+    errors.push('Supabase configuration is invalid');
+    return {
+      isConnected: false,
+      configurationValid: false,
+      tablesAccessible,
+      errors
+    };
+  }
+
+  // Try to connect and check essential tables
+  const essentialTables = [
+    'users',
+    'user_roles',
+    'team_members',
+    'team_locations',
+    'subcontractors',
+    'projects',
+    'quotes'
+  ];
+
+  for (const table of essentialTables) {
+    try {
+      const { error } = await supabase
+        .from(table)
+        .select('1')
+        .limit(1);
+
+      tablesAccessible[table] = !error;
+      if (error) {
+        errors.push(`Table '${table}' not accessible: ${error.message}`);
+      }
+    } catch (err) {
+      tablesAccessible[table] = false;
+      errors.push(`Table '${table}' check failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    }
+  }
+
+  const isConnected = Object.values(tablesAccessible).some(v => v);
+
+  return {
+    isConnected,
+    configurationValid: validation.isValid,
+    tablesAccessible,
+    errors
+  };
+}
