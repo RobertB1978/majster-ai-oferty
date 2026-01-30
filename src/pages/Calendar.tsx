@@ -186,13 +186,16 @@ export default function Calendar() {
       setIsEventDialogOpen(false);
       setEventData(initialEventData);
       setEditingEvent(null);
+      toast.success('Wydarzenie zapisane!');
     } catch (error) {
-      console.error('Error saving event:', error);
+      logger.error('Error saving event:', error);
+      const message = error instanceof Error ? error.message : 'Nieznany błąd';
+      toast.error('Błąd zapisywania: ' + message);
     }
   };
 
   const handleDeleteEvent = async (_eventId: string) => {
-    await deleteEvent.mutateAsync(eventId);
+    await deleteEvent.mutateAsync(_eventId);
   };
 
   const getNavigationTitle = () => {

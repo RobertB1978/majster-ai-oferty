@@ -24,9 +24,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { logger } from '@/lib/logger';
 import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
-import { logger } from '@/lib/logger';
 import { buildOfferData } from '@/lib/offerDataBuilder';
-import { logger } from '@/lib/logger';
 import { generateOfferPdf, uploadOfferPdf } from '@/lib/offerPdfGenerator';
 
 interface PdfPreviewPanelProps {

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 import { normalizeProfileData } from '@/lib/dataValidation';
 
@@ -92,7 +93,7 @@ export function useUpdateProfile() {
       toast.success('Profil firmy został zapisany');
     },
     onError: (error) => {
-      console.error('Error updating profile:', error);
+      logger.error('Error updating profile:', error);
       toast.error('Nie udało się zapisać profilu');
     },
   });
@@ -142,7 +143,7 @@ export function useUploadLogo() {
       toast.success('Logo zostało przesłane');
     },
     onError: (error) => {
-      console.error('Error uploading logo:', error);
+      logger.error('Error uploading logo:', error);
       const message = error instanceof Error ? error.message : 'Nie udało się przesłać logo';
       toast.error(message);
     },

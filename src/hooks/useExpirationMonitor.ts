@@ -31,15 +31,17 @@ export function useExpirationMonitor() {
 
   // Fetch offers expiring within 7 days
   const { data: expiringOffers } = useQuery({
-    queryKey: ['expiring-offers'],
+    queryKey: ['expiring-offers', user?.id],
     queryFn: async () => {
+      if (!user?.id) throw new Error('User not authenticated');
+
       const sevenDaysFromNow = new Date();
       sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
 
       const { data, error } = await supabase
         .from('offer_approvals')
         .select('id, project_id, client_name, client_email, expires_at, created_at')
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .eq('status', 'pending')
         .lte('expires_at', sevenDaysFromNow.toISOString())
         .gte('expires_at', new Date().toISOString())
@@ -48,36 +50,40 @@ export function useExpirationMonitor() {
       if (error) throw error;
       return data as ExpiringOffer[];
     },
-    enabled: !!user,
+    enabled: !!user?.id,
     refetchInterval: 1000 * 60 * 60, // Refetch every hour
   });
 
   // Fetch subscription status
   const { data: subscription } = useQuery({
-    queryKey: ['subscription-expiration'],
+    queryKey: ['subscription-expiration', user?.id],
     queryFn: async () => {
+      if (!user?.id) throw new Error('User not authenticated');
+
       const { data, error } = await supabase
         .from('user_subscriptions')
         .select('id, plan_id, current_period_end, status')
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (error) throw error;
       return data as ExpiringSubscription | null;
     },
-    enabled: !!user,
+    enabled: !!user?.id,
     refetchInterval: 1000 * 60 * 60, // Refetch every hour
   });
 
   // Check for notification already sent today
   const wasNotificationSentToday = useCallback(async (title: string): Promise<boolean> => {
+    if (!user?.id) return false;
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const { data } = await supabase
       .from('notifications')
       .select('id')
-      .eq('user_id', user!.id)
+      .eq('user_id', user.id)
       .eq('title', title)
       .gte('created_at', today.toISOString())
       .limit(1);

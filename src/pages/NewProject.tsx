@@ -73,46 +73,51 @@ export default function NewProject() {
 
   // Initialize speech recognition
   useEffect(() => {
-    const SpeechRecognition = (window as unknown).SpeechRecognition || (window as unknown).webkitSpeechRecognition;
-    let recognitionInstance: unknown = null;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-    if (SpeechRecognition) {
-      recognitionInstance = new SpeechRecognition();
-      recognitionInstance.lang = 'pl-PL';
-      recognitionInstance.continuous = true;
-      recognitionInstance.interimResults = true;
+    if (!SpeechRecognition) {
+      return;
+    }
 
-      recognitionInstance.onresult = (event: unknown) => {
-        let finalTranscript = '';
+    const recognitionInstance = new SpeechRecognition() as any;
+    recognitionInstance.lang = 'pl-PL';
+    recognitionInstance.continuous = true;
+    recognitionInstance.interimResults = true;
 
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const result = event.results[i];
+    recognitionInstance.onresult = (event: any) => {
+      let finalTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result && result[0]) {
           if (result.isFinal) {
             finalTranscript += result[0].transcript;
           } else {
             const _interimTranscript = result[0].transcript;
           }
         }
+      }
 
-        if (finalTranscript) {
-          setTranscript(prev => prev + ' ' + finalTranscript);
-        }
-      };
+      if (finalTranscript) {
+        setTranscript(prev => prev + ' ' + finalTranscript);
+      }
+    };
 
-      recognitionInstance.onerror = (event: unknown) => {
+    recognitionInstance.onerror = (event: any) => {
+      if (event && event.error) {
         logger.error('Speech recognition error:', event.error);
         setIsListening(false);
         if (event.error === 'not-allowed') {
           toast.error('Brak dostępu do mikrofonu. Włącz mikrofon w ustawieniach przeglądarki.');
         }
-      };
+      }
+    };
 
-      recognitionInstance.onend = () => {
-        setIsListening(false);
-      };
+    recognitionInstance.onend = () => {
+      setIsListening(false);
+    };
 
-      setRecognition(recognitionInstance);
-    }
+    setRecognition(recognitionInstance);
 
     return () => {
       if (recognitionInstance) {
