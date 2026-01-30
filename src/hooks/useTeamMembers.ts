@@ -32,16 +32,28 @@ export function useTeamMembers() {
   return useQuery({
     queryKey: ['team_members'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('team_members')
-        .select('*')
-        .eq('owner_user_id', user!.id)
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('team_members')
+          .select('*')
+          .eq('owner_user_id', user!.id)
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data as TeamMember[];
+        if (error) {
+          // Table might not exist or RLS blocks access - return empty array
+          console.warn('Could not fetch team members:', error.message);
+          return [] as TeamMember[];
+        }
+        return data as TeamMember[];
+      } catch (err) {
+        // Network error or other issue - return empty array instead of crashing
+        console.error('Error fetching team members:', err);
+        return [] as TeamMember[];
+      }
     },
     enabled: !!user,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -121,21 +133,33 @@ export function useTeamLocations(projectId?: string) {
   return useQuery({
     queryKey: ['team_locations', projectId],
     queryFn: async () => {
-      let query = supabase
-        .from('team_locations')
-        .select('*, team_members(*)')
-        .eq('user_id', user!.id)
-        .order('recorded_at', { ascending: false });
+      try {
+        let query = supabase
+          .from('team_locations')
+          .select('*, team_members(*)')
+          .eq('user_id', user!.id)
+          .order('recorded_at', { ascending: false });
 
-      if (projectId) {
-        query = query.eq('project_id', projectId);
+        if (projectId) {
+          query = query.eq('project_id', projectId);
+        }
+
+        const { data, error } = await query.limit(100);
+        if (error) {
+          // Table might not exist or RLS blocks access - return empty array
+          console.warn('Could not fetch team locations:', error.message);
+          return [];
+        }
+        return data;
+      } catch (err) {
+        // Network error or other issue - return empty array instead of crashing
+        console.error('Error fetching team locations:', err);
+        return [];
       }
-
-      const { data, error } = await query.limit(100);
-      if (error) throw error;
-      return data;
     },
     enabled: !!user,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 }
 

@@ -25,7 +25,7 @@ export function TopBar() {
   const { user, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { isAdmin, isModerator } = useAdminRole();
+  const { isAdmin, isModerator, isError: adminRoleError } = useAdminRole();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme');
@@ -109,8 +109,8 @@ export function TopBar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Admin Panel Access */}
-            {(isAdmin || isModerator) && (
+            {/* Admin Panel Access - only show if user has roles and no error */}
+            {!adminRoleError && (isAdmin || isModerator) && (
               <Button
                 variant="ghost"
                 size="icon"
