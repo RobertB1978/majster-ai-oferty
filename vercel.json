@@ -66,5 +66,8 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "buildCache": {
+    "paths": ["node_modules/**"]
+  }
 }
