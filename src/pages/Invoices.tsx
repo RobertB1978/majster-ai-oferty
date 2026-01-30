@@ -32,12 +32,12 @@ export default function InvoicesPage() {
 
   const handleSendEmail = (invoiceId: string) => {
     // TODO: Open send email modal
-    console.log('Send email for invoice:', invoiceId);
+    console.warn('Send email for invoice:', invoiceId);
   };
 
   const handleRecordPayment = (invoiceId: string) => {
     // TODO: Open payment recording modal
-    console.log('Record payment for invoice:', invoiceId);
+    console.warn('Record payment for invoice:', invoiceId);
   };
 
   return (

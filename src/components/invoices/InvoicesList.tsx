@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, FileText, Send, Download, Trash2, Edit, Eye } from 'lucide-react';
+import { Plus, Send, Download, Trash2, Edit, Eye } from 'lucide-react';
 import { useInvoices } from '../../hooks/useInvoices';
 import { useDeleteInvoice } from '../../hooks/useInvoices';
 import {
@@ -122,7 +122,7 @@ export function InvoicesList({
           onChange={e => setSearchTerm(e.target.value)}
           className="w-64"
         />
-        <Select value={statusFilter} onValueChange={v => setStatusFilter(v as any)}>
+        <Select value={statusFilter} onValueChange={v => setStatusFilter(v as InvoiceStatus | 'all')}>
           <SelectTrigger className="w-40">
             <SelectValue placeholder={t('labels.status', 'Status')} />
           </SelectTrigger>
@@ -135,7 +135,7 @@ export function InvoicesList({
           </SelectContent>
         </Select>
 
-        <Select value={paymentFilter} onValueChange={v => setPaymentFilter(v as any)}>
+        <Select value={paymentFilter} onValueChange={v => setPaymentFilter(v as PaymentStatus | 'all')}>
           <SelectTrigger className="w-40">
             <SelectValue placeholder={t('labels.paymentStatus', 'Płatność')} />
           </SelectTrigger>

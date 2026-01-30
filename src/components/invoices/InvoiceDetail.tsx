@@ -3,7 +3,6 @@
  * Display detailed view of a single invoice with payment tracking
  */
 
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Send, Download, Plus } from 'lucide-react';
 import { useInvoice } from '../../hooks/useInvoices';

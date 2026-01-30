@@ -299,7 +299,7 @@ export function generateInvoiceNumberSequence(
   prefix: string = 'FV'
 ): string[] {
   const numbers: string[] = [];
-  let year = startYear;
+  const year = startYear;
   let sequence = startSequence;
 
   for (let i = 0; i < count; i++) {
@@ -338,7 +338,7 @@ export function getSequenceFromInvoiceNumber(invoiceNumber: string): number | nu
  * @param prefix - Prefix filter
  * @returns Next sequence number (based on result + 1)
  */
-export function getNextSequenceFromMaxFound(maxSequence: number | null, year: number): number {
+export function getNextSequenceFromMaxFound(maxSequence: number | null, _year: number): number {
   if (!maxSequence) {
     return 1;
   }

@@ -184,7 +184,7 @@ serve(async (req: Request) => {
       return new Response('Method not allowed', { status: 405 });
     }
 
-    const { invoiceId, clientEmail, subject, message, includePdf } =
+    const { invoiceId, clientEmail, subject, message, includePdf: _includePdf } =
       (await req.json()) as SendInvoiceEmailRequest;
 
     if (!invoiceId || !clientEmail) {

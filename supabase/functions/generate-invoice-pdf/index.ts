@@ -95,7 +95,7 @@ function generateInvoiceHTML(invoice: InvoiceData): string {
     </div>
   `;
 
-  const lineItemsHTML = invoice.line_items
+  const _lineItemsHTML = invoice.line_items
     .map(
       (item) => `
     <tr>
@@ -404,7 +404,7 @@ serve(async (req: Request) => {
       return new Response('Method not allowed', { status: 405 });
     }
 
-    const { invoiceId, template = 'standard' } = (await req.json()) as GenerateInvoicePdfRequest;
+    const { invoiceId, template: _template = 'standard' } = (await req.json()) as GenerateInvoicePdfRequest;
 
     if (!invoiceId) {
       return new Response(JSON.stringify({ error: 'invoiceId is required' }), {
