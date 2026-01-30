@@ -8,31 +8,35 @@ interface BiometricCredential {
   publicKey?: string;
 }
 
-const CREDENTIALS_STORAGE_KEY = 'majster_biometric_credentials';
+// Session-based in-memory storage (no persistence to avoid XSS risk)
+// Credentials are cleared on page refresh or logout
+let sessionCredentials: BiometricCredential[] = [];
 
 function getStoredCredentials(): BiometricCredential[] {
-  try {
-    const stored = localStorage.getItem(CREDENTIALS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+  return sessionCredentials;
 }
 
 function storeCredential(credential: BiometricCredential) {
-  const credentials = getStoredCredentials();
-  const existing = credentials.findIndex(c => c.email === credential.email);
+  const existing = sessionCredentials.findIndex(c => c.email === credential.email);
   if (existing >= 0) {
-    credentials[existing] = credential;
+    sessionCredentials[existing] = credential;
   } else {
-    credentials.push(credential);
+    sessionCredentials.push(credential);
   }
-  localStorage.setItem(CREDENTIALS_STORAGE_KEY, JSON.stringify(credentials));
 }
 
 function removeCredential(email: string) {
-  const credentials = getStoredCredentials().filter(c => c.email !== email);
-  localStorage.setItem(CREDENTIALS_STORAGE_KEY, JSON.stringify(credentials));
+  sessionCredentials = sessionCredentials.filter(c => c.email !== email);
+}
+
+/**
+ * Clear all biometric credentials from session.
+ * Called on logout to ensure credentials are not persisted.
+ * @since 2026-01-30 - Security fix: moved from localStorage to in-memory
+ */
+export function clearBiometricCredentials() {
+  sessionCredentials = [];
+  logger.log('Biometric credentials cleared from session');
 }
 
 // Helper to get the RP ID based on current environment

@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { clearBiometricCredentials } from '@/hooks/useBiometricAuth';
 
 interface AuthContextType {
   user: User | null;
@@ -116,6 +117,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    // Clear biometric credentials from session (security: prevent XSS access via localStorage)
+    clearBiometricCredentials();
     await supabase.auth.signOut();
   };
 
