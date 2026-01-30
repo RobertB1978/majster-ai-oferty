@@ -14,8 +14,6 @@ type CreationMode = 'idle' | 'voice' | 'ai' | 'manual';
 export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps) {
   const navigate = useNavigate();
   const [mode, setMode] = useState<CreationMode>('idle');
-  const [_isRecording, _setIsRecording] = useState(false);
-  const [isProcessing, _setIsProcessing] = useState(false);
 
   const handleVoiceClick = () => {
     setMode('voice');
@@ -93,7 +91,7 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
           <button
             key={btn.id}
             onClick={btn.onClick}
-            disabled={isProcessing}
+            disabled={mode !== 'idle'}
             className={cn(
               "group relative flex flex-col items-center justify-center",
               "aspect-square rounded-full",

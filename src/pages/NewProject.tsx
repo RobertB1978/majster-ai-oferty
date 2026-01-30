@@ -28,6 +28,37 @@ import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
 
+// Type definitions for Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: {
+    length: number;
+    [index: number]: {
+      isFinal: boolean;
+      [index: number]: { transcript: string };
+    };
+  };
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognitionInstance {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
+
+
 type CreationMode = 'voice' | 'ai' | 'manual';
 
 interface VoiceQuoteResult {
@@ -73,18 +104,21 @@ export default function NewProject() {
 
   // Initialize speech recognition
   useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognitionAPI = (
+      (window as Window & { SpeechRecognition?: SpeechRecognitionConstructor }).SpeechRecognition ||
+      (window as Window & { webkitSpeechRecognition?: SpeechRecognitionConstructor }).webkitSpeechRecognition
+    ) as SpeechRecognitionConstructor | undefined;
 
-    if (!SpeechRecognition) {
+    if (!SpeechRecognitionAPI) {
       return;
     }
 
-    const recognitionInstance = new SpeechRecognition() as any;
+    const recognitionInstance = new SpeechRecognitionAPI();
     recognitionInstance.lang = 'pl-PL';
     recognitionInstance.continuous = true;
     recognitionInstance.interimResults = true;
 
-    recognitionInstance.onresult = (event: any) => {
+    recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
       let finalTranscript = '';
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -92,8 +126,6 @@ export default function NewProject() {
         if (result && result[0]) {
           if (result.isFinal) {
             finalTranscript += result[0].transcript;
-          } else {
-            const _interimTranscript = result[0].transcript;
           }
         }
       }
@@ -103,7 +135,7 @@ export default function NewProject() {
       }
     };
 
-    recognitionInstance.onerror = (event: any) => {
+    recognitionInstance.onerror = (event: SpeechRecognitionErrorEvent) => {
       if (event && event.error) {
         logger.error('Speech recognition error:', event.error);
         setIsListening(false);
