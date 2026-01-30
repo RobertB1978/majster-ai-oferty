@@ -63,7 +63,7 @@ export function DeleteAccountSection() {
       // Przekieruj do strony głównej
       navigate('/login');
     } catch (error: unknown) {
-      console.error('Error deleting account:', error);
+      logger.error('Error deleting account:', error);
       toast.error('Błąd przy usuwaniu konta', {
         description: error.message || 'Spróbuj ponownie później',
       });

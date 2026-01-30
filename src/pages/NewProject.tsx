@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
 
 type CreationMode = 'voice' | 'ai' | 'manual';
@@ -73,12 +74,14 @@ export default function NewProject() {
   // Initialize speech recognition
   useEffect(() => {
     const SpeechRecognition = (window as unknown).SpeechRecognition || (window as unknown).webkitSpeechRecognition;
+    let recognitionInstance: unknown = null;
+
     if (SpeechRecognition) {
-      const recognitionInstance = new SpeechRecognition();
+      recognitionInstance = new SpeechRecognition();
       recognitionInstance.lang = 'pl-PL';
       recognitionInstance.continuous = true;
       recognitionInstance.interimResults = true;
-      
+
       recognitionInstance.onresult = (event: unknown) => {
         let finalTranscript = '';
 
@@ -90,30 +93,30 @@ export default function NewProject() {
             const _interimTranscript = result[0].transcript;
           }
         }
-        
+
         if (finalTranscript) {
           setTranscript(prev => prev + ' ' + finalTranscript);
         }
       };
-      
+
       recognitionInstance.onerror = (event: unknown) => {
-        console.error('Speech recognition error:', event.error);
+        logger.error('Speech recognition error:', event.error);
         setIsListening(false);
         if (event.error === 'not-allowed') {
           toast.error('Brak dostępu do mikrofonu. Włącz mikrofon w ustawieniach przeglądarki.');
         }
       };
-      
+
       recognitionInstance.onend = () => {
         setIsListening(false);
       };
-      
+
       setRecognition(recognitionInstance);
     }
-    
+
     return () => {
-      if (recognition) {
-        recognition.abort();
+      if (recognitionInstance) {
+        recognitionInstance.abort();
       }
     };
   }, []);
@@ -134,7 +137,7 @@ export default function NewProject() {
         setIsListening(true);
         toast.info('Nagrywanie rozpoczęte. Mów wyraźnie...');
       } catch (error) {
-        console.error('Error starting recognition:', error);
+        logger.error('Error starting recognition:', error);
         toast.error('Nie udało się uruchomić mikrofonu');
       }
     }
@@ -155,7 +158,7 @@ export default function NewProject() {
       });
       
       if (error) {
-        console.error('Voice processing error:', error);
+        logger.error('Voice processing error:', error);
         throw error;
       }
       
@@ -166,7 +169,7 @@ export default function NewProject() {
         toast.success('Wycena przygotowana!');
       }
     } catch (error) {
-      console.error('Error processing voice:', error);
+      logger.error('Error processing voice:', error);
       toast.error('Błąd przetwarzania głosu. Spróbuj ponownie.');
     } finally {
       setIsProcessingVoice(false);
@@ -192,7 +195,7 @@ export default function NewProject() {
       });
       
       if (error) {
-        console.error('AI error:', error);
+        logger.error('AI error:', error);
         throw error;
       }
       
@@ -200,7 +203,7 @@ export default function NewProject() {
       setAiMessages(prev => [...prev, { role: 'assistant', content: aiReply }]);
       
     } catch (error) {
-      console.error('Error with AI:', error);
+      logger.error('Error with AI:', error);
       toast.error('Błąd komunikacji z AI. Spróbuj ponownie.');
       setAiMessages(prev => [...prev, { role: 'assistant', content: 'Przepraszam, wystąpił problem z połączeniem. Spróbuj ponownie.' }]);
     } finally {

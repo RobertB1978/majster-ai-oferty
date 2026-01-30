@@ -16,6 +16,7 @@ import {
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
+import { logger } from '@/lib/logger';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
 interface CompanyDocument {
@@ -108,7 +109,7 @@ export function CompanyDocuments() {
     },
     onError: (error) => {
       toast.error('Błąd przy dodawaniu dokumentu');
-      console.error(error);
+      logger.error(error);
     },
     onSettled: () => {
       setIsUploading(false);

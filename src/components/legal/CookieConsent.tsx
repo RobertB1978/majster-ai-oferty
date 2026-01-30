@@ -58,7 +58,7 @@ export function CookieConsent() {
         });
       }
     } catch (error) {
-      console.error('Error saving consent:', error);
+      logger.error('Error saving consent:', error);
     }
 
     setIsVisible(false);
