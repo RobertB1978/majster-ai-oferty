@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,7 @@ import {
   // ArrowRight,
   Wand2
 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
 import { useVoiceToText } from '@/hooks/useVoiceToText';
 import { supabase } from '@/integrations/supabase/client';
@@ -55,29 +56,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
     }
   }, [transcript]);
 
-  useEffect(() => {
-    if (!isListening && mode === 'listening') {
-      if (voiceText.trim().length > 10) {
-        processVoiceInput();
-      } else {
-        setMode('idle');
-      }
-    }
-  }, [isListening]);
-
-  const handleStartListening = () => {
-    setVoiceText('');
-    resetTranscript();
-    setResult(null);
-    setMode('listening');
-    startListening();
-  };
-
-  const handleStopListening = () => {
-    stopListening();
-  };
-
-  const processVoiceInput = async () => {
+  const processVoiceInput = useCallback(async () => {
     if (!voiceText.trim()) {
       setMode('idle');
       return;
@@ -95,10 +74,32 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
       setResult(data);
       setMode('editing');
     } catch (error: unknown) {
-      console.error('Voice processing error:', error);
+      logger.error('Voice processing error:', error);
       toast.error('Błąd przetwarzania. Spróbuj ponownie.');
       setMode('idle');
     }
+  }, [voiceText]);
+
+  useEffect(() => {
+    if (!isListening && mode === 'listening') {
+      if (voiceText.trim().length > 10) {
+        processVoiceInput();
+      } else {
+        setMode('idle');
+      }
+    }
+  }, [isListening, mode, voiceText, processVoiceInput]);
+
+  const handleStartListening = () => {
+    setVoiceText('');
+    resetTranscript();
+    setResult(null);
+    setMode('listening');
+    startListening();
+  };
+
+  const handleStopListening = () => {
+    stopListening();
   };
 
   const handleEditSubmit = () => {

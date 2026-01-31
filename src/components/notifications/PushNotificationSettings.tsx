@@ -60,7 +60,7 @@ export function PushNotificationSettings() {
         toast.error('Powiadomienia zostały zablokowane. Zmień ustawienia przeglądarki.');
       }
     } catch (_error) {
-      console.error('Error requesting notification permission:', error);
+      logger.error('Error requesting notification permission:', error);
       toast.error('Błąd przy włączaniu powiadomień');
     } finally {
       setIsLoading(false);

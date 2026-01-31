@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Building2, FileText, Phone, Upload, CheckCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
 const STEPS = {
@@ -91,7 +92,7 @@ export function OnboardingModal() {
         toast.success('Profil firmy został skonfigurowany!');
       }
     } catch (error) {
-      console.error('Onboarding error:', error);
+      logger.error('Onboarding error:', error);
     }
   };
 

@@ -100,11 +100,11 @@ export function useCompleteOnboardingStep() {
     mutationFn: async (stepId: number) => {
       if (!user) throw new Error('Not authenticated');
 
-      const completedSteps = progress?.completed_steps || [];
-      const newCompletedSteps = completedSteps.includes(stepId) 
-        ? completedSteps 
+      const completedSteps = Array.isArray(progress?.completed_steps) ? progress.completed_steps : [];
+      const newCompletedSteps = completedSteps.includes(stepId)
+        ? completedSteps
         : [...completedSteps, stepId];
-      
+
       const nextStep = Math.min(stepId + 1, ONBOARDING_STEPS.length);
       const isCompleted = newCompletedSteps.length === ONBOARDING_STEPS.length;
 

@@ -21,6 +21,7 @@ import { useQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useProject } from '@/hooks/useProjects';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/contexts/AuthContext';
+import { logger } from '@/lib/logger';
 import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { buildOfferData } from '@/lib/offerDataBuilder';
@@ -148,7 +149,7 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
       onPdfGenerated?.(publicUrl); // Phase 5C: Notify parent of new PDF URL
       toast.success('PDF oferty został wygenerowany i zapisany');
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      logger.error('Error generating PDF:', error);
       toast.error('Nie udało się wygenerować PDF');
     } finally {
       setIsGeneratingPdf(false);

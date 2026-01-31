@@ -39,10 +39,11 @@ const ItemTemplates = lazy(() => import("./pages/ItemTemplates"));
 const Settings = lazy(() => import("./pages/Settings"));
 const PdfGenerator = lazy(() => import("./pages/PdfGenerator"));
 const Calendar = lazy(() => import("./pages/Calendar"));
-const Analytics = lazy(() => import("./pages/Analytics"));
-const Team = lazy(() => import("./pages/Team"));
+// TEMPORARILY DISABLED for MVP stability
+// const Analytics = lazy(() => import("./pages/Analytics"));
+// const Team = lazy(() => import("./pages/Team"));
+// const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Finance = lazy(() => import("./pages/Finance"));
-const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Billing = lazy(() => import("./pages/Billing"));
 const Admin = lazy(() => import("./pages/Admin"));
 const OfferApproval = lazy(() => import("./pages/OfferApproval"));
@@ -54,13 +55,21 @@ const CookiesPolicy = lazy(() => import("./pages/legal/CookiesPolicy"));
 const DPA = lazy(() => import("./pages/legal/DPA"));
 const GDPRCenter = lazy(() => import("./pages/legal/GDPRCenter"));
 
+// React Query configuration with aggressive retry strategy
+// Fixes race condition causing intermittent app loading failures
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes (renamed from cacheTime)
-      retry: 1,
+      staleTime: 1000 * 60 * 1, // 1 minute (less caching = fresher data)
+      gcTime: 1000 * 60 * 5, // 5 minutes (renamed from cacheTime)
+      retry: 3, // Retry up to 3 times for failed requests
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff: 1s, 2s, 4s, max 30s
       refetchOnWindowFocus: false,
+      networkMode: 'always', // Retry even in offline mode when connection returns
+    },
+    mutations: {
+      retry: 1,
+      networkMode: 'always',
     },
   },
 });
@@ -102,7 +111,7 @@ const App = () => (
                   <Route path="/privacy" element={<Navigate to="/legal/privacy" replace />} />
                   <Route path="/terms" element={<Navigate to="/legal/terms" replace />} />
 
-                  {/* Protected app routes */}
+                  {/* Protected app routes - MVP features only */}
                   <Route element={<AppLayout />}>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/clients" element={<Clients />} />
@@ -114,10 +123,11 @@ const App = () => (
                     <Route path="/profile" element={<CompanyProfile />} />
                     <Route path="/templates" element={<ItemTemplates />} />
                     <Route path="/calendar" element={<Calendar />} />
-                    <Route path="/analytics" element={<Analytics />} />
-                    <Route path="/team" element={<Team />} />
+                    {/* TEMPORARILY DISABLED - To be re-enabled after stabilization */}
+                    {/* <Route path="/analytics" element={<Analytics />} /> */}
+                    {/* <Route path="/team" element={<Team />} /> */}
+                    {/* <Route path="/marketplace" element={<Marketplace />} /> */}
                     <Route path="/finance" element={<Finance />} />
-                    <Route path="/marketplace" element={<Marketplace />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/billing" element={<Billing />} />
                     <Route path="/admin" element={<Admin />} />

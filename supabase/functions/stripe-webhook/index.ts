@@ -315,7 +315,7 @@ async function handlePaymentFailed(
   // Find user by subscription ID
   const { data: subscription } = await supabase
     .from("user_subscriptions")
-    .select("user_id")
+    .select("user_id, user_email:users(email)")
     .eq("stripe_subscription_id", subscriptionId)
     .maybeSingle();
 
@@ -334,7 +334,69 @@ async function handlePaymentFailed(
     processed_at: new Date().toISOString(),
   });
 
-  // TODO: Send email notification to user about payment failure
+  // Send email notification to user about payment failure
+  try {
+    const userEmail = subscription.user_email?.[0]?.email;
+    if (!userEmail) {
+      console.warn("[stripe-webhook] No email found for user:", subscription.user_id);
+      return;
+    }
+
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      console.error("[stripe-webhook] RESEND_API_KEY not configured");
+      return;
+    }
+
+    const amount = invoice.amount_due / 100; // Convert cents to currency
+    const currency = (invoice.currency || "USD").toUpperCase();
+    const dueDate = new Date(invoice.due_date * 1000).toLocaleDateString();
+
+    const emailHtml = `
+      <h2>Płatność nie powiodła się</h2>
+      <p>Drogi użytkowniku,</p>
+      <p>Próba pobrania płatności za Twoją subskrypcję nie powiodła się.</p>
+
+      <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <p><strong>Szczegóły:</strong></p>
+        <ul>
+          <li>Kwota: ${amount} ${currency}</li>
+          <li>Rachunek: ${invoice.number}</li>
+          <li>Termin zapłaty: ${dueDate}</li>
+        </ul>
+      </div>
+
+      <p>Aby uniknąć przerwy w usłudze, prosimy o aktualizację metody płatności w dashboard:</p>
+      <p><a href="${Deno.env.get("FRONTEND_URL")}/settings/billing" style="color: #0066cc;">Zarządzaj płatnościami</a></p>
+
+      <p>Jeśli masz pytania, skontaktuj się z naszą obsługą klienta.</p>
+
+      <p>Pozdrawiamy,<br/>Zespół Majster.AI</p>
+    `;
+
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "support@majster.ai",
+        to: userEmail,
+        subject: `⚠️ Płatność nie powiodła się - ${invoice.number}`,
+        html: emailHtml,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("[stripe-webhook] Failed to send payment failure email:", errorData);
+    } else {
+      console.log("[stripe-webhook] Payment failure notification sent to:", userEmail);
+    }
+  } catch (error) {
+    console.error("[stripe-webhook] Error sending payment failure notification:", error);
+  }
 }
 
 serve(handler);

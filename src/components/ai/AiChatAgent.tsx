@@ -21,6 +21,7 @@ import {
   Trash2,
   Plus
 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
 import { useVoiceToText } from '@/hooks/useVoiceToText';
 import { supabase } from '@/integrations/supabase/client';
@@ -137,7 +138,7 @@ export function AiChatAgent() {
         saveMessage.mutate({ sessionId, role: 'assistant', content: assistantContent });
       }
     } catch (error: unknown) {
-      console.error('AI Chat error:', error);
+      logger.error('AI Chat error:', error);
       toast.error('Błąd połączenia z AI');
       
       const errorMessage: Message = {

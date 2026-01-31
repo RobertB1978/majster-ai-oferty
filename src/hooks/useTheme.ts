@@ -67,7 +67,7 @@ export function useTheme() {
   // Initialize on mount
   useEffect(() => {
     updateTheme(theme);
-  }, []);
+  }, [theme, updateTheme]);
 
   return {
     theme,

@@ -80,7 +80,7 @@ export function OfferApprovalPanel({ projectId, clientName = '', clientEmail = '
       if (error) throw error;
       toast.success('Przypomnienie wysłane do klienta');
     } catch (error) {
-      console.error('Error sending reminder:', error);
+      logger.error('Error sending reminder:', error);
       toast.error('Błąd podczas wysyłania przypomnienia');
     } finally {
       setSendingReminder(null);

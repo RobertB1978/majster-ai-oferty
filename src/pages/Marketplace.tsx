@@ -3,12 +3,13 @@ import { Helmet } from 'react-helmet-async';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Store,
   Search,
   Plus,
-  Users
+  Users,
+  MapPin
 } from 'lucide-react';
 import { SubcontractorCard } from '@/components/marketplace/SubcontractorCard';
 import { useMySubcontractors, usePublicSubcontractors, useAddSubcontractor } from '@/hooks/useSubcontractors';

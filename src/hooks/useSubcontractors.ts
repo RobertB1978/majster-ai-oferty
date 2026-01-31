@@ -47,16 +47,26 @@ export function useMySubcontractors() {
   return useQuery({
     queryKey: ['subcontractors', 'mine'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('subcontractors')
-        .select('*')
-        .eq('user_id', user!.id)
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('subcontractors')
+          .select('*')
+          .eq('user_id', user!.id)
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data as Subcontractor[];
+        if (error) {
+          console.warn('Could not fetch subcontractors:', error.message);
+          return [] as Subcontractor[];
+        }
+        return data as Subcontractor[];
+      } catch (err) {
+        console.error('Error fetching subcontractors:', err);
+        return [] as Subcontractor[];
+      }
     },
     enabled: !!user,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -64,23 +74,33 @@ export function usePublicSubcontractors(filters?: { city?: string; minRating?: n
   return useQuery({
     queryKey: ['subcontractors', 'public', filters],
     queryFn: async () => {
-      let query = supabase
-        .from('subcontractors')
-        .select('*')
-        .eq('is_public', true)
-        .order('rating', { ascending: false });
+      try {
+        let query = supabase
+          .from('subcontractors')
+          .select('*')
+          .eq('is_public', true)
+          .order('rating', { ascending: false });
 
-      if (filters?.city) {
-        query = query.ilike('location_city', `%${filters.city}%`);
-      }
-      if (filters?.minRating) {
-        query = query.gte('rating', filters.minRating);
-      }
+        if (filters?.city) {
+          query = query.ilike('location_city', `%${filters.city}%`);
+        }
+        if (filters?.minRating) {
+          query = query.gte('rating', filters.minRating);
+        }
 
-      const { data, error } = await query;
-      if (error) throw error;
-      return data as Subcontractor[];
+        const { data, error } = await query;
+        if (error) {
+          console.warn('Could not fetch public subcontractors:', error.message);
+          return [] as Subcontractor[];
+        }
+        return data as Subcontractor[];
+      } catch (err) {
+        console.error('Error fetching public subcontractors:', err);
+        return [] as Subcontractor[];
+      }
     },
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 }
 

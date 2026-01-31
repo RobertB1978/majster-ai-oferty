@@ -12,6 +12,7 @@ import { useCreateOfferSend, useUpdateOfferSend } from '@/hooks/useOfferSends';
 import { generateOfferEmailSubject, generateOfferEmailBody } from '@/lib/emailTemplates';
 import { OFFER_EMAIL_TEMPLATES, renderOfferEmailTemplate } from '@/lib/offerEmailTemplates';
 import { formatCurrency } from '@/lib/formatters';
+import { logger } from '@/lib/logger';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -167,7 +168,7 @@ export function SendOfferModal({
       toast.success('Oferta została wysłana!');
       onOpenChange(false);
     } catch (error: unknown) {
-      console.error('Error sending offer:', error);
+      logger.error('Error sending offer:', error);
       
       // Check if it's an API key error
       if (error.message?.includes('RESEND_API_KEY') || error.message?.includes('API key')) {

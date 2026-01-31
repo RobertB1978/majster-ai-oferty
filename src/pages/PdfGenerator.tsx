@@ -34,9 +34,9 @@ export default function PdfGenerator() {
     if (existingPdfData && !isInitialized) {
       setVersion(existingPdfData.version as 'standard' | 'premium');
       setTitle(existingPdfData.title);
-      setOfferText(existingPdfData.offer_text || offerText);
-      setDeadlineText(existingPdfData.deadline_text || deadlineText);
-      setTerms(existingPdfData.terms || terms);
+      setOfferText(existingPdfData.offer_text);
+      setDeadlineText(existingPdfData.deadline_text);
+      setTerms(existingPdfData.terms);
       setIsInitialized(true);
     } else if (!pdfDataLoading && !existingPdfData && project && !isInitialized) {
       setTitle(`Oferta - ${project.project_name}`);
