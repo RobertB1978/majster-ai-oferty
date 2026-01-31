@@ -18,7 +18,7 @@ export interface OfferApproval {
   expires_at: string | null;
 }
 
-export function useOfferApprovals(_projectId: string) {
+export function useOfferApprovals(projectId: string) {
   const { user } = useAuth();
 
   return useQuery({
