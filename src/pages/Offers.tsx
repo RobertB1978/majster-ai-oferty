@@ -74,7 +74,7 @@ export default function Offers() {
               {t('offers.subtitle', 'Zarządzaj swoimi ofertami i wycenami')}
             </p>
           </div>
-          <Button onClick={() => navigate('/projects/new')} className="w-full sm:w-auto">
+          <Button onClick={() => navigate('/offers/new')} className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             {t('offers.newOffer', '+ Nowa oferta')}
           </Button>
@@ -98,7 +98,7 @@ export default function Offers() {
               <p className="text-muted-foreground text-sm max-w-sm mb-6">
                 {t('offers.emptyDescription', 'Stwórz swoją pierwszą ofertę i wyślij ją do klienta.')}
               </p>
-              <Button onClick={() => navigate('/projects/new')}>
+              <Button onClick={() => navigate('/offers/new')}>
                 <Plus className="h-4 w-4 mr-2" />
                 {t('offers.newOffer', '+ Nowa oferta')}
               </Button>
