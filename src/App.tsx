@@ -55,6 +55,8 @@ const CookiesPolicy = lazy(() => import("./pages/legal/CookiesPolicy"));
 const DPA = lazy(() => import("./pages/legal/DPA"));
 const GDPRCenter = lazy(() => import("./pages/legal/GDPRCenter"));
 
+// React Query configuration with aggressive retry strategy
+// Fixes race condition causing intermittent app loading failures
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
