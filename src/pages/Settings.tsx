@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings as SettingsIcon, Key, Bell, Globe, CreditCard, Calendar, FileText, Shield, Puzzle, Scale, Fingerprint } from 'lucide-react';
+import { Settings as SettingsIcon, Key, Bell, Globe, CreditCard, Calendar, FileText, Puzzle, Scale, Fingerprint } from 'lucide-react';
 import { ApiKeysPanel } from '@/components/api/ApiKeysPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -12,16 +12,11 @@ import { BillingDashboard } from '@/components/billing/BillingDashboard';
 import { CalendarSync } from '@/components/calendar/CalendarSync';
 import { CompanyDocuments } from '@/components/documents/CompanyDocuments';
 import { PushNotificationSettings } from '@/components/notifications/PushNotificationSettings';
-import { AdminDashboard } from '@/components/admin/AdminDashboard';
-import { AuditLogPanel } from '@/components/admin/AuditLogPanel';
 import { PluginsPanel } from '@/components/plugins/PluginsPanel';
 import { BiometricSettings } from '@/components/settings/BiometricSettings';
-import { useUserSubscription } from '@/hooks/useSubscription';
 
 export default function Settings() {
   const { t } = useTranslation();
-  const { data: subscription } = useUserSubscription();
-  const isAdmin = subscription?.plan_id === 'enterprise' || subscription?.plan_id === 'business';
 
   return (
     <>
@@ -75,12 +70,6 @@ export default function Settings() {
               <Fingerprint className="h-4 w-4" />
               {t('settings.biometric', 'Biometria')}
             </TabsTrigger>
-            {isAdmin && (
-              <TabsTrigger value="admin" className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                {t('settings.admin', 'Admin')}
-              </TabsTrigger>
-            )}
           </TabsList>
 
           <TabsContent value="general" className="mt-4 space-y-4">
@@ -164,13 +153,6 @@ export default function Settings() {
           <TabsContent value="biometric" className="mt-4">
             <BiometricSettings />
           </TabsContent>
-
-          {isAdmin && (
-            <TabsContent value="admin" className="mt-4 space-y-6">
-              <AdminDashboard />
-              <AuditLogPanel />
-            </TabsContent>
-          )}
         </Tabs>
       </div>
     </>
