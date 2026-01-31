@@ -45,11 +45,12 @@ export function Footer() {
                   Szablony
                 </Link>
               </li>
-              <li>
+              {/* TEMPORARILY DISABLED for MVP stability */}
+              {/* <li>
                 <Link to="/marketplace" className="text-muted-foreground hover:text-primary transition-colors">
                   Marketplace
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 

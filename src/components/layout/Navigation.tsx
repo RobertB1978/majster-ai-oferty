@@ -1,18 +1,16 @@
 import { useTranslation } from 'react-i18next';
 import { NavLink } from '@/components/NavLink';
-import { 
-  LayoutDashboard, 
-  Users, 
-  FolderKanban, 
-  Menu, 
-  X, 
-  Building2, 
-  Package, 
-  Calendar, 
-  BarChart3, 
-  UsersRound, 
-  TrendingUp, 
-  Store, 
+import {
+  LayoutDashboard,
+  Users,
+  FolderKanban,
+  Menu,
+  X,
+  Building2,
+  Package,
+  Calendar,
+  // DISABLED: BarChart3, UsersRound, Store
+  TrendingUp,
   Settings,
   CreditCard,
   ChevronDown
@@ -32,10 +30,11 @@ export function Navigation() {
     { to: '/clients', label: t('nav.clients'), icon: Users },
     { to: '/projects', label: t('nav.projects'), icon: FolderKanban },
     { to: '/calendar', label: t('nav.calendar'), icon: Calendar },
-    { to: '/team', label: t('nav.team'), icon: UsersRound },
+    // TEMPORARILY DISABLED for MVP stability
+    // { to: '/team', label: t('nav.team'), icon: UsersRound },
     { to: '/finance', label: t('nav.finance'), icon: TrendingUp },
-    { to: '/marketplace', label: t('nav.marketplace'), icon: Store },
-    { to: '/analytics', label: t('nav.analytics'), icon: BarChart3 },
+    // { to: '/marketplace', label: t('nav.marketplace'), icon: Store },
+    // { to: '/analytics', label: t('nav.analytics'), icon: BarChart3 },
     { to: '/templates', label: t('nav.templates'), icon: Package },
     { to: '/billing', label: t('nav.billing'), icon: CreditCard, badge: 'Pro', badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500' },
     { to: '/profile', label: t('nav.profile'), icon: Building2 },

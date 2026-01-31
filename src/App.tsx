@@ -39,10 +39,11 @@ const ItemTemplates = lazy(() => import("./pages/ItemTemplates"));
 const Settings = lazy(() => import("./pages/Settings"));
 const PdfGenerator = lazy(() => import("./pages/PdfGenerator"));
 const Calendar = lazy(() => import("./pages/Calendar"));
-const Analytics = lazy(() => import("./pages/Analytics"));
-const Team = lazy(() => import("./pages/Team"));
+// TEMPORARILY DISABLED for MVP stability
+// const Analytics = lazy(() => import("./pages/Analytics"));
+// const Team = lazy(() => import("./pages/Team"));
+// const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Finance = lazy(() => import("./pages/Finance"));
-const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Billing = lazy(() => import("./pages/Billing"));
 const Admin = lazy(() => import("./pages/Admin"));
 const OfferApproval = lazy(() => import("./pages/OfferApproval"));
@@ -102,7 +103,7 @@ const App = () => (
                   <Route path="/privacy" element={<Navigate to="/legal/privacy" replace />} />
                   <Route path="/terms" element={<Navigate to="/legal/terms" replace />} />
 
-                  {/* Protected app routes */}
+                  {/* Protected app routes - MVP features only */}
                   <Route element={<AppLayout />}>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/clients" element={<Clients />} />
@@ -114,10 +115,11 @@ const App = () => (
                     <Route path="/profile" element={<CompanyProfile />} />
                     <Route path="/templates" element={<ItemTemplates />} />
                     <Route path="/calendar" element={<Calendar />} />
-                    <Route path="/analytics" element={<Analytics />} />
-                    <Route path="/team" element={<Team />} />
+                    {/* TEMPORARILY DISABLED - To be re-enabled after stabilization */}
+                    {/* <Route path="/analytics" element={<Analytics />} /> */}
+                    {/* <Route path="/team" element={<Team />} /> */}
+                    {/* <Route path="/marketplace" element={<Marketplace />} /> */}
                     <Route path="/finance" element={<Finance />} />
-                    <Route path="/marketplace" element={<Marketplace />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/billing" element={<Billing />} />
                     <Route path="/admin" element={<Admin />} />
