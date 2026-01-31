@@ -58,10 +58,16 @@ const GDPRCenter = lazy(() => import("./pages/legal/GDPRCenter"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes (renamed from cacheTime)
-      retry: 1,
+      staleTime: 1000 * 60 * 1, // 1 minute (less caching = fresher data)
+      gcTime: 1000 * 60 * 5, // 5 minutes (renamed from cacheTime)
+      retry: 3, // Retry up to 3 times for failed requests
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff: 1s, 2s, 4s, max 30s
       refetchOnWindowFocus: false,
+      networkMode: 'always', // Retry even in offline mode when connection returns
+    },
+    mutations: {
+      retry: 1,
+      networkMode: 'always',
     },
   },
 });
