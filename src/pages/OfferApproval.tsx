@@ -63,11 +63,16 @@ export default function OfferApproval() {
           .single();
 
         if (error) throw error;
-        
+
         setOffer(data as unknown);
         if (data.client_name) setClientName(data.client_name);
         if (data.client_email) setClientEmail(data.client_email);
         if (data.status !== 'pending') setSubmitted(true);
+
+        // Track offer view (non-blocking, silent fail)
+        if (data.status === 'pending') {
+          supabase.rpc('record_offer_view', { p_token: token }).catch(() => {});
+        }
       } catch (error) {
         console.error('Error fetching offer:', error);
         toast.error('Nie znaleziono oferty');

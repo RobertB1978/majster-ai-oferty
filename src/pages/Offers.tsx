@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
@@ -8,6 +9,16 @@ import { formatCurrency } from '@/lib/formatters';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -16,14 +27,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Plus, FileText, Loader2 } from 'lucide-react';
+import { Plus, FileText, Loader2, Send } from 'lucide-react';
+import { useCreateOfferApproval } from '@/hooks/useOfferApprovals';
+import { useCreateOfferSend, useUpdateOfferSend } from '@/hooks/useOfferSends';
+import { toast } from 'sonner';
 
 interface OfferRow {
   id: string;
   project_name: string;
   status: string;
   created_at: string;
-  clients: { name: string } | null;
+  clients: { name: string; email: string | null } | null;
   quotes: { total: number }[] | null;
 }
 
@@ -42,13 +56,24 @@ export default function Offers() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  // Send dialog state
+  const [sendOffer, setSendOffer] = useState<OfferRow | null>(null);
+  const [sendEmail, setSendEmail] = useState('');
+  const [sendMessage, setSendMessage] = useState('');
+  const [isSending, setIsSending] = useState(false);
+
+  const createApproval = useCreateOfferApproval();
+  const createOfferSend = useCreateOfferSend();
+  const updateOfferSend = useUpdateOfferSend();
 
   const { data: offers, isLoading } = useQuery({
     queryKey: ['offers-home', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('id, project_name, status, created_at, clients(name), quotes(total)')
+        .select('id, project_name, status, created_at, clients(name, email), quotes(total)')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -58,6 +83,85 @@ export default function Offers() {
   });
 
   const hasOffers = offers && offers.length > 0;
+
+  const openSendDialog = (e: React.MouseEvent, offer: OfferRow) => {
+    e.stopPropagation();
+    setSendOffer(offer);
+    setSendEmail(offer.clients?.email || '');
+    setSendMessage(
+      `Szanowny Kliencie,\n\nPrzesyłam ofertę "${offer.project_name}" do wglądu i akceptacji.\n\nPozdrawiam`
+    );
+  };
+
+  const handleSend = async () => {
+    if (!sendOffer) return;
+    if (!sendEmail.trim()) {
+      toast.error('Podaj adres email');
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      // 1. Create approval → get public token
+      const approval = await createApproval.mutateAsync({
+        projectId: sendOffer.id,
+        clientName: sendOffer.clients?.name || '',
+        clientEmail: sendEmail,
+      });
+
+      // 2. Build message with public link
+      const publicUrl = `${window.location.origin}/offer/${approval.public_token}`;
+      const htmlMessage = sendMessage.replace(/\n/g, '<br>') +
+        `<div style="text-align:center;margin:24px 0;">` +
+        `<a href="${publicUrl}" style="display:inline-block;background:#2563eb;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;">Zobacz ofertę</a>` +
+        `</div>`;
+
+      // 3. Create offer_send record
+      const offerSend = await createOfferSend.mutateAsync({
+        project_id: sendOffer.id,
+        client_email: sendEmail,
+        subject: `Oferta – ${sendOffer.project_name}`,
+        message: sendMessage,
+        status: 'pending',
+      });
+
+      // 4. Send email via edge function
+      const { error } = await supabase.functions.invoke('send-offer-email', {
+        body: {
+          offerSendId: offerSend.id,
+          to: sendEmail,
+          subject: `Oferta – ${sendOffer.project_name}`,
+          message: htmlMessage,
+          projectName: sendOffer.project_name,
+        },
+      });
+      if (error) throw error;
+
+      // 5. Update offer_send status
+      await updateOfferSend.mutateAsync({
+        id: offerSend.id,
+        projectId: sendOffer.id,
+        status: 'sent',
+      });
+
+      // 6. Update project status to "Oferta wysłana"
+      await supabase
+        .from('projects')
+        .update({ status: 'Oferta wysłana' })
+        .eq('id', sendOffer.id);
+
+      // 7. Refresh offers list
+      queryClient.invalidateQueries({ queryKey: ['offers-home'] });
+
+      toast.success('Oferta wysłana!');
+      setSendOffer(null);
+    } catch (err) {
+      console.error('Send error:', err);
+      toast.error('Nie udało się wysłać oferty');
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   return (
     <>
@@ -120,6 +224,7 @@ export default function Offers() {
                       <TableHead className="text-right">{t('offers.amount', 'Kwota')}</TableHead>
                       <TableHead>{t('offers.date', 'Data')}</TableHead>
                       <TableHead>{t('offers.status', 'Status')}</TableHead>
+                      <TableHead className="w-[80px]"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -144,6 +249,16 @@ export default function Offers() {
                           </TableCell>
                           <TableCell>
                             <Badge variant={variant}>{label}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => openSendDialog(e, offer)}
+                              title="Wyślij ofertę"
+                            >
+                              <Send className="h-4 w-4" />
+                            </Button>
                           </TableCell>
                         </TableRow>
                       );
@@ -172,7 +287,17 @@ export default function Offers() {
                             {offer.clients?.name || '—'}
                           </p>
                         </div>
-                        <Badge variant={variant}>{label}</Badge>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={(e) => openSendDialog(e, offer)}
+                            title="Wyślij ofertę"
+                          >
+                            <Send className="h-4 w-4" />
+                          </Button>
+                          <Badge variant={variant}>{label}</Badge>
+                        </div>
                       </div>
                       <div className="flex items-center justify-between mt-3 text-sm">
                         <span className="text-muted-foreground">
@@ -190,6 +315,49 @@ export default function Offers() {
           </>
         )}
       </div>
+
+      {/* Send Offer Dialog */}
+      <Dialog open={!!sendOffer} onOpenChange={(open) => { if (!open) setSendOffer(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Wyślij ofertę</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label htmlFor="send-email">Email klienta *</Label>
+              <Input
+                id="send-email"
+                type="email"
+                value={sendEmail}
+                onChange={(e) => setSendEmail(e.target.value)}
+                placeholder="klient@example.com"
+              />
+            </div>
+            <div>
+              <Label htmlFor="send-message">Wiadomość</Label>
+              <Textarea
+                id="send-message"
+                rows={5}
+                value={sendMessage}
+                onChange={(e) => setSendMessage(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSendOffer(null)} disabled={isSending}>
+              Anuluj
+            </Button>
+            <Button onClick={handleSend} disabled={isSending}>
+              {isSending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4 mr-2" />
+              )}
+              Wyślij
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
