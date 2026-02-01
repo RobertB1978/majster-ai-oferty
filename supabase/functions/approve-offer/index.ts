@@ -1,6 +1,6 @@
 // ============================================
-// APPROVE OFFER - Security Enhanced
-// Security Pack Δ1
+// APPROVE OFFER - Security Enhanced + Audit Trail
+// PR#4: Acceptance/Rejection with IP hashing & tracking
 // ============================================
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -12,6 +12,15 @@ import {
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
 import { sanitizeUserInput } from "../_shared/sanitization.ts";
+
+// Helper: Hash IP address with salt (GDPR-compliant, no raw IP storage)
+async function hashIP(ip: string, salt: string): Promise<string> {
+  const data = new TextEncoder().encode(ip + salt);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -29,7 +38,7 @@ serve(async (req) => {
 
   try {
     // Parse request body
-    let body: { token?: unknown; action?: unknown; signatureData?: unknown; comment?: unknown };
+    let body: { token?: unknown; action?: unknown; signatureData?: unknown; comment?: unknown; clientName?: unknown; clientEmail?: unknown };
     try {
       body = await req.json();
     } catch {
@@ -39,7 +48,12 @@ serve(async (req) => {
       );
     }
 
-    const { token, action, signatureData, comment } = body;
+    const { token, action, signatureData, comment, clientName, clientEmail } = body;
+
+    // Extract client IP from x-forwarded-for header (for audit trail)
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    const userAgent = req.headers.get('user-agent') || 'unknown';
+    const ipSalt = Deno.env.get('IP_HASH_SALT') || 'default-salt';
     
     // Validate token
     const tokenValidation = validateUUID(token, 'token');
@@ -142,18 +156,38 @@ serve(async (req) => {
         });
       }
 
+      // Validate clientName (required for both approve and reject)
+      const clientNameStr = clientName ? String(clientName).trim() : '';
+      if (!clientNameStr) {
+        return new Response(JSON.stringify({ error: "Client name is required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       // Sanitize and validate optional fields
+      const safeClientName = sanitizeUserInput(clientNameStr, 255);
+      const safeClientEmail = clientEmail ? sanitizeUserInput(String(clientEmail), 255) : null;
       const safeComment = comment ? sanitizeUserInput(String(comment), 1000) : null;
       const safeSignature = signatureData ? String(signatureData).substring(0, 50000) : null; // Base64 signature
 
+      // Hash client IP for audit trail (GDPR-compliant)
+      const ipHash = await hashIP(clientIP, ipSalt);
+
       const updateData: Record<string, unknown> = {
         status: action === 'approve' ? 'approved' : 'rejected',
+        client_name: safeClientName,
+        client_email: safeClientEmail,
         client_comment: safeComment,
+        ip_hash: ipHash,
+        user_agent: userAgent,
       };
 
       if (action === 'approve') {
         updateData.signature_data = safeSignature;
         updateData.approved_at = new Date().toISOString();
+      } else if (action === 'reject') {
+        updateData.rejected_at = new Date().toISOString();
       }
 
       const { error: updateError } = await supabase
@@ -165,6 +199,14 @@ serve(async (req) => {
         console.error('Update error:', updateError);
         throw updateError;
       }
+
+      // Sync decision status to offer_sends.tracking_status (for consistent tracking)
+      const trackingStatus = action === 'approve' ? 'accepted' : 'rejected';
+      await supabase
+        .from('offer_sends')
+        .update({ tracking_status: trackingStatus })
+        .eq('project_id', approval.project_id)
+        .is('tracking_status', null); // Only update if not already set
 
       // Update project status
       if (action === 'approve') {
