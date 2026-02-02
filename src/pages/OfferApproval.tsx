@@ -20,6 +20,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
 
+interface QuotePosition {
+  name: string;
+  qty: number;
+  unit: string;
+  price: number;
+}
+
 interface OfferData {
   id: string;
   status: string;
@@ -32,7 +39,7 @@ interface OfferData {
   } | null;
   quote: {
     total: number;
-    positions: unknown[];
+    positions: QuotePosition[];
   } | null;
 }
 
@@ -121,7 +128,8 @@ export default function OfferApproval() {
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'approved' } : null);
     } catch (error: unknown) {
-      toast.error(error.message);
+      const msg = error instanceof Error ? error.message : 'Wystąpił błąd';
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -154,7 +162,8 @@ export default function OfferApproval() {
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'rejected' } : null);
     } catch (error: unknown) {
-      toast.error(error.message);
+      const msg = error instanceof Error ? error.message : 'Wystąpił błąd';
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -276,7 +285,7 @@ export default function OfferApproval() {
                         </tr>
                       </thead>
                       <tbody>
-                        {offer.quote.positions.map((pos: unknown, idx: number) => (
+                        {offer.quote.positions.map((pos: QuotePosition, idx: number) => (
                           <tr key={idx} className="border-t">
                             <td className="p-3">{pos.name}</td>
                             <td className="text-right p-3">{pos.qty} {pos.unit}</td>

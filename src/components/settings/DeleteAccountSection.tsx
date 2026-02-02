@@ -64,8 +64,9 @@ export function DeleteAccountSection() {
       navigate('/login');
     } catch (error: unknown) {
       console.error('Error deleting account:', error);
+      const msg = error instanceof Error ? error.message : 'Spróbuj ponownie później';
       toast.error('Błąd przy usuwaniu konta', {
-        description: error.message || 'Spróbuj ponownie później',
+        description: msg,
       });
     } finally {
       setIsDeleting(false);
