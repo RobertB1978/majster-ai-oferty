@@ -6,16 +6,16 @@ import { toast } from 'sonner';
 // import { supabase } from '@/integrations/supabase/client';
 
 interface QuoteCreationHubProps {
-  _onVoiceQuoteCreated?: (result: unknown) => void;
+  onVoiceQuoteCreated?: (result: unknown) => void;
 }
 
 type CreationMode = 'idle' | 'voice' | 'ai' | 'manual';
 
-export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps) {
+export function QuoteCreationHub({ onVoiceQuoteCreated: _onVoiceQuoteCreated }: QuoteCreationHubProps) {
   const navigate = useNavigate();
   const [mode, setMode] = useState<CreationMode>('idle');
-  const [_isRecording, _setIsRecording] = useState(false);
-  const [_isProcessing, _setIsProcessing] = useState(false);
+  const [, /* isRecording */] = useState(false);
+  const [isProcessing] = useState(false);
 
   const handleVoiceClick = () => {
     setMode('voice');

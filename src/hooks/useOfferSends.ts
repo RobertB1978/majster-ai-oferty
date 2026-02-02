@@ -15,7 +15,7 @@ export interface OfferSend {
   sent_at: string;
 }
 
-export function useOfferSends(_projectId: string) {
+export function useOfferSends(projectId: string) {
   const { user } = useAuth();
 
   return useQuery({

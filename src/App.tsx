@@ -27,7 +27,9 @@ import NotFound from "./pages/NotFound";
 import EnvCheck from "./pages/EnvCheck"; // Environment diagnostic page
 
 // Lazy-loaded pages (code splitting for better initial load)
-// Dashboard and all app pages are lazy-loaded to reduce initial bundle size
+// All app pages are lazy-loaded to reduce initial bundle size
+const Offers = lazy(() => import("./pages/Offers"));
+const OfferWizard = lazy(() => import("./pages/OfferWizard"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Clients = lazy(() => import("./pages/Clients"));
 const Projects = lazy(() => import("./pages/Projects"));
@@ -104,6 +106,8 @@ const App = () => (
 
                   {/* Protected app routes */}
                   <Route element={<AppLayout />}>
+                    <Route path="/offers" element={<Offers />} />
+                    <Route path="/offers/new" element={<OfferWizard />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/clients" element={<Clients />} />
                     <Route path="/projects" element={<Projects />} />
@@ -124,7 +128,7 @@ const App = () => (
                   </Route>
 
                   {/* Default and 404 */}
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/" element={<Navigate to="/offers" replace />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>

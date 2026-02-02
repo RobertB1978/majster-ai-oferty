@@ -40,7 +40,7 @@ function extractFilePath(photoUrl: string): string {
   return match ? match[1].split('?')[0] : '';
 }
 
-export function useProjectPhotos(_projectId: string) {
+export function useProjectPhotos(projectId: string) {
   const { user } = useAuth();
 
   return useQuery({

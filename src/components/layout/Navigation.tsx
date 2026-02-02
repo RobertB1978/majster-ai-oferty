@@ -1,26 +1,17 @@
 import { useTranslation } from 'react-i18next';
 import { NavLink } from '@/components/NavLink';
-import { 
-  LayoutDashboard, 
-  Users, 
-  FolderKanban, 
-  Menu, 
-  X, 
-  Building2, 
-  Package, 
-  Calendar, 
-  BarChart3, 
-  UsersRound, 
-  TrendingUp, 
-  Store, 
+import {
+  FileText,
+  Users,
+  Menu,
+  X,
+  Package,
   Settings,
-  CreditCard,
   ChevronDown
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export function Navigation() {
@@ -28,17 +19,9 @@ export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { to: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { to: '/offers', label: t('nav.offers', 'Oferty'), icon: FileText },
     { to: '/clients', label: t('nav.clients'), icon: Users },
-    { to: '/projects', label: t('nav.projects'), icon: FolderKanban },
-    { to: '/calendar', label: t('nav.calendar'), icon: Calendar },
-    { to: '/team', label: t('nav.team'), icon: UsersRound },
-    { to: '/finance', label: t('nav.finance'), icon: TrendingUp },
-    { to: '/marketplace', label: t('nav.marketplace'), icon: Store },
-    { to: '/analytics', label: t('nav.analytics'), icon: BarChart3 },
     { to: '/templates', label: t('nav.templates'), icon: Package },
-    { to: '/billing', label: t('nav.billing'), icon: CreditCard, badge: 'Pro', badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500' },
-    { to: '/profile', label: t('nav.profile'), icon: Building2 },
     { to: '/settings', label: t('nav.settings'), icon: Settings },
   ];
 
@@ -74,18 +57,7 @@ export function Navigation() {
                 activeClassName="bg-gradient-to-r from-primary/15 to-accent/10 text-primary shadow-sm"
               >
                 <item.icon className="h-4 w-4 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
-                <span className="hidden lg:inline">{item.label}</span>
-                {item.badge && (
-                  <Badge 
-                    variant="secondary" 
-                    className={cn(
-                      "ml-1 px-1.5 py-0 text-[10px] font-semibold text-white hidden xl:flex",
-                      item.badgeColor || "bg-primary"
-                    )}
-                  >
-                    {item.badge}
-                  </Badge>
-                )}
+                <span>{item.label}</span>
               </NavLink>
             ))}
           </div>
@@ -112,17 +84,6 @@ export function Navigation() {
                 >
                   <item.icon className="h-5 w-5 shrink-0" />
                   <span className="truncate">{item.label}</span>
-                  {item.badge && (
-                    <Badge 
-                      variant="secondary" 
-                      className={cn(
-                        "ml-auto text-[9px] px-1.5 py-0 text-white shrink-0",
-                        item.badgeColor || "bg-primary"
-                      )}
-                    >
-                      {item.badge}
-                    </Badge>
-                  )}
                 </NavLink>
               ))}
             </div>
