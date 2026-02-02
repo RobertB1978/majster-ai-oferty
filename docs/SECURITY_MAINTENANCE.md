@@ -37,6 +37,8 @@ This document defines how we maintain security over time.
 npm audit
 ```
 
+> TODO: Plan a dedicated PR to upgrade the Vite/esbuild toolchain (dev dependencies flagged by npm audit). Verify build/dev server/e2e compatibility before raising audit coverage back to include dev dependencies.
+
 **Fix vulnerabilities:**
 ```bash
 npm audit fix
