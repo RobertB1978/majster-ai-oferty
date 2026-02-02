@@ -141,9 +141,10 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Run npm audit
-        run: npm audit --audit-level=moderate
-        continue-on-error: true
+      - name: Run npm audit (prod dependencies only)
+        run: bash scripts/run-audit.sh
+        env:
+          AUDIT_LEVEL: moderate
 
       - name: Run Snyk security scan
         uses: snyk/actions/node@master
