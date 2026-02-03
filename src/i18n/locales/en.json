@@ -554,5 +554,58 @@
     "updated": "Updated successfully",
     "emailSent": "Email sent successfully",
     "copied": "Copied to clipboard"
+  },
+  "offerApproval": {
+    "pageTitle": "Offer Approval | Majster.AI",
+    "pageDescription": "Accept or reject the offer",
+    "title": "Offer for Approval",
+    "subtitle": "Review the details and accept or reject the offer",
+    "notFound": {
+      "title": "Offer Not Found",
+      "description": "The offer link is invalid or the offer has expired."
+    },
+    "status": {
+      "approved": "Offer Approved",
+      "approvedThanks": "Thank you for accepting the offer",
+      "rejected": "Offer Rejected",
+      "rejectedInfo": "The offer has been rejected"
+    },
+    "details": {
+      "title": "Offer Details",
+      "project": "Project",
+      "noName": "No name",
+      "date": "Offer Date",
+      "value": "Offer Value",
+      "noQuote": "No quote"
+    },
+    "positions": {
+      "title": "Quote Items:",
+      "item": "Item",
+      "quantity": "Quantity",
+      "price": "Price",
+      "value": "Value"
+    },
+    "form": {
+      "title": "Your Decision",
+      "description": "Fill out the form below to accept or reject the offer",
+      "name": "Full Name",
+      "comment": "Comment (optional)",
+      "commentPlaceholder": "Additional notes...",
+      "signature": "Signature",
+      "signatureHint": "Sign below to accept the offer",
+      "approve": "Accept Offer",
+      "reject": "Reject"
+    },
+    "errors": {
+      "notFound": "Offer not found",
+      "nameRequired": "Please enter your name",
+      "signatureRequired": "Please add your signature",
+      "approvalFailed": "Failed to approve offer",
+      "rejectionFailed": "Failed to reject offer"
+    },
+    "success": {
+      "approved": "Offer has been approved!",
+      "rejected": "Offer has been rejected"
+    }
   }
 }

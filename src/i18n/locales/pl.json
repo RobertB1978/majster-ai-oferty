@@ -583,5 +583,58 @@
     "created": "Utworzono pomyślnie",
     "sent": "Wysłano pomyślnie",
     "copied": "Skopiowano do schowka"
+  },
+  "offerApproval": {
+    "pageTitle": "Akceptacja oferty | Majster.AI",
+    "pageDescription": "Zaakceptuj lub odrzuć ofertę",
+    "title": "Oferta do akceptacji",
+    "subtitle": "Przejrzyj szczegóły i zaakceptuj lub odrzuć ofertę",
+    "notFound": {
+      "title": "Oferta nie znaleziona",
+      "description": "Link do oferty jest nieprawidłowy lub oferta wygasła."
+    },
+    "status": {
+      "approved": "Oferta zaakceptowana",
+      "approvedThanks": "Dziękujemy za akceptację oferty",
+      "rejected": "Oferta odrzucona",
+      "rejectedInfo": "Oferta została odrzucona"
+    },
+    "details": {
+      "title": "Szczegóły oferty",
+      "project": "Projekt",
+      "noName": "Brak nazwy",
+      "date": "Data oferty",
+      "value": "Wartość oferty",
+      "noQuote": "Brak wyceny"
+    },
+    "positions": {
+      "title": "Pozycje kosztorysu:",
+      "item": "Pozycja",
+      "quantity": "Ilość",
+      "price": "Cena",
+      "value": "Wartość"
+    },
+    "form": {
+      "title": "Twoja decyzja",
+      "description": "Wypełnij poniższy formularz, aby zaakceptować lub odrzucić ofertę",
+      "name": "Imię i nazwisko",
+      "comment": "Komentarz (opcjonalnie)",
+      "commentPlaceholder": "Dodatkowe uwagi...",
+      "signature": "Podpis",
+      "signatureHint": "Podpisz się poniżej, aby zaakceptować ofertę",
+      "approve": "Akceptuję ofertę",
+      "reject": "Odrzuć"
+    },
+    "errors": {
+      "notFound": "Nie znaleziono oferty",
+      "nameRequired": "Podaj swoje imię i nazwisko",
+      "signatureRequired": "Dodaj podpis",
+      "approvalFailed": "Błąd akceptacji oferty",
+      "rejectionFailed": "Błąd odrzucenia oferty"
+    },
+    "success": {
+      "approved": "Oferta została zaakceptowana!",
+      "rejected": "Oferta została odrzucona"
+    }
   }
 }
