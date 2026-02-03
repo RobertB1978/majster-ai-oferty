@@ -120,17 +120,26 @@
     "title": "Клієнти",
     "subtitle": "Керуйте базою клієнтів",
     "newClient": "Новий клієнт",
+    "addClient": "Додати клієнта",
     "name": "Назва",
     "email": "Електронна пошта",
     "phone": "Телефон",
     "address": "Адреса",
     "noClients": "Немає клієнтів",
     "noClientsDesc": "Додайте першого клієнта для початку",
+    "createFirst": "Створіть першого клієнта",
     "searchClients": "Пошук клієнтів...",
+    "searchPlaceholder": "Пошук клієнтів...",
     "editClient": "Редагувати клієнта",
     "deleteClient": "Видалити клієнта",
     "confirmDelete": "Ви впевнені, що хочете видалити цього клієнта?",
-    "clientProjects": "Проєкти клієнта"
+    "clientProjects": "Проєкти клієнта",
+    "namePlaceholder": "Іван Іванов",
+    "phonePlaceholder": "+380 123 456 789",
+    "emailPlaceholder": "ivan@example.com",
+    "addressPlaceholder": "вул. Хрещатик 1, 01001 Київ",
+    "clearSearch": "Очистити пошук",
+    "saveChanges": "Зберегти зміни"
   },
   "calendar": {
     "title": "Календар",
@@ -221,12 +230,28 @@
     "title": "Шаблони позицій",
     "subtitle": "Керуйте шаблонами для кошторисів",
     "newTemplate": "Новий шаблон",
+    "editTemplate": "Редагувати шаблон",
     "category": "Категорія",
     "unit": "Одиниця",
+    "quantity": "Кількість",
+    "price": "Ціна (грн)",
     "defaultPrice": "Ціна за замовчуванням",
     "defaultQty": "Кількість за замовчуванням",
     "noTemplates": "Немає шаблонів",
     "noTemplatesDesc": "Створіть шаблони для швидкого створення кошторисів",
+    "noResults": "Немає результатів за вибраними фільтрами",
+    "count": "{{count}} шаблонів • Готові елементи для швидкого створення кошторису",
+    "import": "Імпорт",
+    "importReady": "Імпортувати готові шаблони",
+    "importDialogTitle": "Імпортувати готові шаблони ({{count}})",
+    "searchPlaceholder": "Пошук шаблону...",
+    "namePlaceholder": "наприклад, Керамічна плитка 60x60",
+    "descriptionPlaceholder": "Додаткова інформація...",
+    "filterByTrade": "Фільтр за професією",
+    "allTrades": "Усі професії",
+    "selected": "Вибрано",
+    "selectVisible": "Вибрати видимі",
+    "create": "Створити",
     "categories": {
       "material": "Матеріали",
       "labor": "Робота",
@@ -399,7 +424,100 @@
     "networkError": "Помилка мережі. Спробуйте ще раз.",
     "unauthorized": "Не авторизовано. Будь ласка, увійдіть.",
     "notFound": "Ресурс не знайдено",
-    "serverError": "Помилка сервера. Спробуйте пізніше."
+    "serverError": "Помилка сервера. Спробуйте пізніше.",
+    "formValidation": "Будь ласка, заповніть усі обов'язкові поля",
+    "importFailed": "Помилка імпорту",
+    "selectTemplates": "Будь ласка, виберіть хоча б один шаблон"
+  },
+  "dialogs": {
+    "deleteTemplate": "Видалити шаблон?",
+    "irreversibleOperation": "Цю операцію не можна скасувати.",
+    "confirmAccountDeletion": "Ви впевнені, що хочете запитати видалення облікового запису та всіх даних?",
+    "deleteAccountTitle": "Ви впевнені, що хочете видалити свій обліковий запис?",
+    "deleteBiometricCredential": "Видалити біометричні дані?"
+  },
+  "validation": {
+    "nameRequired": "Назва обов'язкова",
+    "quantityMustBePositive": "Кількість повинна бути більше 0",
+    "priceCannotBeNegative": "Ціна не може бути від'ємною",
+    "addAtLeastOnePosition": "Додайте хоча б одну позицію",
+    "signatureRequired": "Додайте підпис",
+    "projectNameRequired": "Введіть назву проєкту",
+    "clientRequired": "Оберіть клієнта",
+    "companyNameRequired": "Введіть назву компанії"
+  },
+  "messages": {
+    "themeSaved": "Тему збережено та застосовано успішно",
+    "approvalLinkCreated": "Посилання на підтвердження створено",
+    "offerExtended": "Термін дії пропозиції продовжено на 30 днів",
+    "offerApproved": "Пропозицію прийнято!",
+    "settingsSaved": "Налаштування збережено",
+    "invoiceUploaded": "Рахунок завантажено",
+    "ocrCompleted": "OCR обробку завершено",
+    "quoteSaved": "Кошторис збережено",
+    "quoteVersionSaved": "Версію кошторису збережено",
+    "projectCreated": "Проєкт створено",
+    "projectUpdated": "Проєкт оновлено",
+    "uploading": "Завантаження...",
+    "recordingStarted": "Запис розпочато. Говоріть чітко...",
+    "templatesImported": "Імпортовано {{count}} шаблонів"
+  },
+  "offerApproval": {
+    "pageTitle": "Підтвердження пропозиції | Majster.AI",
+    "pageDescription": "Прийняти або відхилити пропозицію",
+    "title": "Пропозиція на підтвердження",
+    "subtitle": "Перегляньте деталі та прийміть або відхиліть пропозицію",
+    "notFound": {
+      "title": "Пропозицію не знайдено",
+      "description": "Посилання на пропозицію недійсне або термін дії пропозиції закінчився."
+    },
+    "status": {
+      "approved": "Пропозицію прийнято",
+      "approvedThanks": "Дякуємо за прийняття пропозиції",
+      "rejected": "Пропозицію відхилено",
+      "rejectedInfo": "Пропозицію було відхилено"
+    },
+    "details": {
+      "title": "Деталі пропозиції",
+      "project": "Проєкт",
+      "noName": "Без назви",
+      "date": "Дата пропозиції",
+      "value": "Вартість пропозиції",
+      "noQuote": "Немає кошторису"
+    },
+    "positions": {
+      "title": "Позиції кошторису:",
+      "item": "Позиція",
+      "quantity": "Кількість",
+      "price": "Ціна",
+      "value": "Вартість"
+    },
+    "form": {
+      "title": "Ваше рішення",
+      "description": "Заповніть форму нижче, щоб прийняти або відхилити пропозицію",
+      "name": "Повне ім'я",
+      "comment": "Коментар (необов'язково)",
+      "commentPlaceholder": "Додаткові примітки...",
+      "signature": "Підпис",
+      "signatureHint": "Підпишіться нижче, щоб прийняти пропозицію",
+      "approve": "Прийняти пропозицію",
+      "reject": "Відхилити"
+    },
+    "errors": {
+      "notFound": "Пропозицію не знайдено",
+      "nameRequired": "Будь ласка, введіть ваше ім'я",
+      "signatureRequired": "Будь ласка, додайте ваш підпис",
+      "approvalFailed": "Не вдалося прийняти пропозицію",
+      "rejectionFailed": "Не вдалося відхилити пропозицію"
+    },
+    "success": {
+      "approved": "Пропозицію прийнято!",
+      "rejected": "Пропозицію відхилено"
+    }
+  },
+  "emptyStates": {
+    "noQuotePositions": "Немає позицій. Натисніть \"Додати позицію\" або виберіть шаблон.",
+    "noQuote": "Немає кошторису. Натисніть \"Редагувати кошторис\", щоб додати елементи до кошторису."
   },
   "success": {
     "saved": "Успішно збережено",
