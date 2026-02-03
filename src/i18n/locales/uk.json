@@ -61,9 +61,42 @@
     "resetPassword": "Скинути пароль",
     "noAccount": "Немає облікового запису?",
     "hasAccount": "Вже маєте обліковий запис?",
+    "loginTitle": "Увійти до Majster.AI",
+    "registerTitle": "Зареєструватися в Majster.AI",
+    "loginSubtitle": "Увійдіть до свого облікового запису",
+    "registerSubtitle": "Створити новий обліковий запис",
+    "registerSubtitleFree": "Створити безкоштовний обліковий запис",
+    "createAccount": "Створити обліковий запис",
+    "creatingAccount": "Створення облікового запису...",
+    "loggingIn": "Вхід...",
+    "sending": "Надсилання...",
+    "sendResetLink": "Надіслати посилання для скидання",
+    "backToLogin": "Назад до входу",
+    "checkInbox": "Перевірте свою скриньку",
+    "resetLinkSent": "Ми надіслали посилання для скидання пароля на адресу",
+    "resetLinkValid": "Посилання дійсне протягом 24 годин. Якщо ви не бачите листа, перевірте папку СПАМ.",
+    "resetPasswordTitle": "Скидання пароля",
+    "resetPasswordDesc": "Введіть свою електронну пошту, і ми надішлемо вам посилання для скидання",
+    "emailPlaceholder": "ivan@example.com",
+    "passwordPlaceholder": "••••••••",
     "biometric": "Біометричний вхід",
     "biometricDescription": "Швидкий і безпечний вхід за відбитком пальця",
-    "biometricNotSupported": "Ваш пристрій не підтримує біометричний вхід"
+    "biometricNotSupported": "Ваш пристрій не підтримує біометричний вхід",
+    "errors": {
+      "invalidCredentials": "Невірна електронна пошта або пароль",
+      "emailNotConfirmed": "Електронну пошту не підтверджено. Перевірте свою скриньку.",
+      "invalidEmail": "Невірна електронна пошта",
+      "rateLimitExceeded": "Забагато спроб. Спробуйте ще раз пізніше.",
+      "genericError": "Сталася помилка. Спробуйте ще раз.",
+      "fillAllFields": "Заповніть усі поля",
+      "passwordsDoNotMatch": "Паролі не збігаються",
+      "passwordRequirements": "Пароль не відповідає вимогам безпеки"
+    },
+    "success": {
+      "loggedIn": "Вхід виконано успішно",
+      "accountCreated": "Обліковий запис створено успішно",
+      "resetLinkSent": "Посилання для скидання пароля надіслано"
+    }
   },
   "dashboard": {
     "title": "Панель",
@@ -80,7 +113,20 @@
     "welcome": "Ласкаво просимо",
     "todayEvents": "Події сьогодні",
     "pendingOffers": "Очікуючі пропозиції",
-    "monthlyStats": "Щомісячна статистика"
+    "monthlyStats": "Щомісячна статистика",
+    "quoteCreation": {
+      "title": "Створити нову пропозицію",
+      "chooseMethod": "Оберіть спосіб створення пропозиції",
+      "voiceTitle": "Голосом",
+      "voiceDesc": "Скажіть, що оцінити",
+      "voiceStarting": "Починаємо голосовий запис на сторінці створення пропозиції",
+      "voiceRedirect": "Зараз вас буде перенаправлено...",
+      "aiTitle": "AI Асистент",
+      "aiDesc": "Напишіть або поговоріть",
+      "aiOpening": "Відкриваємо AI асистента...",
+      "manualTitle": "Вручну",
+      "manualDesc": "Заповніть форму"
+    }
   },
   "projects": {
     "title": "Проєкти",

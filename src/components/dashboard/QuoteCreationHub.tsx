@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Mic, Bot, PenTool, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -12,6 +13,7 @@ interface QuoteCreationHubProps {
 type CreationMode = 'idle' | 'voice' | 'ai' | 'manual';
 
 export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<CreationMode>('idle');
   const [_isRecording, _setIsRecording] = useState(false);
@@ -19,8 +21,8 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
 
   const handleVoiceClick = () => {
     setMode('voice');
-    toast.info('Rozpocznij nagrywanie głosowe na stronie tworzenia oferty', {
-      description: 'Za chwilę zostaniesz przekierowany...'
+    toast.info(t('dashboard.quoteCreation.voiceStarting'), {
+      description: t('dashboard.quoteCreation.voiceRedirect')
     });
     setTimeout(() => {
       navigate('/projects/new', { state: { mode: 'voice' } });
@@ -29,8 +31,8 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
 
   const handleAiClick = () => {
     setMode('ai');
-    toast.info('Otwieranie asystenta AI...', {
-      description: 'Za chwilę zostaniesz przekierowany...'
+    toast.info(t('dashboard.quoteCreation.aiOpening'), {
+      description: t('dashboard.quoteCreation.voiceRedirect')
     });
     setTimeout(() => {
       navigate('/projects/new', { state: { mode: 'ai' } });
@@ -46,8 +48,8 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
     {
       id: 'voice',
       icon: Mic,
-      label: 'Głosowo',
-      sublabel: 'Powiedz co wycenić',
+      label: t('dashboard.quoteCreation.voiceTitle'),
+      sublabel: t('dashboard.quoteCreation.voiceDesc'),
       onClick: handleVoiceClick,
       gradient: 'from-rose-500 to-orange-500',
       hoverGradient: 'hover:from-rose-600 hover:to-orange-600',
@@ -58,8 +60,8 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
     {
       id: 'ai',
       icon: Bot,
-      label: 'Asystent AI',
-      sublabel: 'Napisz lub rozmawiaj',
+      label: t('dashboard.quoteCreation.aiTitle'),
+      sublabel: t('dashboard.quoteCreation.aiDesc'),
       onClick: handleAiClick,
       gradient: 'from-violet-500 to-purple-500',
       hoverGradient: 'hover:from-violet-600 hover:to-purple-600',
@@ -70,8 +72,8 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
     {
       id: 'manual',
       icon: PenTool,
-      label: 'Ręcznie',
-      sublabel: 'Wypełnij formularz',
+      label: t('dashboard.quoteCreation.manualTitle'),
+      sublabel: t('dashboard.quoteCreation.manualDesc'),
       onClick: handleManualClick,
       gradient: 'from-emerald-500 to-teal-500',
       hoverGradient: 'hover:from-emerald-600 hover:to-teal-600',
@@ -85,9 +87,9 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
     <div className="w-full">
       <div className="flex items-center gap-2 mb-4">
         <Sparkles className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-semibold">Stwórz nową ofertę</h3>
+        <h3 className="text-lg font-semibold">{t('dashboard.quoteCreation.title')}</h3>
       </div>
-      
+
       <div className="grid grid-cols-3 gap-4 sm:gap-6">
         {buttons.map((btn) => (
           <button
@@ -118,7 +120,7 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
                 <span className="absolute inset-2 rounded-full bg-gradient-to-br from-rose-500/30 to-orange-500/30 animate-pulse" />
               </>
             )}
-            
+
             {/* Icon */}
             <div className="relative z-10 flex flex-col items-center gap-2">
               <btn.icon className={cn(
@@ -133,7 +135,7 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
                 {btn.sublabel}
               </span>
             </div>
-            
+
             {/* Glow effect on hover */}
             <div className={cn(
               "absolute inset-0 rounded-full opacity-0",
@@ -144,9 +146,9 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
           </button>
         ))}
       </div>
-      
+
       <p className="text-center text-sm text-muted-foreground mt-4">
-        Wybierz sposób tworzenia oferty
+        {t('dashboard.quoteCreation.chooseMethod')}
       </p>
     </div>
   );

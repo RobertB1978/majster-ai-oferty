@@ -66,13 +66,34 @@
     "registerTitle": "Register for Majster.AI",
     "loginSubtitle": "Sign in to your account",
     "registerSubtitle": "Create a new account",
+    "registerSubtitleFree": "Create a free account",
+    "createAccount": "Create account",
+    "creatingAccount": "Creating account...",
     "loggingIn": "Logging in...",
+    "sending": "Sending...",
+    "sendResetLink": "Send reset link",
+    "backToLogin": "Back to login",
+    "checkInbox": "Check your inbox",
+    "resetLinkSent": "We've sent a password reset link to",
+    "resetLinkValid": "The link is valid for 24 hours. If you don't see the email, check your SPAM folder.",
+    "resetPasswordTitle": "Reset password",
+    "resetPasswordDesc": "Enter your email and we'll send you a reset link",
+    "emailPlaceholder": "john@example.com",
+    "passwordPlaceholder": "••••••••",
     "errors": {
       "invalidCredentials": "Invalid email or password",
-      "emailNotConfirmed": "Email not confirmed. Check your inbox."
+      "emailNotConfirmed": "Email not confirmed. Check your inbox.",
+      "invalidEmail": "Invalid email",
+      "rateLimitExceeded": "Too many attempts. Please try again later.",
+      "genericError": "An error occurred. Please try again.",
+      "fillAllFields": "Fill in all fields",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "passwordRequirements": "Password does not meet security requirements"
     },
     "success": {
-      "loggedIn": "Logged in successfully"
+      "loggedIn": "Logged in successfully",
+      "accountCreated": "Account created successfully",
+      "resetLinkSent": "Password reset link sent"
     },
     "biometric": {
       "title": "Biometric Login",
@@ -100,7 +121,20 @@
     "welcome": "Welcome back",
     "todayEvents": "Today's Events",
     "pendingOffers": "Pending Offers",
-    "monthlyStats": "Monthly Statistics"
+    "monthlyStats": "Monthly Statistics",
+    "quoteCreation": {
+      "title": "Create new offer",
+      "chooseMethod": "Choose how to create the offer",
+      "voiceTitle": "Voice",
+      "voiceDesc": "Say what to quote",
+      "voiceStarting": "Starting voice recording on offer creation page",
+      "voiceRedirect": "You will be redirected shortly...",
+      "aiTitle": "AI Assistant",
+      "aiDesc": "Type or chat",
+      "aiOpening": "Opening AI assistant...",
+      "manualTitle": "Manually",
+      "manualDesc": "Fill in the form"
+    }
   },
   "projects": {
     "title": "Projects",
