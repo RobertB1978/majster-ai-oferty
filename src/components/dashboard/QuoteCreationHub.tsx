@@ -93,7 +93,7 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
           <button
             key={btn.id}
             onClick={btn.onClick}
-            disabled={isProcessing}
+            disabled={_isProcessing}
             className={cn(
               "group relative flex flex-col items-center justify-center",
               "aspect-square rounded-full",

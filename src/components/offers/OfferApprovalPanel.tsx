@@ -268,11 +268,18 @@ export function OfferApprovalPanel({ projectId, clientName = '', clientEmail = '
                     </div>
                   )}
                   
-                  {/* Approval date for completed */}
-                  {approval.approved_at && (
-                    <p className="text-sm text-muted-foreground pt-2 border-t border-border/50">
-                      {approval.status === 'approved' ? 'Zaakceptowana' : 'Odrzucona'}: {format(new Date(approval.approved_at), 'dd MMM yyyy, HH:mm', { locale: pl })}
-                    </p>
+                  {/* Approval/Rejection date for completed */}
+                  {(approval.approved_at || approval.rejected_at) && (
+                    <div className="pt-2 border-t border-border/50 space-y-1">
+                      <p className="text-sm text-muted-foreground">
+                        {approval.status === 'approved' ? 'Zaakceptowana' : 'Odrzucona'}: {format(new Date(approval.status === 'approved' ? approval.approved_at : approval.rejected_at), 'dd MMM yyyy, HH:mm', { locale: pl })}
+                      </p>
+                      {approval.client_name && (
+                        <p className="text-sm text-muted-foreground">
+                          Decyzja od: {approval.client_name}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               );

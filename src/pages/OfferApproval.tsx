@@ -107,7 +107,7 @@ export default function OfferApproval() {
       });
 
       const result = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(result.error || 'Błąd akceptacji oferty');
       }
@@ -116,13 +116,19 @@ export default function OfferApproval() {
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'approved' } : null);
     } catch (error: unknown) {
-      toast.error(error.message);
+      toast.error(error instanceof Error ? error.message : 'Błąd akceptacji oferty');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleReject = async () => {
+    // Validate clientName required for reject too
+    if (!clientName.trim()) {
+      toast.error('Podaj swoje imię i nazwisko');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/approve-offer`, {
@@ -140,7 +146,7 @@ export default function OfferApproval() {
       });
 
       const result = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(result.error || 'Błąd odrzucenia oferty');
       }
@@ -149,7 +155,7 @@ export default function OfferApproval() {
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'rejected' } : null);
     } catch (error: unknown) {
-      toast.error(error.message);
+      toast.error(error instanceof Error ? error.message : 'Błąd odrzucenia oferty');
     } finally {
       setIsSubmitting(false);
     }
