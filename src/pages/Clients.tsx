@@ -105,7 +105,7 @@ export default function Clients() {
     e.preventDefault();
 
     if (!validateForm()) {
-      toast.error('Popraw błędy w formularzu');
+      toast.error(t('errors.formValidation'));
       return;
     }
 
@@ -164,7 +164,7 @@ export default function Clients() {
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Jan Kowalski"
+                  placeholder={t('clients.namePlaceholder')}
                   className={errors.name ? 'border-destructive' : ''}
                 />
                 {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
@@ -175,7 +175,7 @@ export default function Clients() {
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="+48 123 456 789"
+                  placeholder={t('clients.phonePlaceholder')}
                   className={errors.phone ? 'border-destructive' : ''}
                 />
                 {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
@@ -187,7 +187,7 @@ export default function Clients() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="jan@example.pl"
+                  placeholder={t('clients.emailPlaceholder')}
                   className={errors.email ? 'border-destructive' : ''}
                 />
                 {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
@@ -198,7 +198,7 @@ export default function Clients() {
                   id="address"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder="ul. Przykładowa 1, 00-001 Warszawa"
+                  placeholder={t('clients.addressPlaceholder')}
                   className={errors.address ? 'border-destructive' : ''}
                 />
                 {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
@@ -256,7 +256,7 @@ export default function Clients() {
           <CardContent className="py-12 text-center">
             <p className="text-muted-foreground mb-2">{t('common.none')}</p>
             <Button variant="outline" onClick={() => handleSearchChange('')}>
-              Wyczyść wyszukiwanie
+              {t('clients.clearSearch')}
             </Button>
           </CardContent>
         </Card>

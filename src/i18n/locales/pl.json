@@ -141,10 +141,17 @@
     "phone": "Telefon",
     "address": "Adres",
     "noClients": "Brak klientów",
-    "createFirst": "Dodaj swojego pierwszego klienta",
+    "createFirst": "Utwórz pierwszego klienta",
     "editClient": "Edytuj klienta",
     "deleteClient": "Usuń klienta",
-    "searchPlaceholder": "Szukaj klientów..."
+    "searchPlaceholder": "Szukaj klientów...",
+    "addClient": "Dodaj Klienta",
+    "namePlaceholder": "Jan Kowalski",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailPlaceholder": "jan@example.pl",
+    "addressPlaceholder": "ul. Przykładowa 1, 00-001 Warszawa",
+    "clearSearch": "Wyczyść wyszukiwanie",
+    "saveChanges": "Zapisz zmiany"
   },
   "calendar": {
     "title": "Kalendarz",
@@ -246,7 +253,7 @@
     "addTemplate": "Dodaj szablon",
     "name": "Nazwa",
     "unit": "Jednostka",
-    "price": "Cena",
+    "price": "Cena (zł)",
     "category": "Kategoria",
     "categories": {
       "material": "Materiał",
@@ -266,7 +273,22 @@
     },
     "importDefaults": "Importuj domyślne szablony",
     "noTemplates": "Brak szablonów",
-    "addFirst": "Dodaj pierwszy szablon"
+    "addFirst": "Dodaj pierwszy szablon",
+    "editTemplate": "Edytuj szablon",
+    "quantity": "Ilość",
+    "noResults": "Brak wyników dla podanych filtrów",
+    "count": "{{count}} szablonów • Gotowe pozycje do szybkiego tworzenia wycen",
+    "import": "Importuj",
+    "importReady": "Importuj gotowe szablony",
+    "importDialogTitle": "Importuj gotowe szablony ({{count}})",
+    "searchPlaceholder": "Szukaj szablonu...",
+    "namePlaceholder": "np. Płytki ceramiczne 60x60",
+    "descriptionPlaceholder": "Dodatkowe informacje...",
+    "filterByTrade": "Filtruj po zawodzie",
+    "allTrades": "Wszystkie zawody",
+    "selected": "Wybrano",
+    "selectVisible": "Zaznacz widoczne",
+    "create": "Utwórz"
   },
   "quotes": {
     "title": "Wycena",
@@ -538,7 +560,9 @@
     "speechRecognitionNotSupported": "Rozpoznawanie mowy nie jest obsługiwane w tej przeglądarce. Użyj Chrome.",
     "invalidCredentials": "Nieprawidłowy email lub hasło",
     "invalidEmailFormat": "Nieprawidłowy format email",
-    "invalidFileType": "Nieprawidłowy typ pliku"
+    "invalidFileType": "Nieprawidłowy typ pliku",
+    "selectTemplates": "Wybierz szablony do importu",
+    "formValidation": "Popraw błędy w formularzu"
   },
   "messages": {
     "themeSaved": "Motyw został zapisany i zastosowany",
@@ -553,7 +577,8 @@
     "projectCreated": "Projekt utworzony",
     "projectUpdated": "Projekt zaktualizowany",
     "uploading": "Przesyłanie...",
-    "recordingStarted": "Nagrywanie rozpoczęte. Mów wyraźnie..."
+    "recordingStarted": "Nagrywanie rozpoczęte. Mów wyraźnie...",
+    "templatesImported": "Zaimportowano {{count}} szablonów"
   },
   "validation": {
     "nameRequired": "Nazwa jest wymagana",

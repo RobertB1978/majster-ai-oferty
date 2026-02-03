@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useItemTemplatesPaginated, useCreateItemTemplate, useUpdateItemTemplate, useDeleteItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Button } from '@/components/ui/button';
@@ -41,6 +42,7 @@ const initialFormData: TemplateFormData = {
 const PAGE_SIZE = 20;
 
 export default function ItemTemplates() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'Materiał' | 'Robocizna'>('all');
@@ -83,7 +85,7 @@ export default function ItemTemplates() {
 
   const handleImportSelected = async () => {
     if (selectedDefaults.size === 0) {
-      toast.error('Wybierz szablony do importu');
+      toast.error(t('errors.selectTemplates'));
       return;
     }
     setIsImporting(true);
@@ -99,11 +101,11 @@ export default function ItemTemplates() {
           description: template.description,
         });
       }
-      toast.success(`Zaimportowano ${toImport.length} szablonów`);
+      toast.success(t('messages.templatesImported', { count: toImport.length }));
       setIsImportDialogOpen(false);
       setSelectedDefaults(new Set());
     } catch {
-      toast.error('Błąd podczas importu');
+      toast.error(t('errors.importFailed'));
     } finally {
       setIsImporting(false);
     }
@@ -150,9 +152,9 @@ export default function ItemTemplates() {
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!formData.name.trim()) newErrors.name = 'Nazwa jest wymagana';
-    if (formData.default_qty <= 0) newErrors.default_qty = 'Ilość musi być > 0';
-    if (formData.default_price < 0) newErrors.default_price = 'Cena nie może być ujemna';
+    if (!formData.name.trim()) newErrors.name = t('validation.nameRequired');
+    if (formData.default_qty <= 0) newErrors.default_qty = t('validation.quantityMustBePositive');
+    if (formData.default_price < 0) newErrors.default_price = t('validation.priceCannotBeNegative');
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -178,7 +180,7 @@ export default function ItemTemplates() {
 
   const handleSave = async () => {
     if (!validateForm()) {
-      toast.error('Popraw błędy w formularzu');
+      toast.error(t('errors.formValidation'));
       return;
     }
     try {
@@ -217,20 +219,20 @@ export default function ItemTemplates() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
               <Package className="h-5 w-5 text-primary-foreground" />
             </div>
-            Szablony pozycji
+            {t('templates.title')}
           </h1>
           <p className="mt-1 text-muted-foreground">
-            {totalCount} szablonów • Gotowe pozycje do szybkiego tworzenia wycen
+            {t('templates.count', { count: totalCount })}
           </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setIsImportDialogOpen(true)}>
             <Download className="mr-2 h-4 w-4" />
-            Importuj ({defaultTemplates.length})
+            {t('templates.import')} ({defaultTemplates.length})
           </Button>
           <Button onClick={() => handleOpenDialog()} className="bg-gradient-to-r from-primary to-primary-glow">
             <Plus className="mr-2 h-5 w-5" />
-            Nowy szablon
+            {t('templates.newTemplate')}
           </Button>
         </div>
       </div>
@@ -240,15 +242,15 @@ export default function ItemTemplates() {
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
           onClear={() => handleSearchChange('')}
-          placeholder="Szukaj szablonu..."
+          placeholder={t('templates.searchPlaceholder')}
           className="sm:w-64"
         />
         <Select value={categoryFilter} onValueChange={handleCategoryChange}>
           <SelectTrigger className="sm:w-40">
-            <SelectValue placeholder="Kategoria" />
+            <SelectValue placeholder={t('templates.category')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Wszystkie</SelectItem>
+            <SelectItem value="all">{t('common.all')}</SelectItem>
             <SelectItem value="Materiał">Materiał</SelectItem>
             <SelectItem value="Robocizna">Robocizna</SelectItem>
           </SelectContent>
@@ -260,12 +262,12 @@ export default function ItemTemplates() {
           <CardContent className="py-12 text-center">
             <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <p className="text-muted-foreground mb-4">
-              {totalCount === 0 && !search && categoryFilter === 'all' ? 'Brak szablonów.' : 'Brak wyników dla podanych filtrów.'}
+              {totalCount === 0 && !search && categoryFilter === 'all' ? t('templates.noTemplates') : t('templates.noResults')}
             </p>
             {totalCount === 0 && !search && categoryFilter === 'all' && (
               <Button onClick={() => setIsImportDialogOpen(true)}>
                 <Download className="mr-2 h-4 w-4" />
-                Importuj gotowe szablony
+                {t('templates.importReady')}
               </Button>
             )}
           </CardContent>
@@ -296,12 +298,12 @@ export default function ItemTemplates() {
                 <div className="mt-3 flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => handleOpenDialog(template)}>
                     <Edit className="mr-1 h-3 w-3" />
-                    Edytuj
+                    {t('common.edit')}
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="text-destructive hover:bg-destructive/10" 
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-destructive hover:bg-destructive/10"
                     onClick={() => setDeleteConfirmId(template.id)}
                   >
                     <Trash2 className="h-3 w-3" />
@@ -327,22 +329,22 @@ export default function ItemTemplates() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingTemplate ? 'Edytuj szablon' : 'Nowy szablon'}</DialogTitle>
+            <DialogTitle>{editingTemplate ? t('templates.editTemplate') : t('templates.newTemplate')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <Label>Nazwa *</Label>
+              <Label>{t('common.name')} *</Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="np. Płytki ceramiczne 60x60"
+                placeholder={t('templates.namePlaceholder')}
                 className={errors.name ? 'border-destructive' : ''}
               />
               {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name}</p>}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Ilość</Label>
+                <Label>{t('templates.quantity')}</Label>
                 <Input
                   type="number"
                   min="0.01"
@@ -352,7 +354,7 @@ export default function ItemTemplates() {
                 />
               </div>
               <div>
-                <Label>Jednostka</Label>
+                <Label>{t('templates.unit')}</Label>
                 <Select value={formData.unit} onValueChange={(v) => setFormData({ ...formData, unit: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -363,7 +365,7 @@ export default function ItemTemplates() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Cena (zł)</Label>
+                <Label>{t('templates.price')}</Label>
                 <Input
                   type="number"
                   min="0"
@@ -373,7 +375,7 @@ export default function ItemTemplates() {
                 />
               </div>
               <div>
-                <Label>Kategoria</Label>
+                <Label>{t('templates.category')}</Label>
                 <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v as 'Materiał' | 'Robocizna' })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -383,19 +385,19 @@ export default function ItemTemplates() {
               </div>
             </div>
             <div>
-              <Label>Opis</Label>
+              <Label>{t('common.description')}</Label>
               <Input
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Dodatkowe informacje..."
+                placeholder={t('templates.descriptionPlaceholder')}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Anuluj</Button>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t('common.cancel')}</Button>
             <Button onClick={handleSave} disabled={createTemplate.isPending || updateTemplate.isPending}>
               {(createTemplate.isPending || updateTemplate.isPending) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {editingTemplate ? 'Zapisz' : 'Utwórz'}
+              {editingTemplate ? t('common.save') : t('templates.create')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -407,18 +409,18 @@ export default function ItemTemplates() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Download className="h-5 w-5" />
-              Importuj gotowe szablony ({defaultTemplates.length})
+              {t('templates.importDialogTitle', { count: defaultTemplates.length })}
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="flex flex-wrap items-center gap-2 py-2 border-b">
             <Filter className="h-4 w-4 text-muted-foreground" />
             <Select value={importTradeFilter} onValueChange={setImportTradeFilter}>
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filtruj po zawodzie" />
+                <SelectValue placeholder={t('templates.filterByTrade')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Wszystkie zawody</SelectItem>
+                <SelectItem value="all">{t('templates.allTrades')}</SelectItem>
                 {trades.map(trade => (
                   <SelectItem key={trade} value={trade}>{trade}</SelectItem>
                 ))}
@@ -426,10 +428,10 @@ export default function ItemTemplates() {
             </Select>
             <div className="ml-auto flex items-center gap-2">
               <span className="text-sm text-muted-foreground">
-                Wybrano: {selectedDefaults.size}
+                {t('templates.selected')}: {selectedDefaults.size}
               </span>
               <Button variant="ghost" size="sm" onClick={selectAllFiltered}>
-                Zaznacz widoczne
+                {t('templates.selectVisible')}
               </Button>
             </div>
           </div>
@@ -471,14 +473,14 @@ export default function ItemTemplates() {
           </ScrollArea>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsImportDialogOpen(false)}>Anuluj</Button>
-            <Button 
-              onClick={handleImportSelected} 
+            <Button variant="outline" onClick={() => setIsImportDialogOpen(false)}>{t('common.cancel')}</Button>
+            <Button
+              onClick={handleImportSelected}
               disabled={isImporting || selectedDefaults.size === 0}
               className="bg-gradient-to-r from-primary to-primary-glow"
             >
               {isImporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Importuj ({selectedDefaults.size})
+              {t('templates.import')} ({selectedDefaults.size})
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -488,12 +490,12 @@ export default function ItemTemplates() {
       <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Usunąć szablon?</AlertDialogTitle>
-            <AlertDialogDescription>Ta operacja jest nieodwracalna.</AlertDialogDescription>
+            <AlertDialogTitle>{t('dialogs.deleteTemplate')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('dialogs.irreversibleOperation')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Anuluj</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">Usuń</AlertDialogAction>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">{t('common.delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
