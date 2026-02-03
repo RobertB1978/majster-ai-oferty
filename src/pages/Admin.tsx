@@ -26,20 +26,27 @@ import { AdminContentEditor } from '@/components/admin/AdminContentEditor';
 import { AuditLogPanel } from '@/components/admin/AuditLogPanel';
 import { ApiKeysPanel } from '@/components/api/ApiKeysPanel';
 import { useAdminRole } from '@/hooks/useAdminRole';
+import { useOrganizationAdmin } from '@/hooks/useOrganizationAdmin';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Admin() {
   const navigate = useNavigate();
   const { user: _user } = useAuth();
-  const { isAdmin, isModerator, isLoading } = useAdminRole();
+
+  // Check both app-wide admin (platform admin) and organization admin
+  const { isAdmin: isAppAdmin, isModerator, isLoading: isLoadingAppRole } = useAdminRole();
+  const { isOrgAdmin, isLoading: isLoadingOrgRole } = useOrganizationAdmin();
   const [activeTab, setActiveTab] = useState('dashboard');
+
+  const isLoading = isLoadingAppRole || isLoadingOrgRole;
+  const hasAdminAccess = isAppAdmin || isModerator || isOrgAdmin;
 
   // Redirect non-admins
   useEffect(() => {
-    if (!isLoading && !isAdmin && !isModerator) {
+    if (!isLoading && !hasAdminAccess) {
       navigate('/dashboard');
     }
-  }, [isAdmin, isModerator, isLoading, navigate]);
+  }, [hasAdminAccess, isLoading, navigate]);
 
   if (isLoading) {
     return (
@@ -49,7 +56,7 @@ export default function Admin() {
     );
   }
 
-  if (!isAdmin && !isModerator) {
+  if (!hasAdminAccess) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
         <AlertTriangle className="h-16 w-16 text-destructive mb-4" />
@@ -88,9 +95,14 @@ export default function Admin() {
               <Activity className="h-3 w-3" />
               System aktywny
             </Badge>
-            {isAdmin && (
+            {isAppAdmin && (
               <Badge className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30">
-                Admin
+                Platform Admin
+              </Badge>
+            )}
+            {isOrgAdmin && !isAppAdmin && (
+              <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/30">
+                Organization Admin
               </Badge>
             )}
           </div>
