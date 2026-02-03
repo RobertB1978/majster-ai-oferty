@@ -15,7 +15,7 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
   const navigate = useNavigate();
   const [mode, setMode] = useState<CreationMode>('idle');
   const [_isRecording, _setIsRecording] = useState(false);
-  const [_isProcessing, _setIsProcessing] = useState(false);
+  const [isProcessing, _setIsProcessing] = useState(false);
 
   const handleVoiceClick = () => {
     setMode('voice');
