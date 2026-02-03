@@ -61,13 +61,34 @@
     "registerTitle": "Zarejestruj się w Majster.AI",
     "loginSubtitle": "Zaloguj się do swojego konta",
     "registerSubtitle": "Stwórz nowe konto",
+    "registerSubtitleFree": "Załóż darmowe konto",
+    "createAccount": "Załóż konto",
+    "creatingAccount": "Tworzenie konta...",
     "loggingIn": "Logowanie...",
+    "sending": "Wysyłanie...",
+    "sendResetLink": "Wyślij link resetujący",
+    "backToLogin": "Powrót do logowania",
+    "checkInbox": "Sprawdź skrzynkę",
+    "resetLinkSent": "Wysłaliśmy link do resetu hasła na adres",
+    "resetLinkValid": "Link jest ważny przez 24 godziny. Jeśli nie widzisz maila, sprawdź folder SPAM.",
+    "resetPasswordTitle": "Reset hasła",
+    "resetPasswordDesc": "Podaj email, a wyślemy link do zmiany hasła",
+    "emailPlaceholder": "jan@example.pl",
+    "passwordPlaceholder": "••••••••",
     "errors": {
       "invalidCredentials": "Nieprawidłowy email lub hasło",
-      "emailNotConfirmed": "Email nie został potwierdzony. Sprawdź skrzynkę."
+      "emailNotConfirmed": "Email nie został potwierdzony. Sprawdź skrzynkę.",
+      "invalidEmail": "Nieprawidłowy email",
+      "rateLimitExceeded": "Zbyt wiele prób. Spróbuj ponownie za chwilę.",
+      "genericError": "Wystąpił błąd. Spróbuj ponownie.",
+      "fillAllFields": "Wypełnij wszystkie pola",
+      "passwordsDoNotMatch": "Hasła nie są identyczne",
+      "passwordRequirements": "Hasło nie spełnia wymagań bezpieczeństwa"
     },
     "success": {
-      "loggedIn": "Zalogowano pomyślnie"
+      "loggedIn": "Zalogowano pomyślnie",
+      "accountCreated": "Konto utworzone pomyślnie",
+      "resetLinkSent": "Link do resetu hasła został wysłany"
     },
     "biometric": {
       "enterEmailFirst": "Wprowadź email przed użyciem logowania biometrycznego",
@@ -98,6 +119,19 @@
       "inProgress": "W toku",
       "sent": "Wysłane",
       "accepted": "Zaakceptowane"
+    },
+    "quoteCreation": {
+      "title": "Stwórz nową ofertę",
+      "chooseMethod": "Wybierz sposób tworzenia oferty",
+      "voiceTitle": "Głosowo",
+      "voiceDesc": "Powiedz co wycenić",
+      "voiceStarting": "Rozpocznij nagrywanie głosowe na stronie tworzenia oferty",
+      "voiceRedirect": "Za chwilę zostaniesz przekierowany...",
+      "aiTitle": "Asystent AI",
+      "aiDesc": "Napisz lub rozmawiaj",
+      "aiOpening": "Otwieranie asystenta AI...",
+      "manualTitle": "Ręcznie",
+      "manualDesc": "Wypełnij formularz"
     }
   },
   "projects": {
