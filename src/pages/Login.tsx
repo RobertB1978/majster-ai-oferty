@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { loginSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AuthDiagnostics } from '@/components/auth/AuthDiagnostics';
 
 export default function Login() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -74,15 +76,15 @@ export default function Login() {
 
     if (error) {
       if (error.includes('Invalid login')) {
-        toast.error('Nieprawidłowy email lub hasło');
+        toast.error(t('auth.errors.invalidCredentials'));
       } else if (error.includes('Email not confirmed')) {
-        toast.error('Email nie został potwierdzony. Sprawdź skrzynkę.');
+        toast.error(t('auth.errors.emailNotConfirmed'));
       } else {
         toast.error(error);
       }
     } else {
       localStorage.setItem('majster_last_email', email);
-      toast.success('Zalogowano pomyślnie');
+      toast.success(t('auth.success.loggedIn'));
 
       // Prefetch Dashboard data while navigating for instant load
       if (data?.user?.id) {
@@ -103,7 +105,7 @@ export default function Login() {
 
   const handleBiometricLogin = async () => {
     if (!email) {
-      toast.error('Wprowadź email przed użyciem logowania biometrycznego');
+      toast.error(t('auth.biometric.enterEmailFirst'));
       return;
     }
 
@@ -111,9 +113,9 @@ export default function Login() {
     if (success) {
       // For biometric login, we need the password stored or use a different auth flow
       // Since we're using Supabase Auth, we'll just verify the biometric and show the password field
-      toast.success('Weryfikacja biometryczna powiodła się. Wprowadź hasło.');
+      toast.success(t('auth.biometric.verificationSuccess'));
     } else {
-      toast.error('Weryfikacja biometryczna nie powiodła się');
+      toast.error(t('auth.biometric.verificationFailed'));
     }
   };
 
@@ -133,13 +135,13 @@ export default function Login() {
           </div>
           <CardTitle className="text-2xl font-bold gradient-text">Majster.AI</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Zaloguj się do swojego konta
+            {t('auth.loginSubtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -155,12 +157,12 @@ export default function Login() {
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Hasło</Label>
-                <Link 
-                  to="/forgot-password" 
+                <Label htmlFor="password">{t('auth.password')}</Label>
+                <Link
+                  to="/forgot-password"
                   className="text-sm text-primary hover:underline"
                 >
-                  Nie pamiętasz hasła?
+                  {t('auth.forgotPassword')}
                 </Link>
               </div>
               <div className="relative">
@@ -180,10 +182,10 @@ export default function Login() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Logowanie...
+                  {t('auth.loggingIn')}
                 </>
               ) : (
-                'Zaloguj się'
+                t('auth.login')
               )}
             </Button>
           </form>
@@ -193,7 +195,7 @@ export default function Login() {
               <div className="relative my-5">
                 <Separator className="bg-border/50" />
                 <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-muted-foreground">
-                  lub
+                  {t('common.or')}
                 </span>
               </div>
               <Button
@@ -206,12 +208,12 @@ export default function Login() {
                 {isAuthenticating ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Weryfikacja...
+                    {t('auth.biometric.verifying')}
                   </>
                 ) : (
                   <>
                     <Fingerprint className="mr-2 h-4 w-4" />
-                    Zaloguj odciskiem palca
+                    {t('auth.biometric.loginWithFingerprint')}
                   </>
                 )}
               </Button>
@@ -219,9 +221,9 @@ export default function Login() {
           )}
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            Nie masz konta?{' '}
+            {t('auth.noAccount')}{' '}
             <Link to="/register" className="font-medium text-primary hover:underline">
-              Zarejestruj się
+              {t('auth.register')}
             </Link>
           </p>
         </CardContent>

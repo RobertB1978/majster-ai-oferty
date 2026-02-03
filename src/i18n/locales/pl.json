@@ -29,7 +29,8 @@
     "date": "Data",
     "name": "Nazwa",
     "description": "Opis",
-    "notes": "Notatki"
+    "notes": "Notatki",
+    "or": "lub"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -52,14 +53,29 @@
     "email": "Email",
     "password": "Hasło",
     "confirmPassword": "Potwierdź hasło",
-    "forgotPassword": "Zapomniałeś hasła?",
+    "forgotPassword": "Nie pamiętasz hasła?",
     "resetPassword": "Zresetuj hasło",
     "noAccount": "Nie masz konta?",
     "hasAccount": "Masz już konto?",
     "loginTitle": "Zaloguj się do Majster.AI",
     "registerTitle": "Zarejestruj się w Majster.AI",
-    "loginSubtitle": "Wprowadź swoje dane logowania",
-    "registerSubtitle": "Stwórz nowe konto"
+    "loginSubtitle": "Zaloguj się do swojego konta",
+    "registerSubtitle": "Stwórz nowe konto",
+    "loggingIn": "Logowanie...",
+    "errors": {
+      "invalidCredentials": "Nieprawidłowy email lub hasło",
+      "emailNotConfirmed": "Email nie został potwierdzony. Sprawdź skrzynkę."
+    },
+    "success": {
+      "loggedIn": "Zalogowano pomyślnie"
+    },
+    "biometric": {
+      "enterEmailFirst": "Wprowadź email przed użyciem logowania biometrycznego",
+      "verificationSuccess": "Weryfikacja biometryczna powiodła się. Wprowadź hasło.",
+      "verificationFailed": "Weryfikacja biometryczna nie powiodła się",
+      "verifying": "Weryfikacja...",
+      "loginWithFingerprint": "Zaloguj odciskiem palca"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
