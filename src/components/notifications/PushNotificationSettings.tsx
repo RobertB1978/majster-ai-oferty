@@ -59,7 +59,7 @@ export function PushNotificationSettings() {
       } else if (result === 'denied') {
         toast.error('Powiadomienia zostały zablokowane. Zmień ustawienia przeglądarki.');
       }
-    } catch (_error) {
+    } catch (error) {
       console.error('Error requesting notification permission:', error);
       toast.error('Błąd przy włączaniu powiadomień');
     } finally {
@@ -71,7 +71,7 @@ export function PushNotificationSettings() {
     setIsLoading(true);
     try {
       if ('serviceWorker' in navigator) {
-        const _registration = await navigator.serviceWorker.ready;
+        const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
         if (subscription) {
           await subscription.unsubscribe();

@@ -166,14 +166,15 @@ export function SendOfferModal({
 
       toast.success('Oferta została wysłana!');
       onOpenChange(false);
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Error sending offer:', error);
-      
+      const errorMessage = error instanceof Error ? error.message : 'Nie udało się wysłać oferty';
+
       // Check if it's an API key error
-      if (error.message?.includes('RESEND_API_KEY') || error.message?.includes('API key')) {
+      if (errorMessage.includes('RESEND_API_KEY') || errorMessage.includes('API key')) {
         toast.error('Wysyłka e-mail nie jest skonfigurowana. Skontaktuj się z administratorem.');
       } else {
-        toast.error(error.message || 'Nie udało się wysłać oferty');
+        toast.error(errorMessage);
       }
     } finally {
       setIsSending(false);

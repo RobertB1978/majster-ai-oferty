@@ -62,10 +62,10 @@ export function DeleteAccountSection() {
 
       // Przekieruj do strony głównej
       navigate('/login');
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Error deleting account:', error);
       toast.error('Błąd przy usuwaniu konta', {
-        description: error.message || 'Spróbuj ponownie później',
+        description: error instanceof Error ? error.message : 'Spróbuj ponownie później',
       });
     } finally {
       setIsDeleting(false);
