@@ -20,6 +20,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
 
+interface QuotePosition {
+  name: string;
+  qty: number;
+  unit: string;
+  price: number;
+}
+
 interface OfferData {
   id: string;
   status: string;
@@ -32,7 +39,7 @@ interface OfferData {
   } | null;
   quote: {
     total: number;
-    positions: unknown[];
+    positions: QuotePosition[];
   } | null;
 }
 
@@ -63,8 +70,8 @@ export default function OfferApproval() {
           .single();
 
         if (error) throw error;
-        
-        setOffer(data as unknown);
+
+        setOffer(data as OfferData);
         if (data.client_name) setClientName(data.client_name);
         if (data.client_email) setClientEmail(data.client_email);
         if (data.status !== 'pending') setSubmitted(true);
@@ -115,8 +122,8 @@ export default function OfferApproval() {
       toast.success('Oferta została zaakceptowana!');
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'approved' } : null);
-    } catch (error: unknown) {
-      toast.error(error.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Wystąpił błąd');
     } finally {
       setIsSubmitting(false);
     }
@@ -148,8 +155,8 @@ export default function OfferApproval() {
       toast.success('Oferta została odrzucona');
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'rejected' } : null);
-    } catch (error: unknown) {
-      toast.error(error.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Wystąpił błąd');
     } finally {
       setIsSubmitting(false);
     }
@@ -271,7 +278,7 @@ export default function OfferApproval() {
                         </tr>
                       </thead>
                       <tbody>
-                        {offer.quote.positions.map((pos: unknown, idx: number) => (
+                        {offer.quote.positions.map((pos: QuotePosition, idx: number) => (
                           <tr key={idx} className="border-t">
                             <td className="p-3">{pos.name}</td>
                             <td className="text-right p-3">{pos.qty} {pos.unit}</td>

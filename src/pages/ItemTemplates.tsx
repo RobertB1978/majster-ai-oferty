@@ -188,7 +188,7 @@ export default function ItemTemplates() {
         await createTemplate.mutateAsync(formData);
       }
       setIsDialogOpen(false);
-    } catch (_error) {
+    } catch (error) {
       // Error is already handled by the mutation hook's onError callback
       console.error('Failed to save template:', error);
     }
