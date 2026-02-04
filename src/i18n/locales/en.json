@@ -34,7 +34,9 @@
     "inactive": "Inactive",
     "noData": "No data available",
     "more": "more",
-    "or": "or"
+    "or": "or",
+    "retry": "Try again",
+    "refreshPage": "Refresh page"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -104,6 +106,14 @@
       "verificationFailed": "Biometric verification failed",
       "verifying": "Verifying...",
       "loginWithFingerprint": "Login with fingerprint"
+    },
+    "passwordStrength": "Password strength:",
+    "passwordRequirements": {
+      "minLength": "Minimum 8 characters",
+      "uppercase": "Uppercase letter (A-Z)",
+      "lowercase": "Lowercase letter (a-z)",
+      "digit": "Digit (0-9)",
+      "special": "Special character (optional)"
     }
   },
   "dashboard": {
@@ -368,16 +378,65 @@
     "paymentHistory": "Payment History",
     "noPayments": "No payment history",
     "plans": {
-      "free": "Free",
-      "pro": "Pro",
-      "business": "Business"
+      "free": {
+        "description": "For trying the app",
+        "features": {
+          "projects": "3 projects",
+          "clients": "5 clients",
+          "basicQuotes": "Basic quotes",
+          "simplePdf": "Simple PDF template"
+        },
+        "limitations": {
+          "ads": "Ads in the app",
+          "noAi": "No AI assistant",
+          "noExcel": "No Excel export"
+        }
+      },
+      "pro": {
+        "description": "For starting businesses",
+        "features": {
+          "projects": "15 projects",
+          "clients": "30 clients",
+          "noAds": "No ads",
+          "allPdfTemplates": "All PDF templates",
+          "excelExport": "Excel export",
+          "emailSupport": "Email support"
+        }
+      },
+      "business": {
+        "description": "For growing businesses",
+        "features": {
+          "unlimitedProjects": "Unlimited projects",
+          "unlimitedClients": "Unlimited clients",
+          "aiAssistant": "AI Quote Assistant",
+          "voiceQuotes": "Voice quote creation",
+          "calendarIntegration": "Calendar integration",
+          "companyDocuments": "Company documents",
+          "prioritySupport": "Priority support"
+        }
+      },
+      "enterprise": {
+        "description": "Full capabilities",
+        "features": {
+          "allBusiness": "Everything in Business",
+          "unlimitedAi": "Unlimited AI requests",
+          "customTemplates": "Custom industry templates",
+          "apiAccess": "API access",
+          "dedicatedManager": "Dedicated account manager",
+          "sla": "99.9% SLA",
+          "teamTraining": "Team training",
+          "priorityFeatures": "Priority features"
+        }
+      }
     },
     "features": "Features",
     "price": "Price",
     "perMonth": "/month",
     "subscribe": "Subscribe",
     "cancel": "Cancel subscription",
-    "popular": "Popular"
+    "popular": "Popular",
+    "withAds": "with ads",
+    "pricePerMonth": "PLN/mo."
   },
   "profile": {
     "title": "Company Profile",
@@ -570,7 +629,10 @@
     "invalidEmailFormat": "Invalid email format",
     "invalidFileType": "Invalid file type",
     "selectTemplates": "Select templates to import",
-    "formValidation": "Please correct the errors in the form"
+    "formValidation": "Please correct the errors in the form",
+    "somethingWentWrong": "Something went wrong",
+    "unexpectedError": "An unexpected error occurred. Try refreshing the page or going back to the previous page.",
+    "errorDetails": "Error details"
   },
   "messages": {
     "themeSaved": "Theme saved and applied successfully",

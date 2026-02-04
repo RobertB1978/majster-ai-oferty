@@ -4,6 +4,7 @@ import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { logError } from '@/lib/sentry';
+import i18n from '@/i18n';
 
 interface Props {
   children: ReactNode;
@@ -56,15 +57,15 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="mx-auto w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
                 <AlertTriangle className="h-6 w-6 text-destructive" />
               </div>
-              <CardTitle>Coś poszło nie tak</CardTitle>
+              <CardTitle>{i18n.t('errors.somethingWentWrong')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground text-center text-sm">
-                Wystąpił nieoczekiwany błąd. Spróbuj odświeżyć stronę lub wrócić do poprzedniej strony.
+                {i18n.t('errors.unexpectedError')}
               </p>
               {this.state.error && (
                 <details className="text-xs text-muted-foreground bg-muted p-3 rounded-md">
-                  <summary className="cursor-pointer font-medium">Szczegóły błędu</summary>
+                  <summary className="cursor-pointer font-medium">{i18n.t('errors.errorDetails')}</summary>
                   <pre className="mt-2 whitespace-pre-wrap break-words">
                     {this.state.error.message}
                   </pre>
@@ -72,11 +73,11 @@ export class ErrorBoundary extends Component<Props, State> {
               )}
               <div className="flex gap-2 justify-center">
                 <Button variant="outline" onClick={this.handleRetry}>
-                  Spróbuj ponownie
+                  {i18n.t('common.retry')}
                 </Button>
                 <Button onClick={this.handleReload}>
                   <RefreshCw className="mr-2 h-4 w-4" />
-                  Odśwież stronę
+                  {i18n.t('common.refreshPage')}
                 </Button>
               </div>
             </CardContent>
