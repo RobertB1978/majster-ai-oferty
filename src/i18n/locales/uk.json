@@ -33,7 +33,9 @@
     "active": "Активний",
     "inactive": "Неактивний",
     "noData": "Немає даних",
-    "more": "більше"
+    "more": "більше",
+    "retry": "Спробувати знову",
+    "refreshPage": "Оновити сторінку"
   },
   "nav": {
     "dashboard": "Панель",
@@ -96,6 +98,14 @@
       "loggedIn": "Вхід виконано успішно",
       "accountCreated": "Обліковий запис створено успішно",
       "resetLinkSent": "Посилання для скидання пароля надіслано"
+    },
+    "passwordStrength": "Надійність пароля:",
+    "passwordRequirements": {
+      "minLength": "Мінімум 8 символів",
+      "uppercase": "Велика літера (A-Z)",
+      "lowercase": "Мала літера (a-z)",
+      "digit": "Цифра (0-9)",
+      "special": "Спеціальний символ (опційно)"
     }
   },
   "dashboard": {
@@ -360,16 +370,65 @@
     "paymentHistory": "Історія платежів",
     "noPayments": "Немає історії платежів",
     "plans": {
-      "free": "Безкоштовний",
-      "pro": "Про",
-      "business": "Бізнес"
+      "free": {
+        "description": "Для ознайомлення з додатком",
+        "features": {
+          "projects": "3 проекти",
+          "clients": "5 клієнтів",
+          "basicQuotes": "Базові кошториси",
+          "simplePdf": "Простий PDF шаблон"
+        },
+        "limitations": {
+          "ads": "Реклама в додатку",
+          "noAi": "Без AI асистента",
+          "noExcel": "Без експорту Excel"
+        }
+      },
+      "pro": {
+        "description": "Для початківців компаній",
+        "features": {
+          "projects": "15 проектів",
+          "clients": "30 клієнтів",
+          "noAds": "Без реклами",
+          "allPdfTemplates": "Всі PDF шаблони",
+          "excelExport": "Експорт Excel",
+          "emailSupport": "Підтримка email"
+        }
+      },
+      "business": {
+        "description": "Для зростаючих компаній",
+        "features": {
+          "unlimitedProjects": "Необмежена кількість проектів",
+          "unlimitedClients": "Необмежена кількість клієнтів",
+          "aiAssistant": "AI Асистент кошторисів",
+          "voiceQuotes": "Голосове створення кошторисів",
+          "calendarIntegration": "Інтеграція з календарем",
+          "companyDocuments": "Документи компанії",
+          "prioritySupport": "Пріоритетна підтримка"
+        }
+      },
+      "enterprise": {
+        "description": "Повні можливості",
+        "features": {
+          "allBusiness": "Все з Business",
+          "unlimitedAi": "Необмежені AI запити",
+          "customTemplates": "Власні галузеві шаблони",
+          "apiAccess": "Доступ API",
+          "dedicatedManager": "Виділений менеджер",
+          "sla": "SLA 99.9%",
+          "teamTraining": "Навчання команди",
+          "priorityFeatures": "Пріоритетні функції"
+        }
+      }
     },
     "features": "Функції",
     "price": "Ціна",
     "perMonth": "/місяць",
     "subscribe": "Підписатися",
     "cancel": "Скасувати підписку",
-    "popular": "Популярний"
+    "popular": "Популярний",
+    "withAds": "з рекламою",
+    "pricePerMonth": "PLN/міс."
   },
   "profile": {
     "title": "Профіль компанії",
@@ -473,7 +532,10 @@
     "serverError": "Помилка сервера. Спробуйте пізніше.",
     "formValidation": "Будь ласка, заповніть усі обов'язкові поля",
     "importFailed": "Помилка імпорту",
-    "selectTemplates": "Будь ласка, виберіть хоча б один шаблон"
+    "selectTemplates": "Будь ласка, виберіть хоча б один шаблон",
+    "somethingWentWrong": "Щось пішло не так",
+    "unexpectedError": "Сталася неочікувана помилка. Спробуйте оновити сторінку або повернутися на попередню.",
+    "errorDetails": "Деталі помилки"
   },
   "dialogs": {
     "deleteTemplate": "Видалити шаблон?",

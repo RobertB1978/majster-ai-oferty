@@ -20,26 +20,26 @@ interface PricingPlan {
   iconGradient: string;
 }
 
-const plans: PricingPlan[] = [
+const getPlans = (t: (key: string) => string): PricingPlan[] => [
   {
     id: 'free',
     name: 'Free',
     price: 0,
-    description: 'Do sprawdzenia aplikacji',
+    description: t('billing.plans.free.description'),
     icon: <Zap className="h-6 w-6" />,
     hasAds: true,
     gradient: 'from-slate-500/10 to-gray-500/5',
     iconGradient: 'from-slate-500 to-gray-600',
     features: [
-      '3 projekty',
-      '5 klientów',
-      'Podstawowe wyceny',
-      'Prosty szablon PDF',
+      t('billing.plans.free.features.projects'),
+      t('billing.plans.free.features.clients'),
+      t('billing.plans.free.features.basicQuotes'),
+      t('billing.plans.free.features.simplePdf'),
     ],
     limitations: [
-      'Reklamy w aplikacji',
-      'Brak AI asystenta',
-      'Brak eksportu Excel',
+      t('billing.plans.free.limitations.ads'),
+      t('billing.plans.free.limitations.noAi'),
+      t('billing.plans.free.limitations.noExcel'),
     ],
   },
   {
@@ -47,17 +47,17 @@ const plans: PricingPlan[] = [
     name: 'Pro',
     price: 39,
     priceId: 'price_pro_monthly',
-    description: 'Dla początkujących firm',
+    description: t('billing.plans.pro.description'),
     icon: <Star className="h-6 w-6" />,
     gradient: 'from-blue-500/10 to-indigo-500/5',
     iconGradient: 'from-blue-500 to-indigo-600',
     features: [
-      '15 projektów',
-      '30 klientów',
-      'Bez reklam',
-      'Wszystkie szablony PDF',
-      'Eksport do Excel',
-      'Wsparcie email',
+      t('billing.plans.pro.features.projects'),
+      t('billing.plans.pro.features.clients'),
+      t('billing.plans.pro.features.noAds'),
+      t('billing.plans.pro.features.allPdfTemplates'),
+      t('billing.plans.pro.features.excelExport'),
+      t('billing.plans.pro.features.emailSupport'),
     ],
   },
   {
@@ -65,19 +65,19 @@ const plans: PricingPlan[] = [
     name: 'Business',
     price: 99,
     priceId: 'price_business_monthly',
-    description: 'Dla rozwijających się firm',
+    description: t('billing.plans.business.description'),
     icon: <Crown className="h-6 w-6" />,
     popular: true,
     gradient: 'from-amber-500/10 to-orange-500/5',
     iconGradient: 'from-amber-500 to-orange-600',
     features: [
-      'Nieograniczone projekty',
-      'Nieograniczeni klienci',
-      'AI Asystent wycen',
-      'Głosowe tworzenie ofert',
-      'Integracja z kalendarzem',
-      'Dokumenty firmowe',
-      'Priorytetowe wsparcie',
+      t('billing.plans.business.features.unlimitedProjects'),
+      t('billing.plans.business.features.unlimitedClients'),
+      t('billing.plans.business.features.aiAssistant'),
+      t('billing.plans.business.features.voiceQuotes'),
+      t('billing.plans.business.features.calendarIntegration'),
+      t('billing.plans.business.features.companyDocuments'),
+      t('billing.plans.business.features.prioritySupport'),
     ],
   },
   {
@@ -85,19 +85,19 @@ const plans: PricingPlan[] = [
     name: 'Enterprise',
     price: 129,
     priceId: 'price_enterprise_monthly',
-    description: 'Pełne możliwości',
+    description: t('billing.plans.enterprise.description'),
     icon: <Rocket className="h-6 w-6" />,
     gradient: 'from-violet-500/10 to-purple-500/5',
     iconGradient: 'from-violet-500 to-purple-600',
     features: [
-      'Wszystko z Business',
-      'Nieograniczone AI zapytania',
-      'Własne szablony branżowe',
-      'API dostęp',
-      'Dedykowany opiekun',
-      'SLA 99.9%',
-      'Szkolenia zespołu',
-      'Priorytetowe funkcje',
+      t('billing.plans.enterprise.features.allBusiness'),
+      t('billing.plans.enterprise.features.unlimitedAi'),
+      t('billing.plans.enterprise.features.customTemplates'),
+      t('billing.plans.enterprise.features.apiAccess'),
+      t('billing.plans.enterprise.features.dedicatedManager'),
+      t('billing.plans.enterprise.features.sla'),
+      t('billing.plans.enterprise.features.teamTraining'),
+      t('billing.plans.enterprise.features.priorityFeatures'),
     ],
   },
 ];
@@ -109,7 +109,8 @@ interface PricingPlansProps {
 }
 
 export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: PricingPlansProps) {
-  const { t: _t } = useTranslation();
+  const { t } = useTranslation();
+  const plans = getPlans(t);
 
   return (
     <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
@@ -131,21 +132,21 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
             <div className="absolute top-3 right-3">
               <Badge className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground shadow-lg flex items-center gap-1">
                 <Sparkles className="h-3 w-3" />
-                Najpopularniejszy
+                {t('billing.mostPopular')}
               </Badge>
             </div>
           )}
           {plan.hasAds && (
             <div className="absolute top-3 left-3">
               <Badge variant="secondary" className="text-xs opacity-70">
-                z reklamami
+                {t('billing.withAds')}
               </Badge>
             </div>
           )}
           {currentPlan === plan.id && (
             <div className="absolute top-3 left-3">
               <Badge className="bg-green-500 text-white">
-                Aktywny
+                {t('billing.active')}
               </Badge>
             </div>
           )}
@@ -165,7 +166,7 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
             </div>
             <div className="flex items-baseline gap-1 mt-4">
               <span className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">{plan.price}</span>
-              <span className="text-muted-foreground text-sm">PLN/mies.</span>
+              <span className="text-muted-foreground text-sm">{t('billing.pricePerMonth')}</span>
             </div>
           </CardHeader>
           
@@ -192,8 +193,8 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
             <Button
               className={cn(
                 'w-full mt-4 transition-all duration-300',
-                plan.popular 
-                  ? 'bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow shadow-lg' 
+                plan.popular
+                  ? 'bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow shadow-lg'
                   : 'hover:bg-primary/10'
               )}
               variant={plan.popular ? 'default' : 'outline'}
@@ -201,11 +202,11 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
               disabled={currentPlan === plan.id || isLoading}
               onClick={() => onSelectPlan?.(plan.id, plan.priceId)}
             >
-              {currentPlan === plan.id 
-                ? '✓ Aktualny plan' 
-                : plan.price === 0 
-                  ? 'Rozpocznij za darmo' 
-                  : 'Wybierz plan'
+              {currentPlan === plan.id
+                ? t('billing.currentPlan')
+                : plan.price === 0
+                  ? t('billing.startFree')
+                  : t('billing.selectPlan')
               }
             </Button>
           </CardContent>

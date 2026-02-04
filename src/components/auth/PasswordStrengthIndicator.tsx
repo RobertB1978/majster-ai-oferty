@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { validatePasswordStrength, getPasswordStrengthLabel } from '@/lib/validations';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
@@ -8,15 +9,16 @@ interface PasswordStrengthIndicatorProps {
   showRequirements?: boolean;
 }
 
-export function PasswordStrengthIndicator({ 
-  password, 
-  showRequirements = true 
+export function PasswordStrengthIndicator({
+  password,
+  showRequirements = true
 }: PasswordStrengthIndicatorProps) {
+  const { t } = useTranslation();
   const analysis = useMemo(() => validatePasswordStrength(password), [password]);
   const strengthLabel = useMemo(() => getPasswordStrengthLabel(analysis.score), [analysis.score]);
-  
+
   if (!password) return null;
-  
+
   const progressPercent = (analysis.score / 7) * 100;
   
   return (
@@ -24,7 +26,7 @@ export function PasswordStrengthIndicator({
       {/* Strength bar */}
       <div className="space-y-1">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Siła hasła:</span>
+          <span className="text-muted-foreground">{t('auth.passwordStrength')}</span>
           <span className={strengthLabel.color}>{strengthLabel.label}</span>
         </div>
         <Progress 
@@ -36,25 +38,25 @@ export function PasswordStrengthIndicator({
       {/* Requirements list */}
       {showRequirements && (
         <div className="space-y-1 text-xs">
-          <RequirementItem 
-            met={password.length >= 8} 
-            text="Minimum 8 znaków" 
+          <RequirementItem
+            met={password.length >= 8}
+            text={t('auth.passwordRequirements.minLength')}
           />
-          <RequirementItem 
-            met={/[A-Z]/.test(password)} 
-            text="Wielka litera (A-Z)" 
+          <RequirementItem
+            met={/[A-Z]/.test(password)}
+            text={t('auth.passwordRequirements.uppercase')}
           />
-          <RequirementItem 
-            met={/[a-z]/.test(password)} 
-            text="Mała litera (a-z)" 
+          <RequirementItem
+            met={/[a-z]/.test(password)}
+            text={t('auth.passwordRequirements.lowercase')}
           />
-          <RequirementItem 
-            met={/\d/.test(password)} 
-            text="Cyfra (0-9)" 
+          <RequirementItem
+            met={/\d/.test(password)}
+            text={t('auth.passwordRequirements.digit')}
           />
-          <RequirementItem 
-            met={/[!@#$%^&*(),.?":{}|<>]/.test(password)} 
-            text="Znak specjalny (opcjonalne)" 
+          <RequirementItem
+            met={/[!@#$%^&*(),.?":{}|<>]/.test(password)}
+            text={t('auth.passwordRequirements.special')}
             optional
           />
         </div>

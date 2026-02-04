@@ -30,7 +30,9 @@
     "name": "Nazwa",
     "description": "Opis",
     "notes": "Notatki",
-    "or": "lub"
+    "or": "lub",
+    "retry": "Spróbuj ponownie",
+    "refreshPage": "Odśwież stronę"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -96,6 +98,14 @@
       "verificationFailed": "Weryfikacja biometryczna nie powiodła się",
       "verifying": "Weryfikacja...",
       "loginWithFingerprint": "Zaloguj odciskiem palca"
+    },
+    "passwordStrength": "Siła hasła:",
+    "passwordRequirements": {
+      "minLength": "Minimum 8 znaków",
+      "uppercase": "Wielka litera (A-Z)",
+      "lowercase": "Mała litera (a-z)",
+      "digit": "Cyfra (0-9)",
+      "special": "Znak specjalny (opcjonalnie)"
     }
   },
   "dashboard": {
@@ -373,10 +383,56 @@
     "upgrade": "Ulepsz plan",
     "manageBilling": "Zarządzaj płatnościami",
     "plans": {
-      "free": "Free",
-      "pro": "Pro",
-      "business": "Business",
-      "enterprise": "Enterprise"
+      "free": {
+        "description": "Do sprawdzenia aplikacji",
+        "features": {
+          "projects": "3 projekty",
+          "clients": "5 klientów",
+          "basicQuotes": "Podstawowe wyceny",
+          "simplePdf": "Prosty szablon PDF"
+        },
+        "limitations": {
+          "ads": "Reklamy w aplikacji",
+          "noAi": "Brak AI asystenta",
+          "noExcel": "Brak eksportu Excel"
+        }
+      },
+      "pro": {
+        "description": "Dla początkujących firm",
+        "features": {
+          "projects": "15 projektów",
+          "clients": "30 klientów",
+          "noAds": "Bez reklam",
+          "allPdfTemplates": "Wszystkie szablony PDF",
+          "excelExport": "Eksport do Excel",
+          "emailSupport": "Wsparcie email"
+        }
+      },
+      "business": {
+        "description": "Dla rozwijających się firm",
+        "features": {
+          "unlimitedProjects": "Nieograniczone projekty",
+          "unlimitedClients": "Nieograniczeni klienci",
+          "aiAssistant": "AI Asystent wycen",
+          "voiceQuotes": "Głosowe tworzenie ofert",
+          "calendarIntegration": "Integracja z kalendarzem",
+          "companyDocuments": "Dokumenty firmowe",
+          "prioritySupport": "Priorytetowe wsparcie"
+        }
+      },
+      "enterprise": {
+        "description": "Pełne możliwości",
+        "features": {
+          "allBusiness": "Wszystko z Business",
+          "unlimitedAi": "Nieograniczone AI zapytania",
+          "customTemplates": "Własne szablony branżowe",
+          "apiAccess": "API dostęp",
+          "dedicatedManager": "Dedykowany opiekun",
+          "sla": "SLA 99.9%",
+          "teamTraining": "Szkolenia zespołu",
+          "priorityFeatures": "Priorytetowe funkcje"
+        }
+      }
     },
     "features": "Funkcje",
     "price": "Cena",
@@ -386,7 +442,9 @@
     "active": "Aktywny",
     "mostPopular": "Najpopularniejszy",
     "selectPlan": "Wybierz plan",
-    "startFree": "Rozpocznij za darmo"
+    "startFree": "Rozpocznij za darmo",
+    "withAds": "z reklamami",
+    "pricePerMonth": "PLN/mies."
   },
   "profile": {
     "title": "Profil firmy",
@@ -596,7 +654,10 @@
     "invalidEmailFormat": "Nieprawidłowy format email",
     "invalidFileType": "Nieprawidłowy typ pliku",
     "selectTemplates": "Wybierz szablony do importu",
-    "formValidation": "Popraw błędy w formularzu"
+    "formValidation": "Popraw błędy w formularzu",
+    "somethingWentWrong": "Coś poszło nie tak",
+    "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj odświeżyć stronę lub wrócić do poprzedniej strony.",
+    "errorDetails": "Szczegóły błędu"
   },
   "messages": {
     "themeSaved": "Motyw został zapisany i zastosowany",
