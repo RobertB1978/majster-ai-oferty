@@ -695,5 +695,20 @@
       "approved": "Oferta została zaakceptowana!",
       "rejected": "Oferta została odrzucona"
     }
+  },
+  "audit": {
+    "title": "Dziennik audytu",
+    "subtitle": "Historia wszystkich działań w systemie",
+    "action": "Działanie",
+    "type": "Typ",
+    "objectId": "ID obiektu",
+    "device": "Urządzenie",
+    "exportCsv": "Eksport CSV",
+    "searchActions": "Szukaj działań...",
+    "filterType": "Filtruj typ",
+    "noLogs": "Brak wpisów w dzienniku audytu",
+    "showing": "Wyświetlono",
+    "of": "z",
+    "entries": "wpisów"
   }
 }
