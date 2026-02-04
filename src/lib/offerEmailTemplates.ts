@@ -5,6 +5,8 @@
  * Provides pre-filled email content based on project type.
  */
 
+import i18n from '@/i18n';
+
 /**
  * Placeholder types that can be used in templates
  */
@@ -33,99 +35,27 @@ export interface OfferEmailTemplate {
 export const OFFER_EMAIL_TEMPLATES: OfferEmailTemplate[] = [
   {
     id: 'general-construction',
-    name: 'Budowlanka ogólna',
-    description: 'Uniwersalny szablon dla projektów budowlanych',
-    content: `Szanowny {client_name},
-
-W odpowiedzi na Państwa zapytanie, przesyłamy ofertę na realizację projektu: {project_name}.
-
-Wartość projektu: {total_price}
-Szacowany termin realizacji: {deadline}
-
-W załączeniu znajdą Państwo szczegółową wycenę wraz z opisem zakresu prac budowlanych. Cena obejmuje materiały, robociznę oraz transport.
-
-Jesteśmy do Państwa dyspozycji w celu omówienia szczegółów oferty lub ewentualnych modyfikacji zakresu prac.
-
-Oferta ważna przez 30 dni od daty wystawienia.
-
-Pozostajemy do dyspozycji,
-{company_name}
-Tel: {company_phone}`,
+    name: i18n.t('emailTemplates.generalConstruction.name'),
+    description: i18n.t('emailTemplates.generalConstruction.description'),
+    content: i18n.t('emailTemplates.generalConstruction.content'),
   },
   {
     id: 'renovation-finishing',
-    name: 'Remont / Wykończenie',
-    description: 'Szablon dla prac wykończeniowych i remontowych',
-    content: `Dzień dobry {client_name},
-
-Dziękujemy za zainteresowanie naszymi usługami wykończeniowymi. Przygotowaliśmy dla Państwa ofertę na: {project_name}.
-
-Wartość prac wykończeniowych: {total_price}
-Planowany termin zakończenia: {deadline}
-
-Oferta obejmuje kompleksowe wykończenie zgodnie z uzgodnionym zakresem. W cenie uwzględniliśmy wysokiej jakości materiały oraz profesjonalne wykonanie.
-
-Szczegółowy opis pozycji i materiałów znajduje się w załączonym dokumencie PDF.
-
-Chętnie odpowiemy na wszystkie pytania i dopasujemy ofertę do Państwa potrzeb.
-
-Z poważaniem,
-{company_name}
-Tel: {company_phone}`,
+    name: i18n.t('emailTemplates.renovationFinishing.name'),
+    description: i18n.t('emailTemplates.renovationFinishing.description'),
+    content: i18n.t('emailTemplates.renovationFinishing.content'),
   },
   {
     id: 'plumbing',
-    name: 'Hydraulika',
-    description: 'Szablon dla instalacji hydraulicznych',
-    content: `Szanowny {client_name},
-
-Przesyłamy ofertę na wykonanie instalacji hydraulicznej: {project_name}.
-
-Wartość robót hydraulicznych: {total_price}
-Termin wykonania: {deadline}
-
-Oferta obejmuje:
-• Projekt instalacji
-• Dostawę materiałów i osprzętu
-• Prace montażowe
-• Próby szczelności i odbiór instalacji
-
-Używamy wyłącznie sprawdzonych materiałów renomowanych producentów. Na wykonane prace udzielamy gwarancji.
-
-Szczegółowy kosztorys znajdą Państwo w załączonym dokumencie.
-
-Zapraszamy do kontaktu w celu ustalenia szczegółów.
-
-Pozdrawiamy,
-{company_name}
-Tel: {company_phone}`,
+    name: i18n.t('emailTemplates.plumbing.name'),
+    description: i18n.t('emailTemplates.plumbing.description'),
+    content: i18n.t('emailTemplates.plumbing.content'),
   },
   {
     id: 'electrical',
-    name: 'Elektryka',
-    description: 'Szablon dla instalacji elektrycznych',
-    content: `Szanowny {client_name},
-
-Przedstawiamy ofertę na wykonanie instalacji elektrycznej: {project_name}.
-
-Wartość robót elektrycznych: {total_price}
-Planowany czas realizacji: {deadline}
-
-Zakres prac obejmuje:
-• Projektowanie układu elektrycznego
-• Montaż instalacji zgodnie z normami
-• Podłączenie urządzeń i osprzętu
-• Pomiary i protokoły odbiorcze
-
-Wszystkie prace wykonywane są przez uprawnione osoby, z użyciem atestowanych materiałów. Gwarantujemy zgodność z przepisami bezpieczeństwa.
-
-Szczegóły techniczne i kosztorys w załączonym PDF.
-
-Jesteśmy do Państwa dyspozycji.
-
-Z poważaniem,
-{company_name}
-Tel: {company_phone}`,
+    name: i18n.t('emailTemplates.electrical.name'),
+    description: i18n.t('emailTemplates.electrical.description'),
+    content: i18n.t('emailTemplates.electrical.content'),
   },
 ];
 
@@ -157,12 +87,12 @@ export function renderOfferEmailTemplate(
 
   // Replace placeholders with actual values or safe defaults
   const placeholders: Record<keyof OfferEmailPlaceholders, string> = {
-    client_name: data.client_name || 'Kliencie',
-    project_name: data.project_name || 'Projekt',
-    total_price: data.total_price || '[do uzupełnienia]',
-    deadline: data.deadline || '[do uzupełnienia]',
+    client_name: data.client_name || i18n.t('emailTemplates.placeholders.client'),
+    project_name: data.project_name || i18n.t('emailTemplates.placeholders.project'),
+    total_price: data.total_price || i18n.t('emailTemplates.placeholders.toComplete'),
+    deadline: data.deadline || i18n.t('emailTemplates.placeholders.toComplete'),
     company_name: data.company_name || '',
-    company_phone: data.company_phone || '[do uzupełnienia]',
+    company_phone: data.company_phone || i18n.t('emailTemplates.placeholders.toComplete'),
   };
 
   // Replace all placeholders

@@ -1,5 +1,9 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
+import i18n from '@/i18n';
+
+// Initialize i18n with Polish locale for tests
+i18n.changeLanguage('pl');
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
