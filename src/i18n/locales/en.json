@@ -760,5 +760,94 @@
     "hourlyRate": "Hourly rate",
     "contact": "Contact",
     "reviews": "Reviews"
+  },
+  "emailTemplates": {
+    "generalConstruction": {
+      "name": "General Construction",
+      "description": "Universal template for construction projects",
+      "content": "Dear {client_name},\n\nIn response to your inquiry, we are sending you an offer for the project: {project_name}.\n\nProject value: {total_price}\nEstimated completion time: {deadline}\n\nAttached you will find a detailed estimate with a description of the scope of construction work. The price includes materials, labor, and transport.\n\nWe are at your disposal to discuss the details of the offer or any modifications to the scope of work.\n\nOffer valid for 30 days from the date of issue.\n\nYours sincerely,\n{company_name}\nPhone: {company_phone}"
+    },
+    "renovationFinishing": {
+      "name": "Renovation / Finishing",
+      "description": "Template for finishing and renovation works",
+      "content": "Hello {client_name},\n\nThank you for your interest in our finishing services. We have prepared an offer for you: {project_name}.\n\nFinishing work value: {total_price}\nPlanned completion date: {deadline}\n\nThe offer includes comprehensive finishing according to the agreed scope. The price includes high-quality materials and professional workmanship.\n\nDetailed description of items and materials can be found in the attached PDF document.\n\nWe will be happy to answer all questions and adjust the offer to your needs.\n\nBest regards,\n{company_name}\nPhone: {company_phone}"
+    },
+    "plumbing": {
+      "name": "Plumbing",
+      "description": "Template for plumbing installations",
+      "content": "Dear {client_name},\n\nWe are sending you an offer for plumbing installation: {project_name}.\n\nPlumbing work value: {total_price}\nCompletion time: {deadline}\n\nThe offer includes:\n• Installation design\n• Delivery of materials and fittings\n• Installation works\n• Leak tests and installation acceptance\n\nWe only use proven materials from renowned manufacturers. We provide a warranty for the work performed.\n\nYou will find a detailed cost estimate in the attached document.\n\nPlease contact us to arrange details.\n\nBest regards,\n{company_name}\nPhone: {company_phone}"
+    },
+    "electrical": {
+      "name": "Electrical",
+      "description": "Template for electrical installations",
+      "content": "Dear {client_name},\n\nWe present an offer for electrical installation: {project_name}.\n\nElectrical work value: {total_price}\nPlanned implementation time: {deadline}\n\nScope of work includes:\n• Electrical system design\n• Installation according to standards\n• Connection of devices and equipment\n• Measurements and acceptance protocols\n\nAll work is performed by qualified personnel using certified materials. We guarantee compliance with safety regulations.\n\nTechnical details and cost estimate in the attached PDF.\n\nWe are at your disposal.\n\nBest regards,\n{company_name}\nPhone: {company_phone}"
+    },
+    "placeholders": {
+      "client": "Client",
+      "project": "Project",
+      "toComplete": "[to be completed]"
+    }
+  },
+  "validations": {
+    "client": {
+      "nameRequired": "Client name is required",
+      "nameMaxLength": "Name max {{max}} characters",
+      "phoneMinDigits": "Phone number must have at least {{min}} digits",
+      "emailInvalid": "Invalid email format",
+      "addressMaxLength": "Address max {{max}} characters"
+    },
+    "project": {
+      "nameRequired": "Project name is required",
+      "nameMaxLength": "Name max {{max}} characters",
+      "clientRequired": "Select client"
+    },
+    "quote": {
+      "positionNameRequired": "Position name is required",
+      "quantityMin": "Quantity must be greater than {{min}}",
+      "priceNonNegative": "Price cannot be negative",
+      "categoryRequired": "Category is required",
+      "categoryMaterial": "Material",
+      "categoryLabor": "Labor",
+      "positionsMin": "Add at least one position",
+      "marginMin": "Margin cannot be negative",
+      "marginMax": "Margin max {{max}}%"
+    },
+    "profile": {
+      "companyNameRequired": "Company name is required",
+      "companyNameMaxLength": "Name max {{max}} characters",
+      "ownerNameMaxLength": "Name and surname max {{max}} characters",
+      "nipFormat": "NIP must have {{digits}} digits",
+      "streetMaxLength": "Street max {{max}} characters",
+      "cityMaxLength": "City max {{max}} characters",
+      "postalCodeFormat": "Postal code: XX-XXX",
+      "phoneMinDigits": "Phone number must have at least {{min}} digits",
+      "emailInvalid": "Invalid email format",
+      "bankAccountMaxLength": "Bank account max {{max}} characters",
+      "emailSubjectMaxLength": "Subject max {{max}} characters",
+      "emailGreetingMaxLength": "Greeting max {{max}} characters",
+      "emailSignatureMaxLength": "Signature max {{max}} characters"
+    },
+    "password": {
+      "minLength": "Password must be at least {{min}} characters",
+      "requireUppercase": "Password must contain at least one uppercase letter",
+      "requireLowercase": "Password must contain at least one lowercase letter",
+      "requireNumber": "Password must contain at least one digit",
+      "commonPattern": "Password contains a too common pattern",
+      "addSpecialChar": "Add a special character (!@#$%^&*) to strengthen the password",
+      "strengthWeak": "Weak",
+      "strengthMedium": "Medium",
+      "strengthGood": "Good",
+      "strengthStrong": "Strong"
+    },
+    "auth": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format",
+      "passwordMinLength": "Password must be at least {{min}} characters",
+      "passwordRequireUppercase": "Password must contain an uppercase letter",
+      "passwordRequireLowercase": "Password must contain a lowercase letter",
+      "passwordRequireDigit": "Password must contain a digit",
+      "confirmPasswordRequired": "Confirm password",
+      "passwordsNotMatch": "Passwords do not match"
+    }
   }
 }

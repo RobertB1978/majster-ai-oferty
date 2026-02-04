@@ -675,16 +675,6 @@
     "recordingStarted": "Nagrywanie rozpoczęte. Mów wyraźnie...",
     "templatesImported": "Zaimportowano {{count}} szablonów"
   },
-  "validation": {
-    "nameRequired": "Nazwa jest wymagana",
-    "quantityMustBePositive": "Ilość musi być > 0",
-    "priceCannotBeNegative": "Cena nie może być ujemna",
-    "addAtLeastOnePosition": "Dodaj przynajmniej jedną pozycję",
-    "signatureRequired": "Dodaj podpis",
-    "projectNameRequired": "Podaj nazwę projektu",
-    "clientRequired": "Wybierz klienta",
-    "companyNameRequired": "Podaj nazwę firmy"
-  },
   "dialogs": {
     "deleteTemplate": "Usunąć szablon?",
     "irreversibleOperation": "Ta operacja jest nieodwracalna.",
@@ -771,5 +761,94 @@
     "showing": "Wyświetlono",
     "of": "z",
     "entries": "wpisów"
+  },
+  "emailTemplates": {
+    "generalConstruction": {
+      "name": "Budowlanka ogólna",
+      "description": "Uniwersalny szablon dla projektów budowlanych",
+      "content": "Szanowny {client_name},\n\nW odpowiedzi na Państwa zapytanie, przesyłamy ofertę na realizację projektu: {project_name}.\n\nWartość projektu: {total_price}\nSzacowany termin realizacji: {deadline}\n\nW załączeniu znajdą Państwo szczegółową wycenę wraz z opisem zakresu prac budowlanych. Cena obejmuje materiały, robociznę oraz transport.\n\nJesteśmy do Państwa dyspozycji w celu omówienia szczegółów oferty lub ewentualnych modyfikacji zakresu prac.\n\nOferta ważna przez 30 dni od daty wystawienia.\n\nPozostajemy do dyspozycji,\n{company_name}\nTel: {company_phone}"
+    },
+    "renovationFinishing": {
+      "name": "Remont / Wykończenie",
+      "description": "Szablon dla prac wykończeniowych i remontowych",
+      "content": "Dzień dobry {client_name},\n\nDziękujemy za zainteresowanie naszymi usługami wykończeniowymi. Przygotowaliśmy dla Państwa ofertę na: {project_name}.\n\nWartość prac wykończeniowych: {total_price}\nPlanowany termin zakończenia: {deadline}\n\nOferta obejmuje kompleksowe wykończenie zgodnie z uzgodnionym zakresem. W cenie uwzględniliśmy wysokiej jakości materiały oraz profesjonalne wykonanie.\n\nSzczegółowy opis pozycji i materiałów znajduje się w załączonym dokumencie PDF.\n\nChętnie odpowiemy na wszystkie pytania i dopasujemy ofertę do Państwa potrzeb.\n\nZ poważaniem,\n{company_name}\nTel: {company_phone}"
+    },
+    "plumbing": {
+      "name": "Hydraulika",
+      "description": "Szablon dla instalacji hydraulicznych",
+      "content": "Szanowny {client_name},\n\nPrzesyłamy ofertę na wykonanie instalacji hydraulicznej: {project_name}.\n\nWartość robót hydraulicznych: {total_price}\nTermin wykonania: {deadline}\n\nOferta obejmuje:\n• Projekt instalacji\n• Dostawę materiałów i osprzętu\n• Prace montażowe\n• Próby szczelności i odbiór instalacji\n\nUżywamy wyłącznie sprawdzonych materiałów renomowanych producentów. Na wykonane prace udzielamy gwarancji.\n\nSzczegółowy kosztorys znajdą Państwo w załączonym dokumencie.\n\nZapraszamy do kontaktu w celu ustalenia szczegółów.\n\nPozdrawiamy,\n{company_name}\nTel: {company_phone}"
+    },
+    "electrical": {
+      "name": "Elektryka",
+      "description": "Szablon dla instalacji elektrycznych",
+      "content": "Szanowny {client_name},\n\nPrzedstawiamy ofertę na wykonanie instalacji elektrycznej: {project_name}.\n\nWartość robót elektrycznych: {total_price}\nPlanowany czas realizacji: {deadline}\n\nZakres prac obejmuje:\n• Projektowanie układu elektrycznego\n• Montaż instalacji zgodnie z normami\n• Podłączenie urządzeń i osprzętu\n• Pomiary i protokoły odbiorcze\n\nWszystkie prace wykonywane są przez uprawnione osoby, z użyciem atestowanych materiałów. Gwarantujemy zgodność z przepisami bezpieczeństwa.\n\nSzczegóły techniczne i kosztorys w załączonym PDF.\n\nJesteśmy do Państwa dyspozycji.\n\nZ poważaniem,\n{company_name}\nTel: {company_phone}"
+    },
+    "placeholders": {
+      "client": "Kliencie",
+      "project": "Projekt",
+      "toComplete": "[do uzupełnienia]"
+    }
+  },
+  "validations": {
+    "client": {
+      "nameRequired": "Nazwa klienta jest wymagana",
+      "nameMaxLength": "Nazwa max {{max}} znaków",
+      "phoneMinDigits": "Numer telefonu musi mieć min. {{min}} cyfr",
+      "emailInvalid": "Nieprawidłowy format email",
+      "addressMaxLength": "Adres max {{max}} znaków"
+    },
+    "project": {
+      "nameRequired": "Nazwa projektu jest wymagana",
+      "nameMaxLength": "Nazwa max {{max}} znaków",
+      "clientRequired": "Wybierz klienta"
+    },
+    "quote": {
+      "positionNameRequired": "Nazwa pozycji jest wymagana",
+      "quantityMin": "Ilość musi być większa od {{min}}",
+      "priceNonNegative": "Cena nie może być ujemna",
+      "categoryRequired": "Kategoria jest wymagana",
+      "categoryMaterial": "Materiał",
+      "categoryLabor": "Robocizna",
+      "positionsMin": "Dodaj przynajmniej jedną pozycję",
+      "marginMin": "Marża nie może być ujemna",
+      "marginMax": "Marża max {{max}}%"
+    },
+    "profile": {
+      "companyNameRequired": "Nazwa firmy jest wymagana",
+      "companyNameMaxLength": "Nazwa max {{max}} znaków",
+      "ownerNameMaxLength": "Imię i nazwisko max {{max}} znaków",
+      "nipFormat": "NIP musi mieć {{digits}} cyfr",
+      "streetMaxLength": "Ulica max {{max}} znaków",
+      "cityMaxLength": "Miasto max {{max}} znaków",
+      "postalCodeFormat": "Kod pocztowy: XX-XXX",
+      "phoneMinDigits": "Numer telefonu musi mieć min. {{min}} cyfr",
+      "emailInvalid": "Nieprawidłowy format email",
+      "bankAccountMaxLength": "Numer konta max {{max}} znaków",
+      "emailSubjectMaxLength": "Temat max {{max}} znaków",
+      "emailGreetingMaxLength": "Powitanie max {{max}} znaków",
+      "emailSignatureMaxLength": "Podpis max {{max}} znaków"
+    },
+    "password": {
+      "minLength": "Hasło musi mieć minimum {{min}} znaków",
+      "requireUppercase": "Hasło musi zawierać co najmniej jedną wielką literę",
+      "requireLowercase": "Hasło musi zawierać co najmniej jedną małą literę",
+      "requireNumber": "Hasło musi zawierać co najmniej jedną cyfrę",
+      "commonPattern": "Hasło zawiera zbyt popularny wzorzec",
+      "addSpecialChar": "Dodaj znak specjalny (!@#$%^&*) aby wzmocnić hasło",
+      "strengthWeak": "Słabe",
+      "strengthMedium": "Średnie",
+      "strengthGood": "Dobre",
+      "strengthStrong": "Silne"
+    },
+    "auth": {
+      "emailRequired": "Email jest wymagany",
+      "emailInvalid": "Nieprawidłowy format email",
+      "passwordMinLength": "Hasło musi mieć min. {{min}} znaków",
+      "passwordRequireUppercase": "Hasło musi zawierać wielką literę",
+      "passwordRequireLowercase": "Hasło musi zawierać małą literę",
+      "passwordRequireDigit": "Hasło musi zawierać cyfrę",
+      "confirmPasswordRequired": "Potwierdź hasło",
+      "passwordsNotMatch": "Hasła nie są identyczne"
+    }
   }
 }
