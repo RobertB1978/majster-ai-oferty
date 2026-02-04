@@ -669,5 +669,34 @@
       "approved": "Offer has been approved!",
       "rejected": "Offer has been rejected"
     }
+  },
+  "organizations": {
+    "title": "Organizations",
+    "subtitle": "Manage teams and companies",
+    "create": "Create organization",
+    "name": "Organization name",
+    "slug": "URL identifier",
+    "members": "Members",
+    "invite": "Invite member",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Administrator",
+      "manager": "Manager",
+      "member": "Member"
+    },
+    "noOrganizations": "No organizations",
+    "createFirst": "Create your first organization"
+  },
+  "marketplace": {
+    "title": "Marketplace",
+    "subtitle": "Find subcontractors",
+    "search": "Search subcontractors",
+    "filters": "Filters",
+    "location": "Location",
+    "specialty": "Specialty",
+    "rating": "Rating",
+    "hourlyRate": "Hourly rate",
+    "contact": "Contact",
+    "reviews": "Reviews"
   }
 }
