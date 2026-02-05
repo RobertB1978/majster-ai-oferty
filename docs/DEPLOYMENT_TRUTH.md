@@ -1,6 +1,25 @@
 # DEPLOYMENT_TRUTH.md
 
-Cel: jedno miejsce, które odpowiada na pytanie „co **naprawdę** działa na środowisku”.  
+## Status P0 Deployment Truth: `UNRESOLVED`
+
+- Evidence Pack: `docs/P0_EVIDENCE_PACK.md`
+- Evidence Request (dla właściciela środowisk): `docs/P0_EVIDENCE_REQUEST.md`
+
+> Fakt z repo: obecny frontend to **Vite + React + TypeScript** (m.in. `vite.config.ts`, brak `next.config.*`).
+
+## Jak zebrać dowody w 10 minut (dla laika)
+1. Wejdź do **Vercel → Project Settings → Git** i zrób screenshot: repo + production branch.
+2. Wejdź do **Vercel → Deployments** i zrób screenshot ostatniego `Ready` na produkcji.
+3. Skopiuj URL produkcyjny i URL ostatniego Preview.
+4. Otwórz ostatni produkcyjny deployment i skopiuj fragment logu z commit SHA.
+5. Wejdź do **Vercel → Settings → Environment Variables** i zrób screenshot samych nazw zmiennych (bez wartości).
+6. Wejdź do **Supabase → Project Settings → General** i zrób screenshot `Project ID`.
+7. Pobierz listę migracji z produkcji (panel/CLI) i porównaj z `supabase/migrations`.
+8. Wejdź do **Supabase → Edge Functions** i zrób screenshot listy wdrożonych funkcji.
+9. Uruchom 1 krytyczną funkcję i zapisz status code + timestamp.
+10. Wklej wszystko do `docs/P0_EVIDENCE_PACK.md`, oznacz PASS/FAIL i wypisz Blockers.
+
+Cel: jedno miejsce, które odpowiada na pytanie „co **naprawdę** działa na środowisku”.
 Wynik każdej sekcji: **PASS / FAIL / BLOCKED** + dowody.
 
 ## 1) Vercel — checklista prawdy wdrożeniowej
@@ -24,7 +43,7 @@ Wynik każdej sekcji: **PASS / FAIL / BLOCKED** + dowody.
 - [ ] Trasa `/offer/*` renderuje się poprawnie.
 - [ ] Nagłówki bezpieczeństwa i CSP są spójne z wymaganiami biznesowymi.
 
-**Wynik Vercel:** `PASS | FAIL | BLOCKED`  
+**Wynik Vercel:** `PASS | FAIL | BLOCKED`
 **Blockers:** (wypisz)
 
 ---
@@ -50,7 +69,7 @@ Wynik każdej sekcji: **PASS / FAIL / BLOCKED** + dowody.
 - [ ] Wymagane sekrety są ustawione.
 - [ ] Ostatnie wywołania nie pokazują błędów krytycznych.
 
-**Wynik Supabase:** `PASS | FAIL | BLOCKED`  
+**Wynik Supabase:** `PASS | FAIL | BLOCKED`
 **Blockers:** (wypisz)
 
 ---
@@ -68,4 +87,3 @@ Format dowodu:
 - `Środowisko:` (prod/preview/dev)
 - `Wynik:` (PASS/FAIL)
 - `Komentarz:`
-
