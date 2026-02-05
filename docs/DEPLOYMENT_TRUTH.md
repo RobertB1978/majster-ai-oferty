@@ -1,71 +1,86 @@
 # DEPLOYMENT_TRUTH.md
 
-Cel: jedno miejsce, które odpowiada na pytanie „co **naprawdę** działa na środowisku”.  
-Wynik każdej sekcji: **PASS / FAIL / BLOCKED** + dowody.
+Cel: jedno źródło prawdy dla P0 „Deployment Truth”.
 
-## 1) Vercel — checklista prawdy wdrożeniowej
-### 1.1 Git integration
-- [ ] Repo i branch produkcyjny są jednoznacznie wskazane.
-- [ ] Auto-deploy z `main` jest potwierdzony.
-- [ ] Preview deploy dla PR działa i ma unikalny URL.
+> Zasada: bez twardych dowodów wynik = **FAIL** (nie zgadujemy).
 
-### 1.2 Environment variables
-- [ ] `VITE_SUPABASE_URL` ustawione dla Production + Preview.
-- [ ] `VITE_SUPABASE_ANON_KEY` ustawione dla Production + Preview.
-- [ ] Brak placeholderów, brak konfliktów nazw.
+## 1) Vercel — PASS/FAIL
 
-### 1.3 Build logs i artefakty
-- [ ] Ostatni produkcyjny build zakończony sukcesem.
-- [ ] W logu jest użyta oczekiwana wersja Node/npm.
-- [ ] Nie ma błędów krytycznych (lint/test/build).
+### 1.1 Repo-side evidence (z tego repo)
+- [x] `vercel.json` istnieje i deklaruje `framework: "vite"`, `buildCommand: "npm run build"`, `outputDirectory: "dist"`.
+- [x] Jest rewrite SPA `/(.*) -> /index.html`.
+- [x] W repo brak workflow GitHub Actions, który deployuje na Vercel (jest CI, ale bez kroku `vercel deploy`).
+- [x] W `package.json` są jawne wersje runtime: `node 20.x`, `npm 10.x`.
+- [x] W dokumentacji repo (`docs/VERCEL_SETUP_CHECKLIST.md`) wskazane są wymagane ENV dla Vercel.
 
-### 1.4 Rewrites/headers
-- [ ] Rewrite SPA (`/(.*)` -> `/index.html`) działa.
-- [ ] Trasa `/offer/*` renderuje się poprawnie.
-- [ ] Nagłówki bezpieczeństwa i CSP są spójne z wymaganiami biznesowymi.
+### 1.2 Dashboard evidence (do dostarczenia przez właściciela)
+- [ ] Screen: **Project Settings → General → Git** (repo + branch produkcyjny).
+- [ ] Screen: **Deployments** z ostatnim produkcyjnym deploymentem i statusem Success.
+- [ ] Screen: szczegóły deploya z commit SHA (musi odpowiadać commitowi z GitHub).
+- [ ] Screen: **Environment Variables** (same nazwy, bez wartości) dla Production i Preview.
+- [ ] Link: produkcyjny URL aplikacji (`*.vercel.app` lub domena custom).
 
-**Wynik Vercel:** `PASS | FAIL | BLOCKED`  
-**Blockers:** (wypisz)
+**Wynik: FAIL**
 
----
+**Blockers:**
+- Brak dowodu z panelu Vercel, że projekt jest podpięty do właściwego repo/brancha i że deploy idzie z Git.
+- Brak dowodu mapowania commit SHA GitHub -> deployment Vercel.
+- Brak dowodu, że ENV w Vercel są ustawione dla obu środowisk (Production + Preview).
 
-## 2) Supabase — checklista prawdy wdrożeniowej
-### 2.1 Migracje
-- [ ] Lista migracji w repo = lista migracji zastosowanych na środowisku.
-- [ ] Brak „driftu” (migracja w DB bez pliku lub plik bez wdrożenia).
-- [ ] Ostatnia migracja jest znana i zweryfikowana.
-
-### 2.2 Tabele i relacje
-- [ ] Kluczowe tabele istnieją i mają zgodny schemat.
-- [ ] Indeksy krytyczne są obecne.
-- [ ] Brak niespójności typów kolumn między środowiskami.
-
-### 2.3 RLS
-- [ ] RLS włączone na tabelach wielodostępowych.
-- [ ] Policy dla odczytu/zapisu jest udokumentowana.
-- [ ] Testy „admin vs non-admin” dają oczekiwany wynik.
-
-### 2.4 Edge Functions
-- [ ] Lista funkcji w repo = lista funkcji wdrożonych.
-- [ ] Wymagane sekrety są ustawione.
-- [ ] Ostatnie wywołania nie pokazują błędów krytycznych.
-
-**Wynik Supabase:** `PASS | FAIL | BLOCKED`  
-**Blockers:** (wypisz)
+**Co trzeba dostarczyć, żeby zmienić FAIL -> PASS:**
+1. Screen integracji Git (repo + branch produkcyjny).
+2. Screen ostatniego deploymentu produkcyjnego ze statusem Success i datą.
+3. Screen szczegółów deploymentu z commit SHA.
+4. Screen listy ENV (same nazwy) z zaznaczonym Production + Preview.
+5. Produkcyjny URL i krótki test ręczny (otwiera się aplikacja bez błędów konfiguracji).
 
 ---
 
-## 3) DOWODY (co wkleić obowiązkowo)
-Dla każdej checklisty dołącz:
-1. **Screeny** z paneli (Vercel/Supabase) z datą i środowiskiem.
-2. **Logi build/deploy** (fragmenty z timestamp).
-3. **Komendy i output** (np. porównanie list migracji).
-4. **URL artefaktu** (preview/production) + krótki test manualny.
+## 2) Supabase — PASS/FAIL
 
-Format dowodu:
-- `Źródło:` (panel/log/CLI)
-- `Data:`
-- `Środowisko:` (prod/preview/dev)
-- `Wynik:` (PASS/FAIL)
-- `Komentarz:`
+### 2.1 Repo-side evidence (z tego repo)
+- [x] `supabase/migrations/` istnieje i zawiera migracje SQL.
+- [x] `supabase/functions/` istnieje i zawiera Edge Functions.
+- [x] `supabase/config.toml` istnieje (używany przez workflow deploy).
+- [x] Jest workflow `.github/workflows/supabase-deploy.yml`, ale uruchamiany **manualnie** (`workflow_dispatch`), nie automatycznie po merge.
+- [x] Workflow deklaruje deploy migracji (`supabase db push`) oraz funkcji (`supabase functions deploy ...`).
 
+### 2.2 Dashboard evidence (do dostarczenia przez właściciela)
+- [ ] Screen: **Project ref** z Supabase Dashboard (zgodny z repo/workflow).
+- [ ] Screen: **Database → Migrations** (pełna lista i kolejność).
+- [ ] Screen: **Database → Tables** z potwierdzeniem obecności kluczowych tabel (w tym `admin_*`).
+- [ ] Screen: **Edge Functions** z listą wdrożonych funkcji i datami.
+- [ ] Screen: **Authentication → URL Configuration** (Site URL + Redirect URLs).
+- [ ] Log z ostatniego uruchomienia `supabase-deploy.yml` ze statusem sukces/porażka.
+
+**Wynik: FAIL**
+
+**Blockers:**
+- Brak dowodu, że migracje z repo zostały rzeczywiście zastosowane na produkcyjnym projekcie Supabase.
+- Brak dowodu, że wszystkie Edge Functions z repo są wdrożone i aktywne.
+- Workflow jest manualny, więc bez logu uruchomienia nie ma gwarancji aktualności wdrożenia.
+
+**Co trzeba dostarczyć, żeby zmienić FAIL -> PASS:**
+1. Screen Project ref z Supabase.
+2. Screen listy migracji w Dashboard (z kolejnością).
+3. Log/screen ostatniego przebiegu `supabase-deploy.yml` (sekcje migrations + functions).
+4. Screen listy Edge Functions i statusów wdrożeń.
+5. Screen Auth URL Configuration (Site URL i Redirect URLs).
+6. Potwierdzenie zgodności: liczba migracji i funkcji repo = dashboard.
+
+---
+
+## 3) Status P0 (na teraz)
+
+| Obszar | Wynik | Uzasadnienie skrócone |
+|---|---|---|
+| Vercel | **FAIL** | Repo potwierdza konfigurację build/rewrite, ale brak dowodów dashboardowych Git integration + deployment trace do commitu. |
+| Supabase | **FAIL** | Repo potwierdza obecność migracji/funkcji i workflow, ale brak dowodu wykonania deploya na właściwym projekcie. |
+
+## 4) Dowody operacyjne — format minimalny
+Dla każdego dowodu wklej:
+- Źródło (Vercel/Supabase/GitHub Actions)
+- Datę i strefę czasową
+- Środowisko (Production/Preview)
+- Krótki werdykt (PASS/FAIL)
+- Link lub screen
