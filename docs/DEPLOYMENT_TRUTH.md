@@ -4,6 +4,7 @@
 
 - Evidence Pack: `docs/P0_EVIDENCE_PACK.md`
 - Evidence Request (dla właściciela środowisk): `docs/P0_EVIDENCE_REQUEST.md`
+- Merge policy: w razie konfliktu treść z `main` jest bazą, a elementy P0 są dogrywane bez utraty dowodów.
 
 > Fakt z repo: obecny frontend to **Vite + React + TypeScript** (m.in. `vite.config.ts`, brak `next.config.*`).
 
