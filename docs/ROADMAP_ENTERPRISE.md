@@ -37,7 +37,7 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 ### Aktywne ryzyka:
 1. **Brak jednej prawdy wdrożeniowej Vercel** (co jest ustawione vs co tylko opisane). ⛔ BLOCKER — wymaga dowodów od Ownera
 2. **Brak jednej prawdy migracji Supabase** (co jest faktycznie zastosowane na środowiskach). ⛔ BLOCKER — wymaga dowodów od Ownera
-3. **Ryzyko merge/push na `main` bez pełnego review i green checks**.
+3. **Ryzyko merge/push na `main` bez pełnego review i green checks**. ⏳ Mitigation documented in `docs/PR03_BRANCH_PROTECTION.md` — awaiting owner to apply settings.
 4. **Polityka CSP:** globalne `frame-ancestors 'none'` może być sprzeczne z potrzebą osadzania widoku oferty.
 5. **ESLint warnings** — 17 warnings (0 errors) po PR#05. Wszystkie to `react-refresh/only-export-components` (kosmetyczne, oczekiwane w shadcn/ui).
 
@@ -77,10 +77,15 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
   3. ✅ Engine constraint widened to `>=20` — verified in current `package.json`
 - **Verified:** 2026-02-07 by independent audit on HEAD `143ba55`.
 
-### PR#03 — Governance PR discipline — 🔲 NOT STARTED
+### PR#03 — Governance PR discipline — ⏳ DOCS_READY (awaiting owner to apply in GitHub UI)
 - **Cel:** egzekwowanie review/green checks/no-direct-main.
 - **Zakres:** proces + template + branch protection (operacyjnie).
-- **Ryzyka główne:** omijanie procesu w pilnych poprawkach.
+- **Deliverables:**
+  - ✅ `docs/PR03_BRANCH_PROTECTION.md` — exact click-path, required toggles, verification steps
+  - ✅ Owner checklist included in document §4
+  - 🔲 Owner applies settings in GitHub UI (Settings → Branches)
+  - 🔲 Owner runs verification tests from §5
+- **Ryzyka główne:** omijanie procesu w pilnych poprawkach (bypass procedure documented in §6).
 - **Dependencies:** None — can proceed independently of PR#01.
 
 ### PR#04 — Techniczny cleanup ryzyk z audytu — 🔲 NOT STARTED (partially unblocked)
@@ -132,15 +137,15 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 | PR#00 | Zainstalować SOURCE OF TRUTH | ✅ DONE | docs/.github/ADR only | komplet dokumentów | — |
 | PR#01 | Ustalić prawdę wdrożeniową | ⏳ DOCS_READY | docs + dowody, bez runtime zmian | PASS/FAIL + blockers | Owner dashboard evidence |
 | PR#01.5 | Config & tooling fixes | ✅ DONE | config.toml, package.json | config complete, deps correct | — |
-| PR#03 | Wymusić dyscyplinę PR/merge | 🔲 TODO | .github + docs | no direct main, review required | — |
+| PR#03 | Wymusić dyscyplinę PR/merge | ⏳ DOCS_READY | docs/ | no direct main, review required | Owner applies in GitHub UI |
 | PR#04 | Domknąć ryzyka audytowe | 🔲 TODO (partially done) | atomowe zmiany produktowe | każde ryzyko osobny mini-PR | CSP: owner input |
 | PR#05 | Fix ESLint exhaustive-deps | ✅ DONE | 8 files, lint only | warnings reduced | — |
 
 ### Execution Order (current):
 1. ~~PR#00~~ ✅
 2. ~~PR#01.5~~ ✅
-3. ~~PR#05~~ ✅ (this session)
-4. **Next (no blocker):** PR#03 — governance enforcement
+3. ~~PR#05~~ ✅
+4. **PR#03** ⏳ DOCS_READY — docs complete, awaiting owner to apply branch protection in GitHub UI
 5. **When owner provides evidence:** PR#01 → close
 6. **After PR#01 + owner CSP decision:** PR#04 — remaining cleanup
 
@@ -193,5 +198,6 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 - Traceability: `docs/TRACEABILITY_MATRIX.md`
 - PR Playbook: `docs/PR_PLAYBOOK.md`
 - Deployment Truth: `docs/DEPLOYMENT_TRUTH.md`
+- Branch Protection: `docs/PR03_BRANCH_PROTECTION.md`
 - Stage Assessment: `docs/STAGE_ASSESSMENT_2026-02-07.md`
 - **Superseded:** `docs/ROADMAP.md` (v1, Feb 3 — replaced by this document)

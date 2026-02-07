@@ -9,8 +9,8 @@
 | Source of Truth roadmap | `docs/ROADMAP_ENTERPRISE.md`, `docs/ADR/ADR-0000-source-of-truth.md` | PR#00 | Review dokumentu + zgodnosc scope fence | ✅ DONE |
 | Deployment truth (Vercel) | `docs/DEPLOYMENT_TRUTH.md`, `docs/P0_EVIDENCE_PACK.md`, `docs/P0_EVIDENCE_REQUEST.md`, `scripts/verify/repo_inventory.sh`, `scripts/verify/vercel_repo_checks.sh`, `vercel.json` | PR#01 (consolidated) | `scripts/verify/repo_inventory.sh`, `scripts/verify/vercel_repo_checks.sh`, screeny z Vercel Dashboard | ⏳ DOCS_READY — awaiting dashboard evidence |
 | Deployment truth (Supabase) | `docs/DEPLOYMENT_TRUTH.md`, `docs/P0_EVIDENCE_PACK.md`, `docs/P0_EVIDENCE_REQUEST.md`, `scripts/verify/supabase_repo_checks.sh`, `supabase/migrations/*`, `supabase/functions/*`, `.github/workflows/supabase-deploy.yml` | PR#01 (consolidated) | `scripts/verify/supabase_repo_checks.sh`, log `supabase-deploy.yml`, screeny Supabase Dashboard | ⏳ DOCS_READY — awaiting dashboard evidence |
-| Dyscyplina PR (process) | `docs/PR_PLAYBOOK.md`, `.github/pull_request_template.md`, `AGENTS.md` | PR#03 | PR testowy przechodzacy template i checks | 🔲 TODO |
-| Governance: no direct main | `AGENTS.md`, branch protection (operacyjnie) | PR#03 | ustawienia repo + green checks | 🔲 TODO |
+| Dyscyplina PR (process) | `docs/PR_PLAYBOOK.md`, `.github/pull_request_template.md`, `docs/PR03_BRANCH_PROTECTION.md` | PR#03 | PR testowy przechodzacy template i checks | ⏳ DOCS_READY — awaiting owner to apply in GitHub UI |
+| Governance: no direct main | `docs/PR03_BRANCH_PROTECTION.md`, branch protection (operacyjnie) | PR#03 | ustawienia repo + green checks + verification §5 | ⏳ DOCS_READY — awaiting owner to apply in GitHub UI |
 
 ## Risk Backlog (PR#04.x)
 
