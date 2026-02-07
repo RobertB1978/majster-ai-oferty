@@ -1,12 +1,15 @@
 # Majster.AI — ENTERPRISE ROADMAP
+
+> **SUPERSEDED** — This document has been replaced by [`ROADMAP_ENTERPRISE.md`](./ROADMAP_ENTERPRISE.md) (v4) as per [ADR-0000](./ADR/ADR-0000-source-of-truth.md). This file is kept for historical reference only. Do not update this file.
+
 ## Production-Ready Repository (Existing Codebase)
 
-**Version**: 1.0
+**Version**: 1.0 (ARCHIVED)
 **Date**: February 3, 2026
-**Status**: ✅ **SINGLE SOURCE OF TRUTH**
+**Status**: SUPERSEDED by ROADMAP_ENTERPRISE.md v4
 **Last Updated**: After PR#6 merged
 **Repository**: RobertB1978/majster-ai-oferty
-**Current Grade**: **A+ (95/100)** (FINAL_GRADE_2026.md)
+**Current Grade**: **A+ (95/100)** (FINAL_GRADE_2026.md) — *Note: grade contested in v4 assessment*
 
 ---
 
