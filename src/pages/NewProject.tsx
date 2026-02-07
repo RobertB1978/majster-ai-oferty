@@ -116,6 +116,7 @@ export default function NewProject() {
         recognition.abort();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only: initialize speech recognition once
   }, []);
 
   const handleVoiceToggle = () => {

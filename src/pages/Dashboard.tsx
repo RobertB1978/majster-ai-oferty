@@ -44,6 +44,7 @@ export default function Dashboard() {
     if (!onboardingLoading && !onboardingProgress && totalProjects === 0 && totalClients === 0) {
       createOnboarding.mutate();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- createOnboarding is a mutation object; adding it causes infinite re-renders
   }, [onboardingLoading, onboardingProgress, totalProjects, totalClients]);
 
   // Show onboarding wizard for new users
