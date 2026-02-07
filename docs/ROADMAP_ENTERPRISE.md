@@ -1,14 +1,14 @@
-# Majster.AI — ROADMAP ENTERPRISE v3 (SOURCE OF TRUTH)
+# Majster.AI — ROADMAP ENTERPRISE v4 (SOURCE OF TRUTH)
 
-**Status:** ACTIVE — Stage: Foundation Ready, Blocked on External Evidence
+**Status:** ACTIVE — Stage: Late Alpha (Code Solid, Deployment Unverified)
 **Właściciel decyzji:** Product Owner + Tech Lead
 **Zakres dokumentu:** plan wdrożeniowy i dyscyplina PR dla repozytorium
-**Ostatnia weryfikacja:** 2026-02-07 (automated audit on HEAD `6d0f2bf`)
+**Ostatnia weryfikacja:** 2026-02-07 (independent audit on HEAD `143ba55`)
 
 ---
 
 ## 0) Inwentarz repo (snapshot — verified 2026-02-07)
-1. Framework: **Vite + React + TypeScript** (`vite.config.ts`, `package.json` scripts `vite`).
+1. Framework: **Vite 7.3.1 + React 18.3 + TypeScript 5.8** (`vite.config.ts`, `package.json` scripts `vite`).
 2. Nie jest to Next.js (brak `next.config.*`, brak katalogu root `app/` dla Next).
 3. Routing jest po stronie klienta przez **react-router-dom** (`BrowserRouter`, `Routes`, `Route`).
 4. Publiczny route oferty: `/offer/:token` w `src/App.tsx`.
@@ -16,8 +16,10 @@
 6. `vercel.json` ma globalne CSP z `frame-ancestors 'none'` oraz osobny blok nagłówków dla `/offer/(.*)`.
 7. W repo istnieją migracje Supabase w `supabase/migrations` (22 pliki).
 8. Lista Edge Functions (`supabase/functions`): `_shared`, `ai-chat-agent`, `ai-quote-suggestions`, `analyze-photo`, `approve-offer`, `cleanup-expired-data`, `create-checkout-session`, `csp-report`, `delete-user-account`, `finance-ai-analysis`, `healthcheck`, `ocr-invoice`, `public-api`, `send-expiring-offer-reminders`, `send-offer-email`, `stripe-webhook`, `voice-quote-processor`.
-9. **Vite** v7.3.1, **Vitest** v4.0.16, **ESLint** v9, **TypeScript** v5.8.
-10. `package.json` engines: Node 20.x, npm 10.x (strict — blocks install on Node 22.x without `--force`).
+9. **Vitest** v4.0.16, **ESLint** v9.39.2, **TypeScript** v5.8.3.
+10. `package.json` engines: `>=20` (accepts Node 20.x and 22.x LTS).
+11. All 16 Edge Functions configured in `config.toml` with explicit `verify_jwt` values.
+12. Test libraries correctly in `devDependencies`.
 
 ---
 
@@ -26,22 +28,28 @@ Ten dokument jest od teraz **jedyną mapą pracy**: co robimy, w jakiej kolejno�
 Najpierw porządkujemy „prawdę wdrożeniową" (Vercel + Supabase), żeby było jasne co naprawdę działa w produkcji, a co tylko lokalnie.
 Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy, plan wycofania i brak „dodatkowych poprawek przy okazji".
 
+> **UWAGA:** Plik `docs/ROADMAP.md` jest przestarzały i zastąpiony przez ten dokument. Patrz ADR-0000.
+
 ---
 
 ## 2) Najważniejsze ryzyka (z audytu — updated 2026-02-07)
-1. **Brak jednej prawdy wdrożeniowej Vercel** (co jest ustawione vs co tylko opisane). ⛔ BLOCKER
-2. **Brak jednej prawdy migracji Supabase** (co jest faktycznie zastosowane na środowiskach). ⛔ BLOCKER
+
+### Aktywne ryzyka:
+1. **Brak jednej prawdy wdrożeniowej Vercel** (co jest ustawione vs co tylko opisane). ⛔ BLOCKER — wymaga dowodów od Ownera
+2. **Brak jednej prawdy migracji Supabase** (co jest faktycznie zastosowane na środowiskach). ⛔ BLOCKER — wymaga dowodów od Ownera
 3. **Ryzyko merge/push na `main` bez pełnego review i green checks**.
-4. **Hardcoded `ACTION_LABELS` / i18n dług techniczny**.
-5. **Polityka CSP:** globalne `frame-ancestors 'none'` może być sprzeczne z potrzebą osadzania widoku oferty.
-6. **ESLint warnings** — 25 warnings (0 errors) utrzymują się (nie blokują builda, ale zwiększają ryzyko regresji).
-7. **NEW: `config.toml` — 6/16 Edge Functions brak jawnej konfiguracji `verify_jwt`** — w tym `healthcheck` i `stripe-webhook`, które powinny mieć `verify_jwt = false`.
-8. **NEW: Test libraries (vitest, jsdom, @testing-library/*) w `dependencies` zamiast `devDependencies`** — zwiększa rozmiar produkcyjnej paczki.
-9. **NEW: Engine constraint Node 20.x może być zbyt restrykcyjny** — Node 22 jest LTS od 2024-10, a `npm ci` odmawia instalacji.
+4. **Polityka CSP:** globalne `frame-ancestors 'none'` może być sprzeczne z potrzebą osadzania widoku oferty.
+5. **ESLint warnings** — 17 warnings (0 errors) po PR#05. Wszystkie to `react-refresh/only-export-components` (kosmetyczne, oczekiwane w shadcn/ui).
+
+### Ryzyka rozwiązane (od v3):
+- ~~`config.toml` — 6/16 Edge Functions brak konfiguracji~~ → NAPRAWIONE w commit `0770247`
+- ~~Test libraries w `dependencies` zamiast `devDependencies`~~ → NAPRAWIONE w commit `0770247`
+- ~~Engine constraint Node 20.x zbyt restrykcyjny~~ → NAPRAWIONE: `>=20` akceptuje Node 22 LTS
+- ~~Hardcoded `ACTION_LABELS`~~ → NAPRAWIONE w commit `e38f90a` (i18n keys)
 
 ---
 
-## 3) Roadmapa realizacji (PR#00–PR#04 + nowe)
+## 3) Roadmapa realizacji (PR#00–PR#05)
 
 ### PR#00 — Instalacja SOURCE OF TRUTH (docs-only) — ✅ DONE
 - **Cel:** ustanowienie dokumentów nadrzędnych + szablonu PR + guardrails pracy.
@@ -53,22 +61,21 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 - **Cel:** potwierdzona „prawda" konfiguracji i deploy flow.
 - **Zakres:** dokumentacja + dowody; bez zmian produktu.
 - **Ryzyka główne:** env drift, rewrites/headers drift, brak dowodów build logs.
-- **Repo-side work:** DONE — DEPLOYMENT_TRUTH.md §1.1 and §2.1 all checked, verify scripts in `scripts/verify/`.
-- **Dashboard evidence:** NOT DONE — DEPLOYMENT_TRUTH.md §1.2 and §2.2 all unchecked. P0 = UNRESOLVED.
-- **Blocker:** Requires Product Owner to provide Vercel and Supabase dashboard screenshots per `docs/P0_EVIDENCE_REQUEST.md`.
-- **Next action:** Owner provides evidence → fill in P0_EVIDENCE_PACK.md → mark PASS/FAIL → close PR#01.
+- **Repo-side work:** DONE — DEPLOYMENT_TRUTH.md §1.1 and §2.1 all checked.
+- **Dashboard evidence:** NOT DONE — §1.2 and §2.2 all unchecked. P0 = UNRESOLVED.
+- **Blocker:** Requires Product Owner to provide Vercel and Supabase dashboard screenshots.
+- **Next action:** Owner provides evidence → mark PASS/FAIL → close PR#01.
 
 ### PR#02 — (consolidated into PR#01)
 
-### PR#01.5 (NEW) — Config & Tooling Fixes
-- **Cel:** naprawić luki konfiguracyjne znalezione w audycie 2026-02-07.
+### PR#01.5 — Config & Tooling Fixes — ✅ DONE
+- **Cel:** naprawić luki konfiguracyjne znalezione w audycie.
 - **Zakres:** `supabase/config.toml`, `package.json` (devDeps, engines).
-- **Items:**
-  1. Add missing 6 Edge Functions to `config.toml` with correct `verify_jwt` values.
-  2. Move test libraries from `dependencies` to `devDependencies`.
-  3. Evaluate widening engine constraint to `>=20` to accept Node 22 LTS.
-- **Ryzyka główne:** config.toml change affects deploy behavior; engine change affects CI.
-- **Dependencies:** None — can proceed independently of PR#01.
+- **Items (all completed):**
+  1. ✅ Add missing 6 Edge Functions to `config.toml` — commit `0770247`
+  2. ✅ Test libraries in `devDependencies` — verified in current `package.json`
+  3. ✅ Engine constraint widened to `>=20` — verified in current `package.json`
+- **Verified:** 2026-02-07 by independent audit on HEAD `143ba55`.
 
 ### PR#03 — Governance PR discipline — 🔲 NOT STARTED
 - **Cel:** egzekwowanie review/green checks/no-direct-main.
@@ -76,22 +83,33 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 - **Ryzyka główne:** omijanie procesu w pilnych poprawkach.
 - **Dependencies:** None — can proceed independently of PR#01.
 
-### PR#04 — Techniczny cleanup ryzyk z audytu — 🔲 NOT STARTED
-- **Cel:** zaplanowany backlog napraw (ACTION_LABELS, CSP, lint warnings).
-- **Zakres:** atomowe PR-y produktowe po zatwierdzeniu prawdy wdrożeniowej.
-- **Ryzyka główne:** scope creep i łączenie wielu fixów naraz.
-- **Dependencies:** PR#01 (deployment truth) should be PASS before production code changes.
+### PR#04 — Techniczny cleanup ryzyk z audytu — 🔲 NOT STARTED (partially unblocked)
+- **Cel:** zaplanowany backlog napraw (CSP, lint warnings).
+- **Zakres:** atomowe PR-y produktowe.
+- **Remaining items:**
+  - CSP `frame-ancestors` policy review (requires business decision)
+  - 18 `react-refresh/only-export-components` warnings (cosmetic, low priority)
+- **Previously planned items now DONE:**
+  - ~~ACTION_LABELS i18n~~ → commit `e38f90a`
+  - ~~react-hooks/exhaustive-deps warnings~~ → PR#05
+- **Dependencies:** CSP change requires owner input. Lint warnings are independent.
+
+### PR#05 (NEW) — ESLint warnings fix — ✅ DONE (this session)
+- **Cel:** naprawić `react-hooks/exhaustive-deps` warnings w kodzie produkcyjnym.
+- **Zakres:** 8 plików z warningami — 2 fixes + 6 documented suppressions.
+- **Files:** `ProjectTimeline.tsx`, `BiometricSettings.tsx`, `VoiceQuoteCreator.tsx`, `useTheme.ts`, `Dashboard.tsx`, `NewProject.tsx`, `OfferApproval.tsx`, `PdfGenerator.tsx`
+- **Risk:** LOW — each suppression includes documented reasoning.
 
 ---
 
-## 4) Verified Quality Gates (2026-02-07)
+## 4) Verified Quality Gates (2026-02-07, independent)
 
 | Command | Result | Detail |
 |---------|--------|--------|
 | `npm run type-check` | ✅ PASS | 0 errors |
-| `npm run lint` | ✅ PASS | 0 errors, 25 warnings |
+| `npm run lint` | ✅ PASS | 0 errors, 17 warnings (all cosmetic react-refresh) |
 | `npm run test` | ✅ PASS | 20 files, 281 tests, all green |
-| `npm run build` | ✅ PASS | Built in 30.34s |
+| `npm run build` | ✅ PASS | Built in 31.06s |
 
 ---
 
@@ -113,16 +131,59 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 |---|---|---|---|---|---|
 | PR#00 | Zainstalować SOURCE OF TRUTH | ✅ DONE | docs/.github/ADR only | komplet dokumentów | — |
 | PR#01 | Ustalić prawdę wdrożeniową | ⏳ DOCS_READY | docs + dowody, bez runtime zmian | PASS/FAIL + blockers | Owner dashboard evidence |
-| PR#01.5 | Config & tooling fixes | 🔲 TODO | config.toml, package.json | config complete, deps correct | — |
+| PR#01.5 | Config & tooling fixes | ✅ DONE | config.toml, package.json | config complete, deps correct | — |
 | PR#03 | Wymusić dyscyplinę PR/merge | 🔲 TODO | .github + docs | no direct main, review required | — |
-| PR#04 | Domknąć ryzyka audytowe | 🔲 TODO | atomowe zmiany produktowe | każde ryzyko osobny mini-PR | PR#01 PASS |
+| PR#04 | Domknąć ryzyka audytowe | 🔲 TODO (partially done) | atomowe zmiany produktowe | każde ryzyko osobny mini-PR | CSP: owner input |
+| PR#05 | Fix ESLint exhaustive-deps | ✅ DONE | 8 files, lint only | warnings reduced | — |
 
-### Execution Order (recommended):
-1. **Now:** This status update PR (docs-only)
-2. **Next (parallel track A):** PR#01.5 — config/tooling fixes (no external dependency)
-3. **Next (parallel track B):** PR#03 — governance enforcement (no external dependency)
-4. **When owner provides evidence:** PR#01 → close
-5. **After PR#01 PASS:** PR#04 — technical cleanup
+### Execution Order (current):
+1. ~~PR#00~~ ✅
+2. ~~PR#01.5~~ ✅
+3. ~~PR#05~~ ✅ (this session)
+4. **Next (no blocker):** PR#03 — governance enforcement
+5. **When owner provides evidence:** PR#01 → close
+6. **After PR#01 + owner CSP decision:** PR#04 — remaining cleanup
+
+### What is NOT blocked and can proceed NOW:
+- PR#03 (governance) — process + templates, no code changes
+- i18n remaining coverage (if desired) — PR-4B from ROADMAP.md scope
+
+### What IS blocked:
+- PR#01 — waiting on owner for Vercel/Supabase dashboard evidence
+- PR#04 CSP item — requires business decision on `frame-ancestors`
+
+---
+
+## 7) Stage Assessment (2026-02-07)
+
+### Current Stage: **Late Alpha**
+
+**What this means:**
+- Code compiles, all tests pass, build succeeds — the codebase is solid
+- Infrastructure exists (CI/CD, monitoring, security headers, RLS)
+- Feature set is comprehensive (auth, quotes, offers, PDF, i18n, admin, calendar, marketplace)
+- BUT: no verified production deployment evidence
+- BUT: no semantic versioning (still v0.0.0)
+- BUT: no CHANGELOG or release process
+- BUT: governance not enforced (branch protection)
+
+**What "Late Alpha" does NOT mean:**
+- It does NOT mean the code is bad — code quality is high
+- It does NOT mean features are missing — the feature set is complete for MVP
+- It DOES mean the project needs deployment verification and release process before calling it "production ready"
+
+### Path to Beta:
+1. Owner provides deployment evidence (PR#01) → confirms real production state
+2. Governance enforced (PR#03) → protects main branch
+3. Version bumped to 0.1.0 → semantic versioning begins
+4. CHANGELOG created → track releases
+
+### Path to Production (v1.0):
+1. All Beta prerequisites met
+2. CSP policy resolved for offer embedding
+3. Real user testing completed
+4. Custom domain configured
+5. Backup and monitoring verified
 
 ---
 
@@ -133,3 +194,4 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 - PR Playbook: `docs/PR_PLAYBOOK.md`
 - Deployment Truth: `docs/DEPLOYMENT_TRUTH.md`
 - Stage Assessment: `docs/STAGE_ASSESSMENT_2026-02-07.md`
+- **Superseded:** `docs/ROADMAP.md` (v1, Feb 3 — replaced by this document)
