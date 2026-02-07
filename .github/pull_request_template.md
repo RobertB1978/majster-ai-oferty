@@ -2,10 +2,10 @@
 
 ## Scope Fence
 ### IN SCOPE
-- 
+-
 
 ### OUT OF SCOPE
-- 
+-
 
 ## Minimalny fix
 - Objaw:
@@ -26,14 +26,17 @@
 - [ ] `npm run type-check`
 
 ## Rollback plan
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Ryzyka / wpływ
-- 
+-
 
 ## DOWODY wdrożeniowe (jeśli dotyczy)
 - Vercel (log/screen/link):
 - Supabase (log/screen/link):
 
+## Related
+- Roadmap: `docs/ROADMAP_ENTERPRISE.md`
+- Traceability: `docs/TRACEABILITY_MATRIX.md`
