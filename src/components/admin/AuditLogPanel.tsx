@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -23,39 +24,10 @@ import { useAuditLogs } from '@/hooks/useAuditLog';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 
-const actionLabels: Record<string, string> = {
-  'user.login': 'Logowanie',
-  'user.logout': 'Wylogowanie',
-  'user.register': 'Rejestracja',
-  'user.password_change': 'Zmiana hasła',
-  'user.profile_update': 'Aktualizacja profilu',
-  'user.consent_update': 'Aktualizacja zgód',
-  'user.data_export': 'Eksport danych',
-  'user.data_delete_request': 'Żądanie usunięcia',
-  'client.create': 'Utworzenie klienta',
-  'client.update': 'Aktualizacja klienta',
-  'client.delete': 'Usunięcie klienta',
-  'project.create': 'Utworzenie projektu',
-  'project.update': 'Aktualizacja projektu',
-  'project.delete': 'Usunięcie projektu',
-  'quote.create': 'Utworzenie wyceny',
-  'quote.update': 'Aktualizacja wyceny',
-  'quote.version_create': 'Nowa wersja wyceny',
-  'pdf.generate': 'Generowanie PDF',
-  'pdf.download': 'Pobranie PDF',
-  'offer.send': 'Wysłanie oferty',
-  'offer.approve': 'Akceptacja oferty',
-  'offer.reject': 'Odrzucenie oferty',
-  'team.member_add': 'Dodanie do zespołu',
-  'team.member_remove': 'Usunięcie z zespołu',
-  'team.role_change': 'Zmiana roli',
-  'api.key_create': 'Utworzenie klucza API',
-  'api.key_revoke': 'Unieważnienie klucza API',
-  'subscription.change': 'Zmiana subskrypcji',
-  'settings.update': 'Aktualizacja ustawień',
-  'document.upload': 'Wgranie dokumentu',
-  'document.delete': 'Usunięcie dokumentu',
-};
+/** Convert dot-notation action (e.g. "user.login") to i18n key under audit.actionLabels */
+function actionLabelKey(action: string): string {
+  return `audit.actionLabels.${action.replace('.', '_')}`;
+}
 
 const actionIcons: Record<string, LucideIcon> = {
   'user': User,
@@ -84,6 +56,7 @@ const actionColors: Record<string, string> = {
 };
 
 export function AuditLogPanel() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [actionFilter, setActionFilter] = useState<string>('all');
   const { data: logs = [], isLoading } = useAuditLogs({ limit: 200 });
@@ -118,7 +91,7 @@ export function AuditLogPanel() {
       ['Data', 'Akcja', 'Typ', 'ID obiektu', 'User Agent'].join(','),
       ...filteredLogs.map(log => [
         format(new Date(log.created_at), 'yyyy-MM-dd HH:mm:ss'),
-        actionLabels[log.action] || log.action,
+        t(actionLabelKey(log.action), { defaultValue: log.action }),
         log.entity_type,
         log.entity_id || '-',
         `"${log.user_agent || '-'}"`,
@@ -226,7 +199,7 @@ export function AuditLogPanel() {
                           <div className="flex items-center gap-2">
                             <Icon className="h-4 w-4 text-muted-foreground" />
                             <Badge className={getActionBadgeColor(log.action)}>
-                              {actionLabels[log.action] || log.action}
+                              {t(actionLabelKey(log.action), { defaultValue: log.action })}
                             </Badge>
                           </div>
                         </TableCell>
