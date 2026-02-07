@@ -29,3 +29,29 @@ verify_jwt = true
 
 [functions.send-expiring-offer-reminders]
 verify_jwt = false
+
+# --- Functions added by PR#01.5 (previously missing from config) ---
+
+[functions.healthcheck]
+# Monitoring endpoint — must be unauthenticated for uptime probes
+verify_jwt = false
+
+[functions.stripe-webhook]
+# Stripe sends webhooks without JWT; function verifies stripe-signature header
+verify_jwt = false
+
+[functions.csp-report]
+# Browsers send CSP violation reports without auth tokens
+verify_jwt = false
+
+[functions.cleanup-expired-data]
+# Cron job — no JWT available; function validates CRON_SECRET internally
+verify_jwt = false
+
+[functions.create-checkout-session]
+# Requires authenticated user (validates JWT in-function)
+verify_jwt = true
+
+[functions.delete-user-account]
+# Requires authenticated user (validates JWT in-function)
+verify_jwt = true
