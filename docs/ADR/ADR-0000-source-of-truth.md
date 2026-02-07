@@ -25,3 +25,16 @@ Pozostałe dokumenty są pomocnicze i muszą być z nim spójne.
 - Trzeba utrzymywać aktualność master-dokumentu.
 - Każda zmiana priorytetów wymaga aktualizacji roadmapy.
 
+## Dokumenty pomocnicze
+| Dokument | Rola |
+|----------|------|
+| `docs/DEPLOYMENT_TRUTH.md` | Stan wdrożenia — PASS/FAIL Vercel + Supabase |
+| `docs/TRACEABILITY_MATRIX.md` | Mapping: wymaganie → kod → PR → test → status |
+| `docs/PR_PLAYBOOK.md` | Proces PR — szablon, zasady, workflow |
+| `docs/PRODUCT_SCOPE.md` | Zakres produktu — moduły, priorytety |
+
+## Zasada aktualizacji
+Przy każdym PR:
+1. Zaktualizuj `TRACEABILITY_MATRIX.md` (zmień status wymagań)
+2. Zaktualizuj `ROADMAP_ENTERPRISE.md` (zmień status PR)
+3. Jeśli dotyczy wdrożenia: zaktualizuj `DEPLOYMENT_TRUTH.md`
