@@ -57,14 +57,16 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 - **DoD:** dokumenty utworzone, spójne i gotowe do użycia operacyjnego.
 - **Verified:** 2026-02-07. Commit `6d0f2bf`. All 7 docs present and internally consistent.
 
-### PR#01 — Deployment Truth (Vercel + Supabase) — ⏳ DOCS_READY (blocked on owner)
+### PR#01 — Deployment Truth (Vercel + Supabase) — 🚫 BLOCKED (awaiting owner evidence)
 - **Cel:** potwierdzona „prawda" konfiguracji i deploy flow.
 - **Zakres:** dokumentacja + dowody; bez zmian produktu.
 - **Ryzyka główne:** env drift, rewrites/headers drift, brak dowodów build logs.
 - **Repo-side work:** DONE — DEPLOYMENT_TRUTH.md §1.1 and §2.1 all checked.
-- **Dashboard evidence:** NOT DONE — §1.2 and §2.2 all unchecked. P0 = UNRESOLVED.
-- **Blocker:** Requires Product Owner to provide Vercel and Supabase dashboard screenshots.
-- **Next action:** Owner provides evidence → mark PASS/FAIL → close PR#01.
+- **Dashboard evidence:** NOT DONE — 0/11 mandatory items have evidence. P0 = UNRESOLVED.
+- **Blocker:** Requires Product Owner to provide 11 screenshots (5 Vercel + 6 Supabase).
+- **Pass/fail criteria:** `docs/PROD_VERIFICATION.md` — ALL 11 mandatory items must PASS.
+- **Owner checklist:** `docs/P0_EVIDENCE_REQUEST.md` — step-by-step screenshot guide.
+- **Next action:** Owner collects screenshots → evidence into `P0_EVIDENCE_PACK.md` → evaluate PASS/FAIL → close PR#01.
 
 ### PR#02 — (consolidated into PR#01)
 
@@ -135,7 +137,7 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 | PR | Cel | Status | Scope fence | DoD | Blocker |
 |---|---|---|---|---|---|
 | PR#00 | Zainstalować SOURCE OF TRUTH | ✅ DONE | docs/.github/ADR only | komplet dokumentów | — |
-| PR#01 | Ustalić prawdę wdrożeniową | ⏳ DOCS_READY | docs + dowody, bez runtime zmian | PASS/FAIL + blockers | Owner dashboard evidence |
+| PR#01 | Ustalić prawdę wdrożeniową | 🚫 BLOCKED | docs + dowody, bez runtime zmian | 11/11 mandatory PASS (`PROD_VERIFICATION.md`) | Owner: 11 screenshots (see `P0_EVIDENCE_REQUEST.md`) |
 | PR#01.5 | Config & tooling fixes | ✅ DONE | config.toml, package.json | config complete, deps correct | — |
 | PR#03 | Wymusić dyscyplinę PR/merge | ⏳ DOCS_READY | docs/ | no direct main, review required | Owner applies in GitHub UI |
 | PR#04 | Domknąć ryzyka audytowe | 🔲 TODO (partially done) | atomowe zmiany produktowe | każde ryzyko osobny mini-PR | CSP: owner input |
@@ -154,7 +156,7 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 - i18n remaining coverage (if desired) — PR-4B from ROADMAP.md scope
 
 ### What IS blocked:
-- PR#01 — waiting on owner for Vercel/Supabase dashboard evidence
+- PR#01 — 🚫 BLOCKED: 0/11 mandatory evidence items provided. Owner must follow `docs/P0_EVIDENCE_REQUEST.md` and paste results into `docs/P0_EVIDENCE_PACK.md`. Criteria in `docs/PROD_VERIFICATION.md`.
 - PR#04 CSP item — requires business decision on `frame-ancestors`
 
 ---
@@ -198,6 +200,9 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 - Traceability: `docs/TRACEABILITY_MATRIX.md`
 - PR Playbook: `docs/PR_PLAYBOOK.md`
 - Deployment Truth: `docs/DEPLOYMENT_TRUTH.md`
+- **Production Verification (PR#01):** `docs/PROD_VERIFICATION.md` — pass/fail criteria (11 mandatory items)
+- **Evidence Request (PR#01):** `docs/P0_EVIDENCE_REQUEST.md` — owner screenshot guide
+- **Evidence Pack (PR#01):** `docs/P0_EVIDENCE_PACK.md` — template for pasting evidence
 - Branch Protection: `docs/PR03_BRANCH_PROTECTION.md`
 - Stage Assessment: `docs/STAGE_ASSESSMENT_2026-02-07.md`
 - **Superseded:** `docs/ROADMAP.md` (v1, Feb 3 — replaced by this document)
