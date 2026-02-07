@@ -42,6 +42,7 @@ export default function PdfGenerator() {
       setTitle(`Oferta - ${project.project_name}`);
       setIsInitialized(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- offerText/deadlineText/terms are used as fallbacks on initial load only; adding them would reset user edits
   }, [existingPdfData, pdfDataLoading, project, isInitialized]);
 
   if (projectLoading || quoteLoading || pdfDataLoading) {

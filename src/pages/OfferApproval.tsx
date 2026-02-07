@@ -86,6 +86,7 @@ export default function OfferApproval() {
     };
 
     fetchOffer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t() is a stable i18next reference; only re-fetch when token changes
   }, [token]);
 
   const handleApprove = async () => {

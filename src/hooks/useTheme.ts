@@ -67,6 +67,7 @@ export function useTheme() {
   // Initialize on mount
   useEffect(() => {
     updateTheme(theme);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only: apply saved theme to DOM once on initial render
   }, []);
 
   return {

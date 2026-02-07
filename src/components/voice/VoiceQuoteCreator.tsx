@@ -63,6 +63,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
         setMode('idle');
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- triggers only on isListening transition; mode/voiceText/processVoiceInput are read but not reactive deps
   }, [isListening]);
 
   const handleStartListening = () => {
