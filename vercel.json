@@ -63,7 +63,5 @@
   ],
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "cleanUrls": true,
-  "trailingSlash": false
+  "outputDirectory": "dist"
 }
