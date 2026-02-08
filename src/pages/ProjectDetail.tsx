@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useProject, useUpdateProject } from '@/hooks/useProjects';
 import { useQuote } from '@/hooks/useQuotes';
@@ -12,10 +12,12 @@ import { exportQuoteToExcel } from '@/lib/exportUtils';
 import { OfferHistoryPanel } from '@/components/offers/OfferHistoryPanel';
 import { OfferStatsPanel } from '@/components/offers/OfferStatsPanel';
 import { SendOfferModal } from '@/components/offers/SendOfferModal';
-import { PhotoEstimationPanel } from '@/components/photos/PhotoEstimationPanel';
-import { PurchaseCostsPanel } from '@/components/costs/PurchaseCostsPanel';
-import { OfferApprovalPanel } from '@/components/offers/OfferApprovalPanel';
-import { PdfPreviewPanel } from '@/components/offers/PdfPreviewPanel';
+
+// Lazy-load heavy tab components to reduce initial page bundle
+const PhotoEstimationPanel = lazy(() => import('@/components/photos/PhotoEstimationPanel').then(m => ({ default: m.PhotoEstimationPanel })));
+const PurchaseCostsPanel = lazy(() => import('@/components/costs/PurchaseCostsPanel').then(m => ({ default: m.PurchaseCostsPanel })));
+const OfferApprovalPanel = lazy(() => import('@/components/offers/OfferApprovalPanel').then(m => ({ default: m.OfferApprovalPanel })));
+const PdfPreviewPanel = lazy(() => import('@/components/offers/PdfPreviewPanel').then(m => ({ default: m.PdfPreviewPanel })));
 
 const statuses = ['Nowy', 'Wycena w toku', 'Oferta wysłana', 'Zaakceptowany'] as const;
 
@@ -243,30 +245,38 @@ export default function ProjectDetail() {
         </TabsContent>
 
         <TabsContent value="photos" className="mt-4">
-          <PhotoEstimationPanel 
-            projectId={id!} 
-            projectName={project.project_name}
-            onAddToQuote={handleAddToQuote}
-          />
+          <Suspense fallback={<div className="flex items-center justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>
+            <PhotoEstimationPanel
+              projectId={id!}
+              projectName={project.project_name}
+              onAddToQuote={handleAddToQuote}
+            />
+          </Suspense>
         </TabsContent>
 
         <TabsContent value="costs" className="mt-4">
-          <PurchaseCostsPanel projectId={id!} />
+          <Suspense fallback={<div className="flex items-center justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>
+            <PurchaseCostsPanel projectId={id!} />
+          </Suspense>
         </TabsContent>
 
         <TabsContent value="approval" className="mt-4">
-          <OfferApprovalPanel 
-            projectId={id!}
-            clientName={project.clients?.name}
-            clientEmail={project.clients?.email}
-          />
+          <Suspense fallback={<div className="flex items-center justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>
+            <OfferApprovalPanel
+              projectId={id!}
+              clientName={project.clients?.name}
+              clientEmail={project.clients?.email}
+            />
+          </Suspense>
         </TabsContent>
 
         <TabsContent value="pdf" className="mt-4">
-          <PdfPreviewPanel
-            projectId={id!}
-            onPdfGenerated={setGeneratedPdfUrl}
-          />
+          <Suspense fallback={<div className="flex items-center justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>
+            <PdfPreviewPanel
+              projectId={id!}
+              onPdfGenerated={setGeneratedPdfUrl}
+            />
+          </Suspense>
         </TabsContent>
       </Tabs>
     </div>

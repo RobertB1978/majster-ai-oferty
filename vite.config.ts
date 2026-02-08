@@ -63,6 +63,8 @@ export default defineConfig(({ mode }) => {
             'supabase-vendor': ['@supabase/supabase-js'],
             'form-vendor': ['react-hook-form', 'zod', '@hookform/resolvers'],
             'charts-vendor': ['recharts'],
+            'pdf-vendor': ['jspdf', 'jspdf-autotable'],
+            'leaflet-vendor': ['leaflet', 'react-leaflet'],
           },
           // Optimize chunk file naming for better caching
           chunkFileNames: 'assets/js/[name]-[hash].js',

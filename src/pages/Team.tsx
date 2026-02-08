@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,18 +6,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Users, 
-  Plus, 
-  MapPin, 
-  Phone, 
-  Mail, 
+import {
+  Users,
+  Plus,
+  MapPin,
+  Phone,
+  Mail,
   MoreVertical,
   Play,
   Coffee,
-  UserCheck
+  UserCheck,
+  Loader2
 } from 'lucide-react';
-import { TeamLocationMap } from '@/components/map/TeamLocationMap';
+
+// Lazy-load map to avoid bundling Leaflet (~150KB) with Team page
+const TeamLocationMap = lazy(() => import('@/components/map/TeamLocationMap').then(m => ({ default: m.TeamLocationMap })));
 import { 
   useTeamMembers, 
   useAddTeamMember, 
@@ -211,7 +214,9 @@ export default function Team() {
 
           <TabsContent value="map" className="mt-4">
             <Card className="overflow-hidden">
-              <TeamLocationMap />
+              <Suspense fallback={<div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>
+                <TeamLocationMap />
+              </Suspense>
             </Card>
           </TabsContent>
 

@@ -1,4 +1,3 @@
-import ExcelJS from 'exceljs';
 import { QuotePosition } from '@/hooks/useQuotes';
 import { toast } from 'sonner';
 
@@ -13,6 +12,9 @@ interface ExportQuoteData {
 
 export async function exportQuoteToExcel(data: ExportQuoteData) {
   const { projectName, positions, summaryMaterials, summaryLabor, marginPercent, total } = data;
+
+  // Dynamic import to avoid 939KB static bundle
+  const ExcelJS = (await import('exceljs')).default;
 
   // Create workbook and worksheet
   const workbook = new ExcelJS.Workbook();
