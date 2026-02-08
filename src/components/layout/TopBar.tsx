@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import { Logo } from '@/components/branding/Logo';
 import { useAdminRole } from '@/hooks/useAdminRole';
+import { useOrganizationAdmin } from '@/hooks/useOrganizationAdmin';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +27,7 @@ export function TopBar() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { isAdmin, isModerator } = useAdminRole();
+  const { isOrgAdmin } = useOrganizationAdmin();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme');
@@ -109,8 +111,8 @@ export function TopBar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Admin Panel Access */}
-            {(isAdmin || isModerator) && (
+            {/* Admin Panel Access - visible to platform admins, moderators, and org admins */}
+            {(isAdmin || isModerator || isOrgAdmin) && (
               <Button
                 variant="ghost"
                 size="icon"

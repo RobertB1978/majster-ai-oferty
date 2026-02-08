@@ -32,11 +32,12 @@ export function useAiChatHistory(sessionId?: string) {
       if (error) throw error;
       return data as AiChatMessage[];
     },
-    enabled: !!user,
+    enabled: !!user && !!sessionId,
+    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 }
 
-export function useAiChatSessions() {
+export function useAiChatSessions(isActive = true) {
   const { user } = useAuth();
 
   return useQuery({
@@ -53,7 +54,7 @@ export function useAiChatSessions() {
 
       // Group by session_id and get first message
       const sessions = new Map<string, { session_id: string; first_message: string; created_at: string }>();
-      
+
       data.forEach((msg: unknown) => {
         if (!sessions.has(msg.session_id)) {
           sessions.set(msg.session_id, {
@@ -66,7 +67,8 @@ export function useAiChatSessions() {
 
       return Array.from(sessions.values());
     },
-    enabled: !!user,
+    enabled: !!user && isActive,
+    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 }
 

@@ -31,6 +31,8 @@ export function useFinancialReports() {
       return data as FinancialReport[];
     },
     enabled: !!user,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 15, // 15 minutes
   });
 }
 
@@ -39,6 +41,8 @@ export function useFinancialSummary() {
 
   return useQuery({
     queryKey: ['financial_summary'],
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 15, // 15 minutes
     queryFn: async () => {
       // Get all quotes (revenue)
       const { data: quotes } = await supabase
