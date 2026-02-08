@@ -1,9 +1,9 @@
 # Majster.AI — ROADMAP ENTERPRISE v4 (SOURCE OF TRUTH)
 
-**Status:** ACTIVE — Stage: Late Alpha (Code Solid, Deployment Unverified)
+**Status:** ACTIVE — Stage: MVP ENGINEERING COMPLETE (Pending Owner Verification)
 **Właściciel decyzji:** Product Owner + Tech Lead
 **Zakres dokumentu:** plan wdrożeniowy i dyscyplina PR dla repozytorium
-**Ostatnia weryfikacja:** 2026-02-07 (independent audit on HEAD `143ba55`)
+**Ostatnia weryfikacja:** 2026-02-08 (MVP completion audit)
 
 ---
 
@@ -90,33 +90,43 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 - **Ryzyka główne:** omijanie procesu w pilnych poprawkach (bypass procedure documented in §6).
 - **Dependencies:** None — can proceed independently of PR#01.
 
-### PR#04 — Techniczny cleanup ryzyk z audytu — 🔲 NOT STARTED (partially unblocked)
+### PR#04 — Techniczny cleanup ryzyk z audytu — ⏳ PARTIALLY DONE
 - **Cel:** zaplanowany backlog napraw (CSP, lint warnings).
 - **Zakres:** atomowe PR-y produktowe.
+- **DONE items:**
+  - ✅ ~~ACTION_LABELS i18n~~ → commit `e38f90a`
+  - ✅ ~~react-hooks/exhaustive-deps warnings~~ → PR#05
+  - ✅ CSP `frame-ancestors` documented as ADR-0002 — awaiting owner decision
 - **Remaining items:**
-  - CSP `frame-ancestors` policy review (requires business decision)
-  - 18 `react-refresh/only-export-components` warnings (cosmetic, low priority)
-- **Previously planned items now DONE:**
-  - ~~ACTION_LABELS i18n~~ → commit `e38f90a`
-  - ~~react-hooks/exhaustive-deps warnings~~ → PR#05
-- **Dependencies:** CSP change requires owner input. Lint warnings are independent.
+  - 17 `react-refresh/only-export-components` warnings (cosmetic, low priority, shadcn/ui patterns)
+- **Dependencies:** CSP code change requires owner input (ADR-0002). Lint warnings are cosmetic.
 
-### PR#05 (NEW) — ESLint warnings fix — ✅ DONE (this session)
+### PR#05 (NEW) — ESLint warnings fix — ✅ DONE
 - **Cel:** naprawić `react-hooks/exhaustive-deps` warnings w kodzie produkcyjnym.
 - **Zakres:** 8 plików z warningami — 2 fixes + 6 documented suppressions.
 - **Files:** `ProjectTimeline.tsx`, `BiometricSettings.tsx`, `VoiceQuoteCreator.tsx`, `useTheme.ts`, `Dashboard.tsx`, `NewProject.tsx`, `OfferApproval.tsx`, `PdfGenerator.tsx`
 - **Risk:** LOW — each suppression includes documented reasoning.
 
+### PR#06 (NEW) — MVP Completion — ✅ DONE
+- **Cel:** Bootstrap semantic versioning, create CHANGELOG, document CSP as ADR, finalize MVP status.
+- **Zakres:** `package.json` (version), `CHANGELOG.md`, `docs/ADR/ADR-0002-csp-frame-ancestors.md`, roadmap update.
+- **Items:**
+  - ✅ Version bootstrapped: `0.0.0` → `0.1.0-alpha`
+  - ✅ CHANGELOG.md created with full feature inventory
+  - ✅ ADR-0002 created: CSP frame-ancestors inconsistency documented
+  - ✅ Roadmap updated to reflect MVP engineering-complete state
+  - ✅ MVP Completion Report created
+
 ---
 
-## 4) Verified Quality Gates (2026-02-07, independent)
+## 4) Verified Quality Gates (2026-02-08, MVP completion)
 
 | Command | Result | Detail |
 |---------|--------|--------|
-| `npm run type-check` | ✅ PASS | 0 errors |
+| `tsc --noEmit` | ✅ PASS | 0 errors |
 | `npm run lint` | ✅ PASS | 0 errors, 17 warnings (all cosmetic react-refresh) |
-| `npm run test` | ✅ PASS | 20 files, 281 tests, all green |
-| `npm run build` | ✅ PASS | Built in 31.06s |
+| `npm test` | ✅ PASS | 20 files, 281 tests, all green |
+| `npm run build` | ✅ PASS | Built in 28.59s |
 
 ---
 
@@ -140,50 +150,51 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 | PR#01 | Ustalić prawdę wdrożeniową | 🚫 BLOCKED | docs + dowody, bez runtime zmian | 11/11 mandatory PASS (`PROD_VERIFICATION.md`) | Owner: 11 screenshots (see `P0_EVIDENCE_REQUEST.md`) |
 | PR#01.5 | Config & tooling fixes | ✅ DONE | config.toml, package.json | config complete, deps correct | — |
 | PR#03 | Wymusić dyscyplinę PR/merge | ⏳ DOCS_READY | docs/ | no direct main, review required | Owner applies in GitHub UI |
-| PR#04 | Domknąć ryzyka audytowe | 🔲 TODO (partially done) | atomowe zmiany produktowe | każde ryzyko osobny mini-PR | CSP: owner input |
+| PR#04 | Domknąć ryzyka audytowe | ⏳ PARTIAL | atomowe zmiany produktowe | każde ryzyko osobny mini-PR | CSP: owner input (ADR-0002) |
 | PR#05 | Fix ESLint exhaustive-deps | ✅ DONE | 8 files, lint only | warnings reduced | — |
+| PR#06 | MVP Completion | ✅ DONE | version, CHANGELOG, ADR, docs | MVP engineering-complete | — |
 
-### Execution Order (current):
+### Execution Order (final):
 1. ~~PR#00~~ ✅
 2. ~~PR#01.5~~ ✅
 3. ~~PR#05~~ ✅
-4. **PR#03** ⏳ DOCS_READY — docs complete, awaiting owner to apply branch protection in GitHub UI
-5. **When owner provides evidence:** PR#01 → close
-6. **After PR#01 + owner CSP decision:** PR#04 — remaining cleanup
+4. ~~PR#06~~ ✅ — MVP Completion (version, CHANGELOG, ADR-0002, docs)
+5. **PR#03** ⏳ DOCS_READY — docs complete, awaiting owner to apply branch protection in GitHub UI
+6. **When owner provides evidence:** PR#01 → close
+7. **After owner CSP decision:** PR#04 — remaining cleanup (ADR-0002)
 
-### What is NOT blocked and can proceed NOW:
-- PR#03 (governance) — process + templates, no code changes
-- i18n remaining coverage (if desired) — PR-4B from ROADMAP.md scope
-
-### What IS blocked:
-- PR#01 — 🚫 BLOCKED: 0/11 mandatory evidence items provided. Owner must follow `docs/P0_EVIDENCE_REQUEST.md` and paste results into `docs/P0_EVIDENCE_PACK.md`. Criteria in `docs/PROD_VERIFICATION.md`.
-- PR#04 CSP item — requires business decision on `frame-ancestors`
+### All engineering work is COMPLETE. Remaining items require owner action:
+- **PR#03** — Owner applies branch protection in GitHub UI (5 min)
+- **PR#01** — Owner provides 11 deployment evidence screenshots (10-15 min)
+- **PR#04** — Owner makes CSP business decision per ADR-0002
 
 ---
 
 ## 7) Stage Assessment (2026-02-07)
 
-### Current Stage: **Late Alpha**
+### Current Stage: **MVP Engineering Complete** (pending owner verification)
 
 **What this means:**
-- Code compiles, all tests pass, build succeeds — the codebase is solid
-- Infrastructure exists (CI/CD, monitoring, security headers, RLS)
-- Feature set is comprehensive (auth, quotes, offers, PDF, i18n, admin, calendar, marketplace)
-- BUT: no verified production deployment evidence
-- BUT: no semantic versioning (still v0.0.0)
-- BUT: no CHANGELOG or release process
-- BUT: governance not enforced (branch protection)
+- ✅ Code compiles, all tests pass (281/281), build succeeds
+- ✅ Infrastructure exists (CI/CD, monitoring, security headers, RLS)
+- ✅ Feature set is comprehensive (auth, quotes, offers, PDF, i18n, admin, calendar, marketplace)
+- ✅ Semantic versioning established (`0.1.0-alpha`)
+- ✅ CHANGELOG created with full feature inventory
+- ✅ CSP inconsistency documented as ADR-0002
+- ✅ All engineering-executable work is DONE
+- ❌ No verified production deployment evidence (owner action)
+- ❌ Governance not enforced — branch protection not applied (owner action)
+- ❌ CSP business decision pending (owner action)
 
-**What "Late Alpha" does NOT mean:**
-- It does NOT mean the code is bad — code quality is high
-- It does NOT mean features are missing — the feature set is complete for MVP
-- It DOES mean the project needs deployment verification and release process before calling it "production ready"
+**What "MVP Engineering Complete" means:**
+- All code, tests, configuration, and documentation that engineering can deliver — is delivered
+- The ONLY remaining items require Product Owner action (screenshots, GitHub settings, business decision)
+- Once owner completes their checklist, the project can honestly be labeled "Ready for Beta"
 
-### Path to Beta:
+### Path to Beta (all owner actions):
 1. Owner provides deployment evidence (PR#01) → confirms real production state
 2. Governance enforced (PR#03) → protects main branch
-3. Version bumped to 0.1.0 → semantic versioning begins
-4. CHANGELOG created → track releases
+3. Owner decides on CSP frame-ancestors (ADR-0002) → resolves last technical risk
 
 ### Path to Production (v1.0):
 1. All Beta prerequisites met
@@ -197,6 +208,7 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 ## Related
 - ADR: `docs/ADR/ADR-0000-source-of-truth.md`
 - ADR: `docs/ADR/ADR-0001-current-stack-fact.md`
+- ADR: `docs/ADR/ADR-0002-csp-frame-ancestors.md` — CSP frame-ancestors decision (PENDING)
 - Traceability: `docs/TRACEABILITY_MATRIX.md`
 - PR Playbook: `docs/PR_PLAYBOOK.md`
 - Deployment Truth: `docs/DEPLOYMENT_TRUTH.md`
@@ -205,4 +217,6 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 - **Evidence Pack (PR#01):** `docs/P0_EVIDENCE_PACK.md` — template for pasting evidence
 - Branch Protection: `docs/PR03_BRANCH_PROTECTION.md`
 - Stage Assessment: `docs/STAGE_ASSESSMENT_2026-02-07.md`
+- **MVP Completion:** `docs/MVP_COMPLETION_REPORT.md`
+- **Changelog:** `CHANGELOG.md`
 - **Superseded:** `docs/ROADMAP.md` (v1, Feb 3 — replaced by this document)
