@@ -5,10 +5,12 @@ import { Footer } from './Footer';
 import { BackToDashboard } from './BackToDashboard';
 import { PageTransition } from './PageTransition';
 import { useAuth } from '@/contexts/AuthContext';
-import { AiChatAgent } from '@/components/ai/AiChatAgent';
-import { OnboardingModal } from '@/components/onboarding/OnboardingModal';
 import { LoadingScreen } from '@/components/ui/loading-screen';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
+
+// Lazy-load heavy layout components that are not needed for initial render
+const AiChatAgent = lazy(() => import('@/components/ai/AiChatAgent').then(m => ({ default: m.AiChatAgent })));
+const OnboardingModal = lazy(() => import('@/components/onboarding/OnboardingModal').then(m => ({ default: m.OnboardingModal })));
 
 export function AppLayout() {
   const { user, isLoading } = useAuth();
@@ -27,11 +29,10 @@ export function AppLayout() {
     }
   }, []);
 
-  // Smooth transition after loading
+  // Show content immediately once auth is resolved (no artificial delay)
   useEffect(() => {
     if (!isLoading && user) {
-      const timer = setTimeout(() => setShowContent(true), 100);
-      return () => clearTimeout(timer);
+      setShowContent(true);
     }
   }, [isLoading, user]);
 
@@ -66,11 +67,15 @@ export function AppLayout() {
       {/* Back to Dashboard floating button */}
       <BackToDashboard />
 
-      {/* AI Chat Agent - Global floating assistant */}
-      <AiChatAgent />
+      {/* AI Chat Agent - Lazy-loaded to avoid blocking route transitions */}
+      <Suspense fallback={null}>
+        <AiChatAgent />
+      </Suspense>
 
-      {/* Onboarding Modal - shown on first login */}
-      <OnboardingModal />
+      {/* Onboarding Modal - Lazy-loaded, shown on first login */}
+      <Suspense fallback={null}>
+        <OnboardingModal />
+      </Suspense>
     </div>
   );
 }

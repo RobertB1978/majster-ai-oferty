@@ -58,11 +58,12 @@ export function AiChatAgent() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   
-  const { data: chatHistory } = useAiChatHistory(sessionId);
-  const { data: sessions } = useAiChatSessions();
+  // Defer queries until chat is opened to avoid unnecessary network requests on every route
+  const { data: chatHistory } = useAiChatHistory(isOpen ? sessionId : undefined);
+  const { data: sessions } = useAiChatSessions(isOpen);
   const saveMessage = useSaveAiMessage();
   const deleteChatSession = useDeleteChatSession();
-  
+
   const { transcript, isListening, isSupported, startListening, stopListening, resetTranscript } = useVoiceToText({
     language: 'pl-PL',
   });
