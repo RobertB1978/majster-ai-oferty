@@ -1,6 +1,6 @@
 # ADR-0003: Field OS Refactor - Architecture Decisions
 
-**Status:** Proposed
+**Status:** Accepted (Phases 1-4 implemented)
 **Date:** 2026-02-09
 **Author:** Claude (Principal Product Engineer)
 
@@ -121,24 +121,33 @@ Construction sites have unreliable connectivity. Showing connection status is es
 
 ## Migration Strategy
 
-### Phase 1: Foundation (This PR)
-- Contract documents
-- Route zone restructuring with redirects
-- AdminLayout skeleton
-- Industrial theme tokens (CSS variable swap)
-- ConfigProvider skeleton
+### Phase 1: Foundation ✅
+- Contract documents (CLAUDE_CONTRACT_FIELD_OS.md)
+- Route zone restructuring: `/` (public), `/app/*` (customer), `/admin/*` (owner)
+- 16 redirect routes from old paths (with param-aware ProjectRedirect)
+- AdminLayout + AdminGuard + AdminSidebar
+- Industrial theme tokens (Deep Amber, WCAG AA compliant)
+- Toast consolidation (Sonner only) + ScrollRestoration
+- Landing page at `/`
 
-### Phase 2: Owner Console Pages
-- Config editor, theme editor, navigation editor
-- Plans editor, content editor
-- Audit log + rollback
+### Phase 2: Owner Console Pages ✅
+- ConfigProvider with Zod validation, semver versioning, localStorage, rollback
+- appConfigSchema.ts + defaultConfig.ts (strict typed config-as-data)
+- AdminAppConfigPage: content editor + feature toggles
+- AdminPlansPage: tier editor (price, limits, highlight)
+- AdminNavigationPage: reorder, visibility, comingSoon toggles
+- AdminDiagnosticsPage: system health dashboard
+- AdminAuditPage: config version history with 1-click rollback
 
-### Phase 3: Field Features
-- Job detail enhancements (photo proof, voice memo, status workflow)
-- Optimistic UI for status changes
-- Skeleton screens for all pages
+### Phase 3: Field Features ✅
+- WorkflowActions: status transitions with confirmation dialogs
+- PhotoProofPanel: drag-and-drop photo upload with local preview grid
+- VoiceMemoButton: placeholder (toast "wkrótce")
+- ProjectDetail: integrated components, new "Dowody" tab, /app/jobs paths
 
-### Phase 4: Polish
-- Remove old redirects
-- Performance audit
-- Accessibility audit
+### Phase 4: Polish ✅
+- PageLoader: skeleton screen instead of spinner
+- WCAG AA color contrast fix (primary darkened for light mode)
+- E2E tests updated for new routing
+- Bundle smoke test updated for admin zone split
+- ADR status updated

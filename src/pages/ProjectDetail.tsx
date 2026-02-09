@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download, Mail, Camera, Receipt, FileSignature, Eye } from 'lucide-react';
+import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download, Mail, Camera, Receipt, FileSignature, Eye, HardHat } from 'lucide-react';
 import { toast } from 'sonner';
 import { exportQuoteToExcel } from '@/lib/exportUtils';
 import { OfferHistoryPanel } from '@/components/offers/OfferHistoryPanel';
@@ -16,6 +16,9 @@ import { PhotoEstimationPanel } from '@/components/photos/PhotoEstimationPanel';
 import { PurchaseCostsPanel } from '@/components/costs/PurchaseCostsPanel';
 import { OfferApprovalPanel } from '@/components/offers/OfferApprovalPanel';
 import { PdfPreviewPanel } from '@/components/offers/PdfPreviewPanel';
+import { WorkflowActions } from '@/components/jobs/WorkflowActions';
+import { PhotoProofPanel } from '@/components/jobs/PhotoProofPanel';
+import { VoiceMemoButton } from '@/components/jobs/VoiceMemoButton';
 
 const statuses = ['Nowy', 'Wycena w toku', 'Oferta wysłana', 'Zaakceptowany'] as const;
 
@@ -40,9 +43,9 @@ export default function ProjectDetail() {
   if (!project) {
     return (
       <div className="space-y-6 animate-fade-in">
-        <Button variant="ghost" onClick={() => navigate('/projects')}>
+        <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Powrót do projektów
+          Powrót do zleceń
         </Button>
         <Card>
           <CardContent className="py-12 text-center">
@@ -62,14 +65,14 @@ export default function ProjectDetail() {
 
   const handleAddToQuote = (items: unknown[]) => {
     // Navigate to quote editor with items to add
-    navigate(`/projects/${id}/quote`, { state: { addItems: items } });
+    navigate(`/app/jobs/${id}/quote`, { state: { addItems: items } });
   };
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <Button variant="ghost" onClick={() => navigate('/projects')}>
+      <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Powrót do projektów
+        Powrót do zleceń
       </Button>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -80,7 +83,7 @@ export default function ProjectDetail() {
           <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <User className="h-4 w-4" />
-              <Link to="/clients" className="hover:text-primary hover:underline">
+              <Link to="/app/clients" className="hover:text-primary hover:underline">
                 {project.clients?.name || 'Nieznany klient'}
               </Link>
             </div>
@@ -90,30 +93,37 @@ export default function ProjectDetail() {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Status:</span>
-          <Select value={project.status} onValueChange={handleStatusChange}>
-            <SelectTrigger className="w-44">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {statuses.map((status) => (
-                <SelectItem key={status} value={status}>
-                  {status}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Status:</span>
+            <Select value={project.status} onValueChange={handleStatusChange}>
+              <SelectTrigger className="w-44">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {statuses.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <WorkflowActions
+            status={project.status}
+            onStatusChange={handleStatusChange}
+            isUpdating={updateProject.isPending}
+          />
         </div>
       </div>
 
       {/* Actions */}
       <div className="flex flex-wrap gap-3">
-        <Button size="lg" onClick={() => navigate(`/projects/${id}/quote`)}>
+        <Button size="lg" onClick={() => navigate(`/app/jobs/${id}/quote`)}>
           <Calculator className="mr-2 h-5 w-5" />
           Edytuj wycenę
         </Button>
-        <Button size="lg" variant="outline" onClick={() => navigate(`/projects/${id}/pdf`)}>
+        <Button size="lg" variant="outline" onClick={() => navigate(`/app/jobs/${id}/pdf`)}>
           <FileText className="mr-2 h-5 w-5" />
           Generuj ofertę PDF
         </Button>
@@ -144,6 +154,7 @@ export default function ProjectDetail() {
             Eksport Excel
           </Button>
         )}
+        <VoiceMemoButton />
       </div>
 
       {/* Send Offer Modal - Phase 5C: Include PDF URL if generated */}
@@ -163,6 +174,10 @@ export default function ProjectDetail() {
           <TabsTrigger value="overview" className="gap-2 data-[state=active]:bg-background">
             <FileText className="h-4 w-4" />
             Przegląd
+          </TabsTrigger>
+          <TabsTrigger value="photo-proof" className="gap-2 data-[state=active]:bg-background">
+            <HardHat className="h-4 w-4" />
+            Dowody
           </TabsTrigger>
           <TabsTrigger value="photos" className="gap-2 data-[state=active]:bg-background">
             <Camera className="h-4 w-4" />
@@ -240,6 +255,10 @@ export default function ProjectDetail() {
           <div className="mt-6">
             <OfferHistoryPanel projectId={id!} />
           </div>
+        </TabsContent>
+
+        <TabsContent value="photo-proof" className="mt-4">
+          <PhotoProofPanel />
         </TabsContent>
 
         <TabsContent value="photos" className="mt-4">
