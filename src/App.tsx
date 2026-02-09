@@ -1,7 +1,7 @@
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType, useParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Suspense, lazy, useEffect } from "react";
 
@@ -68,6 +68,12 @@ const AdminAppConfigPage = lazy(() => import("./pages/admin/AdminAppConfigPage")
 const AdminPlansPage = lazy(() => import("./pages/admin/AdminPlansPage"));
 const AdminNavigationPage = lazy(() => import("./pages/admin/AdminNavigationPage"));
 const AdminDiagnosticsPage = lazy(() => import("./pages/admin/AdminDiagnosticsPage"));
+
+/** Redirect old /projects/:id paths to /app/jobs/:id, preserving the real param value. */
+function ProjectRedirect({ suffix = '' }: { suffix?: string }) {
+  const { id } = useParams();
+  return <Navigate to={`/app/jobs/${id}${suffix}`} replace />;
+}
 
 /** Scroll to top on PUSH/REPLACE navigation; let browser handle POP (back/forward). */
 function ScrollRestoration() {
@@ -189,9 +195,9 @@ const App = () => (
                   <Route path="/clients" element={<Navigate to="/app/clients" replace />} />
                   <Route path="/projects" element={<Navigate to="/app/jobs" replace />} />
                   <Route path="/projects/new" element={<Navigate to="/app/jobs/new" replace />} />
-                  <Route path="/projects/:id" element={<Navigate to="/app/jobs/:id" replace />} />
-                  <Route path="/projects/:id/quote" element={<Navigate to="/app/jobs/:id/quote" replace />} />
-                  <Route path="/projects/:id/pdf" element={<Navigate to="/app/jobs/:id/pdf" replace />} />
+                  <Route path="/projects/:id" element={<ProjectRedirect />} />
+                  <Route path="/projects/:id/quote" element={<ProjectRedirect suffix="/quote" />} />
+                  <Route path="/projects/:id/pdf" element={<ProjectRedirect suffix="/pdf" />} />
                   <Route path="/calendar" element={<Navigate to="/app/calendar" replace />} />
                   <Route path="/team" element={<Navigate to="/app/team" replace />} />
                   <Route path="/finance" element={<Navigate to="/app/finance" replace />} />
