@@ -1,12 +1,11 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { LogOut, HelpCircle, Globe, ChevronDown, Moon, Sun, Shield } from 'lucide-react';
+import { LogOut, HelpCircle, Globe, ChevronDown, Moon, Sun, Shield, Wifi, WifiOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import { Logo } from '@/components/branding/Logo';
 import { useAdminRole } from '@/hooks/useAdminRole';
-import { useOrganizationAdmin } from '@/hooks/useOrganizationAdmin';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,8 +25,7 @@ export function TopBar() {
   const { user, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { isAdmin, isModerator } = useAdminRole();
-  const { isOrgAdmin } = useOrganizationAdmin();
+  const { isAdmin } = useAdminRole();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme');
@@ -36,6 +34,19 @@ export function TopBar() {
     }
     return false;
   });
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+
+  // Online/offline detection
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Listen for system preference changes
   useEffect(() => {
@@ -65,10 +76,26 @@ export function TopBar() {
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur-lg supports-[backdrop-filter]:bg-card/80 shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-card shadow-sm">
       <div className="container flex h-16 items-center justify-between">
-        <Logo size="md" animated />
-        
+        <div className="flex items-center gap-3">
+          <Logo size="md" />
+          {/* Online/offline indicator */}
+          <div className="hidden sm:flex items-center gap-1.5 text-xs" aria-live="polite">
+            {isOnline ? (
+              <>
+                <Wifi className="h-3.5 w-3.5 text-success" />
+                <span className="text-success font-medium">Online</span>
+              </>
+            ) : (
+              <>
+                <WifiOff className="h-3.5 w-3.5 text-destructive" />
+                <span className="text-destructive font-medium">Offline</span>
+              </>
+            )}
+          </div>
+        </div>
+
         {user && (
           <div className="flex items-center gap-1 sm:gap-2">
             <NotificationCenter />
@@ -78,20 +105,20 @@ export function TopBar() {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="h-9 w-9"
+              className="h-10 w-10"
               aria-label={isDark ? t('theme.switchToLight', 'Przełącz na jasny motyw') : t('theme.switchToDark', 'Przełącz na ciemny motyw')}
             >
               {isDark ? (
-                <Sun className="h-4 w-4 transition-transform hover:rotate-45" />
+                <Sun className="h-4 w-4" />
               ) : (
-                <Moon className="h-4 w-4 transition-transform hover:-rotate-12" />
+                <Moon className="h-4 w-4" />
               )}
             </Button>
-            
+
             {/* Language Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-1.5 px-2 sm:px-3">
+                <Button variant="ghost" size="sm" className="gap-1.5 px-2 sm:px-3 min-h-[40px]">
                   <Globe className="h-4 w-4" />
                   <span className="text-lg">{currentLanguage.flag}</span>
                   <ChevronDown className="h-3 w-3 opacity-50" />
@@ -102,7 +129,7 @@ export function TopBar() {
                   <DropdownMenuItem
                     key={lang.code}
                     onClick={() => i18n.changeLanguage(lang.code)}
-                    className={i18n.language === lang.code ? 'bg-accent font-medium' : ''}
+                    className={i18n.language === lang.code ? 'bg-primary/10 font-medium' : ''}
                   >
                     <span className="mr-2 text-lg">{lang.flag}</span>
                     {lang.name}
@@ -111,13 +138,13 @@ export function TopBar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Admin Panel Access - visible to platform admins, moderators, and org admins */}
-            {(isAdmin || isModerator || isOrgAdmin) && (
+            {/* Admin Panel Access - visible to platform admins only */}
+            {isAdmin && (
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate('/admin')}
-                className="h-9 w-9 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-500/10"
+                onClick={() => navigate('/admin/dashboard')}
+                className="h-10 w-10 text-primary hover:text-primary hover:bg-primary/10"
                 aria-label={t('admin.panelAccess', 'Panel administracyjny')}
               >
                 <Shield className="h-5 w-5" />
@@ -126,12 +153,12 @@ export function TopBar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9" aria-label={t('help.menu', 'Menu pomocy')}>
+                <Button variant="ghost" size="icon" className="h-10 w-10" aria-label={t('help.menu', 'Menu pomocy')}>
                   <HelpCircle className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => navigate('/profile')}>
+                <DropdownMenuItem onClick={() => navigate('/app/profile')}>
                   {t('nav.companyProfile', 'Profil firmy')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -145,17 +172,17 @@ export function TopBar() {
               <span className="text-sm text-muted-foreground max-w-[120px] truncate">
                 {user.email}
               </span>
-              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-foreground min-h-[40px]">
                 <LogOut className="mr-2 h-4 w-4" />
                 {t('auth.logout')}
               </Button>
             </div>
-            
+
             <Button
               variant="ghost"
               size="icon"
               onClick={handleLogout}
-              className="sm:hidden h-9 w-9 text-muted-foreground"
+              className="sm:hidden h-10 w-10 text-muted-foreground"
               aria-label={t('auth.logout', 'Wyloguj')}
             >
               <LogOut className="h-5 w-5" />
