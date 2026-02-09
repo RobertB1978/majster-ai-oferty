@@ -132,12 +132,12 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Apply theme tokens as CSS variables
+  const theme = state.config.theme;
   useEffect(() => {
-    const { theme } = state.config;
     const root = document.documentElement;
     root.style.setProperty('--primary', `${theme.primaryHue} ${theme.primarySaturation}% ${theme.primaryLightness}%`);
     root.style.setProperty('--radius', `${theme.radiusPx / 16}rem`);
-  }, [state.config.theme]);
+  }, [theme]);
 
   const applyConfig = useCallback(
     (partial: Partial<AppConfig>, summary: string): boolean => {
