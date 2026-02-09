@@ -97,10 +97,10 @@ test.describe('Smoke Tests', () => {
     });
   });
 
-  test('unauthenticated user is redirected to login', async ({ page }) => {
+  test('unauthenticated user sees landing page at root', async ({ page }) => {
     console.log('🧪 Test: Redirect to login for unauthenticated user');
 
-    // Go to root - should redirect to /login (via /dashboard → AppLayout auth guard)
+    // Go to root - should show public Landing page (no auth required)
     await page.goto('/', {
       waitUntil: 'domcontentloaded', // Changed from networkidle (faster in CI)
       timeout: 90000
@@ -109,17 +109,15 @@ test.describe('Smoke Tests', () => {
     // Wait for React hydration
     await waitForReactHydration(page);
 
-    // Wait for redirect to complete
-    await page.waitForFunction(() => window.location.pathname.includes('/login'), { timeout: 45000 });
-
-    console.log('Current URL:', page.url());
-    expect(page.url()).toMatch(/\/login/);
-
-    // Verify login page loaded by checking for login-specific UI
-    const heading = page.getByRole('heading', { name: /majster\.ai/i });
+    // Verify landing page loaded (public, no redirect)
+    const heading = page.getByRole('heading', { name: /cyfrowe narzędzie/i });
     await expect(heading).toBeVisible({ timeout: 15000 });
 
-    console.log('✅ Unauthenticated user redirected to login');
+    // Verify login link is available
+    const loginLink = page.getByRole('link', { name: /zaloguj się/i });
+    await expect(loginLink).toBeVisible({ timeout: 15000 });
+
+    console.log('✅ Landing page visible for unauthenticated user');
   });
 
   test('login page renders with accessible form', async ({ page }) => {
