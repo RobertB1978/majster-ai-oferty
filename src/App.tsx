@@ -1,10 +1,9 @@
-import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 
 // Lazy load React Query Devtools only in development
 const ReactQueryDevtools = import.meta.env.MODE === 'development'
@@ -70,6 +69,20 @@ const AdminPlansPage = lazy(() => import("./pages/admin/AdminPlansPage"));
 const AdminNavigationPage = lazy(() => import("./pages/admin/AdminNavigationPage"));
 const AdminDiagnosticsPage = lazy(() => import("./pages/admin/AdminDiagnosticsPage"));
 
+/** Scroll to top on PUSH/REPLACE navigation; let browser handle POP (back/forward). */
+function ScrollRestoration() {
+  const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+
+  useEffect(() => {
+    if (navigationType !== 'POP') {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, navigationType]);
+
+  return null;
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -88,7 +101,7 @@ const App = () => (
         <TooltipProvider>
           <BrowserRouter>
             <AuthProvider>
-              <Toaster />
+              <ScrollRestoration />
               <Sonner />
               <OfflineFallback />
               <InstallPrompt />
