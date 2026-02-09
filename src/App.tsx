@@ -12,22 +12,33 @@ const ReactQueryDevtools = import.meta.env.MODE === 'development'
   : null;
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { AdminLayout } from "@/components/layout/AdminLayout";
 import { PageLoader } from "@/components/layout/PageLoader";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { OfflineFallback } from "@/components/pwa/OfflineFallback";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsent } from "@/components/legal/CookieConsent";
 
-// Critical pages (loaded immediately - auth flow only)
+// === ZONE 1: PUBLIC (loaded immediately - auth flow) ===
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
-import EnvCheck from "./pages/EnvCheck"; // Environment diagnostic page
+import EnvCheck from "./pages/EnvCheck";
 
-// Lazy-loaded pages (code splitting for better initial load)
-// Dashboard and all app pages are lazy-loaded to reduce initial bundle size
+// === ZONE 1: PUBLIC (lazy) ===
+const Landing = lazy(() => import("./pages/Landing"));
+const OfferApproval = lazy(() => import("./pages/OfferApproval"));
+
+// Legal pages (lazy - rarely visited)
+const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/legal/TermsOfService"));
+const CookiesPolicy = lazy(() => import("./pages/legal/CookiesPolicy"));
+const DPA = lazy(() => import("./pages/legal/DPA"));
+const GDPRCenter = lazy(() => import("./pages/legal/GDPRCenter"));
+
+// === ZONE 2: CUSTOMER APP (lazy - auth required) ===
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Clients = lazy(() => import("./pages/Clients"));
 const Projects = lazy(() => import("./pages/Projects"));
@@ -44,21 +55,26 @@ const Team = lazy(() => import("./pages/Team"));
 const Finance = lazy(() => import("./pages/Finance"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Billing = lazy(() => import("./pages/Billing"));
-const Admin = lazy(() => import("./pages/Admin"));
-const OfferApproval = lazy(() => import("./pages/OfferApproval"));
 
-// Legal pages (lazy - rarely visited)
-const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
-const TermsOfService = lazy(() => import("./pages/legal/TermsOfService"));
-const CookiesPolicy = lazy(() => import("./pages/legal/CookiesPolicy"));
-const DPA = lazy(() => import("./pages/legal/DPA"));
-const GDPRCenter = lazy(() => import("./pages/legal/GDPRCenter"));
+// === ZONE 3: OWNER CONSOLE (lazy - admin only, separate chunk) ===
+const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
+const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
+const AdminThemePage = lazy(() => import("./pages/admin/AdminThemePage"));
+const AdminContentPage = lazy(() => import("./pages/admin/AdminContentPage"));
+const AdminDatabasePage = lazy(() => import("./pages/admin/AdminDatabasePage"));
+const AdminSystemPage = lazy(() => import("./pages/admin/AdminSystemPage"));
+const AdminApiPage = lazy(() => import("./pages/admin/AdminApiPage"));
+const AdminAuditPage = lazy(() => import("./pages/admin/AdminAuditPage"));
+const AdminAppConfigPage = lazy(() => import("./pages/admin/AdminAppConfigPage"));
+const AdminPlansPage = lazy(() => import("./pages/admin/AdminPlansPage"));
+const AdminNavigationPage = lazy(() => import("./pages/admin/AdminNavigationPage"));
+const AdminDiagnosticsPage = lazy(() => import("./pages/admin/AdminDiagnosticsPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes (renamed from cacheTime)
+      gcTime: 1000 * 60 * 30, // 30 minutes
       retry: 1,
       refetchOnWindowFocus: false,
     },
@@ -79,59 +95,108 @@ const App = () => (
               <CookieConsent />
               <Suspense fallback={<PageLoader />}>
                 <Routes>
-                  {/* Environment diagnostic (public) */}
-                  <Route path="/env-check" element={<EnvCheck />} />
+                  {/* ============================================
+                      ZONE 1: PUBLIC (no auth required)
+                      ============================================ */}
 
-                  {/* Public auth routes */}
+                  {/* Marketing landing */}
+                  <Route path="/" element={<Landing />} />
+
+                  {/* Auth flow */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
 
-                  {/* Public offer approval (lazy) */}
+                  {/* Public offer approval */}
                   <Route path="/offer/:token" element={<OfferApproval />} />
 
-                  {/* Legal pages (lazy) */}
+                  {/* Environment diagnostic */}
+                  <Route path="/env-check" element={<EnvCheck />} />
+
+                  {/* Legal pages */}
                   <Route path="/legal/privacy" element={<PrivacyPolicy />} />
                   <Route path="/legal/terms" element={<TermsOfService />} />
                   <Route path="/legal/cookies" element={<CookiesPolicy />} />
                   <Route path="/legal/dpa" element={<DPA />} />
                   <Route path="/legal/gdpr" element={<GDPRCenter />} />
 
-                  {/* Legacy redirects */}
+                  {/* Legacy legal redirects */}
                   <Route path="/privacy" element={<Navigate to="/legal/privacy" replace />} />
                   <Route path="/terms" element={<Navigate to="/legal/terms" replace />} />
 
-                  {/* Protected app routes */}
-                  <Route element={<AppLayout />}>
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/clients" element={<Clients />} />
-                    <Route path="/projects" element={<Projects />} />
-                    <Route path="/projects/new" element={<NewProject />} />
-                    <Route path="/projects/:id" element={<ProjectDetail />} />
-                    <Route path="/projects/:id/quote" element={<QuoteEditor />} />
-                    <Route path="/projects/:id/pdf" element={<PdfGenerator />} />
-                    <Route path="/profile" element={<CompanyProfile />} />
-                    <Route path="/templates" element={<ItemTemplates />} />
-                    <Route path="/calendar" element={<Calendar />} />
-                    <Route path="/analytics" element={<Analytics />} />
-                    <Route path="/team" element={<Team />} />
-                    <Route path="/finance" element={<Finance />} />
-                    <Route path="/marketplace" element={<Marketplace />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/billing" element={<Billing />} />
-                    <Route path="/admin" element={<Admin />} />
+                  {/* ============================================
+                      ZONE 2: CUSTOMER APP (auth required)
+                      ============================================ */}
+                  <Route path="/app" element={<AppLayout />}>
+                    <Route index element={<Navigate to="/app/dashboard" replace />} />
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="clients" element={<Clients />} />
+                    <Route path="jobs" element={<Projects />} />
+                    <Route path="jobs/new" element={<NewProject />} />
+                    <Route path="jobs/:id" element={<ProjectDetail />} />
+                    <Route path="jobs/:id/quote" element={<QuoteEditor />} />
+                    <Route path="jobs/:id/pdf" element={<PdfGenerator />} />
+                    <Route path="calendar" element={<Calendar />} />
+                    <Route path="team" element={<Team />} />
+                    <Route path="finance" element={<Finance />} />
+                    <Route path="marketplace" element={<Marketplace />} />
+                    <Route path="analytics" element={<Analytics />} />
+                    <Route path="templates" element={<ItemTemplates />} />
+                    <Route path="plan" element={<Billing />} />
+                    <Route path="profile" element={<CompanyProfile />} />
+                    <Route path="settings" element={<Settings />} />
                   </Route>
 
-                  {/* Default and 404 */}
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  {/* ============================================
+                      ZONE 3: OWNER CONSOLE (admin auth required)
+                      Lazy-loaded: customers never download this bundle
+                      ============================================ */}
+                  <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                    <Route path="dashboard" element={<AdminDashboardPage />} />
+                    <Route path="users" element={<AdminUsersPage />} />
+                    <Route path="theme" element={<AdminThemePage />} />
+                    <Route path="content" element={<AdminContentPage />} />
+                    <Route path="database" element={<AdminDatabasePage />} />
+                    <Route path="system" element={<AdminSystemPage />} />
+                    <Route path="api" element={<AdminApiPage />} />
+                    <Route path="audit" element={<AdminAuditPage />} />
+                    <Route path="app-config" element={<AdminAppConfigPage />} />
+                    <Route path="plans" element={<AdminPlansPage />} />
+                    <Route path="navigation" element={<AdminNavigationPage />} />
+                    <Route path="diagnostics" element={<AdminDiagnosticsPage />} />
+                  </Route>
+
+                  {/* ============================================
+                      REDIRECT LAYER: Old routes -> New /app/* routes
+                      Preserves bookmarks and external links
+                      ============================================ */}
+                  <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
+                  <Route path="/clients" element={<Navigate to="/app/clients" replace />} />
+                  <Route path="/projects" element={<Navigate to="/app/jobs" replace />} />
+                  <Route path="/projects/new" element={<Navigate to="/app/jobs/new" replace />} />
+                  <Route path="/projects/:id" element={<Navigate to="/app/jobs/:id" replace />} />
+                  <Route path="/projects/:id/quote" element={<Navigate to="/app/jobs/:id/quote" replace />} />
+                  <Route path="/projects/:id/pdf" element={<Navigate to="/app/jobs/:id/pdf" replace />} />
+                  <Route path="/calendar" element={<Navigate to="/app/calendar" replace />} />
+                  <Route path="/team" element={<Navigate to="/app/team" replace />} />
+                  <Route path="/finance" element={<Navigate to="/app/finance" replace />} />
+                  <Route path="/marketplace" element={<Navigate to="/app/marketplace" replace />} />
+                  <Route path="/analytics" element={<Navigate to="/app/analytics" replace />} />
+                  <Route path="/templates" element={<Navigate to="/app/templates" replace />} />
+                  <Route path="/billing" element={<Navigate to="/app/plan" replace />} />
+                  <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
+                  <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
+
+                  {/* 404 */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
-        {/* React Query Devtools - ONLY in development, not in production */}
+        {/* React Query Devtools - ONLY in development */}
         {ReactQueryDevtools && (
           <Suspense fallback={null}>
             <ReactQueryDevtools initialIsOpen={false} />
