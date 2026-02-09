@@ -10,6 +10,7 @@ const ReactQueryDevtools = import.meta.env.MODE === 'development'
   ? lazy(() => import('@tanstack/react-query-devtools').then(module => ({ default: module.ReactQueryDevtools })))
   : null;
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ConfigProvider } from "@/contexts/ConfigContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { PageLoader } from "@/components/layout/PageLoader";
@@ -106,6 +107,7 @@ const App = () => (
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <BrowserRouter>
+            <ConfigProvider>
             <AuthProvider>
               <ScrollRestoration />
               <Sonner />
@@ -213,6 +215,7 @@ const App = () => (
                 </Routes>
               </Suspense>
             </AuthProvider>
+            </ConfigProvider>
           </BrowserRouter>
         </TooltipProvider>
         {/* React Query Devtools - ONLY in development */}
