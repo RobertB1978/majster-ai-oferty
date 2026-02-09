@@ -7,7 +7,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t bg-card/50 backdrop-blur-sm mt-auto">
+    <footer className="border-t bg-card mt-auto">
       <div className="container py-8 px-4">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Company info */}
@@ -36,17 +36,17 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Produkt</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/billing" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/app/plan" className="text-muted-foreground hover:text-primary transition-colors">
                   Cennik
                 </Link>
               </li>
               <li>
-                <Link to="/templates" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/app/templates" className="text-muted-foreground hover:text-primary transition-colors">
                   Szablony
                 </Link>
               </li>
               <li>
-                <Link to="/marketplace" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/app/marketplace" className="text-muted-foreground hover:text-primary transition-colors">
                   Marketplace
                 </Link>
               </li>
