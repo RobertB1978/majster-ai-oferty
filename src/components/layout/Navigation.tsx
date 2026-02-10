@@ -15,32 +15,52 @@ import {
   Store,
   Settings,
   CreditCard,
-  ChevronDown
+  ChevronDown,
+  Briefcase,
+  Wallet,
+  FileText,
+  UserPlus,
+  type LucideIcon,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { useConfig } from '@/contexts/ConfigContext';
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  LayoutDashboard, Users, FolderKanban, Building2, Package, Calendar,
+  BarChart3, UsersRound, TrendingUp, Store, Settings, CreditCard,
+  Briefcase, Wallet, FileText, UserPlus,
+};
 
 export function Navigation() {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const { config } = useConfig();
 
-  const navItems = [
-    { to: '/app/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
-    { to: '/app/clients', label: t('nav.clients'), icon: Users },
-    { to: '/app/jobs', label: t('nav.projects'), icon: FolderKanban },
-    { to: '/app/calendar', label: t('nav.calendar'), icon: Calendar },
-    { to: '/app/team', label: t('nav.team'), icon: UsersRound },
-    { to: '/app/finance', label: t('nav.finance'), icon: TrendingUp },
-    { to: '/app/marketplace', label: t('nav.marketplace'), icon: Store },
-    { to: '/app/analytics', label: t('nav.analytics'), icon: BarChart3 },
-    { to: '/app/templates', label: t('nav.templates'), icon: Package },
-    { to: '/app/plan', label: t('nav.billing'), icon: CreditCard, badge: 'Pro' },
-    { to: '/app/profile', label: t('nav.profile'), icon: Building2 },
-    { to: '/app/settings', label: t('nav.settings'), icon: Settings },
-  ];
+  const navItems = useMemo(() => {
+    const configItems = config.navigation.mainItems
+      .filter((item) => item.visible)
+      .sort((a, b) => a.order - b.order)
+      .map((item) => ({
+        to: item.path,
+        label: item.label,
+        icon: ICON_MAP[item.icon] || LayoutDashboard,
+        comingSoon: item.comingSoon,
+      }));
+
+    // Always include profile + settings at the end if not in config
+    const paths = new Set(configItems.map((i) => i.to));
+    if (!paths.has('/app/profile')) {
+      configItems.push({ to: '/app/profile', label: t('nav.profile'), icon: Building2, comingSoon: false });
+    }
+    if (!paths.has('/app/settings')) {
+      configItems.push({ to: '/app/settings', label: t('nav.settings'), icon: Settings, comingSoon: false });
+    }
+    return configItems;
+  }, [config.navigation.mainItems, t]);
 
   return (
     <nav className="border-b border-border bg-card sticky top-16 z-40">
@@ -76,12 +96,12 @@ export function Navigation() {
               >
                 <item.icon className="h-4 w-4" />
                 <span className="hidden lg:inline">{item.label}</span>
-                {item.badge && (
+                {item.comingSoon && (
                   <Badge
                     variant="secondary"
                     className="ml-1 px-1.5 py-0 text-[10px] font-semibold hidden xl:flex"
                   >
-                    {item.badge}
+                    Soon
                   </Badge>
                 )}
               </NavLink>

@@ -76,7 +76,7 @@ export function EmptyDashboard() {
 
       <Button
         size="lg"
-        onClick={() => navigate('/projects/new')}
+        onClick={() => navigate('/app/jobs/new')}
         className="mb-12 shadow-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 text-lg px-8 py-6"
       >
         <FolderPlus className="mr-2 h-5 w-5" />

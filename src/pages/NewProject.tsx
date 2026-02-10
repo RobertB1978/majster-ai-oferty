@@ -228,7 +228,7 @@ export default function NewProject() {
       status: 'Nowy',
     });
 
-    navigate(`/projects/${project.id}`);
+    navigate(`/app/jobs/${project.id}`);
   };
 
   const isVoiceSupported = !!(window as unknown).SpeechRecognition || !!(window as unknown).webkitSpeechRecognition;
@@ -236,7 +236,7 @@ export default function NewProject() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" onClick={() => navigate('/projects')}>
+        <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Powrót do projektów
         </Button>
@@ -466,7 +466,7 @@ export default function NewProject() {
                 {!clientsLoading && clients.length === 0 && (
                   <p className="text-sm text-muted-foreground">
                     Brak klientów.{' '}
-                    <Button variant="link" className="h-auto p-0" onClick={() => navigate('/clients')}>
+                    <Button variant="link" className="h-auto p-0" onClick={() => navigate('/app/clients')}>
                       Dodaj klienta
                     </Button>
                   </p>

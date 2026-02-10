@@ -56,7 +56,7 @@ export default function Dashboard() {
 
   // Handle voice quote creation
   const handleVoiceQuoteCreated = (result: unknown) => {
-    navigate('/projects/new', { state: { voiceQuote: result } });
+    navigate('/app/jobs/new', { state: { voiceQuote: result } });
   };
 
   // Show empty state for new users
@@ -103,7 +103,7 @@ export default function Dashboard() {
               <AlertTitle>Wygasające oferty</AlertTitle>
               <AlertDescription>
                 Masz {expiringOffersCount} {expiringOffersCount === 1 ? 'ofertę wygasającą' : 'ofert wygasających'} w ciągu 7 dni. 
-                <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/projects')}>
+                <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/app/jobs')}>
                   Zobacz szczegóły
                 </Button>
               </AlertDescription>
@@ -115,7 +115,7 @@ export default function Dashboard() {
               <AlertTitle>Plan wkrótce wygasa</AlertTitle>
               <AlertDescription>
                 Twój plan wygasa za {subscriptionExpiresIn} dni. 
-                <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/billing')}>
+                <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/app/plan')}>
                   Odnów teraz
                 </Button>
               </AlertDescription>
@@ -146,7 +146,7 @@ export default function Dashboard() {
           </div>
           <Button 
             size="lg" 
-            onClick={() => navigate('/projects/new')} 
+            onClick={() => navigate('/app/jobs/new')} 
             className="shadow-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200"
           >
             <Plus className="mr-2 h-5 w-5" />

@@ -93,7 +93,7 @@ export default function Projects() {
               {t('projects.exportBtn')}
             </Button>
           )}
-          <Button size="lg" onClick={() => navigate('/projects/new')} className="shadow-sm bg-primary hover:bg-primary/90 transition-colors">
+          <Button size="lg" onClick={() => navigate('/app/jobs/new')} className="shadow-sm bg-primary hover:bg-primary/90 transition-colors">
             <Plus className="mr-2 h-5 w-5" />
             {t('projects.newProject')}
           </Button>
@@ -141,7 +141,7 @@ export default function Projects() {
             </div>
             <h3 className="text-lg font-semibold mb-2">{t('projects.noProjects')}</h3>
             <p className="text-muted-foreground mb-4">{t('projects.createFirst')}</p>
-            <Button onClick={() => navigate('/projects/new')} className="bg-primary">
+            <Button onClick={() => navigate('/app/jobs/new')} className="bg-primary">
               <Plus className="mr-2 h-4 w-4" />
               {t('projects.newProject')}
             </Button>
