@@ -179,7 +179,9 @@
       "low": "Low",
       "medium": "Medium",
       "high": "High"
-    }
+    },
+    "allStatuses": "All statuses",
+    "open": "Open"
   },
   "clients": {
     "title": "Clients",

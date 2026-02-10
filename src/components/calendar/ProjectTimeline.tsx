@@ -180,7 +180,7 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
 
                   {/* Project bar */}
                   <button
-                    onClick={() => navigate(`/projects/${project!.id}`)}
+                    onClick={() => navigate(`/app/jobs/${project!.id}`)}
                     className={cn(
                       'absolute top-2 h-10 rounded transition-all cursor-pointer',
                       'hover:brightness-110 hover:shadow-md',

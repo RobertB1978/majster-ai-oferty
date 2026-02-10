@@ -63,7 +63,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-muted-foreground text-center text-sm">
                 {i18n.t('errors.unexpectedError')}
               </p>
-              {this.state.error && (
+              {this.state.error && import.meta.env.DEV && (
                 <details className="text-xs text-muted-foreground bg-muted p-3 rounded-md">
                   <summary className="cursor-pointer font-medium">{i18n.t('errors.errorDetails')}</summary>
                   <pre className="mt-2 whitespace-pre-wrap break-words">

@@ -167,6 +167,8 @@
       "rejected": "Відхилений",
       "completed": "Завершений"
     },
+    "allStatuses": "Усі статуси",
+    "open": "Відкрити",
     "priorities": {
       "low": "Низький",
       "medium": "Середній",
