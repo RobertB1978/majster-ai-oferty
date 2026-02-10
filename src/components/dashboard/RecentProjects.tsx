@@ -41,7 +41,7 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
             <CardTitle>Ostatnie projekty</CardTitle>
             <CardDescription>Twoje najnowsze projekty</CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={() => navigate('/projects')}>
+          <Button variant="outline" size="sm" onClick={() => navigate('/app/jobs')}>
             Zobacz wszystkie
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
@@ -66,7 +66,7 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
               <p className="text-muted-foreground">Brak projektów</p>
               <Button 
                 variant="link" 
-                onClick={() => navigate('/projects/new')}
+                onClick={() => navigate('/app/jobs/new')}
                 className="mt-2"
               >
                 Utwórz pierwszy projekt
@@ -107,7 +107,7 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => navigate(`/projects/${project.id}`)}
+                      onClick={() => navigate(`/app/jobs/${project.id}`)}
                     >
                       Otwórz
                     </Button>

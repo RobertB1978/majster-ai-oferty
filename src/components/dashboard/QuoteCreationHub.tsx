@@ -25,7 +25,7 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
       description: t('dashboard.quoteCreation.voiceRedirect')
     });
     setTimeout(() => {
-      navigate('/projects/new', { state: { mode: 'voice' } });
+      navigate('/app/jobs/new', { state: { mode: 'voice' } });
     }, 800);
   };
 
@@ -35,13 +35,13 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
       description: t('dashboard.quoteCreation.voiceRedirect')
     });
     setTimeout(() => {
-      navigate('/projects/new', { state: { mode: 'ai' } });
+      navigate('/app/jobs/new', { state: { mode: 'ai' } });
     }, 800);
   };
 
   const handleManualClick = () => {
     setMode('manual');
-    navigate('/projects/new', { state: { mode: 'manual' } });
+    navigate('/app/jobs/new', { state: { mode: 'manual' } });
   };
 
   const buttons = [

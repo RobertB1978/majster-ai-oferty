@@ -1,6 +1,7 @@
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { TopBar } from './TopBar';
 import { Navigation } from './Navigation';
+import { MobileBottomNav } from './MobileBottomNav';
 import { Footer } from './Footer';
 import { BackToDashboard } from './BackToDashboard';
 import { PageTransition } from './PageTransition';
@@ -55,7 +56,7 @@ export function AppLayout() {
       </a>
       <TopBar />
       <Navigation />
-      <main id="main-content" className={`flex-1 container py-6 px-4 md:px-6 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <main id="main-content" className={`flex-1 container py-6 px-4 md:px-6 pb-20 lg:pb-6 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         <PageTransition>
           <Outlet />
         </PageTransition>
@@ -63,6 +64,9 @@ export function AppLayout() {
       
       {/* Footer */}
       <Footer />
+
+      {/* Mobile bottom navigation */}
+      <MobileBottomNav />
 
       {/* Back to Dashboard floating button */}
       <BackToDashboard />

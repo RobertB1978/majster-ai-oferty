@@ -12,23 +12,23 @@ export function QuickActions() {
     {
       label: t('dashboard.newProject', 'Nowy projekt'),
       icon: Plus,
-      onClick: () => navigate('/projects/new'),
+      onClick: () => navigate('/app/jobs/new'),
       primary: true
     },
     {
       label: t('dashboard.addClient', 'Dodaj klienta'),
       icon: Users,
-      onClick: () => navigate('/clients'),
+      onClick: () => navigate('/app/clients'),
     },
     {
       label: t('nav.templates', 'Szablony'),
       icon: FileText,
-      onClick: () => navigate('/templates'),
+      onClick: () => navigate('/app/templates'),
     },
     {
       label: t('nav.calendar', 'Kalendarz'),
       icon: Calendar,
-      onClick: () => navigate('/calendar'),
+      onClick: () => navigate('/app/calendar'),
     },
   ];
 

@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 /**
  * Auth Diagnostics Panel - DEV ONLY
  *
@@ -52,10 +53,10 @@ function AuthDiagnosticsContent() {
     try {
       const { data, error } = await supabase.auth.getSession();
       logger.log('🔍 Connection Test Result:', { data, error });
-      alert(error ? `❌ Error: ${error.message}` : '✅ Connection successful!');
+      toast(error ? `Connection error: ${error.message}` : 'Connection successful!');
     } catch (err) {
       logger.error('🔍 Connection Test Failed:', err);
-      alert(`❌ Connection failed: ${err}`);
+      toast(`Connection failed: ${err}`);
     }
   };
 
