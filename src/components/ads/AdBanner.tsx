@@ -23,7 +23,7 @@ const mockAds = [
     title: 'Ubezpieczenia dla firm',
     description: 'Polisa OC dla rzemieślników już od 50 zł/mies.',
     cta: 'Porównaj oferty',
-    color: 'from-blue-500 to-cyan-500',
+    color: 'from-primary to-primary',
   },
   {
     id: 3,
@@ -37,7 +37,7 @@ const mockAds = [
     title: 'Szkolenia BHP',
     description: 'Certyfikowane szkolenia online dla Twojego zespołu.',
     cta: 'Zapisz się',
-    color: 'from-purple-500 to-pink-500',
+    color: 'from-primary to-primary',
   },
 ];
 
@@ -64,7 +64,7 @@ export function AdBanner({ variant = 'horizontal', className, onClose, showClose
   if (variant === 'vertical') {
     return (
       <div className={cn(
-        'relative rounded-lg overflow-hidden border bg-gradient-to-b p-4 space-y-3',
+        'relative rounded-lg overflow-hidden bg-card border p-4 space-y-3',
         currentAd.color,
         className
       )}>
@@ -92,7 +92,7 @@ export function AdBanner({ variant = 'horizontal', className, onClose, showClose
   if (variant === 'inline') {
     return (
       <div className={cn(
-        'relative rounded-lg overflow-hidden border bg-gradient-to-r p-3 flex items-center gap-4',
+        'relative rounded-lg overflow-hidden bg-card border p-3 flex items-center gap-4',
         currentAd.color,
         className
       )}>
@@ -122,7 +122,7 @@ export function AdBanner({ variant = 'horizontal', className, onClose, showClose
   // Default horizontal
   return (
     <div className={cn(
-      'relative rounded-lg overflow-hidden border bg-gradient-to-r p-4 flex items-center justify-between gap-4',
+      'relative rounded-lg overflow-hidden bg-card border p-4 flex items-center justify-between gap-4',
       currentAd.color,
       className
     )}>

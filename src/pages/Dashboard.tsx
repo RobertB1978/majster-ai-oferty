@@ -124,9 +124,8 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Header with gradient background */}
-      <div className="relative rounded-2xl bg-gradient-to-r from-primary/10 via-purple-500/5 to-pink-500/10 p-6 overflow-hidden">
-        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-3xl" />
+      {/* Header */}
+      <div className="relative rounded-2xl bg-primary/5 border border-primary/20 p-6 overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
@@ -148,7 +147,7 @@ export default function Dashboard() {
           <Button 
             size="lg" 
             onClick={() => navigate('/projects/new')} 
-            className="shadow-xl bg-gradient-to-r from-primary via-purple-500 to-pink-500 hover:shadow-2xl hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
+            className="shadow-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200"
           >
             <Plus className="mr-2 h-5 w-5" />
             Nowy projekt
@@ -157,7 +156,7 @@ export default function Dashboard() {
       </div>
 
       {/* Quote Creation Hub - Main Feature */}
-      <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-purple-500/5 to-pink-500/5 overflow-hidden shadow-lg">
+      <Card className="border-2 border-primary/20 bg-primary/5 overflow-hidden shadow-sm">
         <CardContent className="p-6 sm:p-8">
           <QuoteCreationHub onVoiceQuoteCreated={handleVoiceQuoteCreated} />
         </CardContent>

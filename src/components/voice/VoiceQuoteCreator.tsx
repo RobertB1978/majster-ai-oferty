@@ -140,13 +140,13 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
   return (
     <Card className={cn(
       'relative overflow-hidden transition-all duration-500',
-      mode === 'listening' && 'border-primary shadow-glow',
+      mode === 'listening' && 'border-primary shadow-md',
       mode === 'processing' && 'border-primary/50',
       mode === 'done' && 'border-green-500/50'
     )}>
       {/* Animated background */}
       {mode === 'listening' && (
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 animate-pulse" />
+        <div className="absolute inset-0 bg-primary/5 animate-pulse" />
       )}
 
       <CardHeader className="pb-2">
@@ -191,7 +191,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
             <Button
               size="lg"
               onClick={handleStartListening}
-              className="h-20 w-20 rounded-full bg-gradient-to-br from-primary to-primary-glow hover:shadow-glow transition-all duration-300 hover:scale-110"
+              className="h-20 w-20 rounded-full bg-primary hover:bg-primary/90 transition-all duration-200"
             >
               <Mic className="h-8 w-8" />
             </Button>
@@ -299,7 +299,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
               </Button>
               <Button
                 onClick={handleEditSubmit}
-                className="flex-1 bg-gradient-to-r from-primary to-primary-glow"
+                className="flex-1 bg-primary"
               >
                 <Check className="h-4 w-4 mr-2" />
                 Zatwierdź

@@ -9,30 +9,26 @@ export function QuickActions() {
   const { t } = useTranslation();
 
   const actions = [
-    { 
-      label: t('dashboard.newProject', 'Nowy projekt'), 
-      icon: Plus, 
+    {
+      label: t('dashboard.newProject', 'Nowy projekt'),
+      icon: Plus,
       onClick: () => navigate('/projects/new'),
-      gradient: 'from-primary via-purple-500 to-pink-500',
-      primary: true 
+      primary: true
     },
-    { 
-      label: t('dashboard.addClient', 'Dodaj klienta'), 
-      icon: Users, 
+    {
+      label: t('dashboard.addClient', 'Dodaj klienta'),
+      icon: Users,
       onClick: () => navigate('/clients'),
-      hoverGradient: 'hover:from-violet-500/10 hover:to-purple-500/10'
     },
-    { 
-      label: t('nav.templates', 'Szablony'), 
-      icon: FileText, 
+    {
+      label: t('nav.templates', 'Szablony'),
+      icon: FileText,
       onClick: () => navigate('/templates'),
-      hoverGradient: 'hover:from-blue-500/10 hover:to-cyan-500/10'
     },
-    { 
-      label: t('nav.calendar', 'Kalendarz'), 
-      icon: Calendar, 
+    {
+      label: t('nav.calendar', 'Kalendarz'),
+      icon: Calendar,
       onClick: () => navigate('/calendar'),
-      hoverGradient: 'hover:from-emerald-500/10 hover:to-teal-500/10'
     },
   ];
 
@@ -48,10 +44,10 @@ export function QuickActions() {
           size="lg"
           onClick={action.onClick}
           className={cn(
-            "transition-all duration-300 hover:scale-105",
-            action.primary 
-              ? `bg-gradient-to-r ${action.gradient} shadow-xl hover:shadow-2xl hover:shadow-primary/30` 
-              : `hover:bg-gradient-to-r ${action.hoverGradient} hover:shadow-md`
+            "transition-all duration-200",
+            action.primary
+              ? "bg-primary text-primary-foreground shadow-md hover:bg-primary/90"
+              : "hover:bg-secondary hover:shadow-sm"
           )}
           style={{ animationDelay: `${0.25 + index * 0.05}s` }}
         >

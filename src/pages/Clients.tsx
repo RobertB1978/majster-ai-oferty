@@ -136,7 +136,7 @@ export default function Clients() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
               <Users className="h-5 w-5 text-primary-foreground" />
             </div>
             {t('clients.title')}
@@ -145,7 +145,7 @@ export default function Clients() {
         </div>
         <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
-            <Button size="lg" onClick={() => handleOpenDialog()} className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300">
+            <Button size="lg" onClick={() => handleOpenDialog()} className="shadow-sm bg-primary hover:bg-primary/90 transition-colors">
               <Plus className="mr-2 h-5 w-5" />
               {t('clients.addClient')}
             </Button>
@@ -245,7 +245,7 @@ export default function Clients() {
             </div>
             <h3 className="text-lg font-semibold mb-2">{t('clients.noClients')}</h3>
             <p className="text-muted-foreground mb-4">{t('clients.createFirst')}</p>
-            <Button onClick={() => handleOpenDialog()} className="bg-gradient-to-r from-primary to-primary-glow">
+            <Button onClick={() => handleOpenDialog()} className="bg-primary">
               <Plus className="mr-2 h-4 w-4" />
               {t('clients.addClient')}
             </Button>

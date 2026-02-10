@@ -102,7 +102,7 @@ export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeMod
       <DialogContent className="max-w-3xl p-0 overflow-hidden">
         <DialogHeader className="p-6 pb-0">
           <div className="flex items-center gap-3 mb-2">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow text-white">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <FeatureIcon className="h-6 w-6" />
             </div>
             <div>
@@ -127,7 +127,7 @@ export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeMod
               }`}
             >
               {plan.popular && (
-                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-primary-glow">
+                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary">
                   Najpopularniejszy
                 </Badge>
               )}

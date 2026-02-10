@@ -25,13 +25,13 @@ export function Logo({ className, size = 'md', showText = true, animated = true 
   return (
     <div className={cn('flex items-center gap-3', className)}>
       <div className={cn(
-        'relative flex items-center justify-center rounded-xl bg-gradient-to-br from-primary via-primary to-primary-glow shadow-lg',
+        'relative flex items-center justify-center rounded-xl bg-primary shadow-md',
         sizes[size],
         animated && 'group'
       )}>
-        {/* Glow effect */}
+        {/* Hover highlight */}
         <div className={cn(
-          'absolute inset-0 rounded-xl bg-gradient-to-br from-primary/40 to-primary-glow/40 blur-xl opacity-0 transition-opacity duration-500',
+          'absolute inset-0 rounded-xl bg-primary/20 opacity-0 transition-opacity duration-300',
           animated && 'group-hover:opacity-100'
         )} />
         

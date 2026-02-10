@@ -216,7 +216,7 @@ export default function ItemTemplates() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
               <Package className="h-5 w-5 text-primary-foreground" />
             </div>
             {t('templates.title')}
@@ -230,7 +230,7 @@ export default function ItemTemplates() {
             <Download className="mr-2 h-4 w-4" />
             {t('templates.import')} ({defaultTemplates.length})
           </Button>
-          <Button onClick={() => handleOpenDialog()} className="bg-gradient-to-r from-primary to-primary-glow">
+          <Button onClick={() => handleOpenDialog()} className="bg-primary">
             <Plus className="mr-2 h-5 w-5" />
             {t('templates.newTemplate')}
           </Button>
@@ -477,7 +477,7 @@ export default function ItemTemplates() {
             <Button
               onClick={handleImportSelected}
               disabled={isImporting || selectedDefaults.size === 0}
-              className="bg-gradient-to-r from-primary to-primary-glow"
+              className="bg-primary"
             >
               {isImporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('templates.import')} ({selectedDefaults.size})
