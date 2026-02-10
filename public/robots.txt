@@ -9,19 +9,9 @@ Allow: /legal/privacy
 Allow: /legal/terms
 Allow: /legal/cookies
 Allow: /legal/dpa
-Disallow: /dashboard
-Disallow: /clients
-Disallow: /projects
-Disallow: /profile
-Disallow: /settings
-Disallow: /templates
-Disallow: /calendar
-Disallow: /analytics
-Disallow: /team
-Disallow: /finance
-Disallow: /marketplace
-Disallow: /billing
-Disallow: /legal/gdpr
+Allow: /legal/rodo
+Disallow: /app/
+Disallow: /admin/
 
 User-agent: Bingbot
 Allow: /
@@ -29,11 +19,11 @@ Allow: /login
 Allow: /register
 Allow: /legal/privacy
 Allow: /legal/terms
-Disallow: /dashboard
-Disallow: /clients
-Disallow: /projects
-Disallow: /profile
-Disallow: /settings
+Allow: /legal/cookies
+Allow: /legal/dpa
+Allow: /legal/rodo
+Disallow: /app/
+Disallow: /admin/
 
 User-agent: Twitterbot
 Allow: /
@@ -51,19 +41,11 @@ Allow: /login
 Allow: /register
 Allow: /legal/privacy
 Allow: /legal/terms
-Disallow: /dashboard
-Disallow: /clients
-Disallow: /projects
-Disallow: /profile
-Disallow: /settings
-Disallow: /templates
-Disallow: /calendar
-Disallow: /analytics
-Disallow: /team
-Disallow: /finance
-Disallow: /marketplace
-Disallow: /billing
-Disallow: /legal/gdpr
+Allow: /legal/cookies
+Allow: /legal/dpa
+Allow: /legal/rodo
+Disallow: /app/
+Disallow: /admin/
 
 # Sitemap location
 Sitemap: https://majster.ai/sitemap.xml
