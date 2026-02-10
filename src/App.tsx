@@ -141,7 +141,7 @@ const App = () => (
                   <Route path="/legal/terms" element={<TermsOfService />} />
                   <Route path="/legal/cookies" element={<CookiesPolicy />} />
                   <Route path="/legal/dpa" element={<DPA />} />
-                  <Route path="/legal/gdpr" element={<GDPRCenter />} />
+                  <Route path="/legal/rodo" element={<GDPRCenter />} />
 
                   {/* Legacy legal redirects */}
                   <Route path="/privacy" element={<Navigate to="/legal/privacy" replace />} />

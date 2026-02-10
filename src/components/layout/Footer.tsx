@@ -96,8 +96,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/legal/gdpr" 
+                <Link
+                  to="/legal/rodo"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Centrum RODO

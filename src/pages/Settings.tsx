@@ -118,7 +118,7 @@ export default function Settings() {
               <CardContent className="space-y-3">
                 <div className="flex flex-wrap gap-2">
                   <Button variant="outline" size="sm" asChild>
-                    <Link to="/legal/gdpr">Centrum RODO</Link>
+                    <Link to="/legal/rodo">Centrum RODO</Link>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
                     <Link to="/legal/privacy">Polityka Prywatności</Link>
