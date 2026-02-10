@@ -204,12 +204,12 @@ export default function Landing() {
       </section>
 
       {/* Stats bar */}
-      <section id="stats" className="border-b border-border bg-accent/50">
+      <section id="stats" className="border-b border-border bg-card">
         <div className="container py-8">
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-3xl font-bold text-primary">{stat.value}</div>
+                <div className="text-3xl font-bold text-foreground">{stat.value}</div>
                 <div className="mt-1 text-sm text-muted-foreground">{stat.label}</div>
               </div>
             ))}
