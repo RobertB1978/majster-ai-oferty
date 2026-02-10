@@ -2,6 +2,7 @@
   "common": {
     "save": "Zapisz",
     "cancel": "Anuluj",
+    "reset": "Reset",
     "delete": "Usuń",
     "edit": "Edytuj",
     "add": "Dodaj",
@@ -593,6 +594,98 @@
     "metaDescription": "Meta Description",
     "ogImage": "OG Image URL",
     "unsavedChanges": "Niezapisane zmiany"
+  },
+  "adminConfig": {
+    "pageTitle": "Konfiguracja",
+    "title": "Konfiguracja aplikacji",
+    "version": "Wersja",
+    "summaryContentUpdated": "Zaktualizowano treści aplikacji",
+    "landingContent": "Treści strony głównej",
+    "landingContentDesc": "Nagłówki widoczne na publicznej stronie Landing",
+    "mainHeadline": "Nagłówek główny",
+    "subtitle": "Podtytuł",
+    "appFeatures": "Funkcje aplikacji",
+    "globalSwitches": "Globalne przełączniki",
+    "onboarding": "Onboarding nowych użytkowników",
+    "onboardingDesc": "Modal onboardingowy po pierwszym logowaniu"
+  },
+  "adminPlans": {
+    "pageTitle": "Plany",
+    "title": "Plany i uprawnienia",
+    "description": "Definiuj plany taryfowe, limity i moduły",
+    "summaryUpdated": "Zaktualizowano plany taryfowe",
+    "free": "Darmowy",
+    "plnPerMonth": "PLN/mies.",
+    "pricePLN": "Cena (PLN)",
+    "maxJobs": "Max zleceń",
+    "maxClients": "Max klientów",
+    "maxTeam": "Max zespół",
+    "highlighted": "Wyróżniony"
+  },
+  "adminNav": {
+    "pageTitle": "Nawigacja",
+    "title": "Edytor nawigacji",
+    "description": "Kolejność, widoczność i flagi modułów",
+    "summaryUpdated": "Zaktualizowano nawigację",
+    "navItems": "Elementy nawigacji",
+    "navItemsDesc": "Przesuń w górę/dół, włącz/wyłącz widoczność",
+    "visible": "Widoczny",
+    "comingSoon": "Wkrótce",
+    "moveUp": "Przesuń w górę",
+    "moveDown": "Przesuń w dół"
+  },
+  "adminDiag": {
+    "pageTitle": "Diagnostyka",
+    "title": "Diagnostyka systemu",
+    "description": "Status, metryki, konfiguracja",
+    "connection": "Połączenie",
+    "online": "Online",
+    "offline": "Offline",
+    "configVersion": "Wersja konfiguracji",
+    "versionHistory": "Historia wersji",
+    "versionsCount": "{{count}} wersji",
+    "configSize": "Rozmiar konfiguracji",
+    "navItems": "Elementy nawigacji",
+    "planTiers": "Plany taryfowe"
+  },
+  "adminAudit": {
+    "pageTitle": "Logi",
+    "configHistory": "Historia konfiguracji",
+    "configHistoryDesc": "Wersje konfiguracji z możliwością przywrócenia (max 10)",
+    "noHistory": "Brak historii zmian",
+    "current": "Aktualna",
+    "restore": "Przywróć"
+  },
+  "configContext": {
+    "invalidConfig": "Nieprawidłowa konfiguracja — przywrócono domyślną",
+    "corruptConfig": "Uszkodzona konfiguracja — przywrócono domyślną",
+    "validationError": "Nieprawidłowa konfiguracja: ",
+    "saved": "Konfiguracja zapisana",
+    "restored": "Konfiguracja przywrócona",
+    "restoredDefaults": "Przywrócono ustawienia domyślne",
+    "rolledBackTo": "Przywrócono wersję z {{date}}"
+  },
+  "workflow": {
+    "start": "Rozpocznij",
+    "pause": "Wstrzymaj",
+    "markSent": "Oznacz jako wysłana",
+    "backToQuoting": "Cofnij do wyceny",
+    "finish": "Zakończ",
+    "resume": "Wznów",
+    "confirmTitle": "Potwierdź zmianę statusu",
+    "confirmDescription": "Czy na pewno chcesz zmienić status z \"{{from}}\" na \"{{to}}\"?"
+  },
+  "photoProof": {
+    "title": "Dokumentacja fotograficzna",
+    "description": "Dodaj zdjęcia z budowy jako dowód wykonania prac",
+    "dropHint": "Przeciągnij zdjęcia tutaj lub",
+    "selectFiles": "Wybierz pliki",
+    "removePhoto": "Usuń zdjęcie",
+    "empty": "Brak zdjęć. Dodaj dokumentację fotograficzną z budowy."
+  },
+  "voiceMemo": {
+    "comingSoon": "Notatki głosowe — wkrótce dostępne",
+    "ariaLabel": "Nagranie głosowe"
   },
   "organizations": {
     "title": "Organizacje",

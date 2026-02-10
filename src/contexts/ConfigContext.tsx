@@ -1,6 +1,7 @@
 import { createContext, useContext, useCallback, useEffect, useReducer } from 'react';
 import type { ReactNode } from 'react';
 import { toast } from 'sonner';
+import i18n from '@/i18n';
 import { appConfigSchema } from '@/data/appConfigSchema';
 import type { AppConfig, ConfigVersion } from '@/data/appConfigSchema';
 import { DEFAULT_CONFIG } from '@/data/defaultConfig';
@@ -43,7 +44,7 @@ function configReducer(state: ConfigState, action: ConfigAction): ConfigState {
         config: target.config,
         timestamp: new Date().toISOString(),
         actor: 'owner',
-        summary: `Przywrócono wersję z ${new Date(target.timestamp).toLocaleString('pl-PL')}`,
+        summary: i18n.t('configContext.rolledBackTo', { date: new Date(target.timestamp).toLocaleString('pl-PL') }),
       };
       const versions = [entry, ...state.versions].slice(0, MAX_VERSIONS);
       persist(target.config, versions);
@@ -54,7 +55,7 @@ function configReducer(state: ConfigState, action: ConfigAction): ConfigState {
         config: DEFAULT_CONFIG,
         timestamp: new Date().toISOString(),
         actor: 'owner',
-        summary: 'Przywrócono ustawienia domyślne',
+        summary: i18n.t('configContext.restoredDefaults'),
       };
       const versions = [entry, ...state.versions].slice(0, MAX_VERSIONS);
       persist(DEFAULT_CONFIG, versions);
@@ -123,10 +124,10 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
       try {
         const result = appConfigSchema.safeParse(JSON.parse(raw));
         if (!result.success) {
-          toast.error('Nieprawidłowa konfiguracja — przywrócono domyślną');
+          toast.error(i18n.t('configContext.invalidConfig'));
         }
       } catch {
-        toast.error('Uszkodzona konfiguracja — przywrócono domyślną');
+        toast.error(i18n.t('configContext.corruptConfig'));
       }
     }
   }, []);
@@ -149,11 +150,11 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
       };
       const result = appConfigSchema.safeParse(merged);
       if (!result.success) {
-        toast.error('Nieprawidłowa konfiguracja: ' + result.error.issues[0]?.message);
+        toast.error(i18n.t('configContext.validationError') + result.error.issues[0]?.message);
         return false;
       }
       dispatch({ type: 'SET_CONFIG', config: result.data, summary });
-      toast.success('Konfiguracja zapisana');
+      toast.success(i18n.t('configContext.saved'));
       return true;
     },
     [state.config]
@@ -161,12 +162,12 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
 
   const rollback = useCallback((index: number) => {
     dispatch({ type: 'ROLLBACK', index });
-    toast.success('Konfiguracja przywrócona');
+    toast.success(i18n.t('configContext.restored'));
   }, []);
 
   const resetToDefaults = useCallback(() => {
     dispatch({ type: 'RESET' });
-    toast.success('Przywrócono ustawienia domyślne');
+    toast.success(i18n.t('configContext.restoredDefaults'));
   }, []);
 
   return (

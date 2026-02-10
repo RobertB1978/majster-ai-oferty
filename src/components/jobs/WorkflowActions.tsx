@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -19,25 +20,28 @@ interface WorkflowActionsProps {
   isUpdating?: boolean;
 }
 
-const WORKFLOW: Record<string, { next: ProjectStatus; label: string; icon: typeof Play; variant: 'default' | 'outline' | 'secondary' }[]> = {
+type WorkflowEntry = { next: ProjectStatus; labelKey: string; icon: typeof Play; variant: 'default' | 'outline' | 'secondary' };
+
+const WORKFLOW: Record<string, WorkflowEntry[]> = {
   'Nowy': [
-    { next: 'Wycena w toku', label: 'Rozpocznij', icon: Play, variant: 'default' },
+    { next: 'Wycena w toku', labelKey: 'workflow.start', icon: Play, variant: 'default' },
   ],
   'Wycena w toku': [
-    { next: 'Nowy', label: 'Wstrzymaj', icon: Pause, variant: 'outline' },
-    { next: 'Oferta wysłana', label: 'Oznacz jako wysłana', icon: CheckCircle, variant: 'default' },
+    { next: 'Nowy', labelKey: 'workflow.pause', icon: Pause, variant: 'outline' },
+    { next: 'Oferta wysłana', labelKey: 'workflow.markSent', icon: CheckCircle, variant: 'default' },
   ],
   'Oferta wysłana': [
-    { next: 'Wycena w toku', label: 'Cofnij do wyceny', icon: Pause, variant: 'outline' },
-    { next: 'Zaakceptowany', label: 'Zakończ', icon: CheckCircle, variant: 'default' },
+    { next: 'Wycena w toku', labelKey: 'workflow.backToQuoting', icon: Pause, variant: 'outline' },
+    { next: 'Zaakceptowany', labelKey: 'workflow.finish', icon: CheckCircle, variant: 'default' },
   ],
   'Zaakceptowany': [
-    { next: 'Wycena w toku', label: 'Wznów', icon: Play, variant: 'outline' },
+    { next: 'Wycena w toku', labelKey: 'workflow.resume', icon: Play, variant: 'outline' },
   ],
 };
 
 export function WorkflowActions({ status, onStatusChange, isUpdating }: WorkflowActionsProps) {
-  const [confirm, setConfirm] = useState<{ next: ProjectStatus; label: string } | null>(null);
+  const { t } = useTranslation();
+  const [confirm, setConfirm] = useState<{ next: ProjectStatus; labelKey: string } | null>(null);
   const actions = WORKFLOW[status] ?? [];
 
   if (actions.length === 0) return null;
@@ -52,10 +56,10 @@ export function WorkflowActions({ status, onStatusChange, isUpdating }: Workflow
             size="sm"
             className="min-h-[44px]"
             disabled={isUpdating}
-            onClick={() => setConfirm({ next: action.next, label: action.label })}
+            onClick={() => setConfirm({ next: action.next, labelKey: action.labelKey })}
           >
             <action.icon className="mr-2 h-4 w-4" />
-            {action.label}
+            {t(action.labelKey)}
           </Button>
         ))}
       </div>
@@ -63,20 +67,20 @@ export function WorkflowActions({ status, onStatusChange, isUpdating }: Workflow
       <AlertDialog open={!!confirm} onOpenChange={() => setConfirm(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Potwierdź zmianę statusu</AlertDialogTitle>
+            <AlertDialogTitle>{t('workflow.confirmTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Czy na pewno chcesz zmienić status z "{status}" na "{confirm?.next}"?
+              {t('workflow.confirmDescription', { from: status, to: confirm?.next })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Anuluj</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (confirm) onStatusChange(confirm.next);
                 setConfirm(null);
               }}
             >
-              {confirm?.label}
+              {confirm ? t(confirm.labelKey) : ''}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
