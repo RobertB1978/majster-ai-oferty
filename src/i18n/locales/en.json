@@ -2,6 +2,7 @@
   "common": {
     "save": "Save",
     "cancel": "Cancel",
+    "reset": "Reset",
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
@@ -585,6 +586,98 @@
     "metaDescription": "Meta Description",
     "ogImage": "OG Image URL",
     "unsavedChanges": "Unsaved Changes"
+  },
+  "adminConfig": {
+    "pageTitle": "Configuration",
+    "title": "App Configuration",
+    "version": "Version",
+    "summaryContentUpdated": "Updated app content",
+    "landingContent": "Landing Page Content",
+    "landingContentDesc": "Headlines visible on the public Landing page",
+    "mainHeadline": "Main Headline",
+    "subtitle": "Subtitle",
+    "appFeatures": "App Features",
+    "globalSwitches": "Global Switches",
+    "onboarding": "New User Onboarding",
+    "onboardingDesc": "Onboarding modal after first login"
+  },
+  "adminPlans": {
+    "pageTitle": "Plans",
+    "title": "Plans & Permissions",
+    "description": "Define pricing plans, limits and modules",
+    "summaryUpdated": "Updated pricing plans",
+    "free": "Free",
+    "plnPerMonth": "PLN/mo",
+    "pricePLN": "Price (PLN)",
+    "maxJobs": "Max jobs",
+    "maxClients": "Max clients",
+    "maxTeam": "Max team",
+    "highlighted": "Highlighted"
+  },
+  "adminNav": {
+    "pageTitle": "Navigation",
+    "title": "Navigation Editor",
+    "description": "Order, visibility and module flags",
+    "summaryUpdated": "Updated navigation",
+    "navItems": "Navigation Items",
+    "navItemsDesc": "Move up/down, toggle visibility",
+    "visible": "Visible",
+    "comingSoon": "Soon",
+    "moveUp": "Move up",
+    "moveDown": "Move down"
+  },
+  "adminDiag": {
+    "pageTitle": "Diagnostics",
+    "title": "System Diagnostics",
+    "description": "Status, metrics, configuration",
+    "connection": "Connection",
+    "online": "Online",
+    "offline": "Offline",
+    "configVersion": "Config Version",
+    "versionHistory": "Version History",
+    "versionsCount": "{{count}} versions",
+    "configSize": "Config Size",
+    "navItems": "Navigation Items",
+    "planTiers": "Plan Tiers"
+  },
+  "adminAudit": {
+    "pageTitle": "Logs",
+    "configHistory": "Configuration History",
+    "configHistoryDesc": "Config versions with rollback capability (max 10)",
+    "noHistory": "No change history",
+    "current": "Current",
+    "restore": "Restore"
+  },
+  "configContext": {
+    "invalidConfig": "Invalid configuration — defaults restored",
+    "corruptConfig": "Corrupt configuration — defaults restored",
+    "validationError": "Invalid configuration: ",
+    "saved": "Configuration saved",
+    "restored": "Configuration restored",
+    "restoredDefaults": "Defaults restored",
+    "rolledBackTo": "Rolled back to version from {{date}}"
+  },
+  "workflow": {
+    "start": "Start",
+    "pause": "Pause",
+    "markSent": "Mark as Sent",
+    "backToQuoting": "Back to Quoting",
+    "finish": "Finish",
+    "resume": "Resume",
+    "confirmTitle": "Confirm Status Change",
+    "confirmDescription": "Are you sure you want to change status from \"{{from}}\" to \"{{to}}\"?"
+  },
+  "photoProof": {
+    "title": "Photo Documentation",
+    "description": "Add construction site photos as proof of work",
+    "dropHint": "Drag photos here or",
+    "selectFiles": "Select Files",
+    "removePhoto": "Remove photo",
+    "empty": "No photos. Add construction site documentation."
+  },
+  "voiceMemo": {
+    "comingSoon": "Voice memos — coming soon",
+    "ariaLabel": "Voice recording"
   },
   "audit": {
     "title": "Audit Log",

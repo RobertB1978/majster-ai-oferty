@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Camera, Upload, X, ImageIcon } from 'lucide-react';
@@ -11,6 +12,7 @@ interface PhotoProof {
 }
 
 export function PhotoProofPanel() {
+  const { t } = useTranslation();
   const [photos, setPhotos] = useState<PhotoProof[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -45,10 +47,10 @@ export function PhotoProofPanel() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Camera className="h-5 w-5" />
-          Dokumentacja fotograficzna
+          {t('photoProof.title')}
         </CardTitle>
         <CardDescription>
-          Dodaj zdjęcia z budowy jako dowód wykonania prac
+          {t('photoProof.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -60,7 +62,7 @@ export function PhotoProofPanel() {
         >
           <Upload className="h-8 w-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground text-center">
-            Przeciągnij zdjęcia tutaj lub
+            {t('photoProof.dropHint')}
           </p>
           <Button
             variant="outline"
@@ -69,7 +71,7 @@ export function PhotoProofPanel() {
             onClick={() => fileRef.current?.click()}
           >
             <ImageIcon className="mr-2 h-4 w-4" />
-            Wybierz pliki
+            {t('photoProof.selectFiles')}
           </Button>
           <input
             ref={fileRef}
@@ -94,7 +96,7 @@ export function PhotoProofPanel() {
                 <button
                   onClick={() => removePhoto(photo.id)}
                   className="absolute top-1 right-1 rounded-full bg-destructive p-1 text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Usuń zdjęcie"
+                  aria-label={t('photoProof.removePhoto')}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -108,7 +110,7 @@ export function PhotoProofPanel() {
 
         {photos.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4">
-            Brak zdjęć. Dodaj dokumentację fotograficzną z budowy.
+            {t('photoProof.empty')}
           </p>
         )}
       </CardContent>

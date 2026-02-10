@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -10,6 +11,7 @@ import { useConfig } from '@/contexts/ConfigContext';
 import type { NavItem } from '@/data/appConfigSchema';
 
 export default function AdminNavigationPage() {
+  const { t } = useTranslation();
   const { config, applyConfig } = useConfig();
   const [items, setItems] = useState<NavItem[]>(
     [...config.navigation.mainItems].sort((a, b) => a.order - b.order)
@@ -32,13 +34,13 @@ export default function AdminNavigationPage() {
   };
 
   const handleSave = () => {
-    applyConfig({ navigation: { mainItems: items } }, 'Zaktualizowano nawigację');
+    applyConfig({ navigation: { mainItems: items } }, t('adminNav.summaryUpdated'));
   };
 
   return (
     <>
       <Helmet>
-        <title>Nawigacja | Owner Console | Majster.AI</title>
+        <title>{t('adminNav.pageTitle')} | Owner Console | Majster.AI</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
@@ -47,22 +49,22 @@ export default function AdminNavigationPage() {
           <div className="flex items-center gap-3">
             <Navigation className="h-6 w-6 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold">Edytor nawigacji</h1>
+              <h1 className="text-2xl font-bold">{t('adminNav.title')}</h1>
               <p className="text-sm text-muted-foreground">
-                Kolejność, widoczność i flagi modułów
+                {t('adminNav.description')}
               </p>
             </div>
           </div>
           <Button size="sm" onClick={handleSave}>
             <Save className="mr-2 h-4 w-4" />
-            Zapisz
+            {t('common.save')}
           </Button>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Elementy nawigacji</CardTitle>
-            <CardDescription>Przesuń w górę/dół, włącz/wyłącz widoczność</CardDescription>
+            <CardTitle>{t('adminNav.navItems')}</CardTitle>
+            <CardDescription>{t('adminNav.navItemsDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -82,18 +84,18 @@ export default function AdminNavigationPage() {
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <div className="flex items-center gap-1">
-                      <Label className="text-xs">Widoczny</Label>
+                      <Label className="text-xs">{t('adminNav.visible')}</Label>
                       <Switch checked={item.visible} onCheckedChange={() => toggleField(i, 'visible')} />
                     </div>
                     <div className="flex items-center gap-1">
-                      <Label className="text-xs">Wkrótce</Label>
+                      <Label className="text-xs">{t('adminNav.comingSoon')}</Label>
                       <Switch checked={item.comingSoon} onCheckedChange={() => toggleField(i, 'comingSoon')} />
                     </div>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={i === 0} onClick={() => moveItem(i, -1)} aria-label="Przesuń w górę">
+                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={i === 0} onClick={() => moveItem(i, -1)} aria-label={t('adminNav.moveUp')}>
                         <ArrowUp className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={i === items.length - 1} onClick={() => moveItem(i, 1)} aria-label="Przesuń w dół">
+                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={i === items.length - 1} onClick={() => moveItem(i, 1)} aria-label={t('adminNav.moveDown')}>
                         <ArrowDown className="h-4 w-4" />
                       </Button>
                     </div>

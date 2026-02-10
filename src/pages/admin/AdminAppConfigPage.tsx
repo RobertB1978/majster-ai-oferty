@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,17 +11,18 @@ import { Sliders, Save, RotateCcw } from 'lucide-react';
 import { useConfig } from '@/contexts/ConfigContext';
 
 export default function AdminAppConfigPage() {
+  const { t } = useTranslation();
   const { config, applyConfig, resetToDefaults } = useConfig();
   const [draft, setDraft] = useState(config.content);
 
   const handleSave = () => {
-    applyConfig({ content: draft }, 'Zaktualizowano treści aplikacji');
+    applyConfig({ content: draft }, t('adminConfig.summaryContentUpdated'));
   };
 
   return (
     <>
       <Helmet>
-        <title>Konfiguracja | Owner Console | Majster.AI</title>
+        <title>{t('adminConfig.pageTitle')} | Owner Console | Majster.AI</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
@@ -29,32 +31,32 @@ export default function AdminAppConfigPage() {
           <div className="flex items-center gap-3">
             <Sliders className="h-6 w-6 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold">Konfiguracja aplikacji</h1>
+              <h1 className="text-2xl font-bold">{t('adminConfig.title')}</h1>
               <p className="text-sm text-muted-foreground">
-                Wersja: <Badge variant="outline">{config.version}</Badge>
+                {t('adminConfig.version')}: <Badge variant="outline">{config.version}</Badge>
               </p>
             </div>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={resetToDefaults}>
               <RotateCcw className="mr-2 h-4 w-4" />
-              Reset
+              {t('common.reset')}
             </Button>
             <Button size="sm" onClick={handleSave}>
               <Save className="mr-2 h-4 w-4" />
-              Zapisz
+              {t('common.save')}
             </Button>
           </div>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Treści strony głównej</CardTitle>
-            <CardDescription>Nagłówki widoczne na publicznej stronie Landing</CardDescription>
+            <CardTitle>{t('adminConfig.landingContent')}</CardTitle>
+            <CardDescription>{t('adminConfig.landingContentDesc')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="headline">Nagłówek główny</Label>
+              <Label htmlFor="headline">{t('adminConfig.mainHeadline')}</Label>
               <Input
                 id="headline"
                 value={draft.landingHeadline}
@@ -64,7 +66,7 @@ export default function AdminAppConfigPage() {
               <p className="text-xs text-muted-foreground">{draft.landingHeadline.length}/120</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="subheadline">Podtytuł</Label>
+              <Label htmlFor="subheadline">{t('adminConfig.subtitle')}</Label>
               <Input
                 id="subheadline"
                 value={draft.landingSubheadline}
@@ -78,15 +80,15 @@ export default function AdminAppConfigPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Funkcje aplikacji</CardTitle>
-            <CardDescription>Globalne przełączniki</CardDescription>
+            <CardTitle>{t('adminConfig.appFeatures')}</CardTitle>
+            <CardDescription>{t('adminConfig.globalSwitches')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div>
-                <Label>Onboarding nowych użytkowników</Label>
+                <Label>{t('adminConfig.onboarding')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Modal onboardingowy po pierwszym logowaniu
+                  {t('adminConfig.onboardingDesc')}
                 </p>
               </div>
               <Switch
