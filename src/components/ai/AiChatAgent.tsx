@@ -199,7 +199,7 @@ export function AiChatAgent() {
         onClick={() => setIsOpen(true)}
         className={cn(
           'fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-xl',
-          'bg-gradient-to-br from-primary to-primary-glow hover:shadow-glow',
+          'bg-primary hover:bg-primary/90',
           'transition-all duration-300 hover:scale-110',
           isOpen && 'hidden'
         )}
@@ -208,8 +208,8 @@ export function AiChatAgent() {
       >
         <MessageCircle className="h-6 w-6" />
         <span className="absolute -top-1 -right-1 flex h-4 w-4">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-glow opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-4 w-4 bg-primary-glow items-center justify-center">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-4 w-4 bg-primary items-center justify-center">
             <Sparkles className="h-2.5 w-2.5 text-white" />
           </span>
         </span>
@@ -222,10 +222,10 @@ export function AiChatAgent() {
           'animate-scale-in origin-bottom-right',
           'border-primary/20'
         )}>
-          <CardHeader className="pb-3 bg-gradient-to-r from-primary/10 to-primary-glow/10 rounded-t-lg">
+          <CardHeader className="pb-3 bg-primary/10 rounded-t-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-glow">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
                   <Bot className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <div>
@@ -321,8 +321,8 @@ export function AiChatAgent() {
                   >
                     <div className={cn(
                       'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
-                      message.role === 'assistant' 
-                        ? 'bg-gradient-to-br from-primary to-primary-glow' 
+                      message.role === 'assistant'
+                        ? 'bg-primary'
                         : 'bg-muted'
                     )}>
                       {message.role === 'assistant' ? (
@@ -343,7 +343,7 @@ export function AiChatAgent() {
                 ))}
                 {isLoading && (
                   <div className="flex gap-3 animate-fade-in">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-glow">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary">
                       <Bot className="h-4 w-4 text-primary-foreground" />
                     </div>
                     <div className="rounded-2xl px-4 py-2.5 bg-muted">
@@ -380,7 +380,7 @@ export function AiChatAgent() {
                   type="submit"
                   size="icon"
                   disabled={isLoading || !input.trim()}
-                  className="bg-gradient-to-br from-primary to-primary-glow hover:opacity-90"
+                  className="bg-primary hover:bg-primary/90"
                   aria-label="Wyślij wiadomość"
                 >
                   <Send className="h-4 w-4" />

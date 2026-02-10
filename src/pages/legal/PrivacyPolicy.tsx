@@ -89,7 +89,7 @@ export default function PrivacyPolicy() {
         keywords="polityka prywatności, RODO, GDPR, ochrona danych, Majster.AI"
       />
       
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+      <div className="min-h-screen bg-background">
         <div className="container max-w-4xl py-8 px-4">
           <Button
             variant="ghost"

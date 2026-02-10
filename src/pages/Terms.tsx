@@ -14,7 +14,7 @@ export default function Terms() {
         <meta name="description" content="Regulamin korzystania z aplikacji Majster.AI - zasady i warunki użytkowania." />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 py-8 px-4">
+      <div className="min-h-screen bg-background py-8 px-4">
         <div className="max-w-4xl mx-auto space-y-8">
           <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -25,7 +25,7 @@ export default function Terms() {
             <div className="inline-flex items-center justify-center p-4 rounded-full bg-primary/10 mb-4">
               <FileText className="h-12 w-12 text-primary" />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-primary">
               Regulamin Usługi
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">

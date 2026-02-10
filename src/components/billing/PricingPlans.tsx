@@ -49,8 +49,8 @@ const getPlans = (t: (key: string) => string): PricingPlan[] => [
     priceId: 'price_pro_monthly',
     description: t('billing.plans.pro.description'),
     icon: <Star className="h-6 w-6" />,
-    gradient: 'from-blue-500/10 to-indigo-500/5',
-    iconGradient: 'from-blue-500 to-indigo-600',
+    gradient: 'from-primary/10 to-primary/5',
+    iconGradient: 'from-primary to-primary',
     features: [
       t('billing.plans.pro.features.projects'),
       t('billing.plans.pro.features.clients'),
@@ -87,8 +87,8 @@ const getPlans = (t: (key: string) => string): PricingPlan[] => [
     priceId: 'price_enterprise_monthly',
     description: t('billing.plans.enterprise.description'),
     icon: <Rocket className="h-6 w-6" />,
-    gradient: 'from-violet-500/10 to-purple-500/5',
-    iconGradient: 'from-violet-500 to-purple-600',
+    gradient: 'from-primary/10 to-primary/5',
+    iconGradient: 'from-primary to-primary',
     features: [
       t('billing.plans.enterprise.features.allBusiness'),
       t('billing.plans.enterprise.features.unlimitedAi'),
@@ -126,11 +126,10 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
           style={{ animationDelay: `${index * 100}ms` }}
         >
           {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent rounded-full -translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-700" />
-          
+
           {plan.popular && (
             <div className="absolute top-3 right-3">
-              <Badge className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground shadow-lg flex items-center gap-1">
+              <Badge className="bg-primary text-primary-foreground shadow-sm flex items-center gap-1">
                 <Sparkles className="h-3 w-3" />
                 {t('billing.mostPopular')}
               </Badge>
@@ -165,7 +164,7 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
               </div>
             </div>
             <div className="flex items-baseline gap-1 mt-4">
-              <span className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">{plan.price}</span>
+              <span className="text-4xl sm:text-5xl font-bold">{plan.price}</span>
               <span className="text-muted-foreground text-sm">{t('billing.pricePerMonth')}</span>
             </div>
           </CardHeader>
@@ -194,7 +193,7 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
               className={cn(
                 'w-full mt-4 transition-all duration-300',
                 plan.popular
-                  ? 'bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow shadow-lg'
+                  ? 'bg-primary hover:bg-primary/90 shadow-sm'
                   : 'hover:bg-primary/10'
               )}
               variant={plan.popular ? 'default' : 'outline'}

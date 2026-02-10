@@ -105,7 +105,7 @@ export default function Marketplace() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold sm:text-3xl flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
                 <Store className="h-5 w-5 text-primary-foreground" />
               </div>
               Marketplace
@@ -117,7 +117,7 @@ export default function Marketplace() {
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" className="shadow-lg bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all duration-300">
+              <Button size="lg" className="shadow-sm bg-primary hover:bg-primary/90 transition-colors">
                 <Plus className="h-4 w-4 mr-2" />
                 Dodaj podwykonawcę
               </Button>

@@ -94,7 +94,7 @@ Koszty audytu ponosi strona inicjująca, chyba że audyt wykaże naruszenia.`,
         keywords="DPA, umowa powierzenia, RODO, art 28, przetwarzanie danych"
       />
       
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+      <div className="min-h-screen bg-background">
         <div className="container max-w-4xl py-8 px-4">
           <Button
             variant="ghost"

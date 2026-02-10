@@ -25,24 +25,24 @@ function StatsCard({ title, value, icon, trend, color = 'primary', delay = 0 }: 
 
   const colorClasses = {
     primary: {
-      bg: 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10',
-      icon: 'bg-gradient-to-br from-blue-500 to-cyan-500',
-      text: 'text-blue-600 dark:text-blue-400'
+      bg: 'bg-primary/10',
+      icon: 'bg-primary',
+      text: 'text-primary'
     },
     accent: {
-      bg: 'bg-gradient-to-br from-violet-500/10 to-purple-500/10',
-      icon: 'bg-gradient-to-br from-violet-500 to-purple-500',
-      text: 'text-violet-600 dark:text-violet-400'
+      bg: 'bg-accent/10',
+      icon: 'bg-accent',
+      text: 'text-accent-foreground'
     },
     success: {
-      bg: 'bg-gradient-to-br from-emerald-500/10 to-teal-500/10',
-      icon: 'bg-gradient-to-br from-emerald-500 to-teal-500',
-      text: 'text-emerald-600 dark:text-emerald-400'
+      bg: 'bg-success/10',
+      icon: 'bg-success',
+      text: 'text-success'
     },
     warning: {
-      bg: 'bg-gradient-to-br from-amber-500/10 to-orange-500/10',
-      icon: 'bg-gradient-to-br from-amber-500 to-orange-500',
-      text: 'text-amber-600 dark:text-amber-400'
+      bg: 'bg-warning/10',
+      icon: 'bg-warning',
+      text: 'text-warning'
     }
   };
 

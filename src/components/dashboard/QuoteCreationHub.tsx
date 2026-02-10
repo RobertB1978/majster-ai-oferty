@@ -51,10 +51,10 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
       label: t('dashboard.quoteCreation.voiceTitle'),
       sublabel: t('dashboard.quoteCreation.voiceDesc'),
       onClick: handleVoiceClick,
-      gradient: 'from-rose-500 to-orange-500',
-      hoverGradient: 'hover:from-rose-600 hover:to-orange-600',
-      shadow: 'shadow-rose-500/30',
-      ring: 'ring-rose-500/50',
+      gradient: 'from-destructive to-destructive',
+      hoverGradient: 'hover:from-destructive/90 hover:to-destructive/90',
+      shadow: 'shadow-destructive/20',
+      ring: 'ring-destructive/50',
       pulse: true
     },
     {
@@ -63,10 +63,10 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
       label: t('dashboard.quoteCreation.aiTitle'),
       sublabel: t('dashboard.quoteCreation.aiDesc'),
       onClick: handleAiClick,
-      gradient: 'from-violet-500 to-purple-500',
-      hoverGradient: 'hover:from-violet-600 hover:to-purple-600',
-      shadow: 'shadow-violet-500/30',
-      ring: 'ring-violet-500/50',
+      gradient: 'from-primary to-primary',
+      hoverGradient: 'hover:from-primary/90 hover:to-primary/90',
+      shadow: 'shadow-primary/20',
+      ring: 'ring-primary/50',
       pulse: false
     },
     {
@@ -75,10 +75,10 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
       label: t('dashboard.quoteCreation.manualTitle'),
       sublabel: t('dashboard.quoteCreation.manualDesc'),
       onClick: handleManualClick,
-      gradient: 'from-emerald-500 to-teal-500',
-      hoverGradient: 'hover:from-emerald-600 hover:to-teal-600',
-      shadow: 'shadow-emerald-500/30',
-      ring: 'ring-emerald-500/50',
+      gradient: 'from-success to-success',
+      hoverGradient: 'hover:from-success/90 hover:to-success/90',
+      shadow: 'shadow-success/20',
+      ring: 'ring-success/50',
       pulse: false
     }
   ];
@@ -116,8 +116,8 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
             {/* Pulse animation for voice button */}
             {btn.pulse && (
               <>
-                <span className="absolute inset-0 rounded-full bg-gradient-to-br from-rose-500/50 to-orange-500/50 animate-ping" />
-                <span className="absolute inset-2 rounded-full bg-gradient-to-br from-rose-500/30 to-orange-500/30 animate-pulse" />
+                <span className="absolute inset-0 rounded-full bg-destructive/50 animate-ping" />
+                <span className="absolute inset-2 rounded-full bg-destructive/30 animate-pulse" />
               </>
             )}
 
@@ -136,11 +136,11 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
               </span>
             </div>
 
-            {/* Glow effect on hover */}
+            {/* Hover overlay */}
             <div className={cn(
               "absolute inset-0 rounded-full opacity-0",
-              "bg-white/20",
-              "transition-opacity duration-300",
+              "bg-white/10",
+              "transition-opacity duration-200",
               "group-hover:opacity-100"
             )} />
           </button>

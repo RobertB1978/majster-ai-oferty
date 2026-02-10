@@ -27,7 +27,7 @@ export function LoadingScreen({ message = 'Ładowanie...', variant = 'default' }
       <div className="flex flex-col items-center gap-6 animate-fade-in">
         {/* Animated Logo/Loader */}
         <div className="relative">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-primary-glow shadow-glow animate-pulse" />
+          <div className="h-16 w-16 rounded-2xl bg-primary shadow-sm animate-pulse" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="h-10 w-10 rounded-xl border-2 border-white/30 animate-spin" style={{ animationDuration: '2s' }} />
           </div>
@@ -36,7 +36,7 @@ export function LoadingScreen({ message = 'Ładowanie...', variant = 'default' }
             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-primary" />
           </div>
           <div className="absolute -inset-4 animate-spin" style={{ animationDuration: '4s', animationDirection: 'reverse' }}>
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1.5 w-1.5 rounded-full bg-primary-glow" />
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1.5 w-1.5 rounded-full bg-primary" />
           </div>
         </div>
         
@@ -56,7 +56,7 @@ export function LoadingScreen({ message = 'Ładowanie...', variant = 'default' }
         {/* Progress bar */}
         <div className="w-48 h-1 bg-muted rounded-full overflow-hidden">
           <div 
-            className="h-full bg-gradient-to-r from-primary via-primary-glow to-primary rounded-full animate-pulse"
+            className="h-full bg-primary rounded-full animate-pulse"
             style={{
               animation: 'loading-progress 1.5s ease-in-out infinite'
             }}

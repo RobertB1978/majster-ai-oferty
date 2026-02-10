@@ -63,7 +63,7 @@ export function FinanceDashboard() {
       icon: DollarSign,
       gradient: 'from-emerald-500 to-green-600',
       bgGradient: 'from-emerald-500/10 to-green-500/5',
-      iconBg: 'bg-gradient-to-br from-emerald-500 to-green-600',
+      iconBg: 'bg-success',
     },
     {
       label: 'Koszty',
@@ -71,15 +71,15 @@ export function FinanceDashboard() {
       icon: Receipt,
       gradient: 'from-rose-500 to-red-600',
       bgGradient: 'from-rose-500/10 to-red-500/5',
-      iconBg: 'bg-gradient-to-br from-rose-500 to-red-600',
+      iconBg: 'bg-destructive',
     },
     {
       label: 'Marża brutto',
       value: summary.grossMargin,
       icon: marginTrend >= 0 ? TrendingUp : TrendingDown,
-      gradient: 'from-blue-500 to-indigo-600',
-      bgGradient: 'from-blue-500/10 to-indigo-500/5',
-      iconBg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+      gradient: 'from-primary to-primary',
+      bgGradient: 'from-primary/10 to-primary/5',
+      iconBg: 'bg-info',
       trend: marginTrend,
     },
     {
@@ -87,9 +87,9 @@ export function FinanceDashboard() {
       value: summary.marginPercent,
       isPercent: true,
       icon: PiggyBank,
-      gradient: 'from-violet-500 to-purple-600',
-      bgGradient: 'from-violet-500/10 to-purple-500/5',
-      iconBg: 'bg-gradient-to-br from-violet-500 to-purple-600',
+      gradient: 'from-primary to-primary',
+      bgGradient: 'from-primary/10 to-primary/5',
+      iconBg: 'bg-primary',
     },
   ];
 
@@ -103,7 +103,7 @@ export function FinanceDashboard() {
             className={`relative overflow-hidden border-0 bg-gradient-to-br ${card.bgGradient} backdrop-blur-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-xl`}
             style={{ animationDelay: `${index * 100}ms` }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+            {/* Decorative element removed */}
             <CardContent className="p-5 relative">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -139,9 +139,9 @@ export function FinanceDashboard() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="border-border/50 shadow-lg overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent border-b border-border/50">
+          <CardHeader className="bg-primary/5 border-b border-border/50">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
                 <BarChart3 className="h-4 w-4 text-white" />
               </div>
               Przychody vs Koszty
@@ -194,9 +194,9 @@ export function FinanceDashboard() {
         </Card>
 
         <Card className="border-border/50 shadow-lg overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-violet-500/5 to-transparent border-b border-border/50">
+          <CardHeader className="bg-primary/5 border-b border-border/50">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
                 <TrendingUp className="h-4 w-4 text-white" />
               </div>
               Marża miesięczna

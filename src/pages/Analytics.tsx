@@ -53,7 +53,7 @@ export default function Analytics() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-foreground sm:text-3xl flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-md">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
                 <BarChart3 className="h-5 w-5 text-primary-foreground" />
               </div>
               {t('analytics.title')}

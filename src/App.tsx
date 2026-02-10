@@ -55,6 +55,7 @@ const Team = lazy(() => import("./pages/Team"));
 const Finance = lazy(() => import("./pages/Finance"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Billing = lazy(() => import("./pages/Billing"));
+const QuickEstimate = lazy(() => import("./pages/QuickEstimate"));
 
 // === ZONE 3: OWNER CONSOLE (lazy - admin only, separate chunk) ===
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
@@ -158,6 +159,7 @@ const App = () => (
                     <Route path="jobs/:id" element={<ProjectDetail />} />
                     <Route path="jobs/:id/quote" element={<QuoteEditor />} />
                     <Route path="jobs/:id/pdf" element={<PdfGenerator />} />
+                    <Route path="quick-est" element={<QuickEstimate />} />
                     <Route path="calendar" element={<Calendar />} />
                     <Route path="team" element={<Team />} />
                     <Route path="finance" element={<Finance />} />

@@ -293,8 +293,8 @@ export default function NewProject() {
                           "relative h-24 w-24 rounded-full flex items-center justify-center",
                           "transition-all duration-300",
                           isListening
-                            ? "bg-gradient-to-br from-rose-500 to-orange-500 shadow-xl shadow-rose-500/30 scale-110"
-                            : "bg-gradient-to-br from-primary to-primary-glow shadow-lg hover:scale-105",
+                            ? "bg-destructive shadow-md scale-110"
+                            : "bg-primary shadow-sm hover:scale-105",
                           "disabled:opacity-50"
                         )}
                       >
@@ -405,10 +405,10 @@ export default function NewProject() {
                     onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendAiMessage()}
                     disabled={isProcessingAi}
                   />
-                  <Button 
-                    onClick={handleSendAiMessage} 
+                  <Button
+                    onClick={handleSendAiMessage}
                     disabled={isProcessingAi || !aiInput.trim()}
-                    className="bg-gradient-to-r from-primary to-primary-glow"
+                    className="bg-primary"
                   >
                     <Send className="h-4 w-4" />
                   </Button>
@@ -498,9 +498,9 @@ export default function NewProject() {
                 </div>
               )}
               
-              <Button 
-                type="submit" 
-                className="w-full bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow transition-all" 
+              <Button
+                type="submit"
+                className="w-full bg-primary hover:bg-primary/90 transition-colors"
                 size="lg"
                 disabled={addProject.isPending}
               >

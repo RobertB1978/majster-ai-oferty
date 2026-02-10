@@ -196,7 +196,7 @@ export default function OfferApproval() {
         <meta name="description" content={t('offerApproval.pageDescription')} />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 py-8 px-4">
+      <div className="min-h-screen bg-background py-8 px-4">
         <div className="max-w-2xl mx-auto space-y-6">
           {/* Header */}
           <div className="text-center">
