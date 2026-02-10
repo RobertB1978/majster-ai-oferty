@@ -28,7 +28,7 @@ export default function Login() {
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate('/app/dashboard');
     }
   }, [user, navigate]);
 
@@ -99,7 +99,7 @@ export default function Login() {
         });
       }
 
-      navigate('/dashboard');
+      navigate('/app/dashboard');
     }
   };
 

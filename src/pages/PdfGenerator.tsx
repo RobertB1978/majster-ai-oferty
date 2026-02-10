@@ -155,7 +155,7 @@ export default function PdfGenerator() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <Button variant="ghost" onClick={() => navigate(`/projects/${id}`)}>
+      <Button variant="ghost" onClick={() => navigate(`/app/jobs/${id}`)}>
         <ArrowLeft className="mr-2 h-4 w-4" />
         Powrót do projektu
       </Button>

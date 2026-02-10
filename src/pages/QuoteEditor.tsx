@@ -222,7 +222,7 @@ export default function QuoteEditor() {
         positions,
         marginPercent,
       });
-      navigate(`/projects/${id}`);
+      navigate(`/app/jobs/${id}`);
     } catch {
       // Error handled by hook
     }

@@ -183,7 +183,7 @@ export default function Projects() {
                     </Badge>
                     <Button
                       variant="outline"
-                      onClick={() => navigate(`/projects/${project.id}`)}
+                      onClick={() => navigate(`/app/jobs/${project.id}`)}
                     >
                       {t('projects.open')}
                     </Button>

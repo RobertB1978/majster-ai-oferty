@@ -54,7 +54,7 @@ export function useItemTemplatesPaginated(params: ItemTemplatesQueryParams = {})
       let query = supabase
         .from('item_templates')
         // Only select columns needed for list view (not SELECT *)
-        .select('id, name, unit, default_qty, default_price, category, created_at', { count: 'exact' });
+        .select('id, name, unit, default_qty, default_price, category, description, created_at', { count: 'exact' });
 
       // Server-side search filter
       if (search?.trim()) {

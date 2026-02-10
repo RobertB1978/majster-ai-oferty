@@ -411,7 +411,7 @@ export default function Calendar() {
             </div>
           ) : (
             sortedDates.map(dateKey => {
-              const dayEvents = eventsByDate[dateKey];
+              const dayEvents = eventsByDate[dateKey] || [];
               const date = new Date(dateKey);
               const isTodayDate = isToday(date);
 

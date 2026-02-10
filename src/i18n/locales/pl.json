@@ -47,7 +47,8 @@
     "settings": "Ustawienia",
     "templates": "Szablony",
     "billing": "Płatności",
-    "profile": "Profil firmy"
+    "profile": "Profil firmy",
+    "admin": "Panel administratora"
   },
   "auth": {
     "login": "Zaloguj się",
@@ -175,7 +176,9 @@
     "editQuote": "Edytuj wycenę",
     "generatePdf": "Generuj PDF",
     "sendEmail": "Wyślij mailem",
-    "exportExcel": "Eksport Excel"
+    "exportExcel": "Eksport Excel",
+    "allStatuses": "Wszystkie statusy",
+    "open": "Otwórz"
   },
   "clients": {
     "title": "Klienci",
