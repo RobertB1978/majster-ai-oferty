@@ -169,6 +169,9 @@
     },
     "allStatuses": "Усі статуси",
     "open": "Відкрити",
+    "searchPlaceholder": "Пошук проєктів...",
+    "exportBtn": "Експорт CSV",
+    "filterByStatus": "Фільтр за статусом",
     "priorities": {
       "low": "Низький",
       "medium": "Середній",

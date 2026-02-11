@@ -176,10 +176,10 @@ export function CookieConsent() {
           </div>
 
           <div className="flex justify-center gap-4 pt-2">
-            <a href="/privacy" className="text-xs text-muted-foreground hover:text-primary transition-colors">
+            <a href="/legal/privacy" className="text-xs text-muted-foreground hover:text-primary transition-colors">
               Polityka prywatności
             </a>
-            <a href="/terms" className="text-xs text-muted-foreground hover:text-primary transition-colors">
+            <a href="/legal/terms" className="text-xs text-muted-foreground hover:text-primary transition-colors">
               Regulamin
             </a>
           </div>

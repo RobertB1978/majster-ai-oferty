@@ -3,7 +3,6 @@ import { TopBar } from './TopBar';
 import { Navigation } from './Navigation';
 import { MobileBottomNav } from './MobileBottomNav';
 import { Footer } from './Footer';
-import { BackToDashboard } from './BackToDashboard';
 import { PageTransition } from './PageTransition';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingScreen } from '@/components/ui/loading-screen';
@@ -67,9 +66,6 @@ export function AppLayout() {
 
       {/* Mobile bottom navigation */}
       <MobileBottomNav />
-
-      {/* Back to Dashboard floating button */}
-      <BackToDashboard />
 
       {/* AI Chat Agent - Lazy-loaded to avoid blocking route transitions */}
       <Suspense fallback={null}>

@@ -169,6 +169,13 @@ const App = () => (
                     <Route path="plan" element={<Billing />} />
                     <Route path="profile" element={<CompanyProfile />} />
                     <Route path="settings" element={<Settings />} />
+
+                    {/* Canonical redirects for legacy/wrong paths within /app */}
+                    <Route path="customers" element={<Navigate to="/app/clients" replace />} />
+                    <Route path="customers/new" element={<Navigate to="/app/clients" replace />} />
+                    <Route path="projects" element={<Navigate to="/app/jobs" replace />} />
+                    <Route path="dash%20board" element={<Navigate to="/app/dashboard" replace />} />
+                    <Route path="dash board" element={<Navigate to="/app/dashboard" replace />} />
                   </Route>
 
                   {/* ============================================
