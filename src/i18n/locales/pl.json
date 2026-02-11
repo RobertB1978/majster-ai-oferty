@@ -178,7 +178,10 @@
     "sendEmail": "Wyślij mailem",
     "exportExcel": "Eksport Excel",
     "allStatuses": "Wszystkie statusy",
-    "open": "Otwórz"
+    "open": "Otwórz",
+    "searchPlaceholder": "Szukaj projektów...",
+    "exportBtn": "Eksportuj CSV",
+    "filterByStatus": "Filtruj wg statusu"
   },
   "clients": {
     "title": "Klienci",

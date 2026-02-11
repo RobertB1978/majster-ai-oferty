@@ -181,7 +181,10 @@
       "high": "High"
     },
     "allStatuses": "All statuses",
-    "open": "Open"
+    "open": "Open",
+    "searchPlaceholder": "Search projects...",
+    "exportBtn": "Export CSV",
+    "filterByStatus": "Filter by status"
   },
   "clients": {
     "title": "Clients",

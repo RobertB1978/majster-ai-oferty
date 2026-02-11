@@ -2,26 +2,18 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings as SettingsIcon, Key, Bell, Globe, CreditCard, Calendar, FileText, Shield, Puzzle, Scale, Fingerprint } from 'lucide-react';
-import { ApiKeysPanel } from '@/components/api/ApiKeysPanel';
+import { Settings as SettingsIcon, Bell, Globe, Calendar, FileText, Scale, Fingerprint } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/settings/LanguageSwitcher';
-import { BillingDashboard } from '@/components/billing/BillingDashboard';
 import { CalendarSync } from '@/components/calendar/CalendarSync';
 import { CompanyDocuments } from '@/components/documents/CompanyDocuments';
 import { PushNotificationSettings } from '@/components/notifications/PushNotificationSettings';
-import { AdminDashboard } from '@/components/admin/AdminDashboard';
-import { AuditLogPanel } from '@/components/admin/AuditLogPanel';
-import { PluginsPanel } from '@/components/plugins/PluginsPanel';
 import { BiometricSettings } from '@/components/settings/BiometricSettings';
-import { useUserSubscription } from '@/hooks/useSubscription';
 
 export default function Settings() {
   const { t } = useTranslation();
-  const { data: subscription } = useUserSubscription();
-  const isAdmin = subscription?.plan_id === 'enterprise' || subscription?.plan_id === 'business';
 
   return (
     <>
@@ -55,32 +47,14 @@ export default function Settings() {
               <Calendar className="h-4 w-4" />
               {t('nav.calendar')}
             </TabsTrigger>
-            <TabsTrigger value="billing" className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4" />
-              {t('settings.billing')}
-            </TabsTrigger>
-            <TabsTrigger value="api" className="flex items-center gap-2">
-              <Key className="h-4 w-4" />
-              API
-            </TabsTrigger>
             <TabsTrigger value="notifications" className="flex items-center gap-2">
               <Bell className="h-4 w-4" />
               {t('settings.notifications')}
-            </TabsTrigger>
-            <TabsTrigger value="plugins" className="flex items-center gap-2">
-              <Puzzle className="h-4 w-4" />
-              {t('settings.plugins', 'Integracje')}
             </TabsTrigger>
             <TabsTrigger value="biometric" className="flex items-center gap-2">
               <Fingerprint className="h-4 w-4" />
               {t('settings.biometric', 'Biometria')}
             </TabsTrigger>
-            {isAdmin && (
-              <TabsTrigger value="admin" className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                {t('settings.admin', 'Admin')}
-              </TabsTrigger>
-            )}
           </TabsList>
 
           <TabsContent value="general" className="mt-4 space-y-4">
@@ -145,32 +119,13 @@ export default function Settings() {
             <CalendarSync />
           </TabsContent>
 
-          <TabsContent value="billing" className="mt-4">
-            <BillingDashboard />
-          </TabsContent>
-
-          <TabsContent value="api" className="mt-4">
-            <ApiKeysPanel />
-          </TabsContent>
-
           <TabsContent value="notifications" className="mt-4">
             <PushNotificationSettings />
-          </TabsContent>
-
-          <TabsContent value="plugins" className="mt-4">
-            <PluginsPanel />
           </TabsContent>
 
           <TabsContent value="biometric" className="mt-4">
             <BiometricSettings />
           </TabsContent>
-
-          {isAdmin && (
-            <TabsContent value="admin" className="mt-4 space-y-6">
-              <AdminDashboard />
-              <AuditLogPanel />
-            </TabsContent>
-          )}
         </Tabs>
       </div>
     </>

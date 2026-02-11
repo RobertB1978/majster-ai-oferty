@@ -21,11 +21,12 @@ export function useCalendarEvents(startDate?: string, endDate?: string) {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['calendar_events', startDate, endDate],
+    queryKey: ['calendar_events', user?.id, startDate, endDate],
     queryFn: async () => {
       let query = supabase
         .from('calendar_events')
         .select('*')
+        .eq('user_id', user!.id)
         .order('event_date', { ascending: true });
 
       if (startDate) {
