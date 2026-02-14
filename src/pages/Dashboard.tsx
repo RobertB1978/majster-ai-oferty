@@ -114,9 +114,9 @@ export default function Dashboard() {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Plan wkrótce wygasa</AlertTitle>
               <AlertDescription>
-                Twój plan wygasa za {subscriptionExpiresIn} dni. 
-                <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/app/plan')}>
-                  Odnów teraz
+                Twój plan wygasa za {subscriptionExpiresIn} dni.
+                <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/app/settings')}>
+                  Sprawdź ustawienia
                 </Button>
               </AlertDescription>
             </Alert>

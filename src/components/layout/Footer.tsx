@@ -36,8 +36,8 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Produkt</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/app/plan" className="text-muted-foreground hover:text-primary transition-colors">
-                  Cennik
+                <Link to="/app/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
+                  Panel główny
                 </Link>
               </li>
               <li>
@@ -46,8 +46,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/app/marketplace" className="text-muted-foreground hover:text-primary transition-colors">
-                  Marketplace
+                <Link to="/app/jobs" className="text-muted-foreground hover:text-primary transition-colors">
+                  Zlecenia
                 </Link>
               </li>
             </ul>

@@ -40,9 +40,12 @@ export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const { config } = useConfig();
 
+  // Items that belong in admin panel only - never show in user navigation
+  const ADMIN_ONLY_IDS = new Set(['plan', 'marketplace', 'analytics', 'team']);
+
   const navItems = useMemo(() => {
     const configItems = config.navigation.mainItems
-      .filter((item) => item.visible)
+      .filter((item) => item.visible && !ADMIN_ONLY_IDS.has(item.id))
       .sort((a, b) => a.order - b.order)
       .map((item) => ({
         to: item.path,

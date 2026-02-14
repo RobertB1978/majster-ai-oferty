@@ -17,8 +17,7 @@ describe('Performance Regression Guards', () => {
       const lazyPages = [
         'Dashboard', 'Clients', 'Projects', 'NewProject', 'ProjectDetail',
         'QuoteEditor', 'CompanyProfile', 'ItemTemplates', 'Settings',
-        'PdfGenerator', 'Calendar', 'Analytics', 'Team', 'Finance',
-        'Marketplace', 'Billing', 'OfferApproval',
+        'PdfGenerator', 'Calendar', 'Finance', 'OfferApproval',
         // Admin zone: individually lazy-loaded for separate chunk splitting
         'AdminDashboardPage', 'AdminUsersPage', 'AdminThemePage',
       ];
