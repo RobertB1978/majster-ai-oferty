@@ -50,11 +50,7 @@ const ItemTemplates = lazy(() => import("./pages/ItemTemplates"));
 const Settings = lazy(() => import("./pages/Settings"));
 const PdfGenerator = lazy(() => import("./pages/PdfGenerator"));
 const Calendar = lazy(() => import("./pages/Calendar"));
-const Analytics = lazy(() => import("./pages/Analytics"));
-const Team = lazy(() => import("./pages/Team"));
 const Finance = lazy(() => import("./pages/Finance"));
-const Marketplace = lazy(() => import("./pages/Marketplace"));
-const Billing = lazy(() => import("./pages/Billing"));
 const QuickEstimate = lazy(() => import("./pages/QuickEstimate"));
 
 // === ZONE 3: OWNER CONSOLE (lazy - admin only, separate chunk) ===
@@ -161,12 +157,12 @@ const App = () => (
                     <Route path="jobs/:id/pdf" element={<PdfGenerator />} />
                     <Route path="quick-est" element={<QuickEstimate />} />
                     <Route path="calendar" element={<Calendar />} />
-                    <Route path="team" element={<Team />} />
+                    <Route path="team" element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="finance" element={<Finance />} />
-                    <Route path="marketplace" element={<Marketplace />} />
-                    <Route path="analytics" element={<Analytics />} />
+                    <Route path="marketplace" element={<Navigate to="/app/dashboard" replace />} />
+                    <Route path="analytics" element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="templates" element={<ItemTemplates />} />
-                    <Route path="plan" element={<Billing />} />
+                    <Route path="plan" element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="profile" element={<CompanyProfile />} />
                     <Route path="settings" element={<Settings />} />
 
@@ -215,7 +211,7 @@ const App = () => (
                   <Route path="/marketplace" element={<Navigate to="/app/marketplace" replace />} />
                   <Route path="/analytics" element={<Navigate to="/app/analytics" replace />} />
                   <Route path="/templates" element={<Navigate to="/app/templates" replace />} />
-                  <Route path="/billing" element={<Navigate to="/app/plan" replace />} />
+                  <Route path="/billing" element={<Navigate to="/app/settings" replace />} />
                   <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
                   <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
 
