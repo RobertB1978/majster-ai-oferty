@@ -36,7 +36,7 @@ jobs:
           VITE_SUPABASE_ANON_KEY: placeholder
 
       - name: Upload bundle analysis report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: bundle-analysis-report
           path: dist/stats.html
