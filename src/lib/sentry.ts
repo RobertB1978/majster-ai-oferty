@@ -121,9 +121,11 @@ export function initSentry() {
       setTimeout(initWebVitals, 100);
     }
 
-    console.log(`✅ Sentry zainicjalizowane (${environment})`);
-  } else {
-    console.log('ℹ️ Sentry nie jest skonfigurowane (brak VITE_SENTRY_DSN)');
+    if (import.meta.env.DEV) {
+      console.log(`Sentry initialized (${environment})`);
+    }
+  } else if (import.meta.env.DEV) {
+    console.log('Sentry not configured (missing VITE_SENTRY_DSN)');
   }
 }
 
@@ -182,7 +184,7 @@ export function logEvent(message: string, level: Sentry.SeverityLevel = 'info', 
       level,
       extra: context,
     });
-  } else {
+  } else if (import.meta.env.DEV) {
     console.log(`[${level}] ${message}`, context);
   }
 }

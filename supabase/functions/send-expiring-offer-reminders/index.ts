@@ -22,6 +22,21 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Verify cron job authorization (same pattern as cleanup-expired-data)
+  const authHeader = req.headers.get('authorization');
+  const cronSecret = Deno.env.get('CRON_SECRET');
+
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    console.warn('Unauthorized reminder attempt');
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized' }),
+      {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
+  }
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;

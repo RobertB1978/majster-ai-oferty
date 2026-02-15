@@ -756,7 +756,27 @@
     "formValidation": "Popraw błędy w formularzu",
     "somethingWentWrong": "Coś poszło nie tak",
     "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj odświeżyć stronę lub wrócić do poprzedniej strony.",
-    "errorDetails": "Szczegóły błędu"
+    "errorDetails": "Szczegóły błędu",
+    "pageNotFound": "Strona nie została znaleziona",
+    "returnHome": "Wróć na stronę główną"
+  },
+  "cookies": {
+    "title": "Ustawienia plików cookies",
+    "subtitle": "Dbamy o Twoją prywatność",
+    "description": "Używamy plików cookies, aby zapewnić najlepsze doświadczenia na naszej stronie. Niektóre z nich są niezbędne do działania serwisu, inne pomagają nam ulepszać usługi.",
+    "essential": "Niezbędne",
+    "essentialDescription": "Wymagane do prawidłowego działania strony. Nie można ich wyłączyć.",
+    "analytics": "Analityczne",
+    "analyticsDescription": "Pomagają nam zrozumieć, jak korzystasz z serwisu.",
+    "marketing": "Marketingowe",
+    "marketingDescription": "Służą do personalizacji reklam.",
+    "hideDetails": "Ukryj szczegóły",
+    "customize": "Dostosuj",
+    "essentialOnly": "Tylko niezbędne",
+    "saveSelected": "Zapisz wybrane",
+    "acceptAll": "Akceptuję wszystkie",
+    "privacyPolicy": "Polityka prywatności",
+    "terms": "Regulamin"
   },
   "messages": {
     "themeSaved": "Motyw został zapisany i zastosowany",
@@ -920,6 +940,16 @@
       "project": "Projekt",
       "toComplete": "[do uzupełnienia]"
     }
+  },
+  "validation": {
+    "nameRequired": "Nazwa jest wymagana",
+    "quantityMustBePositive": "Ilość musi być większa od 0",
+    "priceCannotBeNegative": "Cena nie może być ujemna",
+    "addAtLeastOnePosition": "Dodaj co najmniej jedną pozycję",
+    "signatureRequired": "Dodaj podpis",
+    "projectNameRequired": "Wprowadź nazwę projektu",
+    "clientRequired": "Wybierz klienta",
+    "companyNameRequired": "Wprowadź nazwę firmy"
   },
   "validations": {
     "client": {
