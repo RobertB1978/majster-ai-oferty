@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { useClientsPaginated, useAddClient, useUpdateClient, useDeleteClient, Client } from '@/hooks/useClients';
 import { useDebounce } from '@/hooks/useDebounce';
 import { clientSchema } from '@/lib/validations';
@@ -24,6 +25,7 @@ const PAGE_SIZE = 20;
 
 export default function Clients() {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -57,6 +59,15 @@ export default function Clients() {
   const clients = paginatedResult?.data || [];
   const totalPages = paginatedResult?.totalPages || 1;
   const totalCount = paginatedResult?.totalCount || 0;
+
+  // Auto-open modal when navigating to /app/customers/new
+  useEffect(() => {
+    if (searchParams.get('new') === '1') {
+      setIsOpen(true);
+      // Clean up the URL by removing the query param
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Reset to page 1 when search changes
   const handleSearchChange = (value: string) => {
