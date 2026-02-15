@@ -133,6 +133,7 @@ const App = () => (
                   <Route path="/env-check" element={<EnvCheck />} />
 
                   {/* Legal pages */}
+                  <Route path="/legal" element={<Navigate to="/legal/privacy" replace />} />
                   <Route path="/legal/privacy" element={<PrivacyPolicy />} />
                   <Route path="/legal/terms" element={<TermsOfService />} />
                   <Route path="/legal/cookies" element={<CookiesPolicy />} />
@@ -142,6 +143,9 @@ const App = () => (
                   {/* Legacy legal redirects */}
                   <Route path="/privacy" element={<Navigate to="/legal/privacy" replace />} />
                   <Route path="/terms" element={<Navigate to="/legal/terms" replace />} />
+                  <Route path="/cookies" element={<Navigate to="/legal/cookies" replace />} />
+                  <Route path="/dpa" element={<Navigate to="/legal/dpa" replace />} />
+                  <Route path="/rodo" element={<Navigate to="/legal/rodo" replace />} />
 
                   {/* ============================================
                       ZONE 2: CUSTOMER APP (auth required)
