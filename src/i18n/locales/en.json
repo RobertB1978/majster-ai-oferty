@@ -763,7 +763,27 @@
     "formValidation": "Please correct the errors in the form",
     "somethingWentWrong": "Something went wrong",
     "unexpectedError": "An unexpected error occurred. Try refreshing the page or going back to the previous page.",
-    "errorDetails": "Error details"
+    "errorDetails": "Error details",
+    "pageNotFound": "Page not found",
+    "returnHome": "Return to home page"
+  },
+  "cookies": {
+    "title": "Cookie settings",
+    "subtitle": "We care about your privacy",
+    "description": "We use cookies to ensure the best experience on our site. Some are essential for the site to work, others help us improve our services.",
+    "essential": "Essential",
+    "essentialDescription": "Required for the site to work properly. Cannot be disabled.",
+    "analytics": "Analytics",
+    "analyticsDescription": "Help us understand how you use the service.",
+    "marketing": "Marketing",
+    "marketingDescription": "Used to personalize advertisements.",
+    "hideDetails": "Hide details",
+    "customize": "Customize",
+    "essentialOnly": "Essential only",
+    "saveSelected": "Save selected",
+    "acceptAll": "Accept all",
+    "privacyPolicy": "Privacy policy",
+    "terms": "Terms of service"
   },
   "messages": {
     "themeSaved": "Theme saved and applied successfully",
