@@ -149,7 +149,7 @@ const App = () => (
                   <Route path="/app" element={<AppLayout />}>
                     <Route index element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="clients" element={<Clients />} />
+                    <Route path="customers" element={<Clients />} />
                     <Route path="jobs" element={<Projects />} />
                     <Route path="jobs/new" element={<NewProject />} />
                     <Route path="jobs/:id" element={<ProjectDetail />} />
@@ -167,8 +167,7 @@ const App = () => (
                     <Route path="settings" element={<Settings />} />
 
                     {/* Canonical redirects for legacy/wrong paths within /app */}
-                    <Route path="customers" element={<Navigate to="/app/clients" replace />} />
-                    <Route path="customers/new" element={<Navigate to="/app/clients" replace />} />
+                    <Route path="clients" element={<Navigate to="/app/customers" replace />} />
                     <Route path="projects" element={<Navigate to="/app/jobs" replace />} />
                     <Route path="dash%20board" element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="dash board" element={<Navigate to="/app/dashboard" replace />} />
@@ -199,7 +198,8 @@ const App = () => (
                       Preserves bookmarks and external links
                       ============================================ */}
                   <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
-                  <Route path="/clients" element={<Navigate to="/app/clients" replace />} />
+                  <Route path="/clients" element={<Navigate to="/app/customers" replace />} />
+                  <Route path="/customers" element={<Navigate to="/app/customers" replace />} />
                   <Route path="/projects" element={<Navigate to="/app/jobs" replace />} />
                   <Route path="/projects/new" element={<Navigate to="/app/jobs/new" replace />} />
                   <Route path="/projects/:id" element={<ProjectRedirect />} />

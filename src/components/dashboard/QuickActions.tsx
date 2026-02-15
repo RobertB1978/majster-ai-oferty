@@ -18,7 +18,7 @@ export function QuickActions() {
     {
       label: t('dashboard.addClient', 'Dodaj klienta'),
       icon: Users,
-      onClick: () => navigate('/app/clients'),
+      onClick: () => navigate('/app/customers'),
     },
     {
       label: t('nav.templates', 'Szablony'),

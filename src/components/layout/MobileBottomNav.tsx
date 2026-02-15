@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 const BOTTOM_NAV_ITEMS = [
   { id: 'dashboard', path: '/app/dashboard', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
   { id: 'jobs', path: '/app/jobs', icon: Briefcase, labelKey: 'nav.projects' },
-  { id: 'clients', path: '/app/clients', icon: Users, labelKey: 'nav.clients' },
+  { id: 'clients', path: '/app/customers', icon: Users, labelKey: 'nav.clients' },
   { id: 'calendar', path: '/app/calendar', icon: Calendar, labelKey: 'nav.calendar' },
   { id: 'finance', path: '/app/finance', icon: Wallet, labelKey: 'nav.finance' },
 ] as const;
