@@ -30,6 +30,11 @@ export default function ProjectDetail() {
   const [activeTab, setActiveTab] = useState('overview');
   const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null); // Phase 5C: Track generated PDF URL
 
+  // Call hooks at top level (before any conditionals)
+  const { data: project, isLoading: projectLoading, error, isError } = useProject(id || '');
+  const { data: quote, isLoading: quoteLoading } = useQuote(id || '');
+  const updateProject = useUpdateProject();
+
   // Validate id parameter exists
   if (!id) {
     return (
@@ -46,10 +51,6 @@ export default function ProjectDetail() {
       </div>
     );
   }
-
-  const { data: project, isLoading: projectLoading, error, isError } = useProject(id);
-  const { data: quote, isLoading: quoteLoading } = useQuote(id);
-  const updateProject = useUpdateProject();
 
   // Handle query error state
   if (isError) {
