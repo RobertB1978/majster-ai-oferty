@@ -150,6 +150,7 @@ const App = () => (
                     <Route index element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="customers" element={<Clients />} />
+                    <Route path="customers/new" element={<Navigate to="/app/customers?new=1" replace />} />
                     <Route path="jobs" element={<Projects />} />
                     <Route path="jobs/new" element={<NewProject />} />
                     <Route path="jobs/:id" element={<ProjectDetail />} />
