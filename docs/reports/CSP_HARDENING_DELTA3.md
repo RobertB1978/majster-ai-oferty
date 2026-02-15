@@ -402,8 +402,8 @@ Content-Security-Policy: ... ; report-uri https://sentry.io/api/<project>/securi
 
 ## 🔗 Powiązane Dokumenty
 
-- `AUDIT_REPORT_2025-12-12.md` - Finding **F007** (CSP allows unsafe-inline/unsafe-eval)
-- `RUNTIME_HARDENING_REPORT_DELTA2.md` - Finding **PROD-001** (CSP weakened by unsafe-inline)
+- [AUDIT_REPORT_2025-12-12.md](./AUDIT_REPORT_2025-12-12.md) - Finding **F007** (CSP allows unsafe-inline/unsafe-eval)
+- [RUNTIME_HARDENING_REPORT_DELTA2.md](./RUNTIME_HARDENING_REPORT_DELTA2.md) - Finding **PROD-001** (CSP weakened by unsafe-inline)
 
 ---
 
