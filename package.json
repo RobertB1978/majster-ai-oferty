@@ -11,6 +11,7 @@
   "scripts": {
     "preinstall": "node -e \"if (process.env.npm_execpath && (process.env.npm_execpath.indexOf('pnpm') !== -1 || process.env.npm_execpath.indexOf('bun') !== -1 || process.env.npm_execpath.indexOf('yarn') !== -1)) { console.error('\\n❌ ERROR: Please use npm install\\n\\nThis project uses npm as the canonical package manager.\\nDo not use pnpm, bun, or yarn.\\n'); process.exit(1); }\"",
     "dev": "vite",
+    "prebuild": "node scripts/generate-sitemap.js",
     "build": "vite build",
     "build:analyze": "ANALYZE_BUNDLE=true vite build",
     "build:dev": "vite build --mode development",
