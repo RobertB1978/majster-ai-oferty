@@ -19,6 +19,7 @@ import { PdfPreviewPanel } from '@/components/offers/PdfPreviewPanel';
 import { WorkflowActions } from '@/components/jobs/WorkflowActions';
 import { PhotoProofPanel } from '@/components/jobs/PhotoProofPanel';
 import { VoiceMemoButton } from '@/components/jobs/VoiceMemoButton';
+import { PanelErrorBoundary } from '@/components/ErrorBoundary';
 
 const statuses = ['Nowy', 'Wycena w toku', 'Oferta wysłana', 'Zaakceptowany'] as const;
 
@@ -246,46 +247,60 @@ export default function ProjectDetail() {
           )}
 
           {/* Phase 6A: Offer Statistics */}
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-4">Statystyki ofert</h3>
-            <OfferStatsPanel />
-          </div>
+          <PanelErrorBoundary>
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold mb-4">Statystyki ofert</h3>
+              <OfferStatsPanel />
+            </div>
+          </PanelErrorBoundary>
 
           {/* Offer History */}
-          <div className="mt-6">
-            <OfferHistoryPanel projectId={id!} />
-          </div>
+          <PanelErrorBoundary>
+            <div className="mt-6">
+              <OfferHistoryPanel projectId={id!} />
+            </div>
+          </PanelErrorBoundary>
         </TabsContent>
 
         <TabsContent value="photo-proof" className="mt-4">
-          <PhotoProofPanel />
+          <PanelErrorBoundary>
+            <PhotoProofPanel />
+          </PanelErrorBoundary>
         </TabsContent>
 
         <TabsContent value="photos" className="mt-4">
-          <PhotoEstimationPanel 
-            projectId={id!} 
-            projectName={project.project_name}
-            onAddToQuote={handleAddToQuote}
-          />
+          <PanelErrorBoundary>
+            <PhotoEstimationPanel
+              projectId={id!}
+              projectName={project.project_name}
+              onAddToQuote={handleAddToQuote}
+            />
+          </PanelErrorBoundary>
         </TabsContent>
 
         <TabsContent value="costs" className="mt-4">
-          <PurchaseCostsPanel projectId={id!} />
+          <PanelErrorBoundary>
+            <PurchaseCostsPanel projectId={id!} />
+          </PanelErrorBoundary>
         </TabsContent>
 
         <TabsContent value="approval" className="mt-4">
-          <OfferApprovalPanel 
-            projectId={id!}
-            clientName={project.clients?.name}
-            clientEmail={project.clients?.email}
-          />
+          <PanelErrorBoundary>
+            <OfferApprovalPanel
+              projectId={id!}
+              clientName={project.clients?.name}
+              clientEmail={project.clients?.email}
+            />
+          </PanelErrorBoundary>
         </TabsContent>
 
         <TabsContent value="pdf" className="mt-4">
-          <PdfPreviewPanel
-            projectId={id!}
-            onPdfGenerated={setGeneratedPdfUrl}
-          />
+          <PanelErrorBoundary>
+            <PdfPreviewPanel
+              projectId={id!}
+              onPdfGenerated={setGeneratedPdfUrl}
+            />
+          </PanelErrorBoundary>
         </TabsContent>
       </Tabs>
     </div>

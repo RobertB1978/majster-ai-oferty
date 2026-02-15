@@ -27,7 +27,10 @@ export function useOfferSends(projectId: string) {
         .eq('project_id', projectId)
         .order('sent_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.warn('useOfferSends: query failed', error.message);
+        return [] as OfferSend[];
+      }
       return data as OfferSend[];
     },
     enabled: !!user && !!projectId,
