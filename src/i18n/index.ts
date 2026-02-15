@@ -19,6 +19,7 @@ i18n
     resources,
     fallbackLng: 'pl',
     supportedLngs: ['pl', 'en', 'uk'],
+    initImmediate: false, // Synchronous init - all resources are inline, no async loading needed
     interpolation: {
       escapeValue: false,
     },

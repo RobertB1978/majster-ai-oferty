@@ -33,18 +33,26 @@ export function useOfferStats() {
         .gte('sent_at', thirtyDaysAgo.toISOString())
         .eq('status', 'sent'); // Only count successfully sent emails
 
-      if (error) throw error;
+      // Return empty stats on error instead of crashing the page
+      if (error) {
+        console.warn('useOfferStats: offer_sends query failed', error.message);
+        return { sentCount: 0, acceptedCount: 0, conversionRate: 0, followupCount: 0, followupNotOpened: 0, followupOpenedNoDecision: 0 };
+      }
 
       // Calculate basic statistics
       const sentCount = data?.length || 0;
-      
+
       // Without tracking_status, we count accepted from offer_approvals
-      const { data: approvals } = await supabase
+      const { data: approvals, error: approvalsError } = await supabase
         .from('offer_approvals')
         .select('status')
         .eq('user_id', user!.id)
         .eq('status', 'approved')
         .gte('created_at', thirtyDaysAgo.toISOString());
+
+      if (approvalsError) {
+        console.warn('useOfferStats: offer_approvals query failed', approvalsError.message);
+      }
 
       const acceptedCount = approvals?.length || 0;
 

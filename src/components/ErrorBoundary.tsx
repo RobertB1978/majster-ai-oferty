@@ -16,6 +16,33 @@ interface State {
   error: Error | null;
 }
 
+/**
+ * Lightweight error boundary for non-critical UI panels.
+ * Renders null on error so the rest of the page remains usable.
+ */
+export class PanelErrorBoundary extends Component<Props, State> {
+  public state: State = { hasError: false, error: null };
+
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    logger.error('PanelErrorBoundary caught an error:', error, errorInfo);
+    logError(error, {
+      componentStack: errorInfo.componentStack,
+      boundary: 'PanelErrorBoundary',
+    });
+  }
+
+  public render() {
+    if (this.state.hasError) {
+      return this.props.fallback ?? null;
+    }
+    return this.props.children;
+  }
+}
+
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
