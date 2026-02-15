@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download, Mail, Camera, Receipt, FileSignature, Eye, HardHat } from 'lucide-react';
+import { ArrowLeft, Calculator, FileText, User, Calendar, Loader2, Download, Mail, Camera, Receipt, FileSignature, Eye, HardHat, AlertTriangle, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { exportQuoteToExcel } from '@/lib/exportUtils';
 import { OfferHistoryPanel } from '@/components/offers/OfferHistoryPanel';
@@ -25,13 +25,74 @@ const statuses = ['Nowy', 'Wycena w toku', 'Oferta wysłana', 'Zaakceptowany'] a
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
-  const { data: project, isLoading: projectLoading } = useProject(id!);
-  const { data: quote, isLoading: quoteLoading } = useQuote(id!);
-  const updateProject = useUpdateProject();
   const navigate = useNavigate();
   const [sendModalOpen, setSendModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null); // Phase 5C: Track generated PDF URL
+
+  // Call hooks at top level (before any conditionals)
+  const { data: project, isLoading: projectLoading, error, isError } = useProject(id || '');
+  const { data: quote, isLoading: quoteLoading } = useQuote(id || '');
+  const updateProject = useUpdateProject();
+
+  // Validate id parameter exists
+  if (!id) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Powrót do zleceń
+        </Button>
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground">Projekt nie został znaleziony.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Handle query error state
+  if (isError) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Powrót do zleceń
+        </Button>
+        <Card>
+          <CardHeader className="text-center">
+            <div className="mx-auto w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+              <AlertTriangle className="h-6 w-6 text-destructive" />
+            </div>
+            <CardTitle>Błąd podczas wczytywania projektu</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground text-center text-sm">
+              Nie udało się wczytać szczegółów projektu. Spróbuj ponownie.
+            </p>
+            {error && import.meta.env.DEV && (
+              <details className="text-xs text-muted-foreground bg-muted p-3 rounded-md">
+                <summary className="cursor-pointer font-medium">Szczegóły błędu</summary>
+                <pre className="mt-2 whitespace-pre-wrap break-words">
+                  {error instanceof Error ? error.message : String(error)}
+                </pre>
+              </details>
+            )}
+            <div className="flex gap-2 justify-center">
+              <Button variant="outline" onClick={() => navigate('/app/jobs')}>
+                Wróć do listy
+              </Button>
+              <Button onClick={() => window.location.reload()}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Odśwież stronę
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (projectLoading) {
     return (
