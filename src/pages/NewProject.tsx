@@ -466,7 +466,7 @@ export default function NewProject() {
                 {!clientsLoading && clients.length === 0 && (
                   <p className="text-sm text-muted-foreground">
                     Brak klientów.{' '}
-                    <Button variant="link" className="h-auto p-0" onClick={() => navigate('/app/clients')}>
+                    <Button variant="link" className="h-auto p-0" onClick={() => navigate('/app/customers')}>
                       Dodaj klienta
                     </Button>
                   </p>

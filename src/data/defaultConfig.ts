@@ -18,7 +18,7 @@ export const DEFAULT_CONFIG: AppConfig = {
     mainItems: [
       { id: 'dashboard', label: 'Pulpit', path: '/app/dashboard', icon: 'LayoutDashboard', visible: true, comingSoon: false, requiredPlan: 'free', order: 0 },
       { id: 'jobs', label: 'Zlecenia', path: '/app/jobs', icon: 'Briefcase', visible: true, comingSoon: false, requiredPlan: 'free', order: 1 },
-      { id: 'clients', label: 'Klienci', path: '/app/clients', icon: 'Users', visible: true, comingSoon: false, requiredPlan: 'free', order: 2 },
+      { id: 'clients', label: 'Klienci', path: '/app/customers', icon: 'Users', visible: true, comingSoon: false, requiredPlan: 'free', order: 2 },
       { id: 'calendar', label: 'Kalendarz', path: '/app/calendar', icon: 'Calendar', visible: true, comingSoon: false, requiredPlan: 'free', order: 3 },
       { id: 'finance', label: 'Finanse', path: '/app/finance', icon: 'Wallet', visible: true, comingSoon: false, requiredPlan: 'free', order: 4 },
       { id: 'templates', label: 'Szablony', path: '/app/templates', icon: 'FileText', visible: true, comingSoon: false, requiredPlan: 'free', order: 5 },
