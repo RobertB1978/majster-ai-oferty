@@ -37,7 +37,8 @@ describe('i18n Locale Completeness', () => {
         const translation = i18n.t(key);
         expect(translation).toBeTruthy();
         expect(translation).not.toBe(key); // Should not return the key itself
-        expect(translation).not.toContain('.'); // Should not contain dots (raw key indicator)
+        // Check that it's not a raw key pattern (word.word)
+        expect(translation).not.toMatch(/^[a-z]+\.[a-z]+/i);
       });
     });
   });
@@ -49,7 +50,8 @@ describe('i18n Locale Completeness', () => {
         const translation = i18n.t(key);
         expect(translation).toBeTruthy();
         expect(translation).not.toBe(key);
-        expect(translation).not.toContain('.');
+        // Check that it's not a raw key pattern (word.word)
+        expect(translation).not.toMatch(/^[a-z]+\.[a-z]+/i);
       });
     });
   });
@@ -61,7 +63,8 @@ describe('i18n Locale Completeness', () => {
         const translation = i18n.t(key);
         expect(translation).toBeTruthy();
         expect(translation).not.toBe(key);
-        expect(translation).not.toContain('.');
+        // Check that it's not a raw key pattern (word.word)
+        expect(translation).not.toMatch(/^[a-z]+\.[a-z]+/i);
       });
     });
   });
