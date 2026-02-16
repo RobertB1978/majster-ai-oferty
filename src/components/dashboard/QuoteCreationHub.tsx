@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Mic, Bot, PenTool, Sparkles } from 'lucide-react';
+import { Mic, Bot, PenTool, Sparkles, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { Card, CardContent } from '@/components/ui/card';
 // import { supabase } from '@/integrations/supabase/client';
 
 interface QuoteCreationHubProps {
@@ -46,108 +47,132 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
 
   const buttons = [
     {
-      id: 'voice',
+      id: 'voice' as const,
       icon: Mic,
       label: t('dashboard.quoteCreation.voiceTitle'),
       sublabel: t('dashboard.quoteCreation.voiceDesc'),
-      onClick: handleVoiceClick,
-      gradient: 'from-destructive to-destructive',
-      hoverGradient: 'hover:from-destructive/90 hover:to-destructive/90',
-      shadow: 'shadow-destructive/20',
-      ring: 'ring-destructive/50',
-      pulse: true
+      onClick: handleVoiceClick
     },
     {
-      id: 'ai',
+      id: 'ai' as const,
       icon: Bot,
       label: t('dashboard.quoteCreation.aiTitle'),
       sublabel: t('dashboard.quoteCreation.aiDesc'),
-      onClick: handleAiClick,
-      gradient: 'from-primary to-primary',
-      hoverGradient: 'hover:from-primary/90 hover:to-primary/90',
-      shadow: 'shadow-primary/20',
-      ring: 'ring-primary/50',
-      pulse: false
+      onClick: handleAiClick
     },
     {
-      id: 'manual',
+      id: 'manual' as const,
       icon: PenTool,
       label: t('dashboard.quoteCreation.manualTitle'),
       sublabel: t('dashboard.quoteCreation.manualDesc'),
-      onClick: handleManualClick,
-      gradient: 'from-success to-success',
-      hoverGradient: 'hover:from-success/90 hover:to-success/90',
-      shadow: 'shadow-success/20',
-      ring: 'ring-success/50',
-      pulse: false
+      onClick: handleManualClick
     }
   ];
 
   return (
     <div className="w-full">
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-6">
         <Sparkles className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-semibold">{t('dashboard.quoteCreation.title')}</h3>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 sm:gap-6">
-        {buttons.map((btn) => (
-          <button
-            key={btn.id}
-            onClick={btn.onClick}
-            disabled={isProcessing}
-            className={cn(
-              "group relative flex flex-col items-center justify-center",
-              "aspect-square rounded-full",
-              "bg-gradient-to-br",
-              btn.gradient,
-              btn.hoverGradient,
-              "shadow-xl",
-              btn.shadow,
-              "transition-all duration-300 ease-out",
-              "hover:scale-110 hover:shadow-2xl",
-              "active:scale-95",
-              "focus:outline-none focus:ring-4",
-              btn.ring,
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              mode === btn.id && "scale-110 ring-4"
-            )}
-          >
-            {/* Pulse animation for voice button */}
-            {btn.pulse && (
-              <>
-                <span className="absolute inset-0 rounded-full bg-destructive/50 animate-ping" />
-                <span className="absolute inset-2 rounded-full bg-destructive/30 animate-pulse" />
-              </>
-            )}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {buttons.map((btn) => {
+          const isActive = mode === btn.id;
+          const colorClasses = {
+            voice: {
+              icon: 'text-destructive',
+              iconBg: 'bg-destructive/10',
+              border: 'border-destructive/20',
+              hoverBorder: 'hover:border-destructive/50',
+              activeBorder: 'border-destructive',
+              text: 'text-destructive'
+            },
+            ai: {
+              icon: 'text-primary',
+              iconBg: 'bg-primary/10',
+              border: 'border-primary/20',
+              hoverBorder: 'hover:border-primary/50',
+              activeBorder: 'border-primary',
+              text: 'text-primary'
+            },
+            manual: {
+              icon: 'text-success',
+              iconBg: 'bg-success/10',
+              border: 'border-success/20',
+              hoverBorder: 'hover:border-success/50',
+              activeBorder: 'border-success',
+              text: 'text-success'
+            }
+          }[btn.id];
 
-            {/* Icon */}
-            <div className="relative z-10 flex flex-col items-center gap-2">
-              <btn.icon className={cn(
-                "h-8 w-8 sm:h-10 sm:w-10 text-white",
-                "transition-transform duration-300",
-                "group-hover:scale-110"
-              )} />
-              <span className="text-white font-semibold text-xs sm:text-sm">
-                {btn.label}
-              </span>
-              <span className="text-white/70 text-[10px] sm:text-xs hidden sm:block">
-                {btn.sublabel}
-              </span>
-            </div>
+          return (
+            <Card
+              key={btn.id}
+              onClick={btn.onClick}
+              className={cn(
+                "relative cursor-pointer transition-all duration-200",
+                "border-2",
+                isActive ? colorClasses.activeBorder : colorClasses.border,
+                !isActive && colorClasses.hoverBorder,
+                "hover:shadow-md",
+                isProcessing && "opacity-50 cursor-not-allowed",
+                "group"
+              )}
+            >
+              <CardContent className="p-6">
+                {/* Icon */}
+                <div className={cn(
+                  "flex items-center justify-center w-12 h-12 rounded-xl mb-4",
+                  colorClasses.iconBg,
+                  "transition-transform duration-200",
+                  "group-hover:scale-105"
+                )}>
+                  <btn.icon className={cn("h-6 w-6", colorClasses.icon)} />
+                </div>
 
-            {/* Hover overlay */}
-            <div className={cn(
-              "absolute inset-0 rounded-full opacity-0",
-              "bg-white/10",
-              "transition-opacity duration-200",
-              "group-hover:opacity-100"
-            )} />
-          </button>
-        ))}
+                {/* Title */}
+                <h4 className={cn(
+                  "font-semibold text-base mb-2",
+                  isActive ? colorClasses.text : "text-foreground"
+                )}>
+                  {btn.label}
+                </h4>
+
+                {/* Description */}
+                <p className="text-sm text-muted-foreground mb-4">
+                  {btn.sublabel}
+                </p>
+
+                {/* Arrow indicator */}
+                <div className={cn(
+                  "flex items-center gap-1 text-xs font-medium",
+                  colorClasses.text,
+                  "transition-transform duration-200",
+                  "group-hover:translate-x-1"
+                )}>
+                  <span>Start</span>
+                  <ArrowRight className="h-3 w-3" />
+                </div>
+
+                {/* Active indicator */}
+                {isActive && (
+                  <div className="absolute top-3 right-3">
+                    <div className={cn(
+                      "w-2 h-2 rounded-full",
+                      btn.id === 'voice' ? 'bg-destructive' :
+                      btn.id === 'ai' ? 'bg-primary' : 'bg-success',
+                      "animate-pulse"
+                    )} />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
-      <p className="text-center text-sm text-muted-foreground mt-4">
+      <p className="text-center text-sm text-muted-foreground mt-6">
         {t('dashboard.quoteCreation.chooseMethod')}
       </p>
     </div>
