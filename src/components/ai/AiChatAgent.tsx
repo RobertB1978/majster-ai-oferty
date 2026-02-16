@@ -43,6 +43,9 @@ const quickActions = [
 
 export function AiChatAgent() {
   const { user } = useAuth();
+  const [isDismissedForever, setIsDismissedForever] = useState(() => {
+    return localStorage.getItem('hideChatWidget') === '1';
+  });
   const [isOpen, setIsOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID());
@@ -192,19 +195,29 @@ export function AiChatAgent() {
     }
   };
 
+  const handleDismissForever = () => {
+    localStorage.setItem('hideChatWidget', '1');
+    setIsDismissedForever(true);
+    setIsOpen(false);
+  };
+
+  if (isDismissedForever) return null;
+
   return (
     <>
       {/* Floating button */}
       <Button
         onClick={() => setIsOpen(true)}
         className={cn(
-          'fixed bottom-20 right-6 z-50 h-14 w-14 rounded-full shadow-xl lg:bottom-6',
+          'fixed bottom-24 right-6 h-14 w-14 rounded-full shadow-xl lg:bottom-6',
           'bg-primary hover:bg-primary/90',
           'transition-all duration-300 hover:scale-110',
           isOpen && 'hidden'
         )}
+        style={{ zIndex: 'var(--z-overlay)' }}
         size="icon"
         aria-label="Otwórz asystenta AI"
+        data-testid="chat-overlay"
       >
         <MessageCircle className="h-6 w-6" />
         <span className="absolute -top-1 -right-1 flex h-4 w-4">
@@ -217,11 +230,14 @@ export function AiChatAgent() {
 
       {/* Chat panel */}
       {isOpen && (
-        <Card className={cn(
-          'fixed bottom-20 right-6 z-50 w-[400px] max-w-[calc(100vw-48px)] shadow-2xl lg:bottom-6',
-          'animate-scale-in origin-bottom-right',
-          'border-primary/20'
-        )}>
+        <Card
+          className={cn(
+            'fixed bottom-24 right-6 w-[400px] max-w-[calc(100vw-48px)] shadow-2xl lg:bottom-6',
+            'animate-scale-in origin-bottom-right',
+            'border-primary/20'
+          )}
+          style={{ zIndex: 'var(--z-overlay)' }}
+        >
           <CardHeader className="pb-3 bg-primary/10 rounded-t-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -252,6 +268,15 @@ export function AiChatAgent() {
                 </Button>
                 <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} aria-label="Zamknij asystenta AI">
                   <X className="h-5 w-5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleDismissForever}
+                  aria-label="Nie pokazuj więcej"
+                  title="Nie pokazuj więcej"
+                >
+                  <X className="h-5 w-5 text-destructive" />
                 </Button>
               </div>
             </div>

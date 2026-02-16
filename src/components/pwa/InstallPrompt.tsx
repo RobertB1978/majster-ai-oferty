@@ -15,8 +15,8 @@ export function InstallPrompt() {
 
   useEffect(() => {
     // Check if already dismissed
-    const wasDismissed = localStorage.getItem('pwa-install-dismissed');
-    if (wasDismissed) {
+    const wasDismissed = localStorage.getItem('hidePwaInstall');
+    if (wasDismissed === '1') {
       setDismissed(true);
       return;
     }
@@ -54,13 +54,17 @@ export function InstallPrompt() {
   const handleDismiss = () => {
     setShowPrompt(false);
     setDismissed(true);
-    localStorage.setItem('pwa-install-dismissed', 'true');
+    localStorage.setItem('hidePwaInstall', '1');
   };
 
   if (!showPrompt || dismissed) return null;
 
   return (
-    <Card className="fixed bottom-4 left-4 right-4 z-50 animate-slide-in sm:left-auto sm:right-4 sm:w-80">
+    <Card
+      className="fixed bottom-20 left-4 right-4 animate-slide-in sm:left-auto sm:right-4 sm:w-80 lg:bottom-4"
+      style={{ zIndex: 'var(--z-overlay)' }}
+      data-testid="pwa-overlay"
+    >
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
