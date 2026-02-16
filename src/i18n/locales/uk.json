@@ -1246,5 +1246,14 @@
     "notSupported": "Ваш браузер не підтримує розпізнавання мови.",
     "processingError": "Помилка обробки. Спробуйте ще раз.",
     "quoteCreated": "Кошторис створено успішно!"
+  },
+  "templateSelector": {
+    "addFromTemplate": "Додати з шаблону",
+    "selectTemplate": "Виберіть шаблон",
+    "searchPlaceholder": "Пошук...",
+    "category": "Категорія",
+    "allCategories": "Усі",
+    "material": "Матеріал",
+    "labor": "Робота"
   }
 }

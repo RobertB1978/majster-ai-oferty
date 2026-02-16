@@ -1246,5 +1246,14 @@
     "notSupported": "Your browser does not support speech recognition.",
     "processingError": "Processing error. Try again.",
     "quoteCreated": "Quote created successfully!"
+  },
+  "templateSelector": {
+    "addFromTemplate": "Add from template",
+    "selectTemplate": "Select template",
+    "searchPlaceholder": "Search...",
+    "category": "Category",
+    "allCategories": "All",
+    "material": "Material",
+    "labor": "Labor"
   }
 }

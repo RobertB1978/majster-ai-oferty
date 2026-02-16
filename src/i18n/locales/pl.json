@@ -1246,5 +1246,14 @@
     "notSupported": "Twoja przeglądarka nie wspiera rozpoznawania mowy.",
     "processingError": "Błąd przetwarzania. Spróbuj ponownie.",
     "quoteCreated": "Wycena utworzona pomyślnie!"
+  },
+  "templateSelector": {
+    "addFromTemplate": "Dodaj z szablonu",
+    "selectTemplate": "Wybierz szablon",
+    "searchPlaceholder": "Szukaj...",
+    "category": "Kategoria",
+    "allCategories": "Wszystkie",
+    "material": "Materiał",
+    "labor": "Robocizna"
   }
 }
