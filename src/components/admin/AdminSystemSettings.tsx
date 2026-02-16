@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdminSettings } from '@/hooks/useAdminSettings';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -48,6 +49,7 @@ interface DisplaySettings {
 }
 
 export function AdminSystemSettings() {
+  const { t } = useTranslation();
   const { session } = useAuth();
   const organizationId = session?.user?.user_metadata?.organization_id;
   const { settings: dbSettings, loading, error, updateSettings, resetSettings: resetDbSettings } = useAdminSettings(organizationId);
@@ -107,7 +109,7 @@ export function AdminSystemSettings() {
       <Card>
         <CardContent className="pt-6 flex items-center justify-center">
           <Loader className="h-5 w-5 animate-spin" />
-          <span className="ml-2">Wczytywanie ustawień...</span>
+          <span className="ml-2">{t('adminSettings.loadingSettings')}</span>
         </CardContent>
       </Card>
     );
@@ -117,7 +119,7 @@ export function AdminSystemSettings() {
     return (
       <Card>
         <CardContent className="pt-6 text-red-600">
-          Błąd wczytywania ustawień: {error?.message || 'Nieznany błąd'}
+          {t('adminSettings.errorLoadingSettings')} {error?.message || t('adminSettings.unknownError')}
         </CardContent>
       </Card>
     );
@@ -130,15 +132,15 @@ export function AdminSystemSettings() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
-              Ustawienia systemu
+              {t('adminSettings.systemSettings')}
             </CardTitle>
             <CardDescription>
-              Konfiguracja globalna aplikacji
+              {t('adminSettings.globalConfiguration')}
             </CardDescription>
           </div>
           {(hasChanges || error) && (
             <Badge variant="outline" className={`${error ? 'text-red-600 border-red-600' : 'text-orange-600 border-orange-600'}`}>
-              {error ? 'Błąd' : 'Niezapisane zmiany'}
+              {error ? t('adminSettings.error') : t('adminSettings.unsavedChanges')}
             </Badge>
           )}
         </div>
@@ -146,11 +148,11 @@ export function AdminSystemSettings() {
       <CardContent>
         <Tabs defaultValue="general">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="general">Ogólne</TabsTrigger>
-            <TabsTrigger value="email">Email</TabsTrigger>
-            <TabsTrigger value="features">Funkcje</TabsTrigger>
-            <TabsTrigger value="limits">Limity</TabsTrigger>
-            <TabsTrigger value="security">Bezpieczeństwo</TabsTrigger>
+            <TabsTrigger value="general">{t('adminSettings.tabs.general')}</TabsTrigger>
+            <TabsTrigger value="email">{t('adminSettings.tabs.email')}</TabsTrigger>
+            <TabsTrigger value="features">{t('adminSettings.tabs.features')}</TabsTrigger>
+            <TabsTrigger value="limits">{t('adminSettings.tabs.limits')}</TabsTrigger>
+            <TabsTrigger value="security">{t('adminSettings.tabs.security')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="space-y-6 mt-4">
@@ -161,11 +163,11 @@ export function AdminSystemSettings() {
                   {displaySettings.maintenance_mode ? <AlertTriangle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5" />}
                 </div>
                 <div>
-                  <Label className="text-base">Tryb konserwacji</Label>
+                  <Label className="text-base">{t('adminSettings.maintenanceMode')}</Label>
                   <p className="text-sm text-muted-foreground">
                     {displaySettings.maintenance_mode
-                      ? 'Aplikacja niedostępna dla użytkowników'
-                      : 'Aplikacja działa normalnie'}
+                      ? t('adminSettings.maintenanceModeActive')
+                      : t('adminSettings.normalOperation')}
                   </p>
                 </div>
               </div>
@@ -180,9 +182,9 @@ export function AdminSystemSettings() {
               <div className="flex items-center gap-3">
                 <Globe className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <Label>Rejestracja nowych użytkowników</Label>
+                  <Label>{t('adminSettings.registration')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Pozwól na zakładanie nowych kont
+                    {t('adminSettings.registrationDesc')}
                   </p>
                 </div>
               </div>
@@ -194,7 +196,7 @@ export function AdminSystemSettings() {
 
             {/* Session Timeout */}
             <div className="space-y-2">
-              <Label>Czas sesji (minuty)</Label>
+              <Label>{t('adminSettings.sessionTimeout')}</Label>
               <Input
                 type="number"
                 value={displaySettings.session_timeout_minutes}
@@ -203,7 +205,7 @@ export function AdminSystemSettings() {
                 max={1440}
               />
               <p className="text-sm text-muted-foreground">
-                Automatyczne wylogowanie po okresie nieaktywności
+                {t('adminSettings.sessionTimeoutDesc')}
               </p>
             </div>
           </TabsContent>
@@ -213,9 +215,9 @@ export function AdminSystemSettings() {
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <Label>Wysyłka email</Label>
+                  <Label>{t('adminSettings.emailSending')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Włącz/wyłącz wysyłkę emaili z aplikacji
+                    {t('adminSettings.emailSendingDesc')}
                   </p>
                 </div>
               </div>
@@ -227,7 +229,7 @@ export function AdminSystemSettings() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Nazwa nadawcy</Label>
+                <Label>{t('adminSettings.senderName')}</Label>
                 <Input
                   value={displaySettings.email_from_name}
                   onChange={(e) => updateSetting('email_from_name', e.target.value)}
@@ -235,7 +237,7 @@ export function AdminSystemSettings() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Adres nadawcy</Label>
+                <Label>{t('adminSettings.senderAddress')}</Label>
                 <Input
                   type="email"
                   value={displaySettings.email_from_address}
@@ -248,24 +250,24 @@ export function AdminSystemSettings() {
             <div className="p-4 rounded-lg bg-muted/50 border border-dashed">
               <p className="text-sm text-muted-foreground flex items-center gap-2">
                 <Lock className="h-4 w-4" />
-                Konfiguracja SMTP wymaga klucza API (Resend)
+                {t('adminSettings.smtpConfigNote')}
               </p>
             </div>
           </TabsContent>
 
           <TabsContent value="features" className="space-y-4 mt-4">
             {[
-              { key: 'api_enabled', label: 'API publiczne', icon: Server, desc: 'Dostęp do API dla zewnętrznych integracji' },
-              { key: 'ai_enabled', label: 'Funkcje AI', icon: Zap, desc: 'Sugestie AI, analiza zdjęć, generowanie wycen' },
-              { key: 'voice_enabled', label: 'Voice-to-Quote', icon: Bell, desc: 'Dyktowanie pozycji wyceny głosem' },
-              { key: 'ocr_enabled', label: 'OCR Faktur', icon: HardDrive, desc: 'Automatyczne rozpoznawanie faktur' },
-            ].map(({ key, label, icon: Icon, desc }) => (
+              { key: 'api_enabled', labelKey: 'publicApi', descKey: 'publicApiDesc', icon: Server },
+              { key: 'ai_enabled', labelKey: 'aiFeatures', descKey: 'aiFeaturesDesc', icon: Zap },
+              { key: 'voice_enabled', labelKey: 'voiceToQuote', descKey: 'voiceToQuoteDesc', icon: Bell },
+              { key: 'ocr_enabled', labelKey: 'ocrInvoices', descKey: 'ocrInvoicesDesc', icon: HardDrive },
+            ].map(({ key, labelKey, descKey, icon: Icon }) => (
               <div key={key} className="flex items-center justify-between p-4 rounded-lg border">
                 <div className="flex items-center gap-3">
                   <Icon className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <Label>{label}</Label>
-                    <p className="text-sm text-muted-foreground">{desc}</p>
+                    <Label>{t(`adminSettings.${labelKey}`)}</Label>
+                    <p className="text-sm text-muted-foreground">{t(`adminSettings.${descKey}`)}</p>
                   </div>
                 </div>
                 <Switch
@@ -279,7 +281,7 @@ export function AdminSystemSettings() {
           <TabsContent value="limits" className="space-y-6 mt-4">
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Max klientów na użytkownika</Label>
+                <Label>{t('adminSettings.maxClientsPerUser')}</Label>
                 <Input
                   type="number"
                   value={displaySettings.max_clients_per_user}
@@ -288,7 +290,7 @@ export function AdminSystemSettings() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Max projektów na użytkownika</Label>
+                <Label>{t('adminSettings.maxProjectsPerUser')}</Label>
                 <Input
                   type="number"
                   value={displaySettings.max_projects_per_user}
@@ -297,7 +299,7 @@ export function AdminSystemSettings() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Max storage (GB)</Label>
+                <Label>{t('adminSettings.maxStorageGb')}</Label>
                 <Input
                   type="number"
                   value={Math.round(displaySettings.max_storage_per_user / 1073741824)}
@@ -313,9 +315,9 @@ export function AdminSystemSettings() {
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <Label>Weryfikacja email</Label>
+                  <Label>{t('adminSettings.emailVerification')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Wymagaj potwierdzenia email przy rejestracji
+                    {t('adminSettings.emailVerificationDesc')}
                   </p>
                 </div>
               </div>
@@ -329,9 +331,9 @@ export function AdminSystemSettings() {
               <div className="flex items-center gap-3">
                 <Shield className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <Label>Uwierzytelnianie dwuskładnikowe (2FA)</Label>
+                  <Label>{t('adminSettings.twoFactorAuth')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Opcjonalne 2FA dla użytkowników
+                    {t('adminSettings.twoFactorAuthDesc')}
                   </p>
                 </div>
               </div>
@@ -343,7 +345,7 @@ export function AdminSystemSettings() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Rate limit (requestów)</Label>
+                <Label>{t('adminSettings.rateLimit')}</Label>
                 <Input
                   type="number"
                   value={displaySettings.rate_limit_requests}
@@ -352,7 +354,7 @@ export function AdminSystemSettings() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Okno czasowe (sekundy)</Label>
+                <Label>{t('adminSettings.rateLimitWindow')}</Label>
                 <Input
                   type="number"
                   value={displaySettings.rate_limit_window_seconds}
@@ -368,11 +370,11 @@ export function AdminSystemSettings() {
         <div className="flex items-center justify-between mt-6 pt-4 border-t">
           <Button variant="outline" onClick={resetSettings}>
             <RefreshCw className="h-4 w-4 mr-2" />
-            Resetuj
+            {t('adminSettings.resetSettings')}
           </Button>
           <Button onClick={saveSettings} disabled={!hasChanges}>
             <Save className="h-4 w-4 mr-2" />
-            Zapisz ustawienia
+            {t('adminSettings.saveSettings')}
           </Button>
         </div>
       </CardContent>

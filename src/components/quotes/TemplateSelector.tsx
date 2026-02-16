@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useItemTemplates, ItemTemplate } from '@/hooks/useItemTemplates';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -12,6 +13,7 @@ interface TemplateSelectorProps {
 }
 
 export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
+  const { t } = useTranslation();
   const { data: templates, isLoading } = useItemTemplates();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -50,29 +52,29 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
       <DialogTrigger asChild>
         <Button variant="outline" size="lg">
           <Package className="mr-2 h-5 w-5" />
-          Dodaj z szablonu
+          {t('templateSelector.addFromTemplate')}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Wybierz szablon</DialogTitle>
+          <DialogTitle>{t('templateSelector.selectTemplate')}</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4 sm:flex-row">
           <SearchInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onClear={() => setSearch('')}
-            placeholder="Szukaj..."
+            placeholder={t('templateSelector.searchPlaceholder')}
             className="flex-1"
           />
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="sm:w-36">
-              <SelectValue placeholder="Kategoria" />
+              <SelectValue placeholder={t('templateSelector.category')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Wszystkie</SelectItem>
-              <SelectItem value="Materiał">Materiał</SelectItem>
-              <SelectItem value="Robocizna">Robocizna</SelectItem>
+              <SelectItem value="all">{t('templateSelector.allCategories')}</SelectItem>
+              <SelectItem value="Materiał">{t('templateSelector.material')}</SelectItem>
+              <SelectItem value="Robocizna">{t('templateSelector.labor')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

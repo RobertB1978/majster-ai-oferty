@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +35,7 @@ export function SendOfferModal({
   clientName = '',
   pdfUrl
 }: SendOfferModalProps) {
+  const { t } = useTranslation();
   const { data: profile } = useProfile();
   const { data: quote } = useQuote(projectId);
   const createOfferSend = useCreateOfferSend();
@@ -84,7 +86,7 @@ export function SendOfferModal({
     // Warn if message was manually edited
     if (messageManuallyEdited && message.trim()) {
       const confirmChange = window.confirm(
-        'Zmiana szablonu nadpisze obecną treść wiadomości. Kontynuować?'
+        t('sendOffer.templateChangeWarning')
       );
       if (!confirmChange) {
         return;
@@ -118,16 +120,16 @@ export function SendOfferModal({
   const handleSend = async () => {
     // Phase 7A: Validate that quote exists before sending
     if (!quote || !quote.positions || quote.positions.length === 0) {
-      toast.error('Najpierw utwórz wycenę dla tego projektu');
+      toast.error(t('sendOffer.createQuoteFirst'));
       return;
     }
 
     if (!email.trim()) {
-      toast.error('Podaj adres e-mail odbiorcy');
+      toast.error(t('sendOffer.provideRecipientEmail'));
       return;
     }
     if (!subject.trim()) {
-      toast.error('Podaj temat wiadomości');
+      toast.error(t('sendOffer.provideSubject'));
       return;
     }
 
@@ -164,15 +166,15 @@ export function SendOfferModal({
         status: 'sent',
       });
 
-      toast.success('Oferta została wysłana!');
+      toast.success(t('sendOffer.offerSent'));
       onOpenChange(false);
     } catch (error) {
       console.error('Error sending offer:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Nie udało się wysłać oferty';
+      const errorMessage = error instanceof Error ? error.message : t('sendOffer.failedToSend');
 
       // Check if it's an API key error
       if (errorMessage.includes('RESEND_API_KEY') || errorMessage.includes('API key')) {
-        toast.error('Wysyłka e-mail nie jest skonfigurowana. Skontaktuj się z administratorem.');
+        toast.error(t('sendOffer.emailNotConfigured'));
       } else {
         toast.error(errorMessage);
       }
@@ -185,23 +187,23 @@ export function SendOfferModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Wyślij ofertę e-mailem</DialogTitle>
+          <DialogTitle>{t('sendOffer.title')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Adres e-mail odbiorcy *</Label>
+            <Label htmlFor="email">{t('sendOffer.recipientEmail')}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="klient@example.com"
+              placeholder={t('sendOffer.recipientEmailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="subject">Temat *</Label>
+            <Label htmlFor="subject">{t('sendOffer.subject')}</Label>
             <Input
               id="subject"
               value={subject}
@@ -213,11 +215,11 @@ export function SendOfferModal({
           <div className="space-y-2">
             <Label htmlFor="template">
               <FileText className="inline h-4 w-4 mr-1 -mt-0.5" />
-              Szablon wiadomości (opcjonalnie)
+              {t('sendOffer.messageTemplateOptional')}
             </Label>
             <Select value={selectedTemplate} onValueChange={handleTemplateChange}>
               <SelectTrigger id="template">
-                <SelectValue placeholder="Wybierz szablon dla branży..." />
+                <SelectValue placeholder={t('sendOffer.selectTemplatePlaceholder')} />
               </SelectTrigger>
               <SelectContent>
                 {OFFER_EMAIL_TEMPLATES.map((template) => (
@@ -234,13 +236,13 @@ export function SendOfferModal({
             </Select>
             {selectedTemplate && (
               <p className="text-xs text-muted-foreground">
-                ✓ Szablon zastosowany. Możesz dalej edytować treść poniżej.
+                {t('sendOffer.templateApplied')}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="message">Treść wiadomości</Label>
+            <Label htmlFor="message">{t('sendOffer.messageContent')}</Label>
             <Textarea
               id="message"
               rows={8}
@@ -256,16 +258,17 @@ export function SendOfferModal({
                 {pdfUrl ? (
                   <>
                     <p className="font-medium text-green-800 dark:text-green-200">
-                      ✓ PDF oferty zostanie dołączony do wiadomości
+                      {t('sendOffer.pdfWillBeAttached')}
                     </p>
                     <p className="mt-1 text-xs text-green-700 dark:text-green-300">
-                      Możesz edytować szablon wiadomości w profilu firmy.
+                      {t('sendOffer.editTemplateInProfile')}
                     </p>
                   </>
                 ) : (
                   <p className="text-muted-foreground">
-                    Możesz edytować szablon wiadomości w profilu firmy.
-                    Aby dołączyć PDF, najpierw wygeneruj go w panelu "Podgląd oferty PDF".
+                    {t('sendOffer.editTemplateInProfile')}
+                    {' '}
+                    {t('sendOffer.generatePdfFirst')}
                   </p>
                 )}
               </div>
@@ -279,7 +282,7 @@ export function SendOfferModal({
             onClick={() => onOpenChange(false)}
             disabled={isSending}
           >
-            Anuluj
+            {t('sendOffer.cancel')}
           </Button>
           <Button onClick={handleSend} disabled={isSending}>
             {isSending ? (
@@ -287,7 +290,7 @@ export function SendOfferModal({
             ) : (
               <Send className="mr-2 h-4 w-4" />
             )}
-            Wyślij
+            {t('sendOffer.send')}
           </Button>
         </DialogFooter>
       </DialogContent>

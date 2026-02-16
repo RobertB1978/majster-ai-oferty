@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +40,7 @@ interface VoiceQuoteCreatorProps {
 }
 
 export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<'idle' | 'listening' | 'processing' | 'editing' | 'done'>('idle');
   const [voiceText, setVoiceText] = useState('');
   const [result, setResult] = useState<VoiceQuoteResult | null>(null);
@@ -97,7 +99,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
       setMode('editing');
     } catch (error: unknown) {
       console.error('Voice processing error:', error);
-      toast.error('Błąd przetwarzania. Spróbuj ponownie.');
+      toast.error(t('voiceQuote.processingError'));
       setMode('idle');
     }
   };
@@ -106,7 +108,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
     if (result) {
       setMode('done');
       onQuoteCreated?.(result);
-      toast.success('Wycena utworzona pomyślnie!');
+      toast.success(t('voiceQuote.quoteCreated'));
     }
   };
 
@@ -130,7 +132,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
         <CardContent className="py-8 text-center">
           <Volume2 className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
           <p className="text-muted-foreground">
-            Twoja przeglądarka nie wspiera rozpoznawania mowy.
+            {t('voiceQuote.notSupported')}
           </p>
         </CardContent>
       </Card>

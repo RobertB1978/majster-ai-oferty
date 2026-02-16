@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -32,6 +33,7 @@ interface PdfPreviewPanelProps {
 }
 
 export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelProps) {
+  const { t } = useTranslation();
   const [isEditMode, setIsEditMode] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
@@ -79,17 +81,17 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
       ...formData,
     });
     setIsEditMode(false);
-    toast.success('Dane oferty zapisane');
+    toast.success(t('pdfPreview.dataSaved'));
   };
 
   const handleGeneratePdf = async () => {
     if (!user) {
-      toast.error('Musisz być zalogowany');
+      toast.error(t('pdfPreview.mustBeLoggedIn'));
       return;
     }
 
     if (!project) {
-      toast.error('Nie znaleziono projektu');
+      toast.error(t('pdfPreview.projectNotFound'));
       return;
     }
 
@@ -146,10 +148,10 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
 
       setGeneratedPdfUrl(publicUrl);
       onPdfGenerated?.(publicUrl); // Phase 5C: Notify parent of new PDF URL
-      toast.success('PDF oferty został wygenerowany i zapisany');
+      toast.success(t('pdfPreview.pdfGenerated'));
     } catch (error) {
       console.error('Error generating PDF:', error);
-      toast.error('Nie udało się wygenerować PDF');
+      toast.error(t('pdfPreview.pdfGenerationFailed'));
     } finally {
       setIsGeneratingPdf(false);
     }
@@ -171,41 +173,41 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Podgląd oferty PDF
+            {t('pdfPreview.title')}
           </span>
           <div className="flex gap-2">
             {isEditMode ? (
               <>
                 <Button variant="outline" onClick={() => setIsEditMode(false)}>
-                  Anuluj
+                  {t('pdfPreview.cancel')}
                 </Button>
                 <Button onClick={handleSave} disabled={savePdfData.isPending}>
                   {savePdfData.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                   <CheckCircle className="h-4 w-4 mr-2" />
-                  Zapisz
+                  {t('pdfPreview.save')}
                 </Button>
               </>
             ) : (
               <>
                 <Button variant="outline" onClick={() => setIsEditMode(true)}>
                   <Edit className="h-4 w-4 mr-2" />
-                  Edytuj
+                  {t('pdfPreview.edit')}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={handleGeneratePdf}
                   disabled={isGeneratingPdf || !quote}
-                  title={!quote ? 'Najpierw utwórz wycenę' : 'Generuj PDF'}
+                  title={!quote ? t('pdfPreview.createQuoteFirst') : t('pdfPreview.generatePdf')}
                 >
                   {isGeneratingPdf ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Generowanie...
+                      {t('pdfPreview.generating')}
                     </>
                   ) : (
                     <>
                       <FileDown className="h-4 w-4 mr-2" />
-                      Generuj PDF
+                      {t('pdfPreview.generatePdf')}
                     </>
                   )}
                 </Button>
@@ -213,12 +215,12 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
                   <DialogTrigger asChild>
                     <Button>
                       <Eye className="h-4 w-4 mr-2" />
-                      Podgląd
+                      {t('pdfPreview.preview')}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
                     <DialogHeader>
-                      <DialogTitle>Podgląd oferty PDF</DialogTitle>
+                      <DialogTitle>{t('pdfPreview.title')}</DialogTitle>
                     </DialogHeader>
                     
                     {/* PDF Preview */}
