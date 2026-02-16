@@ -24,7 +24,7 @@ export default function Settings() {
 
       <div className="space-y-6 animate-fade-in">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
             <SettingsIcon className="h-6 w-6" />
             {t('settings.title')}
           </h1>
