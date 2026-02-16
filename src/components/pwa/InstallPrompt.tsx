@@ -61,7 +61,7 @@ export function InstallPrompt() {
 
   return (
     <Card
-      className="fixed bottom-20 left-4 right-4 animate-slide-in sm:left-auto sm:right-4 sm:w-80 lg:bottom-4"
+      className="fixed bottom-[88px] left-4 right-4 animate-slide-in sm:left-auto sm:right-4 sm:w-80 lg:bottom-4"
       style={{ zIndex: 'var(--z-overlay)' }}
       data-testid="pwa-overlay"
     >
