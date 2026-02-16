@@ -126,7 +126,7 @@ export default function EnvCheck() {
                         ? 'border-red-500 bg-red-50 dark:bg-red-950'
                         : isSet
                         ? 'border-green-500 bg-green-50 dark:bg-green-950'
-                        : 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950'
+                        : 'border-[hsl(var(--warning))] bg-[hsl(var(--warning))]/10'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-4">
@@ -137,7 +137,7 @@ export default function EnvCheck() {
                           ) : isSet ? (
                             <CheckCircle className="h-5 w-5 text-green-500" />
                           ) : (
-                            <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                            <AlertTriangle className="h-5 w-5 text-[hsl(var(--warning))]" />
                           )}
                           <code className="font-mono font-bold">{check.name}</code>
                           {check.required && (

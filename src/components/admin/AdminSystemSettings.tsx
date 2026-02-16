@@ -139,7 +139,7 @@ export function AdminSystemSettings() {
             </CardDescription>
           </div>
           {(hasChanges || error) && (
-            <Badge variant="outline" className={`${error ? 'text-red-600 border-red-600' : 'text-orange-600 border-orange-600'}`}>
+            <Badge variant="outline" className={`${error ? 'text-red-600 border-red-600' : 'text-[hsl(var(--warning))] border-[hsl(var(--warning))]'}`}>
               {error ? t('adminSettings.error') : t('adminSettings.unsavedChanges')}
             </Badge>
           )}
@@ -159,7 +159,7 @@ export function AdminSystemSettings() {
             {/* Maintenance Mode */}
             <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-full ${displaySettings.maintenance_mode ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'}`}>
+                <div className={`p-2 rounded-full ${displaySettings.maintenance_mode ? 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]' : 'bg-green-100 text-green-600'}`}>
                   {displaySettings.maintenance_mode ? <AlertTriangle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5" />}
                 </div>
                 <div>
