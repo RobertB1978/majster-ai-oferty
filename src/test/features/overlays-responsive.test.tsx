@@ -284,7 +284,6 @@ describe('Responsive Overlays', () => {
       await waitFor(() => {
         const overlay = screen.queryByTestId('pwa-overlay');
         if (overlay) {
-          const styles = window.getComputedStyle(overlay);
           // Check that z-index is set via style attribute
           expect(overlay.getAttribute('style')).toContain('z-index');
         }
