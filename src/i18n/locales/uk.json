@@ -36,7 +36,8 @@
     "noData": "Немає даних",
     "more": "більше",
     "retry": "Спробувати знову",
-    "refreshPage": "Оновити сторінку"
+    "refreshPage": "Оновити сторінку",
+    "or": "або"
   },
   "nav": {
     "dashboard": "Панель",
@@ -82,7 +83,16 @@
     "resetPasswordDesc": "Введіть свою електронну пошту, і ми надішлемо вам посилання для скидання",
     "emailPlaceholder": "ivan@example.com",
     "passwordPlaceholder": "••••••••",
-    "biometric": "Біометричний вхід",
+    "biometric": {
+      "title": "Біометричний вхід",
+      "description": "Швидкий і безпечний вхід за відбитком пальця",
+      "notSupported": "Ваш пристрій не підтримує біометричний вхід",
+      "enterEmailFirst": "Введіть email перед використанням біометричного входу",
+      "verificationSuccess": "Біометрична верифікація успішна. Введіть пароль.",
+      "verificationFailed": "Біометрична верифікація не вдалася",
+      "verifying": "Верифікація...",
+      "loginWithFingerprint": "Увійти за відбитком пальця"
+    },
     "biometricDescription": "Швидкий і безпечний вхід за відбитком пальця",
     "biometricNotSupported": "Ваш пристрій не підтримує біометричний вхід",
     "errors": {
@@ -137,6 +147,15 @@
       "aiOpening": "Відкриваємо AI асистента...",
       "manualTitle": "Вручну",
       "manualDesc": "Заповніть форму"
+    },
+    "createFirst": "Створіть перший",
+    "noClients": "Немає клієнтів",
+    "noProjects": "Немає проєктів",
+    "stats": {
+      "new": "Нові",
+      "inProgress": "В роботі",
+      "sent": "Надіслані",
+      "accepted": "Прийняті"
     }
   },
   "projects": {
@@ -165,7 +184,10 @@
       "sent": "Пропозиція надіслана",
       "accepted": "Прийнятий",
       "rejected": "Відхилений",
-      "completed": "Завершений"
+      "completed": "Завершений",
+      "draft": "Чернетка",
+      "active": "Активний",
+      "cancelled": "Скасований"
     },
     "allStatuses": "Усі статуси",
     "open": "Відкрити",
@@ -176,7 +198,11 @@
       "low": "Низький",
       "medium": "Середній",
       "high": "Високий"
-    }
+    },
+    "createFirst": "Створіть свій перший проєкт",
+    "editQuote": "Редагувати кошторис",
+    "exportExcel": "Експорт Excel",
+    "sendEmail": "Надіслати email"
   },
   "clients": {
     "title": "Клієнти",
@@ -224,7 +250,8 @@
       "deadline": "Дедлайн",
       "meeting": "Зустріч",
       "reminder": "Нагадування",
-      "other": "Інше"
+      "other": "Інше",
+      "work": "Робота"
     },
     "days": {
       "mon": "Пн",
@@ -233,11 +260,32 @@
       "thu": "Чт",
       "fri": "Пт",
       "sat": "Сб",
-      "sun": "Нд"
+      "sun": "Нд",
+      "monday": "Понеділок",
+      "tuesday": "Вівторок",
+      "wednesday": "Середа",
+      "thursday": "Четвер",
+      "friday": "П'ятниця",
+      "saturday": "Субота",
+      "sunday": "Неділя"
     },
     "syncGoogle": "Синхронізувати з Google",
     "syncOutlook": "Синхронізувати з Outlook",
-    "exportIcs": "Експортувати ICS"
+    "exportIcs": "Експортувати ICS",
+    "months": {
+      "january": "Січень",
+      "february": "Лютий",
+      "march": "Березень",
+      "april": "Квітень",
+      "may": "Травень",
+      "june": "Червень",
+      "july": "Липень",
+      "august": "Серпень",
+      "september": "Вересень",
+      "october": "Жовтень",
+      "november": "Листопад",
+      "december": "Грудень"
+    }
   },
   "finance": {
     "title": "Фінанси",
@@ -258,7 +306,16 @@
     "grossAmount": "Сума брутто",
     "ocrScan": "OCR сканування",
     "cashflow": "Грошовий потік",
-    "profitAnalysis": "Аналіз прибутку"
+    "profitAnalysis": "Аналіз прибутку",
+    "monthly": "Щомісячні",
+    "yearly": "Щорічні",
+    "totalRevenue": "Загальні доходи",
+    "totalCosts": "Загальні витрати",
+    "netProfit": "Чистий прибуток",
+    "grossMargin": "Валова маржа",
+    "reports": "Звіти",
+    "invoices": "Рахунки",
+    "expenses": "Витрати"
   },
   "team": {
     "title": "Команда",
@@ -279,14 +336,18 @@
     "roles": {
       "worker": "Працівник",
       "foreman": "Бригадир",
-      "manager": "Менеджер"
+      "manager": "Менеджер",
+      "admin": "Адміністратор"
     },
     "statuses": {
       "working": "Працює",
       "traveling": "В дорозі",
       "break": "На перерві",
-      "idle": "Неактивний"
-    }
+      "idle": "Неактивний",
+      "active": "Активний",
+      "inactive": "Неактивний"
+    },
+    "addFirst": "Додайте першого учасника команди"
   },
   "templates": {
     "title": "Шаблони позицій",
@@ -319,6 +380,22 @@
       "labor": "Робота",
       "equipment": "Обладнання",
       "other": "Інше"
+    },
+    "addFirst": "Додайте перший шаблон",
+    "addTemplate": "Додати шаблон",
+    "name": "Назва",
+    "importDefaults": "Імпортувати шаблони за замовчуванням",
+    "trades": {
+      "glazurnik": "Плиточник",
+      "malarz": "Маляр",
+      "hydraulik": "Сантехнік",
+      "elektryk": "Електрик",
+      "podlogarz": "Паркетник",
+      "suchazabudowa": "Гіпсокартон",
+      "dekarz": "Покрівельник",
+      "elewacja": "Фасади",
+      "stolarz": "Столяр",
+      "murarz": "Муляр"
     }
   },
   "quotes": {
@@ -343,7 +420,13 @@
     "restoreVersion": "Відновити версію",
     "aiSuggestions": "AI підказки",
     "getAiSuggestions": "Отримати AI підказки",
-    "applyTemplate": "Застосувати шаблон"
+    "applyTemplate": "Застосувати шаблон",
+    "position": "Позиція",
+    "noPositions": "Немає позицій",
+    "total": "Всього",
+    "totalAmount": "Загальна сума",
+    "summary": "Підсумок",
+    "addFirst": "Додайте першу позицію кошторису"
   },
   "settings": {
     "title": "Налаштування",
@@ -364,7 +447,19 @@
     "dpa": "Угода DPA",
     "pushNotifications": "Push-сповіщення",
     "enablePush": "Увімкнути push-сповіщення",
-    "emailNotifications": "Email-сповіщення"
+    "emailNotifications": "Email-сповіщення",
+    "admin": "Адмін панель",
+    "biometric": "Біометричний вхід",
+    "biometricDescription": "Використовуйте відбиток пальця або Face ID для входу",
+    "calendarSync": "Синхронізація календаря",
+    "documentsDescription": "Керуйте документами та файлами компанії",
+    "plugins": "Інтеграції та плагіни",
+    "security": "Безпека",
+    "themes": {
+      "light": "Світла",
+      "dark": "Темна",
+      "system": "Системна"
+    }
   },
   "billing": {
     "title": "Платежі та підписки",
@@ -434,7 +529,12 @@
     "cancel": "Скасувати підписку",
     "popular": "Популярний",
     "withAds": "з рекламою",
-    "pricePerMonth": "PLN/міс."
+    "pricePerMonth": "PLN/міс.",
+    "active": "Активний",
+    "mostPopular": "Найпопулярніший",
+    "selectPlan": "Вибрати план",
+    "startFree": "Почати безкоштовно",
+    "subtitle": "Керуйте своєю підпискою"
   },
   "profile": {
     "title": "Профіль компанії",
@@ -454,7 +554,8 @@
     "emailSettings": "Налаштування email",
     "emailGreeting": "Привітання в email",
     "emailSignature": "Підпис email",
-    "subjectTemplate": "Шаблон теми"
+    "subjectTemplate": "Шаблон теми",
+    "emailSubject": "Тема email"
   },
   "pdf": {
     "title": "Генератор PDF",
@@ -468,7 +569,10 @@
     "generate": "Згенерувати PDF",
     "download": "Завантажити PDF",
     "preview": "Попередній перегляд",
-    "sendEmail": "Надіслати email"
+    "sendEmail": "Надіслати email",
+    "offerTitle": "Назва пропозиції",
+    "deadline": "Термін дії",
+    "version": "Версія"
   },
   "ai": {
     "title": "AI помічник",
@@ -478,7 +582,17 @@
     "suggestions": "Підказки",
     "analyzingPhoto": "Аналізую фото...",
     "voiceInput": "Голосовий ввід",
-    "chatHistory": "Історія чату"
+    "chatHistory": "Історія чату",
+    "history": "Історія чату",
+    "listening": "Слухаю...",
+    "newConversation": "Нова розмова",
+    "placeholder": "Напишіть повідомлення...",
+    "processing": "Обробка...",
+    "quickActions": {
+      "prepareOffer": "Підготувати пропозицію",
+      "calculateCosts": "Розрахувати витрати",
+      "pricingAdvice": "Поради щодо цін"
+    }
   },
   "analytics": {
     "title": "Аналітика",
@@ -496,7 +610,14 @@
     "meetings": "Зустрічі",
     "completed": "Завершені",
     "eventsOverTime": "Події за часом",
-    "eventTypes": "Типи подій"
+    "eventTypes": "Типи подій",
+    "conversion": "Конверсія пропозицій",
+    "export": "Експорт звіту",
+    "performance": "Продуктивність",
+    "projectsByStatus": "Проєкти за статусом",
+    "revenueChart": "Дохід за часом",
+    "topClients": "Топ клієнти",
+    "trends": "Тренди"
   },
   "admin": {
     "title": "Адмін панель",
@@ -511,7 +632,82 @@
     "logs": "Логи",
     "systemActive": "Система активна",
     "noAccess": "Немає доступу",
-    "noAccessDesc": "У вас немає дозволу переглядати цю сторінку"
+    "noAccessDesc": "У вас немає дозволу переглядати цю сторінку",
+    "active": "Система активна",
+    "noAccessDescription": "У вас немає дозволу для перегляду цієї сторінки",
+    "systemStatus": "Статус системи",
+    "userManagement": "Керування користувачами",
+    "systemSettings": "Налаштування системи",
+    "globalConfiguration": "Глобальна конфігурація додатку",
+    "maintenanceMode": "Режим обслуговування",
+    "maintenanceModeDesc": "Додаток недоступний для користувачів",
+    "normalOperation": "Додаток працює нормально",
+    "registration": "Реєстрація нових користувачів",
+    "registrationDesc": "Дозволити створення нових облікових записів",
+    "sessionTimeout": "Час сесії (хвилини)",
+    "sessionTimeoutDesc": "Автоматичний вихід після періоду неактивності",
+    "emailConfig": "Відправка email",
+    "emailConfigDesc": "Увімкнути/вимкнути відправку email з додатку",
+    "senderName": "Ім'я відправника",
+    "senderEmail": "Email відправника",
+    "smtpConfig": "Конфігурація SMTP вимагає ключа API (Resend)",
+    "features": "Функції",
+    "publicApi": "Публічний API",
+    "publicApiDesc": "Доступ до API для зовнішніх інтеграцій",
+    "aiFeatures": "Функції AI",
+    "aiFeaturesDesc": "Підказки AI, аналіз фото, генерація кошторисів",
+    "voiceQuote": "Голосовий ввід",
+    "voiceQuoteDesc": "Голосове диктування позицій кошторису",
+    "ocrInvoices": "OCR рахунків",
+    "ocrInvoicesDesc": "Автоматичне розпізнавання рахунків",
+    "limits": "Ліміти",
+    "maxClients": "Макс. клієнтів на користувача",
+    "maxProjects": "Макс. проєктів на користувача",
+    "maxStorage": "Макс. сховище (GB)",
+    "security": "Безпека",
+    "emailVerification": "Верифікація email",
+    "emailVerificationDesc": "Вимагати підтвердження email при реєстрації",
+    "twoFactor": "Двофакторна аутентифікація (2FA)",
+    "twoFactorDesc": "Опціональна 2FA для користувачів",
+    "rateLimit": "Обмеження запитів",
+    "rateLimitWindow": "Часове вікно (секунди)",
+    "themeEditor": "Редактор теми",
+    "themeCustomization": "Налаштуйте вигляд додатку: кольори, шрифти, заокруглення",
+    "primaryColor": "Основний колір",
+    "accentColor": "Акцентний колір",
+    "hue": "Відтінок",
+    "saturation": "Насиченість",
+    "lightness": "Яскравість",
+    "accentHue": "Відтінок акценту",
+    "colorPresets": "Готові кольорові схеми",
+    "typography": "Типографіка",
+    "font": "Шрифт",
+    "baseFontSize": "Базовий розмір шрифту",
+    "sampleText": "Зразок тексту - Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    "smallerText": "Менший текст - Ut enim ad minim veniam.",
+    "layout": "Макет",
+    "borderRadius": "Заокруглення кутів",
+    "baseSpacing": "Базовий інтервал",
+    "contentEditor": "Редактор контенту",
+    "contentEditorDesc": "Редагуйте тексти, описи та контент у додатку",
+    "landingPage": "Лендінг",
+    "heroTitle": "Головний заголовок",
+    "heroSubtitle": "Підзаголовок",
+    "ctaText": "Текст CTA",
+    "ctaLink": "Посилання CTA",
+    "footer": "Підвал",
+    "companyName": "Назва компанії",
+    "copyright": "Авторські права",
+    "footerDescription": "Опис у підвалі",
+    "contactLabel": "Контакт",
+    "supportEmail": "Email підтримки",
+    "phoneNumber": "Номер телефону",
+    "address": "Адреса",
+    "seoSettings": "SEO",
+    "metaTitle": "Meta Title",
+    "metaDescription": "Meta Description",
+    "ogImage": "URL OG зображення",
+    "unsavedChanges": "Незбережені зміни"
   },
   "adminConfig": {
     "pageTitle": "Конфігурація",
@@ -666,7 +862,30 @@
     "selectTemplates": "Будь ласка, виберіть хоча б один шаблон",
     "somethingWentWrong": "Щось пішло не так",
     "unexpectedError": "Сталася неочікувана помилка. Спробуйте оновити сторінку або повернутися на попередню.",
-    "errorDetails": "Деталі помилки"
+    "errorDetails": "Деталі помилки",
+    "generic": "Сталася помилка",
+    "minLength": "Мінімум {{count}} символів",
+    "maxLength": "Максимум {{count}} символів",
+    "pageNotFound": "Сторінку не знайдено",
+    "returnHome": "Повернутися на головну",
+    "themeSaveFailed": "Не вдалося зберегти тему",
+    "saveSendFailed": "Помилка при збереженні надсилання",
+    "processingFailed": "Помилка обробки. Спробуйте ще раз.",
+    "settingsSaveFailed": "Не вдалося зберегти налаштування",
+    "exportDataFailed": "Помилка під час експорту даних",
+    "sendRequestFailed": "Помилка під час надсилання запиту",
+    "createLinkFailed": "Помилка при створенні посилання",
+    "extendOfferFailed": "Помилка при продовженні пропозиції",
+    "processingError": "Помилка обробки",
+    "addClientFailed": "Помилка при додаванні клієнта",
+    "updateClientFailed": "Помилка при оновленні клієнта",
+    "sendOfferFailed": "Не вдалося надіслати пропозицію",
+    "pdfGenerationFailed": "Не вдалося згенерувати PDF",
+    "microphoneAccessDenied": "Немає доступу до мікрофона. Увімкніть мікрофон у налаштуваннях браузера.",
+    "speechRecognitionNotSupported": "Розпізнавання мови не підтримується в цьому браузері. Використовуйте Chrome.",
+    "invalidCredentials": "Невірна електронна пошта або пароль",
+    "invalidEmailFormat": "Невірний формат email",
+    "invalidFileType": "Невірний тип файлу"
   },
   "dialogs": {
     "deleteTemplate": "Видалити шаблон?",
@@ -764,7 +983,8 @@
     "created": "Успішно створено",
     "updated": "Успішно оновлено",
     "emailSent": "Email успішно надіслано",
-    "copied": "Скопійовано в буфер обміну"
+    "copied": "Скопійовано в буфер обміну",
+    "sent": "Надіслано успішно"
   },
   "organizations": {
     "title": "Організації",
@@ -883,5 +1103,23 @@
       "confirmPasswordRequired": "Підтвердіть пароль",
       "passwordsNotMatch": "Паролі не збігаються"
     }
+  },
+  "cookies": {
+    "title": "Налаштування cookies",
+    "subtitle": "Ми піклуємося про вашу приватність",
+    "description": "Ми використовуємо cookies для забезпечення найкращого досвіду на нашому сайті. Деякі з них необхідні для роботи сервісу, інші допомагають нам покращувати послуги.",
+    "essential": "Необхідні",
+    "essentialDescription": "Потрібні для правильної роботи сайту. Не можна вимкнути.",
+    "analytics": "Аналітичні",
+    "analyticsDescription": "Допомагають нам зрозуміти, як ви користуєтеся сервісом.",
+    "marketing": "Маркетингові",
+    "marketingDescription": "Використовуються для персоналізації реклами.",
+    "hideDetails": "Сховати деталі",
+    "customize": "Налаштувати",
+    "essentialOnly": "Тільки необхідні",
+    "saveSelected": "Зберегти вибрані",
+    "acceptAll": "Прийняти всі",
+    "privacyPolicy": "Політика конфіденційності",
+    "terms": "Умови використання"
   }
 }

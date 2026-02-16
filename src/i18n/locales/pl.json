@@ -31,6 +31,10 @@
     "name": "Nazwa",
     "description": "Opis",
     "notes": "Notatki",
+    "active": "Aktywny",
+    "inactive": "Nieaktywny",
+    "noData": "Brak danych",
+    "more": "więcej",
     "or": "lub",
     "retry": "Spróbuj ponownie",
     "refreshPage": "Odśwież stronę"
@@ -95,6 +99,9 @@
       "resetLinkSent": "Link do resetu hasła został wysłany"
     },
     "biometric": {
+      "title": "Logowanie biometryczne",
+      "description": "Zaloguj się szybko i bezpiecznie za pomocą odcisku palca",
+      "notSupported": "Twoje urządzenie nie obsługuje logowania biometrycznego",
       "enterEmailFirst": "Wprowadź email przed użyciem logowania biometrycznego",
       "verificationSuccess": "Weryfikacja biometryczna powiodła się. Wprowadź hasło.",
       "verificationFailed": "Weryfikacja biometryczna nie powiodła się",
@@ -108,7 +115,9 @@
       "lowercase": "Mała litera (a-z)",
       "digit": "Cyfra (0-9)",
       "special": "Znak specjalny (opcjonalnie)"
-    }
+    },
+    "biometricDescription": "Używaj odcisku palca lub Face ID do logowania",
+    "biometricNotSupported": "Twoje urządzenie nie obsługuje logowania biometrycznego"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -126,6 +135,9 @@
     "noProjects": "Brak projektów",
     "noClients": "Brak klientów",
     "createFirst": "Utwórz pierwszy",
+    "todayEvents": "Wydarzenia dzisiaj",
+    "pendingOffers": "Oczekujące oferty",
+    "monthlyStats": "Statystyki miesięczne",
     "stats": {
       "new": "Nowe",
       "inProgress": "W toku",
@@ -163,6 +175,7 @@
       "inProgress": "Wycena w toku",
       "sent": "Oferta wysłana",
       "accepted": "Zaakceptowany",
+      "rejected": "Odrzucony",
       "completed": "Zakończony",
       "cancelled": "Anulowany"
     },
@@ -172,11 +185,19 @@
       "high": "Wysoki"
     },
     "noProjects": "Brak projektów",
+    "noProjectsDesc": "Dodaj swój pierwszy projekt, aby rozpocząć",
     "createFirst": "Utwórz swój pierwszy projekt",
+    "selectClient": "Wybierz klienta",
+    "createQuote": "Utwórz wycenę",
     "editQuote": "Edytuj wycenę",
     "generatePdf": "Generuj PDF",
+    "sendOffer": "Wyślij ofertę",
     "sendEmail": "Wyślij mailem",
     "exportExcel": "Eksport Excel",
+    "viewDetails": "Zobacz szczegóły",
+    "editProject": "Edytuj projekt",
+    "deleteProject": "Usuń projekt",
+    "confirmDelete": "Czy na pewno chcesz usunąć ten projekt?",
     "allStatuses": "Wszystkie statusy",
     "open": "Otwórz",
     "searchPlaceholder": "Szukaj projektów...",
@@ -192,9 +213,13 @@
     "phone": "Telefon",
     "address": "Adres",
     "noClients": "Brak klientów",
+    "noClientsDesc": "Dodaj swojego pierwszego klienta, aby rozpocząć",
     "createFirst": "Utwórz pierwszego klienta",
+    "searchClients": "Szukaj klientów...",
     "editClient": "Edytuj klienta",
     "deleteClient": "Usuń klienta",
+    "confirmDelete": "Czy na pewno chcesz usunąć tego klienta?",
+    "clientProjects": "Projekty klienta",
     "searchPlaceholder": "Szukaj klientów...",
     "addClient": "Dodaj Klienta",
     "namePlaceholder": "Jan Kowalski",
@@ -213,6 +238,7 @@
     "eventType": "Typ wydarzenia",
     "eventTime": "Godzina",
     "eventDescription": "Opis wydarzenia",
+    "linkedProject": "Powiązany projekt",
     "eventTypes": {
       "deadline": "Termin",
       "meeting": "Spotkanie",
@@ -258,7 +284,8 @@
       "december": "Grudzień"
     },
     "syncGoogle": "Synchronizuj z Google",
-    "syncOutlook": "Synchronizuj z Outlook"
+    "syncOutlook": "Synchronizuj z Outlook",
+    "exportIcs": "Eksport ICS"
   },
   "finance": {
     "title": "Finanse",
@@ -275,7 +302,20 @@
     "grossMargin": "Marża brutto",
     "reports": "Raporty",
     "invoices": "Faktury",
-    "expenses": "Wydatki"
+    "expenses": "Wydatki",
+    "monthlyReport": "Raport miesięczny",
+    "exportPdf": "Eksport PDF",
+    "exportExcel": "Eksport Excel",
+    "purchaseCosts": "Koszty zakupu",
+    "addCost": "Dodaj koszt",
+    "invoiceNumber": "Numer faktury",
+    "supplier": "Dostawca",
+    "netAmount": "Kwota netto",
+    "vatAmount": "Kwota VAT",
+    "grossAmount": "Kwota brutto",
+    "ocrScan": "Skanowanie OCR",
+    "cashflow": "Przepływ gotówki",
+    "profitAnalysis": "Analiza zysków"
   },
   "team": {
     "title": "Zespół",
@@ -289,14 +329,25 @@
     "roles": {
       "admin": "Administrator",
       "manager": "Manager",
-      "worker": "Pracownik"
+      "worker": "Pracownik",
+      "foreman": "Brygadzista"
     },
     "statuses": {
       "active": "Aktywny",
-      "inactive": "Nieaktywny"
+      "inactive": "Nieaktywny",
+      "working": "Pracuje",
+      "traveling": "W podróży",
+      "break": "Na przerwie",
+      "idle": "Bezczynny"
     },
     "noMembers": "Brak członków zespołu",
-    "addFirst": "Dodaj pierwszego członka zespołu"
+    "addFirst": "Dodaj pierwszego członka zespołu",
+    "mapView": "Widok mapy",
+    "listView": "Widok listy",
+    "noMembersDesc": "Dodaj pierwszego członka zespołu",
+    "startWork": "Rozpocznij pracę",
+    "onBreak": "Na przerwie",
+    "traveling": "W podróży"
   },
   "templates": {
     "title": "Szablony pozycji",
@@ -308,7 +359,9 @@
     "category": "Kategoria",
     "categories": {
       "material": "Materiał",
-      "labor": "Robocizna"
+      "labor": "Robocizna",
+      "equipment": "Sprzęt",
+      "other": "Inne"
     },
     "trades": {
       "glazurnik": "Glazurnik",
@@ -339,7 +392,11 @@
     "allTrades": "Wszystkie zawody",
     "selected": "Wybrano",
     "selectVisible": "Zaznacz widoczne",
-    "create": "Utwórz"
+    "create": "Utwórz",
+    "newTemplate": "Nowy szablon",
+    "defaultPrice": "Cena domyślna",
+    "defaultQty": "Ilość domyślna",
+    "noTemplatesDesc": "Utwórz szablony do szybkiego tworzenia wycen"
   },
   "quotes": {
     "title": "Wycena",
@@ -357,7 +414,19 @@
     "totalAmount": "Kwota całkowita",
     "saveQuote": "Zapisz wycenę",
     "noPositions": "Brak pozycji",
-    "addFirst": "Dodaj pierwszą pozycję kosztorysu"
+    "addFirst": "Dodaj pierwszą pozycję kosztorysu",
+    "positions": "Pozycje",
+    "itemName": "Nazwa pozycji",
+    "totalPrice": "Cena całkowita",
+    "marginPercent": "Marża %",
+    "subtotal": "Suma częściowa",
+    "grandTotal": "Suma całkowita",
+    "versions": "Wersje",
+    "createVersion": "Utwórz wersję",
+    "restoreVersion": "Przywróć wersję",
+    "aiSuggestions": "Sugestie AI",
+    "getAiSuggestions": "Pobierz sugestie AI",
+    "applyTemplate": "Zastosuj szablon"
   },
   "settings": {
     "title": "Ustawienia",
@@ -381,7 +450,16 @@
     "documentsDescription": "Zarządzaj dokumentami i plikami firmy",
     "calendarSync": "Synchronizacja kalendarza",
     "plugins": "Integracje i wtyczki",
-    "admin": "Panel administratora"
+    "admin": "Panel administratora",
+    "privacy": "Prywatność i dane",
+    "gdprCenter": "Centrum GDPR",
+    "privacyPolicy": "Polityka prywatności",
+    "cookiesPolicy": "Polityka cookies",
+    "termsOfService": "Warunki usługi",
+    "dpa": "Umowa DPA",
+    "pushNotifications": "Powiadomienia push",
+    "enablePush": "Włącz powiadomienia push",
+    "emailNotifications": "Powiadomienia email"
   },
   "billing": {
     "title": "Płatności i subskrypcje",
@@ -451,7 +529,12 @@
     "selectPlan": "Wybierz plan",
     "startFree": "Rozpocznij za darmo",
     "withAds": "z reklamami",
-    "pricePerMonth": "PLN/mies."
+    "pricePerMonth": "PLN/mies.",
+    "nextPayment": "Następna płatność",
+    "usage": "Wykorzystanie",
+    "paymentHistory": "Historia płatności",
+    "noPayments": "Brak historii płatności",
+    "popular": "Popularne"
   },
   "profile": {
     "title": "Profil firmy",
@@ -471,7 +554,8 @@
     "emailSettings": "Ustawienia email",
     "emailGreeting": "Powitanie",
     "emailSignature": "Podpis",
-    "emailSubject": "Temat wiadomości"
+    "emailSubject": "Temat wiadomości",
+    "subjectTemplate": "Szablon tematu"
   },
   "pdf": {
     "title": "Generator oferty PDF",
@@ -485,7 +569,10 @@
     "download": "Pobierz PDF",
     "preview": "Podgląd",
     "standard": "Standard",
-    "premium": "Premium"
+    "premium": "Premium",
+    "template": "Szablon",
+    "deadlineText": "Tekst terminu",
+    "sendEmail": "Wyślij przez email"
   },
   "ai": {
     "title": "Asystent AI",
@@ -500,7 +587,12 @@
     },
     "voiceInput": "Wejście głosowe",
     "newConversation": "Nowa rozmowa",
-    "history": "Historia rozmów"
+    "history": "Historia rozmów",
+    "askQuestion": "Zadaj pytanie...",
+    "thinking": "Myślę...",
+    "suggestions": "Sugestie",
+    "analyzingPhoto": "Analizuję zdjęcie...",
+    "chatHistory": "Historia czatu"
   },
   "analytics": {
     "title": "Analityka",
@@ -511,7 +603,21 @@
     "performance": "Wydajność",
     "conversion": "Konwersja ofert",
     "trends": "Trendy",
-    "export": "Eksportuj raport"
+    "export": "Eksportuj raport",
+    "allProjects": "Wszystkie projekty",
+    "projectsOverTime": "Projekty w czasie",
+    "statusDistribution": "Rozkład statusów",
+    "conversionRate": "Współczynnik konwersji",
+    "averageValue": "Średnia wartość",
+    "totalValue": "Wartość całkowita",
+    "vsLastMonth": "vs poprzedni miesiąc",
+    "calendarAnalytics": "Analityka kalendarza",
+    "allEvents": "Wszystkie wydarzenia",
+    "thisWeek": "Ten tydzień",
+    "meetings": "Spotkania",
+    "completed": "Ukończone",
+    "eventsOverTime": "Wydarzenia w czasie",
+    "eventTypes": "Typy wydarzeń"
   },
   "admin": {
     "title": "Panel administratora",
@@ -599,7 +705,9 @@
     "metaTitle": "Meta Title",
     "metaDescription": "Meta Description",
     "ogImage": "OG Image URL",
-    "unsavedChanges": "Niezapisane zmiany"
+    "unsavedChanges": "Niezapisane zmiany",
+    "systemActive": "System aktywny",
+    "noAccessDesc": "Nie masz uprawnień do wyświetlenia tej strony"
   },
   "adminConfig": {
     "pageTitle": "Konfiguracja",
@@ -811,7 +919,8 @@
     "updated": "Zaktualizowano pomyślnie",
     "created": "Utworzono pomyślnie",
     "sent": "Wysłano pomyślnie",
-    "copied": "Skopiowano do schowka"
+    "copied": "Skopiowano do schowka",
+    "emailSent": "Email wysłany pomyślnie"
   },
   "offerApproval": {
     "pageTitle": "Akceptacja oferty | Majster.AI",

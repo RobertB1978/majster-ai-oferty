@@ -115,7 +115,9 @@
       "lowercase": "Lowercase letter (a-z)",
       "digit": "Digit (0-9)",
       "special": "Special character (optional)"
-    }
+    },
+    "biometricDescription": "Use fingerprint or Face ID to login",
+    "biometricNotSupported": "Your device does not support biometric login"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -145,6 +147,15 @@
       "aiOpening": "Opening AI assistant...",
       "manualTitle": "Manually",
       "manualDesc": "Fill in the form"
+    },
+    "createFirst": "Create your first",
+    "noClients": "No clients",
+    "noProjects": "No projects",
+    "stats": {
+      "accepted": "Accepted",
+      "inProgress": "In Progress",
+      "new": "New",
+      "sent": "Sent"
     }
   },
   "projects": {
@@ -173,7 +184,10 @@
       "sent": "Offer Sent",
       "accepted": "Accepted",
       "rejected": "Rejected",
-      "completed": "Completed"
+      "completed": "Completed",
+      "active": "Active",
+      "cancelled": "Cancelled",
+      "draft": "Draft"
     },
     "priorities": {
       "low": "Low",
@@ -184,7 +198,11 @@
     "open": "Open",
     "searchPlaceholder": "Search projects...",
     "exportBtn": "Export CSV",
-    "filterByStatus": "Filter by status"
+    "filterByStatus": "Filter by status",
+    "createFirst": "Create your first project",
+    "editQuote": "Edit quote",
+    "exportExcel": "Export Excel",
+    "sendEmail": "Send via email"
   },
   "clients": {
     "title": "Clients",
@@ -232,7 +250,8 @@
       "deadline": "Deadline",
       "meeting": "Meeting",
       "reminder": "Reminder",
-      "other": "Other"
+      "other": "Other",
+      "work": "Work"
     },
     "days": {
       "mon": "Mon",
@@ -241,11 +260,32 @@
       "thu": "Thu",
       "fri": "Fri",
       "sat": "Sat",
-      "sun": "Sun"
+      "sun": "Sun",
+      "friday": "Friday",
+      "monday": "Monday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
+      "thursday": "Thursday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday"
     },
     "syncGoogle": "Sync with Google",
     "syncOutlook": "Sync with Outlook",
-    "exportIcs": "Export ICS"
+    "exportIcs": "Export ICS",
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    }
   },
   "finance": {
     "title": "Finance",
@@ -266,7 +306,16 @@
     "grossAmount": "Gross Amount",
     "ocrScan": "OCR Scan",
     "cashflow": "Cash Flow",
-    "profitAnalysis": "Profit Analysis"
+    "profitAnalysis": "Profit Analysis",
+    "expenses": "Expenses",
+    "grossMargin": "Gross Margin",
+    "invoices": "Invoices",
+    "monthly": "Monthly",
+    "netProfit": "Net Profit",
+    "reports": "Reports",
+    "totalCosts": "Total Costs",
+    "totalRevenue": "Total Revenue",
+    "yearly": "Yearly"
   },
   "team": {
     "title": "Team",
@@ -287,14 +336,18 @@
     "roles": {
       "worker": "Worker",
       "foreman": "Foreman",
-      "manager": "Manager"
+      "manager": "Manager",
+      "admin": "Admin"
     },
     "statuses": {
       "working": "Working",
       "traveling": "Traveling",
       "break": "On Break",
-      "idle": "Idle"
-    }
+      "idle": "Idle",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "addFirst": "Add your first team member"
   },
   "templates": {
     "title": "Item Templates",
@@ -327,6 +380,22 @@
       "labor": "Labor",
       "equipment": "Equipment",
       "other": "Other"
+    },
+    "addFirst": "Add your first template",
+    "addTemplate": "Add template",
+    "importDefaults": "Import default templates",
+    "name": "Name",
+    "trades": {
+      "dekarz": "Roofer",
+      "elektryk": "Electrician",
+      "elewacja": "Facade",
+      "glazurnik": "Tiler",
+      "hydraulik": "Plumber",
+      "malarz": "Painter",
+      "murarz": "Bricklayer",
+      "podlogarz": "Flooring specialist",
+      "stolarz": "Carpenter",
+      "suchazabudowa": "Drywall"
     }
   },
   "quotes": {
@@ -351,7 +420,13 @@
     "restoreVersion": "Restore Version",
     "aiSuggestions": "AI Suggestions",
     "getAiSuggestions": "Get AI Suggestions",
-    "applyTemplate": "Apply Template"
+    "applyTemplate": "Apply Template",
+    "addFirst": "Add your first quote item",
+    "noPositions": "No items",
+    "position": "Item",
+    "summary": "Summary",
+    "total": "Total",
+    "totalAmount": "Total amount"
   },
   "settings": {
     "title": "Settings",
@@ -372,7 +447,19 @@
     "dpa": "DPA Agreement",
     "pushNotifications": "Push Notifications",
     "enablePush": "Enable push notifications",
-    "emailNotifications": "Email Notifications"
+    "emailNotifications": "Email Notifications",
+    "admin": "Admin Panel",
+    "biometric": "Biometric Login",
+    "biometricDescription": "Use fingerprint or Face ID to login",
+    "calendarSync": "Calendar synchronization",
+    "documentsDescription": "Manage company documents and files",
+    "plugins": "Integrations and plugins",
+    "security": "Security",
+    "themes": {
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    }
   },
   "billing": {
     "title": "Billing & Subscriptions",
@@ -442,7 +529,12 @@
     "cancel": "Cancel subscription",
     "popular": "Popular",
     "withAds": "with ads",
-    "pricePerMonth": "PLN/mo."
+    "pricePerMonth": "PLN/mo.",
+    "active": "Active",
+    "mostPopular": "Most Popular",
+    "selectPlan": "Select plan",
+    "startFree": "Start for free",
+    "subtitle": "Manage your subscription plan"
   },
   "profile": {
     "title": "Company Profile",
@@ -462,7 +554,8 @@
     "emailSettings": "Email Settings",
     "emailGreeting": "Email Greeting",
     "emailSignature": "Email Signature",
-    "subjectTemplate": "Subject Template"
+    "subjectTemplate": "Subject Template",
+    "emailSubject": "Email subject"
   },
   "pdf": {
     "title": "PDF Generator",
@@ -476,7 +569,10 @@
     "generate": "Generate PDF",
     "download": "Download PDF",
     "preview": "Preview",
-    "sendEmail": "Send via Email"
+    "sendEmail": "Send via Email",
+    "deadline": "Validity deadline",
+    "offerTitle": "Offer title",
+    "version": "Version"
   },
   "ai": {
     "title": "AI Assistant",
@@ -486,7 +582,17 @@
     "suggestions": "Suggestions",
     "analyzingPhoto": "Analyzing photo...",
     "voiceInput": "Voice Input",
-    "chatHistory": "Chat History"
+    "chatHistory": "Chat History",
+    "history": "Chat History",
+    "listening": "Listening...",
+    "newConversation": "New conversation",
+    "placeholder": "Type a message...",
+    "processing": "Processing...",
+    "quickActions": {
+      "calculateCosts": "Calculate costs",
+      "prepareOffer": "Prepare offer",
+      "pricingAdvice": "Pricing advice"
+    }
   },
   "analytics": {
     "title": "Analytics",
@@ -504,7 +610,14 @@
     "meetings": "Meetings",
     "completed": "Completed",
     "eventsOverTime": "Events Over Time",
-    "eventTypes": "Event Types"
+    "eventTypes": "Event Types",
+    "conversion": "Offer conversion",
+    "export": "Export report",
+    "performance": "Performance",
+    "projectsByStatus": "Projects by status",
+    "revenueChart": "Revenue over time",
+    "topClients": "Top clients",
+    "trends": "Trends"
   },
   "admin": {
     "title": "Admin Panel",
@@ -590,7 +703,11 @@
     "metaTitle": "Meta Title",
     "metaDescription": "Meta Description",
     "ogImage": "OG Image URL",
-    "unsavedChanges": "Unsaved Changes"
+    "unsavedChanges": "Unsaved Changes",
+    "active": "Active",
+    "noAccessDescription": "You don't have permission to view this page",
+    "systemStatus": "System Status",
+    "userManagement": "User Management"
   },
   "adminConfig": {
     "pageTitle": "Configuration",
@@ -765,7 +882,10 @@
     "unexpectedError": "An unexpected error occurred. Try refreshing the page or going back to the previous page.",
     "errorDetails": "Error details",
     "pageNotFound": "Page not found",
-    "returnHome": "Return to home page"
+    "returnHome": "Return to home page",
+    "generic": "An error occurred",
+    "maxLength": "Maximum {{count}} characters",
+    "minLength": "Minimum {{count}} characters"
   },
   "cookies": {
     "title": "Cookie settings",
@@ -828,7 +948,8 @@
     "created": "Created successfully",
     "updated": "Updated successfully",
     "emailSent": "Email sent successfully",
-    "copied": "Copied to clipboard"
+    "copied": "Copied to clipboard",
+    "sent": "Sent successfully"
   },
   "offerApproval": {
     "pageTitle": "Offer Approval | Majster.AI",
