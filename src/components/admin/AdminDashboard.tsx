@@ -330,7 +330,7 @@ export function AdminDashboard() {
                 ].map((log, i) => (
                   <div key={i} className="py-1 border-b border-border/50 last:border-0">
                     <span className="text-muted-foreground">[{log.time}]</span>
-                    <span className={`ml-2 ${log.level === 'WARN' ? 'text-yellow-500' : log.level === 'ERROR' ? 'text-red-500' : 'text-green-500'}`}>
+                    <span className={`ml-2 ${log.level === 'WARN' ? 'text-[hsl(var(--warning))]' : log.level === 'ERROR' ? 'text-red-500' : 'text-green-500'}`}>
                       [{log.level}]
                     </span>
                     <span className="ml-2">{log.message}</span>
