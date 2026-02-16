@@ -15,7 +15,7 @@ class ResizeObserverMock {
 }
 
 beforeEach(() => {
-  global.ResizeObserver = ResizeObserverMock as any;
+  global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
 });
 
 // Mock i18next
