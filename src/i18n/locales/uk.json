@@ -1223,5 +1223,28 @@
     "rateLimitWindow": "Часове вікно (секунди)",
     "resetSettings": "Скинути",
     "saveSettings": "Зберегти налаштування"
+  },
+  "pdfPreview": {
+    "title": "Попередній перегляд пропозиції PDF",
+    "edit": "Редагувати",
+    "cancel": "Скасувати",
+    "save": "Зберегти",
+    "generatePdf": "Згенерувати PDF",
+    "generating": "Генерація...",
+    "preview": "Попередній перегляд",
+    "dataSaved": "Дані пропозиції збережено",
+    "mustBeLoggedIn": "Ви повинні бути авторизовані",
+    "projectNotFound": "Проект не знайдено",
+    "pdfGenerated": "PDF пропозиції згенеровано та збережено",
+    "pdfGenerationFailed": "Не вдалося згенерувати PDF",
+    "createQuoteFirst": "Спочатку створіть кошторис",
+    "client": "Клієнт:",
+    "offer": "Пропозиція",
+    "date": "Дата"
+  },
+  "voiceQuote": {
+    "notSupported": "Ваш браузер не підтримує розпізнавання мови.",
+    "processingError": "Помилка обробки. Спробуйте ще раз.",
+    "quoteCreated": "Кошторис створено успішно!"
   }
 }

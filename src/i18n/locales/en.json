@@ -1223,5 +1223,28 @@
     "rateLimitWindow": "Time window (seconds)",
     "resetSettings": "Reset",
     "saveSettings": "Save settings"
+  },
+  "pdfPreview": {
+    "title": "Offer PDF Preview",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "generatePdf": "Generate PDF",
+    "generating": "Generating...",
+    "preview": "Preview",
+    "dataSaved": "Offer data saved",
+    "mustBeLoggedIn": "You must be logged in",
+    "projectNotFound": "Project not found",
+    "pdfGenerated": "Offer PDF has been generated and saved",
+    "pdfGenerationFailed": "Failed to generate PDF",
+    "createQuoteFirst": "Create a quote first",
+    "client": "Client:",
+    "offer": "Offer",
+    "date": "Date"
+  },
+  "voiceQuote": {
+    "notSupported": "Your browser does not support speech recognition.",
+    "processingError": "Processing error. Try again.",
+    "quoteCreated": "Quote created successfully!"
   }
 }

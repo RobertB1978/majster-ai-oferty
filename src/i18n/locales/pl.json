@@ -1223,5 +1223,28 @@
     "rateLimitWindow": "Okno czasowe (sekundy)",
     "resetSettings": "Resetuj",
     "saveSettings": "Zapisz ustawienia"
+  },
+  "pdfPreview": {
+    "title": "Podgląd oferty PDF",
+    "edit": "Edytuj",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "generatePdf": "Generuj PDF",
+    "generating": "Generowanie...",
+    "preview": "Podgląd",
+    "dataSaved": "Dane oferty zapisane",
+    "mustBeLoggedIn": "Musisz być zalogowany",
+    "projectNotFound": "Nie znaleziono projektu",
+    "pdfGenerated": "PDF oferty został wygenerowany i zapisany",
+    "pdfGenerationFailed": "Nie udało się wygenerować PDF",
+    "createQuoteFirst": "Najpierw utwórz wycenę",
+    "client": "Klient:",
+    "offer": "Oferta",
+    "date": "Data"
+  },
+  "voiceQuote": {
+    "notSupported": "Twoja przeglądarka nie wspiera rozpoznawania mowy.",
+    "processingError": "Błąd przetwarzania. Spróbuj ponownie.",
+    "quoteCreated": "Wycena utworzona pomyślnie!"
   }
 }
