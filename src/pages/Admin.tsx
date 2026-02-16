@@ -82,7 +82,7 @@ export default function Admin() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
               <Shield className="h-6 w-6 text-primary" />
               Panel Administratora
             </h1>
