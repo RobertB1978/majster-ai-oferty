@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useProfile, useUpdateProfile, useUploadLogo } from '@/hooks/useProfile';
 import { useAuth } from '@/contexts/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -20,6 +21,7 @@ const STEPS = {
 const TOTAL_STEPS = 4;
 
 export function OnboardingModal() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
@@ -53,14 +55,14 @@ export function OnboardingModal() {
     sessionStorage.setItem('onboarding_skipped', 'true');
     setSkipped(true);
     setOpen(false);
-    toast.info('Możesz uzupełnić profil firmy w dowolnym momencie w ustawieniach');
+    toast.info(t('onboarding.completeProfileAnytime'));
   };
 
   const handleNext = async () => {
     try {
       if (step === STEPS.COMPANY_NAME) {
         if (!companyName.trim()) {
-          toast.error('Podaj nazwę firmy');
+          toast.error(t('onboarding.provideCompanyName'));
           return;
         }
         await updateProfile.mutateAsync({ company_name: companyName });
@@ -88,7 +90,7 @@ export function OnboardingModal() {
           await uploadLogo.mutateAsync(logoFile);
         }
         setOpen(false);
-        toast.success('Profil firmy został skonfigurowany!');
+        toast.success(t('onboarding.profileConfigured'));
       }
     } catch (error) {
       console.error('Onboarding error:', error);
@@ -111,36 +113,36 @@ export function OnboardingModal() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            Witaj w Majster.AI!
+            {t('onboarding.welcome')}
           </DialogTitle>
           <DialogDescription>
-            Skonfiguruj swój profil firmy w kilku prostych krokach
+            {t('onboarding.setupProfile')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <Progress value={progress} className="h-2" />
           <p className="text-sm text-muted-foreground">
-            Krok {step + 1} z {TOTAL_STEPS}
+            {t('onboarding.stepOf', { current: step + 1, total: TOTAL_STEPS })}
           </p>
 
           {step === STEPS.COMPANY_NAME && (
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-primary">
                 <Building2 className="h-5 w-5" />
-                <h3 className="font-semibold">Nazwa firmy</h3>
+                <h3 className="font-semibold">{t('onboarding.companyName')}</h3>
               </div>
               <div>
-                <Label htmlFor="company_name">Jak nazywa się Twoja firma? *</Label>
+                <Label htmlFor="company_name">{t('onboarding.companyNameQuestion')}</Label>
                 <Input
                   id="company_name"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
-                  placeholder="np. Remonty Kowalski"
+                  placeholder={t('onboarding.companyNamePlaceholder')}
                   autoFocus
                 />
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Nazwa będzie widoczna na ofertach PDF
+                  {t('onboarding.companyNameHint')}
                 </p>
               </div>
             </div>
@@ -150,19 +152,19 @@ export function OnboardingModal() {
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-primary">
                 <FileText className="h-5 w-5" />
-                <h3 className="font-semibold">NIP</h3>
+                <h3 className="font-semibold">{t('onboarding.nip')}</h3>
               </div>
               <div>
-                <Label htmlFor="nip">NIP firmy (opcjonalnie)</Label>
+                <Label htmlFor="nip">{t('onboarding.nipOptional')}</Label>
                 <Input
                   id="nip"
                   value={nip}
                   onChange={(e) => setNip(e.target.value)}
-                  placeholder="1234567890"
+                  placeholder={t('onboarding.nipPlaceholder')}
                   autoFocus
                 />
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Możesz dodać później. Ten krok można pominąć.
+                  {t('onboarding.nipHint')}
                 </p>
               </div>
             </div>
@@ -172,30 +174,30 @@ export function OnboardingModal() {
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-primary">
                 <Phone className="h-5 w-5" />
-                <h3 className="font-semibold">Dane kontaktowe</h3>
+                <h3 className="font-semibold">{t('onboarding.contactInfo')}</h3>
               </div>
               <div>
-                <Label htmlFor="phone">Telefon (opcjonalnie)</Label>
+                <Label htmlFor="phone">{t('onboarding.phoneOptional')}</Label>
                 <Input
                   id="phone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+48 123 456 789"
+                  placeholder={t('onboarding.phonePlaceholder')}
                   autoFocus
                 />
               </div>
               <div>
-                <Label htmlFor="email">Email do ofert (opcjonalnie)</Label>
+                <Label htmlFor="email">{t('onboarding.emailOptional')}</Label>
                 <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="kontakt@firma.pl"
+                  placeholder={t('onboarding.emailPlaceholder')}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Dane kontaktowe będą widoczne na ofertach
+                {t('onboarding.contactInfoHint')}
               </p>
             </div>
           )}
@@ -204,10 +206,10 @@ export function OnboardingModal() {
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-primary">
                 <Upload className="h-5 w-5" />
-                <h3 className="font-semibold">Logo firmy</h3>
+                <h3 className="font-semibold">{t('onboarding.logo')}</h3>
               </div>
               <div>
-                <Label htmlFor="logo">Dodaj logo (opcjonalnie)</Label>
+                <Label htmlFor="logo">{t('onboarding.addLogoOptional')}</Label>
                 <Input
                   id="logo"
                   type="file"
@@ -215,13 +217,13 @@ export function OnboardingModal() {
                   onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
                 />
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Max 2MB, format: JPG, PNG. Logo będzie widoczne na ofertach.
+                  {t('onboarding.logoHint')}
                 </p>
               </div>
               {logoFile && (
                 <div className="flex items-center gap-2 text-sm text-green-600">
                   <CheckCircle className="h-4 w-4" />
-                  <span>Wybrano: {logoFile.name}</span>
+                  <span>{t('onboarding.selected', { filename: logoFile.name })}</span>
                 </div>
               )}
             </div>
@@ -235,7 +237,7 @@ export function OnboardingModal() {
             className="w-full sm:w-auto"
             disabled={updateProfile.isPending || uploadLogo.isPending}
           >
-            Pomiń, przypomnij później
+            {t('onboarding.skipRemindLater')}
           </Button>
           <div className="flex gap-2">
             {step > STEPS.COMPANY_NAME && (
@@ -244,7 +246,7 @@ export function OnboardingModal() {
                 onClick={handleBack}
                 disabled={updateProfile.isPending || uploadLogo.isPending}
               >
-                Wstecz
+                {t('onboarding.previous')}
               </Button>
             )}
             <Button
@@ -254,7 +256,7 @@ export function OnboardingModal() {
               {updateProfile.isPending || uploadLogo.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : null}
-              {step === STEPS.LOGO ? 'Zakończ' : 'Dalej'}
+              {step === STEPS.LOGO ? t('onboarding.finish') : t('onboarding.next')}
             </Button>
           </div>
         </DialogFooter>
