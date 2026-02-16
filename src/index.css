@@ -435,3 +435,27 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
+
+/* Z-index layering system */
+:root {
+  --z-base: 0;
+  --z-nav: 40;
+  --z-overlay: 50;
+  --z-modal: 60;
+}
+
+/* Safe area utilities for mobile */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Bottom offset for content above mobile nav */
+@media (max-width: 1023px) {
+  .mobile-bottom-safe {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+}
