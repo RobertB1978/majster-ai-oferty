@@ -314,9 +314,9 @@ describe('Responsive Overlays', () => {
       await waitFor(() => {
         const overlay = screen.queryByTestId('pwa-overlay');
         if (overlay) {
-          // Check that overlay is positioned above bottom nav (bottom-20 on mobile)
+          // Check that overlay is positioned above bottom nav (bottom-[88px] on mobile)
           const classes = overlay.className;
-          expect(classes).toContain('bottom-20');
+          expect(classes).toContain('bottom-[88px]');
         }
       });
     });
@@ -327,8 +327,8 @@ describe('Responsive Overlays', () => {
       const chatButton = screen.getByTestId('chat-overlay');
       const classes = chatButton.className;
 
-      // Should be positioned at bottom-24 on mobile to avoid nav and PWA prompt
-      expect(classes).toContain('bottom-24');
+      // Should be positioned at bottom-[88px] on mobile to avoid nav (64px + 24px margin)
+      expect(classes).toContain('bottom-[88px]');
     });
   });
 });
