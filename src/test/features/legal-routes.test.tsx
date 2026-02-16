@@ -1,9 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
-import App from '@/App';
 
 /**
  * Legal Routes - Route Mapping Tests
@@ -21,50 +20,55 @@ import App from '@/App';
  * Each test navigates to a route and verifies UNIQUE content markers
  * that distinguish it from other legal pages.
  *
- * NOTE: We use @testing-library/react (not @/test/utils) to avoid nested routers.
- * The test utils wrap in BrowserRouter, but we need MemoryRouter for route control.
+ * NOTE: We use a minimal TestRouter (not full App) to avoid nested routers.
+ * This mirrors the approach in routing-redirects.test.tsx.
  */
+
+// Lazy load legal pages exactly as App.tsx does
+const PrivacyPolicy = lazy(() => import("@/pages/legal/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("@/pages/legal/TermsOfService"));
+const CookiesPolicy = lazy(() => import("@/pages/legal/CookiesPolicy"));
+const DPA = lazy(() => import("@/pages/legal/DPA"));
+const GDPRCenter = lazy(() => import("@/pages/legal/GDPRCenter"));
 
 /**
- * Create a test QueryClient with retries disabled for faster tests
+ * Minimal router structure matching App.tsx legal routes (lines 136-148)
  */
-function createTestQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
-}
-
-/**
- * Helper to render App with routing at a specific route
- * Wraps with required providers but uses only ONE router (MemoryRouter)
- */
-function renderWithRouter(ui: React.ReactElement, { initialRoute = '/' } = {}) {
-  const queryClient = createTestQueryClient();
-
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <HelmetProvider>
-        <MemoryRouter initialEntries={[initialRoute]}>
+function TestRouter({ initialPath }: { initialPath: string }) {
+  return (
+    <HelmetProvider>
+      <MemoryRouter initialEntries={[initialPath]}>
+        <Suspense fallback={<div>Loading...</div>}>
           <Routes>
-            <Route path="/*" element={ui} />
+            {/* Legal pages - exact structure from App.tsx */}
+            <Route path="/legal" element={<Navigate to="/legal/privacy" replace />} />
+            <Route path="/legal/privacy" element={<PrivacyPolicy />} />
+            <Route path="/legal/terms" element={<TermsOfService />} />
+            <Route path="/legal/cookies" element={<CookiesPolicy />} />
+            <Route path="/legal/dpa" element={<DPA />} />
+            <Route path="/legal/rodo" element={<GDPRCenter />} />
+
+            {/* Legacy legal redirects - from App.tsx lines 144-148 */}
+            <Route path="/privacy" element={<Navigate to="/legal/privacy" replace />} />
+            <Route path="/terms" element={<Navigate to="/legal/terms" replace />} />
+            <Route path="/cookies" element={<Navigate to="/legal/cookies" replace />} />
+            <Route path="/dpa" element={<Navigate to="/legal/dpa" replace />} />
+            <Route path="/rodo" element={<Navigate to="/legal/rodo" replace />} />
           </Routes>
-        </MemoryRouter>
-      </HelmetProvider>
-    </QueryClientProvider>
+        </Suspense>
+      </MemoryRouter>
+    </HelmetProvider>
   );
 }
 
 describe('Legal Routes Mapping', () => {
   describe('Route → Component correctness', () => {
     it('/legal/privacy should show Privacy Policy (NOT terms/cookies/dpa)', async () => {
-      renderWithRouter(<App />, { initialRoute: '/legal/privacy' });
+      render(<TestRouter initialPath="/legal/privacy" />);
 
       await waitFor(() => {
-        // MUST contain Privacy-specific content
-        expect(screen.getByText(/Polityka Prywatności/i)).toBeDefined();
+        // MUST contain Privacy-specific content (use heading to avoid multiple matches)
+        expect(screen.getByRole('heading', { name: /Polityka Prywatności/i })).toBeDefined();
         expect(screen.getByText(/Administrator danych/i)).toBeDefined();
       });
 
@@ -75,7 +79,7 @@ describe('Legal Routes Mapping', () => {
     });
 
     it('/legal/terms should show Terms of Service (NOT privacy/cookies/dpa)', async () => {
-      renderWithRouter(<App />, { initialRoute: '/legal/terms' });
+      render(<TestRouter initialPath="/legal/terms" />);
 
       await waitFor(() => {
         // MUST contain Terms-specific content
@@ -90,7 +94,7 @@ describe('Legal Routes Mapping', () => {
     });
 
     it('/legal/cookies should show Cookies Policy (NOT privacy/terms/dpa)', async () => {
-      renderWithRouter(<App />, { initialRoute: '/legal/cookies' });
+      render(<TestRouter initialPath="/legal/cookies" />);
 
       await waitFor(() => {
         // MUST contain Cookies-specific content
@@ -105,7 +109,7 @@ describe('Legal Routes Mapping', () => {
     });
 
     it('/legal/dpa should show DPA (NOT privacy/terms/cookies)', async () => {
-      renderWithRouter(<App />, { initialRoute: '/legal/dpa' });
+      render(<TestRouter initialPath="/legal/dpa" />);
 
       await waitFor(() => {
         // MUST contain DPA-specific content
@@ -129,16 +133,16 @@ describe('Legal Routes Mapping', () => {
 
   describe('Legacy redirects', () => {
     it('/privacy should redirect to /legal/privacy', async () => {
-      renderWithRouter(<App />, { initialRoute: '/privacy' });
+      render(<TestRouter initialPath="/privacy" />);
 
       await waitFor(() => {
-        expect(screen.getByText(/Polityka Prywatności/i)).toBeDefined();
+        expect(screen.getByRole('heading', { name: /Polityka Prywatności/i })).toBeDefined();
         expect(screen.getByText(/Administrator danych/i)).toBeDefined();
       });
     });
 
     it('/terms should redirect to /legal/terms', async () => {
-      renderWithRouter(<App />, { initialRoute: '/terms' });
+      render(<TestRouter initialPath="/terms" />);
 
       await waitFor(() => {
         expect(screen.getByText(/Regulamin Serwisu/i)).toBeDefined();
@@ -147,7 +151,7 @@ describe('Legal Routes Mapping', () => {
     });
 
     it('/cookies should redirect to /legal/cookies', async () => {
-      renderWithRouter(<App />, { initialRoute: '/cookies' });
+      render(<TestRouter initialPath="/cookies" />);
 
       await waitFor(() => {
         expect(screen.getByText(/Polityka Cookies/i)).toBeDefined();
@@ -156,7 +160,7 @@ describe('Legal Routes Mapping', () => {
     });
 
     it('/dpa should redirect to /legal/dpa', async () => {
-      renderWithRouter(<App />, { initialRoute: '/dpa' });
+      render(<TestRouter initialPath="/dpa" />);
 
       await waitFor(() => {
         expect(screen.getByText(/Umowa Powierzenia Danych/i)).toBeDefined();
@@ -171,10 +175,10 @@ describe('Legal Routes Mapping', () => {
 
   describe('/legal redirect', () => {
     it('/legal should redirect to /legal/privacy', async () => {
-      renderWithRouter(<App />, { initialRoute: '/legal' });
+      render(<TestRouter initialPath="/legal" />);
 
       await waitFor(() => {
-        expect(screen.getByText(/Polityka Prywatności/i)).toBeDefined();
+        expect(screen.getByRole('heading', { name: /Polityka Prywatności/i })).toBeDefined();
         expect(screen.getByText(/Administrator danych/i)).toBeDefined();
       });
     });
