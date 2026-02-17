@@ -14,6 +14,11 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const BASE_URL =
+  process.env.VITE_PUBLIC_SITE_URL ||
+  process.env.PUBLIC_SITE_URL ||
+  "https://majster-ai-oferty.vercel.app";
+
 // Get base URL from environment or use fallback
 const getBaseUrl = () => {
   // Check various possible env vars
@@ -28,8 +33,8 @@ const getBaseUrl = () => {
   }
 
   // Default fallback
-  console.warn('⚠️  No VITE_PUBLIC_SITE_URL found, using default: https://majster.ai');
-  return 'https://majster.ai';
+  console.warn('⚠️  No VITE_PUBLIC_SITE_URL found, using default: ' + BASE_URL);
+  return BASE_URL;
 };
 
 const generateSitemap = (baseUrl) => {
