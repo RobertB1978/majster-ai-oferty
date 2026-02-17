@@ -14,6 +14,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const languages = [
   { code: 'pl', name: 'Polski', flag: '🇵🇱' },
@@ -25,6 +27,7 @@ export function TopBar() {
   const { user, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { isAdmin } = useAdminRole();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -68,9 +71,15 @@ export function TopBar() {
     localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      queryClient.clear(); // Clear all cached data
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      toast.error(t('errors.logoutFailed', 'Nie udało się wylogować. Spróbuj ponownie.'));
+    }
   };
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];

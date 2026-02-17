@@ -41,12 +41,14 @@ export function useAiSuggestions() {
       return data?.suggestions || [];
     },
     onError: (error: unknown) => {
-      if (error.message?.includes('429') || error.message?.includes('limit')) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      if (errorMessage.includes('429') || errorMessage.includes('limit')) {
         toast.error('Przekroczono limit zapytań AI. Spróbuj później.');
-      } else if (error.message?.includes('402')) {
+      } else if (errorMessage.includes('402')) {
         toast.error('Brak kredytów AI. Doładuj konto.');
       } else {
-        toast.error('Błąd AI: ' + (error.message || 'Nieznany błąd'));
+        toast.error('Błąd AI: ' + errorMessage);
       }
     },
   });
