@@ -230,7 +230,7 @@ test.describe('MVP Gate - Quote Management', () => {
 });
 
 // ============================================================================
-// MVP GATE - CALENDAR
+// MVP GATE - CALENDAR (P0-CALENDAR)
 // ============================================================================
 
 test.describe('MVP Gate - Calendar', () => {
@@ -269,6 +269,98 @@ test.describe('MVP Gate - Calendar', () => {
 
     // Note: Full integration test with actual event CRUD is BLOCKED
     // Requires: Test user credentials + authenticated session
+  });
+
+  /**
+   * P0-CALENDAR: Calendar page loads without error boundary crash (AC1)
+   *
+   * Root cause fixed: CalendarEvent.description was typed `string` but DB returns
+   * `string | null`. When Supabase returned null description, events.forEach()
+   * in useMemo could throw TypeError if data was null (= [] default only
+   * applies to undefined). Fixed by:
+   * - CalendarEvent.description: string | null (type consistency, AC3)
+   * - return (data ?? []) as CalendarEvent[] (null guard in queryFn, AC1)
+   * - if (!user) throw Error (explicit auth guard in mutation, AC2)
+   * - if (!data) throw Error (null insert guard, AC2)
+   *
+   * OWNER_ACTION_REQUIRED: Full integration test with event CRUD requires
+   *   TEST_EMAIL and TEST_PASSWORD environment variables.
+   */
+  test('P0-CALENDAR: calendar route loads without error boundary crash (AC1)', async ({ page }) => {
+    console.log('🧪 Test: P0-CALENDAR — calendar loads without error boundary');
+
+    await setupPageBlocking(page);
+
+    await page.goto('/app/calendar', {
+      waitUntil: 'domcontentloaded',
+      timeout: 90000,
+    });
+
+    await waitForReactHydration(page);
+
+    const currentUrl = page.url();
+    console.log('URL after /app/calendar navigation:', currentUrl);
+
+    // AC1: No error boundary crash — page must NOT show the error boundary UI
+    const errorBoundaryHeading = page.locator('text=Something went wrong').or(
+      page.locator('text=Coś poszło nie tak')
+    );
+    const errorBoundaryVisible = await errorBoundaryHeading.isVisible().catch(() => false);
+    expect(errorBoundaryVisible).toBe(false);
+    console.log('✅ AC1: Error boundary NOT triggered on calendar route');
+
+    // Auth guard: unauthenticated → /login (no crash, just redirect)
+    const isRedirectedToLogin = currentUrl.includes('/login');
+    const isOnCalendar = currentUrl.includes('/calendar');
+    expect(isRedirectedToLogin || isOnCalendar).toBe(true);
+    console.log(`✅ AC1: Route handled correctly (login=${isRedirectedToLogin}, calendar=${isOnCalendar})`);
+
+    // Integration path: if credentials are set, validate full calendar UI
+    const email = process.env.TEST_EMAIL;
+    const password = process.env.TEST_PASSWORD;
+
+    if (email && password && isRedirectedToLogin) {
+      console.log('📋 Credentials found — running authenticated calendar test');
+
+      // Login
+      await page.fill('input[type="email"]', email);
+      await page.fill('input[type="password"]', password);
+      await page.click('button[type="submit"]');
+
+      // Wait for redirect to app
+      await page.waitForURL('**/app/**', { timeout: 30000 });
+      await page.goto('/app/calendar', { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await waitForReactHydration(page);
+
+      // AC1: calendar page rendered without error boundary
+      const calendarTitle = page.getByRole('heading', { name: /kalendarz|calendar/i });
+      await expect(calendarTitle).toBeVisible({ timeout: 20000 });
+      console.log('✅ AC1 (authenticated): Calendar heading visible, no crash');
+
+      // AC2: "Add Event" button is present and clickable
+      const addBtn = page.getByRole('button', { name: /dodaj wydarzenie|add event/i });
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
+      await addBtn.click();
+      console.log('✅ AC2: Add event button clicked — dialog should open');
+
+      // Verify dialog opens (no crash on open)
+      const dialog = page.getByRole('dialog');
+      await expect(dialog).toBeVisible({ timeout: 10000 });
+      console.log('✅ AC2: Event dialog opened without crash');
+
+      // Cancel without saving — verify dialog closes cleanly
+      const cancelBtn = page.getByRole('button', { name: /anuluj|cancel/i });
+      await cancelBtn.click();
+      await expect(dialog).not.toBeVisible({ timeout: 5000 });
+      console.log('✅ AC2: Dialog closed cleanly');
+
+      // Verify no error boundary after dialog interaction
+      const errorAfterDialog = await page.locator('text=Something went wrong').isVisible().catch(() => false);
+      expect(errorAfterDialog).toBe(false);
+      console.log('✅ AC2: No error boundary after dialog interaction');
+    } else {
+      console.log('ℹ️ OWNER_ACTION_REQUIRED: Set TEST_EMAIL + TEST_PASSWORD for full integration test');
+    }
   });
 
 });

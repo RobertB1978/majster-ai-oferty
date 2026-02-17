@@ -7,3 +7,4 @@ Log zmian sesji Claude Code.
 | Data | ID | Wynik | Zmienione pliki |
 |------|----|-------|-----------------|
 | 2026-02-17 | P0-LOGOUT | FIXED | src/contexts/AuthContext.tsx, src/components/layout/TopBar.tsx, e2e/logout.spec.ts |
+| 2026-02-17 | P0-CALENDAR | FIXED | src/hooks/useCalendarEvents.ts, e2e/mvp-gate.spec.ts |

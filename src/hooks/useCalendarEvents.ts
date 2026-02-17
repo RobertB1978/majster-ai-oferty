@@ -9,7 +9,7 @@ export interface CalendarEvent {
   user_id: string;
   project_id: string | null;
   title: string;
-  description: string;
+  description: string | null;
   event_date: string;
   event_time: string | null;
   event_type: string;
@@ -38,7 +38,7 @@ export function useCalendarEvents(startDate?: string, endDate?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as CalendarEvent[];
+      return (data ?? []) as CalendarEvent[];
     },
     enabled: !!user,
   });
@@ -50,13 +50,15 @@ export function useAddCalendarEvent() {
 
   return useMutation({
     mutationFn: async (event: Omit<CalendarEvent, 'id' | 'user_id' | 'created_at'>) => {
+      if (!user) throw new Error('User not authenticated');
       const { data, error } = await supabase
         .from('calendar_events')
-        .insert({ ...event, user_id: user!.id })
+        .insert({ ...event, user_id: user.id })
         .select()
         .single();
 
       if (error) throw error;
+      if (!data) throw new Error('No data returned after insert');
       return data as CalendarEvent;
     },
     onSuccess: () => {
@@ -83,6 +85,7 @@ export function useUpdateCalendarEvent() {
         .single();
 
       if (error) throw error;
+      if (!data) throw new Error('Event not found or access denied');
       return data as CalendarEvent;
     },
     onSuccess: () => {
