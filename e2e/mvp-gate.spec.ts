@@ -364,16 +364,36 @@ test.describe('MVP Gate - Public Pages', () => {
     console.log('Expected base URL:', expectedBaseUrl);
     console.log('Sample URLs from sitemap:', urls.slice(0, 3));
 
-    // Verify all URLs start with expected base URL
-    const allUrlsCorrect = urls.every(url => url.startsWith(expectedBaseUrl));
+    // Parse expected base URL to get hostname and protocol
+    const expectedUrl = new URL(expectedBaseUrl);
+    const expectedHost = expectedUrl.hostname;
+    const expectedProtocol = expectedUrl.protocol;
+
+    // Verify all URLs use the exact same hostname and protocol
+    // This prevents attacks like https://majster.ai.evil.com bypassing validation
+    const allUrlsCorrect = urls.every(url => {
+      try {
+        const parsedUrl = new URL(url);
+        return parsedUrl.hostname === expectedHost && parsedUrl.protocol === expectedProtocol;
+      } catch {
+        return false; // Invalid URL
+      }
+    });
 
     if (allUrlsCorrect) {
       console.log(`✅ All ${urls.length} URLs use correct base: ${expectedBaseUrl}`);
     } else {
-      const incorrectUrls = urls.filter(url => !url.startsWith(expectedBaseUrl));
+      const incorrectUrls = urls.filter(url => {
+        try {
+          const parsedUrl = new URL(url);
+          return parsedUrl.hostname !== expectedHost || parsedUrl.protocol !== expectedProtocol;
+        } catch {
+          return true; // Invalid URLs are incorrect
+        }
+      });
       console.error('❌ Some URLs have incorrect base:');
       console.error('   Incorrect URLs:', incorrectUrls.slice(0, 5));
-      throw new Error(`Sitemap URLs don't use correct base URL: ${expectedBaseUrl}`);
+      throw new Error(`Sitemap URLs don't use correct hostname/protocol: ${expectedBaseUrl}`);
     }
 
     // Note: Full verification requires VITE_PUBLIC_SITE_URL set in Vercel
