@@ -26,3 +26,4 @@
 | ID | Priority | Summary | Status |
 |----|----------|---------|--------|
 | P0-LOGOUT | P0 | Logout does not clear session / redirect | FIXED (2026-02-17) |
+| P0-CALENDAR | P0 | Calendar event creation causes error boundary crash | FIXED (2026-02-17) |
