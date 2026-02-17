@@ -116,7 +116,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } finally {
+      // Explicitly clear state to eliminate race condition.
+      // onAuthStateChange fires asynchronously — without this,
+      // navigate('/login') in the caller runs before state updates,
+      // leaving stale auth state. Also fixes mock-client path where
+      // onAuthStateChange callback is never invoked.
+      setUser(null);
+      setSession(null);
+    }
   };
 
   return (

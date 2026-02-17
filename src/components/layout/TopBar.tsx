@@ -181,7 +181,7 @@ export function TopBar() {
               <span className="text-sm text-muted-foreground max-w-[120px] truncate">
                 {user.email}
               </span>
-              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-foreground min-h-[40px]">
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-foreground min-h-[40px]" data-testid="logout-button">
                 <LogOut className="mr-2 h-4 w-4" />
                 {t('auth.logout')}
               </Button>
@@ -193,6 +193,7 @@ export function TopBar() {
               onClick={handleLogout}
               className="sm:hidden h-10 w-10 text-muted-foreground"
               aria-label={t('auth.logout', 'Wyloguj')}
+              data-testid="logout-button-mobile"
             >
               <LogOut className="h-5 w-5" />
             </Button>

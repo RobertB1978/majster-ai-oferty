@@ -42,17 +42,20 @@
 
 ### P1 - Security/UX Critical (HIGH PRIORITY)
 
-#### ✅ PASS: Logout Race Condition (E-001-P1-001)
+#### ✅ PASS: P0-LOGOUT — Logout Race Condition (E-001-P1-001)
 - **Tracker ID**: MVP-AUTH-001
-- **Issue**: Navigation to /login before session cleared, cache not cleared
-- **Fix**: Added async/await + queryClient.clear() + error handling
-- **Test**: `e2e/mvp-gate.spec.ts` → `logout flow works end-to-end`
-- **Evidence**: Commit d602a76 (src/components/layout/TopBar.tsx lines 72-85)
-- **Verification**: Test validates protected routes redirect to login (auth guard active)
-- **Status**: ✅ PASS
-- **CI Run**: TBD (after merge)
-- **Local Run**: TBD (running)
-- **Note**: Full integration test (actual login/logout) is BLOCKED - requires test user credentials. Current test validates UI flow and auth guard behavior.
+- **Issue**: `logout()` in AuthContext relied on async `onAuthStateChange` to clear user/session state. `navigate('/login')` fired before the state update, leaving stale auth state. Mock client path never fires the callback at all.
+- **Root Cause**: (d) signOut race condition + (f) mock client never fires onAuthStateChange
+- **Fix**: Explicit `setUser(null); setSession(null)` in `finally` block of `logout()` (AuthContext.tsx:118-128). Added `data-testid` to logout buttons (TopBar.tsx:184,194).
+- **Test**: `e2e/logout.spec.ts` — dedicated P0-LOGOUT test (guard + integration with creds)
+- **Evidence**: Branch `claude/fix-p0-logout-P6gpy`
+- **Verification**: `tsc --noEmit` passes; guard test validates /app/* redirect; integration test requires TEST_EMAIL/TEST_PASSWORD (OWNER_ACTION_REQUIRED)
+- **Status**: ✅ PASS (code-level) | OWNER_ACTION_REQUIRED (full integration run)
+- **AC1**: PASS — signOut awaited, state cleared, navigate('/login') follows
+- **AC2**: PASS — AppLayout guard checks `!user` → redirects to /login
+- **AC3**: DEFAULT — no custom storageKey; Supabase SDK clears `sb-<ref>-auth-token` from localStorage on signOut
+- **AC4**: PASS — `queryClient.clear()` in TopBar handleLogout (line 77)
+- **AC5**: PASS (compile) | OWNER_ACTION_REQUIRED (execution with credentials)
 
 #### ⏳ BLOCKED: Sitemap Base URL (E-001-P1-002)
 - **Tracker ID**: MVP-SEO-001
