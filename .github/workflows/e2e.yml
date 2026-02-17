@@ -1,4 +1,4 @@
-name: E2E Tests
+name: E2E Tests (MVP Gate)
 
 on:
   pull_request:
@@ -22,6 +22,7 @@ concurrency:
 
 jobs:
   e2e:
+    name: MVP Gate + Smoke Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -38,7 +39,7 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run E2E tests
+      - name: Run E2E tests (MVP Gate + Smoke)
         env:
           # E2E tests only test UI/UX flow, not backend connectivity
           # Using official Supabase demo credentials (same as used by Supabase CLI for local dev)
@@ -47,18 +48,41 @@ jobs:
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
         run: npx playwright test
 
-      - name: Upload Playwright report
-        if: failure()
+      - name: Generate test summary
+        if: always()
+        run: |
+          echo "## E2E Test Results (MVP Gate)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Coverage**: 6 MVP Gate tests + 4 Smoke tests + 2 Specialized tests" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**MVP Gate Critical Flows**:" >> $GITHUB_STEP_SUMMARY
+          echo "- Quote editor loads without crash (P0)" >> $GITHUB_STEP_SUMMARY
+          echo "- Logout flow works end-to-end (P1)" >> $GITHUB_STEP_SUMMARY
+          echo "- Calendar add/delete events work (P2)" >> $GITHUB_STEP_SUMMARY
+          echo "- Cookie consent banner appears (P2)" >> $GITHUB_STEP_SUMMARY
+          echo "- Sitemap has correct base URL (P1)" >> $GITHUB_STEP_SUMMARY
+          echo "- Language switching works (P2)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Traceability**: See [docs/mvp-gate/TRACEABILITY_MATRIX.md](https://github.com/${{ github.repository }}/blob/${{ github.sha }}/docs/mvp-gate/TRACEABILITY_MATRIX.md)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ **All tests passed** - MVP Gate is GREEN" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Tests failed** - Check artifacts below for traces/videos/screenshots" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload Playwright HTML report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ github.run_number }}
           path: playwright-report/
           retention-days: 7
 
       - name: Upload test results and traces
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: test-results-${{ github.run_number }}
           path: test-results/
           retention-days: 7
