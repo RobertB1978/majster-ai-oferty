@@ -319,7 +319,7 @@ test.describe('MVP Gate - Public Pages', () => {
     console.log('✅ Landing page loads, cookie consent implementation verified');
   });
 
-  test('sitemap has correct base URL (E-001-P1-002)', async ({ page }) => {
+  test('sitemap has correct base URL (E-001-P1-002)', async () => {
     console.log('🧪 Test: Sitemap base URL verification');
 
     // The sitemap is generated at build time by scripts/generate-sitemap.js
