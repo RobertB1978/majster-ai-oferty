@@ -4,6 +4,41 @@ Append-only log of audit sessions. One entry per session. Most recent at top.
 
 ---
 
+## 2026-02-17 — Fix Pack: Audit Findings P2-A, P2-C (G3), P1-B
+
+**Session:** `fix/audit-fixpack-20260217-p2a-p2c-p1b`
+**Branch:** `fix/audit-fixpack-20260217-p2a-p2c-p1b`
+**Auditor:** Staff+ SaaS Engineer (Claude Sonnet 4.6)
+**Method:** Evidence-first, sequential fix execution per prompt specification
+
+**Fixes Attempted and Verdicts:**
+
+- **FIX-1 (P2-A) — Sitemap domain:** PASS. Introduced `BASE_URL` constant in `scripts/generate-sitemap.js` using `VITE_PUBLIC_SITE_URL || PUBLIC_SITE_URL || "https://majster-ai-oferty.vercel.app"`. Updated warn message and fallback return to use `BASE_URL`. Regenerated `public/sitemap.xml`. V1=sitemap_majsterai=0, V2=generator_majsterai=0.
+
+- **FIX-2 (P2-C / G3) — QuoteEditor id! guard:** PASS. File located at `src/pages/QuoteEditor.tsx` (audit scope fence listed incorrect path `src/components/quotes/QuoteEditor.tsx`). Added `Navigate` to react-router-dom imports. Replaced `id!` with `id || ''` for hook calls at lines 24-25 to preserve Rules of Hooks. Added `if (!id) return <Navigate to="/app/jobs" replace />;` guard after all hooks. Replaced remaining `id!` at lines 221 and 246 with `id`. V3=id_bang=0. tsc exit 0.
+
+- **FIX-3 (P1-B) — i18n key coverage:** PASS (already complete). Running the key diff revealed pl_total=46, missing_en=0, missing_ua=0. The locale file is `uk.json` (not `ua.json` as specified in audit). Prior fix packs had already resolved the coverage gap. No file changes were required.
+
+**Post-Fix Verification Suite (V1–V5) outputs:**
+- V1: sitemap_majsterai=0 ✅
+- V2: generator_majsterai=0 ✅
+- V3: id_bang=0 ✅ (checked `src/pages/QuoteEditor.tsx`)
+- V4: missing_en=0, missing_ua=0 ✅ (checked `src/i18n/locales/uk.json`)
+- V5: tsc_exit=0 ✅
+
+**Files Modified (actual writes):**
+- `scripts/generate-sitemap.js` (FIX-1)
+- `public/sitemap.xml` (FIX-1, regenerated output)
+- `src/pages/QuoteEditor.tsx` (FIX-2; note: scope fence listed wrong path)
+- `docs/audit/AUDIT_STATUS.md` (artifact update)
+- `docs/audit/AUDIT_LOG.md` (this entry)
+
+**Notable path discrepancies vs audit prompt spec:**
+- Scope fence: `src/components/quotes/QuoteEditor.tsx` → Actual: `src/pages/QuoteEditor.tsx`
+- Scope fence: `src/i18n/locales/ua.json` → Actual: `src/i18n/locales/uk.json`
+
+---
+
 ## 2026-02-17 — Post-Merge Snapshot Audit
 
 **Session:** `claude/audit-snapshot-majster-eG4Om`
