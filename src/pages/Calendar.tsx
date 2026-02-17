@@ -192,7 +192,12 @@ export default function Calendar() {
   };
 
   const handleDeleteEvent = async (eventId: string) => {
-    await deleteEvent.mutateAsync(eventId);
+    try {
+      await deleteEvent.mutateAsync(eventId);
+    } catch (error) {
+      // Toast already handled by mutation's onError, but prevents unhandled rejection warnings
+      console.error('Delete event error:', error);
+    }
   };
 
   const getNavigationTitle = () => {

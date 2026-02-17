@@ -23,7 +23,7 @@ export interface QuoteVersion {
   created_at: string;
 }
 
-export function useQuoteVersions(_projectId: string) {
+export function useQuoteVersions(projectId: string) {
   const { user } = useAuth();
 
   return useQuery({
@@ -45,7 +45,7 @@ export function useQuoteVersions(_projectId: string) {
   });
 }
 
-export function useActiveQuoteVersion(_projectId: string) {
+export function useActiveQuoteVersion(projectId: string) {
   const { user } = useAuth();
 
   return useQuery({
@@ -60,7 +60,7 @@ export function useActiveQuoteVersion(_projectId: string) {
 
       if (error) throw error;
       if (!data) return null;
-      
+
       return {
         ...data,
         quote_snapshot: data.quote_snapshot as unknown as QuoteSnapshot,

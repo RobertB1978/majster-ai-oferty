@@ -873,6 +873,7 @@
     "pdfGenerationFailed": "Failed to generate PDF",
     "microphoneAccessDenied": "Microphone access denied. Please enable microphone in browser settings.",
     "speechRecognitionNotSupported": "Speech recognition is not supported in this browser. Please use Chrome.",
+    "logoutFailed": "Logout failed. Please try again.",
     "invalidCredentials": "Invalid email or password",
     "invalidEmailFormat": "Invalid email format",
     "invalidFileType": "Invalid file type",

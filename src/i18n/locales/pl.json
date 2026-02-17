@@ -857,6 +857,7 @@
     "pdfGenerationFailed": "Nie udało się wygenerować PDF",
     "microphoneAccessDenied": "Brak dostępu do mikrofonu. Włącz mikrofon w ustawieniach przeglądarki.",
     "speechRecognitionNotSupported": "Rozpoznawanie mowy nie jest obsługiwane w tej przeglądarce. Użyj Chrome.",
+    "logoutFailed": "Nie udało się wylogować. Spróbuj ponownie.",
     "invalidCredentials": "Nieprawidłowy email lub hasło",
     "invalidEmailFormat": "Nieprawidłowy format email",
     "invalidFileType": "Nieprawidłowy typ pliku",
