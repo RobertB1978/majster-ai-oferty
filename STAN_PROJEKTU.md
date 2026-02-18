@@ -6,6 +6,7 @@ Log zmian sesji Claude Code.
 
 | Data | ID | Wynik | Zmienione pliki |
 |------|----|-------|-----------------|
+| 2026-02-18 | P1-AI-LLM | FIXED — `body: unknown` → `body: Record<string, unknown>` in callOpenAICompatible, callAnthropic, callGemini; prevents Deno type-check failure at deploy time; commit de23ff9 | supabase/functions/_shared/ai-provider.ts, STAN_PROJEKTU.md, docs/mvp-gate/STATUS.md |
 | 2026-02-18 | REALITY-SYNC | DONE — Reconciliation 2026-02-17 vs 2026-02-18: 3×P0 PASS · P1-LINT UNKNOWN · P1-I18N PASS · P1-SITEMAP PASS · P1-AI PASS · P1-COOKIE PASS · P2-FINANCE PASS · P2-RLS UNKNOWN · Next TARGET: P1-LINT | docs/TRUTH.md, STAN_PROJEKTU.md, docs/mvp-gate/ORDERING.md, docs/mvp-gate/STATUS.md |
 | 2026-02-18 | I18N-REGRESSION | FIXED — errors.logoutFailed missing from uk.json (regression); missing_en=0 missing_uk=0 confirmed | src/i18n/locales/uk.json |
 | 2026-02-18 | SITEMAP-FIX | CONFIRMED — 0 occurrences majster.ai in sitemap.xml (verified via grep) | public/sitemap.xml, scripts/generate-sitemap.js |
@@ -24,3 +25,7 @@ Log zmian sesji Claude Code.
 - **Files at risk**: `eslint.config.js:1` (imports `@eslint/js`), `package.json` (devDependencies)
 - **Impact if FAIL**: Lint regressions can reach CI undetected; could hide type/style issues introduced since 2026-02-07.
 - **Impact if PASS**: Close last P1 UNKNOWN; full MVP Gate green except P2-RLS (owner action) and P2-TESTS (environment).
+
+## OWNER ACTIONS REQUIRED
+
+- **OPENAI_API_KEY** or **ANTHROPIC_API_KEY** or **GEMINI_API_KEY**: at least one must be set in Supabase Edge Function secrets for the AI assistant to return real responses. Without a key the edge function throws at startup. Set via: Supabase Dashboard → Edge Functions → Secrets.

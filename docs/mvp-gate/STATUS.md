@@ -1,8 +1,8 @@
 # MVP Gate Status — PASS/FAIL/UNKNOWN
 
-**Last Updated**: 2026-02-18 (Reality-Sync Reconciliation `claude/reality-sync-reconciliation-lzHqT`)
-**Evidence Date**: 2026-02-18 (reconciles 2026-02-17 vs 2026-02-18 audit artifacts)
-**Latest Fix Commits**: `8aa30fb` (P0-CALENDAR) · `447f044` (P0-LOGOUT) · `d602a76` (P0-QUOTE) · `14ac892` (sitemap) · `ad2a555` (i18n regression)
+**Last Updated**: 2026-02-18 (P1-AI-ASSISTANT-EDGE-LLM fix `claude/fix-ai-llm-integration-xj4kS`)
+**Evidence Date**: 2026-02-18
+**Latest Fix Commits**: `de23ff9` (P1-AI-LLM) · `8aa30fb` (P0-CALENDAR) · `447f044` (P0-LOGOUT) · `d602a76` (P0-QUOTE) · `14ac892` (sitemap) · `ad2a555` (i18n regression)
 
 ---
 
@@ -21,14 +21,14 @@ This file was updated 2026-02-18 to reconcile conflicting statuses between:
 | Category | Total | ✅ PASS | ❌ FAIL | ❓ UNKNOWN |
 |----------|-------|---------|---------|------------|
 | **P0 - Production Blockers** | 3 | 3 | 0 | 0 |
-| **P1 - High Priority** | 5 | 4 | 0 | 1 |
+| **P1 - High Priority** | 6 | 5 | 0 | 1 |
 | **P2 - Quality/Polish** | 4 | 2 | 0 | 2 |
 | **Baseline - Smoke Tests** | 4 | 4 | 0 | 0 |
-| **TOTAL** | 16 | 13 | 0 | 3 |
+| **TOTAL** | 17 | 14 | 0 | 3 |
 
-**Overall Status**: 🟢 **81% PASS · 19% UNKNOWN** (environment gap, not code failures)
+**Overall Status**: 🟢 **82% PASS · 18% UNKNOWN** (environment gap, not code failures)
 
-**Production Readiness**: ✅ **READY** — All P0 blockers resolved; 1 P1 UNKNOWN (lint infrastructure, environment gap); 2 P2 UNKNOWNs require owner action or environment setup.
+**Production Readiness**: ✅ **READY** — All P0 blockers resolved; P1-AI-LLM code fix applied (owner must set API key secret); 1 P1 UNKNOWN (lint infrastructure, environment gap); 2 P2 UNKNOWNs require owner action or environment setup.
 
 **Next SESSION TARGET**: P1-LINT — `npm install && npm run lint`; AC: exit 0, 0 errors.
 
@@ -102,6 +102,30 @@ This file was updated 2026-02-18 to reconcile conflicting statuses between:
 - **Verification (2026-02-18)**: `grep "majster-ai-oferty.vercel.app" public/sitemap.xml` → present ✅
 - **Status**: ✅ PASS
 - **Evidence**: Session `claude/audit-and-fix-WpVlK` (2026-02-18) confirms FIX-1: `sitemap_majsterai=0`, `generator_majsterai=0`
+
+#### ✅ PASS: P1-AI-ASSISTANT-EDGE-LLM — AI Chat Agent LLM path fix (2026-02-18)
+
+- **Tracker ID**: P1-AI-LLM
+- **Issue**: AI Assistant returned "communication error" / "AI without LLM" — edge function failed Deno type-check at deploy time, preventing startup.
+- **Root Cause**: `body: unknown` type annotation in `callOpenAICompatible`, `callAnthropic`, and `callGemini` (all in `supabase/functions/_shared/ai-provider.ts`). Assigning properties on an `unknown`-typed variable is a TypeScript error caught by Deno's type-checker, causing the edge function deployment to fail.
+- **Evidence**:
+  ```
+  # TypeScript error (Deno check):
+  # error TS2339: Property 'temperature' does not exist on type 'unknown'
+  # error TS2339: Property 'tools' does not exist on type 'unknown'
+  # error TS2339: Property 'tool_choice' does not exist on type 'unknown'
+  # (same pattern in callAnthropic and callGemini)
+  ```
+- **Fix** (`supabase/functions/_shared/ai-provider.ts`, commit `de23ff9`):
+  - `callOpenAICompatible`: `body: unknown` → `body: Record<string, unknown>`
+  - `callAnthropic`: `body: unknown` → `body: Record<string, unknown>`
+  - `callGemini`: extract `generationConfig: Record<string, unknown>` (allows conditional `.temperature` assignment); `body: unknown` → `body: Record<string, unknown>`
+- **Verification**: `grep -n "body: unknown" supabase/functions/_shared/ai-provider.ts` → 0 matches; `tsc --noEmit` exits 0
+- **Commit**: `de23ff9` on `claude/fix-ai-llm-integration-xj4kS`
+- **Status**: ✅ PASS (code-level type error eliminated; runtime requires API key — see Owner Actions)
+- **Owner Action Required**: At least one of `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `GEMINI_API_KEY` must be set in Supabase Edge Function Secrets for the assistant to return real AI responses.
+
+---
 
 #### ❓ UNKNOWN: Lint Infrastructure (P1-LINT) — Reconciled 2026-02-18
 
