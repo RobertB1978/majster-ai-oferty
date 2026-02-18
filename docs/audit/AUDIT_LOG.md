@@ -4,6 +4,47 @@ Append-only log of audit sessions. One entry per session. Most recent at top.
 
 ---
 
+## 2026-02-18 — Re-Audit: Findings FIX-1 (P2-A), FIX-2 (P2-C), FIX-3 (P1-B)
+
+**Session:** `claude/audit-and-fix-WpVlK`
+**Branch:** `claude/audit-and-fix-WpVlK`
+**Auditor:** Staff+ SaaS Engineer (Claude Sonnet 4.6)
+**Method:** Evidence-first re-audit of prior fix session; verify fixes hold; fix regressions.
+
+**Pre-Flight:**
+- Working tree: CLEAN
+- Required files: all present (note: actual paths are `src/pages/QuoteEditor.tsx` and `src/i18n/locales/uk.json` — scope fence path discrepancies documented in prior session)
+- robots.txt Sitemap line: `Sitemap: https://majster-ai-oferty.vercel.app/sitemap.xml` PASS
+- BOM/line endings baseline: `en.json: bom=no crlf=0 lf=1260`; `uk.json: bom=no crlf=0 lf=1259`
+
+**Fixes Attempted and Verdicts:**
+
+- **FIX-1 (P2-A) — Sitemap domain:** PASS (no changes). Baseline grep: 0 hits for majster.ai in both `public/sitemap.xml` and `scripts/generate-sitemap.js`. Prior fix confirmed holding.
+
+- **FIX-2 (P2-C / G3) — QuoteEditor id! guard:** PASS (no changes). Baseline grep: 0 hits for `id!` in `src/pages/QuoteEditor.tsx`. Prior fix confirmed holding.
+
+- **FIX-3 (P1-B) — i18n key coverage:** PASS after fix. Baseline check (nested, pl_total_paths=1070): missing_en=0, missing_ua=1 (`errors.logoutFailed` missing from uk.json — regression). Applied targeted string insertion: added comma to prior last key `invalidFileType` and inserted `"logoutFailed": "Не вдалося вийти. Спробуйте ще раз."` before closing brace of `errors` block at uk.json:888-889. JSON valid. BOM/line endings unchanged (lf=1259→1260, +1 for new line). Post-fix: missing_en=0, missing_ua=0.
+
+**Post-Fix Verification Suite (V1–V5) outputs:**
+- V1: `sitemap_majsterai=0` ✅
+- V2: `generator_majsterai=0` ✅
+- V3: `id_bang=0` ✅
+- V4: `missing_en=0, missing_ua=0` (pl_total_paths=1070) ✅
+- V5: `tsc_exit=0` ✅
+
+**Info-only scan (route param non-null assertions):** 0 matches found. No new P2 items.
+
+**Files Modified (actual writes):**
+- `src/i18n/locales/uk.json` (FIX-3; note: scope fence listed ua.json — same prior discrepancy)
+- `docs/audit/AUDIT_STATUS.md` (artifact update)
+- `docs/audit/AUDIT_LOG.md` (this entry)
+
+**Notable path discrepancies vs audit prompt spec (unchanged from prior session):**
+- Scope fence: `src/components/quotes/QuoteEditor.tsx` → Actual: `src/pages/QuoteEditor.tsx`
+- Scope fence: `src/i18n/locales/ua.json` → Actual: `src/i18n/locales/uk.json`
+
+---
+
 ## 2026-02-17 — Fix Pack: Audit Findings P2-A, P2-C (G3), P1-B
 
 **Session:** `fix/audit-fixpack-20260217-p2a-p2c-p1b`

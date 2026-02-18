@@ -1,6 +1,6 @@
 # Audit Status Tracker — Majster.AI
 
-**Last Updated:** 2026-02-17 (fix session: `fix/audit-fixpack-20260217-p2a-p2c-p1b`)
+**Last Updated:** 2026-02-18 (re-audit session: `claude/audit-and-fix-WpVlK`)
 **Audit Session:** `claude/audit-snapshot-majster-eG4Om`
 **Source Report:** `docs/audit/AUDIT_REPORT_2026-02-17.md`
 
@@ -56,7 +56,7 @@
 - **Acceptance Criteria:** `diff <(jq 'keys[]' src/i18n/locales/pl.json | sort) <(jq 'keys[]' src/i18n/locales/en.json | sort)` outputs 0 lines.
 - **Verification:** `diff <(jq 'keys[]' src/i18n/locales/pl.json | sort) <(jq 'keys[]' src/i18n/locales/en.json | sort)`
 - **File:** `src/i18n/locales/pl.json`, `src/i18n/locales/en.json`
-- **Status:** ✅ RESOLVED (2026-02-17) — missing_en=0, missing_ua=0 verified via hasOwnProperty check; pl_total=46 keys all present in en.json and uk.json
+- **Status:** ✅ RESOLVED (2026-02-18) — re-audit found regression: errors.logoutFailed missing from uk.json; fixed with targeted insertion; missing_en=0, missing_ua=0; pl_total_paths=1070 (nested); uk_json_valid=true; tsc_exit=0
 
 ---
 
@@ -88,9 +88,9 @@
 
 | Item | Session | Resolution |
 |------|---------|------------|
-| P2-A / F-sitemap (sitemap domain) | 2026-02-17 | RESOLVED — `scripts/generate-sitemap.js` + `public/sitemap.xml`; V1=0, V2=0 |
-| P2-C / G3 (id! non-null assertion) | 2026-02-17 | RESOLVED — `src/pages/QuoteEditor.tsx`; Navigate guard added; V3=0 |
-| P1-B / C (i18n key coverage) | 2026-02-17 | RESOLVED — already complete; pl_total=46, missing_en=0, missing_ua=0 |
+| P2-A / F-sitemap (sitemap domain) | 2026-02-18 | RESOLVED (re-audit confirmed) — no regression; V1=sitemap_majsterai=0, V2=generator_majsterai=0 |
+| P2-C / G3 (id! non-null assertion) | 2026-02-18 | RESOLVED (re-audit confirmed) — no regression; V3=id_bang=0; tsc_exit=0 |
+| P1-B / C (i18n key coverage) | 2026-02-18 | RESOLVED — re-audit fixed regression (errors.logoutFailed missing from uk.json); pl_total_paths=1070, missing_en=0, missing_ua=0 |
 | P0-CALENDAR (error boundary crash) | 2026-02-17 | FIXED — commit `8aa30fb` (`useCalendarEvents.ts`) |
 | P0-LOGOUT (race condition + cache) | 2026-02-17 | FIXED — commit `447f044` (`TopBar.tsx`, `AuthContext.tsx`) |
 | P0-QUOTE (ReferenceError projectId) | 2026-02-17 | FIXED — commit `d602a76` (`useQuoteVersions.ts`) |
