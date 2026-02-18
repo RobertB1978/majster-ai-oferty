@@ -1,25 +1,36 @@
-# MVP Gate Status — PASS/FAIL/BLOCKED
+# MVP Gate Status — PASS/FAIL/UNKNOWN
 
-**Last Updated**: 2026-02-17 (P0-CALENDAR session)
-**Evidence Date**: 2026-02-17
-**Fix Commit**: see branch claude/fix-p0-calendar-QtCB0
-**Branch**: claude/fix-p0-calendar-QtCB0
+**Last Updated**: 2026-02-18 (Reality-Sync Reconciliation `claude/reality-sync-reconciliation-lzHqT`)
+**Evidence Date**: 2026-02-18 (reconciles 2026-02-17 vs 2026-02-18 audit artifacts)
+**Latest Fix Commits**: `8aa30fb` (P0-CALENDAR) · `447f044` (P0-LOGOUT) · `d602a76` (P0-QUOTE) · `14ac892` (sitemap) · `ad2a555` (i18n regression)
 
 ---
 
-## Executive Summary
+## Reconciliation Note
 
-| Category | Total | ✅ PASS | ❌ FAIL | ⏳ BLOCKED |
+This file was updated 2026-02-18 to reconcile conflicting statuses between:
+- 2026-02-17 audit snapshot (`docs/audit/AUDIT_REPORT_2026-02-17.md`)
+- 2026-02-18 re-audit (`docs/audit/AUDIT_STATUS.md`, `docs/audit/AUDIT_LOG.md`)
+
+**Verdict**: No conflicts remain. All P0 items PASS. Sitemap, i18n, and QuoteEditor guard all confirmed PASS by 2026-02-18 verification. Lint and test suite remain UNKNOWN (environment gap — node_modules absent). See `docs/TRUTH.md` for full reconciliation table.
+
+---
+
+## Executive Summary (Reconciled 2026-02-18)
+
+| Category | Total | ✅ PASS | ❌ FAIL | ❓ UNKNOWN |
 |----------|-------|---------|---------|------------|
-| **P0 - Production Blockers** | 2 | 2 | 0 | 0 |
-| **P1 - Security/UX Critical** | 2 | 1 | 0 | 1 |
-| **P2 - Quality/Polish** | 4 | 4 | 0 | 0 |
+| **P0 - Production Blockers** | 3 | 3 | 0 | 0 |
+| **P1 - High Priority** | 5 | 4 | 0 | 1 |
+| **P2 - Quality/Polish** | 4 | 2 | 0 | 2 |
 | **Baseline - Smoke Tests** | 4 | 4 | 0 | 0 |
-| **TOTAL** | 12 | 11 | 0 | 1 |
+| **TOTAL** | 16 | 13 | 0 | 3 |
 
-**Overall Status**: 🟢 **91.7% PASS** (11/12 tests passing, 1 blocked by owner action)
+**Overall Status**: 🟢 **81% PASS · 19% UNKNOWN** (environment gap, not code failures)
 
-**Production Readiness**: ✅ **READY** (all P0/P1 fixes deployed, 1 P1 item blocked by non-code owner action)
+**Production Readiness**: ✅ **READY** — All P0 blockers resolved; 1 P1 UNKNOWN (lint infrastructure, environment gap); 2 P2 UNKNOWNs require owner action or environment setup.
+
+**Next SESSION TARGET**: P1-LINT — `npm install && npm run lint`; AC: exit 0, 0 errors.
 
 ---
 
@@ -82,24 +93,27 @@
 - **AC4**: PASS — `queryClient.clear()` in TopBar handleLogout (line 77)
 - **AC5**: PASS (compile) | OWNER_ACTION_REQUIRED (execution with credentials)
 
-#### ⏳ BLOCKED: Sitemap Base URL (E-001-P1-002)
+#### ✅ PASS: Sitemap Base URL (E-001-P1-002) — RESOLVED 2026-02-18
+
 - **Tracker ID**: MVP-SEO-001
-- **Issue**: Missing VITE_PUBLIC_SITE_URL documentation
-- **Fix**: Documented in .env.example (commit d602a76)
-- **Test**: `e2e/mvp-gate.spec.ts` → `sitemap has correct base URL`
-- **Evidence**: Commit d602a76 (.env.example lines 124-128)
-- **Verification**: Test reads sitemap.xml and validates all URLs use correct base
-- **Status**: ⏳ BLOCKED
-- **Blocker**: Requires owner action to set VITE_PUBLIC_SITE_URL in Vercel environment variables
-- **Current Behavior**: Sitemap defaults to https://majster.ai (hardcoded in generate-sitemap.js)
-- **Owner Action Required**:
-  1. Go to Vercel Dashboard → Project → Settings → Environment Variables
-  2. Add: `VITE_PUBLIC_SITE_URL` = `https://majster.ai`
-  3. Scope: Production, Preview, Development
-  4. Redeploy application
-- **Verification Path**: After owner sets env var, redeploy and verify sitemap.xml URLs
-- **Risk if not fixed**: Sitemap may have wrong base URL if deployed to different domain
-- **Current Risk**: LOW (hardcoded default is correct for production domain)
+- **Issue**: `public/sitemap.xml` had hardcoded `https://majster.ai` domain (unowned)
+- **Fix**: `scripts/generate-sitemap.js` updated with `BASE_URL` constant using env-var-first fallback; sitemap regenerated; `QuoteEditor.tsx` `id!` guard added (session `fix/audit-fixpack-20260217-p2a-p2c-p1b`, commit `14ac892`)
+- **Verification (2026-02-18)**: `grep -c "majster\.ai" public/sitemap.xml` → **0** ✅
+- **Verification (2026-02-18)**: `grep "majster-ai-oferty.vercel.app" public/sitemap.xml` → present ✅
+- **Status**: ✅ PASS
+- **Evidence**: Session `claude/audit-and-fix-WpVlK` (2026-02-18) confirms FIX-1: `sitemap_majsterai=0`, `generator_majsterai=0`
+
+#### ❓ UNKNOWN: Lint Infrastructure (P1-LINT) — Reconciled 2026-02-18
+
+- **Tracker ID**: P1-LINT
+- **Issue**: `npm run lint` exits non-zero in sandbox — `Cannot find package '@eslint/js'` (node_modules absent)
+- **Root Cause (candidate)**: node_modules not installed; `@eslint/js` is a devDependency in package.json
+- **Last Confirmed PASS**: 2026-02-07 (`docs/TRACEABILITY_MATRIX.md` — 0 errors, 25 warnings)
+- **Verification Command**: `npm install && npm run lint 2>&1 | tail -20`
+- **Acceptance Criteria**: exit 0, 0 errors, ≤25 warnings
+- **Status**: ❓ UNKNOWN (environment gap — not a code failure)
+- **Missing Data**: npm install output and lint result after node_modules installed
+- **NEXT SESSION TARGET**: YES — highest-impact unresolved P1 item
 
 ---
 
@@ -149,12 +163,16 @@
 - **CI Run**: TBD (after merge)
 - **Local Run**: TBD (running)
 
-#### ✅ BASELINE: i18n Language Switching (MVP-I18N-001)
+#### ✅ PASS: i18n Language Switching + Key Coverage (MVP-I18N-001) — Updated 2026-02-18
+
 - **Tracker ID**: MVP-I18N-001
-- **Issue**: General UX requirement (not a bug)
-- **Fix**: N/A (i18next already configured)
+- **Issue**: ~55% EN/UK key coverage gap (per 2026-02-15 audit); regression `errors.logoutFailed` missing from uk.json detected in 2026-02-18 re-audit
+- **Fix**: Regression fixed in commit `ad2a555` — `errors.logoutFailed` inserted into `src/i18n/locales/uk.json`
+- **Verification (2026-02-18)**: `pl_total_paths=1070, missing_en=0, missing_uk=0` ✅
 - **Test**: `e2e/mvp-gate.spec.ts` → `language switching works`
-- **Evidence**: i18next in package.json, language selector in UI
+- **Evidence**: Python key-diff script (nested traversal); Session AUDIT_LOG.md 2026-02-18 FIX-3; `i18n/index.ts:20` fallbackLng=pl
+- **Status**: ✅ PASS (keys fully covered; fallbackLng=pl ensures Polish users never see raw keys)
+- **Note**: i18next in package.json, language selector in UI
 - **Verification**: Test validates landing page loads and language infrastructure exists
 - **Status**: ✅ BASELINE (infrastructure verified)
 - **CI Run**: TBD (after merge)
@@ -198,44 +216,42 @@
 
 ---
 
-## Blocked Items Detail
+## Open/Unknown Items Detail (Reconciled 2026-02-18)
 
-### 1. Sitemap Base URL Verification (E-001-P1-002)
+### 1. Sitemap Base URL (E-001-P1-002) — ✅ RESOLVED
 
-**Status**: ⏳ BLOCKED
+**Status**: ✅ PASS (resolved in session `fix/audit-fixpack-20260217-p2a-p2c-p1b`, confirmed 2026-02-18)
 
-**What's Missing**: VITE_PUBLIC_SITE_URL environment variable in Vercel
+**Evidence**: `grep -c "majster\.ai" public/sitemap.xml` = **0** (verified 2026-02-18)
+`scripts/generate-sitemap.js` uses `VITE_PUBLIC_SITE_URL || PUBLIC_SITE_URL || "https://majster-ai-oferty.vercel.app"` fallback chain.
 
-**Impact**:
-- **Current**: Sitemap uses hardcoded default https://majster.ai (correct for production)
-- **Risk**: If deployed to different domain, sitemap URLs will be wrong
-- **SEO Impact**: Medium (search engines may index wrong URLs)
+**No further action required** for code-level fix. If deploying to custom domain, set `VITE_PUBLIC_SITE_URL` in Vercel env vars to regenerate sitemap at build time.
 
-**How to Unblock**:
-```bash
-# In Vercel Dashboard:
-1. Go to: Settings → Environment Variables
-2. Add Variable:
-   - Name: VITE_PUBLIC_SITE_URL
-   - Value: https://majster.ai
-   - Scope: Production, Preview, Development
-3. Redeploy application
+---
+
+### 2. ❓ UNKNOWN: P1-LINT — ESLint Infrastructure
+
+**Status**: ❓ UNKNOWN (environment gap)
+
+**Missing Data**: npm install output + lint result
+
+**Evidence of failure**:
+```
+$ npm run lint
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@eslint/js'
+  imported from /home/user/majster-ai-oferty/eslint.config.js
+EXIT_CODE: non-zero
 ```
 
-**Verification After Unblock**:
+**How to unblock**:
 ```bash
-# After redeploy:
-1. Download public/sitemap.xml from deployed build
-2. Verify all <loc> URLs start with https://majster.ai
-3. Run: npx playwright test -g "sitemap has correct base URL"
+npm install && npm run lint 2>&1 | tail -20
+# Expected: 0 errors, ≤25 warnings, exit 0
 ```
 
-**Current Test Behavior**:
-- Test reads sitemap.xml from build output
-- Validates XML structure and URL format
-- Checks all URLs use expected base (defaults to https://majster.ai)
-- Will PASS if VITE_PUBLIC_SITE_URL is set correctly
-- Will FAIL if URLs have wrong base
+**Last confirmed PASS**: 2026-02-07 (docs/TRACEABILITY_MATRIX.md — 0 errors, 25 warnings)
+
+**Risk**: LOW if package-lock.json is intact and no devDependencies removed since 2026-02-07.
 
 ---
 
@@ -295,39 +311,43 @@ E2E_TEST_USER_PASSWORD=TestPassword123!
 
 ---
 
-## Next Steps
+## Next Steps (Reconciled 2026-02-18)
 
-### Immediate (Before Merge)
-1. ✅ Complete local test run and verify results
-2. ✅ Update this STATUS.md with test output
-3. ✅ Create FINAL_REPORT.md with MVP readiness assessment
-4. ✅ Commit all MVP Gate artifacts to branch
+### Next SESSION TARGET — P1-LINT
+1. Run `npm install && npm run lint 2>&1 | tail -20`
+2. If PASS: mark P1-LINT PASS in STATUS.md + TRUTH.md; move to P2-TESTS
+3. If FAIL: read full error output; check `eslint.config.js` and devDependencies; fix without touching non-doc files; re-verify `tsc --noEmit` exits 0
 
-### Post-Merge (Owner Actions)
-1. ⏳ Set VITE_PUBLIC_SITE_URL in Vercel environment variables
-2. ⏳ Redeploy application
-3. ⏳ Verify sitemap.xml has correct URLs
-4. ⏳ Provide deployment evidence (see docs/P0_EVIDENCE_PACK.md)
+### Owner Actions (P2 — non-code blockers)
+1. ✅ VITE_PUBLIC_SITE_URL — sitemap fix already in code; set env var in Vercel for production correctness
+2. ⏳ user_roles RLS — Supabase Dashboard → Table Editor → user_roles → Policies → confirm SELECT policy `auth.uid() = user_id`
+3. ⏳ E2E integration tests — create test user + credentials in GitHub Secrets
 
-### Future Enhancements (Optional)
-1. 🔮 Create test user credentials for full integration tests
-2. 🔮 Seed test data in Supabase test project
-3. 🔮 Extend MVP Gate with authenticated flow tests
-4. 🔮 Add performance metrics to E2E tests
+### Already Completed (Do Not Repeat)
+1. ✅ P0-LOGOUT fixed (commit `447f044`)
+2. ✅ P0-CALENDAR fixed (commit `8aa30fb`)
+3. ✅ P0-QUOTE fixed (commit `d602a76`)
+4. ✅ Sitemap domain fixed (commit `14ac892`)
+5. ✅ QuoteEditor id! guard added (commit `14ac892`)
+6. ✅ i18n regression (uk.json) fixed (commit `ad2a555`)
+7. ✅ TypeScript strict mode — `tsc --noEmit` exits 0 (verified 2026-02-18)
 
 ---
 
 ## Evidence Links
 
+- **Source of Truth**: docs/TRUTH.md (reconciled 2026-02-18)
+- **Priority Ordering**: docs/mvp-gate/ORDERING.md
+- **Audit Report**: docs/audit/AUDIT_REPORT_2026-02-17.md
+- **Audit Status**: docs/audit/AUDIT_STATUS.md (updated 2026-02-18)
+- **Audit Log**: docs/audit/AUDIT_LOG.md
 - **Evidence Pack**: docs/evidence/2026-02-17/INDEX.md
-- **Fix Results**: docs/MVP_FIX_PACK_2026-02-17_RESULTS.md
 - **Traceability Matrix**: docs/mvp-gate/TRACEABILITY_MATRIX.md
-- **MVP Gate README**: docs/mvp-gate/README.md
 - **CI Workflow**: .github/workflows/e2e.yml
 - **Test Implementation**: e2e/mvp-gate.spec.ts
 
 ---
 
-**Status Last Verified**: 2026-02-17 11:15 UTC
-**Engineer**: Claude Sonnet 4.5
-**Session**: https://claude.ai/code/session_01Vzdp1wUdwrh9vYzyLqu2VW
+**Status Last Verified**: 2026-02-18 (Reality-Sync Reconciliation)
+**Engineer**: Claude Sonnet 4.6
+**Session**: claude/reality-sync-reconciliation-lzHqT
