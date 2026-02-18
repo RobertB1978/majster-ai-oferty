@@ -885,7 +885,8 @@
     "speechRecognitionNotSupported": "Розпізнавання мови не підтримується в цьому браузері. Використовуйте Chrome.",
     "invalidCredentials": "Невірна електронна пошта або пароль",
     "invalidEmailFormat": "Невірний формат email",
-    "invalidFileType": "Невірний тип файлу"
+    "invalidFileType": "Невірний тип файлу",
+    "logoutFailed": "Не вдалося вийти. Спробуйте ще раз."
   },
   "dialogs": {
     "deleteTemplate": "Видалити шаблон?",
