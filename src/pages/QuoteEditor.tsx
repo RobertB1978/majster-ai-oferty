@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useProject } from '@/hooks/useProjects';
 import { useQuote, useSaveQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useCreateItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
@@ -21,8 +21,8 @@ const categories = ['Materiał', 'Robocizna'] as const;
 
 export default function QuoteEditor() {
   const { id } = useParams<{ id: string }>();
-  const { data: project, isLoading: projectLoading } = useProject(id!);
-  const { data: existingQuote, isLoading: quoteLoading } = useQuote(id!);
+  const { data: project, isLoading: projectLoading } = useProject(id || '');
+  const { data: existingQuote, isLoading: quoteLoading } = useQuote(id || '');
   const saveQuote = useSaveQuote();
   const createTemplate = useCreateItemTemplate();
   const aiSuggestions = useAiSuggestions();
@@ -42,6 +42,8 @@ export default function QuoteEditor() {
       setIsInitialized(true);
     }
   }, [existingQuote, quoteLoading, isInitialized]);
+
+  if (!id) return <Navigate to="/app/jobs" replace />;
 
   if (projectLoading || quoteLoading) {
     return (
@@ -218,7 +220,7 @@ export default function QuoteEditor() {
 
     try {
       await saveQuote.mutateAsync({
-        projectId: id!,
+        projectId: id,
         positions,
         marginPercent,
       });
@@ -242,8 +244,8 @@ export default function QuoteEditor() {
       </div>
 
       {/* Versions Panel */}
-      <QuoteVersionsPanel 
-        projectId={id!} 
+      <QuoteVersionsPanel
+        projectId={id}
         currentSnapshot={currentSnapshot}
         onLoadVersion={handleLoadVersion}
       />

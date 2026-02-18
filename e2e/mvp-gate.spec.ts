@@ -451,7 +451,7 @@ test.describe('MVP Gate - Public Pages', () => {
     }
 
     // Check if VITE_PUBLIC_SITE_URL is set (for full verification)
-    const expectedBaseUrl = process.env.VITE_PUBLIC_SITE_URL || 'https://majster.ai';
+    const expectedBaseUrl = process.env.VITE_PUBLIC_SITE_URL || 'https://majster-ai-oferty.vercel.app';
 
     console.log('Expected base URL:', expectedBaseUrl);
     console.log('Sample URLs from sitemap:', urls.slice(0, 3));
@@ -489,7 +489,7 @@ test.describe('MVP Gate - Public Pages', () => {
     }
 
     // Note: Full verification requires VITE_PUBLIC_SITE_URL set in Vercel
-    // If not set, sitemap defaults to https://majster.ai (from generate-sitemap.js)
+    // If not set, sitemap defaults to https://majster-ai-oferty.vercel.app (from generate-sitemap.js)
   });
 
 });

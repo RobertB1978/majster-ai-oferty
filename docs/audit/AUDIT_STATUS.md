@@ -1,6 +1,6 @@
 # Audit Status Tracker — Majster.AI
 
-**Last Updated:** 2026-02-17
+**Last Updated:** 2026-02-17 (fix session: `fix/audit-fixpack-20260217-p2a-p2c-p1b`)
 **Audit Session:** `claude/audit-snapshot-majster-eG4Om`
 **Source Report:** `docs/audit/AUDIT_REPORT_2026-02-17.md`
 
@@ -17,15 +17,15 @@
 | Calendar — Fix at file:line confirmed | B2 | ✅ PASS | None |
 | Calendar — No `as any` workarounds | B3 | ✅ PASS | None |
 | Calendar — TypeScript clean compile | B4 | ✅ PASS | None |
-| i18n correctness | C | ⚠️ PARTIAL | P2 |
+| i18n correctness | C | ✅ PASS | None |
 | Admin separation (code) | D-code | ✅ PASS | None |
 | Admin separation (RLS) | D-rls | ❓ UNKNOWN | P2 |
 | Legal routing | E | ✅ PASS | None |
-| SEO sitemap domain | F-sitemap | ❌ FAIL | P2 |
+| SEO sitemap domain | F-sitemap | ✅ RESOLVED | None |
 | SEO robots.txt | F-robots | ✅ PASS | None |
 | Quote edit — route + auth | G1 | ✅ PASS | None |
 | Quote edit — error handling | G2 | ✅ PASS | None |
-| Quote edit — no unsafe assertions | G3 | ⚠️ PARTIAL | Low |
+| Quote edit — no unsafe assertions | G3 | ✅ RESOLVED | None |
 | AI — Error caught | H1 | ✅ PASS | None |
 | AI — No unhandled rejection | H2 | ✅ PASS | None |
 | AI — Fallback state | H3 | ✅ PASS | None |
@@ -56,7 +56,7 @@
 - **Acceptance Criteria:** `diff <(jq 'keys[]' src/i18n/locales/pl.json | sort) <(jq 'keys[]' src/i18n/locales/en.json | sort)` outputs 0 lines.
 - **Verification:** `diff <(jq 'keys[]' src/i18n/locales/pl.json | sort) <(jq 'keys[]' src/i18n/locales/en.json | sort)`
 - **File:** `src/i18n/locales/pl.json`, `src/i18n/locales/en.json`
-- **Status:** OPEN
+- **Status:** ✅ RESOLVED (2026-02-17) — missing_en=0, missing_ua=0 verified via hasOwnProperty check; pl_total=46 keys all present in en.json and uk.json
 
 ---
 
@@ -68,7 +68,7 @@
 - **Verification:** `grep -c "majster\.ai" public/sitemap.xml` (must be 0)
 - **File:** `public/sitemap.xml:4`, `scripts/generate-sitemap.js:31-32`
 - **Owner Action Required:** Set `VITE_PUBLIC_SITE_URL=https://majster-ai-oferty.vercel.app` in Vercel env vars and redeploy.
-- **Status:** OPEN
+- **Status:** ✅ RESOLVED (2026-02-17) — BASE_URL constant introduced in generate-sitemap.js; sitemap regenerated; V1=0, V2=0
 
 #### [P2-B] Confirm user_roles RLS Policy
 - **Description:** Admin guard reads from `user_roles` table. RLS policy not verifiable from repo. If missing, authenticated users could read all role rows.
@@ -88,6 +88,9 @@
 
 | Item | Session | Resolution |
 |------|---------|------------|
+| P2-A / F-sitemap (sitemap domain) | 2026-02-17 | RESOLVED — `scripts/generate-sitemap.js` + `public/sitemap.xml`; V1=0, V2=0 |
+| P2-C / G3 (id! non-null assertion) | 2026-02-17 | RESOLVED — `src/pages/QuoteEditor.tsx`; Navigate guard added; V3=0 |
+| P1-B / C (i18n key coverage) | 2026-02-17 | RESOLVED — already complete; pl_total=46, missing_en=0, missing_ua=0 |
 | P0-CALENDAR (error boundary crash) | 2026-02-17 | FIXED — commit `8aa30fb` (`useCalendarEvents.ts`) |
 | P0-LOGOUT (race condition + cache) | 2026-02-17 | FIXED — commit `447f044` (`TopBar.tsx`, `AuthContext.tsx`) |
 | P0-QUOTE (ReferenceError projectId) | 2026-02-17 | FIXED — commit `d602a76` (`useQuoteVersions.ts`) |
