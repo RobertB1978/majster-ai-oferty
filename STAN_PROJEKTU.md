@@ -6,6 +6,7 @@ Log zmian sesji Claude Code.
 
 | Data | ID | Wynik | Zmienione pliki |
 |------|----|-------|-----------------|
+| 2026-02-19 | RELEASE-MERGE-CHECKLIST | DONE — P1-LINT verified PASS (0 errors, 16 warnings, exit 0) after npm install on HEAD `5099064`; tsc --noEmit exits 0; all fix PRs (#215–#222) confirmed merged to origin/main; merge checklist + owner runbook produced; STATUS.md updated; DEPLOY_RUNBOOK.md absent (not created per scope fence) | STAN_PROJEKTU.md, docs/mvp-gate/STATUS.md |
 | 2026-02-18 | P1-AI-LLM | FIXED — `body: unknown` → `body: Record<string, unknown>` in callOpenAICompatible, callAnthropic, callGemini; prevents Deno type-check failure at deploy time; commit de23ff9 | supabase/functions/_shared/ai-provider.ts, STAN_PROJEKTU.md, docs/mvp-gate/STATUS.md |
 | 2026-02-18 | REALITY-SYNC | DONE — Reconciliation 2026-02-17 vs 2026-02-18: 3×P0 PASS · P1-LINT UNKNOWN · P1-I18N PASS · P1-SITEMAP PASS · P1-AI PASS · P1-COOKIE PASS · P2-FINANCE PASS · P2-RLS UNKNOWN · Next TARGET: P1-LINT | docs/TRUTH.md, STAN_PROJEKTU.md, docs/mvp-gate/ORDERING.md, docs/mvp-gate/STATUS.md |
 | 2026-02-18 | I18N-REGRESSION | FIXED — errors.logoutFailed missing from uk.json (regression); missing_en=0 missing_uk=0 confirmed | src/i18n/locales/uk.json |
@@ -17,14 +18,12 @@ Log zmian sesji Claude Code.
 
 ## NEXT SESSION TARGET
 
-**P1-LINT** — ESLint Infrastructure Verification
+**PRODUCTION DEPLOY** — Vercel + Supabase deployment (all code gates PASS)
 
-- **Problem**: `npm run lint` fails with `Cannot find package '@eslint/js'` — node_modules absent in sandbox. Last confirmed PASS: 2026-02-07 (0 errors, 25 warnings).
-- **Acceptance Criteria**: `npm run lint` exits 0 with 0 errors after `npm install` on clean checkout of HEAD.
-- **Verification command**: `npm install && npm run lint 2>&1 | tail -20`
-- **Files at risk**: `eslint.config.js:1` (imports `@eslint/js`), `package.json` (devDependencies)
-- **Impact if FAIL**: Lint regressions can reach CI undetected; could hide type/style issues introduced since 2026-02-07.
-- **Impact if PASS**: Close last P1 UNKNOWN; full MVP Gate green except P2-RLS (owner action) and P2-TESTS (environment).
+- **P1-LINT**: ✅ PASS — verified 2026-02-19 (0 errors, 16 warnings, exit 0 on HEAD `5099064`)
+- **TYPE-CHECK**: ✅ PASS — `tsc --noEmit` exits 0 on HEAD `5099064`
+- **All fix PRs**: ✅ Merged to `origin/main` (#215–#222)
+- **Remaining owner actions**: See OWNER ACTIONS REQUIRED below
 
 ## OWNER ACTIONS REQUIRED
 
