@@ -8,11 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Wrench, Mail, Lock, Loader2, Fingerprint } from 'lucide-react';
+import { Wrench, Mail, Lock, Loader2, Fingerprint, Moon, Sun } from 'lucide-react';
 import { toast } from 'sonner';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthDiagnostics } from '@/components/auth/AuthDiagnostics';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function Login() {
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ export default function Login() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { isSupported, checkIfEnabled, authenticateWithBiometric, isAuthenticating } = useBiometricAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [biometricAvailable, setBiometricAvailable] = useState(false);
 
   useEffect(() => {
@@ -121,7 +123,16 @@ export default function Login() {
 
   return (
     <>
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="flex min-h-screen items-center justify-center bg-background p-4 relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleTheme}
+          aria-label="Przełącz motyw"
+          className="absolute top-4 right-4"
+        >
+          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </Button>
         <Card className="w-full max-w-md animate-fade-in relative shadow-md border">
         <CardHeader className="text-center pb-2">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-sm">

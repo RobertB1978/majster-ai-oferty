@@ -20,7 +20,10 @@ import {
   TrendingUp,
   FolderKanban,
   Star,
+  Moon,
+  Sun,
 } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 
 const features = [
   {
@@ -127,6 +130,8 @@ function scrollToFeatures() {
 }
 
 export default function Landing() {
+  const { isDark, toggleTheme } = useTheme();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -150,6 +155,9 @@ export default function Landing() {
             </a>
           </nav>
           <div className="flex items-center gap-2 sm:gap-3">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Przełącz motyw">
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
             <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
               <Link to="/login">Zaloguj się</Link>
             </Button>
