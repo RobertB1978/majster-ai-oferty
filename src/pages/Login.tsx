@@ -123,16 +123,21 @@ export default function Login() {
 
   return (
     <>
-      <div className="flex min-h-screen items-center justify-center bg-background p-4 relative">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleTheme}
-          aria-label="Przełącz motyw"
-          className="absolute top-4 right-4"
-        >
-          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        </Button>
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="w-full border-b border-border bg-card">
+          <div className="container flex h-14 items-center justify-between px-4">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                <Wrench className="h-4 w-4 text-primary-foreground" />
+              </div>
+              <span className="font-bold text-sm">Majster.AI</span>
+            </div>
+            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Przełącz motyw">
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+          </div>
+        </header>
+        <div className="flex flex-1 items-center justify-center p-4">
         <Card className="w-full max-w-md animate-fade-in relative shadow-md border">
         <CardHeader className="text-center pb-2">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-sm">
@@ -233,7 +238,8 @@ export default function Login() {
           </p>
         </CardContent>
       </Card>
-    </div>
+        </div>
+      </div>
 
     {/* Dev-only diagnostics panel */}
     <AuthDiagnostics />
