@@ -629,12 +629,12 @@ export default function Calendar() {
               </div>
               <div>
                 <Label>{t('calendar.linkedProject')}</Label>
-                <Select value={eventData.project_id} onValueChange={(v) => setEventData({ ...eventData, project_id: v })}>
+                <Select value={eventData.project_id || 'none'} onValueChange={(v) => setEventData({ ...eventData, project_id: v === 'none' ? '' : v })}>
                   <SelectTrigger>
                     <SelectValue placeholder={t('common.none')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">({t('common.none')})</SelectItem>
+                    <SelectItem value="none">({t('common.none')})</SelectItem>
                     {projects.map((p) => (
                       <SelectItem key={p.id} value={p.id}>{p.project_name}</SelectItem>
                     ))}

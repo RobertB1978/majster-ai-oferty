@@ -6,6 +6,7 @@ Log zmian sesji Claude Code.
 
 | Data | ID | Wynik | Zmienione pliki |
 |------|----|-------|-----------------|
+| 2026-02-19 | P0-CALENDAR-SELECT | FIXED — `<SelectItem value="">` → `<SelectItem value="none">` in Calendar dialog; Radix UI Select v2 throws invariant error on empty-string item values crashing the Add Event dialog; sentinel `"none"` mapped at onValueChange boundary; tsc --noEmit exits 0 | src/pages/Calendar.tsx |
 | 2026-02-19 | RELEASE-MERGE-CHECKLIST | DONE — P1-LINT verified PASS (0 errors, 16 warnings, exit 0) after npm install on HEAD `5099064`; tsc --noEmit exits 0; all fix PRs (#215–#222) confirmed merged to origin/main; merge checklist + owner runbook produced; STATUS.md updated; DEPLOY_RUNBOOK.md absent (not created per scope fence) | STAN_PROJEKTU.md, docs/mvp-gate/STATUS.md |
 | 2026-02-18 | P1-AI-LLM | FIXED — `body: unknown` → `body: Record<string, unknown>` in callOpenAICompatible, callAnthropic, callGemini; prevents Deno type-check failure at deploy time; commit de23ff9 | supabase/functions/_shared/ai-provider.ts, STAN_PROJEKTU.md, docs/mvp-gate/STATUS.md |
 | 2026-02-18 | REALITY-SYNC | DONE — Reconciliation 2026-02-17 vs 2026-02-18: 3×P0 PASS · P1-LINT UNKNOWN · P1-I18N PASS · P1-SITEMAP PASS · P1-AI PASS · P1-COOKIE PASS · P2-FINANCE PASS · P2-RLS UNKNOWN · Next TARGET: P1-LINT | docs/TRUTH.md, STAN_PROJEKTU.md, docs/mvp-gate/ORDERING.md, docs/mvp-gate/STATUS.md |
