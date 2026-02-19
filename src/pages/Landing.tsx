@@ -366,13 +366,16 @@ export default function Landing() {
               <p className="text-sm text-muted-foreground">
                 Profesjonalne wyceny i zarządzanie zleceniami dla fachowców. Szybko, łatwo, bezpiecznie.
               </p>
+              <a href="mailto:kontakt@majster.ai" className="text-sm text-muted-foreground hover:text-foreground transition-colors mt-2 inline-block">
+                kontakt@majster.ai
+              </a>
             </div>
             <div>
               <h4 className="font-semibold mb-3 text-sm">Produkt</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><button onClick={scrollToFeatures} className="hover:text-foreground transition-colors">Funkcje</button></li>
-                <li><Link to="/register" className="hover:text-foreground transition-colors">Cennik</Link></li>
-                <li><Link to="/register" className="hover:text-foreground transition-colors">Rejestracja</Link></li>
+                <li><Link to="/app/dashboard" className="hover:text-foreground transition-colors">Panel główny</Link></li>
+                <li><Link to="/app/templates" className="hover:text-foreground transition-colors">Szablony</Link></li>
+                <li><Link to="/app/jobs" className="hover:text-foreground transition-colors">Zlecenia</Link></li>
               </ul>
             </div>
             <div>
@@ -380,15 +383,17 @@ export default function Landing() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link to="/legal/privacy" className="hover:text-foreground transition-colors">Polityka Prywatności</Link></li>
                 <li><Link to="/legal/terms" className="hover:text-foreground transition-colors">Regulamin</Link></li>
-                <li><Link to="/legal/cookies" className="hover:text-foreground transition-colors">Cookies</Link></li>
+                <li><Link to="/legal/cookies" className="hover:text-foreground transition-colors">Polityka Cookies</Link></li>
                 <li><Link to="/legal/dpa" className="hover:text-foreground transition-colors">Umowa DPA</Link></li>
+                <li><Link to="/legal/rodo" className="hover:text-foreground transition-colors">Centrum RODO</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-3 text-sm">Kontakt</h4>
+              <h4 className="font-semibold mb-3 text-sm">Wsparcie</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>kontakt@majster.ai</li>
-                <li>Polska</li>
+                <li><a href="mailto:support@majster.ai" className="hover:text-foreground transition-colors">Pomoc techniczna</a></li>
+                <li><a href="mailto:sales@majster.ai" className="hover:text-foreground transition-colors">Sprzedaż</a></li>
+                <li><a href="mailto:kontakt@majster.ai" className="hover:text-foreground transition-colors">Partnerstwo</a></li>
               </ul>
             </div>
           </div>

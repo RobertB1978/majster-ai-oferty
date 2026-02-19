@@ -111,27 +111,27 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Wsparcie</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a 
-                  href="mailto:support@majster.ai" 
+                <a
+                  href="mailto:support@majster.ai"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Pomoc techniczna
                 </a>
               </li>
               <li>
-                <a 
-                  href="mailto:privacy@majster.ai" 
+                <a
+                  href="mailto:sales@majster.ai"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Ochrona danych (RODO)
+                  Sprzedaż
                 </a>
               </li>
               <li>
-                <a 
-                  href="mailto:sales@majster.ai" 
+                <a
+                  href="mailto:kontakt@majster.ai"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Sprzedaż i partnerstwa
+                  Partnerstwo
                 </a>
               </li>
             </ul>
