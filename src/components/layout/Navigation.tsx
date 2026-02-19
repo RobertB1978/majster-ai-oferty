@@ -41,7 +41,8 @@ export function Navigation() {
   const { config } = useConfig();
 
   // Items that belong in admin panel only - never show in user navigation
-  const ADMIN_ONLY_IDS = new Set(['plan', 'marketplace', 'analytics', 'team']);
+  // 'plan' is intentionally excluded — users should access their subscription page
+  const ADMIN_ONLY_IDS = new Set(['marketplace', 'analytics', 'team']);
 
   const navItems = useMemo(() => {
     const configItems = config.navigation.mainItems
