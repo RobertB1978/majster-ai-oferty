@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +34,6 @@ function formatLimit(value: number): string {
 }
 
 export default function Plan() {
-  const { t } = useTranslation();
   const { config } = useConfig();
   const tiers = config.plans.tiers;
 

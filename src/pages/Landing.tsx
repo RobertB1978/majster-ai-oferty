@@ -22,7 +22,6 @@ import {
   Star,
   Moon,
   Sun,
-  Globe,
 } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
