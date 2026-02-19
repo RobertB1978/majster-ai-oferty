@@ -163,7 +163,7 @@ async function callOpenAICompatible(
   const model = config.model || DEFAULT_MODELS[config.provider];
   const endpoint = config.baseUrl || API_ENDPOINTS[config.provider];
 
-  const body: unknown = {
+  const body: Record<string, unknown> = {
     model,
     messages: options.messages,
     max_tokens: options.maxTokens || 2048,
@@ -225,7 +225,7 @@ async function callAnthropic(
   const model = config.model || DEFAULT_MODELS.anthropic;
   const { system, messages } = convertToAnthropicFormat(options.messages);
 
-  const body: unknown = {
+  const body: Record<string, unknown> = {
     model,
     max_tokens: options.maxTokens || 2048,
     system,
@@ -308,18 +308,21 @@ async function callGemini(
 
   const endpoint = `${API_ENDPOINTS.gemini}/${model}:generateContent?key=${config.apiKey}`;
 
-  const body: unknown = {
+  const generationConfig: Record<string, unknown> = {
+    maxOutputTokens: options.maxTokens || 2048,
+  };
+
+  if (options.temperature !== undefined) {
+    generationConfig.temperature = options.temperature;
+  }
+
+  const body: Record<string, unknown> = {
     contents,
-    generationConfig: {
-      maxOutputTokens: options.maxTokens || 2048,
-    },
+    generationConfig,
   };
 
   if (systemInstruction) {
     body.systemInstruction = systemInstruction;
-  }
-  if (options.temperature !== undefined) {
-    body.generationConfig.temperature = options.temperature;
   }
   if (options.tools) {
     body.tools = [{
