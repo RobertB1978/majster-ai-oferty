@@ -426,6 +426,17 @@ export function handleAIError(error: Error): Response {
     );
   }
 
+  // No AI provider configured — guide the operator to set an API key
+  if (error.message.includes('No AI API key configured') || error.message.includes('OPENAI_API_KEY') || error.message.includes('ANTHROPIC_API_KEY') || error.message.includes('GEMINI_API_KEY')) {
+    return new Response(
+      JSON.stringify({
+        error: 'AI_NOT_CONFIGURED',
+        message: 'Asystent AI nie jest jeszcze skonfigurowany. Administrator musi ustawić klucz API (OPENAI_API_KEY, ANTHROPIC_API_KEY lub GEMINI_API_KEY) w ustawieniach Supabase Edge Functions.',
+      }),
+      { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   console.error('AI error:', error);
   return new Response(
     JSON.stringify({ error: `Błąd AI: ${error.message}` }),

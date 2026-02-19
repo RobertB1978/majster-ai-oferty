@@ -24,6 +24,13 @@ import {
   Sun,
 } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
+
+const LANDING_LANGUAGES = [
+  { code: 'pl', name: 'PL', flag: '🇵🇱' },
+  { code: 'en', name: 'EN', flag: '🇬🇧' },
+  { code: 'uk', name: 'UK', flag: '🇺🇦' },
+];
 
 const features = [
   {
@@ -131,6 +138,7 @@ function scrollToFeatures() {
 
 export default function Landing() {
   const { isDark, toggleTheme } = useTheme();
+  const { i18n } = useTranslation();
 
   return (
     <div className="min-h-screen bg-background">
@@ -155,6 +163,25 @@ export default function Landing() {
             </a>
           </nav>
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Language switcher */}
+            <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/40 p-0.5">
+              {LANDING_LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => i18n.changeLanguage(lang.code)}
+                  className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors ${
+                    i18n.language === lang.code
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                  aria-label={`Zmień język na ${lang.name}`}
+                >
+                  <span>{lang.flag}</span>
+                  <span className="hidden sm:inline">{lang.name}</span>
+                </button>
+              ))}
+            </div>
+
             <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Przełącz motyw">
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
@@ -239,12 +266,20 @@ export default function Landing() {
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => (
-              <Card key={feature.title} className="border hover:border-primary/30 hover:shadow-md transition-all duration-200 group">
+              <Card
+                key={feature.title}
+                className="relative border hover:border-primary/40 hover:shadow-lg transition-all duration-300 group overflow-hidden hover:-translate-y-1"
+              >
+                {/* Subtle top accent that slides in on hover */}
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+
                 <CardContent className="pt-6 pb-6">
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 group-hover:bg-primary group-hover:border-primary transition-colors duration-200">
                     <feature.icon className="h-6 w-6 text-primary group-hover:text-primary-foreground transition-colors duration-200" />
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold">{feature.title}</h3>
+                  <h3 className="mt-4 text-lg font-semibold group-hover:text-primary transition-colors duration-200">
+                    {feature.title}
+                  </h3>
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                     {feature.description}
                   </p>
@@ -256,6 +291,17 @@ export default function Landing() {
                       </li>
                     ))}
                   </ul>
+
+                  {/* "Try it" CTA — visible only on hover */}
+                  <div className="mt-4 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200">
+                    <Link
+                      to="/register"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                    >
+                      Wypróbuj bezpłatnie
+                      <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  </div>
                 </CardContent>
               </Card>
             ))}

@@ -79,13 +79,18 @@ export default function CompanyProfile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast.error('Popraw błędy w formularzu');
       return;
     }
 
-    await updateProfile.mutateAsync(formData);
+    try {
+      await updateProfile.mutateAsync(formData);
+    } catch (err) {
+      console.error('Profile update failed:', err);
+      toast.error('Nie udało się zapisać profilu. Spróbuj ponownie.');
+    }
   };
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

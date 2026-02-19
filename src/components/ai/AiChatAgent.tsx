@@ -126,6 +126,11 @@ export function AiChatAgent() {
 
       if (error) throw error;
 
+      // Edge function returned an error body (e.g. AI not configured)
+      if (data?.error === 'AI_NOT_CONFIGURED') {
+        throw new Error('AI_NOT_CONFIGURED');
+      }
+
       const assistantContent = data?.response || 'Przepraszam, nie udało się przetworzyć odpowiedzi.';
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
@@ -142,12 +147,24 @@ export function AiChatAgent() {
       }
     } catch (error: unknown) {
       console.error('AI Chat error:', error);
-      toast.error('Błąd połączenia z AI');
-      
+
+      const isNotConfigured =
+        error instanceof Error && error.message === 'AI_NOT_CONFIGURED';
+
+      if (isNotConfigured) {
+        toast.error('Asystent AI nie jest skonfigurowany');
+      } else {
+        toast.error('Błąd połączenia z AI');
+      }
+
+      const errorContent = isNotConfigured
+        ? 'Asystent AI nie jest jeszcze dostępny. Administrator musi skonfigurować klucz API (OpenAI, Anthropic lub Gemini) w ustawieniach serwera. Skontaktuj się z pomocą techniczną.'
+        : 'Przepraszam, wystąpił błąd. Spróbuj ponownie za chwilę.';
+
       const errorMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: 'Przepraszam, wystąpił błąd. Spróbuj ponownie za chwilę.',
+        content: errorContent,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);

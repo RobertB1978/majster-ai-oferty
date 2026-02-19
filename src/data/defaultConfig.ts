@@ -25,7 +25,7 @@ export const DEFAULT_CONFIG: AppConfig = {
       { id: 'team', label: 'Zespół', path: '/app/team', icon: 'UserPlus', visible: false, comingSoon: false, requiredPlan: 'pro', order: 6 },
       { id: 'marketplace', label: 'Marketplace', path: '/app/marketplace', icon: 'Store', visible: false, comingSoon: false, requiredPlan: 'business', order: 7 },
       { id: 'analytics', label: 'Analityka', path: '/app/analytics', icon: 'BarChart3', visible: false, comingSoon: false, requiredPlan: 'business', order: 8 },
-      { id: 'plan', label: 'Mój plan', path: '/app/plan', icon: 'CreditCard', visible: false, comingSoon: false, requiredPlan: 'free', order: 9 },
+      { id: 'plan', label: 'Mój plan', path: '/app/plan', icon: 'CreditCard', visible: true, comingSoon: false, requiredPlan: 'free', order: 9 },
     ],
   },
 

@@ -34,28 +34,31 @@ export default function Settings() {
         </div>
 
         <Tabs defaultValue="general">
-          <TabsList className="flex-wrap">
-            <TabsTrigger value="general" className="flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              {t('settings.language')}
-            </TabsTrigger>
-            <TabsTrigger value="documents" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Dokumenty
-            </TabsTrigger>
-            <TabsTrigger value="calendar" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              {t('nav.calendar')}
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2">
-              <Bell className="h-4 w-4" />
-              {t('settings.notifications')}
-            </TabsTrigger>
-            <TabsTrigger value="biometric" className="flex items-center gap-2">
-              <Fingerprint className="h-4 w-4" />
-              {t('settings.biometric', 'Biometria')}
-            </TabsTrigger>
-          </TabsList>
+          {/* Horizontally scrollable on mobile to prevent text overlap */}
+          <div className="overflow-x-auto -mx-1 px-1">
+            <TabsList className="inline-flex h-auto min-w-full gap-1 p-1">
+              <TabsTrigger value="general" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                <Globe className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <span>{t('settings.language')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="documents" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <span>Dokumenty</span>
+              </TabsTrigger>
+              <TabsTrigger value="calendar" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <span>{t('nav.calendar')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="notifications" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <span>{t('settings.notifications')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="biometric" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                <Fingerprint className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <span>{t('settings.biometric', 'Biometria')}</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="general" className="mt-4 space-y-4">
             <Card>

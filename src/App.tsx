@@ -52,6 +52,7 @@ const PdfGenerator = lazy(() => import("./pages/PdfGenerator"));
 const Calendar = lazy(() => import("./pages/Calendar"));
 const Finance = lazy(() => import("./pages/Finance"));
 const QuickEstimate = lazy(() => import("./pages/QuickEstimate"));
+const Plan = lazy(() => import("./pages/Plan"));
 
 // === ZONE 3: OWNER CONSOLE (lazy - admin only, separate chunk) ===
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
@@ -184,7 +185,7 @@ const App = () => (
                     <Route path="marketplace" element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="analytics" element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="templates" element={<ItemTemplates />} />
-                    <Route path="plan" element={<Navigate to="/app/dashboard" replace />} />
+                    <Route path="plan" element={<Plan />} />
                     <Route path="profile" element={<CompanyProfile />} />
                     <Route path="settings" element={<Settings />} />
 
