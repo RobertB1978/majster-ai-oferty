@@ -587,14 +587,14 @@ export default function Calendar() {
         </Tabs>
 
         <Dialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md flex flex-col max-h-[85vh]">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <CalendarIcon className="h-5 w-5 text-primary" />
                 {editingEvent ? t('common.edit') : t('calendar.addEvent')}
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-4 overflow-y-auto flex-1 min-h-0 pr-1">
               <div>
                 <Label>{t('calendar.eventTitle')} *</Label>
                 <Input
