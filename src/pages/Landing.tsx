@@ -1,6 +1,14 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import {
   HardHat,
   Calculator,
@@ -25,6 +33,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
+import type { LucideIcon } from 'lucide-react';
 
 const LANDING_LANGUAGES = [
   { code: 'pl', name: 'PL', flag: '🇵🇱' },
@@ -32,105 +41,20 @@ const LANDING_LANGUAGES = [
   { code: 'uk', name: 'UK', flag: '🇺🇦' },
 ];
 
-const features = [
-  {
-    icon: Calculator,
-    title: 'Szybkie wyceny',
-    description: 'Twórz profesjonalne wyceny w minuty, nie godziny. Dyktuj głosem, użyj AI lub utwórz ręcznie.',
-    benefits: ['Wycena głosem w 2 minuty', 'AI sugestie cenowe', 'Szablony pozycji'],
-  },
-  {
-    icon: FileText,
-    title: 'PDF i oferty',
-    description: 'Generuj dokumenty gotowe do wysyłki jednym kliknięciem. Klient zatwierdza online.',
-    benefits: ['Profesjonalny PDF z logo', 'Wysyłka mailem', 'Podpis elektroniczny'],
-  },
-  {
-    icon: Users,
-    title: 'Baza klientów',
-    description: 'Cała historia projektów klienta w jednym miejscu. Automatyczne przypomnienia o follow-up.',
-    benefits: ['Historia projektów', 'Dane kontaktowe', 'Notatki i tagi'],
-  },
-  {
-    icon: FolderKanban,
-    title: 'Zarządzanie projektami',
-    description: 'Śledź status każdego projektu od wyceny po zakończenie. Zdjęcia z budowy jako dowód prac.',
-    benefits: ['Status workflow', 'Zdjęcia z budowy', 'Dokumentacja prac'],
-  },
-  {
-    icon: Clock,
-    title: 'Kalendarz projektów',
-    description: 'Planuj prace, śledź terminy, zarządzaj zespołem. Nigdy nie przegapisz terminu.',
-    benefits: ['Widok tygodnia/miesiąca', 'Przypomnienia', 'Koordynacja zespołu'],
-  },
-  {
-    icon: TrendingUp,
-    title: 'Finanse i koszty',
-    description: 'Kontroluj rentowność każdego projektu. Śledź przychody, koszty materiałów i robocizny.',
-    benefits: ['Zysk na projekcie', 'Koszty materiałów', 'Raporty finansowe'],
-  },
-  {
-    icon: Bot,
-    title: 'AI Asystent',
-    description: 'Inteligentny asystent pomoże Ci z wycenami, odpowie na pytania i zasugeruje rozwiązania.',
-    benefits: ['Czat AI 24/7', 'Sugestie cenowe', 'Analiza zdjęć'],
-  },
-  {
-    icon: BarChart3,
-    title: 'Analityka biznesu',
-    description: 'Dashboardy pokazują jak rośnie Twój biznes. Podejmuj lepsze decyzje na podstawie danych.',
-    benefits: ['Trendy przychodów', 'Statystyki projektów', 'Konwersja ofert'],
-  },
-  {
-    icon: Smartphone,
-    title: 'Działa na telefonie',
-    description: 'Pełna funkcjonalność na budowie. Duże przyciski, czytelny interfejs, działa offline.',
-    benefits: ['Aplikacja mobilna', 'Tryb offline', 'Interfejs na rękawice'],
-  },
-  {
-    icon: Camera,
-    title: 'Zdjęcia z budowy',
-    description: 'Dokumentuj postęp prac zdjęciami. AI przeanalizuje zdjęcie i pomoże z wyceną.',
-    benefits: ['Galeria projektów', 'Wycena ze zdjęcia', 'Dowody prac'],
-  },
-  {
-    icon: CreditCard,
-    title: 'Plany i rozliczenia',
-    description: 'Zacznij za darmo, upgrade gdy rośniesz. Przejrzyste ceny bez ukrytych opłat.',
-    benefits: ['Plan darmowy', 'Pro dla zespołów', 'Faktura VAT'],
-  },
-  {
-    icon: Shield,
-    title: 'Bezpieczeństwo danych',
-    description: 'Szyfrowanie, kopie zapasowe, pełna zgodność z RODO. Twoje dane są bezpieczne.',
-    benefits: ['Szyfrowanie SSL', 'Kopie zapasowe', 'Zgodność z RODO'],
-  },
-];
+interface FeatureItem {
+  icon: LucideIcon;
+  key: string;
+  title: string;
+  description: string;
+  benefits: string[];
+}
 
-const stats = [
-  { value: '2 min', label: 'Średni czas wyceny' },
-  { value: '85%', label: 'Szybciej niż ręcznie' },
-  { value: '100%', label: 'Zgodność z RODO' },
-  { value: '24/7', label: 'Dostęp do danych' },
-];
-
-const testimonials = [
-  {
-    name: 'Marek K.',
-    role: 'Właściciel firmy remontowej',
-    text: 'Wreszcie mogę robić wyceny prosto z budowy. Klient dostaje PDF w 5 minut.',
-  },
-  {
-    name: 'Tomasz W.',
-    role: 'Elektryk, jednoosobowa firma',
-    text: 'Dyktowanie wyceny głosem to game changer. Oszczędzam 2 godziny dziennie.',
-  },
-  {
-    name: 'Anna S.',
-    role: 'Biuro projektowe',
-    text: 'Zarządzanie klientami i projektami w jednym miejscu. Polecam każdemu fachowcowi.',
-  },
-];
+interface DemoFeature {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  benefits: string[];
+}
 
 function scrollToFeatures() {
   document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
@@ -138,14 +62,184 @@ function scrollToFeatures() {
 
 export default function Landing() {
   const { isDark, toggleTheme } = useTheme();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [demoFeature, setDemoFeature] = useState<DemoFeature | null>(null);
+
+  const features: FeatureItem[] = [
+    {
+      icon: Calculator,
+      key: 'quotes',
+      title: t('landing.features.quotes.title'),
+      description: t('landing.features.quotes.description'),
+      benefits: [
+        t('landing.features.quotes.b1'),
+        t('landing.features.quotes.b2'),
+        t('landing.features.quotes.b3'),
+      ],
+    },
+    {
+      icon: FileText,
+      key: 'pdf',
+      title: t('landing.features.pdf.title'),
+      description: t('landing.features.pdf.description'),
+      benefits: [
+        t('landing.features.pdf.b1'),
+        t('landing.features.pdf.b2'),
+        t('landing.features.pdf.b3'),
+      ],
+    },
+    {
+      icon: Users,
+      key: 'clients',
+      title: t('landing.features.clients.title'),
+      description: t('landing.features.clients.description'),
+      benefits: [
+        t('landing.features.clients.b1'),
+        t('landing.features.clients.b2'),
+        t('landing.features.clients.b3'),
+      ],
+    },
+    {
+      icon: FolderKanban,
+      key: 'projects',
+      title: t('landing.features.projects.title'),
+      description: t('landing.features.projects.description'),
+      benefits: [
+        t('landing.features.projects.b1'),
+        t('landing.features.projects.b2'),
+        t('landing.features.projects.b3'),
+      ],
+    },
+    {
+      icon: Clock,
+      key: 'calendar',
+      title: t('landing.features.calendar.title'),
+      description: t('landing.features.calendar.description'),
+      benefits: [
+        t('landing.features.calendar.b1'),
+        t('landing.features.calendar.b2'),
+        t('landing.features.calendar.b3'),
+      ],
+    },
+    {
+      icon: TrendingUp,
+      key: 'finance',
+      title: t('landing.features.finance.title'),
+      description: t('landing.features.finance.description'),
+      benefits: [
+        t('landing.features.finance.b1'),
+        t('landing.features.finance.b2'),
+        t('landing.features.finance.b3'),
+      ],
+    },
+    {
+      icon: Bot,
+      key: 'ai',
+      title: t('landing.features.ai.title'),
+      description: t('landing.features.ai.description'),
+      benefits: [
+        t('landing.features.ai.b1'),
+        t('landing.features.ai.b2'),
+        t('landing.features.ai.b3'),
+      ],
+    },
+    {
+      icon: BarChart3,
+      key: 'analytics',
+      title: t('landing.features.analytics.title'),
+      description: t('landing.features.analytics.description'),
+      benefits: [
+        t('landing.features.analytics.b1'),
+        t('landing.features.analytics.b2'),
+        t('landing.features.analytics.b3'),
+      ],
+    },
+    {
+      icon: Smartphone,
+      key: 'mobile',
+      title: t('landing.features.mobile.title'),
+      description: t('landing.features.mobile.description'),
+      benefits: [
+        t('landing.features.mobile.b1'),
+        t('landing.features.mobile.b2'),
+        t('landing.features.mobile.b3'),
+      ],
+    },
+    {
+      icon: Camera,
+      key: 'photos',
+      title: t('landing.features.photos.title'),
+      description: t('landing.features.photos.description'),
+      benefits: [
+        t('landing.features.photos.b1'),
+        t('landing.features.photos.b2'),
+        t('landing.features.photos.b3'),
+      ],
+    },
+    {
+      icon: CreditCard,
+      key: 'billing',
+      title: t('landing.features.billing.title'),
+      description: t('landing.features.billing.description'),
+      benefits: [
+        t('landing.features.billing.b1'),
+        t('landing.features.billing.b2'),
+        t('landing.features.billing.b3'),
+      ],
+    },
+    {
+      icon: Shield,
+      key: 'security',
+      title: t('landing.features.security.title'),
+      description: t('landing.features.security.description'),
+      benefits: [
+        t('landing.features.security.b1'),
+        t('landing.features.security.b2'),
+        t('landing.features.security.b3'),
+      ],
+    },
+  ];
+
+  const stats = [
+    { value: '2 min', label: t('landing.stats.quoteTime') },
+    { value: '85%', label: t('landing.stats.faster') },
+    { value: '100%', label: t('landing.stats.gdpr') },
+    { value: '24/7', label: t('landing.stats.access') },
+  ];
+
+  const testimonials = [
+    {
+      name: 'Marek K.',
+      role: t('landing.testimonials.t1Role'),
+      text: t('landing.testimonials.t1Text'),
+    },
+    {
+      name: 'Tomasz W.',
+      role: t('landing.testimonials.t2Role'),
+      text: t('landing.testimonials.t2Text'),
+    },
+    {
+      name: 'Anna S.',
+      role: t('landing.testimonials.t3Role'),
+      text: t('landing.testimonials.t3Text'),
+    },
+  ];
+
+  function openDemo(feature: FeatureItem) {
+    setDemoFeature({
+      icon: feature.icon,
+      title: feature.title,
+      description: feature.description,
+      benefits: feature.benefits,
+    });
+  }
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="container flex h-16 items-center justify-between gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
               <HardHat className="h-6 w-6 text-primary-foreground" />
             </div>
@@ -153,24 +247,24 @@ export default function Landing() {
           </div>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
             <button onClick={scrollToFeatures} className="hover:text-foreground transition-colors">
-              Funkcje
+              {t('landing.nav.features')}
             </button>
             <a href="#stats" className="hover:text-foreground transition-colors">
-              Dlaczego my
+              {t('landing.nav.whyUs')}
             </a>
             <a href="#testimonials" className="hover:text-foreground transition-colors">
-              Opinie
+              {t('landing.nav.testimonials')}
             </a>
           </nav>
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Language switcher */}
-            <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/40 p-0.5">
+            <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/40 p-0.5 shrink-0">
               {LANDING_LANGUAGES.map((lang) => (
                 <button
                   key={lang.code}
                   onClick={() => i18n.changeLanguage(lang.code)}
-                  className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors ${
-                    i18n.language === lang.code
+                  className={`flex items-center gap-1 rounded px-1.5 py-1 text-xs font-medium transition-colors ${
+                    i18n.language === lang.code || i18n.language.startsWith(lang.code)
                       ? 'bg-background text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
@@ -182,16 +276,18 @@ export default function Landing() {
               ))}
             </div>
 
-            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Przełącz motyw">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Przełącz motyw" className="shrink-0">
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
-            <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
-              <Link to="/login">Zaloguj się</Link>
+            <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex shrink-0">
+              <Link to="/login">{t('landing.nav.login')}</Link>
             </Button>
-            <Button size="sm" asChild>
-              <Link to="/register">
-                Wypróbuj za darmo
-                <ArrowRight className="ml-2 h-4 w-4" />
+            {/* Fix #2: mobile button - short text on small screens, full text on sm+ */}
+            <Button size="sm" asChild className="shrink-0">
+              <Link to="/register" className="flex items-center">
+                <span className="hidden sm:inline">{t('landing.nav.tryFreeFull')}</span>
+                <span className="sm:hidden">{t('landing.nav.tryFree')}</span>
+                <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -204,20 +300,19 @@ export default function Landing() {
           <div className="mx-auto max-w-3xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
               <Zap className="h-4 w-4" />
-              Cyfrowe narzędzie dla branży budowlanej
+              {t('landing.hero.badge')}
             </div>
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-              Zarządzaj firmą
-              <span className="block text-primary">jak profesjonalista</span>
+              {t('landing.hero.title')}
+              <span className="block text-primary">{t('landing.hero.titleHighlight')}</span>
             </h1>
             <p className="mt-6 text-lg text-muted-foreground md:text-xl max-w-2xl mx-auto">
-              Wyceny, oferty, projekty, klienci i finanse — wszystko w jednym miejscu.
-              Stworzony dla ekip budowlanych i remontowych w Polsce.
+              {t('landing.hero.desc')}
             </p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Button size="lg" className="h-14 px-8 text-base" asChild>
                 <Link to="/register">
-                  Zacznij za darmo
+                  {t('landing.hero.startFree')}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -227,12 +322,12 @@ export default function Landing() {
                 className="h-14 px-8 text-base"
                 onClick={scrollToFeatures}
               >
-                Zobacz funkcje
+                {t('landing.hero.seeFeatures')}
                 <ArrowDown className="ml-2 h-5 w-5" />
               </Button>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              Bez karty kredytowej. Darmowy plan na start.
+              {t('landing.hero.noCard')}
             </p>
           </div>
         </div>
@@ -257,18 +352,22 @@ export default function Landing() {
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold md:text-4xl">
-              Wszystko czego potrzebujesz na budowie
+              {t('landing.features.sectionTitle')}
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground text-lg">
-              Jeden system zastępuje notatnik, Excela, maila i WhatsAppa.
-              Każda funkcja zaprojektowana z myślą o fachowcach.
+              {t('landing.features.sectionDesc')}
             </p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => (
               <Card
-                key={feature.title}
-                className="relative border hover:border-primary/40 hover:shadow-lg transition-all duration-300 group overflow-hidden hover:-translate-y-1"
+                key={feature.key}
+                className="relative border hover:border-primary/40 hover:shadow-lg transition-all duration-300 group overflow-hidden hover:-translate-y-1 cursor-pointer"
+                onClick={() => openDemo(feature)}
+                role="button"
+                tabIndex={0}
+                aria-label={`${t('landing.features.demoTitle')}: ${feature.title}`}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') openDemo(feature); }}
               >
                 {/* Subtle top accent that slides in on hover */}
                 <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
@@ -292,15 +391,12 @@ export default function Landing() {
                     ))}
                   </ul>
 
-                  {/* "Try it" CTA — visible only on hover */}
+                  {/* "Preview demo" CTA — visible only on hover */}
                   <div className="mt-4 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200">
-                    <Link
-                      to="/register"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
-                    >
-                      Wypróbuj bezpłatnie
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                      {t('landing.features.demoTitle')}
                       <ArrowRight className="h-3 w-3" />
-                    </Link>
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -309,28 +405,76 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Feature Demo Modal — Fix #3: demo mode, no app access */}
+      <Dialog open={demoFeature !== null} onOpenChange={(open) => { if (!open) setDemoFeature(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              {demoFeature && (
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 shrink-0">
+                  <demoFeature.icon className="h-6 w-6 text-primary" />
+                </div>
+              )}
+              <div>
+                <DialogTitle className="text-lg">{demoFeature?.title}</DialogTitle>
+                <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                  {t('landing.features.demoTitle')} — {t('landing.features.demoDesc')}
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {demoFeature?.description}
+            </p>
+            <ul className="space-y-2">
+              {demoFeature?.benefits.map((benefit) => (
+                <li key={benefit} className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
+                  <span>{benefit}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 text-sm text-muted-foreground text-center">
+              {t('landing.features.demoDesc')}
+            </div>
+            <div className="flex flex-col gap-2 pt-1">
+              <Button size="sm" asChild className="w-full">
+                <Link to="/register">
+                  {t('landing.features.registerFree')}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button size="sm" variant="ghost" asChild className="w-full">
+                <Link to="/login">{t('landing.features.loginForAccess')}</Link>
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* How it works */}
       <section className="py-16 md:py-20 border-t border-border bg-card">
         <div className="container">
           <h2 className="text-center text-3xl font-bold mb-12">
-            Jak to działa?
+            {t('landing.howItWorks.title')}
           </h2>
           <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
             {[
               {
                 step: '1',
-                title: 'Załóż konto',
-                desc: 'Rejestracja trwa 30 sekund. Bez karty kredytowej.',
+                title: t('landing.howItWorks.step1Title'),
+                desc: t('landing.howItWorks.step1Desc'),
               },
               {
                 step: '2',
-                title: 'Dodaj projekt',
-                desc: 'Utwórz projekt i stwórz wycenę — ręcznie, głosem lub z AI.',
+                title: t('landing.howItWorks.step2Title'),
+                desc: t('landing.howItWorks.step2Desc'),
               },
               {
                 step: '3',
-                title: 'Wyślij ofertę',
-                desc: 'Wygeneruj PDF, wyślij klientowi mailem. Klient zatwierdza online.',
+                title: t('landing.howItWorks.step3Title'),
+                desc: t('landing.howItWorks.step3Desc'),
               },
             ].map((item) => (
               <div key={item.step} className="text-center">
@@ -349,11 +493,11 @@ export default function Landing() {
       <section id="testimonials" className="py-16 md:py-20 border-t border-border">
         <div className="container">
           <h2 className="text-center text-3xl font-bold mb-12">
-            Co mówią fachowcy
+            {t('landing.testimonials.title')}
           </h2>
           <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
-            {testimonials.map((t) => (
-              <Card key={t.name} className="border">
+            {testimonials.map((testimony) => (
+              <Card key={testimony.name} className="border">
                 <CardContent className="pt-6">
                   <div className="flex gap-1 mb-3">
                     {Array.from({ length: 5 }).map((_, i) => (
@@ -361,11 +505,11 @@ export default function Landing() {
                     ))}
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed italic">
-                    &ldquo;{t.text}&rdquo;
+                    &ldquo;{testimony.text}&rdquo;
                   </p>
                   <div className="mt-4 pt-4 border-t border-border">
-                    <div className="font-semibold text-sm">{t.name}</div>
-                    <div className="text-xs text-muted-foreground">{t.role}</div>
+                    <div className="font-semibold text-sm">{testimony.name}</div>
+                    <div className="text-xs text-muted-foreground">{testimony.role}</div>
                   </div>
                 </CardContent>
               </Card>
@@ -374,24 +518,28 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA — Fix #6: "Mam już konto" button visible in light mode */}
       <section className="border-t border-border bg-accent text-accent-foreground">
         <div className="container py-16 text-center">
-          <h2 className="text-3xl font-bold">Gotowy na cyfrową zmianę?</h2>
+          <h2 className="text-3xl font-bold">{t('landing.cta.title')}</h2>
           <p className="mt-4 text-accent-foreground/80 max-w-xl mx-auto">
-            Dołącz do fachowców, którzy oszczędzają czas i zarabiają więcej.
-            Zacznij od darmowego planu — bez zobowiązań.
+            {t('landing.cta.desc')}
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" className="h-14 px-8 text-base" asChild>
               <Link to="/register">
-                Załóż konto za darmo
+                {t('landing.cta.registerBtn')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="h-14 px-8 text-base border-accent-foreground/20 text-accent-foreground hover:bg-accent-foreground/10" asChild>
+            {/* Fix #6: explicit bg-transparent + border + text that works in both modes */}
+            <Button
+              size="lg"
+              className="h-14 px-8 text-base bg-transparent border-2 border-accent-foreground/50 text-accent-foreground hover:bg-accent-foreground/10 hover:border-accent-foreground/70"
+              asChild
+            >
               <Link to="/login">
-                Mam już konto
+                {t('landing.cta.loginBtn')}
               </Link>
             </Button>
           </div>
@@ -410,46 +558,46 @@ export default function Landing() {
                 <span className="font-bold">Majster.AI</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Profesjonalne wyceny i zarządzanie projektami dla fachowców. Szybko, łatwo, bezpiecznie.
+                {t('landing.footer.desc')}
               </p>
               <a href="mailto:kontakt@majster.ai" className="text-sm text-muted-foreground hover:text-foreground transition-colors mt-2 inline-block">
                 kontakt@majster.ai
               </a>
             </div>
             <div>
-              <h4 className="font-semibold mb-3 text-sm">Produkt</h4>
+              <h4 className="font-semibold mb-3 text-sm">{t('landing.footer.product')}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/app/dashboard" className="hover:text-foreground transition-colors">Panel główny</Link></li>
-                <li><Link to="/app/templates" className="hover:text-foreground transition-colors">Szablony</Link></li>
-                <li><Link to="/app/jobs" className="hover:text-foreground transition-colors">Projekty</Link></li>
+                <li><Link to="/app/dashboard" className="hover:text-foreground transition-colors">{t('landing.footer.dashboard')}</Link></li>
+                <li><Link to="/app/templates" className="hover:text-foreground transition-colors">{t('landing.footer.templates')}</Link></li>
+                <li><Link to="/app/jobs" className="hover:text-foreground transition-colors">{t('landing.footer.projects')}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-3 text-sm">Prawne</h4>
+              <h4 className="font-semibold mb-3 text-sm">{t('landing.footer.legal')}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/legal/privacy" className="hover:text-foreground transition-colors">Polityka Prywatności</Link></li>
-                <li><Link to="/legal/terms" className="hover:text-foreground transition-colors">Regulamin</Link></li>
-                <li><Link to="/legal/cookies" className="hover:text-foreground transition-colors">Polityka Cookies</Link></li>
-                <li><Link to="/legal/dpa" className="hover:text-foreground transition-colors">Umowa DPA</Link></li>
-                <li><Link to="/legal/rodo" className="hover:text-foreground transition-colors">Centrum RODO</Link></li>
+                <li><Link to="/legal/privacy" className="hover:text-foreground transition-colors">{t('landing.footer.privacy')}</Link></li>
+                <li><Link to="/legal/terms" className="hover:text-foreground transition-colors">{t('landing.footer.terms')}</Link></li>
+                <li><Link to="/legal/cookies" className="hover:text-foreground transition-colors">{t('landing.footer.cookies')}</Link></li>
+                <li><Link to="/legal/dpa" className="hover:text-foreground transition-colors">{t('landing.footer.dpa')}</Link></li>
+                <li><Link to="/legal/rodo" className="hover:text-foreground transition-colors">{t('landing.footer.gdpr')}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-3 text-sm">Wsparcie</h4>
+              <h4 className="font-semibold mb-3 text-sm">{t('landing.footer.support')}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="mailto:support@majster.ai" className="hover:text-foreground transition-colors">Pomoc techniczna</a></li>
-                <li><a href="mailto:sales@majster.ai" className="hover:text-foreground transition-colors">Sprzedaż</a></li>
-                <li><a href="mailto:kontakt@majster.ai" className="hover:text-foreground transition-colors">Partnerstwo</a></li>
+                <li><a href="mailto:support@majster.ai" className="hover:text-foreground transition-colors">{t('landing.footer.techSupport')}</a></li>
+                <li><a href="mailto:sales@majster.ai" className="hover:text-foreground transition-colors">{t('landing.footer.sales')}</a></li>
+                <li><a href="mailto:kontakt@majster.ai" className="hover:text-foreground transition-colors">{t('landing.footer.partnership')}</a></li>
               </ul>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Majster.AI. Wszystkie prawa zastrzeżone.
+              © {new Date().getFullYear()} Majster.AI. {t('landing.footer.rights')}
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Shield className="h-3.5 w-3.5" />
-              Made in Poland. RODO Compliant.
+              {t('landing.footer.madeIn')}
             </div>
           </div>
         </div>
