@@ -1,8 +1,8 @@
 # MVP Gate Status — PASS/FAIL/UNKNOWN
 
-**Last Updated**: 2026-02-18 (P1-AI-ASSISTANT-EDGE-LLM fix `claude/fix-ai-llm-integration-xj4kS`)
-**Evidence Date**: 2026-02-18
-**Latest Fix Commits**: `de23ff9` (P1-AI-LLM) · `8aa30fb` (P0-CALENDAR) · `447f044` (P0-LOGOUT) · `d602a76` (P0-QUOTE) · `14ac892` (sitemap) · `ad2a555` (i18n regression)
+**Last Updated**: 2026-02-19 (P1-LINT verified PASS; release-merge-checklist session `claude/release-merge-checklist-7XOYq`)
+**Evidence Date**: 2026-02-19
+**Latest Fix Commits**: `5099064` (P1-AI-LLM, origin/main HEAD) · `ad2a555` (i18n) · `14ac892` (sitemap/i18n/id!) · `8aa30fb` (P0-CALENDAR) · `447f044` (P0-LOGOUT) · `d602a76` (P0-QUOTE)
 
 ---
 
@@ -21,16 +21,16 @@ This file was updated 2026-02-18 to reconcile conflicting statuses between:
 | Category | Total | ✅ PASS | ❌ FAIL | ❓ UNKNOWN |
 |----------|-------|---------|---------|------------|
 | **P0 - Production Blockers** | 3 | 3 | 0 | 0 |
-| **P1 - High Priority** | 6 | 5 | 0 | 1 |
+| **P1 - High Priority** | 6 | 6 | 0 | 0 |
 | **P2 - Quality/Polish** | 4 | 2 | 0 | 2 |
 | **Baseline - Smoke Tests** | 4 | 4 | 0 | 0 |
-| **TOTAL** | 17 | 14 | 0 | 3 |
+| **TOTAL** | 17 | 15 | 0 | 2 |
 
-**Overall Status**: 🟢 **82% PASS · 18% UNKNOWN** (environment gap, not code failures)
+**Overall Status**: 🟢 **88% PASS · 12% UNKNOWN** (P2 owner/env actions only — not code failures)
 
-**Production Readiness**: ✅ **READY** — All P0 blockers resolved; P1-AI-LLM code fix applied (owner must set API key secret); 1 P1 UNKNOWN (lint infrastructure, environment gap); 2 P2 UNKNOWNs require owner action or environment setup.
+**Production Readiness**: ✅ **READY** — All P0 blockers resolved; P1-LINT verified PASS 2026-02-19 (0 errors, 16 warnings); P1-AI-LLM code fix applied (owner must set API key secret); 2 P2 UNKNOWNs require owner action (RLS policy confirmation, E2E credentials).
 
-**Next SESSION TARGET**: P1-LINT — `npm install && npm run lint`; AC: exit 0, 0 errors.
+**Next SESSION TARGET**: PRODUCTION DEPLOY — all code gates PASS; owner must action Supabase secrets + Vercel env vars; run Supabase Autopilot workflow.
 
 ---
 
@@ -127,17 +127,17 @@ This file was updated 2026-02-18 to reconcile conflicting statuses between:
 
 ---
 
-#### ❓ UNKNOWN: Lint Infrastructure (P1-LINT) — Reconciled 2026-02-18
+#### ✅ PASS: Lint Infrastructure (P1-LINT) — Verified 2026-02-19
 
 - **Tracker ID**: P1-LINT
-- **Issue**: `npm run lint` exits non-zero in sandbox — `Cannot find package '@eslint/js'` (node_modules absent)
-- **Root Cause (candidate)**: node_modules not installed; `@eslint/js` is a devDependency in package.json
-- **Last Confirmed PASS**: 2026-02-07 (`docs/TRACEABILITY_MATRIX.md` — 0 errors, 25 warnings)
-- **Verification Command**: `npm install && npm run lint 2>&1 | tail -20`
-- **Acceptance Criteria**: exit 0, 0 errors, ≤25 warnings
-- **Status**: ❓ UNKNOWN (environment gap — not a code failure)
-- **Missing Data**: npm install output and lint result after node_modules installed
-- **NEXT SESSION TARGET**: YES — highest-impact unresolved P1 item
+- **Issue (prior)**: `npm run lint` failed with `Cannot find package '@eslint/js'` — node_modules absent in sandbox
+- **Root Cause**: node_modules not installed; `@eslint/js` is a devDependency — not a code regression
+- **Verification (2026-02-19)**: `npm install && npm run lint` on HEAD `5099064`
+  - **Result**: ✖ 16 problems (0 errors, 16 warnings) — exit 0 ✅
+  - **Warnings**: `react-refresh/only-export-components` (unchanged since 2026-02-07 baseline)
+  - **Type-check**: `tsc --noEmit` → exit 0 ✅
+- **Acceptance Criteria**: exit 0, 0 errors, ≤25 warnings — **ALL MET**
+- **Status**: ✅ PASS (verified 2026-02-19 in session `claude/release-merge-checklist-7XOYq`)
 
 ---
 
@@ -240,7 +240,7 @@ This file was updated 2026-02-18 to reconcile conflicting statuses between:
 
 ---
 
-## Open/Unknown Items Detail (Reconciled 2026-02-18)
+## Open/Unknown Items Detail (Updated 2026-02-19)
 
 ### 1. Sitemap Base URL (E-001-P1-002) — ✅ RESOLVED
 
@@ -253,29 +253,21 @@ This file was updated 2026-02-18 to reconcile conflicting statuses between:
 
 ---
 
-### 2. ❓ UNKNOWN: P1-LINT — ESLint Infrastructure
+### 2. ✅ RESOLVED: P1-LINT — ESLint Infrastructure (2026-02-19)
 
-**Status**: ❓ UNKNOWN (environment gap)
+**Status**: ✅ PASS — verified 2026-02-19 on HEAD `5099064`
 
-**Missing Data**: npm install output + lint result
-
-**Evidence of failure**:
+**Evidence**:
 ```
-$ npm run lint
-Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@eslint/js'
-  imported from /home/user/majster-ai-oferty/eslint.config.js
-EXIT_CODE: non-zero
+$ npm install && npm run lint
+✖ 16 problems (0 errors, 16 warnings)   # exit 0 ✅
+$ npm run type-check
+# exit 0 ✅
 ```
 
-**How to unblock**:
-```bash
-npm install && npm run lint 2>&1 | tail -20
-# Expected: 0 errors, ≤25 warnings, exit 0
-```
+**Warnings**: 16 × `react-refresh/only-export-components` (identical category to 2026-02-07 baseline of 25 warnings — count reduced, no new error categories)
 
-**Last confirmed PASS**: 2026-02-07 (docs/TRACEABILITY_MATRIX.md — 0 errors, 25 warnings)
-
-**Risk**: LOW if package-lock.json is intact and no devDependencies removed since 2026-02-07.
+**Risk**: NONE — package-lock.json intact, all devDependencies present.
 
 ---
 
@@ -335,26 +327,31 @@ E2E_TEST_USER_PASSWORD=TestPassword123!
 
 ---
 
-## Next Steps (Reconciled 2026-02-18)
+## Next Steps (Updated 2026-02-19)
 
-### Next SESSION TARGET — P1-LINT
-1. Run `npm install && npm run lint 2>&1 | tail -20`
-2. If PASS: mark P1-LINT PASS in STATUS.md + TRUTH.md; move to P2-TESTS
-3. If FAIL: read full error output; check `eslint.config.js` and devDependencies; fix without touching non-doc files; re-verify `tsc --noEmit` exits 0
+### Next SESSION TARGET — PRODUCTION DEPLOY
+All code-level gates are PASS. Next step is deployment.
+1. Owner actions (see Owner Actions section below) — set Supabase secrets + Vercel env vars
+2. Run Supabase Autopilot workflow (GitHub Actions → supabase-deploy.yml → Run workflow)
+3. Verify Vercel auto-deploy triggered from `main` branch
+4. Run Post-Deploy Smoke Tests (see Merge Checklist doc)
 
 ### Owner Actions (P2 — non-code blockers)
-1. ✅ VITE_PUBLIC_SITE_URL — sitemap fix already in code; set env var in Vercel for production correctness
-2. ⏳ user_roles RLS — Supabase Dashboard → Table Editor → user_roles → Policies → confirm SELECT policy `auth.uid() = user_id`
-3. ⏳ E2E integration tests — create test user + credentials in GitHub Secrets
+1. ⏳ **OPENAI_API_KEY / ANTHROPIC_API_KEY / GEMINI_API_KEY** — set at least one in Supabase Edge Function Secrets (Dashboard → Edge Functions → Secrets)
+2. ⏳ **VITE_PUBLIC_SITE_URL** — set in Vercel env vars for production domain (sitemap regenerates at build)
+3. ⏳ **user_roles RLS** — Supabase Dashboard → Table Editor → user_roles → Policies → confirm SELECT policy `auth.uid() = user_id`
+4. ⏳ **SUPABASE_ACCESS_TOKEN + SUPABASE_PROJECT_REF** — must be set in GitHub Secrets for supabase-deploy.yml workflow
 
 ### Already Completed (Do Not Repeat)
-1. ✅ P0-LOGOUT fixed (commit `447f044`)
-2. ✅ P0-CALENDAR fixed (commit `8aa30fb`)
-3. ✅ P0-QUOTE fixed (commit `d602a76`)
-4. ✅ Sitemap domain fixed (commit `14ac892`)
-5. ✅ QuoteEditor id! guard added (commit `14ac892`)
-6. ✅ i18n regression (uk.json) fixed (commit `ad2a555`)
-7. ✅ TypeScript strict mode — `tsc --noEmit` exits 0 (verified 2026-02-18)
+1. ✅ P0-LOGOUT fixed (commit `447f044`, PR #215)
+2. ✅ P0-CALENDAR fixed (commit `8aa30fb`, PR #216)
+3. ✅ P0-QUOTE fixed (commit `d602a76`, PR #214)
+4. ✅ Sitemap domain fixed (commit `14ac892`, PR #218)
+5. ✅ QuoteEditor id! guard added (commit `14ac892`, PR #218)
+6. ✅ i18n regression (uk.json) fixed (commit `ad2a555`, PR #219)
+7. ✅ TypeScript strict mode — `tsc --noEmit` exits 0 (verified 2026-02-18 + 2026-02-19)
+8. ✅ P1-AI-LLM fix — `body: Record<string, unknown>` (commit `5099064`, PR #222)
+9. ✅ P1-LINT — `npm run lint` exits 0, 0 errors (verified 2026-02-19 on HEAD `5099064`)
 
 ---
 
@@ -372,6 +369,6 @@ E2E_TEST_USER_PASSWORD=TestPassword123!
 
 ---
 
-**Status Last Verified**: 2026-02-18 (Reality-Sync Reconciliation)
+**Status Last Verified**: 2026-02-19 (Release-Merge Checklist — P1-LINT PASS confirmed)
 **Engineer**: Claude Sonnet 4.6
-**Session**: claude/reality-sync-reconciliation-lzHqT
+**Session**: claude/release-merge-checklist-7XOYq
