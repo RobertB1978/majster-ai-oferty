@@ -64,7 +64,7 @@ describe('ProjectDetail', () => {
       render(<ProjectDetail />);
 
       expect(screen.getByText('Projekt nie został znaleziony.')).toBeDefined();
-      expect(screen.getByText('Powrót do zleceń')).toBeDefined();
+      expect(screen.getByText('Powrót do projektów')).toBeDefined();
     });
 
     it('should render not found message when project is null', () => {
