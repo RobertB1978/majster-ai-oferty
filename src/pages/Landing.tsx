@@ -41,26 +41,26 @@ const features = [
   {
     icon: Users,
     title: 'Baza klientów',
-    description: 'Cała historia zleceń klienta w jednym miejscu. Automatyczne przypomnienia o follow-up.',
-    benefits: ['Historia zleceń', 'Dane kontaktowe', 'Notatki i tagi'],
+    description: 'Cała historia projektów klienta w jednym miejscu. Automatyczne przypomnienia o follow-up.',
+    benefits: ['Historia projektów', 'Dane kontaktowe', 'Notatki i tagi'],
   },
   {
     icon: FolderKanban,
-    title: 'Zarządzanie zleceniami',
-    description: 'Śledź status każdego zlecenia od wyceny po zakończenie. Zdjęcia z budowy jako dowód prac.',
+    title: 'Zarządzanie projektami',
+    description: 'Śledź status każdego projektu od wyceny po zakończenie. Zdjęcia z budowy jako dowód prac.',
     benefits: ['Status workflow', 'Zdjęcia z budowy', 'Dokumentacja prac'],
   },
   {
     icon: Clock,
-    title: 'Kalendarz zleceń',
+    title: 'Kalendarz projektów',
     description: 'Planuj prace, śledź terminy, zarządzaj zespołem. Nigdy nie przegapisz terminu.',
     benefits: ['Widok tygodnia/miesiąca', 'Przypomnienia', 'Koordynacja zespołu'],
   },
   {
     icon: TrendingUp,
     title: 'Finanse i koszty',
-    description: 'Kontroluj rentowność każdego zlecenia. Śledź przychody, koszty materiałów i robocizny.',
-    benefits: ['Zysk na zleceniu', 'Koszty materiałów', 'Raporty finansowe'],
+    description: 'Kontroluj rentowność każdego projektu. Śledź przychody, koszty materiałów i robocizny.',
+    benefits: ['Zysk na projekcie', 'Koszty materiałów', 'Raporty finansowe'],
   },
   {
     icon: Bot,
@@ -72,7 +72,7 @@ const features = [
     icon: BarChart3,
     title: 'Analityka biznesu',
     description: 'Dashboardy pokazują jak rośnie Twój biznes. Podejmuj lepsze decyzje na podstawie danych.',
-    benefits: ['Trendy przychodów', 'Statystyki zleceń', 'Konwersja ofert'],
+    benefits: ['Trendy przychodów', 'Statystyki projektów', 'Konwersja ofert'],
   },
   {
     icon: Smartphone,
@@ -84,7 +84,7 @@ const features = [
     icon: Camera,
     title: 'Zdjęcia z budowy',
     description: 'Dokumentuj postęp prac zdjęciami. AI przeanalizuje zdjęcie i pomoże z wyceną.',
-    benefits: ['Galeria zleceń', 'Wycena ze zdjęcia', 'Dowody prac'],
+    benefits: ['Galeria projektów', 'Wycena ze zdjęcia', 'Dowody prac'],
   },
   {
     icon: CreditCard,
@@ -121,7 +121,7 @@ const testimonials = [
   {
     name: 'Anna S.',
     role: 'Biuro projektowe',
-    text: 'Zarządzanie klientami i zleceniami w jednym miejscu. Polecam każdemu fachowcowi.',
+    text: 'Zarządzanie klientami i projektami w jednym miejscu. Polecam każdemu fachowcowi.',
   },
 ];
 
@@ -184,7 +184,7 @@ export default function Landing() {
               <span className="block text-primary">jak profesjonalista</span>
             </h1>
             <p className="mt-6 text-lg text-muted-foreground md:text-xl max-w-2xl mx-auto">
-              Wyceny, oferty, zlecenia, klienci i finanse — wszystko w jednym miejscu.
+              Wyceny, oferty, projekty, klienci i finanse — wszystko w jednym miejscu.
               Stworzony dla ekip budowlanych i remontowych w Polsce.
             </p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
@@ -278,7 +278,7 @@ export default function Landing() {
               },
               {
                 step: '2',
-                title: 'Dodaj zlecenie',
+                title: 'Dodaj projekt',
                 desc: 'Utwórz projekt i stwórz wycenę — ręcznie, głosem lub z AI.',
               },
               {
@@ -364,7 +364,7 @@ export default function Landing() {
                 <span className="font-bold">Majster.AI</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Profesjonalne wyceny i zarządzanie zleceniami dla fachowców. Szybko, łatwo, bezpiecznie.
+                Profesjonalne wyceny i zarządzanie projektami dla fachowców. Szybko, łatwo, bezpiecznie.
               </p>
               <a href="mailto:kontakt@majster.ai" className="text-sm text-muted-foreground hover:text-foreground transition-colors mt-2 inline-block">
                 kontakt@majster.ai
@@ -375,7 +375,7 @@ export default function Landing() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link to="/app/dashboard" className="hover:text-foreground transition-colors">Panel główny</Link></li>
                 <li><Link to="/app/templates" className="hover:text-foreground transition-colors">Szablony</Link></li>
-                <li><Link to="/app/jobs" className="hover:text-foreground transition-colors">Zlecenia</Link></li>
+                <li><Link to="/app/jobs" className="hover:text-foreground transition-colors">Projekty</Link></li>
               </ul>
             </div>
             <div>

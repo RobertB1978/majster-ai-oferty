@@ -41,7 +41,7 @@ export default function ProjectDetail() {
       <div className="space-y-6 animate-fade-in">
         <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Powrót do zleceń
+          Powrót do projektów
         </Button>
         <Card>
           <CardContent className="py-12 text-center">
@@ -58,7 +58,7 @@ export default function ProjectDetail() {
       <div className="space-y-6 animate-fade-in">
         <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Powrót do zleceń
+          Powrót do projektów
         </Button>
         <Card>
           <CardHeader className="text-center">
@@ -107,7 +107,7 @@ export default function ProjectDetail() {
       <div className="space-y-6 animate-fade-in">
         <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Powrót do zleceń
+          Powrót do projektów
         </Button>
         <Card>
           <CardContent className="py-12 text-center">

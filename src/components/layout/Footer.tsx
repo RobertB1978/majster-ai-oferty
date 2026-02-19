@@ -47,7 +47,7 @@ export function Footer() {
               </li>
               <li>
                 <Link to="/app/jobs" className="text-muted-foreground hover:text-primary transition-colors">
-                  Zlecenia
+                  Projekty
                 </Link>
               </li>
             </ul>

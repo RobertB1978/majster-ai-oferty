@@ -54,7 +54,7 @@ export const plansSchema = z.object({
 export const contentSchema = z.object({
   landingHeadline: z.string().max(120).default('Cyfrowe narzędzie dla fachowców'),
   landingSubheadline: z.string().max(200).default(
-    'Wyceny, oferty, zlecenia i faktury — wszystko w jednym miejscu.'
+    'Wyceny, oferty, projekty i faktury — wszystko w jednym miejscu.'
   ),
   onboardingEnabled: z.boolean().default(true),
 });
