@@ -73,6 +73,22 @@ function ProjectRedirect({ suffix = '' }: { suffix?: string }) {
   return <Navigate to={`/app/jobs/${id}${suffix}`} replace />;
 }
 
+/** Initialize theme from localStorage or system preference for all routes (including auth pages). */
+function ThemeInitializer() {
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  return null;
+}
+
 /** Scroll to top on PUSH/REPLACE navigation; let browser handle POP (back/forward). */
 function ScrollRestoration() {
   const { pathname } = useLocation();
@@ -106,6 +122,7 @@ const App = () => (
           <BrowserRouter>
             <ConfigProvider>
             <AuthProvider>
+              <ThemeInitializer />
               <ScrollRestoration />
               <Sonner />
               <OfflineFallback />
