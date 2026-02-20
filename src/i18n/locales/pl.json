@@ -94,6 +94,7 @@
       "passwordRequirements": "Hasło nie spełnia wymagań bezpieczeństwa",
       "invalidPhone": "Podaj prawidłowy numer telefonu (min. 9 cyfr).",
       "phoneTaken": "Ten numer telefonu jest już zarejestrowany.",
+      "emailTaken": "Ten adres email jest już powiązany z innym kontem.",
       "registrationFailed": "Błąd rejestracji. Spróbuj ponownie."
     },
     "success": {
@@ -1468,5 +1469,14 @@
     "noItems": "Dodaj co najmniej jedną pozycję.",
     "saved": "Wycena zapisana!",
     "defaultName": "Szybka wycena"
+  },
+  "plan": {
+    "names": {
+      "free": "Darmowy",
+      "pro": "Pro",
+      "starter": "Pro",
+      "business": "Biznes",
+      "enterprise": "Enterprise"
+    }
   }
 }

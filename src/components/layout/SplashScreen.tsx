@@ -50,8 +50,8 @@ export function SplashScreen() {
     >
       {/* Animated logo */}
       <div className="flex flex-col items-center gap-4 animate-fade-in">
-        <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-primary shadow-2xl shadow-primary/30">
-          {/* Wrench SVG */}
+        <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10 shadow-2xl shadow-primary/20">
+          {/* Wrench SVG — uses var(--color-primary) for theme-reactive primary color */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -60,9 +60,10 @@ export function SplashScreen() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="h-12 w-12 text-primary-foreground"
+            className="h-12 w-12"
             style={{
-              animation: 'wrench-swing 0.9s ease-in-out 0.2s 2 alternate',
+              color: 'var(--color-primary)',
+              animation: 'wrenchWiggle 0.9s ease-in-out 0.2s 2 alternate',
             }}
           >
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
@@ -88,7 +89,7 @@ export function SplashScreen() {
       </div>
 
       <style>{`
-        @keyframes wrench-swing {
+        @keyframes wrenchWiggle {
           from { transform: rotate(-15deg); }
           to   { transform: rotate(15deg); }
         }

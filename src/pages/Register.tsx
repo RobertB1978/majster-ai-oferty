@@ -43,18 +43,27 @@ export default function Register() {
       return;
     }
 
-    // Anti-abuse: check for duplicate phone in profiles
-    const { data: existingPhone, error: phoneCheckError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('phone', digitsOnly)
-      .maybeSingle();
-    if (phoneCheckError) {
+    // Anti-abuse: run phone + email conflict checks in parallel before any auth call
+    const [phoneCheckResult, emailConflictResult] = await Promise.all([
+      supabase.from('profiles').select('id').eq('phone', digitsOnly).maybeSingle(),
+      supabase
+        .from('profiles')
+        .select('id')
+        .eq('email_for_offers', email)
+        .neq('phone', digitsOnly)
+        .maybeSingle(),
+    ]);
+
+    if (phoneCheckResult.error || emailConflictResult.error) {
       toast.error(t('auth.errors.registrationFailed', 'Błąd rejestracji. Spróbuj ponownie.'));
       return;
     }
-    if (existingPhone) {
+    if (phoneCheckResult.data) {
       toast.error(t('auth.errors.phoneTaken', 'Ten numer telefonu jest już zarejestrowany.'));
+      return;
+    }
+    if (emailConflictResult.data) {
+      toast.error(t('auth.errors.emailTaken', 'Ten adres email jest już powiązany z innym kontem.'));
       return;
     }
 
