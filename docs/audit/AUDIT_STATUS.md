@@ -1,8 +1,8 @@
 # Audit Status Tracker — Majster.AI
 
-**Last Updated:** 2026-02-18 (re-audit session: `claude/audit-and-fix-WpVlK`)
-**Audit Session:** `claude/audit-snapshot-majster-eG4Om`
-**Source Report:** `docs/audit/AUDIT_REPORT_2026-02-17.md`
+**Last Updated:** 2026-02-20 (360° Enterprise Audit session: `claude/add-app-testing-audit-dSKf8`)
+**Audit Session:** `claude/add-app-testing-audit-dSKf8`
+**Source Report:** `docs/audit/AUDIT_REPORT_2026-02-20.md`
 
 ---
 
@@ -13,87 +13,82 @@
 | Auth — Logout invalidation | A1 | ✅ PASS | None |
 | Auth — /app route protection | A2 | ✅ PASS | None |
 | Auth — No stale data post-logout | A3 | ✅ PASS | None |
-| Calendar — Pre-merge error identified | B1 | ✅ PASS | None |
-| Calendar — Fix at file:line confirmed | B2 | ✅ PASS | None |
-| Calendar — No `as any` workarounds | B3 | ✅ PASS | None |
-| Calendar — TypeScript clean compile | B4 | ✅ PASS | None |
-| i18n correctness | C | ✅ PASS | None |
+| Calendar — Error boundary crash | B1 | ✅ PASS | None |
+| Calendar — SelectItem crash | B2 | ✅ PASS | None |
+| Calendar — TypeScript clean | B3 | ✅ PASS | None |
+| i18n — Full key coverage (PL/EN/UK) | C | ✅ PASS | None |
 | Admin separation (code) | D-code | ✅ PASS | None |
 | Admin separation (RLS) | D-rls | ❓ UNKNOWN | P2 |
 | Legal routing | E | ✅ PASS | None |
-| SEO sitemap domain | F-sitemap | ✅ RESOLVED | None |
+| SEO sitemap domain | F-sitemap | ✅ PASS | None |
 | SEO robots.txt | F-robots | ✅ PASS | None |
 | Quote edit — route + auth | G1 | ✅ PASS | None |
 | Quote edit — error handling | G2 | ✅ PASS | None |
-| Quote edit — no unsafe assertions | G3 | ✅ RESOLVED | None |
+| Quote edit — no unsafe assertions | G3 | ✅ PASS | None |
 | AI — Error caught | H1 | ✅ PASS | None |
-| AI — No unhandled rejection | H2 | ✅ PASS | None |
+| AI — Type safety | H2 | ✅ PASS | None |
 | AI — Fallback state | H3 | ✅ PASS | None |
 | TypeScript (`tsc --noEmit`) | TS | ✅ PASS | None |
-| Lint (`npm run lint`) | LINT | ❓ UNKNOWN | P1 |
-| Tests (`npm test`) | TEST | ❓ UNKNOWN | P1 |
+| Lint (`npm run lint`) | LINT | ✅ PASS | None |
+| Tests (`npm test`) | TEST | ✅ PASS | None |
+| Build (`npm run build`) | BUILD | ✅ PASS | None |
+| Domain constraint (sitemap) | DC-1 | ✅ PASS | None |
+| Domain constraint (emails) | DC-2 | ⚠️ FAIL | P2 |
+| Domain constraint (.env.example) | DC-3 | ⚠️ FAIL | P2 |
+| Bundle size (<500KB gzip) | PERF | ⚠️ FAIL | P2 |
+| Cookie consent | COOKIE | ✅ PASS | None |
 
 ---
 
-## Next Session Targets
+## Summary (2026-02-20)
 
-### P0 (Blocking)
-*None — all prior P0 items resolved as of commit `8aa30fb`*
+| Category | Total | ✅ PASS | ⚠️ FAIL | ❓ UNKNOWN |
+|----------|-------|---------|---------|------------|
+| **Previously Known Bugs** | 8 | 8 | 0 | 0 |
+| **Domain Checks** | 27 | 23 | 3 | 1 |
+| **TOTAL** | 27 | 23 | 3 | 1 |
+
+**Overall: 85% PASS · 11% FAIL (P2) · 4% UNKNOWN (P2)**
 
 ---
 
-### P1 (High Priority)
+## New P2 Items (from 2026-02-20 audit)
 
-#### [P1-A] Lint Infrastructure Verification
-- **Description:** `npm run lint` fails in sandbox (missing node_modules). Must be verified in real CI environment.
-- **Acceptance Criteria:** `npm run lint` exits 0 with 0 errors after `npm install`.
-- **Verification:** `npm install && npm run lint 2>&1 | tail -5`
-- **File:** `eslint.config.js:1`
+### [NEW-01] @majster.ai emails in codebase
+- **Description:** 20+ references to `@majster.ai` email addresses in source. Domain not owned — emails bounce.
+- **AC:** `grep -rn "@majster\.ai" src/ --include="*.tsx" --include="*.ts" | grep -v test | wc -l` → 0
+- **Files:** Footer.tsx, Landing.tsx, Plan.tsx, Privacy.tsx, Terms.tsx, AdminContentEditor.tsx, AdminSystemSettings.tsx, useAdminSettings.ts
 - **Status:** OPEN
 
-#### [P1-B] i18n Key Coverage Gap Resolution
-- **Description:** ~55% key coverage (from Feb 15 audit). EN/UA users see raw key strings for untranslated sections. Partial fix in Feb 17 pack. Full coverage not re-measured.
-- **Acceptance Criteria:** `diff <(jq 'keys[]' src/i18n/locales/pl.json | sort) <(jq 'keys[]' src/i18n/locales/en.json | sort)` outputs 0 lines.
-- **Verification:** `diff <(jq 'keys[]' src/i18n/locales/pl.json | sort) <(jq 'keys[]' src/i18n/locales/en.json | sort)`
-- **File:** `src/i18n/locales/pl.json`, `src/i18n/locales/en.json`
-- **Status:** ✅ RESOLVED (2026-02-18) — re-audit found regression: errors.logoutFailed missing from uk.json; fixed with targeted insertion; missing_en=0, missing_ua=0; pl_total_paths=1070 (nested); uk_json_valid=true; tsc_exit=0
+### [NEW-02] Bundle size exceeds target
+- **Description:** Total gzipped JS ~1.1MB (target: 500KB). Largest: exportUtils 272KB gzip (exceljs).
+- **AC:** No chunk > 150KB gzipped in build output
+- **Status:** OPEN
 
----
-
-### P2 (Medium Priority)
-
-#### [P2-A] Fix public/sitemap.xml Domain
-- **Description:** `public/sitemap.xml` has hardcoded `https://majster.ai` (unowned domain). Served as-is by Vercel.
-- **Acceptance Criteria:** `grep -c "majster\.ai" public/sitemap.xml` returns `0`; `grep "majster-ai-oferty.vercel.app" public/sitemap.xml` returns ≥1.
-- **Verification:** `grep -c "majster\.ai" public/sitemap.xml` (must be 0)
-- **File:** `public/sitemap.xml:4`, `scripts/generate-sitemap.js:31-32`
-- **Owner Action Required:** Set `VITE_PUBLIC_SITE_URL=https://majster-ai-oferty.vercel.app` in Vercel env vars and redeploy.
-- **Status:** ✅ RESOLVED (2026-02-17) — BASE_URL constant introduced in generate-sitemap.js; sitemap regenerated; V1=0, V2=0
-
-#### [P2-B] Confirm user_roles RLS Policy
-- **Description:** Admin guard reads from `user_roles` table. RLS policy not verifiable from repo. If missing, authenticated users could read all role rows.
-- **Acceptance Criteria:** Supabase `user_roles` table has SELECT policy with `auth.uid() = user_id` restriction.
-- **Verification:** Supabase Dashboard → Authentication → Policies → `user_roles` OR `SELECT * FROM pg_policies WHERE tablename = 'user_roles';` in SQL editor.
-- **Status:** OPEN (OWNER_ACTION_REQUIRED)
-
-#### [P2-C] Test Suite Execution Verification
-- **Description:** Tests could not be executed in audit sandbox. Suite covers P0 scenarios.
-- **Acceptance Criteria:** `npm test` exits 0 with all tests passing.
-- **Verification:** `npm install && npm test 2>&1 | tail -20`
+### [NEW-03] .env.example defaults to majster.ai
+- **Description:** Line 32: `VITE_PUBLIC_SITE_URL=https://majster.ai`
+- **AC:** `grep "majster\.ai" .env.example | wc -l` → 0
 - **Status:** OPEN
 
 ---
 
-## Resolved Items (from prior sessions)
+## Resolved Items (from prior sessions — DO NOT REPEAT)
 
 | Item | Session | Resolution |
 |------|---------|------------|
-| P2-A / F-sitemap (sitemap domain) | 2026-02-18 | RESOLVED (re-audit confirmed) — no regression; V1=sitemap_majsterai=0, V2=generator_majsterai=0 |
-| P2-C / G3 (id! non-null assertion) | 2026-02-18 | RESOLVED (re-audit confirmed) — no regression; V3=id_bang=0; tsc_exit=0 |
-| P1-B / C (i18n key coverage) | 2026-02-18 | RESOLVED — re-audit fixed regression (errors.logoutFailed missing from uk.json); pl_total_paths=1070, missing_en=0, missing_ua=0 |
-| P0-CALENDAR (error boundary crash) | 2026-02-17 | FIXED — commit `8aa30fb` (`useCalendarEvents.ts`) |
-| P0-LOGOUT (race condition + cache) | 2026-02-17 | FIXED — commit `447f044` (`TopBar.tsx`, `AuthContext.tsx`) |
-| P0-QUOTE (ReferenceError projectId) | 2026-02-17 | FIXED — commit `d602a76` (`useQuoteVersions.ts`) |
-| P1-CRON-AUTH (missing CRON_SECRET) | 2026-02-15 | FIXED — `send-expiring-offer-reminders/index.ts` |
-| P2-COOKIE-CONSENT i18n | 2026-02-15 | FIXED — `CookieConsent.tsx` |
-| P2-NOTFOUND i18n + SPA nav | 2026-02-15 | FIXED — `NotFound.tsx` |
+| P0-LOGOUT | 2026-02-17 | FIXED — commit `447f044` |
+| P0-CALENDAR (hook) | 2026-02-17 | FIXED — commit `8aa30fb` |
+| P0-CALENDAR (SelectItem) | 2026-02-19 | FIXED — commit `bd14e62` |
+| P0-QUOTE | 2026-02-17 | FIXED — commit `d602a76` |
+| P1-LINT | 2026-02-19 | PASS — 0 errors, 16 warnings |
+| P1-I18N | 2026-02-18 | FIXED — 1236/1236/1236, 0 missing |
+| P1-SITEMAP | 2026-02-18 | FIXED — 0 majster.ai in sitemap |
+| P1-AI | 2026-02-18 | FIXED — Record<string, unknown> |
+| P1-COOKIE | verified | PASS — CookieConsent in App.tsx |
+| P2-TS-STRICT | 2026-02-17 | FIXED — instanceof guard |
+| P2-FINANCE | verified | PASS — fully implemented |
+| P2-TESTS | 2026-02-20 | PASS — 519 tests passing |
+
+---
+
+*Updated: 2026-02-20 | Session: claude/add-app-testing-audit-dSKf8*
