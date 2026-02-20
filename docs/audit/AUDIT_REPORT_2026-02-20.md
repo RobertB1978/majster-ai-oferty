@@ -91,8 +91,8 @@ All 8 previously known bugs (3×P0, 4×P1, 1×P2) are **FIXED** and verified. Th
 |----|------|-------|-----------|-------|
 | NEW-05 | Content | Lorem ipsum text in AdminThemeEditor preview | `AdminThemeEditor.tsx:299` | Acceptable for admin preview section |
 | NEW-06 | Content | "Coming Soon" in PluginsPanel | `PluginsPanel.tsx:237` | Acceptable for unreleased feature |
-| NEW-07 | SEO | No `hreflang` tags for PL/EN/UK language variants | `index.html` | Add hreflang links for multi-language SEO |
-| NEW-08 | SEO | No per-page canonical URLs (only global OG tags in index.html) | `index.html` | SPA limitation; consider `react-helmet-async` for dynamic meta |
+| NEW-07 | SEO | `SEOHead.tsx` component exists with hreflang, canonical, OG, Twitter cards, JSON-LD — but only used on 6 pages (5 legal + admin audit). Missing from Landing, Login, Dashboard, etc. | `src/components/seo/SEOHead.tsx` | Add `<SEOHead>` to Landing.tsx, Login.tsx, Register.tsx at minimum for per-page SEO |
+| NEW-08 | SEO | JSON-LD structured data in `SEOHead.tsx:38` uses `siteUrl` (runtime `window.location.origin`) which may differ from canonical production URL | `SEOHead.tsx:38` | Should use env-var-based production URL |
 
 ---
 
@@ -282,7 +282,7 @@ All 8 previously known bugs (3×P0, 4×P1, 1×P2) are **FIXED** and verified. Th
 - ⚠️ Stripe integration present in migrations but payment flow not tested from code
 - ⚠️ AI assistant requires API key (owner action)
 
-### D12: SEO & Metadata — 75/100 (B)
+### D12: SEO & Metadata — 82/100 (B)
 
 **Evidence:**
 - ✅ `<title>` tag: "Majster.AI — Wyceny i oferty PDF dla fachowców" (`index.html:16`)
@@ -293,10 +293,8 @@ All 8 previously known bugs (3×P0, 4×P1, 1×P2) are **FIXED** and verified. Th
 - ✅ `<html lang="pl">` set
 - ✅ PWA manifest linked (`/manifest.json`)
 - ✅ Apple mobile web app tags present
-- ⚠️ No `hreflang` tags for PL/EN/UK variants
-- ⚠️ No per-page canonical URLs (SPA limitation)
-- ⚠️ No `og:image` tag
-- ⚠️ No `twitter:card` meta tags
+- ✅ `SEOHead.tsx` component has: canonical URLs, hreflang, og:image, twitter:card, JSON-LD structured data
+- ⚠️ `SEOHead` only used on 6 pages (5 legal + admin audit) — missing from Landing, Login, Register, public offer pages
 
 ---
 
