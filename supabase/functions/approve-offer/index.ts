@@ -97,6 +97,15 @@ serve(async (req) => {
           .from('offer_approvals')
           .update({ status: 'expired' })
           .eq('id', approval.id);
+
+        // Trigger: notify contractor of expiry
+        await supabase.from('notifications').insert({
+          user_id: approval.user_id,
+          title: '⏰ Oferta wygasła',
+          message: 'Termin ważności oferty minął. Klient nie zaakceptował w wyznaczonym czasie.',
+          type: 'warning',
+          action_url: `/app/jobs/${approval.project_id}`,
+        });
       }
       return new Response(JSON.stringify({
         error: "Oferta wygasła. Skontaktuj się z wykonawcą, aby uzyskać nową wycenę.",
@@ -110,11 +119,23 @@ serve(async (req) => {
     if (req.method === 'GET') {
       // View-only: mark as viewed if currently pending/sent
       if (['pending', 'sent', 'draft'].includes(approval.status)) {
-        await supabase
+        const { count } = await supabase
           .from('offer_approvals')
           .update({ status: 'viewed', viewed_at: new Date().toISOString() })
           .eq('id', approval.id)
-          .filter('viewed_at', 'is', null); // only set first view
+          .filter('viewed_at', 'is', null) // only set first view
+          .select('id', { count: 'exact', head: true });
+
+        // Notify contractor: client just opened the offer (first view only)
+        if ((count ?? 0) > 0) {
+          await supabase.from('notifications').insert({
+            user_id: approval.user_id,
+            title: '👁 Klient otworzył ofertę',
+            message: 'Klient po raz pierwszy otworzył Twoją ofertę.',
+            type: 'info',
+            action_url: `/app/jobs/${approval.project_id}`,
+          });
+        }
       }
 
       const { data: quote } = await supabase

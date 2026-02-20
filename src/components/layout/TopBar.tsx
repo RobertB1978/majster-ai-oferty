@@ -175,7 +175,7 @@ export function TopBar() {
                   {t('nav.companyProfile', 'Profil firmy')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.open('https://majster.ai/pomoc', '_blank')}>
+                <DropdownMenuItem onClick={() => toast.info(t('help.docsComingSoon', 'Dokumentacja wkrótce dostępna. Sprawdź zakładkę Ustawienia lub napisz do nas.'))}>
                   {t('help.documentation', 'Dokumentacja')}
                 </DropdownMenuItem>
               </DropdownMenuContent>

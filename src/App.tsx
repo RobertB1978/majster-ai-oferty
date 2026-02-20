@@ -53,7 +53,9 @@ const Settings = lazy(() => import("./pages/Settings"));
 const PdfGenerator = lazy(() => import("./pages/PdfGenerator"));
 const Calendar = lazy(() => import("./pages/Calendar"));
 const Finance = lazy(() => import("./pages/Finance"));
+const Analytics = lazy(() => import("./pages/Analytics"));
 const QuickEstimate = lazy(() => import("./pages/QuickEstimate"));
+const Photos = lazy(() => import("./pages/Photos"));
 const Plan = lazy(() => import("./pages/Plan"));
 
 // === ZONE 3: OWNER CONSOLE (lazy - admin only, separate chunk) ===
@@ -191,11 +193,12 @@ const App = () => (
                     <Route path="jobs/:id/quote" element={<QuoteEditor />} />
                     <Route path="jobs/:id/pdf" element={<PdfGenerator />} />
                     <Route path="quick-est" element={<QuickEstimate />} />
+                    <Route path="photos" element={<Photos />} />
                     <Route path="calendar" element={<Calendar />} />
                     <Route path="team" element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="finance" element={<Finance />} />
                     <Route path="marketplace" element={<Navigate to="/app/dashboard" replace />} />
-                    <Route path="analytics" element={<Navigate to="/app/dashboard" replace />} />
+                    <Route path="analytics" element={<Analytics />} />
                     <Route path="templates" element={<ItemTemplates />} />
                     <Route path="plan" element={<Plan />} />
                     <Route path="profile" element={<CompanyProfile />} />

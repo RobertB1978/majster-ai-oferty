@@ -205,6 +205,35 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Trigger 5: "Offer sent" notification — best-effort, no failure if lookup fails
+    if (supabase && offerSendId) {
+      try {
+        const { data: sendRow } = await supabase
+          .from('offer_sends')
+          .select('project_id')
+          .eq('id', offerSendId)
+          .single();
+        if (sendRow?.project_id) {
+          const { data: approval } = await supabase
+            .from('offer_approvals')
+            .select('user_id')
+            .eq('project_id', sendRow.project_id)
+            .maybeSingle();
+          if (approval?.user_id) {
+            await supabase.from('notifications').insert({
+              user_id: approval.user_id,
+              title: '📤 Oferta wysłana',
+              message: `Oferta do projektu "${projectName}" została wysłana na adres email klienta.`,
+              type: 'info',
+              action_url: `/app/jobs/${sendRow.project_id}`,
+            });
+          }
+        }
+      } catch (notifErr) {
+        console.warn('[send-offer-email] Could not send notification:', notifErr);
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
