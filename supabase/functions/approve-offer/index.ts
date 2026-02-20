@@ -1,6 +1,6 @@
 // ============================================
-// APPROVE OFFER - Security Enhanced
-// Security Pack Δ1
+// APPROVE OFFER - Sprint 1 v2
+// Dual-token + full lifecycle + cancel window
 // ============================================
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -29,7 +29,15 @@ serve(async (req) => {
 
   try {
     // Parse request body
-    let body: { token?: unknown; action?: unknown; signatureData?: unknown; comment?: unknown };
+    let body: {
+      token?: unknown;
+      acceptToken?: unknown;
+      action?: unknown;
+      signatureData?: unknown;
+      comment?: unknown;
+      rejected_reason?: unknown;
+      accepted_via?: unknown;
+    };
     try {
       body = await req.json();
     } catch {
@@ -39,45 +47,60 @@ serve(async (req) => {
       );
     }
 
-    const { token, action, signatureData, comment } = body;
-    
-    // Validate token
+    const { token, acceptToken, action, signatureData, comment, rejected_reason, accepted_via } = body;
+
+    // Validate public_token (UUID)
     const tokenValidation = validateUUID(token, 'token');
     if (!tokenValidation.valid) {
       return createValidationErrorResponse(tokenValidation.errors, corsHeaders);
     }
 
-    // Rate limiting
+    // Rate limiting — max 10 attempts per IP per hour (D8)
     const rateLimitResult = await checkRateLimit(
       getIdentifier(req),
       'approve-offer',
       supabase
     );
-    
     if (!rateLimitResult.allowed) {
       return createRateLimitResponse(rateLimitResult, corsHeaders);
     }
 
-    // Get offer approval by token
+    // Fetch offer by public_token
     const { data: approval, error: fetchError } = await supabase
       .from('offer_approvals')
-      .select('id, project_id, user_id, status, public_token, expires_at')
+      .select('id, project_id, user_id, status, public_token, accept_token, expires_at, valid_until, approved_at, accepted_at, accepted_via')
       .eq('public_token', token)
       .single();
 
     if (fetchError || !approval) {
-      console.warn('Offer not found for token');
-      return new Response(JSON.stringify({ error: "Offer not found" }), {
+      return new Response(JSON.stringify({ error: "Oferta nie została znaleziona" }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Check if token has expired
+    // Token-level expiry check (link itself expired)
     if (approval.expires_at && new Date(approval.expires_at) < new Date()) {
-      console.log(`Offer ${approval.id} token expired at ${approval.expires_at}`);
-      return new Response(JSON.stringify({ 
-        error: "Link do akceptacji wygasł. Skontaktuj się z wykonawcą w celu uzyskania nowego linku." 
+      return new Response(JSON.stringify({
+        error: "Link do akceptacji wygasł. Skontaktuj się z wykonawcą w celu uzyskania nowego linku."
+      }), {
+        status: 410,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // valid_until check — offer validity (auto-expire)
+    if (approval.valid_until && new Date(approval.valid_until) < new Date()) {
+      // Auto-expire if not already expired
+      if (!['expired', 'accepted', 'approved', 'withdrawn'].includes(approval.status)) {
+        await supabase
+          .from('offer_approvals')
+          .update({ status: 'expired' })
+          .eq('id', approval.id);
+      }
+      return new Response(JSON.stringify({
+        error: "Oferta wygasła. Skontaktuj się z wykonawcą, aby uzyskać nową wycenę.",
+        status: 'expired',
       }), {
         status: 410,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -85,12 +108,13 @@ serve(async (req) => {
     }
 
     if (req.method === 'GET') {
-      // Return offer details for viewing (only if pending)
-      if (approval.status !== 'pending') {
-        return new Response(JSON.stringify({ error: "Offer already processed" }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      // View-only: mark as viewed if currently pending/sent
+      if (['pending', 'sent', 'draft'].includes(approval.status)) {
+        await supabase
+          .from('offer_approvals')
+          .update({ status: 'viewed', viewed_at: new Date().toISOString() })
+          .eq('id', approval.id)
+          .filter('viewed_at', 'is', null); // only set first view
       }
 
       const { data: quote } = await supabase
@@ -107,15 +131,15 @@ serve(async (req) => {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('company_name, owner_name, phone, email_for_offers, street, city, postal_code, logo_url')
+        .select('company_name, owner_name, phone, contact_email, email_for_offers, street, city, postal_code, logo_url')
         .eq('user_id', approval.user_id)
         .single();
 
-      return new Response(JSON.stringify({ 
+      return new Response(JSON.stringify({
         approval: { id: approval.id, status: approval.status },
         quote,
         project,
-        company: profile
+        company: profile,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -128,32 +152,119 @@ serve(async (req) => {
         return createValidationErrorResponse(actionValidation.errors, corsHeaders);
       }
 
-      if (action !== 'approve' && action !== 'reject') {
-        return new Response(JSON.stringify({ error: "Invalid action. Must be 'approve' or 'reject'" }), {
+      const validActions = ['approve', 'reject', 'cancel_accept', 'withdraw'];
+      if (!validActions.includes(String(action))) {
+        return new Response(JSON.stringify({ error: `Action must be one of: ${validActions.join(', ')}` }), {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
-      if (approval.status !== 'pending') {
-        return new Response(JSON.stringify({ error: "Offer already processed" }), {
-          status: 400,
+      // ─── CANCEL_ACCEPT (10-minute window) ───────────────
+      if (action === 'cancel_accept') {
+        const isAccepted = ['accepted', 'approved'].includes(approval.status);
+        if (!isAccepted) {
+          return new Response(JSON.stringify({ error: "Oferta nie jest zaakceptowana" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const acceptedTs = approval.accepted_at ?? approval.approved_at;
+        if (!acceptedTs) {
+          return new Response(JSON.stringify({ error: "Nie można ustalić czasu akceptacji" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const diffMs = Date.now() - new Date(acceptedTs).getTime();
+        if (diffMs > 600_000) {
+          return new Response(JSON.stringify({ error: "Minął 10-minutowy czas na cofnięcie akceptacji" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        await supabase
+          .from('offer_approvals')
+          .update({
+            status: 'sent',
+            accepted_at: null,
+            approved_at: null,
+            accepted_via: null,
+          })
+          .eq('id', approval.id);
+
+        // Notify contractor
+        await supabase
+          .from('notifications')
+          .insert({
+            user_id: approval.user_id,
+            title: 'Klient cofnął akceptację oferty',
+            message: 'Klient cofnął akceptację oferty w oknie 10-minutowym.',
+            type: 'warning',
+            action_url: `/app/jobs/${approval.project_id}`,
+          });
+
+        return new Response(JSON.stringify({ success: true }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
-      // Sanitize and validate optional fields
+      // ─── WITHDRAW (contractor action) ───────────────────
+      if (action === 'withdraw') {
+        await supabase
+          .from('offer_approvals')
+          .update({ status: 'withdrawn', withdrawn_at: new Date().toISOString() })
+          .eq('id', approval.id);
+
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // ─── APPROVE / REJECT ────────────────────────────────
+      // Idempotency: already processed
+      const alreadyFinal = ['accepted', 'approved', 'rejected', 'expired', 'withdrawn'].includes(approval.status);
+      if (alreadyFinal) {
+        return new Response(JSON.stringify({
+          success: true,
+          idempotent: true,
+          status: approval.status,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // For 1-click accept: validate accept_token
+      if (action === 'approve' && accepted_via === 'email_1click') {
+        if (!acceptToken || String(acceptToken) !== String(approval.accept_token)) {
+          return new Response(JSON.stringify({ error: "Nieprawidłowy token akceptacji" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+
       const safeComment = comment ? sanitizeUserInput(String(comment), 1000) : null;
-      const safeSignature = signatureData ? String(signatureData).substring(0, 50000) : null; // Base64 signature
+      const safeRejectedReason = rejected_reason ? sanitizeUserInput(String(rejected_reason), 500) : null;
+      const safeSignature = signatureData ? String(signatureData).substring(0, 50000) : null;
+      const safeAcceptedVia = accepted_via === 'email_1click' ? 'email_1click' : 'web_button';
 
+      const now = new Date().toISOString();
       const updateData: Record<string, unknown> = {
-        status: action === 'approve' ? 'approved' : 'rejected',
+        status: action === 'approve' ? 'accepted' : 'rejected',
         client_comment: safeComment,
       };
 
       if (action === 'approve') {
         updateData.signature_data = safeSignature;
-        updateData.approved_at = new Date().toISOString();
+        updateData.approved_at = now;
+        updateData.accepted_at = now;
+        updateData.accepted_via = safeAcceptedVia;
+      } else {
+        updateData.rejected_reason = safeRejectedReason;
       }
 
       const { error: updateError } = await supabase
@@ -166,7 +277,7 @@ serve(async (req) => {
         throw updateError;
       }
 
-      // Update project status
+      // Update project status on approval
       if (action === 'approve') {
         await supabase
           .from('projects')
@@ -174,19 +285,22 @@ serve(async (req) => {
           .eq('id', approval.project_id);
       }
 
-      // Create notification for owner
+      // Notification for contractor
       await supabase
         .from('notifications')
         .insert({
           user_id: approval.user_id,
-          title: action === 'approve' ? 'Oferta zaakceptowana!' : 'Oferta odrzucona',
-          message: `Klient ${action === 'approve' ? 'zaakceptował' : 'odrzucił'} ofertę.${safeComment ? ` Komentarz: ${safeComment.substring(0, 100)}` : ''}`,
+          title: action === 'approve'
+            ? '✓ Klient zaakceptował ofertę'
+            : 'Oferta odrzucona',
+          message: action === 'approve'
+            ? `Klient zaakceptował ofertę${safeAcceptedVia === 'email_1click' ? ' (1-klik z emaila)' : ''}.${safeComment ? ` Komentarz: ${safeComment.substring(0, 100)}` : ''}`
+            : `Klient odrzucił ofertę.${safeRejectedReason ? ` Powód: ${safeRejectedReason.substring(0, 100)}` : ''}`,
           type: action === 'approve' ? 'success' : 'warning',
-          action_url: `/projects/${approval.project_id}`
+          action_url: `/app/jobs/${approval.project_id}`,
         });
 
-      console.log(`[approve-offer] Offer ${approval.id} ${action}d successfully by token ${token}`);
-      console.log(`[approve-offer] Project ${approval.project_id} status updated`);
+      console.log(`[approve-offer] Offer ${approval.id} ${action}d (${safeAcceptedVia ?? 'web'})`);
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
