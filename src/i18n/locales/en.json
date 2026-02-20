@@ -91,7 +91,10 @@
       "genericError": "An error occurred. Please try again.",
       "fillAllFields": "Fill in all fields",
       "passwordsDoNotMatch": "Passwords do not match",
-      "passwordRequirements": "Password does not meet security requirements"
+      "passwordRequirements": "Password does not meet security requirements",
+      "invalidPhone": "Please enter a valid phone number (min. 9 digits).",
+      "phoneTaken": "This phone number is already registered.",
+      "registrationFailed": "Registration error. Please try again."
     },
     "success": {
       "loggedIn": "Logged in successfully",
@@ -117,7 +120,10 @@
       "special": "Special character (optional)"
     },
     "biometricDescription": "Use fingerprint or Face ID to login",
-    "biometricNotSupported": "Your device does not support biometric login"
+    "biometricNotSupported": "Your device does not support biometric login",
+    "phone": "Phone number",
+    "phonePlaceholder": "+48 500 000 000",
+    "phoneHint": "Required for account verification. We do not share it with others."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1418,5 +1424,15 @@
       "rights": "All rights reserved.",
       "madeIn": "Made in Poland. GDPR Compliant."
     }
+  },
+  "addons": {
+    "title": "Purchase more resources",
+    "subtitle": "Your plan limit has been reached. Choose an add-on to extend it.",
+    "purchaseSuccess": "Add-on purchased",
+    "purchaseError": "Purchase error",
+    "purchased": "Purchased",
+    "selected": "Selected",
+    "vatNote": "Net price + 23% VAT. Payment via Stripe.",
+    "buy": "Buy now"
   }
 }

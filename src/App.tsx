@@ -76,7 +76,7 @@ function ProjectRedirect({ suffix = '' }: { suffix?: string }) {
   return <Navigate to={`/app/jobs/${id}${suffix}`} replace />;
 }
 
-/** Initialize theme from localStorage or system preference for all routes (including auth pages). */
+/** Initialize theme + lang from localStorage or system preference for all routes. */
 function ThemeInitializer() {
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -87,6 +87,12 @@ function ThemeInitializer() {
     } else {
       document.documentElement.classList.remove('dark');
     }
+
+    // Sync html[lang] with stored i18next language on boot
+    const storedLang = localStorage.getItem('i18nextLng');
+    const supportedLangs = ['pl', 'en', 'uk'];
+    const lang = storedLang && supportedLangs.includes(storedLang) ? storedLang : 'pl';
+    document.documentElement.lang = lang;
   }, []);
 
   return null;

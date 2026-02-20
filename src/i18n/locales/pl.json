@@ -91,7 +91,10 @@
       "genericError": "Wystąpił błąd. Spróbuj ponownie.",
       "fillAllFields": "Wypełnij wszystkie pola",
       "passwordsDoNotMatch": "Hasła nie są identyczne",
-      "passwordRequirements": "Hasło nie spełnia wymagań bezpieczeństwa"
+      "passwordRequirements": "Hasło nie spełnia wymagań bezpieczeństwa",
+      "invalidPhone": "Podaj prawidłowy numer telefonu (min. 9 cyfr).",
+      "phoneTaken": "Ten numer telefonu jest już zarejestrowany.",
+      "registrationFailed": "Błąd rejestracji. Spróbuj ponownie."
     },
     "success": {
       "loggedIn": "Zalogowano pomyślnie",
@@ -117,7 +120,10 @@
       "special": "Znak specjalny (opcjonalnie)"
     },
     "biometricDescription": "Używaj odcisku palca lub Face ID do logowania",
-    "biometricNotSupported": "Twoje urządzenie nie obsługuje logowania biometrycznego"
+    "biometricNotSupported": "Twoje urządzenie nie obsługuje logowania biometrycznego",
+    "phone": "Numer telefonu",
+    "phonePlaceholder": "+48 500 000 000",
+    "phoneHint": "Wymagany do weryfikacji konta. Nie udostępniamy go innym."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1418,5 +1424,15 @@
       "rights": "Wszystkie prawa zastrzeżone.",
       "madeIn": "Stworzone w Polsce. Zgodne z RODO."
     }
+  },
+  "addons": {
+    "title": "Dokup więcej zasobów",
+    "subtitle": "Osiągnięto limit Twojego planu. Wybierz dodatek, aby go rozszerzyć.",
+    "purchaseSuccess": "Zakupiono dodatek",
+    "purchaseError": "Błąd zakupu",
+    "purchased": "Zakupiono",
+    "selected": "Wybrany",
+    "vatNote": "Cena netto + 23% VAT. Płatność przez Stripe.",
+    "buy": "Kup teraz"
   }
 }
