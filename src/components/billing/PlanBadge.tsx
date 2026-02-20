@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '@/components/ui/badge';
 import { ChevronDown } from 'lucide-react';
 import { useUserSubscription } from '@/hooks/useSubscription';
 

@@ -199,7 +199,7 @@ export async function handleSendOfferEmail(
     console.error("[send-offer-email] Error:", error);
     return {
       ok: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred while sending email",
     };
   }
 }
