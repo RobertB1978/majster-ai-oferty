@@ -43,7 +43,7 @@ All 8 previously known bugs (3×P0, 4×P1, 1×P2) are **FIXED** and verified. Th
 | `npm run lint` | 0 errors, 16 warnings | 0 | All warnings: `react-refresh/only-export-components` |
 | `npm test -- --run` | 519 passed, 5 skipped, 37 test files | 0 | Duration: 35.21s |
 | `npm run build` | Success | 0 | Built in 35.34s, output in `dist/` |
-| `npm audit` | 1 moderate, 20 high | non-zero | All from exceljs/archiver dependency chain; no fix available upstream |
+| `npm audit` | 1 moderate, 20 high | non-zero | **jsPDF**: 3 HIGH (fixable via `npm audit fix`); **exceljs/archiver**: 17 HIGH (no fix available upstream) |
 
 ---
 
@@ -72,7 +72,9 @@ All 8 previously known bugs (3×P0, 4×P1, 1×P2) are **FIXED** and verified. Th
 
 ### HIGH (P1 — Fix this week)
 
-*None found.*
+| ID | Area | Issue | File:Line | Suggested Fix |
+|----|------|-------|-----------|---------------|
+| NEW-09 | Security | jsPDF <=4.1.0 has 3 HIGH vulnerabilities: (1) PDF Injection via AcroForm (arbitrary JS execution), (2) PDF Object Injection via unsanitized input in addJS(), (3) DoS via malicious GIF dimensions. **Fix IS available** via `npm audit fix`. Critical for a PDF-generation app. | `node_modules/jspdf` | Run `npm audit fix` — this will update jsPDF to patched version without breaking changes |
 
 ### MEDIUM (P2 — Fix this sprint)
 
@@ -81,7 +83,7 @@ All 8 previously known bugs (3×P0, 4×P1, 1×P2) are **FIXED** and verified. Th
 | NEW-01 | Domain Constraint | `@majster.ai` email addresses hardcoded throughout codebase. Domain is NOT owned per project constraint. Emails to `kontakt@majster.ai`, `support@majster.ai`, `sales@majster.ai`, `privacy@majster.ai`, `noreply@majster.ai` will bounce. | `Footer.tsx:27-28,115,123,131`; `Landing.tsx:513-514,538-540`; `Plan.tsx:165,185-186`; `Privacy.tsx:139`; `Terms.tsx:153`; `AdminContentEditor.tsx:65,232`; `AdminSystemSettings.tsx:67,245`; `useAdminSettings.ts:47` | Replace with actual working email or use `VITE_CONTACT_EMAIL` env var pattern. ~10 files affected. |
 | NEW-02 | Performance | JS bundle total gzipped exceeds 500KB target. Key chunks: `exportUtils` 272KB gzip (exceljs), `index` 191KB gzip, `ProjectDetail` 155KB gzip, `charts-vendor` 114KB gzip. Total estimated >1MB gzipped. | `dist/assets/js/exportUtils-*.js` (938KB raw / 272KB gzip) | Consider lazy-loading exceljs only when export is triggered. Split ProjectDetail further. |
 | NEW-03 | Configuration | `.env.example:32` defaults `VITE_PUBLIC_SITE_URL=https://majster.ai` — contradicts domain constraint. The `generate-sitemap.js` correctly falls back to Vercel URL, but `.env.example` is misleading. | `.env.example:32` | Change default to `https://majster-ai-oferty.vercel.app` or leave blank with comment |
-| NEW-04 | Security | 21 npm audit vulnerabilities (1 moderate, 20 high) — all from `exceljs → archiver → archiver-utils → minimatch` chain. No upstream fix available yet. | `npm audit` output | Monitor for `minimatch@10.2.1` release; consider `--audit-level=critical` in CI (already done in `security.yml`) |
+| NEW-04 | Security | 17 npm audit vulnerabilities from `exceljs → archiver → minimatch` chain. No upstream fix available yet. | `npm audit` output | Monitor for `minimatch@10.2.1` release; CI already uses `--audit-level=critical` |
 
 ### LOW (P3 — Backlog)
 
