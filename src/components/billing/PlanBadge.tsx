@@ -3,24 +3,25 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 import { useUserSubscription } from '@/hooks/useSubscription';
 
-const PLAN_LABELS: Record<string, { pl: string; en: string; uk: string; color: string }> = {
-  free: { pl: 'Darmowy', en: 'Free', uk: 'Безкоштовний', color: 'secondary' },
-  pro: { pl: 'Pro', en: 'Pro', uk: 'Про', color: 'default' },
-  starter: { pl: 'Pro', en: 'Pro', uk: 'Про', color: 'default' },
-  business: { pl: 'Biznes', en: 'Business', uk: 'Бізнес', color: 'default' },
-  enterprise: { pl: 'Enterprise', en: 'Enterprise', uk: 'Корпоративний', color: 'default' },
-};
-
 export function PlanBadge() {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { t } = useTranslation();
   const { data: subscription, isLoading } = useUserSubscription();
 
   if (isLoading) return null;
 
   const planId = subscription?.plan_id ?? 'free';
-  const lang = i18n.language.startsWith('uk') ? 'uk' : i18n.language.startsWith('en') ? 'en' : 'pl';
-  const planLabel = PLAN_LABELS[planId]?.[lang] ?? planId;
+
+  // t() is reactive — badge updates instantly on language change without page reload
+  const planNames: Record<string, string> = {
+    free: t('plan.names.free'),
+    pro: t('plan.names.pro'),
+    starter: t('plan.names.starter'),
+    business: t('plan.names.business'),
+    enterprise: t('plan.names.enterprise'),
+  };
+
+  const planLabel = planNames[planId] ?? planId;
   const isPaid = planId !== 'free';
 
   return (

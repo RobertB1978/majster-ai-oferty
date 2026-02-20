@@ -94,6 +94,7 @@
       "passwordRequirements": "Password does not meet security requirements",
       "invalidPhone": "Please enter a valid phone number (min. 9 digits).",
       "phoneTaken": "This phone number is already registered.",
+      "emailTaken": "This email is already linked to another account.",
       "registrationFailed": "Registration error. Please try again."
     },
     "success": {
@@ -1468,5 +1469,14 @@
     "noItems": "Add at least one item.",
     "saved": "Estimate saved!",
     "defaultName": "Quick estimate"
+  },
+  "plan": {
+    "names": {
+      "free": "Free",
+      "pro": "Pro",
+      "starter": "Pro",
+      "business": "Business",
+      "enterprise": "Enterprise"
+    }
   }
 }
