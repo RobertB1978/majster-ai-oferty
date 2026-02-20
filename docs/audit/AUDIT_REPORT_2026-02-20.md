@@ -19,8 +19,8 @@ All 8 previously known bugs (3×P0, 4×P1, 1×P2) are **FIXED** and verified. Th
 
 | Dimension | Score | Grade | Status |
 |-----------|-------|-------|--------|
-| D1: GitHub Health | 82/100 | B | PASS |
-| D2: Vercel/Deployment | 85/100 | B | PASS |
+| D1: GitHub Health | 88/100 | B | PASS |
+| D2: Vercel/Deployment | 88/100 | B | PASS |
 | D3: Supabase Security | 75/100 | B | PARTIAL (RLS unverifiable) |
 | D4: Feature Completeness | 90/100 | A | PASS |
 | D5: UX/Mobile | 75/100 | B | PASS |
@@ -98,7 +98,7 @@ All 8 previously known bugs (3×P0, 4×P1, 1×P2) are **FIXED** and verified. Th
 
 ## DIMENSION DETAILS
 
-### D1: GitHub Repository Health — 82/100 (B)
+### D1: GitHub Repository Health — 88/100 (B)
 
 **Evidence:**
 - ✅ 5 CI workflows: `ci.yml`, `e2e.yml`, `security.yml`, `bundle-analysis.yml`, `supabase-deploy.yml`
@@ -106,11 +106,11 @@ All 8 previously known bugs (3×P0, 4×P1, 1×P2) are **FIXED** and verified. Th
 - ✅ Active development: 25 recent commits on HEAD
 - ✅ PR-based workflow with numbered PRs (#210–#235)
 - ✅ Comprehensive documentation: 60+ docs in `docs/`
-- ⚠️ No `.github/PULL_REQUEST_TEMPLATE.md` found
+- ✅ PR template exists: `.github/pull_request_template.md` (Polish, with DoD checklist, scope fence, rollback plan)
+- ✅ README.md bilingual (PL/EN) with badges, tech stack, features
 - ⚠️ Multiple stale branches visible (old `claude/` branches)
-- ⚠️ README.md exists but quick-start docs are in `docs/QUICK_START.md`
 
-### D2: Vercel/Deployment — 85/100 (B)
+### D2: Vercel/Deployment — 88/100 (B)
 
 **Evidence:**
 - ✅ Comprehensive security headers in `vercel.json`:
@@ -121,9 +121,10 @@ All 8 previously known bugs (3×P0, 4×P1, 1×P2) are **FIXED** and verified. Th
   - Referrer-Policy: strict-origin-when-cross-origin
   - Permissions-Policy: camera=(), microphone=(), geolocation=()
 - ✅ SPA rewrite: `"/(.*)" → "/index.html"`
-- ✅ Only 5 `console.log` statements in production code, all in logger/sentry infrastructure
+- ✅ Only 5 `console.log` in production — all in `logger.ts` (PII-masked via `maskPII()`) and `sentry.ts` (dev-only or config warnings)
 - ✅ No localhost URLs hardcoded (biometric hooks use runtime `window.location.hostname` check — legitimate)
-- ✅ `.env.example` comprehensively documented (103 lines)
+- ✅ `.env.example` comprehensively documented (103 lines) with security warnings
+- ✅ Rate limiting in Edge Functions: `supabase/functions/_shared/rate-limiter.ts` — per-endpoint, per-user/IP, database-persisted (e.g., AI chat: 20 req/min, public API: 100 req/min)
 - ⚠️ `.env.example:32` defaults to `https://majster.ai` (NEW-03)
 - ⚠️ No custom 404 page (uses React Router `*` catch-all to NotFound component)
 
