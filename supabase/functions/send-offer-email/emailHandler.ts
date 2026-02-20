@@ -1,6 +1,6 @@
 // ============================================
-// EMAIL HANDLER - Pure Logic (Testable)
-// Phase 7C: Extract core logic for unit testing
+// EMAIL HANDLER - Sprint 1 v2
+// Reply-To + dual action buttons (view & 1-click accept)
 // ============================================
 
 import { sanitizeString } from "../_shared/validation.ts";
@@ -17,6 +17,12 @@ export interface SendOfferPayload {
   pdfUrl?: string;
   offerSendId?: string;
   tracking_status?: string;
+  // Sprint 1: dual-token + reply-to
+  publicToken?: string;
+  acceptToken?: string;
+  replyTo?: string;       // verified contact_email → Reply-To header
+  companyName?: string;
+  frontendUrl?: string;   // injected from env FRONTEND_URL
 }
 
 /**
@@ -33,18 +39,13 @@ export interface SendOfferResult {
  * Dependencies for email handler (mockable in tests)
  */
 export interface EmailDeps {
-  /**
-   * Send email via external service (e.g., Resend)
-   */
   sendEmail: (params: {
     to: string;
     subject: string;
     html: string;
+    replyTo?: string;
   }) => Promise<{ id: string }>;
 
-  /**
-   * Update offer_sends record in database (optional)
-   */
   updateOfferSend?: (params: {
     offerSendId: string;
     pdfUrl?: string;
@@ -53,76 +54,91 @@ export interface EmailDeps {
 }
 
 /**
- * Generate HTML content for offer email
+ * Generate HTML content for offer email with dual action buttons
  */
 export function generateOfferEmailHtml(
   projectName: string,
-  message: string
+  message: string,
+  opts?: {
+    publicToken?: string;
+    acceptToken?: string;
+    companyName?: string;
+    pdfUrl?: string;
+    frontendUrl?: string;
+  }
 ): string {
   const safeProjectName = sanitizeString(projectName);
   const safeMessage = message.replace(/\n/g, '<br>');
+  const safeCompanyName = opts?.companyName ? sanitizeString(opts.companyName) : 'Majster.AI';
+  const baseUrl = opts?.frontendUrl ?? 'https://majster.ai';
 
-  return `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-          body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-          }
-          .header {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white;
-            padding: 30px;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 30px;
-          }
-          .content {
-            background: #f9fafb;
-            padding: 25px;
-            border-radius: 8px;
-          }
-          .footer {
-            text-align: center;
-            color: #6b7280;
-            font-size: 12px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-          }
-          .project-badge {
-            display: inline-block;
-            background: #dbeafe;
-            color: #1d4ed8;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            margin-top: 10px;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1 style="margin: 0;">Majster.AI</h1>
-          <span class="project-badge">${safeProjectName}</span>
-        </div>
-        <div class="content">
-          ${safeMessage}
-        </div>
-        <div class="footer">
-          <p>Ta wiadomość została wysłana przez Majster.AI</p>
-        </div>
-      </body>
-    </html>
-  `;
+  const viewUrl = opts?.publicToken
+    ? `${baseUrl}/offer/${opts.publicToken}`
+    : null;
+  const acceptUrl = opts?.publicToken && opts?.acceptToken
+    ? `${baseUrl}/offer/${opts.publicToken}?t=${opts.acceptToken}`
+    : null;
+
+  const actionButtons = viewUrl && acceptUrl ? `
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${acceptUrl}"
+         style="display:inline-block; background:#16a34a; color:#ffffff; padding:14px 28px; border-radius:6px;
+                text-decoration:none; font-size:16px; font-weight:700; letter-spacing:0.5px; margin-bottom:12px; min-width:200px;">
+        ✓ AKCEPTUJĘ (1 klik)
+      </a>
+      <br>
+      <a href="${viewUrl}"
+         style="display:inline-block; background:#2563eb; color:#ffffff; padding:14px 28px; border-radius:6px;
+                text-decoration:none; font-size:15px; font-weight:600; letter-spacing:0.5px; min-width:200px;">
+        OGLĄDAM OFERTĘ →
+      </a>
+    </div>
+  ` : viewUrl ? `
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${viewUrl}"
+         style="display:inline-block; background:#2563eb; color:#ffffff; padding:14px 28px; border-radius:6px;
+                text-decoration:none; font-size:15px; font-weight:600;">
+        OGLĄDAM OFERTĘ →
+      </a>
+    </div>
+  ` : '';
+
+  const pdfSection = opts?.pdfUrl ? `
+    <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:12px; margin-top:16px; text-align:center;">
+      <a href="${opts.pdfUrl}" style="color:#16a34a; text-decoration:none; font-size:14px;">
+        📄 Pobierz ofertę w PDF
+      </a>
+    </div>
+  ` : '';
+
+  return `<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oferta — ${safeProjectName}</title>
+  </head>
+  <body style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:#1a1a1a;max-width:600px;margin:0 auto;padding:20px;background:#ffffff;">
+    <div style="background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:30px;border-radius:8px;text-align:center;margin-bottom:24px;">
+      <h1 style="margin:0;font-size:24px;">${safeCompanyName}</h1>
+      <span style="display:inline-block;background:rgba(255,255,255,0.2);padding:4px 14px;border-radius:20px;font-size:14px;margin-top:10px;">
+        ${safeProjectName}
+      </span>
+    </div>
+
+    <div style="background:#f9fafb;padding:24px;border-radius:8px;border:1px solid #e5e7eb;">
+      <div style="white-space:pre-wrap;">${safeMessage}</div>
+    </div>
+
+    ${actionButtons}
+    ${pdfSection}
+
+    <div style="text-align:center;color:#6b7280;font-size:12px;margin-top:30px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <p style="margin:0 0 4px;">Ta wiadomość została wysłana przez <strong>Majster.AI</strong></p>
+      ${viewUrl ? `<p style="margin:0;"><a href="${viewUrl}" style="color:#9ca3af;font-size:11px;">Nie możesz kliknąć przycisku? Użyj tego linku: ${viewUrl}</a></p>` : ''}
+    </div>
+  </body>
+</html>`;
 }
 
 /**
@@ -133,36 +149,34 @@ export async function handleSendOfferEmail(
   payload: SendOfferPayload,
   deps: EmailDeps
 ): Promise<SendOfferResult> {
-  const { to, subject, message, projectName, pdfUrl, offerSendId, tracking_status } = payload;
+  const {
+    to, subject, message, projectName, pdfUrl, offerSendId, tracking_status,
+    publicToken, acceptToken, replyTo, companyName, frontendUrl,
+  } = payload;
 
-  // Validate required fields (basic checks)
-  if (!to?.trim()) {
-    return { ok: false, error: "Email recipient is required" };
-  }
-  if (!subject?.trim()) {
-    return { ok: false, error: "Email subject is required" };
-  }
-  if (!message?.trim()) {
-    return { ok: false, error: "Email message is required" };
-  }
-  if (!projectName?.trim()) {
-    return { ok: false, error: "Project name is required" };
-  }
+  if (!to?.trim()) return { ok: false, error: "Email recipient is required" };
+  if (!subject?.trim()) return { ok: false, error: "Email subject is required" };
+  if (!message?.trim()) return { ok: false, error: "Email message is required" };
+  if (!projectName?.trim()) return { ok: false, error: "Project name is required" };
 
   try {
-    // Generate HTML email content
-    const htmlContent = generateOfferEmailHtml(projectName, message);
+    const htmlContent = generateOfferEmailHtml(projectName, message, {
+      publicToken,
+      acceptToken,
+      companyName,
+      pdfUrl,
+      frontendUrl,
+    });
 
-    // Send email via external service
     const emailResult = await deps.sendEmail({
       to: to.trim(),
       subject: subject.trim(),
       html: htmlContent,
+      replyTo: replyTo?.trim() || undefined,
     });
 
-    console.log(`[send-offer-email] Email sent successfully: ${emailResult.id} to ${to.substring(0, 3)}***`);
+    console.log(`[send-offer-email] Email sent: ${emailResult.id} to ${to.substring(0, 3)}***`);
 
-    // Update database record if offerSendId provided and updateOfferSend available
     if (offerSendId && deps.updateOfferSend) {
       try {
         await deps.updateOfferSend({
@@ -170,11 +184,8 @@ export async function handleSendOfferEmail(
           pdfUrl,
           tracking_status: normalizeTrackingStatus(tracking_status),
         });
-        console.log(`[send-offer-email] Updated offer_sends record: ${offerSendId}`);
       } catch (dbError) {
-        // Email was sent successfully, but DB update failed
-        // Don't fail the whole operation, but return a warning
-        console.error(`[send-offer-email] Failed to update offer_sends ${offerSendId}:`, dbError);
+        console.error(`[send-offer-email] DB update failed for ${offerSendId}:`, dbError);
         return {
           ok: true,
           emailId: emailResult.id,
@@ -183,24 +194,12 @@ export async function handleSendOfferEmail(
       }
     }
 
-    return {
-      ok: true,
-      emailId: emailResult.id,
-    };
+    return { ok: true, emailId: emailResult.id };
   } catch (error) {
-    console.error("[send-offer-email] Error in handleSendOfferEmail:", error);
-
-    // Distinguish between email service errors and other errors
-    if (error instanceof Error) {
-      return {
-        ok: false,
-        error: error.message || "Failed to send email",
-      };
-    }
-
+    console.error("[send-offer-email] Error:", error);
     return {
       ok: false,
-      error: "Unknown error occurred while sending email",
+      error: error instanceof Error ? error.message : "Unknown error occurred while sending email",
     };
   }
 }

@@ -8,12 +8,14 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
 import { validatePasswordStrength } from '@/lib/validations';
-import { Wrench, Mail, Lock } from 'lucide-react';
+import { Wrench, Mail, Lock, Phone } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Register() {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -29,8 +31,30 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !password || !confirmPassword) {
+    if (!email || !phone || !password || !confirmPassword) {
       toast.error(t('auth.errors.fillAllFields'));
+      return;
+    }
+
+    // Phone validation: strip non-digits, must be ≥9 digits (Polish standard)
+    const digitsOnly = phone.replace(/\D/g, '');
+    if (digitsOnly.length < 9) {
+      toast.error(t('auth.errors.invalidPhone', 'Podaj prawidłowy numer telefonu (min. 9 cyfr).'));
+      return;
+    }
+
+    // Anti-abuse: check for duplicate phone in profiles
+    const { data: existingPhone, error: phoneCheckError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('phone', digitsOnly)
+      .maybeSingle();
+    if (phoneCheckError) {
+      toast.error(t('auth.errors.registrationFailed', 'Błąd rejestracji. Spróbuj ponownie.'));
+      return;
+    }
+    if (existingPhone) {
+      toast.error(t('auth.errors.phoneTaken', 'Ten numer telefonu jest już zarejestrowany.'));
       return;
     }
 
@@ -48,14 +72,22 @@ export default function Register() {
 
     setIsLoading(true);
     const { error } = await register(email, password);
-    setIsLoading(false);
 
     if (error) {
+      setIsLoading(false);
       toast.error(error);
-    } else {
-      toast.success(t('auth.success.accountCreated'));
-      navigate('/dashboard');
+      return;
     }
+
+    // Save normalised phone to profile (profile row created by DB trigger on auth.users)
+    const { data: { user: newUser } } = await supabase.auth.getUser();
+    if (newUser) {
+      await supabase.from('profiles').update({ phone: digitsOnly }).eq('id', newUser.id);
+    }
+
+    setIsLoading(false);
+    toast.success(t('auth.success.accountCreated'));
+    navigate('/dashboard');
   };
 
   return (
@@ -83,6 +115,22 @@ export default function Register() {
                   className="pl-10"
                 />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">{t('auth.phone', 'Numer telefonu')}</Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder={t('auth.phonePlaceholder', '+48 500 000 000')}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="pl-10"
+                  autoComplete="tel"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">{t('auth.phoneHint', 'Wymagany do weryfikacji konta. Nie udostępniamy go innym.')}</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">{t('auth.password')}</Label>

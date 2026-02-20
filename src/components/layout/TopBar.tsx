@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { LogOut, HelpCircle, Globe, ChevronDown, Moon, Sun, Shield, Wifi, WifiOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { PlanBadge } from '@/components/billing/PlanBadge';
 import { Logo } from '@/components/branding/Logo';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import {
@@ -107,6 +108,9 @@ export function TopBar() {
 
         {user && (
           <div className="flex items-center gap-1 sm:gap-2">
+            <div className="hidden sm:block">
+              <PlanBadge />
+            </div>
             <NotificationCenter />
 
             {/* Theme Toggle */}
@@ -171,7 +175,7 @@ export function TopBar() {
                   {t('nav.companyProfile', 'Profil firmy')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.open('https://majster.ai/pomoc', '_blank')}>
+                <DropdownMenuItem onClick={() => toast.info(t('help.docsComingSoon', 'Dokumentacja wkrótce dostępna. Sprawdź zakładkę Ustawienia lub napisz do nas.'))}>
                   {t('help.documentation', 'Dokumentacja')}
                 </DropdownMenuItem>
               </DropdownMenuContent>

@@ -25,8 +25,13 @@ interface SendOfferRequest {
   subject: string;
   message: string;
   projectName: string;
-  pdfUrl?: string; // Phase 5C: Optional PDF URL to save in database
-  tracking_status?: string; // Phase 7B: Optional tracking status (normalized to 'sent' if invalid/missing)
+  pdfUrl?: string;
+  tracking_status?: string;
+  // Sprint 1: dual-token + reply-to + branding
+  publicToken?: string;
+  acceptToken?: string;
+  replyTo?: string;
+  companyName?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -71,7 +76,8 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const { to, subject, message, projectName, pdfUrl, offerSendId, tracking_status } = body;
+    const { to, subject, message, projectName, pdfUrl, offerSendId, tracking_status,
+            publicToken, acceptToken, replyTo, companyName } = body;
 
     // Validate all inputs
     const validation = combineValidations(
@@ -103,23 +109,28 @@ const handler = async (req: Request): Promise<Response> => {
     // Create dependencies for email handler
     const deps: EmailDeps = {
       // Resend API call with timeout
-      sendEmail: async ({ to: emailTo, subject: emailSubject, html }) => {
+      sendEmail: async ({ to: emailTo, subject: emailSubject, html, replyTo: emailReplyTo }) => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
         try {
+          const emailPayload: Record<string, unknown> = {
+            from: "Majster.AI <oferty@majster.ai>",
+            to: [emailTo],
+            subject: emailSubject,
+            html,
+          };
+          // Reply-To only set when contact_email is verified
+          if (emailReplyTo) {
+            emailPayload.reply_to = emailReplyTo;
+          }
           const resendResponse = await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: {
               "Authorization": `Bearer ${resendApiKey}`,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              from: "Majster.AI <onboarding@resend.dev>",
-              to: [emailTo],
-              subject: emailSubject,
-              html,
-            }),
+            body: JSON.stringify(emailPayload),
             signal: controller.signal,
           });
 
@@ -163,7 +174,7 @@ const handler = async (req: Request): Promise<Response> => {
       } : undefined,
     };
 
-    // Prepare payload
+    // Prepare payload (Sprint 1: include dual-token + Reply-To fields)
     const payload: SendOfferPayload = {
       to,
       subject,
@@ -172,6 +183,11 @@ const handler = async (req: Request): Promise<Response> => {
       pdfUrl,
       offerSendId,
       tracking_status,
+      publicToken,
+      acceptToken,
+      replyTo,
+      companyName,
+      frontendUrl: Deno.env.get("FRONTEND_URL") ?? undefined,
     };
 
     // Call handler with dependencies
@@ -187,6 +203,35 @@ const handler = async (req: Request): Promise<Response> => {
           headers: { "Content-Type": "application/json", ...corsHeaders }
         }
       );
+    }
+
+    // Trigger 5: "Offer sent" notification — best-effort, no failure if lookup fails
+    if (supabase && offerSendId) {
+      try {
+        const { data: sendRow } = await supabase
+          .from('offer_sends')
+          .select('project_id')
+          .eq('id', offerSendId)
+          .single();
+        if (sendRow?.project_id) {
+          const { data: approval } = await supabase
+            .from('offer_approvals')
+            .select('user_id')
+            .eq('project_id', sendRow.project_id)
+            .maybeSingle();
+          if (approval?.user_id) {
+            await supabase.from('notifications').insert({
+              user_id: approval.user_id,
+              title: '📤 Oferta wysłana',
+              message: `Oferta do projektu "${projectName}" została wysłana na adres email klienta.`,
+              type: 'info',
+              action_url: `/app/jobs/${sendRow.project_id}`,
+            });
+          }
+        }
+      } catch (notifErr) {
+        console.warn('[send-offer-email] Could not send notification:', notifErr);
+      }
     }
 
     return new Response(

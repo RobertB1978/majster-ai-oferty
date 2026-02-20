@@ -13,6 +13,7 @@ export function LanguageSwitcher() {
 
   const handleLanguageChange = (value: string) => {
     i18n.changeLanguage(value);
+    document.documentElement.lang = value;
   };
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];

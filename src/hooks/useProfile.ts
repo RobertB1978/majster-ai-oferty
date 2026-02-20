@@ -21,6 +21,12 @@ export interface Profile {
   email_subject_template: string | null;
   email_greeting: string | null;
   email_signature: string | null;
+  // Sprint 1 — contact email for Reply-To (offer emails)
+  contact_email: string | null;
+  contact_email_verified: boolean;
+  contact_email_verified_at: string | null;
+  contact_email_verification_token: string | null;
+  contact_email_verification_sent_at: string | null;
   created_at: string;
   updated_at: string;
 }
