@@ -2,13 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
+import { SplashScreen } from '@/components/layout/SplashScreen';
+import { FeatureDemoModal, type DemoFeature } from '@/components/landing/FeatureDemoModal';
 import {
   HardHat,
   Calculator,
@@ -44,13 +39,6 @@ const LANDING_LANGUAGES = [
 interface FeatureItem {
   icon: LucideIcon;
   key: string;
-  title: string;
-  description: string;
-  benefits: string[];
-}
-
-interface DemoFeature {
-  icon: LucideIcon;
   title: string;
   description: string;
   benefits: string[];
@@ -227,6 +215,7 @@ export default function Landing() {
 
   function openDemo(feature: FeatureItem) {
     setDemoFeature({
+      key: feature.key,
       icon: feature.icon,
       title: feature.title,
       description: feature.description,
@@ -236,6 +225,7 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SplashScreen />
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
         <div className="container flex h-16 items-center justify-between gap-2">
@@ -262,7 +252,7 @@ export default function Landing() {
               {LANDING_LANGUAGES.map((lang) => (
                 <button
                   key={lang.code}
-                  onClick={() => i18n.changeLanguage(lang.code)}
+                  onClick={() => { i18n.changeLanguage(lang.code); document.documentElement.lang = lang.code; }}
                   className={`flex items-center gap-1 rounded px-1.5 py-1 text-xs font-medium transition-colors ${
                     i18n.language === lang.code || i18n.language.startsWith(lang.code)
                       ? 'bg-background text-foreground shadow-sm'
@@ -310,7 +300,7 @@ export default function Landing() {
               {t('landing.hero.desc')}
             </p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <Button size="lg" className="h-14 px-8 text-base" asChild>
+              <Button size="lg" className="h-14 px-8 text-base w-full sm:w-auto" asChild>
                 <Link to="/register">
                   {t('landing.hero.startFree')}
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -319,13 +309,18 @@ export default function Landing() {
               <Button
                 size="lg"
                 variant="outline"
-                className="h-14 px-8 text-base"
+                className="h-14 px-8 text-base w-full sm:w-auto border-foreground/30 hover:border-foreground/60"
                 onClick={scrollToFeatures}
               >
                 {t('landing.hero.seeFeatures')}
                 <ArrowDown className="ml-2 h-5 w-5" />
               </Button>
             </div>
+            <p className="mt-3 text-sm">
+              <Link to="/login" className="font-medium text-primary underline-offset-4 hover:underline">
+                {t('landing.cta.loginBtn', 'Mam już konto')}
+              </Link>
+            </p>
             <p className="mt-4 text-sm text-muted-foreground">
               {t('landing.hero.noCard')}
             </p>
@@ -405,53 +400,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Feature Demo Modal — Fix #3: demo mode, no app access */}
-      <Dialog open={demoFeature !== null} onOpenChange={(open) => { if (!open) setDemoFeature(null); }}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <div className="flex items-center gap-3 mb-2">
-              {demoFeature && (
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 shrink-0">
-                  <demoFeature.icon className="h-6 w-6 text-primary" />
-                </div>
-              )}
-              <div>
-                <DialogTitle className="text-lg">{demoFeature?.title}</DialogTitle>
-                <DialogDescription className="text-xs text-muted-foreground mt-0.5">
-                  {t('landing.features.demoTitle')} — {t('landing.features.demoDesc')}
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {demoFeature?.description}
-            </p>
-            <ul className="space-y-2">
-              {demoFeature?.benefits.map((benefit) => (
-                <li key={benefit} className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
-                  <span>{benefit}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 text-sm text-muted-foreground text-center">
-              {t('landing.features.demoDesc')}
-            </div>
-            <div className="flex flex-col gap-2 pt-1">
-              <Button size="sm" asChild className="w-full">
-                <Link to="/register">
-                  {t('landing.features.registerFree')}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="sm" variant="ghost" asChild className="w-full">
-                <Link to="/login">{t('landing.features.loginForAccess')}</Link>
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Feature Demo Modal — rich per-feature sample UI */}
+      <FeatureDemoModal feature={demoFeature} onClose={() => setDemoFeature(null)} />
 
       {/* How it works */}
       <section className="py-16 md:py-20 border-t border-border bg-card">
