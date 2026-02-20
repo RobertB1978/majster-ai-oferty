@@ -17,6 +17,7 @@ import { AdBanner } from '@/components/ads/AdBanner';
 import { usePlanFeatures } from '@/hooks/useSubscription';
 import { useExpirationMonitor } from '@/hooks/useExpirationMonitor';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { TrialBanner } from '@/components/billing/TrialBanner';
 
 export default function Dashboard() {
   // Optimized: Single hook with server-side aggregations
@@ -89,6 +90,9 @@ export default function Dashboard() {
       {/* Background mesh gradient */}
       <div className="fixed inset-0 bg-mesh-gradient pointer-events-none opacity-30" />
       
+      {/* Trial countdown banner */}
+      <TrialBanner />
+
       {/* Ad Banner for Free users */}
       {showAds && (
         <AdBanner variant="inline" className="mb-2" />

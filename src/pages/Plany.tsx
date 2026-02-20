@@ -1,0 +1,203 @@
+import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { CheckCircle2, Star, ArrowRight, HardHat } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+
+// ─── Single source of truth for plan features ─────────────────────────────
+
+export const PLANS = [
+  {
+    slug: 'darmowy',
+    name: 'Darmowy',
+    pricePLN: 0,
+    highlighted: false,
+    description: 'Idealne do zaczęcia i sprawdzenia platformy.',
+    features: [
+      '3 projekty',
+      '5 klientów',
+      '100 MB zdjęć',
+      'Generowanie ofert PDF',
+      'Podstawowe szablony',
+    ],
+    faq: [
+      { q: 'Jak długo działa plan darmowy?', a: 'Bezterminowo — nie ma limitu czasu.' },
+      { q: 'Czy mogę zmienić na płatny plan?', a: 'Tak, w każdej chwili. Dane są zachowane.' },
+      { q: 'Czy pokazują się reklamy?', a: 'W planie darmowym mogą pojawiać się banery informacyjne.' },
+    ],
+  },
+  {
+    slug: 'pro',
+    name: 'Pro',
+    pricePLN: 49,
+    highlighted: true, // "Najpopularniejszy" badge
+    description: 'Dla aktywnych fachowców. Więcej projektów, więcej klientów, eksport Excel.',
+    features: [
+      '15 projektów',
+      '30 klientów',
+      '1 GB zdjęć',
+      'Eksport Excel',
+      'Własne szablony',
+      'Bez reklam',
+    ],
+    faq: [
+      { q: 'Czy mogę anulować?', a: 'Tak — płatność można anulować w dowolnym momencie.' },
+      { q: 'Czy jest faktura VAT?', a: 'Tak, wystawiamy fakturę VAT do każdego zakupu.' },
+      { q: 'Co się stanie po anulowaniu?', a: 'Masz dostęp do końca opłaconego okresu.' },
+    ],
+  },
+  {
+    slug: 'biznes',
+    name: 'Biznes',
+    pricePLN: 99,
+    highlighted: false,
+    description: 'Dla firm z zespołem. AI, dyktowanie głosem, synchronizacja kalendarza.',
+    features: [
+      'Nieograniczone projekty',
+      'Nieograniczeni klienci',
+      '5 GB zdjęć',
+      'Asystent AI',
+      'Dyktowanie głosem',
+      'Dokumenty firmowe',
+      'Synchronizacja kalendarza',
+      'Priorytetowe wsparcie',
+    ],
+    faq: [
+      { q: 'Ile osób może pracować?', a: 'Do 5 członków zespołu. Można dokupić więcej.' },
+      { q: 'Czy AI jest wliczone?', a: 'Tak — asystent AI i wycena ze zdjęcia wliczone w plan.' },
+      { q: 'Jak dodać zespół?', a: 'W panelu → Zespół → Zaproś członka.' },
+    ],
+  },
+  {
+    slug: 'enterprise',
+    name: 'Enterprise',
+    pricePLN: 199,
+    highlighted: false,
+    description: 'Dla dużych firm. Nieograniczone wszystko, API, dedykowany opiekun.',
+    features: [
+      'Wszystko z Biznes',
+      'Nieograniczona liczba członków zespołu',
+      'Nieograniczone miejsce na zdjęcia',
+      'Dostęp do API',
+      'Dedykowany opiekun konta',
+      'Własne integracje (na zapytanie)',
+    ],
+    faq: [
+      { q: 'Czy jest umowa SLA?', a: 'Tak — dla planów Enterprise dostępna jest umowa SLA.' },
+      { q: 'Czy cena jest negocjowalna?', a: 'Tak — przy większych zespołach zapraszamy do kontaktu.' },
+      { q: 'Jak uzyskać dostęp do API?', a: 'Po zakupie klucze API dostępne są w Ustawieniach → API.' },
+    ],
+  },
+] as const;
+
+export default function Plany() {
+  return (
+    <>
+      <Helmet>
+        <title>Cennik i plany | Majster.AI</title>
+        <meta name="description" content="Wybierz plan Majster.AI dopasowany do Twojej firmy. Zacznij bezpłatnie." />
+      </Helmet>
+
+      <div className="min-h-screen bg-background">
+        {/* Simple header */}
+        <header className="sticky top-0 z-50 border-b border-border bg-card">
+          <div className="container flex h-16 items-center justify-between">
+            <Link to="/" className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+                <HardHat className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <span className="font-bold text-lg">Majster.AI</span>
+            </Link>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/login">Zaloguj się</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link to="/register">Wypróbuj za darmo</Link>
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        <div className="container py-16 max-w-5xl">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold mb-4">Cennik i plany</h1>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+              Zacznij bezpłatnie. Rozwijaj się kiedy Twój biznes tego potrzebuje.
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Ceny netto, do ceny doliczamy 23% VAT
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {PLANS.map((plan) => (
+              <Card
+                key={plan.slug}
+                className={`relative flex flex-col transition-all hover:-translate-y-1 hover:shadow-lg ${
+                  plan.highlighted ? 'border-primary ring-2 ring-primary/20 shadow-md' : ''
+                }`}
+              >
+                {plan.highlighted && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <Badge className="gap-1 shadow-sm">
+                      <Star className="h-3 w-3 fill-current" />
+                      Najpopularniejszy
+                    </Badge>
+                  </div>
+                )}
+                <CardHeader>
+                  <CardTitle>{plan.name}</CardTitle>
+                  <CardDescription>
+                    <span className="text-3xl font-bold text-foreground">
+                      {plan.pricePLN === 0 ? 'Gratis' : `${plan.pricePLN} zł`}
+                    </span>
+                    {plan.pricePLN > 0 && <span className="text-sm"> / mies. netto</span>}
+                  </CardDescription>
+                  <p className="text-xs text-muted-foreground">{plan.description}</p>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col gap-4">
+                  <ul className="space-y-2 text-sm flex-1">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="pt-2 space-y-2">
+                    <Button
+                      className="w-full"
+                      variant={plan.highlighted ? 'default' : 'outline'}
+                      asChild
+                    >
+                      <Link to={`/plany/${plan.slug}`}>
+                        Szczegóły <ArrowRight className="ml-1 h-4 w-4" />
+                      </Link>
+                    </Button>
+                    {plan.pricePLN === 0 ? (
+                      <Button className="w-full" asChild>
+                        <Link to="/register">Zacznij za darmo</Link>
+                      </Button>
+                    ) : (
+                      <Button className="w-full" variant={plan.highlighted ? 'default' : 'secondary'} asChild>
+                        <Link to="/register">Wypróbuj 30 dni</Link>
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* VAT note */}
+          <p className="text-center text-sm text-muted-foreground mt-8">
+            Wszystkie ceny podane są w złotych polskich (PLN) netto. Do ceny doliczamy 23% VAT.
+            Wystawiamy faktury VAT.
+          </p>
+        </div>
+      </div>
+    </>
+  );
+}

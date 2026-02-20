@@ -30,6 +30,8 @@ import EnvCheck from "./pages/EnvCheck";
 // === ZONE 1: PUBLIC (lazy) ===
 const Landing = lazy(() => import("./pages/Landing"));
 const OfferApproval = lazy(() => import("./pages/OfferApproval"));
+const PlanyPage = lazy(() => import("./pages/Plany"));
+const PlanyDetailPage = lazy(() => import("./pages/PlanyDetail"));
 
 // Legal pages (lazy - rarely visited)
 const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
@@ -157,6 +159,10 @@ const App = () => (
                   <Route path="/legal/cookies" element={<CookiesPolicy />} />
                   <Route path="/legal/dpa" element={<DPA />} />
                   <Route path="/legal/rodo" element={<GDPRCenter />} />
+
+                  {/* Public pricing / plan pages */}
+                  <Route path="/plany" element={<PlanyPage />} />
+                  <Route path="/plany/:slug" element={<PlanyDetailPage />} />
 
                   {/* Legacy legal redirects */}
                   <Route path="/privacy" element={<Navigate to="/legal/privacy" replace />} />
