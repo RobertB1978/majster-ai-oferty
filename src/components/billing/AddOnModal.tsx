@@ -188,7 +188,7 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
             <Button variant="outline" onClick={onClose} disabled={loading}>
               {t('common.cancel', 'Anuluj')}
             </Button>
-            <Button onClick={handleBuy} disabled={!selected || loading || purchased.includes(selected ?? '' as AddOnKey)}>
+            <Button onClick={handleBuy} disabled={!selected || loading || (!!selected && purchased.includes(selected))}>
               {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               {t('addons.buy', 'Kup teraz')}
             </Button>
