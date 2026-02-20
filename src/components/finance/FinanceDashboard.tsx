@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +28,7 @@ interface AIAnalysisResult {
 }
 
 export function FinanceDashboard() {
+  const { t } = useTranslation();
   const { data: summary, isLoading } = useFinancialSummary();
   const aiAnalysis = useAIFinancialAnalysis();
   const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
@@ -58,7 +60,7 @@ export function FinanceDashboard() {
 
   const kpiCards = [
     {
-      label: 'Przychody',
+      label: t('finance.revenue', 'Przychody'),
       value: summary.totalRevenue,
       icon: DollarSign,
       gradient: 'from-emerald-500 to-green-600',
@@ -66,7 +68,7 @@ export function FinanceDashboard() {
       iconBg: 'bg-success',
     },
     {
-      label: 'Koszty',
+      label: t('finance.costs', 'Koszty'),
       value: summary.totalCosts,
       icon: Receipt,
       gradient: 'from-rose-500 to-red-600',
@@ -74,7 +76,7 @@ export function FinanceDashboard() {
       iconBg: 'bg-destructive',
     },
     {
-      label: 'Marża brutto',
+      label: t('finance.grossMargin', 'Marża brutto'),
       value: summary.grossMargin,
       icon: marginTrend >= 0 ? TrendingUp : TrendingDown,
       gradient: 'from-primary to-primary',
@@ -83,7 +85,7 @@ export function FinanceDashboard() {
       trend: marginTrend,
     },
     {
-      label: 'Marża %',
+      label: `${t('finance.margin', 'Marża')} %`,
       value: summary.marginPercent,
       isPercent: true,
       icon: PiggyBank,
@@ -144,7 +146,7 @@ export function FinanceDashboard() {
               <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
                 <BarChart3 className="h-4 w-4 text-white" />
               </div>
-              Przychody vs Koszty
+              {t('finance.revenueVsCosts', 'Przychody vs Koszty')}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
@@ -178,15 +180,15 @@ export function FinanceDashboard() {
                   stroke="hsl(142, 76%, 36%)"
                   strokeWidth={2}
                   fill="url(#colorRevenue)" 
-                  name="Przychody"
+                  name={t('finance.revenue', 'Przychody')}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="costs" 
+                <Area
+                  type="monotone"
+                  dataKey="costs"
                   stroke="hsl(0, 84%, 60%)"
                   strokeWidth={2}
-                  fill="url(#colorCosts)" 
-                  name="Koszty"
+                  fill="url(#colorCosts)"
+                  name={t('finance.costs', 'Koszty')}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -199,7 +201,7 @@ export function FinanceDashboard() {
               <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
                 <TrendingUp className="h-4 w-4 text-white" />
               </div>
-              Marża miesięczna
+              {t('finance.monthlyMargin', 'Marża miesięczna')}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
@@ -226,7 +228,7 @@ export function FinanceDashboard() {
                 <Bar 
                   dataKey="margin" 
                   fill="url(#barGradient)" 
-                  name="Marża"
+                  name={t('finance.margin', 'Marża')}
                   radius={[6, 6, 0, 0]}
                 />
               </BarChart>

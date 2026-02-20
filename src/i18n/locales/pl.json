@@ -322,7 +322,9 @@
     "grossAmount": "Kwota brutto",
     "ocrScan": "Skanowanie OCR",
     "cashflow": "Przepływ gotówki",
-    "profitAnalysis": "Analiza zysków"
+    "profitAnalysis": "Analiza zysków",
+    "revenueVsCosts": "Przychody vs Koszty",
+    "monthlyMargin": "Marża miesięczna"
   },
   "team": {
     "title": "Zespół",

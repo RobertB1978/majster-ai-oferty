@@ -322,7 +322,9 @@
     "grossMargin": "Валова маржа",
     "reports": "Звіти",
     "invoices": "Рахунки",
-    "expenses": "Витрати"
+    "expenses": "Витрати",
+    "revenueVsCosts": "Доходи vs Витрати",
+    "monthlyMargin": "Щомісячна маржа"
   },
   "team": {
     "title": "Команда",

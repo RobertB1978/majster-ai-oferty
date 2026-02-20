@@ -314,6 +314,8 @@
     "ocrScan": "OCR Scan",
     "cashflow": "Cash Flow",
     "profitAnalysis": "Profit Analysis",
+    "revenueVsCosts": "Revenue vs Costs",
+    "monthlyMargin": "Monthly Margin",
     "expenses": "Expenses",
     "grossMargin": "Gross Margin",
     "invoices": "Invoices",

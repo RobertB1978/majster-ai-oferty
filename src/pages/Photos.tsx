@@ -6,8 +6,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Camera, ExternalLink, FolderOpen, ImageOff } from 'lucide-react';
+import { Camera, ExternalLink, FolderOpen, ImageOff, HardDrive, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Progress } from '@/components/ui/progress';
+import { useUserSubscription } from '@/hooks/useSubscription';
 
 interface PhotoRow {
   id: string;
@@ -45,9 +47,25 @@ function useAllPhotos() {
   });
 }
 
+const PLAN_STORAGE: Record<string, { label: string; limitMB: number | null }> = {
+  free:       { label: '100 MB', limitMB: 100 },
+  pro:        { label: '1 GB',   limitMB: 1024 },
+  starter:    { label: '1 GB',   limitMB: 1024 },
+  business:   { label: '5 GB',   limitMB: 5120 },
+  enterprise: { label: '∞',      limitMB: null },
+};
+
+// Approximate: avg photo ~2 MB after compression
+const AVG_PHOTO_MB = 2;
+
 export default function Photos() {
   const { t } = useTranslation();
   const { data: photos, isLoading } = useAllPhotos();
+  const { data: subscription } = useUserSubscription();
+  const planId = subscription?.plan_id ?? 'free';
+  const storageInfo = PLAN_STORAGE[planId] ?? PLAN_STORAGE.free;
+  const usedMB = (photos?.length ?? 0) * AVG_PHOTO_MB;
+  const pct = storageInfo.limitMB ? Math.min(100, Math.round((usedMB / storageInfo.limitMB) * 100)) : 0;
 
   return (
     <>
@@ -75,6 +93,38 @@ export default function Photos() {
             </Link>
           </Button>
         </div>
+
+        {/* Storage bar */}
+        <Card className="border-border/60">
+          <CardContent className="flex flex-col sm:flex-row sm:items-center gap-3 py-4">
+            <HardDrive className="h-5 w-5 text-primary shrink-0" />
+            <div className="flex-1 space-y-1.5">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">
+                  {t('photos.storageUsed', 'Wykorzystano przestrzeń')}
+                </span>
+                <span className="font-medium tabular-nums">
+                  {storageInfo.limitMB
+                    ? `~${usedMB} MB / ${storageInfo.label}`
+                    : `~${usedMB} MB / ${storageInfo.label}`}
+                </span>
+              </div>
+              {storageInfo.limitMB ? (
+                <Progress value={pct} className="h-2" />
+              ) : (
+                <div className="h-2 rounded-full bg-primary/20">
+                  <div className="h-full w-0 rounded-full bg-primary" />
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground">
+                {t('photos.storagePlanNote', 'Limit dla planu')}:{' '}
+                <span className="font-medium">
+                  {t(`plan.names.${planId}`, planId)} — {storageInfo.label}
+                </span>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {isLoading && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -163,6 +213,21 @@ export default function Photos() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* GDPR note */}
+      <div className="flex items-start gap-3 rounded-xl border border-border/50 bg-muted/30 p-4 text-sm text-muted-foreground">
+        <ShieldCheck className="h-5 w-5 shrink-0 text-success mt-0.5" />
+        <p>
+          {t(
+            'photos.gdprNote',
+            'Zdjęcia są przechowywane bezpiecznie i przetwarzane zgodnie z RODO / GDPR. Możesz je usunąć w dowolnym momencie z poziomu projektu. Nie udostępniamy ich osobom trzecim.'
+          )}
+          {' '}
+          <Link to="/legal/rodo" className="underline underline-offset-2 hover:text-foreground transition-colors">
+            {t('photos.gdprLink', 'Centrum RODO')}
+          </Link>
+        </p>
       </div>
     </>
   );
