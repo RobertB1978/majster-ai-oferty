@@ -1256,5 +1256,167 @@
     "allCategories": "All",
     "material": "Material",
     "labor": "Labor"
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "whyUs": "Why us",
+      "testimonials": "Reviews",
+      "login": "Log in",
+      "tryFree": "Try it",
+      "tryFreeFull": "Try for free"
+    },
+    "hero": {
+      "badge": "Digital tool for the construction industry",
+      "title": "Manage your business",
+      "titleHighlight": "like a professional",
+      "desc": "Quotes, offers, projects, clients and finances — all in one place. Built for construction and renovation teams in Poland.",
+      "startFree": "Start for free",
+      "seeFeatures": "See features",
+      "noCard": "No credit card required. Free plan to start."
+    },
+    "stats": {
+      "quoteTime": "Average quote time",
+      "faster": "Faster than manually",
+      "gdpr": "GDPR compliant",
+      "access": "Data access"
+    },
+    "features": {
+      "sectionTitle": "Everything you need on site",
+      "sectionDesc": "One system replaces your notebook, spreadsheet, email and messenger. Every feature designed with tradespeople in mind.",
+      "demoTitle": "Feature Preview",
+      "demoDesc": "This is a demo. Log in to get full access.",
+      "loginForAccess": "Log in for full access",
+      "registerFree": "Create a free account",
+      "close": "Close",
+      "tryFree": "Try for free",
+      "quotes": {
+        "title": "Quick quotes",
+        "description": "Create professional quotes in minutes, not hours. Dictate by voice, use AI or create manually.",
+        "b1": "Voice quote in 2 minutes",
+        "b2": "AI price suggestions",
+        "b3": "Item templates"
+      },
+      "pdf": {
+        "title": "PDF & offers",
+        "description": "Generate ready-to-send documents with one click. Client approves online.",
+        "b1": "Professional PDF with logo",
+        "b2": "Send by email",
+        "b3": "Electronic signature"
+      },
+      "clients": {
+        "title": "Client database",
+        "description": "Full client project history in one place. Automatic follow-up reminders.",
+        "b1": "Project history",
+        "b2": "Contact details",
+        "b3": "Notes and tags"
+      },
+      "projects": {
+        "title": "Project management",
+        "description": "Track the status of every project from quote to completion. Site photos as proof of work.",
+        "b1": "Project status tracking",
+        "b2": "Site photos",
+        "b3": "Work documentation"
+      },
+      "calendar": {
+        "title": "Project calendar",
+        "description": "Plan work, track deadlines, manage your team. Never miss a deadline.",
+        "b1": "Week/month view",
+        "b2": "Reminders",
+        "b3": "Team coordination"
+      },
+      "finance": {
+        "title": "Finance & costs",
+        "description": "Control the profitability of every project. Track revenues, material and labour costs.",
+        "b1": "Profit per project",
+        "b2": "Material costs",
+        "b3": "Financial reports"
+      },
+      "ai": {
+        "title": "AI Assistant",
+        "description": "Smart assistant helps you with quotes, answers questions and suggests solutions.",
+        "b1": "AI chat 24/7",
+        "b2": "Price suggestions",
+        "b3": "Photo analysis"
+      },
+      "analytics": {
+        "title": "Business analytics",
+        "description": "Dashboards show how your business is growing. Make better decisions based on data.",
+        "b1": "Revenue trends",
+        "b2": "Project statistics",
+        "b3": "Offer conversion"
+      },
+      "mobile": {
+        "title": "Works on mobile",
+        "description": "Full functionality on site. Large buttons, clear interface, works offline.",
+        "b1": "Mobile app",
+        "b2": "Offline mode",
+        "b3": "Glove-friendly interface"
+      },
+      "photos": {
+        "title": "Site photos",
+        "description": "Document work progress with photos. AI will analyse the photo and help with quotes.",
+        "b1": "Project gallery",
+        "b2": "Quote from photo",
+        "b3": "Proof of work"
+      },
+      "billing": {
+        "title": "Plans & billing",
+        "description": "Start free, upgrade as you grow. Transparent pricing with no hidden fees.",
+        "b1": "Free plan",
+        "b2": "Pro plan for teams",
+        "b3": "VAT invoice"
+      },
+      "security": {
+        "title": "Data security",
+        "description": "Encryption, backups, full GDPR compliance. Your data is safe.",
+        "b1": "SSL encryption",
+        "b2": "Backups",
+        "b3": "GDPR compliant"
+      }
+    },
+    "howItWorks": {
+      "title": "How does it work?",
+      "step1Title": "Create an account",
+      "step1Desc": "Registration takes 30 seconds. No credit card required.",
+      "step2Title": "Add a project",
+      "step2Desc": "Create a project and make a quote — manually, by voice or with AI.",
+      "step3Title": "Send the offer",
+      "step3Desc": "Generate a PDF, send it to the client by email. Client approves online."
+    },
+    "testimonials": {
+      "title": "What tradespeople say",
+      "t1Role": "Renovation company owner",
+      "t1Text": "I can finally do quotes straight from the site. The client gets a PDF in 5 minutes.",
+      "t2Role": "Electrician, sole trader",
+      "t2Text": "Voice dictation for quotes is a game-changer. I save 2 hours a day.",
+      "t3Role": "Design office",
+      "t3Text": "Managing clients and projects in one place. I recommend it to every tradesperson."
+    },
+    "cta": {
+      "title": "Ready for digital transformation?",
+      "desc": "Join tradespeople who save time and earn more. Start with the free plan — no strings attached.",
+      "registerBtn": "Sign up for free",
+      "loginBtn": "I already have an account"
+    },
+    "footer": {
+      "desc": "Professional quotes and project management for tradespeople. Fast, easy, secure.",
+      "product": "Product",
+      "dashboard": "Dashboard",
+      "templates": "Templates",
+      "projects": "Projects",
+      "legal": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy",
+      "dpa": "DPA Agreement",
+      "gdpr": "GDPR Centre",
+      "support": "Support",
+      "techSupport": "Technical support",
+      "sales": "Sales",
+      "partnership": "Partnership",
+      "rights": "All rights reserved.",
+      "madeIn": "Made in Poland. GDPR Compliant."
+    }
   }
 }

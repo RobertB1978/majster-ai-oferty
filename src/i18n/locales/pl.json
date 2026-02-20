@@ -1256,5 +1256,167 @@
     "allCategories": "Wszystkie",
     "material": "Materiał",
     "labor": "Robocizna"
+  },
+  "landing": {
+    "nav": {
+      "features": "Funkcje",
+      "whyUs": "Dlaczego my",
+      "testimonials": "Opinie",
+      "login": "Zaloguj się",
+      "tryFree": "Wypróbuj",
+      "tryFreeFull": "Wypróbuj za darmo"
+    },
+    "hero": {
+      "badge": "Cyfrowe narzędzie dla branży budowlanej",
+      "title": "Zarządzaj firmą",
+      "titleHighlight": "jak profesjonalista",
+      "desc": "Wyceny, oferty, projekty, klienci i finanse — wszystko w jednym miejscu. Stworzony dla ekip budowlanych i remontowych w Polsce.",
+      "startFree": "Zacznij za darmo",
+      "seeFeatures": "Zobacz funkcje",
+      "noCard": "Bez karty kredytowej. Darmowy plan na start."
+    },
+    "stats": {
+      "quoteTime": "Średni czas wyceny",
+      "faster": "Szybciej niż ręcznie",
+      "gdpr": "Zgodność z RODO",
+      "access": "Dostęp do danych"
+    },
+    "features": {
+      "sectionTitle": "Wszystko czego potrzebujesz na budowie",
+      "sectionDesc": "Jeden system zastępuje notatnik, arkusz kalkulacyjny, maila i komunikator. Każda funkcja zaprojektowana z myślą o fachowcach.",
+      "demoTitle": "Podgląd funkcji",
+      "demoDesc": "To jest demonstracja. Zaloguj się, aby uzyskać pełny dostęp.",
+      "loginForAccess": "Zaloguj się dla pełnego dostępu",
+      "registerFree": "Załóż darmowe konto",
+      "close": "Zamknij",
+      "tryFree": "Wypróbuj bezpłatnie",
+      "quotes": {
+        "title": "Szybkie wyceny",
+        "description": "Twórz profesjonalne wyceny w minuty, nie godziny. Dyktuj głosem, użyj AI lub utwórz ręcznie.",
+        "b1": "Wycena głosem w 2 minuty",
+        "b2": "Sugestie AI cenowe",
+        "b3": "Szablony pozycji"
+      },
+      "pdf": {
+        "title": "PDF i oferty",
+        "description": "Generuj dokumenty gotowe do wysyłki jednym kliknięciem. Klient zatwierdza online.",
+        "b1": "Profesjonalny PDF z logo",
+        "b2": "Wysyłka mailem",
+        "b3": "Podpis elektroniczny"
+      },
+      "clients": {
+        "title": "Baza klientów",
+        "description": "Cała historia projektów klienta w jednym miejscu. Automatyczne przypomnienia o kontakcie zwrotnym.",
+        "b1": "Historia projektów",
+        "b2": "Dane kontaktowe",
+        "b3": "Notatki i tagi"
+      },
+      "projects": {
+        "title": "Zarządzanie projektami",
+        "description": "Śledź status każdego projektu od wyceny po zakończenie. Zdjęcia z budowy jako dowód prac.",
+        "b1": "Status realizacji",
+        "b2": "Zdjęcia z budowy",
+        "b3": "Dokumentacja prac"
+      },
+      "calendar": {
+        "title": "Kalendarz projektów",
+        "description": "Planuj prace, śledź terminy, zarządzaj zespołem. Nigdy nie przegapisz terminu.",
+        "b1": "Widok tygodnia/miesiąca",
+        "b2": "Przypomnienia",
+        "b3": "Koordynacja zespołu"
+      },
+      "finance": {
+        "title": "Finanse i koszty",
+        "description": "Kontroluj rentowność każdego projektu. Śledź przychody, koszty materiałów i robocizny.",
+        "b1": "Zysk na projekcie",
+        "b2": "Koszty materiałów",
+        "b3": "Raporty finansowe"
+      },
+      "ai": {
+        "title": "Asystent AI",
+        "description": "Inteligentny asystent pomoże Ci z wycenami, odpowie na pytania i zasugeruje rozwiązania.",
+        "b1": "Czat AI 24/7",
+        "b2": "Sugestie cenowe",
+        "b3": "Analiza zdjęć"
+      },
+      "analytics": {
+        "title": "Analityka biznesu",
+        "description": "Panele pokazują jak rośnie Twój biznes. Podejmuj lepsze decyzje na podstawie danych.",
+        "b1": "Trendy przychodów",
+        "b2": "Statystyki projektów",
+        "b3": "Konwersja ofert"
+      },
+      "mobile": {
+        "title": "Działa na telefonie",
+        "description": "Pełna funkcjonalność na budowie. Duże przyciski, czytelny interfejs, działa bez internetu.",
+        "b1": "Aplikacja mobilna",
+        "b2": "Tryb bez internetu",
+        "b3": "Interfejs na rękawice"
+      },
+      "photos": {
+        "title": "Zdjęcia z budowy",
+        "description": "Dokumentuj postęp prac zdjęciami. AI przeanalizuje zdjęcie i pomoże z wyceną.",
+        "b1": "Galeria projektów",
+        "b2": "Wycena ze zdjęcia",
+        "b3": "Dowody prac"
+      },
+      "billing": {
+        "title": "Plany i rozliczenia",
+        "description": "Zacznij za darmo, rozwiń gdy rośniesz. Przejrzyste ceny bez ukrytych opłat.",
+        "b1": "Plan darmowy",
+        "b2": "Plan Pro dla zespołów",
+        "b3": "Faktura VAT"
+      },
+      "security": {
+        "title": "Bezpieczeństwo danych",
+        "description": "Szyfrowanie, kopie zapasowe, pełna zgodność z RODO. Twoje dane są bezpieczne.",
+        "b1": "Szyfrowanie SSL",
+        "b2": "Kopie zapasowe",
+        "b3": "Zgodność z RODO"
+      }
+    },
+    "howItWorks": {
+      "title": "Jak to działa?",
+      "step1Title": "Załóż konto",
+      "step1Desc": "Rejestracja trwa 30 sekund. Bez karty kredytowej.",
+      "step2Title": "Dodaj projekt",
+      "step2Desc": "Utwórz projekt i stwórz wycenę — ręcznie, głosem lub z AI.",
+      "step3Title": "Wyślij ofertę",
+      "step3Desc": "Wygeneruj PDF, wyślij klientowi mailem. Klient zatwierdza online."
+    },
+    "testimonials": {
+      "title": "Co mówią fachowcy",
+      "t1Role": "Właściciel firmy remontowej",
+      "t1Text": "Wreszcie mogę robić wyceny prosto z budowy. Klient dostaje PDF w 5 minut.",
+      "t2Role": "Elektryk, jednoosobowa firma",
+      "t2Text": "Dyktowanie wyceny głosem to przełom. Oszczędzam 2 godziny dziennie.",
+      "t3Role": "Biuro projektowe",
+      "t3Text": "Zarządzanie klientami i projektami w jednym miejscu. Polecam każdemu fachowcowi."
+    },
+    "cta": {
+      "title": "Gotowy na cyfrową zmianę?",
+      "desc": "Dołącz do fachowców, którzy oszczędzają czas i zarabiają więcej. Zacznij od darmowego planu — bez zobowiązań.",
+      "registerBtn": "Załóż konto za darmo",
+      "loginBtn": "Mam już konto"
+    },
+    "footer": {
+      "desc": "Profesjonalne wyceny i zarządzanie projektami dla fachowców. Szybko, łatwo, bezpiecznie.",
+      "product": "Produkt",
+      "dashboard": "Panel główny",
+      "templates": "Szablony",
+      "projects": "Projekty",
+      "legal": "Prawne",
+      "privacy": "Polityka Prywatności",
+      "terms": "Regulamin",
+      "cookies": "Polityka Cookies",
+      "dpa": "Umowa DPA",
+      "gdpr": "Centrum RODO",
+      "support": "Wsparcie",
+      "techSupport": "Pomoc techniczna",
+      "sales": "Sprzedaż",
+      "partnership": "Partnerstwo",
+      "rights": "Wszystkie prawa zastrzeżone.",
+      "madeIn": "Stworzone w Polsce. Zgodne z RODO."
+    }
   }
 }
