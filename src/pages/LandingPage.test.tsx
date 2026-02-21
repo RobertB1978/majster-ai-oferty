@@ -43,9 +43,10 @@ describe('Landing', () => {
     expect(featuresSection).toBeInTheDocument();
   });
 
-  it('coming soon section has correct label', () => {
+  it('coming soon section is not rendered (removed per truth-sync requirement)', () => {
     renderLanding();
-    expect(screen.getByText(/Co planujemy/i)).toBeInTheDocument();
+    // ComingSoonSection ("Co planujemy") was removed from landing — no "beta/wkrótce" claims
+    expect(screen.queryByText(/Co planujemy/i)).not.toBeInTheDocument();
   });
 
   it('footer is rendered on landing page', () => {
