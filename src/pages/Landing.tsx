@@ -30,7 +30,7 @@ export default function Landing() {
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      <div className="min-h-screen bg-[#0F0F0F]">
+      <div className="min-h-screen bg-white dark:bg-[#0F0F0F]">
         {/* Sticky header — fixed position, not in page flow */}
         <LandingHeader />
 

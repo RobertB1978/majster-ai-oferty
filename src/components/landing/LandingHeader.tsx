@@ -70,7 +70,7 @@ export function LandingHeader() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'backdrop-blur-md bg-black/80 border-b border-[#2A2A2A]'
+            ? 'backdrop-blur-md bg-white/90 dark:bg-black/80 border-b border-gray-200 dark:border-[#2A2A2A]'
             : 'bg-transparent'
         }`}
       >
@@ -78,7 +78,7 @@ export function LandingHeader() {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-1 text-xl font-bold text-white tracking-tight shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded"
+            className="flex items-center gap-1 text-xl font-bold text-gray-900 dark:text-white tracking-tight shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black rounded"
             aria-label="Majster.AI — strona główna"
           >
             Majster
@@ -93,7 +93,7 @@ export function LandingHeader() {
                 key={item.id}
                 href={`#${item.id}`}
                 onClick={scrollTo(item.id)}
-                className="text-sm font-medium text-[#A3A3A3] hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded"
+                className="text-sm font-medium text-gray-600 dark:text-[#A3A3A3] hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black rounded"
               >
                 {item.label}
               </a>
@@ -104,7 +104,7 @@ export function LandingHeader() {
           <div className="flex items-center gap-2 shrink-0">
             {/* Language switcher */}
             <div
-              className="hidden sm:flex items-center gap-0.5 rounded-lg border border-[#2A2A2A] bg-[#1A1A1A]/60 p-0.5"
+              className="hidden sm:flex items-center gap-0.5 rounded-lg border border-gray-200 dark:border-[#2A2A2A] bg-gray-100/80 dark:bg-[#1A1A1A]/60 p-0.5"
               role="group"
               aria-label="Wybór języka"
             >
@@ -114,8 +114,8 @@ export function LandingHeader() {
                   onClick={() => changeLanguage(lang.code)}
                   className={`rounded px-2 py-1 text-xs font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                     currentLang === lang.code
-                      ? 'bg-[#2A2A2A] text-white'
-                      : 'text-[#A3A3A3] hover:text-white'
+                      ? 'bg-gray-200 dark:bg-[#2A2A2A] text-gray-900 dark:text-white'
+                      : 'text-gray-500 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white'
                   }`}
                   aria-label={`Zmień język na ${lang.label}`}
                   aria-pressed={currentLang === lang.code}
@@ -128,7 +128,7 @@ export function LandingHeader() {
             {/* Theme toggle — reuses src/hooks/useTheme (localStorage + system preference) */}
             <button
               onClick={toggleTheme}
-              className="hidden sm:flex items-center justify-center w-9 h-9 rounded-lg border border-[#2A2A2A] text-[#A3A3A3] hover:text-white hover:border-amber-500/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="hidden sm:flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 dark:border-[#2A2A2A] text-gray-600 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white hover:border-amber-500/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               aria-label={isDark ? 'Przełącz na jasny motyw' : 'Przełącz na ciemny motyw'}
             >
               {isDark ? (
@@ -140,21 +140,21 @@ export function LandingHeader() {
 
             <Link
               to="/login"
-              className="hidden sm:inline-flex items-center text-sm font-medium text-[#A3A3A3] hover:text-white transition-colors duration-200 px-3 py-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+              className="hidden sm:inline-flex items-center text-sm font-medium text-gray-600 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white transition-colors duration-200 px-3 py-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black"
             >
               Zaloguj
             </Link>
 
             <Link
               to={CTA_ROUTE}
-              className="inline-flex items-center bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold px-4 py-2 rounded-xl text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black min-h-[44px]"
+              className="inline-flex items-center bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold px-4 py-2 rounded-xl text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[44px]"
             >
               Zacznij za darmo
             </Link>
 
             {/* Hamburger */}
             <button
-              className="md:hidden flex items-center justify-center w-11 h-11 rounded-xl border border-[#2A2A2A] text-[#A3A3A3] hover:text-white hover:border-amber-500/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="md:hidden flex items-center justify-center w-11 h-11 rounded-xl border border-gray-200 dark:border-[#2A2A2A] text-gray-600 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white hover:border-amber-500/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               onClick={() => setDrawerOpen(true)}
               aria-label="Otwórz menu nawigacyjne"
               aria-expanded={drawerOpen}
@@ -183,17 +183,17 @@ export function LandingHeader() {
         role="dialog"
         aria-modal="true"
         aria-label="Menu nawigacyjne"
-        className={`fixed top-0 right-0 bottom-0 z-[51] w-72 bg-[#0F0F0F] border-l border-[#2A2A2A] transform transition-transform duration-300 md:hidden ${
+        className={`fixed top-0 right-0 bottom-0 z-[51] w-72 bg-white dark:bg-[#0F0F0F] border-l border-gray-200 dark:border-[#2A2A2A] transform transition-transform duration-300 md:hidden ${
           drawerOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between p-4 border-b border-[#2A2A2A]">
-          <span className="text-white font-bold text-lg">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[#2A2A2A]">
+          <span className="text-gray-900 dark:text-white font-bold text-lg">
             Majster<span className="text-amber-500">.</span>AI
           </span>
           <button
             onClick={closeDrawer}
-            className="flex items-center justify-center w-10 h-10 rounded-xl text-[#A3A3A3] hover:text-white hover:bg-[#1A1A1A] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            className="flex items-center justify-center w-10 h-10 rounded-xl text-gray-500 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#1A1A1A] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             aria-label="Zamknij menu"
           >
             <X className="w-5 h-5" aria-hidden="true" />
@@ -206,14 +206,14 @@ export function LandingHeader() {
               key={item.id}
               href={`#${item.id}`}
               onClick={(e) => { scrollTo(item.id)(e); closeDrawer(); }}
-              className="px-4 py-3 rounded-xl text-[#A3A3A3] hover:text-white hover:bg-[#1A1A1A] font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="px-4 py-3 rounded-xl text-gray-600 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#1A1A1A] font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             >
               {item.label}
             </a>
           ))}
         </nav>
 
-        <div className="p-4 border-t border-[#2A2A2A] flex flex-col gap-3">
+        <div className="p-4 border-t border-gray-200 dark:border-[#2A2A2A] flex flex-col gap-3">
           {/* Language switcher mobile */}
           <div className="flex gap-1" role="group" aria-label="Wybór języka">
             {LANGUAGES.map((lang) => (
@@ -222,8 +222,8 @@ export function LandingHeader() {
                 onClick={() => { changeLanguage(lang.code); }}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                   currentLang === lang.code
-                    ? 'bg-[#2A2A2A] text-white'
-                    : 'text-[#A3A3A3] hover:text-white'
+                    ? 'bg-gray-200 dark:bg-[#2A2A2A] text-gray-900 dark:text-white'
+                    : 'text-gray-500 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white'
                 }`}
                 aria-label={`Zmień język na ${lang.label}`}
                 aria-pressed={currentLang === lang.code}
@@ -236,7 +236,7 @@ export function LandingHeader() {
           {/* Theme toggle mobile */}
           <button
             onClick={toggleTheme}
-            className="flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-[#2A2A2A] text-[#A3A3A3] hover:text-white hover:border-amber-500/40 transition-colors duration-200 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            className="flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-gray-200 dark:border-[#2A2A2A] text-gray-600 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white hover:border-amber-500/40 transition-colors duration-200 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             aria-label={isDark ? 'Przełącz na jasny motyw' : 'Przełącz na ciemny motyw'}
           >
             {isDark ? (
@@ -255,7 +255,7 @@ export function LandingHeader() {
           <Link
             to="/login"
             onClick={closeDrawer}
-            className="block text-center py-3 px-4 rounded-xl border border-[#2A2A2A] text-white font-medium hover:border-amber-500/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            className="block text-center py-3 px-4 rounded-xl border border-gray-200 dark:border-[#2A2A2A] text-gray-900 dark:text-white font-medium hover:border-amber-500/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           >
             Zaloguj się
           </Link>
