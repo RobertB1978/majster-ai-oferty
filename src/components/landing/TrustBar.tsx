@@ -6,55 +6,67 @@
 //   • "Plan Free" — PricingSection shows 0 zł / mies, no card required
 //   • "Mobile-first" — Capacitor installed + UI itself is the evidence
 
+import { useTranslation } from 'react-i18next';
+
 const TRUST_ITEMS = [
   {
     value: '3',
-    label: 'języki interfejsu',
+    labelKey: 'landing.trust.languages_label',
+    labelDefault: 'języki interfejsu',
     sub: 'PL / EN / UK',
     verified: true,
   },
   {
     value: 'PDF',
-    label: 'w kilka kliknięć',
-    sub: 'wyceny i oferty',
+    labelKey: 'landing.trust.pdf_label',
+    labelDefault: 'w kilka kliknięć',
+    subKey: 'landing.trust.pdf_sub',
+    subDefault: 'wyceny i oferty',
     verified: true,
   },
   {
     value: '∞',
-    label: 'bez limitu projektów',
-    sub: 'plan Pro i wyższe',
+    labelKey: 'landing.trust.unlimited_label',
+    labelDefault: 'bez limitu projektów',
+    subKey: 'landing.trust.unlimited_sub',
+    subDefault: 'plan Pro i wyższe',
     verified: true,
   },
   {
     value: '📱',
-    label: 'Mobile-first',
-    sub: 'działa na każdym telefonie',
+    labelKey: 'landing.trust.mobile_label',
+    labelDefault: 'Mobile-first',
+    subKey: 'landing.trust.mobile_sub',
+    subDefault: 'działa na każdym telefonie',
     verified: true,
   },
 ] as const;
 
 export function TrustBar() {
+  const { t } = useTranslation();
   const visible = TRUST_ITEMS.filter((i) => i.verified);
 
   return (
     <div
-      className="bg-[#141414] border-y border-[#2A2A2A]"
+      className="bg-gray-50 dark:bg-[#141414] border-y border-gray-200 dark:border-[#2A2A2A]"
       aria-label="Kluczowe informacje o platformie"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {visible.map((item) => (
-            <div key={item.label} className="flex flex-col items-center gap-1">
+            <div key={item.labelDefault} className="flex flex-col items-center gap-1">
               <span
                 className="text-2xl font-bold text-amber-500"
                 aria-hidden="true"
               >
                 {item.value}
               </span>
-              <span className="text-sm font-semibold text-white leading-tight">
-                {item.label}
+              <span className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
+                {t(item.labelKey, item.labelDefault)}
               </span>
-              <span className="text-xs text-[#525252]">{item.sub}</span>
+              <span className="text-xs text-gray-400 dark:text-[#525252]">
+                {'subKey' in item ? t(item.subKey, item.subDefault) : item.sub}
+              </span>
             </div>
           ))}
         </div>

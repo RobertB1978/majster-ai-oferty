@@ -1468,5 +1468,93 @@
     "noItems": "Add at least one item.",
     "saved": "Estimate saved!",
     "defaultName": "Quick estimate"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Platform for contractors and craftspeople",
+      "title1": "Manage your business",
+      "title2": "like a professional.",
+      "subtitle": "Platform for contractors and craftspeople.",
+      "subtitle2": "Estimates, projects, clients — all in one place.",
+      "cta_start": "Start for free",
+      "cta_features": "See features",
+      "microcopy": "First 30 days free · No obligations"
+    },
+    "trust": {
+      "languages_label": "interface languages",
+      "pdf_label": "in a few clicks",
+      "pdf_sub": "estimates and quotes",
+      "unlimited_label": "unlimited projects",
+      "unlimited_sub": "Pro plan and above",
+      "mobile_label": "Mobile-first",
+      "mobile_sub": "works on any phone"
+    },
+    "how": {
+      "sectionTitle": "How it works?",
+      "sectionSubtitle": "Three steps and you're ready to work.",
+      "step": "Step",
+      "step1_title": "Create account",
+      "step1_desc": "Registration takes a moment. First 30 days free — no credit card required.",
+      "step2_title": "Add a project",
+      "step2_desc": "Create a project, assign a client, add tasks and materials.",
+      "step3_title": "Send a quote",
+      "step3_desc": "Generate a professional PDF and send it to the client in a few clicks."
+    },
+    "testimonials": {
+      "sectionTitle": "What users say",
+      "sectionSubtitle": "Reviews from real contractors and craftspeople."
+    },
+    "pricing": {
+      "sectionTitle": "Transparent pricing",
+      "sectionSubtitle": "Start free for 30 days. Scale when your business needs it.",
+      "vatNote": "Net prices · 23% VAT added to every purchase",
+      "badge": "Most popular",
+      "ctaFree": "Start for free",
+      "ctaTry": "Try",
+      "cancelNote": "Cancel any time · VAT invoices provided"
+    },
+    "faq": {
+      "sectionTitle": "Frequently asked questions",
+      "sectionSubtitle": "Can't find an answer? Write to kontakt@majster.ai",
+      "q1": "Do I need to sign a contract?",
+      "a1": "No. You start free for 30 days, no obligations and no credit card required. You can cancel at any time.",
+      "q2": "Is my client data secure?",
+      "a2": "Data is protected and access is controlled. You can manage permissions and know who has access to what information.",
+      "q3": "Does the app work on mobile?",
+      "a3": "Yes, the app is fully optimized for mobile devices. You can use it on any smartphone with a web browser.",
+      "q4": "How long is the free access?",
+      "a4": "The free plan is free for 30 days. After that you can choose a paid plan suited to your needs.",
+      "q5": "What languages does the app support?",
+      "a5": "The app supports three languages: Polish, English and Ukrainian. You can change the language in settings at any time."
+    },
+    "cta": {
+      "heading": "Ready for digital transformation?",
+      "desc": "Start free for 30 days.",
+      "desc2": "Join contractors who manage their business digitally.",
+      "cta_start": "Start for free",
+      "cta_login": "I already have an account",
+      "microcopy": "No obligations · Cancel any time"
+    },
+    "footer": {
+      "brand_desc": "Platform for craftspeople and contractors in Poland.",
+      "legal_title": "Legal",
+      "product_title": "Product",
+      "language_title": "Language",
+      "link_privacy": "Privacy policy",
+      "link_terms": "Terms of service",
+      "link_cookies": "Cookies",
+      "link_dpa": "Data processing agreement",
+      "link_gdpr": "GDPR",
+      "link_register": "Create account",
+      "link_login": "Log in",
+      "link_pricing": "Pricing",
+      "copyright": "All rights reserved.",
+      "built_in": "Built in Poland 🇵🇱"
+    },
+    "features": {
+      "sectionTitle": "What you get",
+      "sectionDesc": "A complete set of tools for managing a renovation and construction business.",
+      "demoTitle": "Preview"
+    }
   }
 }

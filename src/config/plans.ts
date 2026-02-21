@@ -21,7 +21,7 @@ export const PLANS = [
       'Podstawowe szablony',
     ],
     faq: [
-      { q: 'Jak długo działa plan darmowy?', a: 'Bezterminowo — nie ma limitu czasu.' },
+      { q: 'Jak długo działa plan darmowy?', a: 'Plan darmowy jest bezpłatny przez pierwsze 30 dni. Po tym czasie możesz wybrać płatny plan lub kontynuować z ograniczonymi funkcjami.' },
       { q: 'Czy mogę zmienić na płatny plan?', a: 'Tak, w każdej chwili. Dane są zachowane.' },
       { q: 'Czy pokazują się reklamy?', a: 'W planie darmowym mogą pojawiać się banery informacyjne.' },
     ],
