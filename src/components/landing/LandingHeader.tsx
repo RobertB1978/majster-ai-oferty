@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { X, Menu } from 'lucide-react';
+import { X, Menu, Sun, Moon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/hooks/useTheme';
 
 const CTA_ROUTE = '/register';
 
@@ -12,6 +13,7 @@ const NAV_ITEMS = [
   { label: 'FAQ',        id: 'faq'          },
 ];
 
+// All 3 locales confirmed: src/i18n/locales/pl.json + en.json + uk.json
 const LANGUAGES = [
   { code: 'pl', label: 'PL', flag: '🇵🇱' },
   { code: 'en', label: 'EN', flag: '🇬🇧' },
@@ -29,6 +31,7 @@ export function LandingHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { i18n } = useTranslation();
+  const { isDark, toggleTheme } = useTheme();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -121,6 +124,19 @@ export function LandingHeader() {
                 </button>
               ))}
             </div>
+
+            {/* Theme toggle — reuses src/hooks/useTheme (localStorage + system preference) */}
+            <button
+              onClick={toggleTheme}
+              className="hidden sm:flex items-center justify-center w-9 h-9 rounded-lg border border-[#2A2A2A] text-[#A3A3A3] hover:text-white hover:border-amber-500/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              aria-label={isDark ? 'Przełącz na jasny motyw' : 'Przełącz na ciemny motyw'}
+            >
+              {isDark ? (
+                <Sun className="w-4 h-4" aria-hidden="true" />
+              ) : (
+                <Moon className="w-4 h-4" aria-hidden="true" />
+              )}
+            </button>
 
             <Link
               to="/login"
@@ -216,6 +232,25 @@ export function LandingHeader() {
               </button>
             ))}
           </div>
+
+          {/* Theme toggle mobile */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-[#2A2A2A] text-[#A3A3A3] hover:text-white hover:border-amber-500/40 transition-colors duration-200 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            aria-label={isDark ? 'Przełącz na jasny motyw' : 'Przełącz na ciemny motyw'}
+          >
+            {isDark ? (
+              <>
+                <Sun className="w-4 h-4" aria-hidden="true" />
+                Jasny motyw
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4" aria-hidden="true" />
+                Ciemny motyw
+              </>
+            )}
+          </button>
 
           <Link
             to="/login"
