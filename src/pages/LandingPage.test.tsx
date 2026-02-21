@@ -4,10 +4,10 @@ import { HelmetProvider } from 'react-helmet-async';
 import { describe, it, expect } from 'vitest';
 import Landing from './Landing';
 
-// Minimal i18n mock — landing components use useTranslation for language switcher only
+// Minimal i18n mock — returns defaultValue (2nd arg) when provided, key otherwise
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string, defaultValue?: string) => defaultValue ?? key,
     i18n: {
       language: 'pl',
       changeLanguage: () => Promise.resolve(),
