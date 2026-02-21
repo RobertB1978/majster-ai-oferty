@@ -1,60 +1,48 @@
-// TrustBar — truth-gated social proof strip displayed below the hero.
-//
-// Every item below is verified to be real:
-//   • "3 języki" — src/i18n/locales/pl.json + en.json + uk.json confirmed in detection
-//   • "PDF" — src/App.tsx /app/jobs/:id/quote → QuoteEditor + /app/jobs/:id/pdf → PdfGenerator
-//   • "Plan Free" — PricingSection shows 0 zł / mies, no card required
-//   • "Mobile-first" — Capacitor installed + UI itself is the evidence
-
-const TRUST_ITEMS = [
-  {
-    value: '3',
-    label: 'języki interfejsu',
-    sub: 'PL / EN / UK',
-    verified: true,
-  },
-  {
-    value: 'PDF',
-    label: 'w kilka kliknięć',
-    sub: 'wyceny i oferty',
-    verified: true,
-  },
-  {
-    value: '∞',
-    label: 'bez limitu projektów',
-    sub: 'plan Pro i wyższe',
-    verified: true,
-  },
-  {
-    value: '📱',
-    label: 'Mobile-first',
-    sub: 'działa na każdym telefonie',
-    verified: true,
-  },
-] as const;
+import { useTranslation } from 'react-i18next';
 
 export function TrustBar() {
-  const visible = TRUST_ITEMS.filter((i) => i.verified);
+  const { t } = useTranslation();
+
+  // Every item is truth-gated (confirmed in Phase 0 detection)
+  const TRUST_ITEMS = [
+    {
+      value: '3',
+      label: t('landing.trust.languages_label', 'języki interfejsu'),
+      sub: 'PL / EN / UK',
+    },
+    {
+      value: 'PDF',
+      label: t('landing.trust.pdf_label', 'w kilka kliknięć'),
+      sub: t('landing.trust.pdf_sub', 'wyceny i oferty'),
+    },
+    {
+      value: '∞',
+      label: t('landing.trust.unlimited_label', 'bez limitu projektów'),
+      sub: t('landing.trust.unlimited_sub', 'plan Pro i wyższe'),
+    },
+    {
+      value: '📱',
+      label: t('landing.trust.mobile_label', 'Mobile-first'),
+      sub: t('landing.trust.mobile_sub', 'działa na każdym telefonie'),
+    },
+  ];
 
   return (
     <div
-      className="bg-[#141414] border-y border-[#2A2A2A]"
+      className="bg-gray-50 dark:bg-[#141414] border-y border-gray-200 dark:border-[#2A2A2A]"
       aria-label="Kluczowe informacje o platformie"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          {visible.map((item) => (
+          {TRUST_ITEMS.map((item) => (
             <div key={item.label} className="flex flex-col items-center gap-1">
-              <span
-                className="text-2xl font-bold text-amber-500"
-                aria-hidden="true"
-              >
+              <span className="text-2xl font-bold text-amber-500" aria-hidden="true">
                 {item.value}
               </span>
-              <span className="text-sm font-semibold text-white leading-tight">
+              <span className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
                 {item.label}
               </span>
-              <span className="text-xs text-[#525252]">{item.sub}</span>
+              <span className="text-xs text-gray-400 dark:text-[#525252]">{item.sub}</span>
             </div>
           ))}
         </div>
