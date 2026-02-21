@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import {
   LandingHeader,
   HeroSection,
+  TrustBar,
   FeaturesGrid,
   HowItWorksSection,
   ComingSoonSection,
@@ -37,6 +38,9 @@ export default function Landing() {
         <main>
           {/* 1. Hero — cinematic dark grid + amber glow */}
           <HeroSection />
+
+          {/* 1b. Trust bar — truth-gated proof signals (languages, PDF, mobile, plan) */}
+          <TrustBar />
 
           {/* 2. Live features grid */}
           <FeaturesGrid />
