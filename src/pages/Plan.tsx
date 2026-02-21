@@ -162,7 +162,7 @@ export default function Plan() {
                       variant={tier.highlighted ? 'default' : 'outline'}
                       asChild
                     >
-                      <a href={`mailto:sales@majster.ai?subject=Upgrade%20do%20planu%20${encodeURIComponent(tier.name)}`}>
+                      <a href={`mailto:sales@CHANGE-ME.example?subject=Upgrade%20do%20planu%20${encodeURIComponent(tier.name)}`}>
                         Wybierz {tier.name}
                       </a>
                     </Button>
@@ -182,8 +182,8 @@ export default function Plan() {
             <p>
               <span className="font-medium text-foreground">Jak zmienić plan?</span>{' '}
               Skontaktuj się z nami przez email{' '}
-              <a href="mailto:sales@majster.ai" className="text-primary hover:underline">
-                sales@majster.ai
+              <a href="mailto:sales@CHANGE-ME.example" className="text-primary hover:underline">
+                sales@CHANGE-ME.example
               </a>{' '}
               lub przez formularz kontaktowy.
             </p>

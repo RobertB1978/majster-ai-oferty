@@ -64,7 +64,7 @@
 - **Fix**: Documented in `.env.example`
 - **Test Path**: `public/sitemap.xml` (generated at build time)
 - **Test Strategy**: Read sitemap.xml, verify all `<loc>` tags use correct base URL
-- **Success Criteria**: All URLs in sitemap start with `https://majster.ai` (or configured URL)
+- **Success Criteria**: All URLs in sitemap start with `https://majster-ai-oferty.vercel.app (TEMP)` (or configured URL)
 - **Blocked By**: Requires `VITE_PUBLIC_SITE_URL` to be set in Vercel environment variables
 
 ---
@@ -180,7 +180,7 @@ test.describe('MVP Gate - i18n', () => {
 
 **How to Unblock**:
 1. Go to Vercel Dashboard → Project → Settings → Environment Variables
-2. Add: `VITE_PUBLIC_SITE_URL` = `https://majster.ai`
+2. Add: `VITE_PUBLIC_SITE_URL` = `https://majster-ai-oferty.vercel.app (TEMP)`
 3. Scope: Production, Preview, Development
 4. Redeploy
 

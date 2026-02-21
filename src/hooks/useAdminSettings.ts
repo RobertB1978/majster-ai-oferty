@@ -44,7 +44,7 @@ const DEFAULT_SETTINGS = {
   smtp_host: '',
   smtp_port: 587,
   email_from_name: 'Majster.AI',
-  email_from_address: 'noreply@majster.ai',
+  email_from_address: 'noreply@CHANGE-ME.example',
   registration_enabled: true,
   maintenance_mode: false,
   api_enabled: true,

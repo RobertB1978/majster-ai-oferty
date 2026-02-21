@@ -510,8 +510,8 @@ export default function Landing() {
               <p className="text-sm text-muted-foreground">
                 {t('landing.footer.desc')}
               </p>
-              <a href="mailto:kontakt@majster.ai" className="text-sm text-muted-foreground hover:text-foreground transition-colors mt-2 inline-block">
-                kontakt@majster.ai
+              <a href="mailto:kontakt@CHANGE-ME.example" className="text-sm text-muted-foreground hover:text-foreground transition-colors mt-2 inline-block">
+                kontakt@CHANGE-ME.example
               </a>
             </div>
             <div>
@@ -535,9 +535,9 @@ export default function Landing() {
             <div>
               <h4 className="font-semibold mb-3 text-sm">{t('landing.footer.support')}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="mailto:support@majster.ai" className="hover:text-foreground transition-colors">{t('landing.footer.techSupport')}</a></li>
-                <li><a href="mailto:sales@majster.ai" className="hover:text-foreground transition-colors">{t('landing.footer.sales')}</a></li>
-                <li><a href="mailto:kontakt@majster.ai" className="hover:text-foreground transition-colors">{t('landing.footer.partnership')}</a></li>
+                <li><a href="mailto:support@CHANGE-ME.example" className="hover:text-foreground transition-colors">{t('landing.footer.techSupport')}</a></li>
+                <li><a href="mailto:sales@CHANGE-ME.example" className="hover:text-foreground transition-colors">{t('landing.footer.sales')}</a></li>
+                <li><a href="mailto:kontakt@CHANGE-ME.example" className="hover:text-foreground transition-colors">{t('landing.footer.partnership')}</a></li>
               </ul>
             </div>
           </div>

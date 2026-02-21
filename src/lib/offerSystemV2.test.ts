@@ -87,7 +87,7 @@ describe('isOfferExpired', () => {
 // ─── Dual-token URL construction ──────────────────────────────────────────
 
 describe('Dual-token URL separation', () => {
-  const BASE = 'https://majster.ai';
+  const BASE = 'https://majster-ai-oferty.vercel.app'; // TEMP
   const PUBLIC = 'aabbccdd-0000-0000-0000-111122223333';
   const ACCEPT = 'ddccbbaa-0000-0000-0000-333322221111';
 

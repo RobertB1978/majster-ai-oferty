@@ -30,7 +30,7 @@ All P0 items are PASS. P1 items with UNKNOWN are the active queue.
 |------|----|---------|--------|------------|
 | **P1-1** | **P1-LINT** | **ESLint infrastructure not verifiable — node_modules absent** | **❓ UNKNOWN** | **`npm install && npm run lint` — NEXT SESSION TARGET** |
 | P1-2 | P1-I18N | i18n key coverage gap (EN/UK) | ✅ PASS | None — missing_en=0, missing_uk=0 (2026-02-18) |
-| P1-3 | P1-SITEMAP | Sitemap hardcoded `majster.ai` domain | ✅ PASS | None — grep confirms 0 hits (2026-02-18) |
+| P1-3 | P1-SITEMAP | Sitemap hardcoded `majster-ai-oferty.vercel.app (TEMP)` domain | ✅ PASS | None — grep confirms 0 hits (2026-02-18) |
 | P1-4 | P1-AI | AI assistant/edge function error handling | ✅ PASS | None — try/catch/finally at `AiChatAgent.tsx:119` |
 | P1-5 | P1-COOKIE | Cookie consent banner | ✅ PASS | None — `<CookieConsent />` at `App.tsx:113` |
 

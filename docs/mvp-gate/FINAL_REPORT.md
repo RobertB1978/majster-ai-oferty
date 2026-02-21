@@ -207,11 +207,11 @@ docs/mvp-gate/
 2. Go to Project Settings → Environment Variables
 3. Add variable:
    - Name: `VITE_PUBLIC_SITE_URL`
-   - Value: `https://majster.ai`
+   - Value: `https://majster-ai-oferty.vercel.app (TEMP)`
    - Scope: Production, Preview, Development
 4. Redeploy application
 
-**Current Risk**: LOW (sitemap defaults to https://majster.ai, which is correct for production)
+**Current Risk**: LOW (sitemap defaults to https://majster-ai-oferty.vercel.app (TEMP), which is correct for production)
 
 **Verification After Unblock**:
 ```bash
@@ -325,7 +325,7 @@ npm run build
 
 # Check sitemap URLs (after build)
 cat public/sitemap.xml | grep "<loc>"
-# Expected: All URLs start with https://majster.ai
+# Expected: All URLs start with https://majster-ai-oferty.vercel.app (TEMP)
 ```
 
 ---
@@ -407,13 +407,13 @@ cat public/sitemap.xml | grep "<loc>"
 ### Post-Merge (Owner Actions)
 
 1. ⏳ **Set Vercel environment variable** (5 minutes)
-   - Variable: `VITE_PUBLIC_SITE_URL` = `https://majster.ai`
+   - Variable: `VITE_PUBLIC_SITE_URL` = `https://majster-ai-oferty.vercel.app (TEMP)`
    - Scope: Production, Preview, Development
    - Redeploy after setting
 
 2. ⏳ **Verify sitemap** (2 minutes)
    - Download `public/sitemap.xml` from deployed build
-   - Verify all `<loc>` URLs start with `https://majster.ai`
+   - Verify all `<loc>` URLs start with `https://majster-ai-oferty.vercel.app (TEMP)`
    - Rerun: `npx playwright test -g "sitemap has correct base URL"`
 
 3. ⏳ **Collect deployment evidence** (15 minutes)

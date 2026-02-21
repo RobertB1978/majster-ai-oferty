@@ -70,7 +70,7 @@ export function generateOfferEmailHtml(
   const safeProjectName = sanitizeString(projectName);
   const safeMessage = message.replace(/\n/g, '<br>');
   const safeCompanyName = opts?.companyName ? sanitizeString(opts.companyName) : 'Majster.AI';
-  const baseUrl = opts?.frontendUrl ?? 'https://majster.ai';
+  const baseUrl = opts?.frontendUrl ?? 'https://majster-ai-oferty.vercel.app'; // TEMP: configure FRONTEND_URL secret in Supabase
 
   const viewUrl = opts?.publicToken
     ? `${baseUrl}/offer/${opts.publicToken}`

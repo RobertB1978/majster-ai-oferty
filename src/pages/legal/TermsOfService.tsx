@@ -20,7 +20,7 @@ dla fachowców z branży budowlanej i usługowej.
 1.3. Korzystając z serwisu, akceptujesz niniejszy Regulamin oraz Politykę Prywatności.
 
 1.4. Definicje:
-• Serwis - aplikacja Majster.AI dostępna pod adresem majster.ai
+• Serwis - aplikacja Majster.AI dostępna pod adresem majster-ai-oferty.vercel.app (TEMP)
 • Użytkownik - osoba korzystająca z Serwisu
 • Konto - indywidualne konto Użytkownika w Serwisie
 • Subskrypcja - płatny plan dostępu do funkcji Serwisu`,
@@ -103,7 +103,7 @@ O zmianach poinformujemy emailem.
 
 6.4. Nieważność pojedynczego postanowienia nie wpływa na ważność całego Regulaminu.
 
-6.5. Kontakt: legal@majster.ai
+6.5. Kontakt: legal@CHANGE-ME.example
 
 6.6. Regulamin wchodzi w życie z dniem publikacji.`,
     },

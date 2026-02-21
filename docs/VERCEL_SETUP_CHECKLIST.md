@@ -293,11 +293,11 @@ Build Completed
 
 ## Krok 8: Ustaw Custom Domain (OPCJONALNIE)
 
-Jeśli masz własną domenę (np. `majster.ai`):
+Jeśli masz własną domenę (np. `majster-ai-oferty.vercel.app (TEMP)`):
 
 1. W Vercel → Projekt → **Settings** → **Domains**
 2. Kliknij **Add**
-3. Wpisz swoją domenę (np. `majster.ai`)
+3. Wpisz swoją domenę (np. `majster-ai-oferty.vercel.app (TEMP)`)
 4. Vercel pokaże instrukcje DNS:
    - **Typ A:** wskazujący na `76.76.21.21`
    - lub **CNAME:** wskazujący na `cname.vercel-dns.com`

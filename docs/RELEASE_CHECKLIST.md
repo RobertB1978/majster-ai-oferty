@@ -71,7 +71,7 @@ Use this checklist before every production release.
 
 ### Post-Deployment (within 1 hour)
 
-- [ ] Health check: `curl https://app.majster.ai/api/health`
+- [ ] Health check: `curl https://majster-ai-oferty.vercel.app (TEMP)/api/health`
 - [ ] Login works
 - [ ] Critical flows work
 - [ ] No error spikes in Sentry

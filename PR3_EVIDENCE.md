@@ -102,19 +102,19 @@ npm run build
 All these URLs should work:
 
 **Primary Routes:**
-- https://majster.ai/legal
-- https://majster.ai/legal/privacy
-- https://majster.ai/legal/terms
-- https://majster.ai/legal/cookies
-- https://majster.ai/legal/dpa
-- https://majster.ai/legal/rodo
+- https://majster-ai-oferty.vercel.app (TEMP)/legal
+- https://majster-ai-oferty.vercel.app (TEMP)/legal/privacy
+- https://majster-ai-oferty.vercel.app (TEMP)/legal/terms
+- https://majster-ai-oferty.vercel.app (TEMP)/legal/cookies
+- https://majster-ai-oferty.vercel.app (TEMP)/legal/dpa
+- https://majster-ai-oferty.vercel.app (TEMP)/legal/rodo
 
 **Legacy Routes (redirects):**
-- https://majster.ai/privacy → redirects to `/legal/privacy`
-- https://majster.ai/terms → redirects to `/legal/terms`
-- https://majster.ai/cookies → redirects to `/legal/cookies`
-- https://majster.ai/dpa → redirects to `/legal/dpa`
-- https://majster.ai/rodo → redirects to `/legal/rodo`
+- https://majster-ai-oferty.vercel.app (TEMP)/privacy → redirects to `/legal/privacy`
+- https://majster-ai-oferty.vercel.app (TEMP)/terms → redirects to `/legal/terms`
+- https://majster-ai-oferty.vercel.app (TEMP)/cookies → redirects to `/legal/cookies`
+- https://majster-ai-oferty.vercel.app (TEMP)/dpa → redirects to `/legal/dpa`
+- https://majster-ai-oferty.vercel.app (TEMP)/rodo → redirects to `/legal/rodo`
 
 ---
 

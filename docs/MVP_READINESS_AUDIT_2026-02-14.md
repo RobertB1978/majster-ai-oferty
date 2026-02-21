@@ -331,7 +331,7 @@ Users **CANNOT** see other users' data. Single-user isolation is correctly enfor
 - **Options:**
   - **A) Keep strict** `frame-ancestors 'none'` (no embedding) - SECURE, limits distribution
   - **B) Relax to** `frame-ancestors 'self' https://trusted.domain` - MODERATE, enables partner embedding
-  - **C) Subdomain** `offers.majster.ai` with separate CSP - COMPLEX, best isolation
+  - **C) Subdomain** `offers.majster-ai-oferty.vercel.app (TEMP)` with separate CSP - COMPLEX, best isolation
 - **Recommendation:** Option A for MVP (defer embedding to post-launch)
 - **DoD:** Decision documented in ADR-0002, `vercel.json` updated (if B/C chosen), tested in iframe
 - **Rollback:** Revert `vercel.json` commit

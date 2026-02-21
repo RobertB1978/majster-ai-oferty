@@ -115,7 +115,7 @@ const handler = async (req: Request): Promise<Response> => {
 
         try {
           const emailPayload: Record<string, unknown> = {
-            from: "Majster.AI <oferty@majster.ai>",
+            from: "Majster.AI <noreply@CHANGE-ME.example>", // OWNER ACTION: configure verified sender in Resend/SMTP
             to: [emailTo],
             subject: emailSubject,
             html,
