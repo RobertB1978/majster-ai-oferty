@@ -5,7 +5,6 @@ import {
   TrustBar,
   FeaturesGrid,
   HowItWorksSection,
-  ComingSoonSection,
   TestimonialsSection,
   PricingSection,
   FAQSection,
@@ -57,10 +56,7 @@ export default function Landing() {
           {/* 6. FAQ — removes objections before final CTA */}
           <FAQSection />
 
-          {/* 7. Coming soon — beta + planned features */}
-          <ComingSoonSection />
-
-          {/* 8. Final CTA strip */}
+          {/* 7. Final CTA strip */}
           <CTASection />
         </main>
 
