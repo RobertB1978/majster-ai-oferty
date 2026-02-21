@@ -462,7 +462,7 @@ test.describe('MVP Gate - Public Pages', () => {
     const expectedProtocol = expectedUrl.protocol;
 
     // Verify all URLs use the exact same hostname and protocol
-    // This prevents attacks like https://majster.ai.evil.com bypassing validation
+    // This prevents attacks like https://attacker-domain.evil.com bypassing validation
     const allUrlsCorrect = urls.every(url => {
       try {
         const parsedUrl = new URL(url);

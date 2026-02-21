@@ -24,8 +24,8 @@ export function Footer() {
             <div className="space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                <a href="mailto:kontakt@majster.ai" className="hover:text-primary transition-colors">
-                  kontakt@majster.ai
+                <a href="mailto:kontakt@CHANGE-ME.example" className="hover:text-primary transition-colors">
+                  kontakt@CHANGE-ME.example
                 </a>
               </div>
             </div>
@@ -112,7 +112,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <a
-                  href="mailto:support@majster.ai"
+                  href="mailto:support@CHANGE-ME.example"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Pomoc techniczna
@@ -120,7 +120,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:sales@majster.ai"
+                  href="mailto:sales@CHANGE-ME.example"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Sprzedaż
@@ -128,7 +128,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:kontakt@majster.ai"
+                  href="mailto:kontakt@CHANGE-ME.example"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Partnerstwo

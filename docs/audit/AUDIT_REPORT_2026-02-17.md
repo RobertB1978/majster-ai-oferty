@@ -5,7 +5,7 @@
 **Repository:** github.com/RobertB1978/majster-ai-oferty
 **Audit Branch:** `claude/audit-snapshot-majster-eG4Om`
 **HEAD Commit:** `8aa30fb` (fix: P0-CALENDAR — calendar event creation error boundary crash)
-**Production URL Baseline:** https://majster-ai-oferty.vercel.app (NOT majster.ai)
+**Production URL Baseline:** https://majster-ai-oferty.vercel.app (NOT [unowned-domain-was-here])
 **Method:** Full repository static analysis — no live UI interaction claimed
 
 ---
@@ -14,7 +14,7 @@
 
 **Overall Status: PARTIAL** (6 PASS · 1 FAIL · 3 PARTIAL/UNKNOWN · 2 non-critical UNKNOWN)
 
-The two most critical P0 fixes (Quote Editor crash, Calendar error boundary crash) have been correctly merged and verified via TypeScript clean compile (exit 0). Logout flow is properly sequenced with cache clearing. Legal routing is correctly mapped. The single FAIL is `public/sitemap.xml` containing hardcoded `https://majster.ai` (an unowned domain) as a committed file artifact — this is a concrete, verifiable bug. Admin role determination queries Supabase DB (server-authoritative) but RLS policy correctness cannot be verified from repo alone and is marked UNKNOWN. Lint is broken due to missing `@eslint/js` package (node_modules not installed in audit environment — unable to distinguish environment gap from structural failure); tests cannot run for the same reason.
+The two most critical P0 fixes (Quote Editor crash, Calendar error boundary crash) have been correctly merged and verified via TypeScript clean compile (exit 0). Logout flow is properly sequenced with cache clearing. Legal routing is correctly mapped. The single FAIL is `public/sitemap.xml` containing hardcoded `https://[unowned-domain-was-here]` (an unowned domain) as a committed file artifact — this is a concrete, verifiable bug. Admin role determination queries Supabase DB (server-authoritative) but RLS policy correctness cannot be verified from repo alone and is marked UNKNOWN. Lint is broken due to missing `@eslint/js` package (node_modules not installed in audit environment — unable to distinguish environment gap from structural failure); tests cannot run for the same reason.
 
 **P0 findings: 0 new blockers** (both prior P0s resolved in merged commits)
 **P1 findings: 1** (Lint infrastructure broken; i18n ~55% key coverage gap)
@@ -203,18 +203,18 @@ Content inspection:
 **Status: FAIL (sitemap) / PASS (robots.txt)**
 
 #### Sitemap — FAIL
-`public/sitemap.xml` is committed to the repo and contains hardcoded `https://majster.ai` domain:
+`public/sitemap.xml` is committed to the repo and contains hardcoded `https://[unowned-domain-was-here]` domain:
 ```xml
-<loc>https://majster.ai/</loc>
-<loc>https://majster.ai/login</loc>
-<loc>https://majster.ai/register</loc>
+<loc>https://[unowned-domain-was-here]/</loc>
+<loc>https://[unowned-domain-was-here]/login</loc>
+<loc>https://[unowned-domain-was-here]/register</loc>
 ```
-`majster.ai` is explicitly documented as NOT owned/in-use (audit scope fence). This committed file is incorrect and will be served directly by Vercel as-is (no build step for the public/ folder).
+`[unowned-domain-was-here]` is explicitly documented as NOT owned/in-use (audit scope fence). This committed file is incorrect and will be served directly by Vercel as-is (no build step for the public/ folder).
 
-`scripts/generate-sitemap.js:31-32` — fallback hardcodes `https://majster.ai` when `VITE_PUBLIC_SITE_URL` is not set:
+`scripts/generate-sitemap.js:31-32` — fallback hardcodes `https://[unowned-domain-was-here]` when `VITE_PUBLIC_SITE_URL` is not set:
 ```js
-console.warn('⚠️  No VITE_PUBLIC_SITE_URL found, using default: https://majster.ai');
-return 'https://majster.ai';
+console.warn('⚠️  No VITE_PUBLIC_SITE_URL found, using default: https://[unowned-domain-was-here]');
+return 'https://[unowned-domain-was-here]';
 ```
 The prebuild script regenerates sitemap during `npm run build`, so if `VITE_PUBLIC_SITE_URL` is set in Vercel, the deployed sitemap would be correct. **However, the committed `public/sitemap.xml` in the repo contains the wrong domain and is what gets served if the build script fails or isn't run.**
 
@@ -223,7 +223,7 @@ The prebuild script regenerates sitemap during `npm run build`, so if `VITE_PUBL
 ```
 Sitemap: https://majster-ai-oferty.vercel.app/sitemap.xml
 ```
-No `majster.ai` reference in robots.txt.
+No `[unowned-domain-was-here]` reference in robots.txt.
 
 **Required fix:** Set `VITE_PUBLIC_SITE_URL=https://majster-ai-oferty.vercel.app` in Vercel environment variables AND rebuild to regenerate sitemap. Or update fallback in generate-sitemap.js to use `majster-ai-oferty.vercel.app`.
 
@@ -328,7 +328,7 @@ The `sendMessage` async function uses a single `try/catch/finally` block coverin
 | **C** i18n correctness | ⚠️ PARTIAL | `i18n/index.ts:20` fallbackLng=pl; ~55% EN/UA coverage | P2 |
 | **D** Admin separation | ✅ PASS (code) / ❓ UNKNOWN (RLS) | `AdminGuard.tsx:37-43`, `useAdminRole.ts:17` | P2 |
 | **E** Legal routing | ✅ PASS | `App.tsx:137-141` all routes correct | None |
-| **F** SEO sitemap | ❌ FAIL | `public/sitemap.xml:4` hardcoded majster.ai | P2 |
+| **F** SEO sitemap | ❌ FAIL | `public/sitemap.xml:4` hardcoded [unowned-domain-was-here] | P2 |
 | **F** SEO robots.txt | ✅ PASS | `public/robots.txt` uses vercel.app domain | None |
 | **G1** Quote route + auth | ✅ PASS | `App.tsx:161`, `AppLayout.tsx:43-44` | None |
 | **G2** Quote error handling | ✅ PASS | `QuoteEditor.tsx:51-62` explicit null check | None |
@@ -383,8 +383,8 @@ File: `src/i18n/locales/pl.json` vs `src/i18n/locales/en.json`
 
 ### P2 (Medium Priority)
 
-#### P2-A: Fix Committed sitemap.xml Domain (majster.ai → vercel.app)
-**Description:** `public/sitemap.xml` has hardcoded `https://majster.ai` URLs (unowned domain). Served as-is by Vercel. SEO bots index wrong domain.
+#### P2-A: Fix Committed sitemap.xml Domain ([unowned-domain-was-here] → vercel.app)
+**Description:** `public/sitemap.xml` has hardcoded `https://[unowned-domain-was-here]` URLs (unowned domain). Served as-is by Vercel. SEO bots index wrong domain.
 
 **Acceptance Criteria (binary):**
 - `grep -c "majster\.ai" public/sitemap.xml` returns `0`.

@@ -26,7 +26,7 @@ Added comprehensive routing tests that verify route-to-component mapping:
 Node.js script that generates sitemap.xml at build time with:
 - Environment-based base URL (VITE_PUBLIC_SITE_URL)
 - Fallback to VERCEL_URL for Vercel deployments
-- Default to https://majster.ai for production
+- Default to https://majster-ai-oferty.vercel.app (TEMP) for production
 - All legal routes included
 - Proper last-modified dates
 
@@ -51,7 +51,7 @@ This ensures sitemap.xml is always regenerated with correct domain on each build
 **File:** `public/sitemap.xml` (MODIFIED)
 
 Updated sitemap with:
-- Correct base URL: `https://majster.ai`
+- Correct base URL: `https://majster-ai-oferty.vercel.app (TEMP)`
 - All legal routes: /legal/privacy, /legal/terms, /legal/cookies, /legal/dpa, /legal/rodo
 - Current last-modified date: 2026-02-15
 - Proper priorities and change frequencies
@@ -138,7 +138,7 @@ Expected:
 
 ### After
 ```xml
-<loc>https://majster.ai/</loc>
+<loc>https://majster-ai-oferty.vercel.app (TEMP)/</loc>
 ```
 ✅ Uses environment variable with fallback to production domain
 
@@ -149,7 +149,7 @@ Expected:
    - `VITE_PUBLIC_SITE_URL` (preferred)
    - `VERCEL_URL` (for Vercel deploys)
    - `URL` (generic)
-   - Fallback: `https://majster.ai`
+   - Fallback: `https://majster-ai-oferty.vercel.app (TEMP)`
 3. **Generation:** Sitemap XML created with correct base URL
 4. **Output:** Written to `public/sitemap.xml`
 5. **Deployment:** Sitemap deployed with correct domain for each environment
@@ -158,7 +158,7 @@ Expected:
 
 **Production (Vercel):**
 ```env
-VITE_PUBLIC_SITE_URL=https://majster.ai
+VITE_PUBLIC_SITE_URL=https://majster-ai-oferty.vercel.app (TEMP)
 ```
 
 **Preview (Vercel):**
@@ -166,7 +166,7 @@ VITE_PUBLIC_SITE_URL=https://majster.ai
 - e.g., `https://majster-ai-oferty-git-pr-branch.vercel.app`
 
 **Local Development:**
-- Falls back to `https://majster.ai`
+- Falls back to `https://majster-ai-oferty.vercel.app (TEMP)`
 - Can override with local `.env`:
   ```env
   VITE_PUBLIC_SITE_URL=http://localhost:5173
@@ -270,7 +270,7 @@ User reported legal routes showing wrong content:
 ### Vercel Configuration
 Add to Vercel environment variables:
 ```
-VITE_PUBLIC_SITE_URL=https://majster.ai
+VITE_PUBLIC_SITE_URL=https://majster-ai-oferty.vercel.app (TEMP)
 ```
 
 ### Build Process

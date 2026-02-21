@@ -124,7 +124,7 @@ FRONTEND_URL=https://majster-ai-oferty-git-BRANCH.vercel.app
 
 ```bash
 # Run E2E against staging
-BASE_URL=https://staging.majster.ai npm run e2e
+BASE_URL=https://staging-CHANGE-ME.vercel.app (TEMP) npm run e2e
 ```
 
 ### Manual Smoke Test

@@ -106,7 +106,7 @@ Full audit with `npm ci` + all QA gates run on HEAD `2f7d9ec`:
 #### ✅ PASS: Sitemap Base URL (E-001-P1-002) — RESOLVED 2026-02-18
 
 - **Tracker ID**: MVP-SEO-001
-- **Issue**: `public/sitemap.xml` had hardcoded `https://majster.ai` domain (unowned)
+- **Issue**: `public/sitemap.xml` had hardcoded `https://majster-ai-oferty.vercel.app (TEMP)` domain (unowned)
 - **Fix**: `scripts/generate-sitemap.js` updated with `BASE_URL` constant using env-var-first fallback; sitemap regenerated; `QuoteEditor.tsx` `id!` guard added (session `fix/audit-fixpack-20260217-p2a-p2c-p1b`, commit `14ac892`)
 - **Verification (2026-02-18)**: `grep -c "majster\.ai" public/sitemap.xml` → **0** ✅
 - **Verification (2026-02-18)**: `grep "majster-ai-oferty.vercel.app" public/sitemap.xml` → present ✅

@@ -100,7 +100,7 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 
 ### Optional (for specific tests)
 ```bash
-VITE_PUBLIC_SITE_URL=https://majster.ai  # For sitemap URL verification
+VITE_PUBLIC_SITE_URL=https://majster-ai-oferty.vercel.app  # For sitemap URL verification
 ```
 
 ## Test User Credentials

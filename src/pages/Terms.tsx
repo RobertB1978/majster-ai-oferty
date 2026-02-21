@@ -150,7 +150,7 @@ export default function Terms() {
                   W sprawach nieuregulowanych zastosowanie mają przepisy prawa polskiego.
                 </p>
                 <p>
-                  Kontakt: support@majster.ai
+                  Kontakt: support@CHANGE-ME.example
                 </p>
               </CardContent>
             </Card>

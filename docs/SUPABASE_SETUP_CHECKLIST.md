@@ -78,7 +78,7 @@ https://majster-ai-oferty.vercel.app
 
 **Co wpisać:**
 - Zastąp `[YOUR_VERCEL_PROJECT]` nazwą Twojego projektu w Vercel
-- Możesz też użyć własnej domeny, jeśli ją podłączyłeś (np. `https://majster.ai`)
+- Możesz też użyć własnej domeny, jeśli ją podłączyłeś (np. `https://majster-ai-oferty.vercel.app (TEMP)`)
 
 ### 3.3 Dodaj Redirect URLs
 

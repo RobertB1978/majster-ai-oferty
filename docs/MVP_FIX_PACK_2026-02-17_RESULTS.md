@@ -123,8 +123,8 @@ Missing documentation for `VITE_PUBLIC_SITE_URL` environment variable, causing:
 # ============================================
 # Canonical site URL for sitemap generation (used in prebuild script)
 # Set this in Vercel environment variables to ensure correct production sitemap URLs
-# If not set, defaults to https://majster.ai
-VITE_PUBLIC_SITE_URL=https://majster.ai
+# If not set, defaults to https://majster-ai-oferty.vercel.app (TEMP)
+VITE_PUBLIC_SITE_URL=https://majster-ai-oferty.vercel.app (TEMP)
 ```
 
 **Impact:**
@@ -134,7 +134,7 @@ VITE_PUBLIC_SITE_URL=https://majster.ai
 
 **Owner Action Required:**
 1. Go to Vercel Dashboard → Project → Settings → Environment Variables
-2. Add: `VITE_PUBLIC_SITE_URL` = `https://majster.ai`
+2. Add: `VITE_PUBLIC_SITE_URL` = `https://majster-ai-oferty.vercel.app (TEMP)`
 3. Scope: Production, Preview, Development
 4. Redeploy to regenerate sitemap with correct URLs
 
@@ -330,7 +330,7 @@ npm run lint
 2. Go to Project Settings → Environment Variables
 3. Add new variable:
    - Name: `VITE_PUBLIC_SITE_URL`
-   - Value: `https://majster.ai`
+   - Value: `https://majster-ai-oferty.vercel.app (TEMP)`
    - Scope: Production, Preview, Development
 4. Redeploy application
 
@@ -338,7 +338,7 @@ npm run lint
 
 **Verification:**
 - After deploy, check `public/sitemap.xml` in build output
-- All `<loc>` tags should start with `https://majster.ai`
+- All `<loc>` tags should start with `https://majster-ai-oferty.vercel.app (TEMP)`
 
 ### 2. Provide Deployment Evidence (10-15 minutes)
 

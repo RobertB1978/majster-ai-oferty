@@ -31,7 +31,7 @@
 - Cookie consent banner — rendered at `src/App.tsx:113`
 - Legal routes (`/legal/privacy`, `/legal/terms`, `/legal/cookies`, `/legal/dpa`, `/legal/rodo`)
 - i18n — pl/en/uk coverage: pl_total_paths=1070, missing_en=0, missing_uk=0 (as of 2026-02-18)
-- Sitemap — `public/sitemap.xml` contains 0 `majster.ai` references (fix confirmed 2026-02-18)
+- Sitemap — `public/sitemap.xml` contains 0 `[unowned-domain]` references (fix confirmed 2026-02-18)
 
 ## Known Issue Tracker (Reconciled 2026-02-18)
 
@@ -42,7 +42,7 @@
 | P0-QUOTE | P0 | Quote editor ReferenceError (projectId undefined) | ✅ PASS | `useQuoteVersions.ts:8`; `id!` count=0 in `QuoteEditor.tsx`; commit `d602a76` |
 | P1-LINT | P1 | ESLint infrastructure — `@eslint/js` not found in sandbox | ❓ UNKNOWN | node_modules absent; last PASS 2026-02-07 (TRACEABILITY_MATRIX.md, 0 errors/25 warnings) |
 | P1-I18N | P1 | i18n key coverage gap (EN/UK) | ✅ PASS | missing_en=0, missing_uk=0 (verified 2026-02-18); regression fixed commit `ad2a555` |
-| P1-SITEMAP | P1/P2 | Sitemap hardcoded majster.ai domain | ✅ PASS | `grep -c "majster\.ai" sitemap.xml`=0 (verified 2026-02-18); fix commit `14ac892` |
+| P1-SITEMAP | P1/P2 | Sitemap hardcoded [unowned-domain] domain | ✅ PASS | `grep -c "[unowned-domain]" sitemap.xml`=0 (verified 2026-02-18); fix commit `14ac892` |
 | P1-AI | P1 | AI assistant error handling | ✅ PASS | `AiChatAgent.tsx:119-156` try/catch/finally; 2026-02-17 audit domain H |
 | P1-COOKIE | P1 | Cookie consent banner | ✅ PASS | `src/App.tsx:113` renders `<CookieConsent />`; 2026-02-17 audit domain E |
 | P2-FINANCE | P2 | Finance shell / Finance page | ✅ PASS | `/app/finance` → PASS (maturity audit 2026-02-15); `FinanceDashboard.tsx` fully implemented with AI analysis, Recharts |
@@ -54,7 +54,7 @@
 
 | Conflicting Claim | 2026-02-17 Status | 2026-02-18 Status | Verdict |
 |-------------------|-------------------|-------------------|---------|
-| Sitemap domain | FAIL (hardcoded majster.ai) | RESOLVED | ✅ PASS — `grep` confirms 0 majster.ai hits |
+| Sitemap domain | FAIL (hardcoded [unowned-domain]) | RESOLVED | ✅ PASS — `grep` confirms 0 [unowned-domain] hits |
 | i18n key coverage | PARTIAL (EN/UK gap) | RESOLVED (regression fixed) | ✅ PASS — missing_en=0, missing_uk=0 |
 | QuoteEditor `id!` assertions | PARTIAL (structurally safe) | RESOLVED (guard added) | ✅ PASS — `id!` count=0 in QuoteEditor.tsx |
 | Lint | UNKNOWN (node_modules absent) | UNKNOWN (same gap) | ❓ UNKNOWN — install node_modules to verify |

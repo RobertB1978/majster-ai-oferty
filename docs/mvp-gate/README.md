@@ -83,7 +83,7 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 **Optional**:
 ```bash
 # For sitemap URL verification test
-VITE_PUBLIC_SITE_URL=https://majster.ai
+VITE_PUBLIC_SITE_URL=https://majster-ai-oferty.vercel.app
 ```
 
 ## CI Integration
@@ -152,7 +152,7 @@ test.describe('MVP Gate - <Category>', () => {
 
 **How to Unblock**:
 1. Go to Vercel Dashboard → Project → Settings → Environment Variables
-2. Add: `VITE_PUBLIC_SITE_URL` = `https://majster.ai`
+2. Add: `VITE_PUBLIC_SITE_URL` = `https://majster-ai-oferty.vercel.app (TEMP)`
 3. Scope: Production, Preview, Development
 4. Redeploy
 

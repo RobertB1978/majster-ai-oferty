@@ -41,7 +41,7 @@ export function getBaseUrl(): string {
   }
 
   // Fallback for SSR/build time (shouldn't normally happen)
-  return 'https://majster.ai';
+  return 'https://majster-ai-oferty.vercel.app'; // TEMP: use Vercel URL until custom domain is configured
 }
 
 /**

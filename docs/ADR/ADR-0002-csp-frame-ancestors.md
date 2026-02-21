@@ -46,7 +46,7 @@ Vercel applies headers from all matching routes additively. Since `/(.*) ` match
 
 ### Option C: Allow Specific Domain Embedding for Offers
 
-- Same as Option B, but CSP uses `frame-ancestors 'self' https://app.majster.ai`
+- Same as Option B, but CSP uses `frame-ancestors 'self' https://majster-ai-oferty.vercel.app (TEMP)`
 - **Pros:** Most flexible for future use cases
 - **Cons:** Same tradeoff as B, more configuration
 
