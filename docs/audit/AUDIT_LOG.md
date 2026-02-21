@@ -16,8 +16,8 @@ Append-only log of audit sessions. One entry per session. Most recent at top.
 - All required files present: .env.example, scripts/generate-sitemap.js, public/robots.txt, public/sitemap.xml, docs/audit/
 
 **Inventory Results (before fixes):**
-- `majster.ai` in text files: 80+ occurrences across ~40 files
-- `@majster.ai` in src/: 20 occurrences (Footer.tsx, Landing.tsx, Plan.tsx, Privacy.tsx, Terms.tsx, AdminContentEditor.tsx, AdminSystemSettings.tsx, useAdminSettings.ts, DPA.tsx, GDPRCenter.tsx, PrivacyPolicy.tsx, TermsOfService.tsx, send-offer-email/index.ts)
+- `[unowned-domain]` in text files: 80+ occurrences across ~40 files
+- `@[unowned-domain]` in src/: 20 occurrences (Footer.tsx, Landing.tsx, Plan.tsx, Privacy.tsx, Terms.tsx, AdminContentEditor.tsx, AdminSystemSettings.tsx, useAdminSettings.ts, DPA.tsx, GDPRCenter.tsx, PrivacyPolicy.tsx, TermsOfService.tsx, send-offer-email/index.ts)
 - `.env.example`: 2 occurrences (comment + default value)
 - `scripts/generate-sitemap.js`: ALREADY CLEAN (used Vercel URL fallback)
 - `public/sitemap.xml`: ALREADY CLEAN (0 occurrences)

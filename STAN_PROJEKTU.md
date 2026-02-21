@@ -36,7 +36,7 @@ Wszystkie adresy email w kodzie zostały zastąpione placeholderem `@CHANGE-ME.e
 Musisz skonfigurować prawdziwy adres email nadawcy:
 
 **A) Resend (zalecane) — kliknij dokładnie:**
-1. Resend Dashboard → Domains → Add Domain → wpisz domenę (np. po zakupie majster.ai, lub użyj subdomeny Vercel)
+1. Resend Dashboard → Domains → Add Domain → wpisz domenę (np. po zakupie domeny, lub użyj subdomeny Vercel)
 2. Dodaj rekordy DNS (Resend pokaże TXT/MX do dodania)
 3. Supabase Dashboard → Edge Functions → Secrets → `RESEND_API_KEY` → ustaw klucz API z Resend
 4. W kodzie `supabase/functions/send-offer-email/index.ts` zmień `noreply@CHANGE-ME.example` na zweryfikowany adres nadawcy
