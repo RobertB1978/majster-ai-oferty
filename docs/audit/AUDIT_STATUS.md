@@ -1,7 +1,7 @@
 # Audit Status Tracker — Majster.AI
 
-**Last Updated:** 2026-02-20 (360° Enterprise Audit session: `claude/add-app-testing-audit-dSKf8`)
-**Audit Session:** `claude/add-app-testing-audit-dSKf8`
+**Last Updated:** 2026-02-21 (Security & Bundle Fix session: `claude/saas-fix-optimization-UCnUh`)
+**Audit Session:** `claude/saas-fix-optimization-UCnUh`
 **Source Report:** `docs/audit/AUDIT_REPORT_2026-02-20.md`
 
 ---
@@ -35,7 +35,9 @@
 | Domain constraint (sitemap) | DC-1 | ✅ PASS | None |
 | Domain constraint (emails) | DC-2 | ✅ FIXED | OWNER ACTION |
 | Domain constraint (.env.example) | DC-3 | ✅ FIXED | None |
-| Bundle size (<500KB gzip) | PERF | ⚠️ FAIL | P2 |
+| Bundle size (<500KB gzip) | PERF | ⚠️ PARTIAL | P2 |
+| jsPDF HIGH CVEs (3x) | SEC-JSPDF | ✅ RESOLVED | None |
+| minimatch HIGH CVEs (20x chain) | SEC-MINIMATCH | 🚫 BLOCKED | P2 |
 | Cookie consent | COOKIE | ✅ PASS | None |
 
 ---
@@ -63,7 +65,20 @@
 ### [NEW-02] Bundle size exceeds target
 - **Description:** Total gzipped JS ~1.1MB (target: 500KB). Largest: exportUtils 272KB gzip (exceljs).
 - **AC:** No chunk > 150KB gzipped in build output
-- **Status:** OPEN
+- **Status:** ⚠️ PARTIAL (2026-02-21)
+  - exportUtils chunk: 938.90 kB → **2.57 kB** (exceljs moved to separate lazy chunk)
+  - exceljs.min chunk: 937.03 kB (270.79 kB gzip) — loads only when user navigates to Projects/ProjectDetail
+  - Remaining heavy chunks still exceed 150 kB gzip target: charts-vendor 113 kB, react-vendor 54 kB, supabase-vendor 46 kB, etc. — further splitting out of scope for this session.
+  - Initial bundle no longer includes exceljs code ✅
+
+### [SEC-JSPDF] jsPDF HIGH Security Vulnerabilities
+- **Description:** jspdf ≤4.1.0 had 3 HIGH CVEs: GHSA-p5xg-68wr-hm3m (AcroForm PDF injection), GHSA-9vjf-qc39-jprp (addJS object injection), GHSA-67pg-wm7f-q7fj (GIF DoS).
+- **Status:** ✅ RESOLVED (2026-02-21) — upgraded jspdf 4.1.0→4.2.0 and jspdf-autotable 5.0.2→5.0.7 via `npm audit fix`. Package-lock.json updated. All 3 CVEs eliminated.
+
+### [SEC-MINIMATCH] minimatch HIGH Vulnerabilities (20 vulns, BLOCKED)
+- **Description:** minimatch <10.2.1 (GHSA-3ppc-4f35-3m26 ReDoS). Fix requires `npm audit fix --force` which installs eslint@10.0.1 — breaking change to our ESLint 9 config.
+- **Status:** 🚫 BLOCKED — upstream fix requires breaking ESLint upgrade.
+- **OWNER ACTION:** To resolve, owner must review ESLint v10 migration guide and upgrade the ESLint stack in a dedicated PR. See: https://eslint.org/docs/latest/use/migrate-to-v10-from-v9
 
 ### [NEW-03] .env.example defaults to [unowned-domain]
 - **Description:** Line 32 previously defaulted `VITE_PUBLIC_SITE_URL` to the unowned domain.

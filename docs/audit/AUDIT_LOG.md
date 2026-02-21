@@ -4,6 +4,59 @@ Append-only log of audit sessions. One entry per session. Most recent at top.
 
 ---
 
+## 2026-02-21 — Security & Bundle Fix (jsPDF CVEs + exceljs lazy-load)
+
+**Session:** `claude/saas-fix-optimization-UCnUh`
+**Branch:** `claude/saas-fix-optimization-UCnUh`
+**Auditor:** Staff+ SaaS Fix Agent (Claude Sonnet 4.6)
+**Method:** Evidence-first, binary targets: A) jsPDF HIGH CVEs, B) exceljs initial bundle reduction.
+
+**Pre-Flight:**
+- Working tree: CLEAN (git status --porcelain = empty)
+- Branch: `claude/saas-fix-optimization-UCnUh` at commit `c9f8c1a` (same as origin/main)
+
+**Baseline Evidence (before fixes):**
+- `npm audit --audit-level=high`: 21 vulnerabilities (1 moderate, 20 high); jspdf ≤4.1.0: 3 HIGH CVEs; minimatch chain: 20 HIGH (fix requires --force/breaking ESLint upgrade)
+- `npm run build`: ✅ Success; `exportUtils-BmNTk4wG.js` = **938.90 kB** (gzip 271.80 kB) — exceljs bundled inline
+- `npx tsc --noEmit`: EXIT 0 ✅
+- `npm run lint`: EXIT 0, 0 errors, 16 warnings ✅
+- `npm test -- --run`: 37 files, 519 passed, 5 skipped ✅
+
+**Target A — jsPDF HIGH CVEs:**
+- Evidence: `npm ls jspdf` → `jspdf@4.1.0`; 3 HIGH CVEs: GHSA-p5xg-68wr-hm3m, GHSA-9vjf-qc39-jprp, GHSA-67pg-wm7f-q7fj
+- Fix available: `npm audit fix` (non-breaking; `^4.1.0` range includes 4.2.0)
+- Applied: `npm audit fix` → jspdf upgraded 4.1.0→4.2.0, jspdf-autotable 5.0.2→5.0.7
+- Result: jspdf CVEs eliminated; audit count 21→20 (3 HIGH removed)
+- Remaining 20 HIGH: minimatch chain — requires `npm audit fix --force` (eslint@10.0.1 breaking change) → **BLOCKED / OWNER ACTION**
+- Commit: `94a49df` — `fix: upgrade jspdf 4.1.0→4.2.0 to resolve HIGH security vulnerabilities`
+
+**Target B — exceljs lazy-load:**
+- Evidence: `src/lib/exportUtils.ts` line 1: `import ExcelJS from 'exceljs';` (static, causing exceljs to be bundled in exportUtils chunk)
+- Fix: Converted to `const _excelJSLoad = import('exceljs');` (module-level dynamic import with pre-warming)
+- Pattern: `const mod = await _excelJSLoad; const ExcelJS = mod.default ?? mod;` inside `exportQuoteToExcel`
+- Result: `exportUtils` chunk: **938.90 kB → 2.57 kB** (gzip 271.80 kB → 1.44 kB); exceljs now in `exceljs.min` separate chunk (937.03 kB, gzip 270.79 kB)
+- Commit: `f202920` — `perf: lazy-load exceljs via dynamic import to reduce initial bundle`
+
+**Post-Fix Verification Gates (all PASS):**
+- `npm run build`: EXIT ✅; exportUtils = 2.57 kB + exceljs.min = 937.03 kB (separate chunk)
+- `npx tsc --noEmit`: EXIT 0 ✅
+- `npm run lint`: EXIT 0, 0 errors, 16 warnings ✅ (identical to baseline)
+- `npm test -- --run`: 37 files, 519 passed, 5 skipped ✅
+
+**Files Modified:**
+- `package-lock.json` (jspdf/jspdf-autotable upgrade)
+- `src/lib/exportUtils.ts` (dynamic import conversion)
+- `docs/audit/AUDIT_STATUS.md` (this update)
+- `docs/audit/AUDIT_LOG.md` (this entry)
+- `STAN_PROJEKTU.md` (LOG ZMIAN line)
+
+**AUDIT STATUS UPDATES:**
+- SEC-JSPDF (jsPDF 3×HIGH): NEW → ✅ RESOLVED
+- SEC-MINIMATCH (minimatch 20×HIGH): NEW → 🚫 BLOCKED (OWNER ACTION for ESLint v10 upgrade)
+- NEW-02 (Bundle size): ⚠️ OPEN → ⚠️ PARTIAL (exportUtils 938 kB → 2.57 kB; full target requires additional chunk splitting)
+
+---
+
 ## 2026-02-21 — Audit Cleanup & Hardening Fix Pack Δ
 
 **Session:** `claude/saas-fix-optimization-0CN1d`
