@@ -1,36 +1,42 @@
 # MVP Gate Status — PASS/FAIL/UNKNOWN
 
-**Last Updated**: 2026-02-19 (P0-CALENDAR-SELECT crash fixed; session `claude/fix-sprint-0-p0-U35EU`)
-**Evidence Date**: 2026-02-19
-**Latest Fix Commits**: `5099064` (P1-AI-LLM, origin/main HEAD) · `ad2a555` (i18n) · `14ac892` (sitemap/i18n/id!) · `8aa30fb` (P0-CALENDAR hook) · `447f044` (P0-LOGOUT) · `d602a76` (P0-QUOTE)
+**Last Updated**: 2026-02-20 (360° Enterprise Audit; session `claude/add-app-testing-audit-dSKf8`)
+**Evidence Date**: 2026-02-20
+**Latest Audit**: `docs/audit/AUDIT_REPORT_2026-02-20.md`
+**Latest Fix Commits**: `2f7d9ec` (HEAD) · `5099064` (P1-AI-LLM) · `bd14e62` (P0-CALENDAR-SELECT) · `ad2a555` (i18n) · `14ac892` (sitemap/i18n/id!) · `8aa30fb` (P0-CALENDAR hook) · `447f044` (P0-LOGOUT) · `d602a76` (P0-QUOTE)
 
 ---
 
-## Reconciliation Note
+## 360° Audit Update (2026-02-20)
 
-This file was updated 2026-02-18 to reconcile conflicting statuses between:
-- 2026-02-17 audit snapshot (`docs/audit/AUDIT_REPORT_2026-02-17.md`)
-- 2026-02-18 re-audit (`docs/audit/AUDIT_STATUS.md`, `docs/audit/AUDIT_LOG.md`)
-
-**Verdict**: No conflicts remain. All P0 items PASS. Sitemap, i18n, and QuoteEditor guard all confirmed PASS by 2026-02-18 verification. Lint and test suite remain UNKNOWN (environment gap — node_modules absent). See `docs/TRUTH.md` for full reconciliation table.
+Full audit with `npm ci` + all QA gates run on HEAD `2f7d9ec`:
+- `tsc --noEmit`: EXIT 0, 0 errors ✅
+- `npm run lint`: EXIT 0, 0 errors, 16 warnings ✅
+- `npm test -- --run`: 519 passed, 5 skipped ✅
+- `npm run build`: Success ✅
+- **All 8 known bugs: FIXED** (0 regressions)
+- **MVP% = 84%** (weighted scoring)
+- **4 new P2 findings**: emails, bundle size, .env.example, npm audit vulns
+- **1 UNKNOWN**: user_roles RLS (owner action)
 
 ---
 
-## Executive Summary (Reconciled 2026-02-18)
+## Executive Summary (2026-02-20)
 
 | Category | Total | ✅ PASS | ❌ FAIL | ❓ UNKNOWN |
 |----------|-------|---------|---------|------------|
 | **P0 - Production Blockers** | 3 | 3 | 0 | 0 |
 | **P1 - High Priority** | 6 | 6 | 0 | 0 |
-| **P2 - Quality/Polish** | 4 | 2 | 0 | 2 |
+| **P2 - Quality/Polish** | 7 | 2 | 4 | 1 |
 | **Baseline - Smoke Tests** | 4 | 4 | 0 | 0 |
-| **TOTAL** | 17 | 15 | 0 | 2 |
+| **Repo QA Gates** | 4 | 4 | 0 | 0 |
+| **TOTAL** | 24 | 19 | 4 | 1 |
 
-**Overall Status**: 🟢 **88% PASS · 12% UNKNOWN** (P2 owner/env actions only — not code failures)
+**Overall Status**: 🟢 **79% PASS · 17% FAIL (P2 only) · 4% UNKNOWN (P2)**
 
-**Production Readiness**: ✅ **READY** — All P0 blockers resolved; P1-LINT verified PASS 2026-02-19 (0 errors, 16 warnings); P1-AI-LLM code fix applied (owner must set API key secret); 2 P2 UNKNOWNs require owner action (RLS policy confirmation, E2E credentials).
+**Production Readiness**: ✅ **READY** — All P0/P1 blockers resolved and verified. P2 FAILs are non-blocking for MVP launch. Tests verified: 519 passing.
 
-**Next SESSION TARGET**: PRODUCTION DEPLOY — all code gates PASS; owner must action Supabase secrets + Vercel env vars; run Supabase Autopilot workflow.
+**Next SESSION TARGET**: Fix NEW-01 (emails), NEW-03 (.env.example), then PRODUCTION DEPLOY.
 
 ---
 

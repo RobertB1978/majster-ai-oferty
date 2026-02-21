@@ -6,6 +6,7 @@ Log zmian sesji Claude Code.
 
 | Data | ID | Wynik | Zmienione pliki |
 |------|----|-------|-----------------|
+| 2026-02-20 | AUDIT-360 | DONE — Full 360° Enterprise Audit: 8/8 known bugs FIXED; tsc/lint/tests/build all EXIT 0 (519 tests passing); MVP%=84%; 4 new P2 findings (emails @majster.ai, bundle >500KB gzip, .env.example default, npm audit vulns); 1 UNKNOWN (user_roles RLS); next targets: NEW-01 emails, NEW-02 bundle, DEPLOY | docs/audit/AUDIT_REPORT_2026-02-20.md, docs/audit/AUDIT_STATUS.md, docs/audit/AUDIT_LOG.md, STAN_PROJEKTU.md |
 | 2026-02-19 | P0-CALENDAR-SELECT | FIXED — `<SelectItem value="">` → `<SelectItem value="none">` in Calendar dialog; Radix UI Select v2 throws invariant error on empty-string item values crashing the Add Event dialog; sentinel `"none"` mapped at onValueChange boundary; tsc --noEmit exits 0 | src/pages/Calendar.tsx |
 | 2026-02-19 | RELEASE-MERGE-CHECKLIST | DONE — P1-LINT verified PASS (0 errors, 16 warnings, exit 0) after npm install on HEAD `5099064`; tsc --noEmit exits 0; all fix PRs (#215–#222) confirmed merged to origin/main; merge checklist + owner runbook produced; STATUS.md updated; DEPLOY_RUNBOOK.md absent (not created per scope fence) | STAN_PROJEKTU.md, docs/mvp-gate/STATUS.md |
 | 2026-02-18 | P1-AI-LLM | FIXED — `body: unknown` → `body: Record<string, unknown>` in callOpenAICompatible, callAnthropic, callGemini; prevents Deno type-check failure at deploy time; commit de23ff9 | supabase/functions/_shared/ai-provider.ts, STAN_PROJEKTU.md, docs/mvp-gate/STATUS.md |
