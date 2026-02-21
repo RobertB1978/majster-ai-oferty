@@ -1,5 +1,6 @@
 export { LandingHeader } from './LandingHeader';
 export { HeroSection } from './HeroSection';
+export { TrustBar } from './TrustBar';
 export { FeaturesGrid } from './FeaturesGrid';
 export { HowItWorksSection } from './HowItWorksSection';
 export { ComingSoonSection } from './ComingSoonSection';
