@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Shield, FileText, Cookie, Building2, Mail } from 'lucide-react';
 
 export function Footer() {
-  const { t: _t } = useTranslation();
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -19,7 +19,7 @@ export function Footer() {
               <span className="font-bold text-lg">Majster.AI</span>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Profesjonalne wyceny dla fachowców. Szybko, łatwo, profesjonalnie.
+              {t('footer.tagline')}
             </p>
             <div className="space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
@@ -33,21 +33,21 @@ export function Footer() {
 
           {/* Product */}
           <div>
-            <h4 className="font-semibold mb-4">Produkt</h4>
+            <h4 className="font-semibold mb-4">{t('footer.product')}</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/app/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
-                  Panel główny
+                  {t('footer.dashboard')}
                 </Link>
               </li>
               <li>
                 <Link to="/app/templates" className="text-muted-foreground hover:text-primary transition-colors">
-                  Szablony
+                  {t('footer.templates')}
                 </Link>
               </li>
               <li>
                 <Link to="/app/jobs" className="text-muted-foreground hover:text-primary transition-colors">
-                  Projekty
+                  {t('footer.projects')}
                 </Link>
               </li>
             </ul>
@@ -57,42 +57,42 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4 flex items-center gap-2">
               <Shield className="h-4 w-4" />
-              Prawne
+              {t('footer.legal')}
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link 
-                  to="/legal/privacy" 
+                <Link
+                  to="/legal/privacy"
                   className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
                 >
                   <Shield className="h-3 w-3" />
-                  Polityka Prywatności
+                  {t('footer.privacy')}
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/legal/terms" 
+                <Link
+                  to="/legal/terms"
                   className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
                 >
                   <FileText className="h-3 w-3" />
-                  Regulamin
+                  {t('footer.terms')}
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/legal/cookies" 
+                <Link
+                  to="/legal/cookies"
                   className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
                 >
                   <Cookie className="h-3 w-3" />
-                  Polityka Cookies
+                  {t('footer.cookies')}
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/legal/dpa" 
+                <Link
+                  to="/legal/dpa"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Umowa DPA
+                  {t('footer.dpa')}
                 </Link>
               </li>
               <li>
@@ -100,7 +100,7 @@ export function Footer() {
                   to="/legal/rodo"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Centrum RODO
+                  {t('footer.gdpr')}
                 </Link>
               </li>
             </ul>
@@ -108,14 +108,14 @@ export function Footer() {
 
           {/* Support */}
           <div>
-            <h4 className="font-semibold mb-4">Wsparcie</h4>
+            <h4 className="font-semibold mb-4">{t('footer.support')}</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <a
                   href="mailto:support@CHANGE-ME.example"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Pomoc techniczna
+                  {t('footer.techSupport')}
                 </a>
               </li>
               <li>
@@ -123,7 +123,7 @@ export function Footer() {
                   href="mailto:sales@CHANGE-ME.example"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Sprzedaż
+                  {t('footer.sales')}
                 </a>
               </li>
               <li>
@@ -131,7 +131,7 @@ export function Footer() {
                   href="mailto:kontakt@CHANGE-ME.example"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Partnerstwo
+                  {t('footer.partnership')}
                 </a>
               </li>
             </ul>
@@ -141,10 +141,10 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-8 pt-6 border-t flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground text-center sm:text-left">
-            © {currentYear} Majster.AI. Wszystkie prawa zastrzeżone.
+            © {currentYear} Majster.AI. {t('footer.copyright')}
           </p>
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <span>🇵🇱 Made in Poland</span>
+            <span>🇵🇱 {t('footer.madeIn')}</span>
             <span>•</span>
             <span>RODO Compliant</span>
           </div>

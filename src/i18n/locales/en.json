@@ -52,7 +52,8 @@
     "templates": "Templates",
     "billing": "Billing",
     "profile": "Company Profile",
-    "admin": "Admin Panel"
+    "admin": "Admin Panel",
+    "plan": "My Plan"
   },
   "auth": {
     "login": "Login",
@@ -1547,5 +1548,24 @@
     "noItems": "Add at least one item.",
     "saved": "Estimate saved!",
     "defaultName": "Quick estimate"
+  },
+  "footer": {
+    "tagline": "Professional quotes for tradespeople. Fast, easy, professional.",
+    "product": "Product",
+    "legal": "Legal",
+    "support": "Support",
+    "dashboard": "Main Dashboard",
+    "templates": "Templates",
+    "projects": "Projects",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Policy",
+    "dpa": "DPA Agreement",
+    "gdpr": "GDPR Center",
+    "techSupport": "Technical Support",
+    "sales": "Sales",
+    "partnership": "Partnership",
+    "copyright": "All rights reserved.",
+    "madeIn": "Made in Poland"
   }
 }

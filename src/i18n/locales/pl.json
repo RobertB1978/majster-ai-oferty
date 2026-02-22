@@ -52,7 +52,8 @@
     "templates": "Szablony",
     "billing": "Płatności",
     "profile": "Profil firmy",
-    "admin": "Panel administratora"
+    "admin": "Panel administratora",
+    "plan": "Mój plan"
   },
   "auth": {
     "login": "Zaloguj się",
@@ -1518,5 +1519,24 @@
     "noItems": "Dodaj co najmniej jedną pozycję.",
     "saved": "Wycena zapisana!",
     "defaultName": "Szybka wycena"
+  },
+  "footer": {
+    "tagline": "Profesjonalne wyceny dla fachowców. Szybko, łatwo, profesjonalnie.",
+    "product": "Produkt",
+    "legal": "Prawne",
+    "support": "Wsparcie",
+    "dashboard": "Panel główny",
+    "templates": "Szablony",
+    "projects": "Projekty",
+    "privacy": "Polityka Prywatności",
+    "terms": "Regulamin",
+    "cookies": "Polityka Cookies",
+    "dpa": "Umowa DPA",
+    "gdpr": "Centrum RODO",
+    "techSupport": "Pomoc techniczna",
+    "sales": "Sprzedaż",
+    "partnership": "Partnerstwo",
+    "copyright": "Wszystkie prawa zastrzeżone.",
+    "madeIn": "Made in Poland"
   }
 }
