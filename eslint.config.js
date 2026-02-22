@@ -3,6 +3,7 @@ import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
+import i18next from "eslint-plugin-i18next";
 
 export default tseslint.config(
   { ignores: ["dist"] },
@@ -33,6 +34,27 @@ export default tseslint.config(
     ignores: ["src/lib/logger.ts", "src/lib/sentry.ts"],
     rules: {
       "no-console": ["error", { allow: ["warn", "error"] }],
+    },
+  },
+  // i18n literal-string proof: applied per-screen as migration progresses
+  {
+    files: [
+      "src/pages/Login.tsx",
+      "src/components/auth/AuthDiagnostics.tsx",
+    ],
+    plugins: { i18next },
+    rules: {
+      "i18next/no-literal-string": ["warn", {
+        framework: "react",
+        mode: "jsx-only",
+        "jsx-attributes": {
+          exclude: [
+            "className", "styleName", "style", "type", "key", "id",
+            "width", "height", "variant", "size", "htmlFor", "to",
+            "href", "target", "rel", "name", "data-testid",
+          ],
+        },
+      }],
     },
   },
 );

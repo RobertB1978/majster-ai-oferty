@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string -- DEV-ONLY: auth diagnostic panel, never rendered in production (MODE !== 'development' guard) */
 import { toast } from 'sonner';
 /**
  * Auth Diagnostics Panel - DEV ONLY
