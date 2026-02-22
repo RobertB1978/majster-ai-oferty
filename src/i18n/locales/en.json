@@ -1479,7 +1479,15 @@
       "badge": "Most popular",
       "ctaFree": "Start for free",
       "ctaTry": "Try",
-      "cancelNote": "Cancel any time · VAT invoices provided"
+      "cancelNote": "Cancel any time · VAT invoices provided",
+      "popular": "Popular",
+      "freeBadge": "Free",
+      "cta_free": "Start for free",
+      "cta_paid": "Choose plan",
+      "cta_enterprise": "Contact us",
+      "per_month": "/ mo",
+      "no_card": "No credit card required",
+      "all_plans": "See all plans"
     },
     "faq": {
       "sectionTitle": "Frequently asked questions",
