@@ -132,7 +132,7 @@ export default function Login() {
               </div>
               <span className="font-bold text-sm">Majster.AI</span>
             </div>
-            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Przełącz motyw">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('common.toggleTheme')}>
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
           </div>
