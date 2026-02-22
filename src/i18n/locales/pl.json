@@ -1272,6 +1272,56 @@
       "tryFree": "Wypróbuj",
       "tryFreeFull": "Wypróbuj za darmo"
     },
+    "trust": {
+      "languages_label": "języki interfejsu",
+      "pdf_label": "w kilka kliknięć",
+      "pdf_sub": "wyceny i oferty",
+      "unlimited_label": "bez limitu projektów",
+      "unlimited_sub": "plan Pro i wyższe",
+      "mobile_label": "Mobile-first",
+      "mobile_sub": "działa na każdym telefonie"
+    },
+    "how": {
+      "sectionTitle": "Jak to działa?",
+      "sectionSubtitle": "Trzy kroki i jesteś gotowy do pracy.",
+      "step": "Krok",
+      "step1_title": "Załóż konto",
+      "step1_desc": "Rejestracja zajmuje chwilę. Pierwsze 30 dni bezpłatnie — bez karty kredytowej.",
+      "step2_title": "Dodaj projekt",
+      "step2_desc": "Stwórz projekt, przypisz klienta, dodaj zadania i materiały.",
+      "step3_title": "Wyślij wycenę",
+      "step3_desc": "Wygeneruj profesjonalne PDF i wyślij klientowi w kilka kliknięć."
+    },
+    "pricing": {
+      "sectionTitle": "Cennik",
+      "sectionSubtitle": "Zacznij za darmo, rozwiń kiedy rośniesz. Żadnych ukrytych opłat.",
+      "popular": "Popularny",
+      "freeBadge": "Bezpłatny",
+      "cta_free": "Zacznij za darmo",
+      "cta_paid": "Wybierz plan",
+      "cta_enterprise": "Skontaktuj się",
+      "per_month": "/ mies.",
+      "no_card": "Bez karty kredytowej",
+      "all_plans": "Zobacz wszystkie plany"
+    },
+    "faq": {
+      "sectionTitle": "Często zadawane pytania",
+      "sectionSubtitle": "Masz pytania? Mamy odpowiedzi.",
+      "q1": "Czy mogę przetestować aplikację za darmo?",
+      "a1": "Tak! Plan Free jest bezpłatny na zawsze. Masz dostęp do podstawowych funkcji bez karty kredytowej.",
+      "q2": "Jak długo trwa wygenerowanie wyceny?",
+      "a2": "Średnio 2-5 minut. Głosowo lub z pomocą AI możesz stworzyć pełną wycenę w mniej niż 3 minuty.",
+      "q3": "Czy moje dane są bezpieczne?",
+      "a3": "Tak. Używamy szyfrowania SSL, kopii zapasowych co 6 godzin i pełnej zgodności z RODO. Twoje dane należą tylko do Ciebie.",
+      "q4": "Czy aplikacja działa na telefonie?",
+      "a4": "Tak! Interfejs jest zaprojektowany mobile-first. Działa na każdym smartfonie z przeglądarką — bez instalacji.",
+      "q5": "Czy mogę importować szablony cenników?",
+      "a5": "Tak — mamy gotowe szablony dla glazurników, malarzy, hydraulików, elektryków i innych branż."
+    },
+    "testimonials": {
+      "sectionTitle": "Co mówią fachowcy",
+      "sectionSubtitle": "Dołącz do wykonawców, którzy już oszczędzają czas."
+    },
     "hero": {
       "badge": "Cyfrowe narzędzie dla branży budowlanej",
       "title": "Zarządzaj firmą",
