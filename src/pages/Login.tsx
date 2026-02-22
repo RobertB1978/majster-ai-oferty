@@ -130,7 +130,7 @@ export default function Login() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <Wrench className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="font-bold text-sm">Majster.AI</span>
+              <span className="font-bold text-sm">{'Majster.AI'}</span>
             </div>
             <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('common.toggleTheme')}>
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -143,7 +143,7 @@ export default function Login() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-sm">
             <Wrench className="h-8 w-8 text-primary-foreground" />
           </div>
-          <CardTitle className="text-2xl font-bold gradient-text">Majster.AI</CardTitle>
+          <CardTitle className="text-2xl font-bold gradient-text">{'Majster.AI'}</CardTitle>
           <CardDescription className="text-muted-foreground">
             {t('auth.loginSubtitle')}
           </CardDescription>
@@ -157,7 +157,7 @@ export default function Login() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="jan@example.pl"
+                  placeholder={t('auth.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`pl-10 ${errors.email ? 'border-destructive' : ''}`}
@@ -168,10 +168,7 @@ export default function Login() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">{t('auth.password')}</Label>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-primary hover:underline"
-                >
+                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
                   {t('auth.forgotPassword')}
                 </Link>
               </div>
@@ -180,7 +177,7 @@ export default function Login() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`pl-10 ${errors.password ? 'border-destructive' : ''}`}
@@ -208,13 +205,7 @@ export default function Login() {
                   {t('common.or')}
                 </span>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full hover:bg-primary/5 transition-colors"
-                onClick={handleBiometricLogin}
-                disabled={isAuthenticating}
-              >
+              <Button type="button" variant="outline" className="w-full hover:bg-primary/5 transition-colors" onClick={handleBiometricLogin} disabled={isAuthenticating}>
                 {isAuthenticating ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
