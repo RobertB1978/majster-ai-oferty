@@ -37,7 +37,8 @@
     "more": "więcej",
     "or": "lub",
     "retry": "Spróbuj ponownie",
-    "refreshPage": "Odśwież stronę"
+    "refreshPage": "Odśwież stronę",
+    "toggleTheme": "Przełącz motyw"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -1322,8 +1323,13 @@
       "a5": "Tak — mamy gotowe szablony dla glazurników, malarzy, hydraulików, elektryków i innych branż."
     },
     "testimonials": {
-      "sectionTitle": "Co mówią fachowcy",
-      "sectionSubtitle": "Dołącz do wykonawców, którzy już oszczędzają czas."
+      "title": "Co mówią fachowcy",
+      "t1Role": "Właściciel firmy remontowej",
+      "t1Text": "Wreszcie mogę robić wyceny prosto z budowy. Klient dostaje PDF w 5 minut.",
+      "t2Role": "Elektryk, jednoosobowa firma",
+      "t2Text": "Dyktowanie wyceny głosem to przełom. Oszczędzam 2 godziny dziennie.",
+      "t3Role": "Biuro projektowe",
+      "t3Text": "Zarządzanie klientami i projektami w jednym miejscu. Polecam każdemu fachowcowi."
     },
     "hero": {
       "badge": "Cyfrowe narzędzie dla branży budowlanej",
@@ -1442,15 +1448,6 @@
       "step2Desc": "Utwórz projekt i stwórz wycenę — ręcznie, głosem lub z AI.",
       "step3Title": "Wyślij ofertę",
       "step3Desc": "Wygeneruj PDF, wyślij klientowi mailem. Klient zatwierdza online."
-    },
-    "testimonials": {
-      "title": "Co mówią fachowcy",
-      "t1Role": "Właściciel firmy remontowej",
-      "t1Text": "Wreszcie mogę robić wyceny prosto z budowy. Klient dostaje PDF w 5 minut.",
-      "t2Role": "Elektryk, jednoosobowa firma",
-      "t2Text": "Dyktowanie wyceny głosem to przełom. Oszczędzam 2 godziny dziennie.",
-      "t3Role": "Biuro projektowe",
-      "t3Text": "Zarządzanie klientami i projektami w jednym miejscu. Polecam każdemu fachowcowi."
     },
     "cta": {
       "title": "Gotowy na cyfrową zmianę?",

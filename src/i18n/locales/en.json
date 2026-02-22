@@ -37,7 +37,8 @@
     "more": "more",
     "or": "or",
     "retry": "Try again",
-    "refreshPage": "Refresh page"
+    "refreshPage": "Refresh page",
+    "toggleTheme": "Toggle theme"
   },
   "nav": {
     "dashboard": "Dashboard",
