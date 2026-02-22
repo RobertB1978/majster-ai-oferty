@@ -95,7 +95,7 @@ export function Navigation() {
             className="flex items-center gap-2 text-foreground min-h-[48px]"
           >
             {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            <span className="font-medium">Menu</span>
+            <span className="font-medium">{t('nav.menu')}</span>
             <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
           </Button>
         </div>
@@ -122,7 +122,7 @@ export function Navigation() {
                     variant="secondary"
                     className="ml-1 px-1.5 py-0 text-[10px] font-semibold hidden xl:flex"
                   >
-                    Soon
+                    {t('nav.comingSoon')}
                   </Badge>
                 )}
               </NavLink>

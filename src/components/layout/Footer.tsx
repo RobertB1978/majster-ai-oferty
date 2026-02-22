@@ -146,7 +146,7 @@ export function Footer() {
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span>🇵🇱 {t('footer.madeIn')}</span>
             <span>•</span>
-            <span>RODO Compliant</span>
+            <span>{t('footer.rodoCompliant')}</span>
           </div>
         </div>
       </div>
