@@ -35,8 +35,22 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Briefcase, Wallet, FileText, UserPlus,
 };
 
+/** Map config item IDs to i18n translation keys so nav labels react to language changes. */
+const NAV_LABEL_KEYS: Record<string, string> = {
+  dashboard: 'nav.dashboard',
+  jobs: 'nav.projects',
+  clients: 'nav.clients',
+  calendar: 'nav.calendar',
+  finance: 'nav.finance',
+  templates: 'nav.templates',
+  team: 'nav.team',
+  marketplace: 'nav.marketplace',
+  analytics: 'nav.analytics',
+  plan: 'nav.plan',
+};
+
 export function Navigation() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const { config } = useConfig();
 
@@ -50,7 +64,8 @@ export function Navigation() {
       .sort((a, b) => a.order - b.order)
       .map((item) => ({
         to: item.path,
-        label: item.label,
+        // Resolve label via i18n key when available; fall back to config label
+        label: NAV_LABEL_KEYS[item.id] ? t(NAV_LABEL_KEYS[item.id]) : item.label,
         icon: ICON_MAP[item.icon] || LayoutDashboard,
         comingSoon: item.comingSoon,
       }));
@@ -64,7 +79,9 @@ export function Navigation() {
       configItems.push({ to: '/app/settings', label: t('nav.settings'), icon: Settings, comingSoon: false });
     }
     return configItems;
-  }, [config.navigation.mainItems, t]);
+  // i18n.language added explicitly: t reference is stable in react-i18next v16,
+  // so we depend on language directly to force recompute on language change.
+  }, [config.navigation.mainItems, t, i18n.language]);
 
   return (
     <nav className="border-b border-border bg-card sticky top-16 z-40">
