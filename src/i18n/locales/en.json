@@ -53,7 +53,9 @@
     "billing": "Billing",
     "profile": "Company Profile",
     "admin": "Admin Panel",
-    "plan": "My Plan"
+    "plan": "My Plan",
+    "menu": "Menu",
+    "comingSoon": "Soon"
   },
   "auth": {
     "login": "Login",
@@ -1566,6 +1568,7 @@
     "sales": "Sales",
     "partnership": "Partnership",
     "copyright": "All rights reserved.",
-    "madeIn": "Made in Poland"
+    "madeIn": "Made in Poland",
+    "rodoCompliant": "GDPR Compliant"
   }
 }
