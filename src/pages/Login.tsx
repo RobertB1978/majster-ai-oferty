@@ -13,7 +13,10 @@ import { toast } from 'sonner';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthDiagnostics } from '@/components/auth/AuthDiagnostics';
+import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWidget';
 import { useTheme } from '@/hooks/useTheme';
+
+const CAPTCHA_FAIL_THRESHOLD = 3;
 
 export default function Login() {
   const { t } = useTranslation();
@@ -21,6 +24,8 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const { login, user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -56,6 +61,9 @@ export default function Login() {
     }
   }, [email, isSupported, checkIfEnabled]);
 
+  const showCaptcha =
+    isCaptchaEnabled && failedAttempts >= CAPTCHA_FAIL_THRESHOLD;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -72,11 +80,18 @@ export default function Login() {
       return;
     }
 
+    if (showCaptcha && !captchaToken) {
+      toast.error(t('auth.captcha.required', 'Wymagana weryfikacja CAPTCHA'));
+      return;
+    }
+
     setIsLoading(true);
     const { error, data } = await login(email, password);
     setIsLoading(false);
 
     if (error) {
+      setFailedAttempts(prev => prev + 1);
+      setCaptchaToken(null); // require fresh CAPTCHA on next attempt
       if (error.includes('Invalid login')) {
         toast.error(t('auth.errors.invalidCredentials'));
       } else if (error.includes('Email not confirmed')) {
@@ -185,7 +200,13 @@ export default function Login() {
               </div>
               {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
             </div>
-            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+            {showCaptcha && (
+              <TurnstileWidget
+                onVerify={(token) => setCaptchaToken(token)}
+                onError={() => setCaptchaToken(null)}
+              />
+            )}
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading || (showCaptcha && !captchaToken)}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
