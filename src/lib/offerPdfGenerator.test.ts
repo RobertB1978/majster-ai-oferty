@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { generateOfferPdf, uploadOfferPdf } from './offerPdfGenerator';
+import { generateOfferPdf, uploadOfferPdf, getPdfComplianceLines } from './offerPdfGenerator';
 import { OfferPdfPayload } from './offerDataBuilder';
 
 // Mock Supabase client
@@ -20,8 +20,7 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-describe('generateOfferPdf', () => {
-  const createMockPayload = (overrides?: Partial<OfferPdfPayload>): OfferPdfPayload => ({
+const createMockPayload = (overrides?: Partial<OfferPdfPayload>): OfferPdfPayload => ({
     projectId: 'test-project-123',
     projectName: 'Remont łazienki',
     company: {
@@ -63,6 +62,11 @@ describe('generateOfferPdf', () => {
       summaryLabor: 800,
       marginPercent: 20,
       total: 1560,
+      vatRate: null,
+      isVatExempt: true,
+      netTotal: 1560,
+      vatAmount: 0,
+      grossTotal: 1560,
     },
     pdfConfig: {
       version: 'standard' as const,
@@ -72,9 +76,13 @@ describe('generateOfferPdf', () => {
       deadlineText: 'Termin realizacji: 2 tygodnie.',
     },
     generatedAt: new Date('2024-01-15T10:00:00Z'),
+    documentId: 'OF/2024/TESTPR',
+    issuedAt: new Date('2024-01-15T10:00:00Z'),
+    validUntil: new Date('2024-02-14T10:00:00Z'),
     ...overrides,
   });
 
+describe('generateOfferPdf', () => {
   it('should generate PDF blob with valid data', async () => {
     const payload = createMockPayload();
     const pdfBlob = await generateOfferPdf(payload);
@@ -101,6 +109,11 @@ describe('generateOfferPdf', () => {
         summaryLabor: 8000,
         marginPercent: 15,
         total: 14950,
+        vatRate: null,
+        isVatExempt: true,
+        netTotal: 14950,
+        vatAmount: 0,
+        grossTotal: 14950,
       },
     });
 
@@ -152,6 +165,67 @@ describe('generateOfferPdf', () => {
     expect(pdfBlob.size).toBeGreaterThan(0);
     // Note: Deeper content validation would require parsing PDF,
     // which is complex. We verify structure is valid by checking blob properties.
+  });
+});
+
+describe('PDF compliance fields (Δ3)', () => {
+  /**
+   * getPdfComplianceLines is a pure function that returns the exact text strings
+   * written to the PDF for compliance-required fields.
+   * Testing it directly proves the PDF contains these strings (generateOfferPdf uses them).
+   */
+
+  it('should include document ID text', () => {
+    const payload = createMockPayload({ documentId: 'OF/2024/TESTPR' });
+    const lines = getPdfComplianceLines(payload);
+    expect(lines.documentIdLine).toContain('OF/2024/TESTPR');
+  });
+
+  it('should include "Data wystawienia:" label in issued-at text', () => {
+    const payload = createMockPayload({
+      issuedAt: new Date('2024-01-15T10:00:00Z'),
+    });
+    const lines = getPdfComplianceLines(payload);
+    expect(lines.issuedAtLine).toContain('Data wystawienia:');
+  });
+
+  it('should include "Ważna do:" label in validity text', () => {
+    const payload = createMockPayload({
+      validUntil: new Date('2024-02-14T10:00:00Z'),
+    });
+    const lines = getPdfComplianceLines(payload);
+    expect(lines.validUntilLine).toContain('Ważna do:');
+  });
+
+  it('should produce VAT exempt notice text when isVatExempt is true', () => {
+    const payload = createMockPayload(); // default: isVatExempt: true
+    const lines = getPdfComplianceLines(payload);
+    expect(lines.vatExemptLine).toMatch(/zwolniony.*VAT/i);
+  });
+
+  it('should produce VAT rate line when vatRate is set', () => {
+    const payload = createMockPayload({
+      quote: {
+        positions: [],
+        summaryMaterials: 0,
+        summaryLabor: 0,
+        marginPercent: 0,
+        total: 1000,
+        vatRate: 23,
+        isVatExempt: false,
+        netTotal: 1000,
+        vatAmount: 230,
+        grossTotal: 1230,
+      },
+    });
+    const lines = getPdfComplianceLines(payload);
+    expect(lines.vatRateLine).toContain('VAT (23%)');
+  });
+
+  it('should return null vatRateLine when isVatExempt is true', () => {
+    const payload = createMockPayload(); // default: isVatExempt: true
+    const lines = getPdfComplianceLines(payload);
+    expect(lines.vatRateLine).toBeNull();
   });
 });
 

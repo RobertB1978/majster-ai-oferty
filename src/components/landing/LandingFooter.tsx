@@ -46,7 +46,7 @@ export function LandingFooter() {
             <div className="text-xl font-bold text-gray-900 dark:text-white mb-3">
               Majster<span className="text-amber-500">.</span>AI
             </div>
-            <p className="text-sm text-gray-400 dark:text-[#525252] leading-relaxed mb-3">
+            <p className="text-sm text-gray-500 dark:text-[#A3A3A3] leading-relaxed mb-3">
               {t('landing.footer.brand_desc', 'Platforma dla majstrów i wykonawców w Polsce.')}
             </p>
             <a
@@ -67,7 +67,7 @@ export function LandingFooter() {
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-sm text-gray-400 dark:text-[#525252] hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+                    className="text-sm text-gray-500 dark:text-[#A3A3A3] hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
                   >
                     {link.label}
                   </Link>
@@ -86,7 +86,7 @@ export function LandingFooter() {
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-sm text-gray-400 dark:text-[#525252] hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+                    className="text-sm text-gray-500 dark:text-[#A3A3A3] hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
                   >
                     {link.label}
                   </Link>
@@ -108,7 +108,7 @@ export function LandingFooter() {
                   className={`py-1.5 px-3 rounded-lg text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                     currentLang === lang.code
                       ? 'bg-gray-200 dark:bg-[#2A2A2A] text-gray-900 dark:text-white'
-                      : 'text-gray-400 dark:text-[#525252] hover:text-gray-900 dark:hover:text-white'
+                      : 'text-gray-500 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white'
                   }`}
                   aria-label={`Zmień język na ${lang.label}`}
                   aria-pressed={currentLang === lang.code}
@@ -122,10 +122,10 @@ export function LandingFooter() {
 
         {/* Bottom bar */}
         <div className="border-t border-gray-200 dark:border-[#2A2A2A] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-400 dark:text-[#525252]">
+          <p className="text-sm text-gray-500 dark:text-[#A3A3A3]">
             © {new Date().getFullYear()} Majster.AI. {t('landing.footer.copyright', 'Wszelkie prawa zastrzeżone.')}
           </p>
-          <p className="text-sm text-gray-400 dark:text-[#525252]">
+          <p className="text-sm text-gray-500 dark:text-[#A3A3A3]">
             {t('landing.footer.built_in', 'Zbudowane w Polsce 🇵🇱')}
           </p>
         </div>

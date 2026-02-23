@@ -17,6 +17,24 @@ import { formatCurrency } from './formatters';
 import { supabase } from '@/integrations/supabase/client';
 
 /**
+ * Returns the compliance-required text lines that will appear in the PDF.
+ * Exported for direct unit testing — generateOfferPdf uses these same strings.
+ */
+export function getPdfComplianceLines(payload: OfferPdfPayload) {
+  const locale = 'pl-PL';
+  return {
+    documentIdLine: `Nr: ${payload.documentId}`,
+    issuedAtLine: `Data wystawienia: ${payload.issuedAt.toLocaleDateString(locale)}`,
+    validUntilLine: `Ważna do: ${payload.validUntil.toLocaleDateString(locale)}`,
+    vatExemptLine: 'Sprzedawca zwolniony z podatku VAT (art. 43 ust. 1 ustawy o VAT)',
+    vatRateLine:
+      payload.quote?.vatRate !== null && payload.quote?.vatRate !== undefined
+        ? `VAT (${payload.quote.vatRate}%):`
+        : null,
+  };
+}
+
+/**
  * Generate PDF document from offer payload
  * Returns a Blob that can be downloaded or uploaded to storage
  */
@@ -91,11 +109,14 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
 
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text(
-    `Data: ${payload.generatedAt.toLocaleDateString('pl-PL')}`,
-    margin,
-    yPosition
-  );
+
+  // Compliance: document ID + dates (uses getPdfComplianceLines for testable strings)
+  const complianceLines = getPdfComplianceLines(payload);
+  doc.text(complianceLines.documentIdLine, pageWidth - margin, yPosition, { align: 'right' });
+  doc.text(complianceLines.issuedAtLine, margin, yPosition);
+  yPosition += 5;
+
+  doc.text(complianceLines.validUntilLine, margin, yPosition);
   yPosition += 10;
 
   // ========================================
@@ -237,7 +258,41 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     doc.text(formatCurrency(payload.quote.total), pageWidth - margin, yPosition, {
       align: 'right',
     });
-    yPosition += 10;
+    yPosition += 8;
+
+    // ========================================
+    // VAT SECTION
+    // ========================================
+
+    doc.setFontSize(9);
+    if (payload.quote.isVatExempt) {
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(100);
+      doc.text(complianceLines.vatExemptLine, summaryX, yPosition);
+      doc.setTextColor(0);
+      yPosition += 8;
+    } else if (complianceLines.vatRateLine !== null) {
+      doc.setFont('helvetica', 'normal');
+      doc.text('Wartość netto:', summaryX, yPosition);
+      doc.text(formatCurrency(payload.quote.netTotal), pageWidth - margin, yPosition, {
+        align: 'right',
+      });
+      yPosition += 5;
+
+      doc.text(complianceLines.vatRateLine, summaryX, yPosition);
+      doc.text(formatCurrency(payload.quote.vatAmount), pageWidth - margin, yPosition, {
+        align: 'right',
+      });
+      yPosition += 5;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.text('Wartość brutto:', summaryX, yPosition);
+      doc.text(formatCurrency(payload.quote.grossTotal), pageWidth - margin, yPosition, {
+        align: 'right',
+      });
+      yPosition += 8;
+    }
   } else {
     // No quote available
     doc.setFontSize(10);

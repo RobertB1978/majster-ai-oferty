@@ -4,6 +4,7 @@ import { useProject } from '@/hooks/useProjects';
 import { useQuote } from '@/hooks/useQuotes';
 import { usePdfData, useSavePdfData } from '@/hooks/usePdfData';
 import { useProfile } from '@/hooks/useProfile';
+import { generateDocumentId } from '@/lib/offerDataBuilder';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,6 +29,8 @@ export default function PdfGenerator() {
   const [offerText, setOfferText] = useState('Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na realizację prac.');
   const [deadlineText, setDeadlineText] = useState('Do ustalenia');
   const [terms, setTerms] = useState('Płatność: 50% zaliczki, 50% po wykonaniu prac.\nGwarancja: 24 miesiące na wykonane prace.');
+  // null = VAT-exempt; 0/5/8/23 = specific rate
+  const [vatRate, setVatRate] = useState<number | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
@@ -37,6 +40,7 @@ export default function PdfGenerator() {
       setOfferText(existingPdfData.offer_text || offerText);
       setDeadlineText(existingPdfData.deadline_text || deadlineText);
       setTerms(existingPdfData.terms || terms);
+      setVatRate(existingPdfData.vat_rate ?? null);
       setIsInitialized(true);
     } else if (!pdfDataLoading && !existingPdfData && project && !isInitialized) {
       setTitle(`Oferta - ${project.project_name}`);
@@ -69,6 +73,11 @@ export default function PdfGenerator() {
     );
   }
 
+  // Compliance fields computed at render time
+  const issuedAt = new Date();
+  const validUntil = new Date(issuedAt.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const documentId = generateDocumentId(id!);
+
   // Profile data with fallbacks
   const companyName = profile?.company_name || 'Majster.AI';
   const _ownerName = profile?.owner_name || '';
@@ -96,6 +105,7 @@ export default function PdfGenerator() {
       offer_text: offerText,
       terms,
       deadline_text: deadlineText,
+      vat_rate: vatRate,
     });
     
     const printContent = printRef.current;
@@ -219,6 +229,24 @@ export default function PdfGenerator() {
                 <Label>Warunki</Label>
                 <Textarea value={terms} onChange={(e) => setTerms(e.target.value)} rows={4} />
               </div>
+              <div className="space-y-2">
+                <Label>Stawka VAT</Label>
+                <Select
+                  value={vatRate === null ? 'exempt' : String(vatRate)}
+                  onValueChange={(v) => setVatRate(v === 'exempt' ? null : Number(v))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="exempt">Zwolniony z VAT (np., art. 43)</SelectItem>
+                    <SelectItem value="0">0%</SelectItem>
+                    <SelectItem value="5">5%</SelectItem>
+                    <SelectItem value="8">8% (usługi budowlane)</SelectItem>
+                    <SelectItem value="23">23% (stawka podstawowa)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </CardContent>
           </Card>
 
@@ -257,7 +285,9 @@ export default function PdfGenerator() {
                   </div>
                 )}
                 <h1 className="mt-4 text-2xl font-bold">{title || 'Oferta'}</h1>
-                <p className="mt-1 opacity-80">Data: {new Date().toLocaleDateString('pl-PL')}</p>
+                <p className="mt-1 opacity-80">Nr: {documentId}</p>
+                <p className="mt-1 opacity-80">Data wystawienia: {issuedAt.toLocaleDateString('pl-PL')}</p>
+                <p className="mt-1 opacity-80">Ważna do: {validUntil.toLocaleDateString('pl-PL')}</p>
               </div>
 
               {/* Client info */}
@@ -319,10 +349,34 @@ export default function PdfGenerator() {
                     <span>Marża ({quote.margin_percent || 0}%):</span>
                     <span>{((Number(quote.summary_materials || 0) + Number(quote.summary_labor || 0)) * Number(quote.margin_percent || 0) / 100).toFixed(2)} zł</span>
                   </div>
-                  <div className="mt-3 flex justify-between border-t border-border pt-3 text-lg font-bold">
-                    <span>Razem:</span>
-                    <span className="text-primary">{Number(quote.total || 0).toFixed(2)} zł</span>
-                  </div>
+                  {vatRate === null ? (
+                    <div className="mt-3 flex justify-between border-t border-border pt-3 text-lg font-bold">
+                      <span>Razem:</span>
+                      <span className="text-primary">{Number(quote.total || 0).toFixed(2)} zł</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="mt-3 border-t border-border pt-3 space-y-1 text-sm">
+                        <div className="flex justify-between">
+                          <span>Wartość netto:</span>
+                          <span>{Number(quote.total || 0).toFixed(2)} zł</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>VAT ({vatRate}%):</span>
+                          <span>{(Number(quote.total || 0) * vatRate / 100).toFixed(2)} zł</span>
+                        </div>
+                        <div className="flex justify-between font-bold text-lg">
+                          <span>Wartość brutto:</span>
+                          <span className="text-primary">{(Number(quote.total || 0) * (1 + vatRate / 100)).toFixed(2)} zł</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {vatRate === null && (
+                    <p className="mt-2 text-xs italic text-muted-foreground">
+                      Sprzedawca zwolniony z podatku VAT (art. 43 ust. 1 ustawy o VAT)
+                    </p>
+                  )}
                 </div>
               )}
 

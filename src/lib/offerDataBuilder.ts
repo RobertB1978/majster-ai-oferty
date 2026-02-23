@@ -58,6 +58,16 @@ export interface QuoteData {
   summaryLabor: number;
   marginPercent: number;
   total: number;
+  /** VAT rate percentage (e.g. 23). null means seller is VAT-exempt. */
+  vatRate: number | null;
+  /** true = seller is not a VAT payer ("zwolniony z VAT") */
+  isVatExempt: boolean;
+  /** Net total before VAT (equals total when VAT-exempt) */
+  netTotal: number;
+  /** VAT amount (0 when VAT-exempt) */
+  vatAmount: number;
+  /** Gross total including VAT (equals total when VAT-exempt) */
+  grossTotal: number;
 }
 
 /**
@@ -82,6 +92,23 @@ export interface OfferPdfPayload {
   quote: QuoteData | null;
   pdfConfig: PdfConfig;
   generatedAt: Date;
+  /** Unique document identifier, e.g. "OF/2026/A1B2C3" */
+  documentId: string;
+  /** Date the offer was issued */
+  issuedAt: Date;
+  /** Date until which the offer is valid */
+  validUntil: Date;
+}
+
+/**
+ * Generate a stable, human-readable document ID for an offer.
+ * Format: OF/{year}/{6-char project suffix}
+ * Example: "OF/2026/A1B2C3"
+ */
+export function generateDocumentId(projectId: string, date?: Date): string {
+  const year = (date ?? new Date()).getFullYear();
+  const suffix = projectId.replace(/-/g, '').slice(0, 6).toUpperCase();
+  return `OF/${year}/${suffix}`;
 }
 
 /**
@@ -113,6 +140,8 @@ export function buildOfferData(params: {
     summary_labor: number;
     margin_percent: number;
     total: number;
+    /** VAT rate percentage (e.g. 23). Omit or pass null for VAT-exempt sellers. */
+    vat_rate?: number | null;
   } | null;
   pdfData?: {
     version: 'standard' | 'premium';
@@ -121,6 +150,10 @@ export function buildOfferData(params: {
     terms: string;
     deadline_text: string;
   };
+  /** Override the auto-generated document ID */
+  documentId?: string;
+  /** Override the validity date (default: issuedAt + 30 days) */
+  validUntil?: Date;
 }): OfferPdfPayload {
   // Company info
   const company: CompanyInfo = {
@@ -144,23 +177,35 @@ export function buildOfferData(params: {
       }
     : null;
 
-  // Quote data
+  // Quote data with VAT compliance fields
   const quote: QuoteData | null = params.quote
-    ? {
-        positions: params.quote.positions.map((pos: unknown, index: number) => ({
-          id: pos.id || `pos-${index}`,
-          name: pos.name,
-          qty: pos.qty,
-          unit: pos.unit,
-          price: pos.price,
-          category: pos.category,
-          notes: pos.notes,
-        })),
-        summaryMaterials: params.quote.summary_materials,
-        summaryLabor: params.quote.summary_labor,
-        marginPercent: params.quote.margin_percent,
-        total: params.quote.total,
-      }
+    ? (() => {
+        const vatRate = params.quote.vat_rate ?? null;
+        const isVatExempt = vatRate === null;
+        const netTotal = params.quote.total;
+        const vatAmount = isVatExempt ? 0 : netTotal * (vatRate! / 100);
+        const grossTotal = netTotal + vatAmount;
+        return {
+          positions: params.quote.positions.map((pos: unknown, index: number) => ({
+            id: (pos as Record<string, unknown>).id || `pos-${index}`,
+            name: (pos as Record<string, unknown>).name as string,
+            qty: (pos as Record<string, unknown>).qty as number,
+            unit: (pos as Record<string, unknown>).unit as string,
+            price: (pos as Record<string, unknown>).price as number,
+            category: (pos as Record<string, unknown>).category as 'Materiał' | 'Robocizna',
+            notes: (pos as Record<string, unknown>).notes as string | undefined,
+          })),
+          summaryMaterials: params.quote.summary_materials,
+          summaryLabor: params.quote.summary_labor,
+          marginPercent: params.quote.margin_percent,
+          total: params.quote.total,
+          vatRate,
+          isVatExempt,
+          netTotal,
+          vatAmount,
+          grossTotal,
+        };
+      })()
     : null;
 
   // PDF configuration
@@ -182,6 +227,11 @@ export function buildOfferData(params: {
         deadlineText: 'Termin realizacji: do uzgodnienia.',
       };
 
+  const issuedAt = new Date();
+  const validUntil =
+    params.validUntil ??
+    new Date(issuedAt.getTime() + 30 * 24 * 60 * 60 * 1000);
+
   return {
     projectId: params.projectId,
     projectName: params.projectName,
@@ -189,7 +239,10 @@ export function buildOfferData(params: {
     client,
     quote,
     pdfConfig,
-    generatedAt: new Date(),
+    generatedAt: issuedAt,
+    documentId: params.documentId ?? generateDocumentId(params.projectId, issuedAt),
+    issuedAt,
+    validUntil,
   };
 }
 
