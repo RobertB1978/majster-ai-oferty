@@ -86,7 +86,7 @@ export function LandingHeader() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6" aria-label="Nawigacja główna">
+          <nav className="hidden md:flex items-center gap-x-6 flex-nowrap" aria-label="Nawigacja główna">
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.id}

@@ -4,12 +4,14 @@ import { useAdminRole } from '@/hooks/useAdminRole';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const { user, isLoading: authLoading } = useAuth();
   const { isAdmin, isLoading: roleLoading } = useAdminRole();
   const location = useLocation();
   const toastShown = useRef(false);
+  const { t } = useTranslation();
 
   const isLoading = authLoading || roleLoading;
 
@@ -17,9 +19,9 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isLoading && user && !isAdmin && !toastShown.current) {
       toastShown.current = true;
-      toast.error('Brak dostępu do panelu administracyjnego');
+      toast.error(t('admin.accessDenied', 'Brak dostępu do panelu administracyjnego'));
     }
-  }, [isLoading, user, isAdmin]);
+  }, [isLoading, user, isAdmin, t]);
 
   if (isLoading) {
     return (

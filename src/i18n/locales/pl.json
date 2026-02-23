@@ -1306,7 +1306,12 @@
       "cta_enterprise": "Skontaktuj się",
       "per_month": "/ mies.",
       "no_card": "Bez karty kredytowej",
-      "all_plans": "Zobacz wszystkie plany"
+      "all_plans": "Zobacz wszystkie plany",
+      "badge": "Najpopularniejszy",
+      "vatNote": "Ceny netto · Do każdego zakupu doliczamy 23% VAT",
+      "ctaFree": "Zacznij za darmo",
+      "ctaTry": "Wypróbuj",
+      "cancelNote": "Anuluj w każdej chwili · Wystawiamy faktury VAT"
     },
     "faq": {
       "sectionTitle": "Często zadawane pytania",
@@ -1329,7 +1334,9 @@
       "t2Role": "Elektryk, jednoosobowa firma",
       "t2Text": "Dyktowanie wyceny głosem to przełom. Oszczędzam 2 godziny dziennie.",
       "t3Role": "Biuro projektowe",
-      "t3Text": "Zarządzanie klientami i projektami w jednym miejscu. Polecam każdemu fachowcowi."
+      "t3Text": "Zarządzanie klientami i projektami w jednym miejscu. Polecam każdemu fachowcowi.",
+      "sectionTitle": "Co mówią użytkownicy",
+      "sectionSubtitle": "Opinie prawdziwych wykonawców i majstrów."
     },
     "hero": {
       "badge": "Cyfrowe narzędzie dla branży budowlanej",
@@ -1338,7 +1345,14 @@
       "desc": "Wyceny, oferty, projekty, klienci i finanse — wszystko w jednym miejscu. Stworzony dla ekip budowlanych i remontowych w Polsce.",
       "startFree": "Zacznij za darmo",
       "seeFeatures": "Zobacz funkcje",
-      "noCard": "Bez karty kredytowej. Darmowy plan na start."
+      "noCard": "Bez karty kredytowej. Darmowy plan na start.",
+      "title1": "Zarządzaj firmą",
+      "title2": "jak profesjonalista.",
+      "subtitle": "Platforma dla majstrów i wykonawców.",
+      "subtitle2": "Wyceny, projekty, klienci — wszystko w jednym miejscu.",
+      "microcopy": "Pierwsze 30 dni bezpłatnie · Bez zobowiązań",
+      "cta_start": "Zacznij za darmo",
+      "cta_features": "Zobacz funkcje"
     },
     "stats": {
       "quoteTime": "Średni czas wyceny",
@@ -1453,7 +1467,12 @@
       "title": "Gotowy na cyfrową zmianę?",
       "desc": "Dołącz do fachowców, którzy oszczędzają czas i zarabiają więcej. Zacznij od darmowego planu — bez zobowiązań.",
       "registerBtn": "Załóż konto za darmo",
-      "loginBtn": "Mam już konto"
+      "loginBtn": "Mam już konto",
+      "heading": "Gotowy na cyfrową transformację?",
+      "desc2": "Dołącz do wykonawców, którzy zarządzają firmą cyfrowo.",
+      "microcopy": "Bez zobowiązań · Anuluj w każdej chwili",
+      "cta_start": "Zacznij za darmo",
+      "cta_login": "Mam już konto"
     },
     "footer": {
       "desc": "Profesjonalne wyceny i zarządzanie projektami dla fachowców. Szybko, łatwo, bezpiecznie.",
@@ -1472,7 +1491,21 @@
       "sales": "Sprzedaż",
       "partnership": "Partnerstwo",
       "rights": "Wszystkie prawa zastrzeżone.",
-      "madeIn": "Stworzone w Polsce. Zgodne z RODO."
+      "madeIn": "Stworzone w Polsce. Zgodne z RODO.",
+      "brand_desc": "Platforma dla majstrów i wykonawców w Polsce.",
+      "built_in": "Zbudowane w Polsce 🇵🇱",
+      "copyright": "Wszelkie prawa zastrzeżone.",
+      "language_title": "Język",
+      "product_title": "Produkt",
+      "legal_title": "Prawne",
+      "link_login": "Zaloguj się",
+      "link_register": "Załóż konto",
+      "link_pricing": "Cennik",
+      "link_privacy": "Polityka prywatności",
+      "link_terms": "Warunki korzystania",
+      "link_cookies": "Cookies",
+      "link_dpa": "Umowa powierzenia",
+      "link_gdpr": "RODO"
     }
   },
   "addons": {

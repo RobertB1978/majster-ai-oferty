@@ -7,6 +7,7 @@ import { PageTransition } from './PageTransition';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { useEffect, useState, lazy, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Lazy-load heavy layout components that are not needed for initial render
 const AiChatAgent = lazy(() => import('@/components/ai/AiChatAgent').then(m => ({ default: m.AiChatAgent })));
@@ -16,6 +17,7 @@ export function AppLayout() {
   const { user, isLoading } = useAuth();
   const location = useLocation();
   const [showContent, setShowContent] = useState(false);
+  const { t } = useTranslation();
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -37,7 +39,7 @@ export function AppLayout() {
   }, [isLoading, user]);
 
   if (isLoading) {
-    return <LoadingScreen message="Uruchamianie aplikacji" variant="fullscreen" />;
+    return <LoadingScreen message={t('app.loading', 'Uruchamianie aplikacji')} variant="fullscreen" />;
   }
 
   if (!user) {
@@ -51,7 +53,7 @@ export function AppLayout() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:ring-2 focus:ring-ring focus:ring-offset-2"
       >
-        Przejdź do treści głównej
+        {t('nav.skipToContent', 'Przejdź do treści głównej')}
       </a>
       <TopBar />
       <Navigation />

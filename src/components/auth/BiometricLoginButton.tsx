@@ -11,7 +11,7 @@ interface BiometricLoginButtonProps {
 }
 
 export function BiometricLoginButton({ email, onSuccess, onError }: BiometricLoginButtonProps) {
-  const { t: _t } = useTranslation();
+  const { t } = useTranslation();
   const { isSupported, isAuthenticating, checkIfEnabled, authenticateWithBiometric } = useBiometricAuth();
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
 
@@ -34,7 +34,7 @@ export function BiometricLoginButton({ email, onSuccess, onError }: BiometricLog
     if (success) {
       onSuccess();
     } else {
-      onError('Uwierzytelnianie biometryczne nie powiodło się');
+      onError(t('auth.biometric.error', 'Uwierzytelnianie biometryczne nie powiodło się'));
     }
   };
 
@@ -49,12 +49,12 @@ export function BiometricLoginButton({ email, onSuccess, onError }: BiometricLog
       {isAuthenticating ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Weryfikacja...
+          {t('auth.biometric.verifying', 'Weryfikacja...')}
         </>
       ) : (
         <>
           <Fingerprint className="mr-2 h-4 w-4" />
-          Zaloguj odciskiem palca
+          {t('auth.biometric.loginLabel', 'Zaloguj odciskiem palca')}
         </>
       )}
     </Button>
