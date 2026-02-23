@@ -133,10 +133,9 @@ export function FeaturesGrid() {
             <div className="text-amber-500 mb-3 flex justify-center">
               <Rocket className="w-10 h-10" aria-hidden="true" />
             </div>
-            <h3 className="text-gray-900 dark:text-white font-semibold text-xl mb-2">Startujemy</h3>
+            <h3 className="text-gray-900 dark:text-white font-semibold text-xl mb-2">{t('landing.features.mvpTitle', 'Startujemy')}</h3>
             <p className="text-gray-600 dark:text-[#A3A3A3] max-w-md mx-auto leading-relaxed">
-              Wersja MVP: zaczynamy od wycen PDF i zarządzania projektami.
-              Reszta funkcji jest aktywnie rozwijana i pojawi się wkrótce.
+              {t('landing.features.mvpDesc', 'Wersja MVP: zaczynamy od wycen PDF i zarządzania projektami. Reszta funkcji jest aktywnie rozwijana i pojawi się wkrótce.')}
             </p>
           </div>
         ) : (

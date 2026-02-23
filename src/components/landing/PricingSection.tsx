@@ -86,7 +86,7 @@ export function PricingSection() {
                         {feature}
                         {isPrep && (
                           <span className="ml-1.5 text-[10px] font-medium text-gray-400 dark:text-[#525252] border border-gray-200 dark:border-[#2A2A2A] rounded px-1 py-0.5 uppercase tracking-wide align-middle">
-                            W przygotowaniu
+                            {t('landing.pricing.prepBadge', 'W przygotowaniu')}
                           </span>
                         )}
                       </span>

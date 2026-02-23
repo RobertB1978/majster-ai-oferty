@@ -6,13 +6,6 @@ import { useTheme } from '@/hooks/useTheme';
 
 const CTA_ROUTE = '/register';
 
-const NAV_ITEMS = [
-  { label: 'Funkcje',    id: 'features'     },
-  { label: 'Jak działa', id: 'how-it-works' },
-  { label: 'Ceny',       id: 'pricing'      },
-  { label: 'FAQ',        id: 'faq'          },
-];
-
 // All 3 locales confirmed: src/i18n/locales/pl.json + en.json + uk.json
 const LANGUAGES = [
   { code: 'pl', label: 'PL', flag: '🇵🇱' },
@@ -30,7 +23,13 @@ function scrollTo(id: string) {
 export function LandingHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const NAV_ITEMS = [
+    { label: t('landing.nav.features', 'Funkcje'),    id: 'features'     },
+    { label: t('landing.nav.howItWorks', 'Jak działa'), id: 'how-it-works' },
+    { label: t('landing.nav.pricing', 'Ceny'),        id: 'pricing'      },
+    { label: t('landing.nav.faq', 'FAQ'),             id: 'faq'          },
+  ];
   const { isDark, toggleTheme } = useTheme();
 
   useEffect(() => {
@@ -86,7 +85,7 @@ export function LandingHeader() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6" aria-label="Nawigacja główna">
+          <nav className="hidden md:flex items-center gap-x-6 flex-nowrap" aria-label="Nawigacja główna">
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.id}
@@ -141,14 +140,14 @@ export function LandingHeader() {
               to="/login"
               className="hidden sm:inline-flex items-center text-sm font-medium text-gray-600 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white transition-colors duration-200 px-3 py-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black"
             >
-              Zaloguj
+              {t('landing.nav.login', 'Zaloguj się')}
             </Link>
 
             <Link
               to={CTA_ROUTE}
               className="inline-flex items-center bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold px-4 py-2 rounded-xl text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[44px]"
             >
-              Zacznij za darmo
+              {t('landing.nav.getStarted', 'Zacznij za darmo')}
             </Link>
 
             {/* Hamburger */}
@@ -256,14 +255,14 @@ export function LandingHeader() {
             onClick={closeDrawer}
             className="block text-center py-3 px-4 rounded-xl border border-gray-200 dark:border-[#2A2A2A] text-gray-900 dark:text-white font-medium hover:border-amber-500/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           >
-            Zaloguj się
+            {t('landing.nav.login', 'Zaloguj się')}
           </Link>
           <Link
             to={CTA_ROUTE}
             onClick={closeDrawer}
             className="block text-center py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           >
-            Zacznij za darmo
+            {t('landing.nav.getStarted', 'Zacznij za darmo')}
           </Link>
         </div>
       </div>
