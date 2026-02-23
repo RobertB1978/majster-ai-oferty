@@ -1274,7 +1274,11 @@
       "testimonials": "Відгуки",
       "login": "Увійти",
       "tryFree": "Спробувати",
-      "tryFreeFull": "Спробувати безкоштовно"
+      "tryFreeFull": "Спробувати безкоштовно",
+      "howItWorks": "Як це працює",
+      "pricing": "Ціни",
+      "faq": "FAQ",
+      "getStarted": "Почати безкоштовно"
     },
     "hero": {
       "badge": "Платформа для підрядників та майстрів",
@@ -1463,7 +1467,10 @@
       "unlimited_label": "необмежена кількість проєктів",
       "unlimited_sub": "план Pro і вище",
       "mobile_label": "Mobile-first",
-      "mobile_sub": "працює на будь-якому телефоні"
+      "mobile_sub": "працює на будь-якому телефоні",
+      "pdfLabel": "PDF кошториси",
+      "mobileLabel": "Mobile-first",
+      "langLabel": "Мови"
     },
     "how": {
       "sectionTitle": "Як це працює?",

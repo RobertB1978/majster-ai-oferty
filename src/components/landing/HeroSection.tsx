@@ -4,13 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 const CTA_ROUTE = '/register';
 
-// Hero stats — only verified === true items are rendered
-const STATS = [
-  { label: 'Wyceny PDF', value: '✓', verified: true },
-  { label: 'Mobile-first', value: '✓', verified: true },
-  { label: 'Języki', value: 'PL / EN / UK', verified: true },
-];
-
 function scrollToFeatures(e: React.MouseEvent<HTMLButtonElement>) {
   e.preventDefault();
   document.getElementById('features')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -18,6 +11,11 @@ function scrollToFeatures(e: React.MouseEvent<HTMLButtonElement>) {
 
 export function HeroSection() {
   const { t } = useTranslation();
+  const STATS = [
+    { label: t('landing.trust.pdfLabel', 'Wyceny PDF'), value: '✓', verified: true },
+    { label: t('landing.trust.mobileLabel', 'Mobile-first'), value: '✓', verified: true },
+    { label: t('landing.trust.langLabel', 'Języki'), value: 'PL / EN / UK', verified: true },
+  ];
   const verifiedStats = STATS.filter((s) => s.verified);
 
   return (

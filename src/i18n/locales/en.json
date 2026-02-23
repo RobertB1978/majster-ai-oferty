@@ -1274,7 +1274,11 @@
       "testimonials": "Reviews",
       "login": "Log in",
       "tryFree": "Try it",
-      "tryFreeFull": "Try for free"
+      "tryFreeFull": "Try for free",
+      "howItWorks": "How it works",
+      "pricing": "Pricing",
+      "faq": "FAQ",
+      "getStarted": "Start for free"
     },
     "hero": {
       "badge": "Platform for contractors and craftspeople",
@@ -1463,7 +1467,10 @@
       "unlimited_label": "unlimited projects",
       "unlimited_sub": "Pro plan and above",
       "mobile_label": "Mobile-first",
-      "mobile_sub": "works on any phone"
+      "mobile_sub": "works on any phone",
+      "pdfLabel": "PDF Quotes",
+      "mobileLabel": "Mobile-first",
+      "langLabel": "Languages"
     },
     "how": {
       "sectionTitle": "How it works?",

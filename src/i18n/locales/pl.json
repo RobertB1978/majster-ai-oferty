@@ -1274,7 +1274,11 @@
       "testimonials": "Opinie",
       "login": "Zaloguj się",
       "tryFree": "Wypróbuj",
-      "tryFreeFull": "Wypróbuj za darmo"
+      "tryFreeFull": "Wypróbuj za darmo",
+      "howItWorks": "Jak działa",
+      "pricing": "Ceny",
+      "faq": "FAQ",
+      "getStarted": "Zacznij za darmo"
     },
     "trust": {
       "languages_label": "języki interfejsu",
@@ -1283,7 +1287,10 @@
       "unlimited_label": "bez limitu projektów",
       "unlimited_sub": "plan Pro i wyższe",
       "mobile_label": "Mobile-first",
-      "mobile_sub": "działa na każdym telefonie"
+      "mobile_sub": "działa na każdym telefonie",
+      "pdfLabel": "Wyceny PDF",
+      "mobileLabel": "Mobile-first",
+      "langLabel": "Języki"
     },
     "how": {
       "sectionTitle": "Jak to działa?",
