@@ -113,8 +113,8 @@ test.describe('Smoke Tests', () => {
     const heading = page.getByRole('heading', { name: /zarządzaj firmą/i });
     await expect(heading).toBeVisible({ timeout: 15000 });
 
-    // Verify login link is available
-    const loginLink = page.getByRole('link', { name: /zaloguj się/i });
+    // Verify login link is available in the header (footer also has one — scope to banner)
+    const loginLink = page.getByRole('banner').getByRole('link', { name: /zaloguj się/i });
     await expect(loginLink).toBeVisible({ timeout: 15000 });
 
     console.log('✅ Landing page visible for unauthenticated user');
