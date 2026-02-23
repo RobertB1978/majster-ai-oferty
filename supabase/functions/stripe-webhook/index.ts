@@ -1,11 +1,20 @@
-// ============================================
+// ============================================================================
 // STRIPE WEBHOOK - Stripe Integration
 // Handles Stripe webhook events for subscription management
-// ============================================
+//
+// Security model
+// ──────────────
+// 1. Every request is verified against STRIPE_WEBHOOK_SECRET before any DB
+//    write (prevents spoofed payloads).
+// 2. Every Stripe event is stored in the `stripe_events` idempotency table
+//    before business logic runs (prevents duplicate side-effects on retry).
+// 3. Unknown subscription statuses map to "inactive" (least privilege).
+// ============================================================================
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.10.0?target=deno";
+import { mapSubscriptionStatus } from "./stripe-utils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,22 +34,42 @@ const PRICE_TO_PLAN_MAP: Record<string, string> = {
   "price_enterprise_yearly": "enterprise",
 };
 
-// Map Stripe subscription status to our status
-function mapSubscriptionStatus(stripeStatus: string): string {
-  switch (stripeStatus) {
-    case "active":
-      return "active";
-    case "canceled":
-    case "unpaid":
-      return "cancelled";
-    case "past_due":
-      return "expired";
-    case "trialing":
-      return "trial";
-    default:
-      return "active";
+// ---------------------------------------------------------------------------
+// Idempotency helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Attempt to claim the event_id in the idempotency store.
+ *
+ * Returns true  → event is new; caller should process it.
+ * Returns false → event was already processed; caller should return 200 early.
+ *
+ * Uses an INSERT … ON CONFLICT DO NOTHING pattern so the check + write is
+ * atomic: two concurrent deliveries of the same event cannot both claim it.
+ */
+async function claimEvent(supabase: SupabaseClient, eventId: string, payloadHash?: string): Promise<boolean> {
+  const { error } = await supabase
+    .from("stripe_events")
+    .insert({ event_id: eventId, payload_hash: payloadHash ?? null });
+
+  if (!error) {
+    // Insert succeeded → this is the first time we see this event_id.
+    return true;
   }
+
+  // Supabase wraps Postgres errors; a primary-key violation means duplicate.
+  if (error.code === "23505") {
+    console.log("[stripe-webhook] Duplicate event, skipping:", eventId);
+    return false;
+  }
+
+  // Any other error is unexpected – surface it.
+  throw new Error(`[stripe-webhook] claimEvent failed: ${error.message}`);
 }
+
+// ---------------------------------------------------------------------------
+// Main handler
+// ---------------------------------------------------------------------------
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -73,7 +102,7 @@ const handler = async (req: Request): Promise<Response> => {
       httpClient: Stripe.createFetchHttpClient(),
     });
 
-    // 3. Verify webhook signature
+    // 3. Verify webhook signature BEFORE reading the body for anything else.
     const signature = req.headers.get("stripe-signature");
     if (!signature) {
       console.error("[stripe-webhook] Missing stripe-signature header");
@@ -102,7 +131,19 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("[stripe-webhook] Received event:", event.type, event.id);
 
-    // 4. Handle different event types
+    // 4. Idempotency check — claim the event_id before doing any side-effects.
+    //    If claimEvent returns false, a prior delivery already processed this
+    //    event; return 200 immediately so Stripe stops retrying.
+    const isNew = await claimEvent(supabase, event.id);
+    if (!isNew) {
+      console.log("[stripe-webhook] Event already processed, returning 200:", event.id);
+      return new Response(
+        JSON.stringify({ received: true, duplicate: true }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // 5. Handle different event types
     switch (event.type) {
       case "customer.subscription.created":
       case "customer.subscription.updated": {
@@ -141,7 +182,7 @@ const handler = async (req: Request): Promise<Response> => {
         console.log("[stripe-webhook] Unhandled event type:", event.type);
     }
 
-    // 5. Log event to database
+    // 6. Log event to audit table
     await supabase.from("subscription_events").insert({
       event_type: event.type,
       event_data: event as unknown as Record<string, unknown>,
@@ -183,7 +224,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-// Helper functions
+// ---------------------------------------------------------------------------
+// Event handlers
+// ---------------------------------------------------------------------------
 
 async function handleSubscriptionUpdate(
   supabase: SupabaseClient,
@@ -199,6 +242,8 @@ async function handleSubscriptionUpdate(
   // Get plan from price ID
   const priceId = subscription.items.data[0]?.price.id;
   const planId = PRICE_TO_PLAN_MAP[priceId] || "free";
+  // mapSubscriptionStatus is imported from stripe-utils.ts;
+  // unknown Stripe statuses resolve to "inactive" (least privilege).
   const status = mapSubscriptionStatus(subscription.status);
 
   console.log("[stripe-webhook] Updating subscription:", {
