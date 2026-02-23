@@ -31,11 +31,9 @@ export function AppLayout() {
     }
   }, []);
 
-  // Show content immediately once auth is resolved (no artificial delay)
+  // Show content when auth is resolved; reset on logout or re-loading
   useEffect(() => {
-    if (!isLoading && user) {
-      setShowContent(true);
-    }
+    setShowContent(!isLoading && !!user);
   }, [isLoading, user]);
 
   if (isLoading) {

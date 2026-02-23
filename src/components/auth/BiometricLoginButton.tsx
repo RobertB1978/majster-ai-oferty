@@ -30,10 +30,14 @@ export function BiometricLoginButton({ email, onSuccess, onError }: BiometricLog
   }
 
   const handleBiometricLogin = async () => {
-    const success = await authenticateWithBiometric(email);
-    if (success) {
-      onSuccess();
-    } else {
+    try {
+      const success = await authenticateWithBiometric(email);
+      if (success) {
+        onSuccess();
+      } else {
+        onError(t('auth.biometric.error', 'Uwierzytelnianie biometryczne nie powiodło się'));
+      }
+    } catch {
       onError(t('auth.biometric.error', 'Uwierzytelnianie biometryczne nie powiodło się'));
     }
   };
