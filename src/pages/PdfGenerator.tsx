@@ -4,6 +4,7 @@ import { useProject } from '@/hooks/useProjects';
 import { useQuote } from '@/hooks/useQuotes';
 import { usePdfData, useSavePdfData } from '@/hooks/usePdfData';
 import { useProfile } from '@/hooks/useProfile';
+import { generateDocumentId } from '@/lib/offerDataBuilder';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -68,6 +69,11 @@ export default function PdfGenerator() {
       </div>
     );
   }
+
+  // Compliance fields computed at render time
+  const issuedAt = new Date();
+  const validUntil = new Date(issuedAt.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const documentId = generateDocumentId(id!);
 
   // Profile data with fallbacks
   const companyName = profile?.company_name || 'Majster.AI';
@@ -257,7 +263,9 @@ export default function PdfGenerator() {
                   </div>
                 )}
                 <h1 className="mt-4 text-2xl font-bold">{title || 'Oferta'}</h1>
-                <p className="mt-1 opacity-80">Data: {new Date().toLocaleDateString('pl-PL')}</p>
+                <p className="mt-1 opacity-80">Nr: {documentId}</p>
+                <p className="mt-1 opacity-80">Data wystawienia: {issuedAt.toLocaleDateString('pl-PL')}</p>
+                <p className="mt-1 opacity-80">Ważna do: {validUntil.toLocaleDateString('pl-PL')}</p>
               </div>
 
               {/* Client info */}
@@ -323,6 +331,9 @@ export default function PdfGenerator() {
                     <span>Razem:</span>
                     <span className="text-primary">{Number(quote.total || 0).toFixed(2)} zł</span>
                   </div>
+                  <p className="mt-2 text-xs italic text-muted-foreground">
+                    Sprzedawca zwolniony z podatku VAT (art. 43 ust. 1 ustawy o VAT)
+                  </p>
                 </div>
               )}
 
