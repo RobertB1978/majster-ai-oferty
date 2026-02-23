@@ -8,6 +8,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
 import { validateString, createValidationErrorResponse } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
+import { sanitizeAiOutput } from "../_shared/sanitization.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -137,24 +138,25 @@ serve(async (req) => {
     if (!quoteData.projectName || typeof quoteData.projectName !== 'string') {
       quoteData.projectName = "Nowa wycena";
     }
-    quoteData.projectName = quoteData.projectName.substring(0, 200);
-    
+    // Δ4: sanitize AI-generated text fields
+    quoteData.projectName = sanitizeAiOutput(quoteData.projectName, 200);
+
     if (!Array.isArray(quoteData.items)) {
       quoteData.items = [];
     }
-    
+
     if (!quoteData.summary || typeof quoteData.summary !== 'string') {
       quoteData.summary = "";
     }
-    quoteData.summary = quoteData.summary.substring(0, 1000);
+    quoteData.summary = sanitizeAiOutput(quoteData.summary, 1000);
 
     // Ensure each item has correct structure and sanitize
     quoteData.items = quoteData.items.slice(0, 50).map((item: unknown) => {
       const i = item as Record<string, unknown>;
       return {
-        name: (typeof i.name === 'string' ? i.name : "Pozycja").substring(0, 200),
+        name: sanitizeAiOutput(typeof i.name === 'string' ? i.name : "Pozycja", 200),
         qty: Math.min(Math.max(Number(i.qty) || 1, 0.01), 99999),
-        unit: (typeof i.unit === 'string' ? i.unit : "szt.").substring(0, 20),
+        unit: sanitizeAiOutput(typeof i.unit === 'string' ? i.unit : "szt.", 20),
         price: Math.min(Math.max(Number(i.price) || 0, 0), 9999999),
         category: i.category === 'Robocizna' ? 'Robocizna' : 'Materiał'
       };

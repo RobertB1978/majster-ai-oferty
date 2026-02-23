@@ -8,6 +8,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
 import { validateArray, createValidationErrorResponse, combineValidations } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
+import { sanitizeAiOutput } from "../_shared/sanitization.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -124,19 +125,30 @@ Wygeneruj szczegółową analizę i rekomendacje.`
       if (jsonMatch) {
         analysis = JSON.parse(jsonMatch[0]);
         
-        // Sanitize output
-        analysis.profitableProjectTypes = Array.isArray(analysis.profitableProjectTypes) 
-          ? analysis.profitableProjectTypes.slice(0, 20) : [];
-        analysis.losingAreas = Array.isArray(analysis.losingAreas) 
-          ? analysis.losingAreas.slice(0, 20) : [];
-        analysis.pricingRecommendations = Array.isArray(analysis.pricingRecommendations) 
-          ? analysis.pricingRecommendations.slice(0, 20) : [];
-        analysis.keyInsights = Array.isArray(analysis.keyInsights) 
-          ? analysis.keyInsights.slice(0, 20) : [];
-        analysis.actionItems = Array.isArray(analysis.actionItems) 
-          ? analysis.actionItems.slice(0, 20) : [];
-        analysis.riskFactors = Array.isArray(analysis.riskFactors) 
-          ? analysis.riskFactors.slice(0, 20) : [];
+        // Δ4: sanitize and limit AI output fields
+        const sanitizeStrings = (arr: unknown[]) =>
+          arr.slice(0, 20).map(s => sanitizeAiOutput(String(s), 500));
+
+        analysis.profitableProjectTypes = Array.isArray(analysis.profitableProjectTypes)
+          ? sanitizeStrings(analysis.profitableProjectTypes) : [];
+        analysis.losingAreas = Array.isArray(analysis.losingAreas)
+          ? sanitizeStrings(analysis.losingAreas) : [];
+        analysis.keyInsights = Array.isArray(analysis.keyInsights)
+          ? sanitizeStrings(analysis.keyInsights) : [];
+        analysis.actionItems = Array.isArray(analysis.actionItems)
+          ? sanitizeStrings(analysis.actionItems) : [];
+        analysis.riskFactors = Array.isArray(analysis.riskFactors)
+          ? sanitizeStrings(analysis.riskFactors) : [];
+        analysis.pricingRecommendations = Array.isArray(analysis.pricingRecommendations)
+          ? analysis.pricingRecommendations.slice(0, 20).map((r: unknown) => {
+              const rec = r as Record<string, unknown>;
+              return {
+                ...rec,
+                category: sanitizeAiOutput(String(rec.category || ''), 100),
+                reason: sanitizeAiOutput(String(rec.reason || ''), 500),
+              };
+            })
+          : [];
       } else {
         throw new Error("No JSON found");
       }

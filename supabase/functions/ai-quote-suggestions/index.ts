@@ -6,13 +6,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
-import { 
-  validateString, 
+import {
+  validateString,
   validateArray,
   createValidationErrorResponse,
-  combineValidations 
+  combineValidations
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
+import { sanitizeAiOutput } from "../_shared/sanitization.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -148,11 +149,12 @@ Zasugeruj 5-8 dodatkowych pozycji do wyceny. Dla każdej podaj:
           suggestions.suggestions = suggestions.suggestions.slice(0, 20).map((s: unknown) => {
             const sug = s as Record<string, unknown>;
             return {
-              name: String(sug.name || '').substring(0, 200),
+              // Δ4: sanitize free-text fields from AI output
+              name: sanitizeAiOutput(String(sug.name || ''), 200),
               category: sug.category === 'Robocizna' ? 'Robocizna' : 'Materiał',
               price: Math.min(Math.max(Number(sug.price) || 0, 0), 999999),
-              unit: String(sug.unit || 'szt.').substring(0, 20),
-              reasoning: String(sug.reasoning || '').substring(0, 500)
+              unit: sanitizeAiOutput(String(sug.unit || 'szt.'), 20),
+              reasoning: sanitizeAiOutput(String(sug.reasoning || ''), 500),
             };
           });
         }

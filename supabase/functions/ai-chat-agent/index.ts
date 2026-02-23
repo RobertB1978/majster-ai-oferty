@@ -6,13 +6,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
-import { 
-  validateString, 
+import {
+  validateString,
   validateArray,
   createValidationErrorResponse,
-  combineValidations 
+  combineValidations
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
+import { sanitizeAiOutput } from "../_shared/sanitization.ts";
+import { moderateAiOutput, MODERATION_BLOCKED_MESSAGE } from "../_shared/moderation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -152,11 +154,21 @@ serve(async (req) => {
       maxTokens: 2048,
     });
 
-    const aiResponse = response.content || 'Przepraszam, nie udało się wygenerować odpowiedzi. Spróbuj ponownie.';
+    const rawResponse = response.content || 'Przepraszam, nie udało się wygenerować odpowiedzi. Spróbuj ponownie.';
+
+    // Δ4: sanitize then moderate AI output
+    const sanitizedResponse = sanitizeAiOutput(rawResponse);
+    const moderation = moderateAiOutput(sanitizedResponse);
+    const aiResponse = moderation.allowed
+      ? sanitizedResponse
+      : MODERATION_BLOCKED_MESSAGE;
+    if (!moderation.allowed) {
+      console.warn('AI output blocked by moderation:', moderation.reason);
+    }
     console.log('AI response received, length:', aiResponse.length);
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         response: aiResponse,
         reply: aiResponse // backwards compatibility
       }),
