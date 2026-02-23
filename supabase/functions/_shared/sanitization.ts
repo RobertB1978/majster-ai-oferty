@@ -88,14 +88,22 @@ export function sanitizeAiOutput(
     return '';
   }
 
-  // Strip ALL HTML/XML tags
-  let sanitized = text.replace(/<[^>]*>/g, '');
+  // Strip ALL HTML/XML tags iteratively until stable.
+  // A single-pass replace can leave behind partial tags when input contains
+  // nested/overlapping sequences like `<scr<script>ipt>`.  Looping ensures
+  // no tag remnants survive (CodeQL: incomplete-multi-char-sanitization).
+  let sanitized = text;
+  let prev: string;
+  do {
+    prev = sanitized;
+    sanitized = sanitized.replace(/<[^>]*>/g, '');
+  } while (sanitized !== prev);
 
-  // Remove javascript: URI scheme (survives tag stripping when not in a tag)
-  sanitized = sanitized.replace(/javascript:/gi, '');
-
-  // Remove data: URIs (common XSS vector via href/src)
-  sanitized = sanitized.replace(/data:[^,\s]*,?/gi, '');
+  // Remove dangerous URI schemes.  All three variants are stripped to prevent
+  // XSS via href/src attributes that survive tag-stripping, including the
+  // vbscript: scheme omitted by the original check
+  // (CodeQL: incomplete-url-scheme-check).
+  sanitized = sanitized.replace(/(?:javascript|vbscript|data):[^\s]*/gi, '');
 
   // Enforce length
   if (sanitized.length > maxLength) {
