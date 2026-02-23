@@ -1336,12 +1336,12 @@
     },
     "testimonials": {
       "title": "Co mówią fachowcy",
-      "t1Role": "Właściciel firmy remontowej",
-      "t1Text": "Wreszcie mogę robić wyceny prosto z budowy. Klient dostaje PDF w 5 minut.",
-      "t2Role": "Elektryk, jednoosobowa firma",
-      "t2Text": "Dyktowanie wyceny głosem to przełom. Oszczędzam 2 godziny dziennie.",
-      "t3Role": "Biuro projektowe",
-      "t3Text": "Zarządzanie klientami i projektami w jednym miejscu. Polecam każdemu fachowcowi.",
+      "t1Role": "Wykonawca remontów",
+      "t1Text": "Mogę wreszcie wysyłać profesjonalne PDF-y w kilka minut zamiast godzin.",
+      "t2Role": "Kierownik budowy",
+      "t2Text": "Baza klientów i kalendarz na telefonie — mam wszystko pod ręką na budowie.",
+      "t3Role": "Właściciel firmy remontowej",
+      "t3Text": "Trzy języki to strzał w dziesiątkę. Zatrudniam Ukraińców i każdy działa w swoim.",
       "sectionTitle": "Co mówią użytkownicy",
       "sectionSubtitle": "Opinie prawdziwych wykonawców i majstrów."
     },

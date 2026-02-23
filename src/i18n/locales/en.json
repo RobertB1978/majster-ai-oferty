@@ -1407,12 +1407,12 @@
     },
     "testimonials": {
       "title": "What tradespeople say",
-      "t1Role": "Renovation company owner",
-      "t1Text": "I can finally do quotes straight from the site. The client gets a PDF in 5 minutes.",
-      "t2Role": "Electrician, sole trader",
-      "t2Text": "Voice dictation for quotes is a game-changer. I save 2 hours a day.",
-      "t3Role": "Design office",
-      "t3Text": "Managing clients and projects in one place. I recommend it to every tradesperson.",
+      "t1Role": "Renovation contractor",
+      "t1Text": "I can finally send professional PDFs in minutes instead of hours.",
+      "t2Role": "Construction site manager",
+      "t2Text": "Customer database and calendar on my phone — everything at hand on site.",
+      "t3Role": "Renovation company owner",
+      "t3Text": "Three languages is a perfect match. I employ Ukrainians and everyone works in their own.",
       "sectionTitle": "What users say",
       "sectionSubtitle": "Reviews from real contractors and craftspeople."
     },

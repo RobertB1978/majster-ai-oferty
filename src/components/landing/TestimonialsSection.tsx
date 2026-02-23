@@ -1,33 +1,33 @@
 import { Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-// Testimonials reference only verified live features:
-// - Wyceny PDF (live: /app/jobs/:id/quote)
-// - Baza klientów + Kalendarz (live: /app/customers, /app/calendar)
-// - 3 języki (live: pl.json + en.json + uk.json)
-const TESTIMONIALS = [
-  {
-    name: 'Marek K.',
-    role: 'Wykonawca remontów',
-    rating: 5,
-    text: 'Mogę wreszcie wysyłać profesjonalne PDF-y w kilka minut zamiast godzin.',
-  },
-  {
-    name: 'Tomasz W.',
-    role: 'Kierownik budowy',
-    rating: 5,
-    text: 'Baza klientów i kalendarz na telefonie — mam wszystko pod ręką na budowie.',
-  },
-  {
-    name: 'Wiesław H.',
-    role: 'Właściciel firmy remontowej',
-    rating: 5,
-    text: 'Trzy języki to strzał w dziesiątkę. Zatrudniam Ukraińców i każdy działa w swoim.',
-  },
-];
-
 export function TestimonialsSection() {
   const { t } = useTranslation();
+
+  // Testimonials reference only verified live features:
+  // - Wyceny PDF (live: /app/jobs/:id/quote)
+  // - Baza klientów + Kalendarz (live: /app/customers, /app/calendar)
+  // - 3 języki (live: pl.json + en.json + uk.json)
+  const TESTIMONIALS = [
+    {
+      name: 'Marek K.',
+      role: t('landing.testimonials.t1Role', 'Wykonawca remontów'),
+      rating: 5,
+      text: t('landing.testimonials.t1Text', 'Mogę wreszcie wysyłać profesjonalne PDF-y w kilka minut zamiast godzin.'),
+    },
+    {
+      name: 'Tomasz W.',
+      role: t('landing.testimonials.t2Role', 'Kierownik budowy'),
+      rating: 5,
+      text: t('landing.testimonials.t2Text', 'Baza klientów i kalendarz na telefonie — mam wszystko pod ręką na budowie.'),
+    },
+    {
+      name: 'Wiesław H.',
+      role: t('landing.testimonials.t3Role', 'Właściciel firmy remontowej'),
+      rating: 5,
+      text: t('landing.testimonials.t3Text', 'Trzy języki to strzał w dziesiątkę. Zatrudniam Ukraińców i każdy działa w swoim.'),
+    },
+  ];
 
   return (
     <section
