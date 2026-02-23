@@ -65,3 +65,42 @@ export function normalizeEmail(email: string | null | undefined): string {
 
   return email.trim().toLowerCase();
 }
+
+/**
+ * Sanitizes AI-generated text output before returning it to clients.
+ *
+ * This is defense-in-depth: React JSX already auto-escapes text on the
+ * frontend, but stripping HTML here ensures no markup survives in stored
+ * chat history or structured response fields regardless of render path.
+ *
+ * Strips ALL HTML/XML tags (not just dangerous ones), removes javascript:
+ * and data: URI schemes, and enforces a maximum length.
+ *
+ * @param text - Raw AI output string
+ * @param maxLength - Maximum allowed length (default 10 000 chars)
+ * @returns Plain-text string safe for storage and rendering
+ */
+export function sanitizeAiOutput(
+  text: string | null | undefined,
+  maxLength = 10000
+): string {
+  if (!text || typeof text !== 'string') {
+    return '';
+  }
+
+  // Strip ALL HTML/XML tags
+  let sanitized = text.replace(/<[^>]*>/g, '');
+
+  // Remove javascript: URI scheme (survives tag stripping when not in a tag)
+  sanitized = sanitized.replace(/javascript:/gi, '');
+
+  // Remove data: URIs (common XSS vector via href/src)
+  sanitized = sanitized.replace(/data:[^,\s]*,?/gi, '');
+
+  // Enforce length
+  if (sanitized.length > maxLength) {
+    sanitized = sanitized.substring(0, maxLength);
+  }
+
+  return sanitized.trim();
+}
