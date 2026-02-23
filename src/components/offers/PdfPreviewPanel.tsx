@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   FileText,
   Eye,
@@ -52,6 +53,7 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
     offer_text: '',
     terms: '',
     deadline_text: '',
+    vat_rate: null as number | null,
   });
 
   // Initialize form when data loads
@@ -63,6 +65,7 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
         offer_text: pdfData.offer_text,
         terms: pdfData.terms,
         deadline_text: pdfData.deadline_text,
+        vat_rate: pdfData.vat_rate ?? null,
       });
     } else if (project) {
       setFormData({
@@ -71,6 +74,7 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
         offer_text: 'Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na wykonanie prac zgodnie z poniższym kosztorysem.',
         terms: 'Warunki płatności: 50% zaliczka, 50% po wykonaniu.\nGwarancja: 24 miesiące na wykonane prace.',
         deadline_text: 'Termin realizacji: do uzgodnienia.',
+        vat_rate: null,
       });
     }
   }, [pdfData, project]);
@@ -78,7 +82,12 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
   const handleSave = async () => {
     await savePdfData.mutateAsync({
       projectId,
-      ...formData,
+      version: formData.version,
+      title: formData.title,
+      offer_text: formData.offer_text,
+      terms: formData.terms,
+      deadline_text: formData.deadline_text,
+      vat_rate: formData.vat_rate,
     });
     setIsEditMode(false);
     toast.success(t('pdfPreview.dataSaved'));
@@ -126,6 +135,7 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
           summary_labor: quote.summary_labor,
           margin_percent: quote.margin_percent,
           total: quote.total,
+          vat_rate: formData.vat_rate,
         } : null,
         pdfData: pdfData ? {
           version: pdfData.version,
@@ -299,10 +309,34 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
                                 <td colSpan={5} className="border p-2 text-right font-medium">Robocizna:</td>
                                 <td className="border p-2 text-right">{formatCurrency(Number(quote.summary_labor))}</td>
                               </tr>
-                              <tr className="bg-gray-100 font-bold">
-                                <td colSpan={5} className="border p-2 text-right">RAZEM:</td>
-                                <td className="border p-2 text-right text-lg">{formatCurrency(Number(quote.total))}</td>
-                              </tr>
+                              {formData.vat_rate === null ? (
+                                <>
+                                  <tr className="bg-gray-100 font-bold">
+                                    <td colSpan={5} className="border p-2 text-right">RAZEM:</td>
+                                    <td className="border p-2 text-right text-lg">{formatCurrency(Number(quote.total))}</td>
+                                  </tr>
+                                  <tr>
+                                    <td colSpan={6} className="border p-2 text-xs italic text-gray-500">
+                                      Sprzedawca zwolniony z podatku VAT (art. 43 ust. 1 ustawy o VAT)
+                                    </td>
+                                  </tr>
+                                </>
+                              ) : (
+                                <>
+                                  <tr className="bg-gray-50">
+                                    <td colSpan={5} className="border p-2 text-right">Wartość netto:</td>
+                                    <td className="border p-2 text-right">{formatCurrency(Number(quote.total))}</td>
+                                  </tr>
+                                  <tr className="bg-gray-50">
+                                    <td colSpan={5} className="border p-2 text-right">VAT ({formData.vat_rate}%):</td>
+                                    <td className="border p-2 text-right">{formatCurrency(Number(quote.total) * formData.vat_rate / 100)}</td>
+                                  </tr>
+                                  <tr className="bg-gray-100 font-bold">
+                                    <td colSpan={5} className="border p-2 text-right">Wartość brutto:</td>
+                                    <td className="border p-2 text-right text-lg">{formatCurrency(Number(quote.total) * (1 + formData.vat_rate / 100))}</td>
+                                  </tr>
+                                </>
+                              )}
                             </tfoot>
                           </table>
                         </div>
@@ -388,11 +422,29 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
             </div>
             <div>
               <Label>Termin realizacji</Label>
-              <Input 
+              <Input
                 value={formData.deadline_text}
                 onChange={(e) => setFormData({ ...formData, deadline_text: e.target.value })}
                 placeholder="Termin realizacji: ..."
               />
+            </div>
+            <div>
+              <Label>Stawka VAT</Label>
+              <Select
+                value={formData.vat_rate === null ? 'exempt' : String(formData.vat_rate)}
+                onValueChange={(v) => setFormData({ ...formData, vat_rate: v === 'exempt' ? null : Number(v) })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="exempt">Zwolniony z VAT (np., art. 43)</SelectItem>
+                  <SelectItem value="0">0%</SelectItem>
+                  <SelectItem value="5">5%</SelectItem>
+                  <SelectItem value="8">8% (usługi budowlane)</SelectItem>
+                  <SelectItem value="23">23% (stawka podstawowa)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         ) : (

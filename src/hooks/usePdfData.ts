@@ -13,6 +13,8 @@ export interface PdfData {
   offer_text: string;
   terms: string;
   deadline_text: string;
+  /** VAT rate percentage (0, 5, 8, 23). null = VAT-exempt seller. */
+  vat_rate: number | null;
   created_at: string;
 }
 
@@ -40,16 +42,17 @@ export function useSavePdfData() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async ({ 
-      projectId, 
-      ...pdfData 
-    }: { 
+    mutationFn: async ({
+      projectId,
+      ...pdfData
+    }: {
       projectId: string;
       version: 'standard' | 'premium';
       title: string;
       offer_text: string;
       terms: string;
       deadline_text: string;
+      vat_rate: number | null;
     }) => {
       // Check if pdf_data exists
       const { data: existing } = await supabase
