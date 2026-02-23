@@ -127,7 +127,12 @@
     "biometricNotSupported": "Your device does not support biometric login",
     "phone": "Phone number",
     "phonePlaceholder": "+48 500 000 000",
-    "phoneHint": "Required for account verification. We do not share it with others."
+    "phoneHint": "Required for account verification. We do not share it with others.",
+    "captcha": {
+      "required": "CAPTCHA verification required",
+      "error": "CAPTCHA error. Please try again.",
+      "label": "Security verification"
+    }
   },
   "dashboard": {
     "title": "Dashboard",

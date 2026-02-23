@@ -11,6 +11,7 @@ import { validatePasswordStrength } from '@/lib/validations';
 import { Wrench, Mail, Lock, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWidget';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const { register, user } = useAuth();
   const navigate = useNavigate();
 
@@ -33,6 +35,11 @@ export default function Register() {
 
     if (!email || !phone || !password || !confirmPassword) {
       toast.error(t('auth.errors.fillAllFields'));
+      return;
+    }
+
+    if (isCaptchaEnabled && !captchaToken) {
+      toast.error(t('auth.captcha.required', 'Wymagana weryfikacja CAPTCHA'));
       return;
     }
 
@@ -161,7 +168,11 @@ export default function Register() {
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+            <TurnstileWidget
+              onVerify={(token) => setCaptchaToken(token)}
+              onError={() => setCaptchaToken(null)}
+            />
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading || (isCaptchaEnabled && !captchaToken)}>
               {isLoading ? t('auth.creatingAccount') : t('auth.createAccount')}
             </Button>
           </form>
