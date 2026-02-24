@@ -1,9 +1,15 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, CreditCard, Zap, Users, HardDrive, FolderKanban, Star } from 'lucide-react';
 import { useConfig } from '@/contexts/ConfigContext';
+import { PlanRequestModal } from '@/components/billing/PlanRequestModal';
+import { supabase } from '@/integrations/supabase/client';
+
+const STRIPE_ENABLED = import.meta.env.VITE_STRIPE_ENABLED === 'true';
+const CONTACT_EMAIL = 'kontakt.majster@gmail.com';
 
 const PLAN_FEATURE_LABELS: Record<string, string> = {
   excelExport: 'Eksport Excel',
@@ -36,6 +42,33 @@ function formatLimit(value: number): string {
 export default function Plan() {
   const { config } = useConfig();
   const tiers = config.plans.tiers;
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{ slug: string; name: string } | null>(null);
+
+  async function handlePlanCta(tierSlug: string, tierName: string) {
+    if (STRIPE_ENABLED) {
+      // Stripe checkout path — wire up when Stripe account is ready
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+      const res = await fetch(`${supabaseUrl}/functions/v1/create-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ planSlug: tierSlug }),
+      });
+      if (res.ok) {
+        const { url } = await res.json();
+        if (url) window.location.href = url;
+      }
+    } else {
+      setSelectedPlan({ slug: tierSlug, name: tierName });
+      setModalOpen(true);
+    }
+  }
 
   return (
     <>
@@ -160,11 +193,9 @@ export default function Plan() {
                     <Button
                       className="w-full"
                       variant={tier.highlighted ? 'default' : 'outline'}
-                      asChild
+                      onClick={() => handlePlanCta(tier.id, tier.name)}
                     >
-                      <a href={`mailto:sales@CHANGE-ME.example?subject=Upgrade%20do%20planu%20${encodeURIComponent(tier.name)}`}>
-                        Wybierz {tier.name}
-                      </a>
+                      Wybierz {tier.name}
                     </Button>
                   )}
                 </div>
@@ -182,10 +213,8 @@ export default function Plan() {
             <p>
               <span className="font-medium text-foreground">Jak zmienić plan?</span>{' '}
               Skontaktuj się z nami przez email{' '}
-              <a href="mailto:sales@CHANGE-ME.example" className="text-primary hover:underline">
-                sales@CHANGE-ME.example
-              </a>{' '}
-              lub przez formularz kontaktowy.
+              <span className="font-medium text-foreground">{CONTACT_EMAIL}</span>{' '}
+              lub wyślij zgłoszenie klikając przycisk przy wybranym planie.
             </p>
             <p>
               <span className="font-medium text-foreground">Czy można anulować?</span>{' '}
@@ -198,6 +227,16 @@ export default function Plan() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Plan Request Modal */}
+      {selectedPlan && (
+        <PlanRequestModal
+          open={modalOpen}
+          planSlug={selectedPlan.slug}
+          planName={selectedPlan.name}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </>
   );
 }
