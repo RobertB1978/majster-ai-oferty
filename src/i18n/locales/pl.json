@@ -495,7 +495,8 @@
           "ads": "Reklamy w aplikacji",
           "noAi": "Brak AI asystenta",
           "noExcel": "Brak eksportu Excel"
-        }
+        },
+        "name": "Darmowy"
       },
       "pro": {
         "description": "Dla początkujących firm",
@@ -506,7 +507,8 @@
           "allPdfTemplates": "Wszystkie szablony PDF",
           "excelExport": "Eksport do Excel",
           "emailSupport": "Wsparcie email"
-        }
+        },
+        "name": "Pro"
       },
       "business": {
         "description": "Dla rozwijających się firm",
@@ -518,7 +520,8 @@
           "calendarIntegration": "Integracja z kalendarzem",
           "companyDocuments": "Dokumenty firmowe",
           "prioritySupport": "Priorytetowe wsparcie"
-        }
+        },
+        "name": "Biznes"
       },
       "enterprise": {
         "description": "Pełne możliwości",
@@ -531,7 +534,8 @@
           "sla": "SLA 99.9%",
           "teamTraining": "Szkolenia zespołu",
           "priorityFeatures": "Priorytetowe funkcje"
-        }
+        },
+        "name": "Enterprise"
       }
     },
     "features": "Funkcje",

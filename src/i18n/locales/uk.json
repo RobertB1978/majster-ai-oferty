@@ -498,7 +498,8 @@
           "ads": "Реклама в додатку",
           "noAi": "Без AI асистента",
           "noExcel": "Без експорту Excel"
-        }
+        },
+        "name": "Безкоштовний"
       },
       "pro": {
         "description": "Для початківців компаній",
@@ -509,7 +510,8 @@
           "allPdfTemplates": "Всі PDF шаблони",
           "excelExport": "Експорт Excel",
           "emailSupport": "Підтримка email"
-        }
+        },
+        "name": "Pro"
       },
       "business": {
         "description": "Для зростаючих компаній",
@@ -521,7 +523,8 @@
           "calendarIntegration": "Інтеграція з календарем",
           "companyDocuments": "Документи компанії",
           "prioritySupport": "Пріоритетна підтримка"
-        }
+        },
+        "name": "Бізнес"
       },
       "enterprise": {
         "description": "Повні можливості",
@@ -534,7 +537,8 @@
           "sla": "SLA 99.9%",
           "teamTraining": "Навчання команди",
           "priorityFeatures": "Пріоритетні функції"
-        }
+        },
+        "name": "Enterprise"
       }
     },
     "features": "Функції",

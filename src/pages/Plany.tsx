@@ -1,15 +1,18 @@
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Star, ArrowRight, HardHat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { PLANS } from '@/config/plans';
+import { formatDualCurrency } from '@/config/currency';
 
 // Re-export for backwards compatibility (PlanyDetail.tsx imports from here)
 export { PLANS };
 
 export default function Plany() {
+  const { i18n } = useTranslation();
   return (
     <>
       <Helmet>
@@ -69,7 +72,7 @@ export default function Plany() {
                   <CardTitle>{plan.name}</CardTitle>
                   <CardDescription>
                     <span className="text-3xl font-bold text-foreground">
-                      {plan.pricePLN === 0 ? 'Gratis' : `${plan.pricePLN} zł`}
+                      {formatDualCurrency(plan.pricePLN, i18n.language)}
                     </span>
                     {plan.pricePLN > 0 && <span className="text-sm"> / mies. netto</span>}
                   </CardDescription>
