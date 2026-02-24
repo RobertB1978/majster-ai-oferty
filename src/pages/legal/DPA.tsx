@@ -146,7 +146,7 @@ Koszty audytu ponosi strona inicjująca, chyba że audyt wykaże naruszenia.`,
                   <p className="font-medium mb-1">Akceptacja umowy</p>
                   <p className="text-sm text-muted-foreground">
                     Korzystając z Majster.AI, akceptujesz niniejszą Umowę Powierzenia 
-                    Przetwarzania Danych. W przypadku pytań skontaktuj się: dpo@CHANGE-ME.example
+                    Przetwarzania Danych. W przypadku pytań skontaktuj się: kontakt.majster@gmail.com
                   </p>
                 </div>
               </div>

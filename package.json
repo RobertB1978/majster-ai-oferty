@@ -31,6 +31,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "clean": "rm -rf dist node_modules/.vite",
     "clean:all": "rm -rf dist node_modules",
+    "check:placeholders": "bash scripts/check-placeholders.sh",
     "prepare": "node -e \"try { require('husky').install() } catch (e) {}\""
   },
   "dependencies": {

@@ -150,7 +150,7 @@ export default function Terms() {
                   W sprawach nieuregulowanych zastosowanie mają przepisy prawa polskiego.
                 </p>
                 <p>
-                  Kontakt: support@CHANGE-ME.example
+                  Kontakt: kontakt.majster@gmail.com
                 </p>
               </CardContent>
             </Card>

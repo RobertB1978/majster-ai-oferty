@@ -6,7 +6,7 @@ info:
     Security Pack Δ1 - PROMPT 9/10
   version: 1.0.0
   contact:
-    email: support@CHANGE-ME.example
+    email: kontakt.majster@gmail.com
 
 servers:
   - url: https://YOUR_PROJECT.supabase.co/functions/v1

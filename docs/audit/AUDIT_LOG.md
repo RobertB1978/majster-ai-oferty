@@ -77,17 +77,17 @@ Append-only log of audit sessions. One entry per session. Most recent at top.
 
 **Fixes Applied:**
 
-- **FIX-1 (NEW-01) — Email addresses in src/:** All `@[unowned-domain]` addresses replaced with `@CHANGE-ME.example` placeholder. OWNER ACTION: configure real sender domain via Resend/SMTP.
-- **FIX-2 (NEW-01) — Email sender in Edge Function:** `supabase/functions/send-offer-email/index.ts` from field changed to `noreply@CHANGE-ME.example` with OWNER ACTION comment.
+- **FIX-1 (NEW-01) — Email addresses in src/:** All `@[unowned-domain]` addresses replaced with `kontakt.majster@gmail.com` (PR3 2026-02-24).
+- **FIX-2 (NEW-01) — Email sender in Edge Function:** `supabase/functions/send-offer-email/index.ts` from field changed to `kontakt.majster@gmail.com` with OWNER ACTION comment.
 - **FIX-3 (NEW-01) — URL fallbacks in src/ and supabase/:** `src/utils/generateSitemap.ts` and `supabase/functions/send-offer-email/emailHandler.ts` fallback `https://[unowned-domain]` → `https://majster-ai-oferty.vercel.app` (TEMP with comment).
 - **FIX-4 (NEW-03) — .env.example:** Default `VITE_PUBLIC_SITE_URL` changed from `[unowned-domain]` to `https://majster-ai-oferty.vercel.app`; comment updated to indicate TEMP status.
-- **FIX-5 — Docs cleanup:** All operational and historical docs replaced forbidden strings with `[unowned-domain-was-here]`, `https://majster-ai-oferty.vercel.app (TEMP)`, or `@CHANGE-ME.example` as appropriate.
+- **FIX-5 — Docs cleanup:** All operational and historical docs replaced forbidden strings with `[unowned-domain-was-here]`, `https://majster-ai-oferty.vercel.app (TEMP)`, or `kontakt.majster@gmail.com` as appropriate.
 
 **Post-Fix Verification:**
 - `rg "majster\.ai" . (excl. .git, .pdf, .docx)` → 0 occurrences ✅
 - `sitemap_has_majster_ai=0` ✅
 - `generator_has_majster_ai=0` ✅
-- `CHANGE-ME.example` placeholders present in 13 source locations ✅
+- Placeholder emails resolved → replaced with `kontakt.majster@gmail.com` (PR3 2026-02-24) ✅
 
 **Files Modified:** 14 source files, 1 Edge Function, .env.example, ~25 docs files, 4 audit artifacts
 
