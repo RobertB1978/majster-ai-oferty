@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { CheckCircle2, CreditCard, Zap, Users, HardDrive, FolderKanban, Star } f
 import { useConfig } from '@/contexts/ConfigContext';
 import { PlanRequestModal } from '@/components/billing/PlanRequestModal';
 import { supabase } from '@/integrations/supabase/client';
+import { formatDualCurrency } from '@/config/currency';
 
 const STRIPE_ENABLED = import.meta.env.VITE_STRIPE_ENABLED === 'true';
 const CONTACT_EMAIL = 'kontakt.majster@gmail.com';
@@ -42,6 +44,7 @@ function formatLimit(value: number): string {
 export default function Plan() {
   const { config } = useConfig();
   const tiers = config.plans.tiers;
+  const { i18n } = useTranslation();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<{ slug: string; name: string } | null>(null);
@@ -131,7 +134,7 @@ export default function Plan() {
                 <CardTitle className="text-xl">{tier.name}</CardTitle>
                 <CardDescription>
                   <span className="text-3xl font-bold text-foreground">
-                    {tier.pricePLN === 0 ? 'Gratis' : `${tier.pricePLN} zł`}
+                    {formatDualCurrency(tier.pricePLN, i18n.language)}
                   </span>
                   {tier.pricePLN > 0 && (
                     <span className="text-sm text-muted-foreground"> / miesiąc</span>

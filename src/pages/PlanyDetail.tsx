@@ -1,12 +1,15 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, ArrowLeft, HardHat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PLANS } from './Plany';
+import { formatDualCurrency } from '@/config/currency';
 
 export default function PlanyDetail() {
+  const { i18n } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
   const plan = PLANS.find((p) => p.slug === slug);
 
@@ -64,7 +67,7 @@ export default function PlanyDetail() {
             </div>
             <div className="flex items-baseline gap-2 mb-3">
               <span className="text-5xl font-bold">
-                {plan.pricePLN === 0 ? 'Gratis' : `${plan.pricePLN} zł`}
+                {formatDualCurrency(plan.pricePLN, i18n.language)}
               </span>
               {plan.pricePLN > 0 && (
                 <span className="text-lg text-muted-foreground">/ miesiąc netto</span>
@@ -106,7 +109,7 @@ export default function PlanyDetail() {
                 <Button size="lg" className="flex-1" asChild>
                   {/* TODO: Replace with Stripe checkout when configured */}
                   <Link to="/register">
-                    Kup teraz — {plan.pricePLN} zł/mies.
+                    Kup teraz — {formatDualCurrency(plan.pricePLN, i18n.language)}/mies.
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>

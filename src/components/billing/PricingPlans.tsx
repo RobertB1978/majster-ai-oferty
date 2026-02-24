@@ -4,11 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Zap, Crown, Rocket, Star, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getPlanById } from '@/config/plans';
+import { formatDualCurrency } from '@/config/currency';
 
 interface PricingPlan {
   id: string;
   name: string;
-  price: number;
+  /** Canonical price in PLN — sourced from PLANS config. */
+  pricePLN: number;
   priceId?: string;
   description: string;
   features: string[];
@@ -24,7 +27,7 @@ const getPlans = (t: (key: string) => string): PricingPlan[] => [
   {
     id: 'free',
     name: 'Free',
-    price: 0,
+    pricePLN: getPlanById('free')!.pricePLN,
     description: t('billing.plans.free.description'),
     icon: <Zap className="h-6 w-6" />,
     hasAds: true,
@@ -45,7 +48,7 @@ const getPlans = (t: (key: string) => string): PricingPlan[] => [
   {
     id: 'pro',
     name: 'Pro',
-    price: 39,
+    pricePLN: getPlanById('pro')!.pricePLN,
     priceId: 'price_pro_monthly',
     description: t('billing.plans.pro.description'),
     icon: <Star className="h-6 w-6" />,
@@ -63,7 +66,7 @@ const getPlans = (t: (key: string) => string): PricingPlan[] => [
   {
     id: 'business',
     name: 'Business',
-    price: 99,
+    pricePLN: getPlanById('business')!.pricePLN,
     priceId: 'price_business_monthly',
     description: t('billing.plans.business.description'),
     icon: <Crown className="h-6 w-6" />,
@@ -83,7 +86,7 @@ const getPlans = (t: (key: string) => string): PricingPlan[] => [
   {
     id: 'enterprise',
     name: 'Enterprise',
-    price: 129,
+    pricePLN: getPlanById('enterprise')!.pricePLN,
     priceId: 'price_enterprise_monthly',
     description: t('billing.plans.enterprise.description'),
     icon: <Rocket className="h-6 w-6" />,
@@ -109,7 +112,7 @@ interface PricingPlansProps {
 }
 
 export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: PricingPlansProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const plans = getPlans(t);
 
   return (
@@ -149,7 +152,7 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
               </Badge>
             </div>
           )}
-          
+
           <CardHeader className="pb-4 pt-8 relative">
             <div className="flex items-center gap-3 mb-3">
               <div className={cn(
@@ -164,11 +167,15 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
               </div>
             </div>
             <div className="flex items-baseline gap-1 mt-4">
-              <span className="text-4xl sm:text-5xl font-bold">{plan.price}</span>
-              <span className="text-muted-foreground text-sm">{t('billing.pricePerMonth')}</span>
+              <span className="text-4xl sm:text-5xl font-bold">
+                {formatDualCurrency(plan.pricePLN, i18n.language)}
+              </span>
             </div>
+            {plan.pricePLN > 0 && (
+              <span className="text-muted-foreground text-sm">{t('billing.pricePerMonth')}</span>
+            )}
           </CardHeader>
-          
+
           <CardContent className="space-y-4 relative">
             <ul className="space-y-2.5">
               {plan.features.map((feature, i) => (
@@ -188,7 +195,7 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
                 </li>
               ))}
             </ul>
-            
+
             <Button
               className={cn(
                 'w-full mt-4 transition-all duration-300',
@@ -203,7 +210,7 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
             >
               {currentPlan === plan.id
                 ? t('billing.currentPlan')
-                : plan.price === 0
+                : plan.pricePLN === 0
                   ? t('billing.startFree')
                   : t('billing.selectPlan')
               }

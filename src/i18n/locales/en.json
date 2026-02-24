@@ -498,7 +498,8 @@
           "ads": "Ads in the app",
           "noAi": "No AI assistant",
           "noExcel": "No Excel export"
-        }
+        },
+        "name": "Free"
       },
       "pro": {
         "description": "For starting businesses",
@@ -509,7 +510,8 @@
           "allPdfTemplates": "All PDF templates",
           "excelExport": "Excel export",
           "emailSupport": "Email support"
-        }
+        },
+        "name": "Pro"
       },
       "business": {
         "description": "For growing businesses",
@@ -521,7 +523,8 @@
           "calendarIntegration": "Calendar integration",
           "companyDocuments": "Company documents",
           "prioritySupport": "Priority support"
-        }
+        },
+        "name": "Business"
       },
       "enterprise": {
         "description": "Full capabilities",
@@ -534,7 +537,8 @@
           "sla": "99.9% SLA",
           "teamTraining": "Team training",
           "priorityFeatures": "Priority features"
-        }
+        },
+        "name": "Enterprise"
       }
     },
     "features": "Features",

@@ -4,59 +4,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CreditCard, Check, Zap, Building, Crown, Receipt, AlertCircle, ArrowRight } from 'lucide-react';
+import { CreditCard, Check, Zap, Building, Crown, Rocket, Receipt, AlertCircle, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { PLANS } from '@/config/plans';
+import { formatDualCurrency } from '@/config/currency';
 
-const plans = [
-  {
-    id: 'free',
-    name: 'Free',
-    price: 0,
-    description: 'Dla początkujących',
-    icon: <Zap className="h-6 w-6" />,
-    features: [
-      '3 projekty',
-      '10 klientów',
-      'Podstawowe raporty',
-      'Wsparcie email',
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: 79,
-    description: 'Dla rozwijających się firm',
-    icon: <Crown className="h-6 w-6" />,
-    popular: true,
-    features: [
-      'Nieograniczone projekty',
-      'Nieograniczeni klienci',
-      'Zaawansowane raporty',
-      'Integracja z kalendarzem',
-      'API dostęp',
-      'Priorytetowe wsparcie',
-    ],
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: 199,
-    description: 'Dla dużych zespołów',
-    icon: <Building className="h-6 w-6" />,
-    features: [
-      'Wszystko z Pro',
-      'Nieograniczeni użytkownicy',
-      'Własne integracje',
-      'Dedykowany opiekun',
-      'SLA 99.9%',
-      'Szkolenia zespołu',
-    ],
-  },
-];
+const PLAN_ICONS: Record<string, React.ReactNode> = {
+  free: <Zap className="h-6 w-6" />,
+  pro: <Crown className="h-6 w-6" />,
+  business: <Building className="h-6 w-6" />,
+  enterprise: <Rocket className="h-6 w-6" />,
+};
 
 export default function Billing() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const handleSelectPlan = (planId: string) => {
     if (planId === 'free') {
@@ -131,16 +93,16 @@ export default function Billing() {
           </TabsList>
 
           <TabsContent value="plans">
-            <div className="grid gap-6 md:grid-cols-3">
-              {plans.map((plan) => (
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+              {PLANS.map((plan) => (
                 <Card
                   key={plan.id}
                   className={cn(
                     'relative overflow-hidden transition-all duration-300 hover:shadow-lg',
-                    plan.popular && 'ring-2 ring-primary shadow-lg md:scale-105'
+                    plan.highlighted && 'ring-2 ring-primary shadow-lg md:scale-105'
                   )}
                 >
-                  {plan.popular && (
+                  {plan.highlighted && (
                     <div className="absolute top-0 right-0">
                       <Badge className="rounded-tl-none rounded-br-none">
                         {t('billing.mostPopular')}
@@ -151,9 +113,9 @@ export default function Billing() {
                     <div className="flex items-center gap-3 mb-2">
                       <div className={cn(
                         'p-2 rounded-lg',
-                        plan.popular ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                        plan.highlighted ? 'bg-primary text-primary-foreground' : 'bg-muted'
                       )}>
-                        {plan.icon}
+                        {PLAN_ICONS[plan.id]}
                       </div>
                       <div>
                         <CardTitle className="text-xl">{plan.name}</CardTitle>
@@ -161,9 +123,13 @@ export default function Billing() {
                       </div>
                     </div>
                     <div className="flex items-baseline gap-1 mt-4">
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      <span className="text-muted-foreground">PLN/mies.</span>
+                      <span className="text-3xl font-bold">
+                        {formatDualCurrency(plan.pricePLN, i18n.language)}
+                      </span>
                     </div>
+                    {plan.pricePLN > 0 && (
+                      <span className="text-sm text-muted-foreground">/mies. netto</span>
+                    )}
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <ul className="space-y-2">
@@ -176,7 +142,7 @@ export default function Billing() {
                     </ul>
                     <Button
                       className="w-full"
-                      variant={plan.popular ? 'default' : 'outline'}
+                      variant={plan.highlighted ? 'default' : 'outline'}
                       onClick={() => handleSelectPlan(plan.id)}
                     >
                       {plan.id === 'free' ? 'Aktualny plan' : (
