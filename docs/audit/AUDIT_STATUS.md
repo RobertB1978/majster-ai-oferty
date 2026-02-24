@@ -58,7 +58,7 @@
 
 ### [NEW-01] @[unowned-domain] emails in codebase
 - **Description:** 20+ references to `@[unowned-domain]` email addresses in source. Domain not owned — emails bounce.
-- **AC:** `grep -rn "@CHANGE-ME.example" src/ --include="*.tsx" --include="*.ts" | wc -l` → 0 in production (all replaced with `@CHANGE-ME.example` placeholder pending OWNER ACTION to configure real sender domain via Resend/SMTP)
+- **AC:** placeholder emails in `src/` → 0 ✅ DONE PR3 2026-02-24 (replaced with `kontakt.majster@gmail.com`)
 - **Files:** Footer.tsx, Landing.tsx, Plan.tsx, Privacy.tsx, Terms.tsx, AdminContentEditor.tsx, AdminSystemSettings.tsx, useAdminSettings.ts, DPA.tsx, GDPRCenter.tsx, PrivacyPolicy.tsx, TermsOfService.tsx, supabase/functions/send-offer-email/index.ts
 - **Status:** ✅ FIXED (2026-02-21) — forbidden domain removed; OWNER ACTION required to configure real sender email
 
@@ -82,7 +82,7 @@
 
 ### [NEW-03] .env.example defaults to [unowned-domain]
 - **Description:** Line 32 previously defaulted `VITE_PUBLIC_SITE_URL` to the unowned domain.
-- **AC:** `grep -c "CHANGE-ME" .env.example` → 0 when owner configures real domain; current default = Vercel URL (TEMP)
+- **AC:** `.env.example` has no placeholder strings; current default = Vercel URL (TEMP)
 - **Status:** ✅ FIXED (2026-02-21) — default changed to `https://majster-ai-oferty.vercel.app` (TEMP); OWNER ACTION to update when domain acquired
 
 ---

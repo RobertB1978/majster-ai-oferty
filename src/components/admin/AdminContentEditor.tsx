@@ -62,7 +62,7 @@ const defaultContent: ContentConfig = {
   footerCompanyName: 'Majster.AI',
   footerCopyright: '© 2024 Majster.AI. Wszelkie prawa zastrzeżone.',
   footerDescription: 'Profesjonalna platforma do tworzenia wycen dla fachowców.',
-  supportEmail: 'support@CHANGE-ME.example',
+  supportEmail: 'kontakt.majster@gmail.com',
   phoneNumber: '+48 123 456 789',
   address: 'ul. Przykładowa 1, 00-001 Warszawa',
   metaTitle: 'Majster.AI - Wyceny i kosztorysy dla fachowców',
@@ -229,7 +229,7 @@ export function AdminContentEditor() {
                 type="email"
                 value={content.supportEmail}
                 onChange={(e) => updateContent('supportEmail', e.target.value)}
-                placeholder="support@CHANGE-ME.example"
+                placeholder="kontakt.majster@gmail.com"
               />
             </div>
             <div className="space-y-2">

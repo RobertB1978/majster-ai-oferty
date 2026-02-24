@@ -405,7 +405,7 @@ function deleteUser(userId: string, confirmation: 'DELETE') {
   // Soft delete, not hard delete
   await db.users.update(userId, {
     deleted_at: new Date(),
-    email: `deleted_${userId}@CHANGE-ME.example`
+    email: `deleted_${userId}@deleted.invalid`
   });
 }
 ```

@@ -64,7 +64,7 @@ export function AdminSystemSettings() {
         smtp_host: dbSettings.smtp_host ?? '',
         smtp_port: dbSettings.smtp_port ?? 587,
         email_from_name: dbSettings.email_from_name ?? 'Majster.AI',
-        email_from_address: dbSettings.email_from_address ?? 'noreply@CHANGE-ME.example',
+        email_from_address: dbSettings.email_from_address ?? 'kontakt.majster@gmail.com',
         registration_enabled: dbSettings.registration_enabled ?? true,
         maintenance_mode: dbSettings.maintenance_mode ?? false,
         api_enabled: dbSettings.api_enabled ?? true,
@@ -242,7 +242,7 @@ export function AdminSystemSettings() {
                   type="email"
                   value={displaySettings.email_from_address}
                   onChange={(e) => updateSetting('email_from_address', e.target.value)}
-                  placeholder="noreply@CHANGE-ME.example"
+                  placeholder="kontakt.majster@gmail.com"
                 />
               </div>
             </div>
