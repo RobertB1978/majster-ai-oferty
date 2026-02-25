@@ -137,6 +137,7 @@
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Overview of your business",
+    "tagline": "Dashboard - projects overview and quick actions",
     "totalProjects": "All Projects",
     "activeProjects": "Active Projects",
     "totalClients": "Clients",
@@ -146,10 +147,17 @@
     "newProject": "New Project",
     "newClient": "New Client",
     "viewAll": "View all",
+    "viewDetails": "View details",
     "welcome": "Welcome back",
     "todayEvents": "Today's Events",
     "pendingOffers": "Pending Offers",
     "monthlyStats": "Monthly Statistics",
+    "expiringOffersTitle": "Expiring offers",
+    "expiringOffersDesc_one": "You have {{count}} offer expiring in 7 days.",
+    "expiringOffersDesc_other": "You have {{count}} offers expiring in 7 days.",
+    "subscriptionExpiringSoonTitle": "Plan expiring soon",
+    "subscriptionExpiresInDays": "Your plan expires in {{days}} days.",
+    "checkSettings": "Check settings",
     "quoteCreation": {
       "title": "Create new offer",
       "chooseMethod": "Choose how to create the offer",
@@ -447,6 +455,8 @@
     "title": "Settings",
     "subtitle": "Configure your application",
     "language": "Language",
+    "languageSelectDescription": "Select your preferred app language",
+    "languageLabel": "User interface language",
     "theme": "Theme",
     "notifications": "Notifications",
     "company": "Company",
@@ -455,6 +465,7 @@
     "integrations": "Integrations",
     "api": "API Keys",
     "privacy": "Privacy & Data",
+    "privacyDescription": "Manage your data in compliance with GDPR",
     "gdprCenter": "GDPR Center",
     "privacyPolicy": "Privacy Policy",
     "cookiesPolicy": "Cookies Policy",
@@ -474,7 +485,8 @@
       "dark": "Dark",
       "light": "Light",
       "system": "System"
-    }
+    },
+    "contactEmailTab": "Offer Email"
   },
   "billing": {
     "title": "Billing & Subscriptions",
