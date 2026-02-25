@@ -55,3 +55,7 @@ verify_jwt = true
 [functions.delete-user-account]
 # Requires authenticated user (validates JWT in-function)
 verify_jwt = true
+
+[functions.client-question]
+# Public endpoint — clients submit questions via offer token (no JWT)
+verify_jwt = false
