@@ -15,6 +15,7 @@ import {
 } from '@/components/quickEstimate/WorkspaceLineItems';
 import type { LineItem } from '@/components/quickEstimate/WorkspaceLineItems';
 import { StickyTotalsCard } from '@/components/quickEstimate/StickyTotalsCard';
+import { itemUnitPrice } from '@/lib/estimateCalc';
 import type { ItemTemplate } from '@/hooks/useItemTemplates';
 import type { StarterPack } from '@/data/starterPacks';
 
@@ -49,7 +50,13 @@ export default function QuickEstimateWorkspace() {
         name: template.name,
         qty: template.default_qty,
         unit: template.unit,
+        priceMode: 'single',
         price: template.default_price,
+        laborCost: 0,
+        materialCost: 0,
+        marginPct: 0,
+        showMargin: true,
+        itemType: 'service',
       };
       return isOnlyBlank ? [newItem] : [...prev, newItem];
     });
@@ -62,7 +69,13 @@ export default function QuickEstimateWorkspace() {
       name: item.name,
       qty: item.qty,
       unit: item.unit,
+      priceMode: 'single' as const,
       price: item.price,
+      laborCost: 0,
+      materialCost: 0,
+      marginPct: 0,
+      showMargin: true,
+      itemType: item.category === 'Materiał' ? 'material' : 'labor',
     }));
     // Replace blank slate with the full pack
     setItems(packItems);
@@ -121,14 +134,14 @@ export default function QuickEstimateWorkspace() {
 
       if (projErr) throw projErr;
 
-      // Insert quote items
+      // Insert quote items — persist effective net unit price (margin already included)
       const { error: itemsErr } = await supabase.from('quote_items').insert(
         validItems.map((item, idx) => ({
           project_id: project.id,
           name: item.name,
           quantity: item.qty,
           unit: item.unit,
-          price: item.price,
+          price: itemUnitPrice(item),
           sort_order: idx,
         }))
       );
