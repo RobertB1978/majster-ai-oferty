@@ -4,9 +4,11 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { FileSpreadsheet, List, Plus, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileSpreadsheet, List, Plus, Trash2 } from 'lucide-react';
 import { isValidDecimal, parseDecimal } from '@/lib/numberParsing';
 import { BulkAddModal } from './BulkAddModal';
+
+const PAGE_SIZE = 50;
 
 export interface LineItem {
   id: string;
@@ -34,6 +36,7 @@ export function WorkspaceLineItems({
   onToggleVat,
 }: WorkspaceLineItemsProps) {
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const [rawInputs, setRawInputs] = useState<
     Record<string, { qty: string; price: string }>
@@ -83,13 +86,15 @@ export function WorkspaceLineItems({
     const item = newLineItem();
     setItems((prev) => [...prev, item]);
     setRawInputs((prev) => ({ ...prev, [item.id]: { qty: '1', price: '0' } }));
+    // Jump to the last page so the new item is visible
+    setCurrentPage(Math.floor(items.length / PAGE_SIZE));
   };
 
   const handleBulkAdd = (newItems: LineItem[]) => {
+    const isOnlyBlank =
+      items.length === 1 && !items[0].name.trim() && items[0].price === 0;
     setItems((prev) => {
       // Replace the only blank item if present, otherwise append
-      const isOnlyBlank =
-        prev.length === 1 && !prev[0].name.trim() && prev[0].price === 0;
       return isOnlyBlank ? newItems : [...prev, ...newItems];
     });
     setRawInputs((prev) => {
@@ -99,7 +104,16 @@ export function WorkspaceLineItems({
       }
       return next;
     });
+    // Navigate to where the new items begin
+    setCurrentPage(isOnlyBlank ? 0 : Math.floor(items.length / PAGE_SIZE));
   };
+
+  // Pagination calculations — clamp page to valid range when items are deleted
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const page = Math.min(currentPage, totalPages - 1);
+  const pageItems = items.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const pageStart = page * PAGE_SIZE + 1;
+  const pageEnd = Math.min((page + 1) * PAGE_SIZE, items.length);
 
   return (
     <>
@@ -160,7 +174,7 @@ export function WorkspaceLineItems({
         )}
 
         <div className="space-y-2">
-          {items.map((item) => {
+          {pageItems.map((item) => {
             const qtyStr = rawInputs[item.id]?.qty ?? String(item.qty);
             const priceStr = rawInputs[item.id]?.price ?? String(item.price);
             const qtyInvalid = qtyStr !== '' && !isValidDecimal(qtyStr);
@@ -239,6 +253,43 @@ export function WorkspaceLineItems({
             );
           })}
         </div>
+
+        {/* Pagination controls — shown only when more than one page exists */}
+        {totalPages > 1 && (
+          <div
+            className="flex items-center justify-between mt-3 pt-3 border-t text-sm"
+            data-testid="pagination-controls"
+          >
+            <span className="text-muted-foreground text-xs">
+              Pozycje {pageStart}–{pageEnd} z {items.length}
+            </span>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page === 0}
+                onClick={() => setCurrentPage(page - 1)}
+                className="h-7 px-2 text-xs"
+                aria-label="Poprzednia strona"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </Button>
+              <span className="text-xs text-muted-foreground px-2" aria-live="polite">
+                {page + 1} / {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= totalPages - 1}
+                onClick={() => setCurrentPage(page + 1)}
+                className="h-7 px-2 text-xs"
+                aria-label="Następna strona"
+              >
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+        )}
 
         <Button
           variant="outline"
