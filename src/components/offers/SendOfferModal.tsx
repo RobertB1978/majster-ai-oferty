@@ -7,10 +7,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Send, AlertCircle, FileText, Clock, ShieldAlert } from 'lucide-react';
+import {
+  Loader2, Send, AlertCircle, FileText, Clock, ShieldAlert,
+  Copy, Download, Check, Link2,
+} from 'lucide-react';
 import { useProfile } from '@/hooks/useProfile';
 import { useQuote } from '@/hooks/useQuotes';
 import { useCreateOfferSend, useUpdateOfferSend } from '@/hooks/useOfferSends';
+import { useAuth } from '@/contexts/AuthContext';
 import { generateOfferEmailSubject, generateOfferEmailBody } from '@/lib/emailTemplates';
 import { OFFER_EMAIL_TEMPLATES, renderOfferEmailTemplate } from '@/lib/offerEmailTemplates';
 import { formatCurrency } from '@/lib/formatters';
@@ -53,6 +57,7 @@ export function SendOfferModal({
   pdfUrl,
 }: SendOfferModalProps) {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const { data: profile } = useProfile();
   const { data: quote } = useQuote(projectId);
   const createOfferSend = useCreateOfferSend();
@@ -68,6 +73,12 @@ export function SendOfferModal({
   const [customDate, setCustomDate] = useState('');
   const [offerApproval, setOfferApproval] = useState<{ public_token: string; accept_token: string } | null>(null);
 
+  // Fallback-delivery state
+  const [isGeneratingToken, setIsGeneratingToken] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [emailSendFailed, setEmailSendFailed] = useState(false);
+  const [emailSendFailedReason, setEmailSendFailedReason] = useState<'not_configured' | 'other' | null>(null);
+
   // Fetch offer_approval tokens for this project
   useEffect(() => {
     if (!open || !projectId) return;
@@ -82,6 +93,15 @@ export function SendOfferModal({
         if (data) setOfferApproval(data as { public_token: string; accept_token: string });
       });
   }, [open, projectId]);
+
+  // Reset transient state when modal opens/closes
+  useEffect(() => {
+    if (open) {
+      setEmailSendFailed(false);
+      setEmailSendFailedReason(null);
+      setLinkCopied(false);
+    }
+  }, [open]);
 
   useEffect(() => {
     if (open && profile) {
@@ -125,11 +145,62 @@ export function SendOfferModal({
     return d.toISOString();
   };
 
-  // Hard-blocker checklist
+  // Checklist
   const hasClientEmail = Boolean(email.trim());
   const hasValidUntil = expiryDays !== '-1' || Boolean(customDate);
   const isEmailVerified = profile?.contact_email_verified === true;
   const canSend = hasClientEmail && hasValidUntil;
+
+  // Show fallback delivery panel when email is absent OR after a send failure
+  const showFallback = !hasClientEmail || emailSendFailed;
+
+  // Public offer link (Polish route preferred)
+  const publicOfferLink = offerApproval
+    ? `${window.location.origin}/oferta/${offerApproval.public_token}`
+    : null;
+
+  // Ensure an offer_approval record (and therefore a public_token) exists.
+  // Creates one on-demand if missing — no DB migrations required.
+  const ensureToken = async (): Promise<{ public_token: string; accept_token: string } | null> => {
+    if (offerApproval) return offerApproval;
+    if (!user || !projectId) return null;
+
+    setIsGeneratingToken(true);
+    try {
+      const { data, error } = await supabase
+        .from('offer_approvals')
+        .insert({
+          project_id: projectId,
+          user_id: user.id,
+          client_name: clientName || null,
+          client_email: email || null,
+        })
+        .select('public_token, accept_token')
+        .single();
+
+      if (error) throw error;
+      const approval = data as unknown as { public_token: string; accept_token: string };
+      setOfferApproval(approval);
+      return approval;
+    } catch (err) {
+      console.error('Failed to generate offer token:', err);
+      toast.error('Nie udało się wygenerować linku do oferty');
+      return null;
+    } finally {
+      setIsGeneratingToken(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    const approval = await ensureToken();
+    if (!approval) return;
+
+    const link = `${window.location.origin}/oferta/${approval.public_token}`;
+    await navigator.clipboard.writeText(link);
+    setLinkCopied(true);
+    toast.success('Link do oferty skopiowany!');
+    setTimeout(() => setLinkCopied(false), 2500);
+  };
 
   const handleSend = async () => {
     if (!quote || !quote.positions || quote.positions.length === 0) {
@@ -148,7 +219,8 @@ export function SendOfferModal({
       if (offerApproval) {
         await supabase
           .from('offer_approvals')
-          .update({ valid_until: validUntil, status: 'sent' })
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .update({ valid_until: validUntil, status: 'sent' } as any)
           .eq('public_token', offerApproval.public_token);
       }
 
@@ -184,7 +256,17 @@ export function SendOfferModal({
     } catch (error) {
       console.error('Error sending offer:', error);
       const msg = error instanceof Error ? error.message : t('sendOffer.failedToSend');
-      if (msg.includes('RESEND_API_KEY') || msg.includes('API key')) {
+      const isConfigError =
+        msg.includes('RESEND_API_KEY') ||
+        msg.includes('API key') ||
+        msg.includes('not configured') ||
+        msg.includes('Email service') ||
+        msg.includes('503');
+
+      setEmailSendFailed(true);
+      setEmailSendFailedReason(isConfigError ? 'not_configured' : 'other');
+
+      if (isConfigError) {
         toast.error(t('sendOffer.emailNotConfigured'));
       } else {
         toast.error(msg);
@@ -202,20 +284,95 @@ export function SendOfferModal({
         </DialogHeader>
 
         <div className="space-y-4 py-2">
-          {/* Email verified warning */}
-          {!isEmailVerified && (
+
+          {/* ── Case B: no client email ─────────────────────────────────────── */}
+          {!hasClientEmail && (
             <Alert>
-              <ShieldAlert className="h-4 w-4" />
+              <AlertCircle className="h-4 w-4" />
               <AlertDescription className="text-sm">
-                <span className="font-medium">⚠️ Email do odpowiedzi niezweryfikowany.</span>{' '}
-                Klienci nie będą mogli odpisać bezpośrednio na ofertę.{' '}
-                <Link to="/app/settings?tab=email" className="text-primary underline underline-offset-2" onClick={() => onOpenChange(false)}>
-                  Zweryfikuj w Ustawieniach →
-                </Link>
+                <span className="font-medium">Brak adresu e-mail klienta.</span>{' '}
+                Wpisz adres poniżej lub skorzystaj z alternatywnych metod dostarczenia oferty.
               </AlertDescription>
             </Alert>
           )}
 
+          {/* ── Case C: email send failed ────────────────────────────────────── */}
+          {emailSendFailed && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-sm">
+                {emailSendFailedReason === 'not_configured' ? (
+                  <>
+                    <span className="font-medium">Wysyłka e-mail nie jest skonfigurowana.</span>{' '}
+                    Skontaktuj się z administratorem lub skorzystaj z poniższych metod.{' '}
+                    <Link
+                      to="/app/settings?tab=email"
+                      className="underline underline-offset-2"
+                      onClick={() => onOpenChange(false)}
+                    >
+                      Przejdź do ustawień →
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-medium">Nie udało się wysłać e-mail.</span>{' '}
+                    Spróbuj ponownie lub skorzystaj z poniższych metod.
+                  </>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* ── Fallback delivery panel (Case B or C) ──────────────────────── */}
+          {showFallback && (
+            <div className="rounded-lg border border-border bg-muted/40 p-4 space-y-3">
+              <p className="text-sm font-medium flex items-center gap-2">
+                <Link2 className="h-4 w-4" />
+                Alternatywne sposoby dostarczenia oferty
+              </p>
+
+              {/* Copy public offer link */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={handleCopyLink}
+                disabled={isGeneratingToken}
+              >
+                {isGeneratingToken ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : linkCopied ? (
+                  <Check className="mr-2 h-4 w-4 text-green-600" />
+                ) : (
+                  <Copy className="mr-2 h-4 w-4" />
+                )}
+                {linkCopied ? 'Link skopiowany!' : 'Skopiuj link do oferty'}
+              </Button>
+
+              {publicOfferLink && (
+                <p className="text-xs text-muted-foreground break-all px-1">
+                  {publicOfferLink}
+                </p>
+              )}
+
+              {/* Download PDF or CTA to generate */}
+              {pdfUrl ? (
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer" download>
+                    <Download className="mr-2 h-4 w-4" />
+                    Pobierz PDF oferty
+                  </a>
+                </Button>
+              ) : (
+                <div className="rounded-md bg-muted p-3 text-sm flex items-start gap-2">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                  <p className="text-muted-foreground">{t('sendOffer.generatePdfFirst')}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Email input (always visible for editing) ─────────────────────── */}
           <div className="space-y-2">
             <Label htmlFor="email">
               {t('sendOffer.recipientEmail')}
@@ -226,100 +383,130 @@ export function SendOfferModal({
               type="email"
               placeholder={t('sendOffer.recipientEmailPlaceholder')}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          {/* Expiry */}
-          <div className="space-y-2">
-            <Label htmlFor="expiry" className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4" />
-              Ważność oferty
-              <span className="text-destructive ml-1">*</span>
-            </Label>
-            <Select value={expiryDays} onValueChange={setExpiryDays}>
-              <SelectTrigger id="expiry">
-                <SelectValue placeholder="Wybierz termin ważności" />
-              </SelectTrigger>
-              <SelectContent>
-                {EXPIRY_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.days} value={String(opt.days)}>
-                    {opt.label}
-                    {opt.days > 0 && (
-                      <span className="text-muted-foreground text-xs ml-2">
-                        (do {daysFromNow(opt.days)})
-                      </span>
-                    )}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {expiryDays === '-1' && (
-              <Input
-                type="date"
-                value={customDate}
-                min={new Date().toISOString().split('T')[0]}
-                onChange={(e) => setCustomDate(e.target.value)}
-                aria-label="Własna data ważności"
-              />
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="subject">{t('sendOffer.subject')}</Label>
-            <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
-          </div>
-
-          {/* Template selector */}
-          <div className="space-y-2">
-            <Label htmlFor="template">
-              <FileText className="inline h-4 w-4 mr-1 -mt-0.5" />
-              {t('sendOffer.messageTemplateOptional')}
-            </Label>
-            <Select value={selectedTemplate} onValueChange={handleTemplateChange}>
-              <SelectTrigger id="template">
-                <SelectValue placeholder={t('sendOffer.selectTemplatePlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                {OFFER_EMAIL_TEMPLATES.map((tmpl) => (
-                  <SelectItem key={tmpl.id} value={tmpl.id}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{tmpl.name}</span>
-                      <span className="text-xs text-muted-foreground">{tmpl.description}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="message">{t('sendOffer.messageContent')}</Label>
-            <Textarea
-              id="message"
-              rows={6}
-              value={message}
               onChange={(e) => {
-                setMessage(e.target.value);
-                if (!messageManuallyEdited) setMessageManuallyEdited(true);
+                setEmail(e.target.value);
+                // Let user retry after a failure without the error banner blocking
+                if (emailSendFailed) {
+                  setEmailSendFailed(false);
+                  setEmailSendFailedReason(null);
+                }
               }}
             />
           </div>
 
-          <div className={`rounded-lg p-3 text-sm ${pdfUrl ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' : 'bg-muted'}`}>
-            <div className="flex items-start gap-2">
-              <AlertCircle className={`mt-0.5 h-4 w-4 shrink-0 ${pdfUrl ? 'text-green-600 dark:text-green-400' : ''}`} />
-              <p className={pdfUrl ? 'text-green-800 dark:text-green-200' : 'text-muted-foreground'}>
-                {pdfUrl ? t('sendOffer.pdfWillBeAttached') : t('sendOffer.generatePdfFirst')}
-              </p>
-            </div>
-          </div>
+          {/* ── Email form — only when a recipient email is present ──────────── */}
+          {hasClientEmail && (
+            <>
+              {/* Email verified warning */}
+              {!isEmailVerified && (
+                <Alert>
+                  <ShieldAlert className="h-4 w-4" />
+                  <AlertDescription className="text-sm">
+                    <span className="font-medium">⚠️ Email do odpowiedzi niezweryfikowany.</span>{' '}
+                    Klienci nie będą mogli odpisać bezpośrednio na ofertę.{' '}
+                    <Link
+                      to="/app/settings?tab=email"
+                      className="text-primary underline underline-offset-2"
+                      onClick={() => onOpenChange(false)}
+                    >
+                      Zweryfikuj w Ustawieniach →
+                    </Link>
+                  </AlertDescription>
+                </Alert>
+              )}
 
-          {/* Dual-token info */}
-          {offerApproval && (
-            <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 text-xs text-muted-foreground">
-              Email będzie zawierał dwa przyciski: <strong>OGLĄDAM OFERTĘ</strong> i <strong>✓ AKCEPTUJĘ (1 klik)</strong>.
-            </div>
+              {/* Expiry */}
+              <div className="space-y-2">
+                <Label htmlFor="expiry" className="flex items-center gap-1.5">
+                  <Clock className="h-4 w-4" />
+                  Ważność oferty
+                  <span className="text-destructive ml-1">*</span>
+                </Label>
+                <Select value={expiryDays} onValueChange={setExpiryDays}>
+                  <SelectTrigger id="expiry">
+                    <SelectValue placeholder="Wybierz termin ważności" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EXPIRY_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.days} value={String(opt.days)}>
+                        {opt.label}
+                        {opt.days > 0 && (
+                          <span className="text-muted-foreground text-xs ml-2">
+                            (do {daysFromNow(opt.days)})
+                          </span>
+                        )}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {expiryDays === '-1' && (
+                  <Input
+                    type="date"
+                    value={customDate}
+                    min={new Date().toISOString().split('T')[0]}
+                    onChange={(e) => setCustomDate(e.target.value)}
+                    aria-label="Własna data ważności"
+                  />
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="subject">{t('sendOffer.subject')}</Label>
+                <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
+              </div>
+
+              {/* Template selector */}
+              <div className="space-y-2">
+                <Label htmlFor="template">
+                  <FileText className="inline h-4 w-4 mr-1 -mt-0.5" />
+                  {t('sendOffer.messageTemplateOptional')}
+                </Label>
+                <Select value={selectedTemplate} onValueChange={handleTemplateChange}>
+                  <SelectTrigger id="template">
+                    <SelectValue placeholder={t('sendOffer.selectTemplatePlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {OFFER_EMAIL_TEMPLATES.map((tmpl) => (
+                      <SelectItem key={tmpl.id} value={tmpl.id}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{tmpl.name}</span>
+                          <span className="text-xs text-muted-foreground">{tmpl.description}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="message">{t('sendOffer.messageContent')}</Label>
+                <Textarea
+                  id="message"
+                  rows={6}
+                  value={message}
+                  onChange={(e) => {
+                    setMessage(e.target.value);
+                    if (!messageManuallyEdited) setMessageManuallyEdited(true);
+                  }}
+                />
+              </div>
+
+              <div className={`rounded-lg p-3 text-sm ${pdfUrl ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' : 'bg-muted'}`}>
+                <div className="flex items-start gap-2">
+                  <AlertCircle className={`mt-0.5 h-4 w-4 shrink-0 ${pdfUrl ? 'text-green-600 dark:text-green-400' : ''}`} />
+                  <p className={pdfUrl ? 'text-green-800 dark:text-green-200' : 'text-muted-foreground'}>
+                    {pdfUrl ? t('sendOffer.pdfWillBeAttached') : t('sendOffer.generatePdfFirst')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Dual-token info */}
+              {offerApproval && (
+                <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 text-xs text-muted-foreground">
+                  Email będzie zawierał dwa przyciski: <strong>OGLĄDAM OFERTĘ</strong> i <strong>✓ AKCEPTUJĘ (1 klik)</strong>.
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -327,10 +514,12 @@ export function SendOfferModal({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSending}>
             {t('sendOffer.cancel')}
           </Button>
-          <Button onClick={handleSend} disabled={isSending || !canSend}>
-            {isSending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-            {t('sendOffer.send')}
-          </Button>
+          {hasClientEmail && (
+            <Button onClick={handleSend} disabled={isSending || !canSend}>
+              {isSending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+              {t('sendOffer.send')}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
