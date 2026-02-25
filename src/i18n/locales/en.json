@@ -1272,7 +1272,22 @@
     "createQuoteFirst": "Create a quote first",
     "client": "Client:",
     "offer": "Offer",
-    "date": "Date"
+    "date": "Date",
+    "template": "PDF Template",
+    "templateClassic": "Classic",
+    "templateModern": "Modern",
+    "templateMinimal": "Minimal",
+    "templateFree": "(free)",
+    "termsPresets": "Quick Terms",
+    "termsPresetsHint": "Click to add to the terms field",
+    "termsPresetPayment": "Payment: 50% deposit upon signing, 50% upon completion.",
+    "termsPresetWarranty": "Warranty: 24 months on all completed work.",
+    "termsPresetDeadline": "Completion date: as agreed with the client.",
+    "termsPresetPriceChange": "Prices quoted do not account for unforeseen changes in material costs.",
+    "termsPresetPenalty": "Penalties: 0.5% of contract value per day of delay.",
+    "termsPresetInsurance": "Insurance: The contractor holds active liability insurance.",
+    "termsPresetDispute": "Disputes: All disputes resolved by the court of the contractor's registered address.",
+    "termsPresetProOnly": "Available on Pro plan and above"
   },
   "voiceQuote": {
     "notSupported": "Your browser does not support speech recognition.",
