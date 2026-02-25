@@ -8,10 +8,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
+import { isTradeOnboardingDone } from '@/hooks/useTradeOnboarding';
 
 // Lazy-load heavy layout components that are not needed for initial render
 const AiChatAgent = lazy(() => import('@/components/ai/AiChatAgent').then(m => ({ default: m.AiChatAgent })));
 const OnboardingModal = lazy(() => import('@/components/onboarding/OnboardingModal').then(m => ({ default: m.OnboardingModal })));
+const TradeOnboardingModal = lazy(() => import('@/components/onboarding/TradeOnboardingModal').then(m => ({ default: m.TradeOnboardingModal })));
 
 export function AppLayout() {
   const { user, isLoading } = useAuth();
@@ -19,11 +21,19 @@ export function AppLayout() {
   const [showContent, setShowContent] = useState(false);
   const { t } = useTranslation();
 
+  /**
+   * Track whether the trade onboarding is done (completed or skipped).
+   * Initialized from localStorage so returning users never see it again.
+   * When the user finishes the trade modal, `onDone` flips this to true,
+   * which unmounts TradeOnboardingModal and allows OnboardingModal to show.
+   */
+  const [tradeOnboardingDone, setTradeOnboardingDone] = useState(isTradeOnboardingDone);
+
   // Initialize theme from localStorage or system preference
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
+
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
       document.documentElement.classList.add('dark');
     } else {
@@ -60,7 +70,7 @@ export function AppLayout() {
           <Outlet />
         </PageTransition>
       </main>
-      
+
       {/* Footer */}
       <Footer />
 
@@ -72,9 +82,17 @@ export function AppLayout() {
         <AiChatAgent />
       </Suspense>
 
-      {/* Onboarding Modal - Lazy-loaded, shown on first login */}
+      {/* Trade Onboarding — shown on first login; gates the company setup modal */}
       <Suspense fallback={null}>
-        <OnboardingModal />
+        <TradeOnboardingModal
+          open={!tradeOnboardingDone}
+          onDone={() => setTradeOnboardingDone(true)}
+        />
+      </Suspense>
+
+      {/* Company setup modal — shown after trade onboarding is done */}
+      <Suspense fallback={null}>
+        <OnboardingModal enabled={tradeOnboardingDone} />
       </Suspense>
     </div>
   );

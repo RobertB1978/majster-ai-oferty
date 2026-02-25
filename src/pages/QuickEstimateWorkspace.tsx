@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import type { StarterPack } from '@/data/starterPacks';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,12 +22,35 @@ import type { StarterPack } from '@/data/starterPacks';
 
 export default function QuickEstimateWorkspace() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Start-choice dialog
-  const [showStartChoice, setShowStartChoice] = useState(true);
+  // Starter pack passed from the trade onboarding flow
+  const locationState = location.state as { pack?: StarterPack; skipStartChoice?: boolean } | null;
+  const locationPack = locationState?.pack ?? null;
+  const skipStartChoice = locationState?.skipStartChoice ?? false;
 
-  // Estimate state
-  const [items, setItems] = useState<LineItem[]>([newLineItem()]);
+  // Start-choice dialog — skip if a pack was pre-selected via onboarding
+  const [showStartChoice, setShowStartChoice] = useState(!skipStartChoice);
+
+  // Estimate state — pre-populate from onboarding pack when available
+  const [items, setItems] = useState<LineItem[]>(() => {
+    if (locationPack) {
+      return locationPack.items.map((item) => ({
+        id: crypto.randomUUID(),
+        name: item.name,
+        qty: item.qty,
+        unit: item.unit,
+        priceMode: 'single' as const,
+        price: item.price,
+        laborCost: 0,
+        materialCost: 0,
+        marginPct: 0,
+        showMargin: true,
+        itemType: item.category === 'Materiał' ? ('material' as const) : ('labor' as const),
+      }));
+    }
+    return [newLineItem()];
+  });
   const [projectName, setProjectName] = useState('');
   const [clientId, setClientId] = useState('');
   const [vatEnabled, setVatEnabled] = useState(true);

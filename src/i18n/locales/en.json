@@ -1668,5 +1668,21 @@
     "bulkErrorSkipped": "row with error — will be skipped",
     "bulkConfirm": "Add items",
     "bulkCancel": "Cancel"
+  },
+  "tradeOnboarding": {
+    "step1Title": "What is your trade?",
+    "step1Subtitle": "Select your trade — we will load a ready-made price list for you.",
+    "step2Title": "How do you want to start?",
+    "step2Subtitle": "Selected: {{tradeName}}. How do you prefer to work?",
+    "stepLabel": "Step {{current}} of 2",
+    "skipLabel": "Skip for now",
+    "continueLabel": "Continue",
+    "backLabel": "Back",
+    "simpleTitle": "Super simple",
+    "simpleDesc": "We open a ready estimate with {{count}} items. Edit and send.",
+    "simpleTag": "Recommended for new users →",
+    "advancedTitle": "Advanced",
+    "advancedDesc": "Full offer editor — clients, tasks, costs, PDF.",
+    "advancedTag": "Full control →"
   }
 }
