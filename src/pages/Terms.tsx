@@ -150,7 +150,7 @@ export default function Terms() {
                   W sprawach nieuregulowanych zastosowanie mają przepisy prawa polskiego.
                 </p>
                 <p>
-                  Kontakt: kontakt.majster@gmail.com
+                  Kontakt: kontakt.majsterai@gmail.com
                 </p>
               </CardContent>
             </Card>

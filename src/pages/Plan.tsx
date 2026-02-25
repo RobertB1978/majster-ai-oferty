@@ -11,7 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatDualCurrency } from '@/config/currency';
 
 const STRIPE_ENABLED = import.meta.env.VITE_STRIPE_ENABLED === 'true';
-const CONTACT_EMAIL = 'kontakt.majster@gmail.com';
+const CONTACT_EMAIL = 'kontakt.majsterai@gmail.com';
 
 const PLAN_FEATURE_LABELS: Record<string, string> = {
   excelExport: 'Eksport Excel',

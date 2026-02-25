@@ -24,8 +24,8 @@ export function Footer() {
             <div className="space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                <a href="mailto:kontakt.majster@gmail.com" className="hover:text-primary transition-colors">
-                  kontakt.majster@gmail.com
+                <a href="mailto:kontakt.majsterai@gmail.com" className="hover:text-primary transition-colors">
+                  kontakt.majsterai@gmail.com
                 </a>
               </div>
             </div>
@@ -112,26 +112,10 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <a
-                  href="mailto:kontakt.majster@gmail.com"
+                  href="mailto:kontakt.majsterai@gmail.com"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  {t('footer.techSupport')}
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:kontakt.majster@gmail.com"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {t('footer.sales')}
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:kontakt.majster@gmail.com"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {t('footer.partnership')}
+                  {t('footer.contact')}
                 </a>
               </li>
             </ul>
