@@ -20,7 +20,12 @@ const STEPS = {
 
 const TOTAL_STEPS = 4;
 
-export function OnboardingModal() {
+interface OnboardingModalProps {
+  /** When false the modal will not open (e.g. while trade onboarding is still active). */
+  enabled?: boolean;
+}
+
+export function OnboardingModal({ enabled = true }: OnboardingModalProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { data: profile, isLoading } = useProfile();
@@ -38,7 +43,7 @@ export function OnboardingModal() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
   useEffect(() => {
-    if (isLoading || !user) return;
+    if (isLoading || !user || !enabled) return;
 
     // Check if user has already completed onboarding
     const hasCompletedOnboarding = profile?.company_name;
@@ -49,7 +54,7 @@ export function OnboardingModal() {
     if (!hasCompletedOnboarding && !hasSkippedOnboarding && !skipped) {
       setOpen(true);
     }
-  }, [profile, isLoading, user, skipped]);
+  }, [profile, isLoading, user, skipped, enabled]);
 
   const handleSkip = () => {
     sessionStorage.setItem('onboarding_skipped', 'true');

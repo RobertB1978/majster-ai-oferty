@@ -1668,5 +1668,21 @@
     "bulkErrorSkipped": "рядок з помилкою — буде пропущений",
     "bulkConfirm": "Додати позиції",
     "bulkCancel": "Скасувати"
+  },
+  "tradeOnboarding": {
+    "step1Title": "Чим ви займаєтесь?",
+    "step1Subtitle": "Виберіть свою спеціальність — завантажимо готовий прайс-лист.",
+    "step2Title": "Як хочете почати?",
+    "step2Subtitle": "Вибрано: {{tradeName}}. Як вам зручніше?",
+    "stepLabel": "Крок {{current}} з 2",
+    "skipLabel": "Пропустити",
+    "continueLabel": "Далі",
+    "backLabel": "Назад",
+    "simpleTitle": "Дуже просто",
+    "simpleDesc": "Відкриємо готовий кошторис з {{count}} позиціями. Редагуйте і надсилайте.",
+    "simpleTag": "Рекомендовано для новачків →",
+    "advancedTitle": "Розширений",
+    "advancedDesc": "Повний редактор — клієнти, задачі, витрати, PDF.",
+    "advancedTag": "Повний контроль →"
   }
 }

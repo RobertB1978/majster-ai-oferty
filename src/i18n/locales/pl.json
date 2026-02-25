@@ -1668,5 +1668,21 @@
     "bulkErrorSkipped": "wiersz z błędem — zostanie pominięty",
     "bulkConfirm": "Dodaj pozycje",
     "bulkCancel": "Anuluj"
+  },
+  "tradeOnboarding": {
+    "step1Title": "Czym się zajmujesz?",
+    "step1Subtitle": "Wybierz swój zawód — załadujemy gotowy cennik na start.",
+    "step2Title": "Jak chcesz zacząć?",
+    "step2Subtitle": "Wybrałeś: {{tradeName}}. Jak wolisz pracować?",
+    "stepLabel": "Krok {{current}} z 2",
+    "skipLabel": "Pomiń na razie",
+    "continueLabel": "Dalej",
+    "backLabel": "Wróć",
+    "simpleTitle": "Super prosto",
+    "simpleDesc": "Otwieramy gotową wycenę z {{count}} pozycjami. Edytuj co chcesz i wyślij.",
+    "simpleTag": "Zalecane dla nowych →",
+    "advancedTitle": "Zaawansowany",
+    "advancedDesc": "Pełny edytor ofert — klienci, zadania, koszty, PDF.",
+    "advancedTag": "Pełna kontrola →"
   }
 }
