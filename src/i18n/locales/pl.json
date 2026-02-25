@@ -1600,5 +1600,33 @@
     "copyright": "Wszystkie prawa zastrzeżone.",
     "madeIn": "Made in Poland",
     "rodoCompliant": "Zgodny z RODO"
+  },
+  "szybkaWycena": {
+    "pageTitle": "Szybka wycena",
+    "subtitle": "Stwórz ofertę i wyślij do klienta bez opuszczania tej strony",
+    "estimateName": "Nazwa wyceny",
+    "estimateNamePlaceholder": "np. Remont łazienki — Nowak",
+    "startChoiceTitle": "Jak zacząć wycenę?",
+    "useTemplate": "Użyj szablonu",
+    "useTemplateDesc": "Zacznij od gotowej pozycji",
+    "emptyQuote": "Pusta wycena",
+    "emptyQuoteDesc": "Wpisz pozycje ręcznie",
+    "selectTemplate": "Wybierz szablon",
+    "skipToEmpty": "Pomiń — zacznij pustą wycenę",
+    "clientRequired": "Klient",
+    "clientErrorMsg": "Wybierz klienta przed zapisaniem wyceny",
+    "addNewClient": "Dodaj nowego klienta",
+    "newClient": "Nowy klient",
+    "lineItems": "Pozycje wyceny",
+    "vatToggle": "VAT 23%",
+    "addItem": "Dodaj pozycję",
+    "itemPlaceholder": "np. Kafelkowanie ściany",
+    "saveAsProject": "Zapisz wycenę jako projekt",
+    "savedSuccess": "Wycena zapisana jako projekt!",
+    "noItemsError": "Dodaj co najmniej jedną pozycję z nazwą i ilością.",
+    "noClientError": "Wybierz klienta przed zapisaniem wyceny.",
+    "vatIncluded": "VAT 23% doliczony automatycznie",
+    "noVat": "Cena netto (bez VAT)",
+    "clientRequiredNote": "Klient wymagany przed zapisem"
   }
 }

@@ -1600,5 +1600,33 @@
     "copyright": "All rights reserved.",
     "madeIn": "Made in Poland",
     "rodoCompliant": "GDPR Compliant"
+  },
+  "szybkaWycena": {
+    "pageTitle": "Quick estimate",
+    "subtitle": "Create a quote and send it to the client without leaving this page",
+    "estimateName": "Estimate name",
+    "estimateNamePlaceholder": "e.g. Bathroom renovation — Smith",
+    "startChoiceTitle": "How to start your estimate?",
+    "useTemplate": "Use template",
+    "useTemplateDesc": "Start from a ready-made item",
+    "emptyQuote": "Empty estimate",
+    "emptyQuoteDesc": "Enter items manually",
+    "selectTemplate": "Select template",
+    "skipToEmpty": "Skip — start with empty estimate",
+    "clientRequired": "Client",
+    "clientErrorMsg": "Select a client before saving the estimate",
+    "addNewClient": "Add new client",
+    "newClient": "New client",
+    "lineItems": "Estimate items",
+    "vatToggle": "VAT 23%",
+    "addItem": "Add item",
+    "itemPlaceholder": "e.g. Tiling wall",
+    "saveAsProject": "Save estimate as project",
+    "savedSuccess": "Estimate saved as project!",
+    "noItemsError": "Add at least one item with name and quantity.",
+    "noClientError": "Select a client before saving the estimate.",
+    "vatIncluded": "VAT 23% added automatically",
+    "noVat": "Net price (no VAT)",
+    "clientRequiredNote": "Client required before saving"
   }
 }
