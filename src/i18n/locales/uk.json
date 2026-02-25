@@ -137,6 +137,7 @@
   "dashboard": {
     "title": "Панель",
     "subtitle": "Огляд вашого бізнесу",
+    "tagline": "Панель управління - огляд проектів і швидкі дії",
     "totalProjects": "Усі проєкти",
     "activeProjects": "Активні проєкти",
     "totalClients": "Клієнти",
@@ -146,10 +147,17 @@
     "newProject": "Новий проєкт",
     "newClient": "Новий клієнт",
     "viewAll": "Переглянути всі",
+    "viewDetails": "Переглянути деталі",
     "welcome": "Ласкаво просимо",
     "todayEvents": "Події сьогодні",
     "pendingOffers": "Очікуючі пропозиції",
     "monthlyStats": "Щомісячна статистика",
+    "expiringOffersTitle": "Пропозиції, що закінчуються",
+    "expiringOffersDesc_one": "У вас є {{count}} пропозиція, що закінчується протягом 7 днів.",
+    "expiringOffersDesc_other": "У вас є {{count}} пропозицій, що закінчуються протягом 7 днів.",
+    "subscriptionExpiringSoonTitle": "План незабаром закінчується",
+    "subscriptionExpiresInDays": "Ваш план закінчується через {{days}} днів.",
+    "checkSettings": "Перевірте налаштування",
     "quoteCreation": {
       "title": "Створити нову пропозицію",
       "chooseMethod": "Оберіть спосіб створення пропозиції",
@@ -447,6 +455,8 @@
     "title": "Налаштування",
     "subtitle": "Конфігурація додатку",
     "language": "Мова",
+    "languageSelectDescription": "Виберіть бажану мову програми",
+    "languageLabel": "Мова інтерфейсу користувача",
     "theme": "Тема",
     "notifications": "Сповіщення",
     "company": "Компанія",
@@ -455,6 +465,7 @@
     "integrations": "Інтеграції",
     "api": "Ключі API",
     "privacy": "Конфіденційність і дані",
+    "privacyDescription": "Керуйте своїми даними відповідно до GDPR",
     "gdprCenter": "Центр GDPR",
     "privacyPolicy": "Політика конфіденційності",
     "cookiesPolicy": "Політика cookies",
@@ -474,7 +485,8 @@
       "light": "Світла",
       "dark": "Темна",
       "system": "Системна"
-    }
+    },
+    "contactEmailTab": "Email пропозиції"
   },
   "billing": {
     "title": "Платежі та підписки",

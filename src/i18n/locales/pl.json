@@ -137,6 +137,7 @@
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Przegląd Twojej działalności",
+    "tagline": "Panel główny - przegląd projektów i szybkie akcje",
     "welcome": "Witaj w Majster.AI",
     "totalProjects": "Wszystkie projekty",
     "activeProjects": "Aktywne projekty",
@@ -147,12 +148,19 @@
     "newProject": "Nowy projekt",
     "newClient": "Nowy klient",
     "viewAll": "Zobacz wszystkie",
+    "viewDetails": "Zobacz szczegóły",
     "noProjects": "Brak projektów",
     "noClients": "Brak klientów",
     "createFirst": "Utwórz pierwszy",
     "todayEvents": "Wydarzenia dzisiaj",
     "pendingOffers": "Oczekujące oferty",
     "monthlyStats": "Statystyki miesięczne",
+    "expiringOffersTitle": "Wygasające oferty",
+    "expiringOffersDesc_one": "Masz {{count}} ofertę wygasającą w ciągu 7 dni.",
+    "expiringOffersDesc_other": "Masz {{count}} ofert wygasających w ciągu 7 dni.",
+    "subscriptionExpiringSoonTitle": "Plan wkrótce wygasa",
+    "subscriptionExpiresInDays": "Twój plan wygasa za {{days}} dni.",
+    "checkSettings": "Sprawdź ustawienia",
     "stats": {
       "new": "Nowe",
       "inProgress": "W toku",
@@ -447,6 +455,8 @@
     "title": "Ustawienia",
     "subtitle": "Konfiguracja aplikacji",
     "language": "Język",
+    "languageSelectDescription": "Wybierz preferowany język aplikacji",
+    "languageLabel": "Język interfejsu użytkownika",
     "theme": "Motyw",
     "themes": {
       "light": "Jasny",
@@ -467,6 +477,7 @@
     "plugins": "Integracje i wtyczki",
     "admin": "Panel administratora",
     "privacy": "Prywatność i dane",
+    "privacyDescription": "Zarządzaj swoimi danymi zgodnie z RODO",
     "gdprCenter": "Centrum RODO",
     "privacyPolicy": "Polityka prywatności",
     "cookiesPolicy": "Polityka cookies",
@@ -474,7 +485,8 @@
     "dpa": "Umowa DPA",
     "pushNotifications": "Powiadomienia push",
     "enablePush": "Włącz powiadomienia push",
-    "emailNotifications": "Powiadomienia email"
+    "emailNotifications": "Powiadomienia email",
+    "contactEmailTab": "Email oferty"
   },
   "billing": {
     "title": "Płatności i subskrypcje",

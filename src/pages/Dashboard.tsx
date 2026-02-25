@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useOnboardingProgress, useCreateOnboardingProgress } from '@/hooks/useOnboarding';
@@ -20,6 +21,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { TrialBanner } from '@/components/billing/TrialBanner';
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   // Optimized: Single hook with server-side aggregations
   const {
     totalProjects,
@@ -104,11 +106,11 @@ export default function Dashboard() {
           {expiringOffersCount > 0 && (
             <Alert variant="destructive" className="border-warning bg-warning/10">
               <Clock className="h-4 w-4" />
-              <AlertTitle>Wygasające oferty</AlertTitle>
+              <AlertTitle>{t('dashboard.expiringOffersTitle')}</AlertTitle>
               <AlertDescription>
-                Masz {expiringOffersCount} {expiringOffersCount === 1 ? 'ofertę wygasającą' : 'ofert wygasających'} w ciągu 7 dni. 
+                {t('dashboard.expiringOffersDesc', { count: expiringOffersCount })}
                 <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/app/jobs')}>
-                  Zobacz szczegóły
+                  {t('dashboard.viewDetails')}
                 </Button>
               </AlertDescription>
             </Alert>
@@ -116,11 +118,11 @@ export default function Dashboard() {
           {isSubscriptionExpiring && subscriptionExpiresIn !== null && (
             <Alert variant="destructive" className="border-destructive bg-destructive/10">
               <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Plan wkrótce wygasa</AlertTitle>
+              <AlertTitle>{t('dashboard.subscriptionExpiringSoonTitle')}</AlertTitle>
               <AlertDescription>
-                Twój plan wygasa za {subscriptionExpiresIn} dni.
+                {t('dashboard.subscriptionExpiresInDays', { days: subscriptionExpiresIn })}
                 <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/app/settings')}>
-                  Sprawdź ustawienia
+                  {t('dashboard.checkSettings')}
                 </Button>
               </AlertDescription>
             </Alert>
@@ -134,7 +136,7 @@ export default function Dashboard() {
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
               <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-                Witaj w Majster.AI
+                {t('dashboard.welcome')}
               </h1>
               <Badge 
                 variant="secondary" 
@@ -145,7 +147,7 @@ export default function Dashboard() {
               </Badge>
             </div>
             <p className="text-muted-foreground">
-              Panel główny - przegląd projektów i szybkie akcje
+              {t('dashboard.tagline')}
             </p>
           </div>
           <Button 
@@ -154,7 +156,7 @@ export default function Dashboard() {
             className="shadow-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200"
           >
             <Plus className="mr-2 h-5 w-5" />
-            Nowy projekt
+            {t('dashboard.newProject')}
           </Button>
         </div>
       </div>

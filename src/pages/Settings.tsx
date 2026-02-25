@@ -44,7 +44,7 @@ export default function Settings() {
               </TabsTrigger>
               <TabsTrigger value="documents" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
-                <span>Dokumenty</span>
+                <span>{t('settings.documents')}</span>
               </TabsTrigger>
               <TabsTrigger value="calendar" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
@@ -56,11 +56,11 @@ export default function Settings() {
               </TabsTrigger>
               <TabsTrigger value="biometric" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <Fingerprint className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
-                <span>{t('settings.biometric', 'Biometria')}</span>
+                <span>{t('settings.biometric')}</span>
               </TabsTrigger>
               <TabsTrigger value="email" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
-                <span>{t('settings.contactEmailTab', 'Email oferty')}</span>
+                <span>{t('settings.contactEmailTab')}</span>
               </TabsTrigger>
             </TabsList>
           </div>
@@ -70,7 +70,7 @@ export default function Settings() {
               <CardHeader>
                 <CardTitle>{t('settings.language')}</CardTitle>
                 <CardDescription>
-                  Wybierz preferowany język aplikacji
+                  {t('settings.languageSelectDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -78,7 +78,7 @@ export default function Settings() {
                   <div>
                     <Label>{t('settings.language')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      Język interfejsu użytkownika
+                      {t('settings.languageLabel')}
                     </p>
                   </div>
                   <LanguageSwitcher />
@@ -91,28 +91,28 @@ export default function Settings() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Scale className="h-5 w-5" />
-                  Prywatność i dane
+                  {t('settings.privacy')}
                 </CardTitle>
                 <CardDescription>
-                  Zarządzaj swoimi danymi zgodnie z RODO
+                  {t('settings.privacyDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex flex-wrap gap-2">
                   <Button variant="outline" size="sm" asChild>
-                    <Link to="/legal/rodo">Centrum RODO</Link>
+                    <Link to="/legal/rodo">{t('settings.gdprCenter')}</Link>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
-                    <Link to="/legal/privacy">Polityka Prywatności</Link>
+                    <Link to="/legal/privacy">{t('settings.privacyPolicy')}</Link>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
-                    <Link to="/legal/cookies">Polityka Cookies</Link>
+                    <Link to="/legal/cookies">{t('settings.cookiesPolicy')}</Link>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
-                    <Link to="/legal/terms">Regulamin</Link>
+                    <Link to="/legal/terms">{t('settings.termsOfService')}</Link>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
-                    <Link to="/legal/dpa">Umowa DPA</Link>
+                    <Link to="/legal/dpa">{t('settings.dpa')}</Link>
                   </Button>
                 </div>
               </CardContent>
