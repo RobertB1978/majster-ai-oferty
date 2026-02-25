@@ -1578,7 +1578,19 @@
     "vatNote": "Cena netto. Dodaj VAT przed wysłaniem do klienta.",
     "noItems": "Dodaj co najmniej jedną pozycję.",
     "saved": "Wycena zapisana!",
-    "defaultName": "Szybka wycena"
+    "defaultName": "Szybka wycena",
+    "tradeCatalog": {
+      "title": "Katalog branż",
+      "subtitle": "Wybierz branżę i załaduj pakiet startowy do wyceny",
+      "chooseCategory": "Wybierz kategorię",
+      "chooseSubcategory": "Podkategorie",
+      "chooseTrade": "Zawody",
+      "itemsInPack": "pozycji w pakiecie",
+      "loadPack": "Załaduj pakiet",
+      "packLoaded": "Pakiet załadowany! Edytuj ceny i ilości.",
+      "btnCatalog": "Katalog branż",
+      "btnCatalogSub": "Załaduj pakiet startowy"
+    }
   },
   "footer": {
     "tagline": "Profesjonalne wyceny dla fachowców. Szybko, łatwo, profesjonalnie.",
