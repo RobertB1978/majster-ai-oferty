@@ -1627,6 +1627,19 @@
     "noClientError": "Wybierz klienta przed zapisaniem wyceny.",
     "vatIncluded": "VAT 23% doliczony automatycznie",
     "noVat": "Cena netto (bez VAT)",
-    "clientRequiredNote": "Klient wymagany przed zapisem"
+    "clientRequiredNote": "Klient wymagany przed zapisem",
+    "bulkAdd": "Dodaj wiele",
+    "bulkAddTitle": "Dodaj wiele pozycji",
+    "bulkPasteLabel": "Wklej pozycje",
+    "bulkLoadCsv": "Wczytaj CSV",
+    "bulkPlaceholder": "Wklej pozycje, np.:\nKafelkowanie ściany | 10 | m² | 150\nMontaż kabiny | 1 | szt | 800\n\nObsługiwane separatory: | (pipe)  tabulator  przecinek",
+    "bulkFormatHint": "Format: Nazwa | ilość | jednostka | cena — lub wczytaj plik CSV",
+    "bulkPreviewLabel": "Podgląd",
+    "bulkPreviewRows": "wierszy",
+    "bulkPreviewRow": "wiersz",
+    "bulkErrorsSkipped": "wiersze z błędami — zostaną pominięte",
+    "bulkErrorSkipped": "wiersz z błędem — zostanie pominięty",
+    "bulkConfirm": "Dodaj pozycje",
+    "bulkCancel": "Anuluj"
   }
 }
