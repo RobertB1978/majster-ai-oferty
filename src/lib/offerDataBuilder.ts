@@ -13,6 +13,13 @@
 import { formatCurrency } from './formatters';
 
 /**
+ * PDF template style identifiers.
+ * 'classic', 'modern', 'minimal' are free-tier templates.
+ * Additional templates can be added here for higher plans.
+ */
+export type PdfTemplateId = 'classic' | 'modern' | 'minimal';
+
+/**
  * Single quote position (material or labor)
  */
 export interface OfferPosition {
@@ -75,6 +82,8 @@ export interface QuoteData {
  */
 export interface PdfConfig {
   version: 'standard' | 'premium';
+  /** Template style for PDF layout. Defaults to 'classic'. */
+  templateId?: PdfTemplateId;
   title: string;
   offerText: string;
   terms: string;
@@ -150,6 +159,8 @@ export function buildOfferData(params: {
     terms: string;
     deadline_text: string;
   };
+  /** Template ID override (UI selection, not persisted to DB) */
+  templateId?: PdfTemplateId;
   /** Override the auto-generated document ID */
   documentId?: string;
   /** Override the validity date (default: issuedAt + 30 days) */
@@ -212,6 +223,7 @@ export function buildOfferData(params: {
   const pdfConfig: PdfConfig = params.pdfData
     ? {
         version: params.pdfData.version,
+        templateId: params.templateId ?? 'classic',
         title: params.pdfData.title,
         offerText: params.pdfData.offer_text,
         terms: params.pdfData.terms,
@@ -219,6 +231,7 @@ export function buildOfferData(params: {
       }
     : {
         version: 'standard',
+        templateId: params.templateId ?? 'classic',
         title: `Oferta - ${params.projectName}`,
         offerText:
           'Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na wykonanie prac zgodnie z poniższym kosztorysem.',

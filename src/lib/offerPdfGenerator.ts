@@ -12,9 +12,52 @@
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import type { PdfTemplateId } from './offerDataBuilder';
 import { OfferPdfPayload } from './offerDataBuilder';
 import { formatCurrency } from './formatters';
 import { supabase } from '@/integrations/supabase/client';
+
+// ---------------------------------------------------------------------------
+// Template theme system
+// ---------------------------------------------------------------------------
+
+interface TemplateTheme {
+  /** Table header background RGB */
+  headerFill: [number, number, number];
+  /** Table header text RGB */
+  headerText: [number, number, number];
+  /** Section title text RGB */
+  accentColor: [number, number, number];
+  /** jspdf-autotable theme */
+  tableTheme: 'grid' | 'striped' | 'plain';
+  /** Optional colored band behind the company name in the header */
+  companyBg?: [number, number, number];
+  /** Optional alternating row fill color */
+  alternateRowFill?: [number, number, number];
+}
+
+const TEMPLATE_THEMES: Record<PdfTemplateId, TemplateTheme> = {
+  classic: {
+    headerFill: [66, 139, 202],
+    headerText: [255, 255, 255],
+    accentColor: [0, 0, 0],
+    tableTheme: 'grid',
+  },
+  modern: {
+    headerFill: [30, 58, 95],
+    headerText: [255, 255, 255],
+    accentColor: [30, 58, 95],
+    tableTheme: 'striped',
+    companyBg: [30, 58, 95],
+    alternateRowFill: [240, 245, 255],
+  },
+  minimal: {
+    headerFill: [60, 60, 60],
+    headerText: [255, 255, 255],
+    accentColor: [80, 80, 80],
+    tableTheme: 'plain',
+  },
+};
 
 /**
  * Returns the compliance-required text lines that will appear in the PDF.
@@ -50,53 +93,92 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   const margin = 15;
   let yPosition = margin;
 
+  // Resolve template theme
+  const templateId = payload.pdfConfig.templateId ?? 'classic';
+  const theme = TEMPLATE_THEMES[templateId];
+
   // ========================================
   // HEADER SECTION
   // ========================================
 
-  // Company name (bold, large)
-  doc.setFontSize(18);
-  doc.setFont('helvetica', 'bold');
-  doc.text(payload.company.name, margin, yPosition);
-  yPosition += 8;
+  if (theme.companyBg) {
+    // Modern template: full-width colored header band
+    const bandHeight = 42;
+    doc.setFillColor(theme.companyBg[0], theme.companyBg[1], theme.companyBg[2]);
+    doc.rect(0, 0, pageWidth, bandHeight, 'F');
 
-  // Company details
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
+    // Company name in white
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text(payload.company.name, margin, 18);
 
-  if (payload.company.nip) {
-    doc.text(`NIP: ${payload.company.nip}`, margin, yPosition);
+    // Company details: NIP + address on one line, contact on next
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(190, 215, 245);
+
+    const addrParts: string[] = [];
+    if (payload.company.nip) addrParts.push(`NIP: ${payload.company.nip}`);
+    if (payload.company.street) addrParts.push(payload.company.street);
+    if (payload.company.postalCode || payload.company.city) {
+      addrParts.push([payload.company.postalCode, payload.company.city].filter(Boolean).join(' '));
+    }
+    if (addrParts.length > 0) doc.text(addrParts.join('  |  '), margin, 27);
+
+    const contactParts: string[] = [];
+    if (payload.company.phone) contactParts.push(`Tel: ${payload.company.phone}`);
+    if (payload.company.email) contactParts.push(`Email: ${payload.company.email}`);
+    if (contactParts.length > 0) doc.text(contactParts.join('  |  '), margin, 34);
+
+    doc.setTextColor(0, 0, 0);
+    yPosition = bandHeight + 5;
+  } else {
+    // Classic / Minimal template: text-only header
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
+    doc.text(payload.company.name, margin, yPosition);
+    yPosition += 8;
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+
+    if (payload.company.nip) {
+      doc.text(`NIP: ${payload.company.nip}`, margin, yPosition);
+      yPosition += 5;
+    }
+
+    if (payload.company.street || payload.company.postalCode || payload.company.city) {
+      const address = [
+        payload.company.street,
+        payload.company.postalCode,
+        payload.company.city,
+      ]
+        .filter(Boolean)
+        .join(', ');
+      doc.text(address, margin, yPosition);
+      yPosition += 5;
+    }
+
+    if (payload.company.phone) {
+      doc.text(`Tel: ${payload.company.phone}`, margin, yPosition);
+      yPosition += 5;
+    }
+
+    if (payload.company.email) {
+      doc.text(`Email: ${payload.company.email}`, margin, yPosition);
+      yPosition += 5;
+    }
+
     yPosition += 5;
+
+    // Separator line
+    doc.setDrawColor(200);
+    doc.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += 10;
   }
-
-  if (payload.company.street || payload.company.postalCode || payload.company.city) {
-    const address = [
-      payload.company.street,
-      payload.company.postalCode,
-      payload.company.city,
-    ]
-      .filter(Boolean)
-      .join(', ');
-    doc.text(address, margin, yPosition);
-    yPosition += 5;
-  }
-
-  if (payload.company.phone) {
-    doc.text(`Tel: ${payload.company.phone}`, margin, yPosition);
-    yPosition += 5;
-  }
-
-  if (payload.company.email) {
-    doc.text(`Email: ${payload.company.email}`, margin, yPosition);
-    yPosition += 5;
-  }
-
-  yPosition += 5;
-
-  // Separator line
-  doc.setDrawColor(200);
-  doc.line(margin, yPosition, pageWidth - margin, yPosition);
-  yPosition += 10;
 
   // ========================================
   // TITLE SECTION
@@ -174,7 +256,9 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   if (payload.quote && payload.quote.positions.length > 0) {
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
     doc.text('Pozycje wyceny:', margin, yPosition);
+    doc.setTextColor(0, 0, 0);
     yPosition += 8;
 
     // Prepare table data
@@ -187,21 +271,24 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
       formatCurrency(pos.qty * pos.price),
     ]);
 
-    // Generate table using jspdf-autotable
+    // Generate table using jspdf-autotable with template-specific styles
     autoTable(doc, {
       startY: yPosition,
       head: [['Nazwa', 'Ilość', 'Jedn.', 'Cena jedn.', 'Kategoria', 'Wartość']],
       body: tableData,
-      theme: 'grid',
+      theme: theme.tableTheme,
       headStyles: {
-        fillColor: [66, 139, 202],
-        textColor: 255,
+        fillColor: theme.headerFill,
+        textColor: theme.headerText,
         fontStyle: 'bold',
         fontSize: 9,
       },
       bodyStyles: {
         fontSize: 9,
       },
+      alternateRowStyles: theme.alternateRowFill
+        ? { fillColor: theme.alternateRowFill }
+        : undefined,
       columnStyles: {
         0: { cellWidth: 50 }, // Nazwa
         1: { cellWidth: 20, halign: 'center' }, // Ilość
@@ -222,7 +309,9 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
 
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
     doc.text('Podsumowanie:', margin, yPosition);
+    doc.setTextColor(0, 0, 0);
     yPosition += 6;
 
     doc.setFontSize(10);
@@ -308,7 +397,9 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   if (payload.pdfConfig.terms) {
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
     doc.text('Warunki:', margin, yPosition);
+    doc.setTextColor(0, 0, 0);
     yPosition += 6;
 
     doc.setFontSize(9);
@@ -328,6 +419,53 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     doc.text(payload.pdfConfig.deadlineText, margin, yPosition);
     yPosition += 10;
   }
+
+  // ========================================
+  // SIGNATURE SECTION
+  // ========================================
+
+  const pageHeight = doc.internal.pageSize.getHeight();
+  // If there's not enough space for the signature block (~55mm), start a new page
+  if (yPosition + 55 > pageHeight - 25) {
+    doc.addPage();
+    yPosition = margin;
+  }
+
+  yPosition += 12;
+
+  // Separator before signatures
+  doc.setDrawColor(180);
+  doc.line(margin, yPosition, pageWidth - margin, yPosition);
+  yPosition += 18;
+
+  const sigColWidth = (pageWidth - 2 * margin - 10) / 2;
+  const rightSigX = margin + sigColWidth + 10;
+  const sigLineY = yPosition + 18;
+
+  // Contractor name label
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(60, 60, 60);
+  doc.text(payload.company.name, margin, yPosition);
+
+  // Client name label
+  const clientName = payload.client?.name ?? 'Klient';
+  doc.text(clientName, rightSigX, yPosition);
+
+  // Signature lines
+  doc.setDrawColor(120);
+  doc.line(margin, sigLineY, margin + sigColWidth, sigLineY);
+  doc.line(rightSigX, sigLineY, rightSigX + sigColWidth, sigLineY);
+
+  // Labels below lines
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(130, 130, 130);
+  doc.text('Podpis i pieczęć wykonawcy', margin, sigLineY + 5);
+  doc.text('Podpis klienta', rightSigX, sigLineY + 5);
+
+  doc.setTextColor(0, 0, 0);
+  yPosition = sigLineY + 10;
 
   // ========================================
   // FOOTER

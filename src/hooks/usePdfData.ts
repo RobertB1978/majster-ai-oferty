@@ -92,7 +92,9 @@ export function useSavePdfData() {
       queryClient.invalidateQueries({ queryKey: ['pdf_data', variables.projectId] });
     },
     onError: (error) => {
-      toast.error('Błąd przy zapisywaniu danych PDF');
+      const message =
+        error instanceof Error ? error.message : 'Nieznany błąd';
+      toast.error(`Błąd przy zapisywaniu danych PDF: ${message}`);
       logger.error(error);
     },
   });

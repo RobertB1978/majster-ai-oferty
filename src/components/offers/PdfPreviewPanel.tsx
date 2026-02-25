@@ -16,16 +16,19 @@ import {
   Loader2,
   CheckCircle,
   Send,
-  FileDown
+  FileDown,
+  Lock,
 } from 'lucide-react';
 import { usePdfData, useSavePdfData } from '@/hooks/usePdfData';
 import { useQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useProject } from '@/hooks/useProjects';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePlanFeatures } from '@/hooks/useSubscription';
 import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { buildOfferData } from '@/lib/offerDataBuilder';
+import type { PdfTemplateId } from '@/lib/offerDataBuilder';
 import { generateOfferPdf, uploadOfferPdf } from '@/lib/offerPdfGenerator';
 
 interface PdfPreviewPanelProps {
@@ -33,18 +36,42 @@ interface PdfPreviewPanelProps {
   onPdfGenerated?: (url: string | null) => void; // Phase 5C: Callback when PDF is generated
 }
 
+// Terms presets — free (first 4) + pro-gated (last 3)
+const TERMS_PRESETS_FREE = [
+  'termsPresetPayment',
+  'termsPresetWarranty',
+  'termsPresetDeadline',
+  'termsPresetPriceChange',
+] as const;
+
+const TERMS_PRESETS_PRO = [
+  'termsPresetPenalty',
+  'termsPresetInsurance',
+  'termsPresetDispute',
+] as const;
+
+// Template options (all 3 are free)
+const FREE_TEMPLATES: { id: PdfTemplateId; labelKey: string }[] = [
+  { id: 'classic',  labelKey: 'templateClassic' },
+  { id: 'modern',   labelKey: 'templateModern' },
+  { id: 'minimal',  labelKey: 'templateMinimal' },
+];
+
 export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelProps) {
   const { t } = useTranslation();
   const [isEditMode, setIsEditMode] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
+  /** Template selection — local state, not persisted to DB */
+  const [selectedTemplate, setSelectedTemplate] = useState<PdfTemplateId>('classic');
 
   const { user } = useAuth();
   const { data: pdfData, isLoading: pdfLoading } = usePdfData(projectId);
   const { data: quote } = useQuote(projectId);
   const { data: project } = useProject(projectId);
   const { data: profile } = useProfile();
+  const { isPremium } = usePlanFeatures();
   const savePdfData = useSavePdfData();
 
   const [formData, setFormData] = useState({
@@ -79,18 +106,32 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
     }
   }, [pdfData, project]);
 
+  /** Append a terms preset sentence to the terms field (if not already present). */
+  const handleTermsPreset = (presetKey: string) => {
+    const text = t(`pdfPreview.${presetKey}`);
+    if (formData.terms.includes(text)) return;
+    setFormData(prev => ({
+      ...prev,
+      terms: prev.terms ? `${prev.terms}\n${text}` : text,
+    }));
+  };
+
   const handleSave = async () => {
-    await savePdfData.mutateAsync({
-      projectId,
-      version: formData.version,
-      title: formData.title,
-      offer_text: formData.offer_text,
-      terms: formData.terms,
-      deadline_text: formData.deadline_text,
-      vat_rate: formData.vat_rate,
-    });
-    setIsEditMode(false);
-    toast.success(t('pdfPreview.dataSaved'));
+    try {
+      await savePdfData.mutateAsync({
+        projectId,
+        version: formData.version,
+        title: formData.title,
+        offer_text: formData.offer_text,
+        terms: formData.terms,
+        deadline_text: formData.deadline_text,
+        vat_rate: formData.vat_rate,
+      });
+      setIsEditMode(false);
+      toast.success(t('pdfPreview.dataSaved'));
+    } catch {
+      // Error toast is shown by useSavePdfData onError handler
+    }
   };
 
   const handleGeneratePdf = async () => {
@@ -113,6 +154,7 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
       const offerPayload = buildOfferData({
         projectId,
         projectName: project.project_name,
+        templateId: selectedTemplate,
         profile: profile ? {
           company_name: profile.company_name,
           nip: profile.nip,
@@ -232,7 +274,7 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
                     <DialogHeader>
                       <DialogTitle>{t('pdfPreview.title')}</DialogTitle>
                     </DialogHeader>
-                    
+
                     {/* PDF Preview */}
                     <div className="bg-white text-black p-8 rounded-lg shadow-lg" style={{ minHeight: '800px' }}>
                       {/* Header */}
@@ -358,10 +400,16 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
                       {/* Signature */}
                       <div className="flex justify-between mt-12 pt-8 border-t">
                         <div className="text-center">
+                          <p className="text-sm font-semibold text-gray-700 mb-3">
+                            {profile?.company_name || 'Wykonawca'}
+                          </p>
                           <div className="h-16 border-b border-gray-300 w-48 mb-2" />
-                          <p className="text-sm text-gray-600">Podpis wykonawcy</p>
+                          <p className="text-sm text-gray-600">Podpis i pieczęć wykonawcy</p>
                         </div>
                         <div className="text-center">
+                          <p className="text-sm font-semibold text-gray-700 mb-3">
+                            {project?.clients?.name || 'Klient'}
+                          </p>
                           <div className="h-16 border-b border-gray-300 w-48 mb-2" />
                           <p className="text-sm text-gray-600">Podpis klienta</p>
                         </div>
@@ -396,7 +444,7 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
           <div className="space-y-4">
             <div>
               <Label>Tytuł oferty</Label>
-              <Input 
+              <Input
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="Oferta - Nazwa projektu"
@@ -404,7 +452,7 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
             </div>
             <div>
               <Label>Tekst wstępny</Label>
-              <Textarea 
+              <Textarea
                 value={formData.offer_text}
                 onChange={(e) => setFormData({ ...formData, offer_text: e.target.value })}
                 rows={4}
@@ -413,12 +461,59 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
             </div>
             <div>
               <Label>Warunki</Label>
-              <Textarea 
+              <Textarea
                 value={formData.terms}
                 onChange={(e) => setFormData({ ...formData, terms: e.target.value })}
-                rows={3}
+                rows={4}
                 placeholder="Warunki płatności, gwarancja..."
               />
+              {/* Terms presets */}
+              <div className="mt-2">
+                <p className="text-xs text-muted-foreground mb-2">
+                  {t('pdfPreview.termsPresets')} — {t('pdfPreview.termsPresetsHint')}:
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {TERMS_PRESETS_FREE.map((key) => (
+                    <Button
+                      key={key}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-7"
+                      onClick={() => handleTermsPreset(key)}
+                    >
+                      {t(`pdfPreview.${key}`).split(':')[0]}
+                    </Button>
+                  ))}
+                  {isPremium
+                    ? TERMS_PRESETS_PRO.map((key) => (
+                        <Button
+                          key={key}
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-xs h-7"
+                          onClick={() => handleTermsPreset(key)}
+                        >
+                          {t(`pdfPreview.${key}`).split(':')[0]}
+                        </Button>
+                      ))
+                    : TERMS_PRESETS_PRO.map((key) => (
+                        <Button
+                          key={key}
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-xs h-7 opacity-50 cursor-not-allowed"
+                          disabled
+                          title={t('pdfPreview.termsPresetProOnly')}
+                        >
+                          <Lock className="h-3 w-3 mr-1" />
+                          {t(`pdfPreview.${key}`).split(':')[0]}
+                        </Button>
+                      ))}
+                </div>
+              </div>
             </div>
             <div>
               <Label>Termin realizacji</Label>
@@ -459,7 +554,29 @@ export function PdfPreviewPanel({ projectId, onPdfGenerated }: PdfPreviewPanelPr
                 </span>
               )}
             </div>
-            
+
+            {/* Template selector */}
+            <div>
+              <Label className="text-sm">{t('pdfPreview.template')}</Label>
+              <div className="flex gap-2 mt-1">
+                {FREE_TEMPLATES.map((tpl) => (
+                  <Button
+                    key={tpl.id}
+                    type="button"
+                    variant={selectedTemplate === tpl.id ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedTemplate(tpl.id)}
+                    className="text-xs"
+                  >
+                    {t(`pdfPreview.${tpl.labelKey}`)}
+                    <span className="ml-1 opacity-60 text-xs">
+                      {t('pdfPreview.templateFree')}
+                    </span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+
             {pdfData ? (
               <div className="p-4 bg-muted rounded-lg">
                 <p className="font-medium mb-2">{pdfData.title}</p>

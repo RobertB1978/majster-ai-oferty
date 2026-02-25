@@ -1272,7 +1272,22 @@
     "createQuoteFirst": "Najpierw utwórz wycenę",
     "client": "Klient:",
     "offer": "Oferta",
-    "date": "Data"
+    "date": "Data",
+    "template": "Szablon PDF",
+    "templateClassic": "Klasyczny",
+    "templateModern": "Nowoczesny",
+    "templateMinimal": "Minimalistyczny",
+    "templateFree": "(darmowy)",
+    "termsPresets": "Szybkie warunki",
+    "termsPresetsHint": "Kliknij, aby dodać do pola warunki",
+    "termsPresetPayment": "Płatność: 50% zaliczki po podpisaniu umowy, 50% po zakończeniu prac.",
+    "termsPresetWarranty": "Gwarancja: 24 miesiące na wszystkie wykonane prace.",
+    "termsPresetDeadline": "Termin realizacji: zgodnie z harmonogramem ustalonym z klientem.",
+    "termsPresetPriceChange": "Ceny podane w ofercie nie uwzględniają nieprzewidzianych zmian cen materiałów.",
+    "termsPresetPenalty": "Kary umowne: Za opóźnienie w wykonaniu robót 0,5% wartości umownej za każdy dzień zwłoki.",
+    "termsPresetInsurance": "Ubezpieczenie: Wykonawca posiada aktywne ubezpieczenie OC z tytułu prowadzonej działalności.",
+    "termsPresetDispute": "Spory: Wszelkie spory rozstrzygane przez sąd właściwy dla siedziby wykonawcy.",
+    "termsPresetProOnly": "Dostępne w planie Pro i wyższych"
   },
   "voiceQuote": {
     "notSupported": "Twoja przeglądarka nie wspiera rozpoznawania mowy.",
