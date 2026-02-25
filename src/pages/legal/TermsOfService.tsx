@@ -103,7 +103,7 @@ O zmianach poinformujemy emailem.
 
 6.4. Nieważność pojedynczego postanowienia nie wpływa na ważność całego Regulaminu.
 
-6.5. Kontakt: kontakt.majster@gmail.com
+6.5. Kontakt: kontakt.majsterai@gmail.com
 
 6.6. Regulamin wchodzi w życie z dniem publikacji.`,
     },

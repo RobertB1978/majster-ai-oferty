@@ -136,7 +136,7 @@ export default function Privacy() {
                   W sprawach związanych z ochroną danych osobowych możesz skontaktować się z nami:
                 </p>
                 <ul>
-                  <li>E-mail: kontakt.majster@gmail.com</li>
+                  <li>E-mail: kontakt.majsterai@gmail.com</li>
                   <li>Formularz kontaktowy w aplikacji</li>
                 </ul>
                 <p>

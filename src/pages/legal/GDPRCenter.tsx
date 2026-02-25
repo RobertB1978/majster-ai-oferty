@@ -254,7 +254,7 @@ export default function GDPRCenter() {
                 <p className="text-sm text-muted-foreground">
                   Zgodnie z RODO mamy 30 dni na realizację Twojego żądania. W przypadku 
                   skomplikowanych żądań termin może zostać przedłużony o kolejne 60 dni.
-                  W razie pytań skontaktuj się: kontakt.majster@gmail.com
+                  W razie pytań skontaktuj się: kontakt.majsterai@gmail.com
                 </p>
               </div>
             </div>

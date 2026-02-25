@@ -74,7 +74,7 @@ export default function PrivacyPolicy() {
       icon: Mail,
       title: '7. Kontakt',
       content: `W sprawach ochrony danych osobowych możesz się z nami skontaktować:
-      • Email: kontakt.majster@gmail.com
+      • Email: kontakt.majsterai@gmail.com
       • Formularz w aplikacji: Ustawienia → Centrum RODO
       
       Masz prawo wnieść skargę do Prezesa UODO.`,
