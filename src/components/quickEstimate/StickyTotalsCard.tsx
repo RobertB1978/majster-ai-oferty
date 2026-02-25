@@ -2,9 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Loader2, Save } from 'lucide-react';
+import { calcTotals } from '@/lib/estimateCalc';
 import type { LineItem } from './WorkspaceLineItems';
-
-const VAT_RATE = 0.23;
 
 function fmt(n: number): string {
   return n.toLocaleString('pl-PL', {
@@ -29,15 +28,12 @@ export function StickyTotalsCard({
   saving,
   compact = false,
 }: StickyTotalsCardProps) {
-  const netTotal = items.reduce((sum, i) => sum + i.qty * i.price, 0);
-  const vatAmount = vatEnabled ? netTotal * VAT_RATE : 0;
-  const grossTotal = netTotal + vatAmount;
+  const { netTotal, vatAmount, grossTotal } = calcTotals(items, vatEnabled);
   const hasItems = items.some((i) => i.name.trim() && i.qty > 0);
 
   if (compact) {
     return (
       <div className="flex items-center gap-3">
-        {/* Compact totals */}
         <div className="flex-1 flex gap-3 text-sm flex-wrap">
           <span className="text-muted-foreground">
             Netto:{' '}
@@ -70,7 +66,6 @@ export function StickyTotalsCard({
   return (
     <Card className={cn('sticky top-4')}>
       <CardContent className="p-4 space-y-3">
-        {/* Totals breakdown */}
         <div className="space-y-2 text-sm">
           <div className="flex justify-between text-muted-foreground">
             <span>Netto</span>
@@ -88,7 +83,6 @@ export function StickyTotalsCard({
           </div>
         </div>
 
-        {/* Save CTA */}
         <Button
           className="w-full"
           onClick={onSave}

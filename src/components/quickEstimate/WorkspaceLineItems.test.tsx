@@ -19,7 +19,13 @@ function createItems(count: number): LineItem[] {
     name: `Pozycja ${i + 1}`,
     qty: 1,
     unit: 'szt',
+    priceMode: 'single' as const,
     price: 100,
+    laborCost: 0,
+    materialCost: 0,
+    marginPct: 0,
+    showMargin: true,
+    itemType: 'service' as const,
   }));
 }
 
@@ -52,7 +58,8 @@ describe('WorkspaceLineItems — pagination', () => {
   it('renders only 50 rows on the first page for 200 items', () => {
     render(<Wrapper initialItems={createItems(200)} />);
     const nameInputs = screen.getAllByPlaceholderText('np. Kafelkowanie ściany');
-    expect(nameInputs).toHaveLength(50);
+    // Each item renders two name inputs: one for desktop layout, one for mobile layout
+    expect(nameInputs).toHaveLength(100);
   });
 
   it('shows correct range label on page 1 of 2 (51 items)', () => {
@@ -94,8 +101,8 @@ describe('WorkspaceLineItems — pagination', () => {
   it('renders last-page item names on page 2', () => {
     render(<Wrapper initialItems={createItems(51)} />);
     fireEvent.click(screen.getByRole('button', { name: /następna strona/i }));
-    // Page 2 has only item 51 — its name input should be visible
+    // Page 2 has only item 51 — each item has desktop + mobile name input = 2
     const nameInputs = screen.getAllByPlaceholderText('np. Kafelkowanie ściany');
-    expect(nameInputs).toHaveLength(1);
+    expect(nameInputs).toHaveLength(2);
   });
 });
