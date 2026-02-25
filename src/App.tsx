@@ -30,6 +30,7 @@ import EnvCheck from "./pages/EnvCheck";
 // === ZONE 1: PUBLIC (lazy) ===
 const Landing = lazy(() => import("./pages/Landing"));
 const OfferApproval = lazy(() => import("./pages/OfferApproval"));
+const OfferPublicPage = lazy(() => import("./pages/OfferPublicPage"));
 const PlanyPage = lazy(() => import("./pages/Plany"));
 const PlanyDetailPage = lazy(() => import("./pages/PlanyDetail"));
 
@@ -155,8 +156,11 @@ const App = () => (
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
 
-                  {/* Public offer approval */}
+                  {/* Public offer approval (legacy English URL) */}
                   <Route path="/offer/:token" element={<OfferApproval />} />
+
+                  {/* Public client portal (Polish URL) */}
+                  <Route path="/oferta/:token" element={<OfferPublicPage />} />
 
                   {/* Environment diagnostic */}
                   <Route path="/env-check" element={<EnvCheck />} />

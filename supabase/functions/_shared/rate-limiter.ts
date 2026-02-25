@@ -26,6 +26,7 @@ export const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
   'finance-ai-analysis': { endpoint: 'finance-ai-analysis', maxRequests: 10, windowMs: 60 * 1000 },
   'send-offer-email': { endpoint: 'send-offer-email', maxRequests: 10, windowMs: 60 * 1000 },
   'approve-offer': { endpoint: 'approve-offer', maxRequests: 30, windowMs: 60 * 1000 },
+  'client-question': { endpoint: 'client-question', maxRequests: 5, windowMs: 10 * 60 * 1000 },
   'request-plan': { endpoint: 'request-plan', maxRequests: 5, windowMs: 60 * 1000 },
 };
 
