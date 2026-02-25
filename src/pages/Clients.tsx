@@ -11,7 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { SearchInput } from '@/components/ui/search-input';
 import { PaginationControls } from '@/components/ui/pagination-controls';
-import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Loader2, Users } from 'lucide-react';
+import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Users } from 'lucide-react';
+import { ClientsGridSkeleton } from '@/components/ui/skeleton-screens';
 import { toast } from 'sonner';
 
 interface ClientFormData {
@@ -242,12 +243,7 @@ export default function Clients() {
       )}
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
-          </div>
-        </div>
+        <ClientsGridSkeleton />
       ) : showEmptyState ? (
         <Card className="border-dashed border-2">
           <CardContent className="py-16 text-center">
