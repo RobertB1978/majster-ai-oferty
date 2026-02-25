@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { FileSpreadsheet, Plus, Trash2 } from 'lucide-react';
+import { FileSpreadsheet, List, Plus, Trash2 } from 'lucide-react';
 import { isValidDecimal, parseDecimal } from '@/lib/numberParsing';
+import { BulkAddModal } from './BulkAddModal';
 
 export interface LineItem {
   id: string;
@@ -32,6 +33,8 @@ export function WorkspaceLineItems({
   vatEnabled,
   onToggleVat,
 }: WorkspaceLineItemsProps) {
+  const [bulkOpen, setBulkOpen] = useState(false);
+
   const [rawInputs, setRawInputs] = useState<
     Record<string, { qty: string; price: string }>
   >(() => {
@@ -82,7 +85,29 @@ export function WorkspaceLineItems({
     setRawInputs((prev) => ({ ...prev, [item.id]: { qty: '1', price: '0' } }));
   };
 
+  const handleBulkAdd = (newItems: LineItem[]) => {
+    setItems((prev) => {
+      // Replace the only blank item if present, otherwise append
+      const isOnlyBlank =
+        prev.length === 1 && !prev[0].name.trim() && prev[0].price === 0;
+      return isOnlyBlank ? newItems : [...prev, ...newItems];
+    });
+    setRawInputs((prev) => {
+      const next = { ...prev };
+      for (const item of newItems) {
+        next[item.id] = { qty: String(item.qty), price: String(item.price) };
+      }
+      return next;
+    });
+  };
+
   return (
+    <>
+    <BulkAddModal
+      open={bulkOpen}
+      onClose={() => setBulkOpen(false)}
+      onAdd={handleBulkAdd}
+    />
     <Card>
       <CardHeader className="pb-2 pt-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
@@ -90,18 +115,31 @@ export function WorkspaceLineItems({
             <FileSpreadsheet className="h-4 w-4" />
             Pozycje wyceny
           </CardTitle>
-          <div className="flex items-center gap-2">
-            <Label
-              htmlFor="ws-vat-toggle"
-              className="text-xs text-muted-foreground cursor-pointer select-none"
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={() => setBulkOpen(true)}
+              className="h-7 text-xs gap-1.5"
+              data-testid="open-bulk-add"
             >
-              VAT 23%
-            </Label>
-            <Switch
-              id="ws-vat-toggle"
-              checked={vatEnabled}
-              onCheckedChange={onToggleVat}
-            />
+              <List className="h-3 w-3" />
+              Dodaj wiele
+            </Button>
+            <div className="flex items-center gap-2">
+              <Label
+                htmlFor="ws-vat-toggle"
+                className="text-xs text-muted-foreground cursor-pointer select-none"
+              >
+                VAT 23%
+              </Label>
+              <Switch
+                id="ws-vat-toggle"
+                checked={vatEnabled}
+                onCheckedChange={onToggleVat}
+              />
+            </div>
           </div>
         </div>
       </CardHeader>
@@ -213,5 +251,6 @@ export function WorkspaceLineItems({
         </Button>
       </CardContent>
     </Card>
+    </>
   );
 }
