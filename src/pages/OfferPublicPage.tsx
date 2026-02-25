@@ -24,6 +24,7 @@ import { formatCurrency } from '@/lib/formatters';
 import {
   fetchPublicOffer,
   acceptPublicOffer,
+  recordOfferViewed,
   sendClientQuestion,
   type PublicOfferData,
   type PublicOfferPosition,
@@ -55,6 +56,9 @@ export default function OfferPublicPage() {
       setOffer(data);
       if (data.client_name) setClientName(data.client_name);
       if (['accepted', 'approved'].includes(data.status)) setAccepted(true);
+      // Record "opened" event — fire-and-forget, never blocks the page.
+      // Only fires if this is the first view (viewed_at is null) and the offer is active.
+      void recordOfferViewed(token);
     } catch {
       setError('Nie znaleziono oferty lub link jest nieprawidłowy.');
     } finally {
