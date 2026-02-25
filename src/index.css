@@ -459,3 +459,16 @@
     padding-bottom: calc(64px + env(safe-area-inset-bottom));
   }
 }
+
+/* ============================================
+   RECHARTS DARK MODE COMPATIBILITY
+   ============================================ */
+.recharts-wrapper,
+.recharts-surface {
+  background: transparent;
+}
+
+.recharts-cartesian-axis-tick text,
+.recharts-text {
+  fill: hsl(var(--muted-foreground));
+}

@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  TrendingUp, TrendingDown, DollarSign, Receipt, 
+import { EmptyState } from '@/components/ui/empty-state';
+import {
+  TrendingUp, TrendingDown, DollarSign, Receipt,
   BarChart3, Sparkles, AlertTriangle, Lightbulb,
   ArrowUpRight, ArrowDownRight, PiggyBank
 } from 'lucide-react';
@@ -30,6 +32,7 @@ export function FinanceDashboard() {
   const { data: summary, isLoading } = useFinancialSummary();
   const aiAnalysis = useAIFinancialAnalysis();
   const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
+  const navigate = useNavigate();
 
   const handleRunAnalysis = async () => {
     const result = await aiAnalysis.mutateAsync();
@@ -52,7 +55,22 @@ export function FinanceDashboard() {
     );
   }
 
-  const marginTrend = summary.monthly.length >= 2 
+  if (!summary.monthly.length) {
+    return (
+      <EmptyState
+        icon={TrendingUp}
+        title="Brak danych finansowych"
+        description="Stwórz projekty i wyceny, aby śledzić swoje przychody, koszty i marżę w czasie."
+        action={{
+          label: "Utwórz pierwszy projekt",
+          onClick: () => navigate('/app/jobs/new'),
+        }}
+        className="min-h-[400px]"
+      />
+    );
+  }
+
+  const marginTrend = summary.monthly.length >= 2
     ? summary.monthly[summary.monthly.length - 1].margin - summary.monthly[summary.monthly.length - 2].margin
     : 0;
 
@@ -161,31 +179,42 @@ export function FinanceDashboard() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <Tooltip 
-                  formatter={(value: number) => `${value.toLocaleString()} zł`}
-                  contentStyle={{ 
-                    backgroundColor: 'hsl(var(--card))', 
+                <XAxis
+                  dataKey="month"
+                  stroke="hsl(var(--border))"
+                  fontSize={12}
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <YAxis
+                  stroke="hsl(var(--border))"
+                  fontSize={12}
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <Tooltip
+                  formatter={(value: number) => [`${value.toLocaleString()} zł`]}
+                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '8px',
-                    boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)'
+                    boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)',
                   }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="revenue" 
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
                   stroke="hsl(142, 76%, 36%)"
                   strokeWidth={2}
-                  fill="url(#colorRevenue)" 
+                  fill="url(#colorRevenue)"
                   name="Przychody"
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="costs" 
+                <Area
+                  type="monotone"
+                  dataKey="costs"
                   stroke="hsl(0, 84%, 60%)"
                   strokeWidth={2}
-                  fill="url(#colorCosts)" 
+                  fill="url(#colorCosts)"
                   name="Koszty"
                 />
               </AreaChart>
@@ -212,20 +241,31 @@ export function FinanceDashboard() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <Tooltip 
-                  formatter={(value: number) => `${value.toLocaleString()} zł`}
-                  contentStyle={{ 
-                    backgroundColor: 'hsl(var(--card))', 
+                <XAxis
+                  dataKey="month"
+                  stroke="hsl(var(--border))"
+                  fontSize={12}
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <YAxis
+                  stroke="hsl(var(--border))"
+                  fontSize={12}
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <Tooltip
+                  formatter={(value: number) => [`${value.toLocaleString()} zł`]}
+                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '8px',
-                    boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)'
+                    boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)',
                   }}
                 />
-                <Bar 
-                  dataKey="margin" 
-                  fill="url(#barGradient)" 
+                <Bar
+                  dataKey="margin"
+                  fill="url(#barGradient)"
                   name="Marża"
                   radius={[6, 6, 0, 0]}
                 />
