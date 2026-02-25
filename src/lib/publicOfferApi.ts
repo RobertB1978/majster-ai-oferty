@@ -18,6 +18,7 @@ export interface PublicOfferData {
   client_name: string | null;
   created_at: string;
   valid_until: string | null;
+  viewed_at: string | null;
   accepted_at: string | null;
   approved_at: string | null;
   accepted_via: string | null;
@@ -44,6 +45,7 @@ export async function fetchPublicOffer(token: string): Promise<PublicOfferData> 
       client_name,
       created_at,
       valid_until,
+      viewed_at,
       accepted_at,
       approved_at,
       accepted_via,
@@ -56,6 +58,22 @@ export async function fetchPublicOffer(token: string): Promise<PublicOfferData> 
 
   if (error) throw error;
   return data as PublicOfferData;
+}
+
+/**
+ * Record that a client opened the public offer page.
+ * Sets viewed_at and transitions status to 'viewed' — only on first open.
+ * Fire-and-forget: caller should not await this; failures are silent.
+ * No personal data is stored — only a server-side timestamp.
+ */
+export async function recordOfferViewed(token: string): Promise<void> {
+  await supabase
+    .from('offer_approvals')
+    .update({ viewed_at: new Date().toISOString(), status: 'viewed' })
+    .eq('public_token', token)
+    .is('viewed_at', null)
+    .in('status', ['sent', 'pending']);
+  // Errors are intentionally ignored: tracking must never break the offer page.
 }
 
 /**

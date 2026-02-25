@@ -10,12 +10,17 @@ export interface OfferApproval {
   public_token: string;
   client_name: string | null;
   client_email: string | null;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'draft' | 'sent' | 'viewed' | 'accepted' | 'approved' | 'rejected' | 'expired' | 'withdrawn';
   signature_data: string | null;
   client_comment: string | null;
-  approved_at: string | null;
   created_at: string;
   expires_at: string | null;
+  viewed_at: string | null;
+  approved_at: string | null;
+  accepted_at: string | null;
+  accepted_via: string | null;
+  withdrawn_at: string | null;
+  valid_until: string | null;
 }
 
 export function useOfferApprovals(projectId: string) {
