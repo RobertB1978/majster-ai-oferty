@@ -19,6 +19,7 @@ import { usePlanFeatures } from '@/hooks/useSubscription';
 import { useExpirationMonitor } from '@/hooks/useExpirationMonitor';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { TrialBanner } from '@/components/billing/TrialBanner';
+import { DashboardSkeleton } from '@/components/ui/skeleton-screens';
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -61,6 +62,11 @@ export default function Dashboard() {
   const handleVoiceQuoteCreated = (result: unknown) => {
     navigate('/app/jobs/new', { state: { voiceQuote: result } });
   };
+
+  // Show skeleton while data is loading
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
 
   // Show empty state for new users
   if (!isLoading && totalProjects === 0 && totalClients === 0) {

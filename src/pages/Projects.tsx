@@ -10,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SearchInput } from '@/components/ui/search-input';
 import { PaginationControls } from '@/components/ui/pagination-controls';
-import { Plus, Loader2, FolderKanban, Download } from 'lucide-react';
+import { Plus, FolderKanban, Download } from 'lucide-react';
+import { ProjectsListSkeleton } from '@/components/ui/skeleton-screens';
 import { exportProjectsToCSV } from '@/lib/exportUtils';
 
 const statusColors: Record<string, string> = {
@@ -127,12 +128,7 @@ export default function Projects() {
       )}
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
-          </div>
-        </div>
+        <ProjectsListSkeleton />
       ) : showEmptyState ? (
         <Card className="border-dashed border-2">
           <CardContent className="py-16 text-center">
