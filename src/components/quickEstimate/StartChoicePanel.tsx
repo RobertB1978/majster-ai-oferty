@@ -10,19 +10,23 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { useItemTemplates } from '@/hooks/useItemTemplates';
 import type { ItemTemplate } from '@/hooks/useItemTemplates';
-import { ArrowLeft, FileText, Loader2, Package, Plus } from 'lucide-react';
+import { ArrowLeft, BookOpen, FileText, Loader2, Package, Plus } from 'lucide-react';
+import { TradeCatalogPicker } from './TradeCatalogPicker';
+import type { StarterPack } from '@/data/starterPacks';
 
-type Step = 'choice' | 'templates';
+type Step = 'choice' | 'templates' | 'catalog';
 
 interface StartChoicePanelProps {
   open: boolean;
   onSelectTemplate: (template: ItemTemplate) => void;
+  onSelectPack: (pack: StarterPack) => void;
   onEmptyStart: () => void;
 }
 
 export function StartChoicePanel({
   open,
   onSelectTemplate,
+  onSelectPack,
   onEmptyStart,
 }: StartChoicePanelProps) {
   const [step, setStep] = useState<Step>('choice');
@@ -48,12 +52,19 @@ export function StartChoicePanel({
     if (!isOpen) onEmptyStart();
   };
 
+  const dialogTitle =
+    step === 'templates'
+      ? 'Wybierz szablon'
+      : step === 'catalog'
+        ? 'Katalog branż'
+        : 'Jak zacząć wycenę?';
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {step === 'templates' && (
+            {step !== 'choice' && (
               <Button
                 variant="ghost"
                 size="icon"
@@ -63,24 +74,41 @@ export function StartChoicePanel({
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            {step === 'choice' ? 'Jak zacząć wycenę?' : 'Wybierz szablon'}
+            {dialogTitle}
           </DialogTitle>
         </DialogHeader>
 
-        {step === 'choice' ? (
-          <div className="grid grid-cols-2 gap-3 py-2">
+        {/* ── Step: choice ───────────────────────────────────────────── */}
+        {step === 'choice' && (
+          <div className="grid grid-cols-3 gap-2 py-2">
+            {/* Catalog option */}
+            <button
+              onClick={() => setStep('catalog')}
+              className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-muted hover:border-primary hover:bg-primary/5 transition-all text-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <BookOpen className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold text-xs">Katalog branż</p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
+                  Załaduj pakiet startowy
+                </p>
+              </div>
+            </button>
+
             {/* Template option */}
             <button
               onClick={() => setStep('templates')}
-              className="flex flex-col items-center gap-3 p-5 rounded-xl border-2 border-muted hover:border-primary hover:bg-primary/5 transition-all text-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-muted hover:border-primary hover:bg-primary/5 transition-all text-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <Package className="h-6 w-6 text-primary" />
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <Package className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-semibold text-sm">Użyj szablonu</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Zacznij od gotowej pozycji
+                <p className="font-semibold text-xs">Szablon</p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
+                  Gotowa pozycja
                 </p>
               </div>
             </button>
@@ -88,20 +116,33 @@ export function StartChoicePanel({
             {/* Empty option */}
             <button
               onClick={onEmptyStart}
-              className="flex flex-col items-center gap-3 p-5 rounded-xl border-2 border-muted hover:border-primary hover:bg-primary/5 transition-all text-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-muted hover:border-primary hover:bg-primary/5 transition-all text-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <FileText className="h-6 w-6 text-primary" />
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <FileText className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-semibold text-sm">Pusta wycena</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Wpisz pozycje ręcznie
+                <p className="font-semibold text-xs">Pusta wycena</p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
+                  Wpisz ręcznie
                 </p>
               </div>
             </button>
           </div>
-        ) : (
+        )}
+
+        {/* ── Step: catalog ──────────────────────────────────────────── */}
+        {step === 'catalog' && (
+          <TradeCatalogPicker
+            onSelectPack={(pack) => {
+              onSelectPack(pack);
+            }}
+            onBack={() => setStep('choice')}
+          />
+        )}
+
+        {/* ── Step: templates ────────────────────────────────────────── */}
+        {step === 'templates' && (
           <div className="space-y-3">
             <Input
               placeholder="Szukaj szablonu..."

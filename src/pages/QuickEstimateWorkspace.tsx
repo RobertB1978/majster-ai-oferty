@@ -16,6 +16,7 @@ import {
 import type { LineItem } from '@/components/quickEstimate/WorkspaceLineItems';
 import { StickyTotalsCard } from '@/components/quickEstimate/StickyTotalsCard';
 import type { ItemTemplate } from '@/hooks/useItemTemplates';
+import type { StarterPack } from '@/data/starterPacks';
 
 export default function QuickEstimateWorkspace() {
   const navigate = useNavigate();
@@ -52,6 +53,19 @@ export default function QuickEstimateWorkspace() {
       };
       return isOnlyBlank ? [newItem] : [...prev, newItem];
     });
+    setShowStartChoice(false);
+  }, []);
+
+  const handlePackSelect = useCallback((pack: StarterPack) => {
+    const packItems: LineItem[] = pack.items.map((item) => ({
+      id: crypto.randomUUID(),
+      name: item.name,
+      qty: item.qty,
+      unit: item.unit,
+      price: item.price,
+    }));
+    // Replace blank slate with the full pack
+    setItems(packItems);
     setShowStartChoice(false);
   }, []);
 
@@ -143,6 +157,7 @@ export default function QuickEstimateWorkspace() {
       <StartChoicePanel
         open={showStartChoice}
         onSelectTemplate={handleTemplateSelect}
+        onSelectPack={handlePackSelect}
         onEmptyStart={handleEmptyStart}
       />
 

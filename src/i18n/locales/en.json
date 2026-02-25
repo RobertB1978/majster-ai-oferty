@@ -1578,7 +1578,19 @@
     "vatNote": "Net price. Add VAT before sending to client.",
     "noItems": "Add at least one item.",
     "saved": "Estimate saved!",
-    "defaultName": "Quick estimate"
+    "defaultName": "Quick estimate",
+    "tradeCatalog": {
+      "title": "Trade catalog",
+      "subtitle": "Choose a trade and load a starter pack into the estimate",
+      "chooseCategory": "Choose category",
+      "chooseSubcategory": "Subcategories",
+      "chooseTrade": "Trades",
+      "itemsInPack": "items in pack",
+      "loadPack": "Load pack",
+      "packLoaded": "Pack loaded! Edit prices and quantities.",
+      "btnCatalog": "Trade catalog",
+      "btnCatalogSub": "Load starter pack"
+    }
   },
   "footer": {
     "tagline": "Professional quotes for tradespeople. Fast, easy, professional.",
