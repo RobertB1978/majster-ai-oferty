@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { AlertTriangle, Upload } from 'lucide-react';
+import { AlertTriangle, Trash2, Upload } from 'lucide-react';
 import { parseBulkText, parsedRowsToLineItems } from '@/lib/bulkItemsParsing';
 import { parseDecimal } from '@/lib/numberParsing';
 import type { ParsedRow } from '@/lib/bulkItemsParsing';
@@ -82,6 +82,9 @@ export function BulkAddModal({ open, onClose, onAdd }: BulkAddModalProps) {
       })
     );
   };
+
+  const removeRow = (id: string) =>
+    setRows((prev) => prev.filter((r) => r.id !== id));
 
   /* ── Confirm / close ────────────────────────────────────────── */
 
@@ -177,11 +180,12 @@ export function BulkAddModal({ open, onClose, onAdd }: BulkAddModalProps) {
               </div>
 
               {/* Column headers */}
-              <div className="hidden sm:grid grid-cols-[1fr_72px_68px_92px] gap-1.5 px-1 text-xs font-medium text-muted-foreground">
+              <div className="hidden sm:grid grid-cols-[1fr_72px_68px_92px_32px] gap-1.5 px-1 text-xs font-medium text-muted-foreground">
                 <span>Nazwa</span>
                 <span>Ilość</span>
                 <span>Jedn.</span>
                 <span className="text-right">Cena netto</span>
+                <span />
               </div>
 
               {/* Rows */}
@@ -194,7 +198,7 @@ export function BulkAddModal({ open, onClose, onAdd }: BulkAddModalProps) {
                   return (
                     <div
                       key={row.id}
-                      className={`grid sm:grid-cols-[1fr_72px_68px_92px] grid-cols-[1fr_68px] gap-1.5 items-center p-1.5 rounded-md ${
+                      className={`grid sm:grid-cols-[1fr_72px_68px_92px_32px] grid-cols-[1fr_68px] gap-1.5 items-center p-1.5 rounded-md ${
                         hasError
                           ? 'bg-destructive/5 ring-1 ring-destructive/20'
                           : 'bg-muted/40'
@@ -249,6 +253,19 @@ export function BulkAddModal({ open, onClose, onAdd }: BulkAddModalProps) {
                           </span>
                         </div>
                       </div>
+
+                      {/* Delete row button */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        type="button"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive col-span-2 sm:col-span-1 justify-self-end"
+                        onClick={() => removeRow(row.id)}
+                        aria-label="Usuń wiersz"
+                        data-testid="bulk-remove-row"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
                   );
                 })}
