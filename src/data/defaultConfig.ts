@@ -1,4 +1,9 @@
 import type { AppConfig } from './appConfigSchema';
+import { PLANS } from '@/config/plans';
+
+// Derive prices from plans.ts — single source of truth for pricing.
+// Any change to pricePLN in plans.ts is automatically reflected here.
+const planPrice = (id: string): number => PLANS.find((p) => p.id === id)?.pricePLN ?? 0;
 
 /** Default configuration matching current app state. Used as reset target. */
 export const DEFAULT_CONFIG: AppConfig = {
@@ -34,7 +39,7 @@ export const DEFAULT_CONFIG: AppConfig = {
       {
         id: 'free',
         name: 'Darmowy',
-        pricePLN: 0,
+        pricePLN: planPrice('free'),
         maxProjects: 3,
         maxClients: 5,
         maxTeamMembers: 0,
@@ -45,7 +50,7 @@ export const DEFAULT_CONFIG: AppConfig = {
       {
         id: 'pro',
         name: 'Pro',
-        pricePLN: 49,
+        pricePLN: planPrice('pro'),
         maxProjects: 15,
         maxClients: 30,
         maxTeamMembers: 2,
@@ -56,7 +61,7 @@ export const DEFAULT_CONFIG: AppConfig = {
       {
         id: 'business',
         name: 'Business',
-        pricePLN: 99,
+        pricePLN: planPrice('business'),
         maxProjects: 100,
         maxClients: 200,
         maxTeamMembers: 10,
@@ -67,7 +72,7 @@ export const DEFAULT_CONFIG: AppConfig = {
       {
         id: 'enterprise',
         name: 'Enterprise',
-        pricePLN: 199,
+        pricePLN: planPrice('enterprise'),
         maxProjects: 9999,
         maxClients: 9999,
         maxTeamMembers: 9999,
