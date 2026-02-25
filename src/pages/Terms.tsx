@@ -82,10 +82,10 @@ export default function Terms() {
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
                 <p>Dostępne plany subskrypcji:</p>
                 <ul>
-                  <li><strong>Free</strong> - darmowy z reklamami, ograniczone funkcje</li>
-                  <li><strong>Starter</strong> - 49 PLN/mies. - podstawowe funkcje bez reklam</li>
+                  <li><strong>Free</strong> - bezpłatny przez pierwsze 30 dni, następnie z ograniczonymi funkcjami</li>
+                  <li><strong>Pro</strong> - 49 PLN/mies. - podstawowe funkcje bez reklam</li>
                   <li><strong>Business</strong> - 99 PLN/mies. - pełne funkcje + AI</li>
-                  <li><strong>Enterprise</strong> - 139 PLN/mies. - wszystkie funkcje + priorytetowe wsparcie</li>
+                  <li><strong>Enterprise</strong> - 199 PLN/mies. - wszystkie funkcje + priorytetowe wsparcie</li>
                 </ul>
                 <p>
                   Płatności są przetwarzane przez bezpieczny system Stripe.
