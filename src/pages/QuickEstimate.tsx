@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +23,7 @@ import {
 import { VoiceQuoteCreator } from '@/components/voice/VoiceQuoteCreator';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { parseDecimal, isValidDecimal } from '@/lib/numberParsing';
 
 /* ─────────────────────────── types ─────────────────────────────────────── */
 
@@ -58,10 +59,56 @@ interface ManualTabProps {
 function ManualTab({ items, setItems }: ManualTabProps) {
   const { t } = useTranslation();
 
+  /** Surowy tekst wpisany przez użytkownika dla pól numerycznych */
+  const [itemInputs, setItemInputs] = useState<Record<string, { qty: string; price: string }>>(
+    () => {
+      const init: Record<string, { qty: string; price: string }> = {};
+      items.forEach((item) => {
+        init[item.id] = { qty: String(item.qty), price: String(item.price) };
+      });
+      return init;
+    }
+  );
+
+  // Synchronizacja itemInputs gdy items zmieniają się z zewnątrz (AI/Głos)
+  useEffect(() => {
+    setItemInputs((prev) => {
+      const next = { ...prev };
+      const itemIds = new Set(items.map((i) => i.id));
+      // Dodaj brakujące wpisy dla nowych pozycji
+      items.forEach((item) => {
+        if (!next[item.id]) {
+          next[item.id] = { qty: String(item.qty), price: String(item.price) };
+        }
+      });
+      // Usuń wpisy dla usuniętych pozycji
+      Object.keys(next).forEach((id) => {
+        if (!itemIds.has(id)) delete next[id];
+      });
+      return next;
+    });
+  }, [items]);
+
   const update = (id: string, field: keyof LineItem, value: string | number) => {
     setItems((prev) =>
       prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
     );
+  };
+
+  /**
+   * Obsługuje zmianę pola numerycznego (qty lub price).
+   * Przechowuje surowy tekst; aktualizuje wartość numeryczną tylko przy poprawnym parsowaniu.
+   */
+  const updateNumericInput = (id: string, field: 'qty' | 'price', rawValue: string) => {
+    setItemInputs((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], [field]: rawValue },
+    }));
+    const parsed = parseDecimal(rawValue);
+    if (parsed !== null) {
+      update(id, field, parsed);
+    }
+    // Przy błędzie parsowania zachowaj ostatnią poprawną wartość numeryczną
   };
 
   const remove = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
@@ -83,58 +130,73 @@ function ManualTab({ items, setItems }: ManualTabProps) {
           </div>
         )}
 
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="grid sm:grid-cols-[1fr_80px_80px_100px_40px] gap-2 px-4 py-2 border-t border-border items-center"
-          >
-            <Input
-              placeholder={t('quickEstimate.itemPlaceholder', 'np. Kafelkowanie ściany')}
-              value={item.name}
-              onChange={(e) => update(item.id, 'name', e.target.value)}
-              className="h-8 text-sm"
-            />
-            <Input
-              type="number"
-              min={0}
-              value={item.qty}
-              onChange={(e) => update(item.id, 'qty', parseFloat(e.target.value) || 0)}
-              className="h-8 text-sm text-right"
-            />
-            <Input
-              placeholder="m²"
-              value={item.unit}
-              onChange={(e) => update(item.id, 'unit', e.target.value)}
-              className="h-8 text-sm"
-            />
-            <div className="relative">
-              <Input
-                type="number"
-                min={0}
-                value={item.price}
-                onChange={(e) => update(item.id, 'price', parseFloat(e.target.value) || 0)}
-                className="h-8 text-sm text-right pr-8"
-              />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                zł
-              </span>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-destructive"
-              onClick={() => remove(item.id)}
+        {items.map((item) => {
+          const qtyStr = itemInputs[item.id]?.qty ?? String(item.qty);
+          const priceStr = itemInputs[item.id]?.price ?? String(item.price);
+          const qtyInvalid = qtyStr !== '' && !isValidDecimal(qtyStr);
+          const priceInvalid = priceStr !== '' && !isValidDecimal(priceStr);
+
+          return (
+            <div
+              key={item.id}
+              className="grid sm:grid-cols-[1fr_80px_80px_100px_40px] gap-2 px-4 py-2 border-t border-border items-center"
             >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        ))}
+              <Input
+                placeholder={t('quickEstimate.itemPlaceholder', 'np. Kafelkowanie ściany')}
+                value={item.name}
+                onChange={(e) => update(item.id, 'name', e.target.value)}
+                className="h-8 text-sm"
+              />
+              <Input
+                type="text"
+                inputMode="decimal"
+                value={qtyStr}
+                onChange={(e) => updateNumericInput(item.id, 'qty', e.target.value)}
+                className={`h-8 text-sm text-right${qtyInvalid ? ' border-destructive' : ''}`}
+                aria-invalid={qtyInvalid}
+                title={qtyInvalid ? 'Nieprawidłowa ilość' : undefined}
+              />
+              <Input
+                placeholder="m²"
+                value={item.unit}
+                onChange={(e) => update(item.id, 'unit', e.target.value)}
+                className="h-8 text-sm"
+              />
+              <div className="relative">
+                <Input
+                  type="text"
+                  inputMode="decimal"
+                  value={priceStr}
+                  onChange={(e) => updateNumericInput(item.id, 'price', e.target.value)}
+                  className={`h-8 text-sm text-right pr-8${priceInvalid ? ' border-destructive' : ''}`}
+                  aria-invalid={priceInvalid}
+                  title={priceInvalid ? 'Nieprawidłowa cena' : undefined}
+                />
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+                  zł
+                </span>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                onClick={() => remove(item.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          );
+        })}
       </div>
 
       <Button
         variant="outline"
         size="sm"
-        onClick={() => setItems((prev) => [...prev, newItem()])}
+        onClick={() => {
+          const item = newItem();
+          setItems((prev) => [...prev, item]);
+          setItemInputs((prev) => ({ ...prev, [item.id]: { qty: '1', price: '0' } }));
+        }}
         className="w-full"
       >
         <Plus className="h-4 w-4 mr-2" />

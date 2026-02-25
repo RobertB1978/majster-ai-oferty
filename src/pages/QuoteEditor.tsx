@@ -15,6 +15,13 @@ import { TemplateSelector } from '@/components/quotes/TemplateSelector';
 import { QuoteVersionsPanel } from '@/components/quotes/QuoteVersionsPanel';
 import { QuoteSnapshot } from '@/hooks/useQuoteVersions';
 import { VoiceInputButton } from '@/components/voice/VoiceInputButton';
+import { parseDecimal } from '@/lib/numberParsing';
+
+/** Surowy tekst wpisany przez użytkownika dla pól numerycznych jednej pozycji */
+interface PositionInputs {
+  qty: string;
+  price: string;
+}
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
 const categories = ['Materiał', 'Robocizna'] as const;
@@ -32,11 +39,19 @@ export default function QuoteEditor() {
   const [marginPercent, setMarginPercent] = useState(10);
   const [isInitialized, setIsInitialized] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  /** Surowe ciągi znaków wpisane przez użytkownika (oddzielnie od wartości numerycznych) */
+  const [positionInputs, setPositionInputs] = useState<Record<string, PositionInputs>>({});
 
   useEffect(() => {
     if (existingQuote && !isInitialized) {
       setPositions(existingQuote.positions || []);
       setMarginPercent(Number(existingQuote.margin_percent) || 10);
+      // Inicjalizacja surowych inputów ze wczytanych pozycji
+      const inputs: Record<string, PositionInputs> = {};
+      (existingQuote.positions || []).forEach((p) => {
+        inputs[p.id] = { qty: String(p.qty), price: String(p.price) };
+      });
+      setPositionInputs(inputs);
       setIsInitialized(true);
     } else if (!quoteLoading && !existingQuote && !isInitialized) {
       setIsInitialized(true);
@@ -79,6 +94,7 @@ export default function QuoteEditor() {
       category: 'Materiał',
     };
     setPositions([...positions, newPosition]);
+    setPositionInputs((prev) => ({ ...prev, [newPosition.id]: { qty: '1', price: '0' } }));
     setValidationErrors({});
   };
 
@@ -92,6 +108,13 @@ export default function QuoteEditor() {
       category: template.category,
     };
     setPositions([...positions, newPosition]);
+    setPositionInputs((prev) => ({
+      ...prev,
+      [newPosition.id]: {
+        qty: String(Number(template.default_qty)),
+        price: String(Number(template.default_price)),
+      },
+    }));
     toast.success(`Dodano: ${template.name}`);
   };
 
@@ -112,7 +135,7 @@ export default function QuoteEditor() {
   };
 
   const updatePosition = (positionId: string, field: keyof QuotePosition, value: unknown) => {
-    setPositions(positions.map(p => 
+    setPositions(positions.map(p =>
       p.id === positionId ? { ...p, [field]: value } : p
     ));
     setValidationErrors(prev => {
@@ -120,6 +143,34 @@ export default function QuoteEditor() {
       delete newErrors[`${positionId}_${field}`];
       return newErrors;
     });
+  };
+
+  /**
+   * Obsługuje zmianę pola numerycznego (qty lub price).
+   * Przechowuje surowy tekst w positionInputs; aktualizuje wartość numeryczną
+   * w positions tylko jeśli parsowanie się powiedzie.
+   * Przy błędzie parsowania zachowuje wpisany tekst i ustawia stan błędu.
+   */
+  const updateNumericInput = (
+    positionId: string,
+    field: 'qty' | 'price',
+    rawValue: string,
+  ) => {
+    // Zawsze zapisuj surowy tekst użytkownika
+    setPositionInputs((prev) => ({
+      ...prev,
+      [positionId]: { ...prev[positionId], [field]: rawValue },
+    }));
+
+    const parsed = parseDecimal(rawValue);
+    if (parsed !== null) {
+      updatePosition(positionId, field, parsed);
+    } else {
+      // Zachowaj ostatnią poprawną wartość numeryczną w positions,
+      // ale zasygnalizuj błąd w UI
+      const label = field === 'qty' ? 'Nieprawidłowa ilość' : 'Nieprawidłowa cena';
+      setValidationErrors((prev) => ({ ...prev, [`${positionId}_${field}`]: label }));
+    }
   };
 
   const removePosition = (positionId: string) => {
@@ -182,6 +233,12 @@ export default function QuoteEditor() {
   const handleLoadVersion = (snapshot: QuoteSnapshot) => {
     setPositions(snapshot.positions);
     setMarginPercent(snapshot.margin_percent);
+    // Sync surowych inputów z wczytaną wersją
+    const inputs: Record<string, PositionInputs> = {};
+    snapshot.positions.forEach((p) => {
+      inputs[p.id] = { qty: String(p.qty), price: String(p.price) };
+    });
+    setPositionInputs(inputs);
   };
 
   const handleAiSuggestions = async () => {
@@ -204,8 +261,14 @@ export default function QuoteEditor() {
           price: s.price,
           category: s.category as 'Materiał' | 'Robocizna',
         }));
-        
+
         setPositions([...positions, ...newPositions]);
+        // Inicjalizacja inputów dla pozycji wygenerowanych przez AI
+        const newInputs: Record<string, PositionInputs> = {};
+        newPositions.forEach((p) => {
+          newInputs[p.id] = { qty: String(p.qty), price: String(p.price) };
+        });
+        setPositionInputs((prev) => ({ ...prev, ...newInputs }));
         toast.success(`Dodano ${suggestions.length} sugestii AI`);
       } else {
         toast.info('Brak sugestii dla tego projektu');
@@ -334,11 +397,10 @@ export default function QuoteEditor() {
                   <div className="sm:col-span-2">
                     <Label className="text-xs text-muted-foreground">Ilość *</Label>
                     <Input
-                      type="number"
-                      min="0.01"
-                      step="0.01"
-                      value={position.qty}
-                      onChange={(e) => updatePosition(position.id, 'qty', parseFloat(e.target.value) || 0)}
+                      type="text"
+                      inputMode="decimal"
+                      value={positionInputs[position.id]?.qty ?? String(position.qty)}
+                      onChange={(e) => updateNumericInput(position.id, 'qty', e.target.value)}
                       className={validationErrors[`${position.id}_qty`] ? 'border-destructive' : ''}
                     />
                     {validationErrors[`${position.id}_qty`] && (
@@ -361,11 +423,10 @@ export default function QuoteEditor() {
                   <div className="sm:col-span-2">
                     <Label className="text-xs text-muted-foreground">Cena jedn. (zł)</Label>
                     <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={position.price}
-                      onChange={(e) => updatePosition(position.id, 'price', parseFloat(e.target.value) || 0)}
+                      type="text"
+                      inputMode="decimal"
+                      value={positionInputs[position.id]?.price ?? String(position.price)}
+                      onChange={(e) => updateNumericInput(position.id, 'price', e.target.value)}
                       className={validationErrors[`${position.id}_price`] ? 'border-destructive' : ''}
                     />
                     {validationErrors[`${position.id}_price`] && (
