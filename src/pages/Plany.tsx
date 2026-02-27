@@ -99,21 +99,21 @@ export default function Plany() {
                   </div>
                 )}
                 <CardHeader>
-                  <CardTitle>{plan.name}</CardTitle>
+                  <CardTitle>{t(plan.displayNameKey, plan.name)}</CardTitle>
                   <CardDescription>
                     <span className="text-3xl font-bold text-foreground">
                       {formatDualCurrency(plan.pricePLN, i18n.language)}
                     </span>
                     {plan.pricePLN > 0 && <span className="text-sm"> {t('billing.perMonth', '/month')}</span>}
                   </CardDescription>
-                  <p className="text-xs text-muted-foreground">{plan.description}</p>
+                  <p className="text-xs text-muted-foreground">{t(plan.descriptionKey, plan.description)}</p>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col gap-4">
                   <ul className="space-y-2 text-sm flex-1">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-center gap-2">
+                    {plan.featuresKeys.map((key) => (
+                      <li key={key} className="flex items-center gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
-                        {f}
+                        {t(key)}
                       </li>
                     ))}
                   </ul>

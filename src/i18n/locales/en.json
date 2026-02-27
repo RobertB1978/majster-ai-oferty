@@ -1553,6 +1553,8 @@
       "registerFree": "Create a free account",
       "close": "Close",
       "tryFree": "Try for free",
+      "mvpTitle": "Launching",
+      "mvpDesc": "MVP version: starting with PDF quotes and project management. Other features are in active development and will be available soon.",
       "quotes": {
         "title": "Quick quotes",
         "description": "Create professional quotes in minutes, not hours. Dictate by voice, use AI or create manually.",
