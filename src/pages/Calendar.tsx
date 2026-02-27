@@ -279,6 +279,11 @@ export default function Calendar() {
           );
         })}
       </div>
+      {events.length === 0 && !isLoading && (
+        <div className="p-6 text-center border-t">
+          <p className="text-sm text-muted-foreground">{t('calendar.noEventsHint', 'No events yet. Double-click a day to add your first event.')}</p>
+        </div>
+      )}
     </div>
   );
 
@@ -352,7 +357,11 @@ export default function Calendar() {
       <div className="bg-card rounded-xl border overflow-hidden">
         <div className="p-4 border-b bg-muted/30">
           <h3 className="text-lg font-semibold">{format(selectedDate, 'EEEE, d MMMM yyyy', { locale: dateLocale })}</h3>
-          <p className="text-sm text-muted-foreground">{dayEvents.length} {t('analytics.allEvents').toLowerCase()}</p>
+          <p className="text-sm text-muted-foreground">
+            {dayEvents.length === 0
+              ? t('calendar.noEventsForDay', 'No events — click any slot to add one')
+              : `${dayEvents.length} ${t('analytics.allEvents').toLowerCase()}`}
+          </p>
         </div>
         <div className="max-h-[600px] overflow-y-auto">
           {hours.map(hour => {

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -28,6 +29,7 @@ export function StickyTotalsCard({
   saving,
   compact = false,
 }: StickyTotalsCardProps) {
+  const { t } = useTranslation();
   const { netTotal, vatAmount, grossTotal } = calcTotals(items, vatEnabled);
   const hasItems = items.some((i) => i.name.trim() && i.qty > 0);
 
@@ -36,12 +38,12 @@ export function StickyTotalsCard({
       <div className="flex items-center gap-3">
         <div className="flex-1 flex gap-3 text-sm flex-wrap">
           <span className="text-muted-foreground">
-            Netto:{' '}
+            {t('common.net', 'Net:')}:{' '}
             <span className="font-medium text-foreground">{fmt(netTotal)} zł</span>
           </span>
           {vatEnabled && (
             <span className="text-muted-foreground">
-              Brutto:{' '}
+              {t('common.gross', 'Gross:')}:{' '}
               <span className="font-bold text-primary">{fmt(grossTotal)} zł</span>
             </span>
           )}
@@ -57,7 +59,7 @@ export function StickyTotalsCard({
           ) : (
             <Save className="h-4 w-4" />
           )}
-          <span className="ml-2 hidden xs:inline">Zapisz</span>
+          <span className="ml-2 hidden xs:inline">{t('quickEstimate.save', 'Save as project')}</span>
         </Button>
       </div>
     );
@@ -68,7 +70,7 @@ export function StickyTotalsCard({
       <CardContent className="p-4 space-y-3">
         <div className="space-y-2 text-sm">
           <div className="flex justify-between text-muted-foreground">
-            <span>Netto</span>
+            <span>{t('common.net', 'Net')}</span>
             <span>{fmt(netTotal)} zł</span>
           </div>
           {vatEnabled && (
@@ -78,7 +80,7 @@ export function StickyTotalsCard({
             </div>
           )}
           <div className="flex justify-between font-bold text-base border-t pt-2">
-            <span>{vatEnabled ? 'Brutto' : 'Suma'}</span>
+            <span>{vatEnabled ? t('common.gross', 'Gross') : t('quickEstimate.total', 'TOTAL')}</span>
             <span className="text-primary">{fmt(grossTotal)} zł</span>
           </div>
         </div>
@@ -93,12 +95,12 @@ export function StickyTotalsCard({
           ) : (
             <Save className="h-4 w-4 mr-2" />
           )}
-          Zapisz wycenę jako projekt
+          {t('szybkaWycena.saveAsProject')}
         </Button>
 
         <p className="text-xs text-muted-foreground text-center">
-          {vatEnabled ? 'VAT 23% doliczony automatycznie' : 'Cena netto (bez VAT)'}
-          {' · '}Klient wymagany przed zapisem
+          {vatEnabled ? t('szybkaWycena.vatIncluded') : t('szybkaWycena.noVat')}
+          {' · '}{t('szybkaWycena.clientRequiredNote')}
         </p>
       </CardContent>
     </Card>

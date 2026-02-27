@@ -38,7 +38,10 @@
     "or": "lub",
     "retry": "Spróbuj ponownie",
     "refreshPage": "Odśwież stronę",
-    "toggleTheme": "Przełącz motyw"
+    "toggleTheme": "Przełącz motyw",
+    "net": "Netto",
+    "gross": "Brutto",
+    "saveError": "Błąd zapisu:"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -56,10 +59,12 @@
     "admin": "Panel administratora",
     "plan": "Mój plan",
     "menu": "Menu",
-    "comingSoon": "Wkrótce"
+    "comingSoon": "Wkrótce",
+    "quickEstimate": "Szybka Wycena"
   },
   "auth": {
     "login": "Zaloguj się",
+    "tryForFree": "Wypróbuj za darmo",
     "register": "Zarejestruj się",
     "logout": "Wyloguj się",
     "email": "Email",
@@ -271,6 +276,8 @@
     },
     "selectDate": "Wybierz datę",
     "noEvents": "Brak wydarzeń w tym dniu",
+    "noEventsHint": "Brak wydarzeń. Kliknij dwukrotnie w dzień, aby dodać pierwsze wydarzenie.",
+    "noEventsForDay": "Brak wydarzeń — kliknij dowolny slot, aby dodać",
     "today": "Dzisiaj",
     "month": "Miesiąc",
     "week": "Tydzień",
@@ -565,7 +572,47 @@
     "usage": "Wykorzystanie",
     "paymentHistory": "Historia płatności",
     "noPayments": "Brak historii płatności",
-    "popular": "Popularne"
+    "popular": "Popularne",
+    "subscriptionAndPlan": "Subskrypcja i plan",
+    "planChooseSubtitle": "Wybierz pakiet dopasowany do Twojego biznesu. Zacznij za darmo, rozwijaj się kiedy chcesz.",
+    "currentlyOnFreePlan": "Aktualnie korzystasz z planu darmowego",
+    "upgradeToUnlock": "Przejdź na wyższy plan, by odblokować AI, zarządzanie zespołem i więcej.",
+    "unlimited": "Bez limitu",
+    "limitProjects": "projektów",
+    "limitClients": "klientów",
+    "limitTeam": "osób w zespole",
+    "storage": "pamięci",
+    "pricingTitle": "Cennik i plany",
+    "pricingDescription": "Wybierz plan Majster.AI dopasowany do Twojej firmy. Zacznij bezpłatnie.",
+    "pricingSubtitle": "Zacznij bezpłatnie. Rozwijaj się kiedy Twój biznes tego potrzebuje.",
+    "vatNote": "Ceny netto, do ceny doliczamy 23% VAT",
+    "vatFootnote": "Wszystkie ceny podane są w złotych polskich (PLN) netto. Do ceny doliczamy 23% VAT. Wystawiamy faktury VAT.",
+    "faqTitle": "Pytania o płatności",
+    "faqQ1": "Jak zmienić plan?",
+    "faqA1": "Skontaktuj się z nami przez email",
+    "faqA1b": "lub wyślij zgłoszenie klikając przycisk przy wybranym planie.",
+    "faqQ2": "Czy można anulować?",
+    "faqA2": "Tak — płatne plany można anulować w dowolnym momencie. Dostęp pozostaje aktywny do końca okresu rozliczeniowego.",
+    "faqQ3": "Faktury VAT?",
+    "faqA3": "Tak, wystawiamy faktury VAT. Podaj NIP firmy przy zakupie planu.",
+    "try30days": "Wypróbuj 30 dni",
+    "planFeature": {
+      "excelExport": "Eksport Excel",
+      "team": "Zarządzanie zespołem",
+      "customTemplates": "Własne szablony",
+      "ai": "Asystent AI",
+      "voice": "Dyktowanie głosem",
+      "documents": "Dokumenty firmowe",
+      "calendarSync": "Synchronizacja kalendarza",
+      "marketplace": "Marketplace",
+      "advancedAnalytics": "Zaawansowana analityka",
+      "photoEstimation": "Wycena ze zdjęcia",
+      "ocr": "OCR faktur",
+      "api": "Dostęp do API",
+      "prioritySupport": "Priorytetowe wsparcie",
+      "unlimitedProjects": "Nieograniczone projekty",
+      "unlimitedClients": "Nieograniczeni klienci"
+    }
   },
   "profile": {
     "title": "Profil firmy",
@@ -1744,6 +1791,13 @@
       "packLoaded": "Pakiet załadowany! Edytuj ceny i ilości.",
       "btnCatalog": "Katalog branż",
       "btnCatalogSub": "Załaduj pakiet startowy"
+    },
+    "types": {
+      "labor": "Robocizna",
+      "material": "Materiał",
+      "service": "Usługa",
+      "travel": "Dojazd",
+      "fixed": "Ryczałt"
     }
   },
   "footer": {

@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import type { StarterPack } from '@/data/starterPacks';
+import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,7 @@ import type { ItemTemplate } from '@/hooks/useItemTemplates';
 import type { StarterPack } from '@/data/starterPacks';
 
 export default function QuickEstimateWorkspace() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -123,13 +124,13 @@ export default function QuickEstimateWorkspace() {
     const validItems = items.filter((i) => i.name.trim() && i.qty > 0);
 
     if (validItems.length === 0) {
-      toast.error('Dodaj co najmniej jedną pozycję z nazwą i ilością.');
+      toast.error(t('szybkaWycena.noItemsError'));
       return;
     }
 
     if (!clientId) {
       setClientError(true);
-      toast.error('Wybierz klienta przed zapisaniem wyceny.');
+      toast.error(t('szybkaWycena.noClientError'));
       // Scroll client card into view on mobile
       clientCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
@@ -142,16 +143,16 @@ export default function QuickEstimateWorkspace() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error('Brak sesji użytkownika');
+      if (!user) throw new Error(t('auth.errors.noSession', 'No user session'));
 
       // Create project
       const { data: project, error: projErr } = await supabase
         .from('projects')
         .insert({
-          project_name: projectName.trim() || 'Szybka wycena',
+          project_name: projectName.trim() || t('szybkaWycena.pageTitle'),
           client_id: clientId,
           user_id: user.id,
-          status: 'Wycena w toku',
+          status: t('szybkaWycena.pageTitle'),
         })
         .select('id')
         .single();
@@ -172,11 +173,11 @@ export default function QuickEstimateWorkspace() {
 
       if (itemsErr) throw itemsErr;
 
-      toast.success('Wycena zapisana jako projekt!');
+      toast.success(t('szybkaWycena.savedSuccess'));
       navigate(`/app/jobs/${project.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      toast.error(`Błąd zapisu: ${msg}`);
+      toast.error(`${t('common.saveError', 'Save error:')} ${msg}`);
     } finally {
       setSaving(false);
     }
@@ -187,7 +188,7 @@ export default function QuickEstimateWorkspace() {
   return (
     <>
       <Helmet>
-        <title>Szybka wycena | Majster.AI</title>
+        <title>{t('szybkaWycena.pageTitle')} | Majster.AI</title>
       </Helmet>
 
       {/* Start-choice modal */}
@@ -216,10 +217,10 @@ export default function QuickEstimateWorkspace() {
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary shrink-0">
                 <Zap className="h-4 w-4 text-primary-foreground" />
               </span>
-              Szybka wycena
+              {t('szybkaWycena.pageTitle')}
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Stwórz ofertę i wyślij do klienta bez opuszczania tej strony
+              {t('szybkaWycena.subtitle')}
             </p>
           </div>
         </div>
@@ -231,10 +232,10 @@ export default function QuickEstimateWorkspace() {
           <div className="space-y-4 min-w-0">
             {/* Project name */}
             <div className="space-y-1">
-              <Label htmlFor="ws-pname">Nazwa wyceny</Label>
+              <Label htmlFor="ws-pname">{t('szybkaWycena.estimateName')}</Label>
               <Input
                 id="ws-pname"
-                placeholder="np. Remont łazienki — Nowak"
+                placeholder={t('szybkaWycena.estimateNamePlaceholder')}
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
               />

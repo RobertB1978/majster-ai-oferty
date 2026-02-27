@@ -1,15 +1,23 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, Users, Calendar, Wallet } from 'lucide-react';
+import { LayoutDashboard, Briefcase, Users, Wallet, Zap, type LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
-const BOTTOM_NAV_ITEMS = [
+interface BottomNavItem {
+  id: string;
+  path: string;
+  icon: LucideIcon;
+  labelKey: string;
+  primary?: boolean;
+}
+
+const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
   { id: 'dashboard', path: '/app/dashboard', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
   { id: 'jobs', path: '/app/jobs', icon: Briefcase, labelKey: 'nav.projects' },
+  { id: 'quickEstimate', path: '/app/szybka-wycena', icon: Zap, labelKey: 'nav.quickEstimate', primary: true },
   { id: 'clients', path: '/app/customers', icon: Users, labelKey: 'nav.clients' },
-  { id: 'calendar', path: '/app/calendar', icon: Calendar, labelKey: 'nav.calendar' },
   { id: 'finance', path: '/app/finance', icon: Wallet, labelKey: 'nav.finance' },
-] as const;
+];
 
 export function MobileBottomNav() {
   const { t } = useTranslation();
@@ -28,13 +36,15 @@ export function MobileBottomNav() {
               key={item.id}
               to={item.path}
               className={cn(
-                'flex flex-col items-center justify-center gap-0.5 px-2 py-1 min-w-[56px] rounded-lg transition-colors',
-                'text-muted-foreground',
+                'flex flex-col items-center justify-center gap-0.5 px-2 py-2 min-w-[60px] rounded-lg transition-colors',
+                item.primary
+                  ? 'text-primary bg-primary/10'
+                  : 'text-muted-foreground',
                 isActive && 'text-primary'
               )}
             >
-              <item.icon className={cn('h-5 w-5', isActive && 'text-primary')} />
-              <span className="text-[10px] font-medium leading-tight truncate max-w-[60px]">
+              <item.icon className={cn('h-5 w-5', item.primary && 'h-6 w-6', isActive && 'text-primary')} />
+              <span className="text-[11px] font-medium leading-tight truncate max-w-[64px]">
                 {t(item.labelKey)}
               </span>
             </NavLink>

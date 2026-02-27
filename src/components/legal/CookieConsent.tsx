@@ -86,8 +86,8 @@ export function CookieConsent() {
   if (!isVisible || shouldSkipConsent) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-fade-in">
-      <Card className="w-full max-w-lg shadow-2xl border-2">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] p-3 sm:p-4 animate-fade-in">
+      <Card className="w-full max-w-lg mx-auto shadow-2xl border-2">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
