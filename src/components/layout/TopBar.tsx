@@ -119,7 +119,7 @@ export function TopBar() {
               size="icon"
               onClick={toggleTheme}
               className="h-10 w-10"
-              aria-label={isDark ? t('theme.switchToLight', 'Przełącz na jasny motyw') : t('theme.switchToDark', 'Przełącz na ciemny motyw')}
+              aria-label={isDark ? t('landing.header.switchToLight') : t('landing.header.switchToDark')}
             >
               {isDark ? (
                 <Sun className="h-4 w-4" />
