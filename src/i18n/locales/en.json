@@ -38,7 +38,12 @@
     "or": "or",
     "retry": "Try again",
     "refreshPage": "Refresh page",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "net": "Net",
+    "gross": "Gross",
+    "saveError": "Save error:",
+    "nextPage": "next page",
+    "previousPage": "previous page"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -56,10 +61,12 @@
     "admin": "Admin Panel",
     "plan": "My Plan",
     "menu": "Menu",
-    "comingSoon": "Soon"
+    "comingSoon": "Soon",
+    "quickEstimate": "Quick Estimate"
   },
   "auth": {
     "login": "Login",
+    "tryForFree": "Try for free",
     "register": "Register",
     "logout": "Logout",
     "email": "Email",
@@ -264,6 +271,8 @@
     "linkedProject": "Linked Project",
     "selectDate": "Select date",
     "noEvents": "No events on this day",
+    "noEventsHint": "No events yet. Double-click a day to add your first event.",
+    "noEventsForDay": "No events — click any slot to add one",
     "today": "Today",
     "month": "Month",
     "week": "Week",
@@ -565,7 +574,47 @@
     "mostPopular": "Most Popular",
     "selectPlan": "Select plan",
     "startFree": "Start for free",
-    "subtitle": "Manage your subscription plan"
+    "subtitle": "Manage your subscription plan",
+    "subscriptionAndPlan": "Subscription & Plan",
+    "planChooseSubtitle": "Choose a plan that fits your business. Start free, scale when ready.",
+    "currentlyOnFreePlan": "You are currently on the Free plan",
+    "upgradeToUnlock": "Upgrade to unlock AI, team management, and more.",
+    "unlimited": "Unlimited",
+    "limitProjects": "projects",
+    "limitClients": "clients",
+    "limitTeam": "team members",
+    "storage": "storage",
+    "pricingTitle": "Pricing & Plans",
+    "pricingDescription": "Choose a Majster.AI plan that fits your business. Start for free.",
+    "pricingSubtitle": "Start for free. Scale when your business needs it.",
+    "vatNote": "Prices are net, 23% VAT applies",
+    "vatFootnote": "All prices in Polish Zloty (PLN), net. 23% VAT applies. We issue VAT invoices.",
+    "faqTitle": "Payment Questions",
+    "faqQ1": "How to change plan?",
+    "faqA1": "Contact us by email",
+    "faqA1b": "or submit a request by clicking the button next to your chosen plan.",
+    "faqQ2": "Can I cancel?",
+    "faqA2": "Yes — paid plans can be cancelled at any time. Access remains active until the end of the billing period.",
+    "faqQ3": "VAT invoices?",
+    "faqA3": "Yes, we issue VAT invoices. Provide your company tax ID (NIP) when purchasing a plan.",
+    "try30days": "Try 30 days",
+    "planFeature": {
+      "excelExport": "Excel Export",
+      "team": "Team Management",
+      "customTemplates": "Custom Templates",
+      "ai": "AI Assistant",
+      "voice": "Voice Dictation",
+      "documents": "Company Documents",
+      "calendarSync": "Calendar Sync",
+      "marketplace": "Marketplace",
+      "advancedAnalytics": "Advanced Analytics",
+      "photoEstimation": "Photo Estimation",
+      "ocr": "Invoice OCR",
+      "api": "API Access",
+      "prioritySupport": "Priority Support",
+      "unlimitedProjects": "Unlimited Projects",
+      "unlimitedClients": "Unlimited Clients"
+    }
   },
   "profile": {
     "title": "Company Profile",
@@ -1744,6 +1793,13 @@
       "packLoaded": "Pack loaded! Edit prices and quantities.",
       "btnCatalog": "Trade catalog",
       "btnCatalogSub": "Load starter pack"
+    },
+    "types": {
+      "labor": "Labour",
+      "material": "Material",
+      "service": "Service",
+      "travel": "Travel",
+      "fixed": "Fixed"
     }
   },
   "footer": {
@@ -1806,7 +1862,8 @@
     "bulkErrorsSkipped": "rows with errors — will be skipped",
     "bulkErrorSkipped": "row with error — will be skipped",
     "bulkConfirm": "Add items",
-    "bulkCancel": "Cancel"
+    "bulkCancel": "Cancel",
+    "paginationRange": "Items {{start}}–{{end}} of {{total}}"
   },
   "tradeOnboarding": {
     "step1Title": "What is your trade?",

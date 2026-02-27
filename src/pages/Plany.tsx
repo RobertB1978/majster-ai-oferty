@@ -12,12 +12,12 @@ import { formatDualCurrency } from '@/config/currency';
 export { PLANS };
 
 export default function Plany() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <>
       <Helmet>
-        <title>Cennik i plany | Majster.AI</title>
-        <meta name="description" content="Wybierz plan Majster.AI dopasowany do Twojej firmy. Zacznij bezpłatnie." />
+        <title>{t('billing.pricingTitle', 'Pricing & Plans')} | Majster.AI</title>
+        <meta name="description" content={t('billing.pricingDescription', 'Choose a Majster.AI plan that fits your business. Start for free.')} />
       </Helmet>
 
       <div className="min-h-screen bg-background">
@@ -32,10 +32,10 @@ export default function Plany() {
             </Link>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/login">Zaloguj się</Link>
+                <Link to="/login">{t('auth.login', 'Sign in')}</Link>
               </Button>
               <Button size="sm" asChild>
-                <Link to="/register">Wypróbuj za darmo</Link>
+                <Link to="/register">{t('auth.tryForFree', 'Try for free')}</Link>
               </Button>
             </div>
           </div>
@@ -43,12 +43,12 @@ export default function Plany() {
 
         <div className="container py-16 max-w-5xl">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">Cennik i plany</h1>
+            <h1 className="text-4xl font-bold mb-4">{t('billing.pricingTitle', 'Pricing & Plans')}</h1>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Zacznij bezpłatnie. Rozwijaj się kiedy Twój biznes tego potrzebuje.
+              {t('billing.pricingSubtitle', 'Start for free. Scale when your business needs it.')}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              Ceny netto, do ceny doliczamy 23% VAT
+              {t('billing.vatNote', 'Prices are net, 23% VAT applies')}
             </p>
           </div>
 
@@ -64,7 +64,7 @@ export default function Plany() {
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <Badge className="gap-1 shadow-sm">
                       <Star className="h-3 w-3 fill-current" />
-                      Najpopularniejszy
+                      {t('billing.mostPopular', 'Most Popular')}
                     </Badge>
                   </div>
                 )}
@@ -74,7 +74,7 @@ export default function Plany() {
                     <span className="text-3xl font-bold text-foreground">
                       {formatDualCurrency(plan.pricePLN, i18n.language)}
                     </span>
-                    {plan.pricePLN > 0 && <span className="text-sm"> / mies. netto</span>}
+                    {plan.pricePLN > 0 && <span className="text-sm"> {t('billing.perMonth', '/month')}</span>}
                   </CardDescription>
                   <p className="text-xs text-muted-foreground">{plan.description}</p>
                 </CardHeader>
@@ -94,16 +94,16 @@ export default function Plany() {
                       asChild
                     >
                       <Link to={`/plany/${plan.slug}`}>
-                        Szczegóły <ArrowRight className="ml-1 h-4 w-4" />
+                        {t('common.details', 'Details')} <ArrowRight className="ml-1 h-4 w-4" />
                       </Link>
                     </Button>
                     {plan.pricePLN === 0 ? (
                       <Button className="w-full" asChild>
-                        <Link to="/register">Zacznij za darmo</Link>
+                        <Link to="/register">{t('billing.startFree', 'Start for free')}</Link>
                       </Button>
                     ) : (
                       <Button className="w-full" variant={plan.highlighted ? 'default' : 'secondary'} asChild>
-                        <Link to="/register">Wypróbuj 30 dni</Link>
+                        <Link to="/register">{t('billing.try30days', 'Try 30 days')}</Link>
                       </Button>
                     )}
                   </div>
@@ -114,8 +114,7 @@ export default function Plany() {
 
           {/* VAT note */}
           <p className="text-center text-sm text-muted-foreground mt-8">
-            Wszystkie ceny podane są w złotych polskich (PLN) netto. Do ceny doliczamy 23% VAT.
-            Wystawiamy faktury VAT.
+            {t('billing.vatFootnote', 'All prices in Polish Zloty (PLN), net. 23% VAT applies. We issue VAT invoices.')}
           </p>
         </div>
       </div>

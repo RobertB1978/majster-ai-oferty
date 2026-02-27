@@ -20,6 +20,7 @@ import {
   Wallet,
   FileText,
   UserPlus,
+  Zap,
   type LucideIcon,
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
@@ -32,7 +33,7 @@ import { useConfig } from '@/contexts/ConfigContext';
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard, Users, FolderKanban, Building2, Package, Calendar,
   BarChart3, UsersRound, TrendingUp, Store, Settings, CreditCard,
-  Briefcase, Wallet, FileText, UserPlus,
+  Briefcase, Wallet, FileText, UserPlus, Zap,
 };
 
 /** Map config item IDs to i18n translation keys so nav labels react to language changes. */
@@ -47,6 +48,7 @@ const NAV_LABEL_KEYS: Record<string, string> = {
   marketplace: 'nav.marketplace',
   analytics: 'nav.analytics',
   plan: 'nav.plan',
+  quickEstimate: 'nav.quickEstimate',
 };
 
 export function Navigation() {

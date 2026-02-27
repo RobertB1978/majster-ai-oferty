@@ -33,7 +33,7 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !phone || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword) {
       toast.error(t('auth.errors.fillAllFields'));
       return;
     }
@@ -43,26 +43,29 @@ export default function Register() {
       return;
     }
 
-    // Phone validation: strip non-digits, must be ≥9 digits (Polish standard)
-    const digitsOnly = phone.replace(/\D/g, '');
-    if (digitsOnly.length < 9) {
-      toast.error(t('auth.errors.invalidPhone', 'Podaj prawidłowy numer telefonu (min. 9 cyfr).'));
-      return;
-    }
+    // Phone validation (optional field): only validate if provided
+    let digitsOnly = '';
+    if (phone.trim()) {
+      digitsOnly = phone.replace(/\D/g, '');
+      if (digitsOnly.length < 9) {
+        toast.error(t('auth.errors.invalidPhone', 'Please provide a valid phone number (min. 9 digits).'));
+        return;
+      }
 
-    // Anti-abuse: check for duplicate phone in profiles
-    const { data: existingPhone, error: phoneCheckError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('phone', digitsOnly)
-      .maybeSingle();
-    if (phoneCheckError) {
-      toast.error(t('auth.errors.registrationFailed', 'Błąd rejestracji. Spróbuj ponownie.'));
-      return;
-    }
-    if (existingPhone) {
-      toast.error(t('auth.errors.phoneTaken', 'Ten numer telefonu jest już zarejestrowany.'));
-      return;
+      // Anti-abuse: check for duplicate phone in profiles
+      const { data: existingPhone, error: phoneCheckError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('phone', digitsOnly)
+        .maybeSingle();
+      if (phoneCheckError) {
+        toast.error(t('auth.errors.registrationFailed', 'Registration failed. Please try again.'));
+        return;
+      }
+      if (existingPhone) {
+        toast.error(t('auth.errors.phoneTaken', 'This phone number is already registered.'));
+        return;
+      }
     }
 
     if (password !== confirmPassword) {
@@ -86,10 +89,12 @@ export default function Register() {
       return;
     }
 
-    // Save normalised phone to profile (profile row created by DB trigger on auth.users)
-    const { data: { user: newUser } } = await supabase.auth.getUser();
-    if (newUser) {
-      await supabase.from('profiles').update({ phone: digitsOnly }).eq('id', newUser.id);
+    // Save normalised phone to profile if provided (profile row created by DB trigger on auth.users)
+    if (digitsOnly) {
+      const { data: { user: newUser } } = await supabase.auth.getUser();
+      if (newUser) {
+        await supabase.from('profiles').update({ phone: digitsOnly }).eq('id', newUser.id);
+      }
     }
 
     setIsLoading(false);
@@ -124,7 +129,7 @@ export default function Register() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">{t('auth.phone', 'Numer telefonu')}</Label>
+              <Label htmlFor="phone">{t('auth.phone', 'Phone number')} <span className="text-muted-foreground text-xs">({t('common.optional', 'optional')})</span></Label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -137,7 +142,7 @@ export default function Register() {
                   autoComplete="tel"
                 />
               </div>
-              <p className="text-xs text-muted-foreground">{t('auth.phoneHint', 'Wymagany do weryfikacji konta. Nie udostępniamy go innym.')}</p>
+              <p className="text-xs text-muted-foreground">{t('auth.phoneHint', 'Used for account verification. Never shared with others.')}</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">{t('auth.password')}</Label>
