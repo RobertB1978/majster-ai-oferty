@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 
 export default function Marketplace() {
+  const { t } = useTranslation();
   const { data: mySubcontractors = [], isLoading: loadingMy } = useMySubcontractors();
   const { data: publicSubcontractors = [], isLoading: loadingPublic } = usePublicSubcontractors();
   const addSubcontractor = useAddSubcontractor();
@@ -53,7 +55,7 @@ export default function Marketplace() {
 
   const handleAddSubcontractor = async () => {
     if (!newSubcontractor.company_name.trim()) {
-      toast.error('Podaj nazwę firmy');
+      toast.error(t('marketplacePage.companyNameLabel'));
       return;
     }
     
@@ -98,7 +100,7 @@ export default function Marketplace() {
     <>
       <Helmet>
         <title>Marketplace | Majster.AI</title>
-        <meta name="description" content="Znajdź i zarządzaj podwykonawcami" />
+        <meta name="description" content={t('marketplacePage.searchPlaceholder')} />
       </Helmet>
 
       <div className="space-y-6 animate-fade-in">
@@ -111,7 +113,7 @@ export default function Marketplace() {
               Marketplace
             </h1>
             <p className="text-muted-foreground mt-1">
-              Znajdź podwykonawców lub dodaj własnych
+              {t('marketplacePage.searchPlaceholder')}
             </p>
           </div>
           
@@ -119,82 +121,82 @@ export default function Marketplace() {
             <DialogTrigger asChild>
               <Button size="lg" className="shadow-sm bg-primary hover:bg-primary/90 transition-colors">
                 <Plus className="h-4 w-4 mr-2" />
-                Dodaj podwykonawcę
+                {t('marketplacePage.addSubcontractor')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   <Store className="h-5 w-5 text-primary" />
-                  Nowy podwykonawca
+                  {t('marketplacePage.newSubcontractor')}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                 <div>
-                  <Label>Nazwa firmy *</Label>
+                  <Label>{t('marketplacePage.companyNameLabel')}</Label>
                   <Input
                     value={newSubcontractor.company_name}
                     onChange={(e) => setNewSubcontractor({ ...newSubcontractor, company_name: e.target.value })}
-                    placeholder="Firma Budowlana XYZ"
+                    placeholder={t('marketplacePage.companyNamePlaceholder')}
                   />
                 </div>
                 <div>
-                  <Label>Osoba kontaktowa</Label>
+                  <Label>{t('marketplacePage.contactPersonLabel')}</Label>
                   <Input
                     value={newSubcontractor.contact_name}
                     onChange={(e) => setNewSubcontractor({ ...newSubcontractor, contact_name: e.target.value })}
-                    placeholder="Jan Kowalski"
+                    placeholder={t('marketplacePage.contactPersonPlaceholder')}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Telefon</Label>
+                    <Label>{t('marketplacePage.phoneLabel')}</Label>
                     <Input
                       value={newSubcontractor.phone}
                       onChange={(e) => setNewSubcontractor({ ...newSubcontractor, phone: e.target.value })}
-                      placeholder="+48 123 456 789"
+                      placeholder={t('marketplacePage.phonePlaceholder')}
                     />
                   </div>
                   <div>
-                    <Label>Email</Label>
+                    <Label>{t('marketplacePage.emailLabel')}</Label>
                     <Input
                       value={newSubcontractor.email}
                       onChange={(e) => setNewSubcontractor({ ...newSubcontractor, email: e.target.value })}
-                      placeholder="kontakt@firma.pl"
+                      placeholder={t('marketplacePage.emailPlaceholder')}
                     />
                   </div>
                 </div>
                 <div>
-                  <Label>Miasto</Label>
+                  <Label>{t('marketplacePage.cityLabel')}</Label>
                   <Input
                     value={newSubcontractor.location_city}
                     onChange={(e) => setNewSubcontractor({ ...newSubcontractor, location_city: e.target.value })}
-                    placeholder="Warszawa"
+                    placeholder={t('marketplacePage.cityPlaceholder')}
                   />
                 </div>
                 <div>
-                  <Label>Stawka godzinowa (PLN)</Label>
+                  <Label>{t('marketplacePage.hourlyRateLabel')}</Label>
                   <Input
                     type="number"
                     value={newSubcontractor.hourly_rate}
                     onChange={(e) => setNewSubcontractor({ ...newSubcontractor, hourly_rate: e.target.value })}
-                    placeholder="80"
+                    placeholder={t('marketplacePage.hourlyRatePlaceholder')}
                   />
                 </div>
                 <div>
-                  <Label>Opis usług</Label>
+                  <Label>{t('marketplacePage.servicesLabel')}</Label>
                   <Textarea
                     value={newSubcontractor.description}
                     onChange={(e) => setNewSubcontractor({ ...newSubcontractor, description: e.target.value })}
-                    placeholder="Specjalizujemy się w..."
+                    placeholder={t('marketplacePage.servicesPlaceholder')}
                     rows={3}
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label>Profil publiczny</Label>
+                    <Label>{t('marketplacePage.publicProfile')}</Label>
                     <p className="text-xs text-muted-foreground">
-                      Inni użytkownicy zobaczą tę firmę
+                      {t('marketplacePage.publicProfileDesc')}
                     </p>
                   </div>
                   <Switch
@@ -203,7 +205,7 @@ export default function Marketplace() {
                   />
                 </div>
                 <Button onClick={handleAddSubcontractor} className="w-full" disabled={addSubcontractor.isPending}>
-                  Dodaj podwykonawcę
+                  {t('marketplacePage.addButton')}
                 </Button>
               </div>
             </DialogContent>
@@ -214,11 +216,11 @@ export default function Marketplace() {
           <TabsList className="bg-muted/50">
             <TabsTrigger value="public" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <Store className="h-4 w-4" />
-              Marketplace ({publicSubcontractors.length})
+              {t('marketplacePage.publicTabLabel', { count: publicSubcontractors.length })}
             </TabsTrigger>
             <TabsTrigger value="my" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <Users className="h-4 w-4" />
-              Moi podwykonawcy ({mySubcontractors.length})
+              {t('marketplacePage.mySubcontractorsTabLabel', { count: mySubcontractors.length })}
             </TabsTrigger>
           </TabsList>
 
@@ -228,7 +230,7 @@ export default function Marketplace() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Szukaj podwykonawców..."
+                  placeholder={t('marketplacePage.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -237,10 +239,10 @@ export default function Marketplace() {
               <Select value={cityFilter} onValueChange={setCityFilter}>
                 <SelectTrigger className="w-[180px]">
                   <MapPin className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Miasto" />
+                  <SelectValue placeholder={t('marketplacePage.cityFilterLabel')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Wszystkie miasta</SelectItem>
+                  <SelectItem value="all">{t('marketplacePage.allCities')}</SelectItem>
                   {cities.map((city) => (
                     <SelectItem key={city} value={city}>
                       {city}
@@ -260,9 +262,9 @@ export default function Marketplace() {
                 <Card className="col-span-full">
                   <CardContent className="flex flex-col items-center justify-center py-12">
                     <Store className="h-12 w-12 text-muted-foreground/50 mb-3" />
-                    <p className="text-muted-foreground">Brak podwykonawców</p>
+                    <p className="text-muted-foreground">{t('marketplacePage.noResults')}</p>
                     <p className="text-sm text-muted-foreground">
-                      Spróbuj zmienić kryteria wyszukiwania
+                      {t('marketplacePage.noResultsHint')}
                     </p>
                   </CardContent>
                 </Card>
@@ -280,9 +282,9 @@ export default function Marketplace() {
                 <Card className="col-span-full">
                   <CardContent className="flex flex-col items-center justify-center py-12">
                     <Users className="h-12 w-12 text-muted-foreground/50 mb-3" />
-                    <p className="text-muted-foreground">Brak własnych podwykonawców</p>
+                    <p className="text-muted-foreground">{t('marketplacePage.noOwn')}</p>
                     <p className="text-sm text-muted-foreground">
-                      Dodaj podwykonawców, z którymi współpracujesz
+                      {t('marketplacePage.noOwnHint')}
                     </p>
                   </CardContent>
                 </Card>

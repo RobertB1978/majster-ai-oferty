@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -53,6 +54,7 @@ interface TradeOnboardingModalProps {
  *      or /app/jobs/new (advanced)
  */
 export function TradeOnboardingModal({ open, onDone }: TradeOnboardingModalProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { complete, skip } = useTradeOnboarding();
   const [step, setStep] = useState<1 | 2>(1);
@@ -86,7 +88,7 @@ export function TradeOnboardingModal({ open, onDone }: TradeOnboardingModalProps
         onPointerDownOutside={(e) => e.preventDefault()}
       >
         <DialogTitle className="sr-only">
-          Konfiguracja konta — krok {step} z 2
+          {t('tradeOnboarding.dialogTitle', { step })}
         </DialogTitle>
 
         {/* ── Header ─────────────────────────────────────────────── */}
@@ -94,22 +96,22 @@ export function TradeOnboardingModal({ open, onDone }: TradeOnboardingModalProps
           <div className="flex items-start justify-between mb-3">
             <div>
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                Krok {step} z 2
+                {t('tradeOnboarding.stepLabel', { current: step })}
               </p>
               <h2 className="text-xl font-bold">
-                {step === 1 ? 'Czym się zajmujesz?' : 'Jak chcesz zacząć?'}
+                {step === 1 ? t('tradeOnboarding.step1Title') : t('tradeOnboarding.step2Title')}
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
                 {step === 1
-                  ? 'Wybierz swój zawód — załadujemy gotowy cennik na start.'
-                  : `Wybrałeś: ${selectedPack?.tradeName}. Jak wolisz pracować?`}
+                  ? t('tradeOnboarding.step1Subtitle')
+                  : t('tradeOnboarding.step2Subtitle', { tradeName: selectedPack?.tradeName })}
               </p>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleSkip}
-              aria-label="Pomiń onboarding"
+              aria-label={t('tradeOnboarding.skipAriaLabel')}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -157,10 +159,10 @@ export function TradeOnboardingModal({ open, onDone }: TradeOnboardingModalProps
             </div>
             <div className="mt-5 flex justify-between items-center">
               <Button variant="ghost" size="sm" onClick={handleSkip}>
-                Pomiń na razie
+                {t('tradeOnboarding.skipLabel')}
               </Button>
               <Button onClick={() => setStep(2)} disabled={!selectedPack}>
-                Dalej
+                {t('tradeOnboarding.continueLabel')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
@@ -181,17 +183,13 @@ export function TradeOnboardingModal({ open, onDone }: TradeOnboardingModalProps
                   <Rocket className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-base">Super prosto</p>
+                  <p className="font-semibold text-base">{t('tradeOnboarding.simpleTitle')}</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Otwieramy gotową wycenę z{' '}
-                    <span className="font-medium text-foreground">
-                      {selectedPack.items.length} pozycjami
-                    </span>
-                    . Edytuj co chcesz i wyślij.
+                    {t('tradeOnboarding.simpleDesc', { count: selectedPack.items.length })}
                   </p>
                 </div>
                 <span className="text-xs text-primary font-medium">
-                  Zalecane dla nowych →
+                  {t('tradeOnboarding.simpleTag')}
                 </span>
               </button>
 
@@ -205,13 +203,13 @@ export function TradeOnboardingModal({ open, onDone }: TradeOnboardingModalProps
                   <Settings2 className="h-6 w-6 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="font-semibold text-base">Zaawansowany</p>
+                  <p className="font-semibold text-base">{t('tradeOnboarding.advancedTitle')}</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Pełny edytor ofert — klienci, zadania, koszty, PDF.
+                    {t('tradeOnboarding.advancedDesc')}
                   </p>
                 </div>
                 <span className="text-xs text-muted-foreground font-medium">
-                  Pełna kontrola →
+                  {t('tradeOnboarding.advancedTag')}
                 </span>
               </button>
             </div>
@@ -219,10 +217,10 @@ export function TradeOnboardingModal({ open, onDone }: TradeOnboardingModalProps
             <div className="flex justify-between items-center pt-1">
               <Button variant="ghost" size="sm" onClick={() => setStep(1)}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Wróć
+                {t('tradeOnboarding.backLabel')}
               </Button>
               <Button variant="ghost" size="sm" onClick={handleSkip}>
-                Pomiń na razie
+                {t('tradeOnboarding.skipLabel')}
               </Button>
             </div>
           </div>

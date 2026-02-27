@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useProject } from '@/hooks/useProjects';
 import { useQuote } from '@/hooks/useQuotes';
 import { usePdfData, useSavePdfData } from '@/hooks/usePdfData';
@@ -15,6 +16,7 @@ import { ArrowLeft, Download, Wrench, Loader2, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner';
 
 export default function PdfGenerator() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { data: project, isLoading: projectLoading } = useProject(id!);
   const { data: quote, isLoading: quoteLoading } = useQuote(id!);
@@ -26,9 +28,9 @@ export default function PdfGenerator() {
 
   const [version, setVersion] = useState<'standard' | 'premium'>('standard');
   const [title, setTitle] = useState('');
-  const [offerText, setOfferText] = useState('Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na realizację prac.');
-  const [deadlineText, setDeadlineText] = useState('Do ustalenia');
-  const [terms, setTerms] = useState('Płatność: 50% zaliczki, 50% po wykonaniu prac.\nGwarancja: 24 miesiące na wykonane prace.');
+  const [offerText, setOfferText] = useState(t('pdfGenerator.defaultOfferText'));
+  const [deadlineText, setDeadlineText] = useState(t('pdfGenerator.defaultDeadline'));
+  const [terms, setTerms] = useState(t('pdfGenerator.defaultTerms'));
   // null = VAT-exempt; 0/5/8/23 = specific rate
   const [vatRate, setVatRate] = useState<number | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -62,11 +64,11 @@ export default function PdfGenerator() {
       <div className="space-y-6 animate-fade-in">
         <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Powrót
+          {t('pdfGenerator.backButton')}
         </Button>
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">Projekt nie został znaleziony.</p>
+            <p className="text-muted-foreground">{t('pdfGenerator.projectNotFound')}</p>
           </CardContent>
         </Card>
       </div>
@@ -94,7 +96,7 @@ export default function PdfGenerator() {
 
   const handleGeneratePdf = async () => {
     if (!title.trim()) {
-      toast.error('Podaj tytuł oferty');
+      toast.error(t('pdfGenerator.titleRequired'));
       return;
     }
 
@@ -113,7 +115,7 @@ export default function PdfGenerator() {
 
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
-      toast.error('Nie można otworzyć okna drukowania. Odblokuj wyskakujące okna.');
+      toast.error(t('pdfGenerator.popupBlocked'));
       return;
     }
 
@@ -158,7 +160,7 @@ export default function PdfGenerator() {
     `);
     printWindow.document.close();
     printWindow.print();
-    toast.success('PDF wygenerowany');
+    toast.success(t('pdfGenerator.pdfGenerated'));
   };
 
   const hasQuotePositions = quote && quote.positions && quote.positions.length > 0;
@@ -167,12 +169,12 @@ export default function PdfGenerator() {
     <div className="space-y-6 animate-fade-in">
       <Button variant="ghost" onClick={() => navigate(`/app/jobs/${id}`)}>
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Powrót do projektu
+        {t('pdfGenerator.backToProject')}
       </Button>
 
       <div>
         <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-          Oferta PDF — {project.project_name}
+          {t('pdfGenerator.pageHeading', { projectName: project.project_name })}
         </h1>
       </div>
 
@@ -182,11 +184,11 @@ export default function PdfGenerator() {
           <CardContent className="flex items-center gap-3 py-4">
             <AlertCircle className="h-5 w-5 text-warning" />
             <div>
-              <p className="font-medium">Uzupełnij profil firmy</p>
+              <p className="font-medium">{t('pdfGenerator.completeProfile')}</p>
               <p className="text-sm text-muted-foreground">
                 <Button variant="link" className="h-auto p-0" onClick={() => navigate('/profile')}>
-                  Przejdź do profilu
-                </Button> aby dodać dane firmy do oferty.
+                  {t('pdfGenerator.goToProfile')}
+                </Button> {t('pdfGenerator.goToProfileHint')}
               </p>
             </div>
           </CardContent>
@@ -198,39 +200,39 @@ export default function PdfGenerator() {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Ustawienia oferty</CardTitle>
+              <CardTitle>{t('pdfGenerator.settingsTitle')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Wersja oferty</Label>
+                <Label>{t('pdfGenerator.versionLabel')}</Label>
                 <Select value={version} onValueChange={(v) => setVersion(v as 'standard' | 'premium')}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="standard">Standard</SelectItem>
-                    <SelectItem value="premium">Premium (z nagłówkiem)</SelectItem>
+                    <SelectItem value="premium">{t('pdfGenerator.versionPremium')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Tytuł oferty *</Label>
+                <Label>{t('pdfGenerator.offerTitleLabel')}</Label>
                 <Input value={title} onChange={(e) => setTitle(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label>Tekst oferty</Label>
+                <Label>{t('pdfGenerator.offerTextLabel')}</Label>
                 <Textarea value={offerText} onChange={(e) => setOfferText(e.target.value)} rows={4} />
               </div>
               <div className="space-y-2">
-                <Label>Termin realizacji</Label>
+                <Label>{t('pdfGenerator.deadlineLabel')}</Label>
                 <Input value={deadlineText} onChange={(e) => setDeadlineText(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label>Warunki</Label>
+                <Label>{t('pdfGenerator.termsLabel')}</Label>
                 <Textarea value={terms} onChange={(e) => setTerms(e.target.value)} rows={4} />
               </div>
               <div className="space-y-2">
-                <Label>Stawka VAT</Label>
+                <Label>{t('pdfGenerator.vatLabel')}</Label>
                 <Select
                   value={vatRate === null ? 'exempt' : String(vatRate)}
                   onValueChange={(v) => setVatRate(v === 'exempt' ? null : Number(v))}
@@ -239,11 +241,11 @@ export default function PdfGenerator() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="exempt">Zwolniony z VAT (np., art. 43)</SelectItem>
+                    <SelectItem value="exempt">{t('pdfGenerator.vatExempt')}</SelectItem>
                     <SelectItem value="0">0%</SelectItem>
                     <SelectItem value="5">5%</SelectItem>
-                    <SelectItem value="8">8% (usługi budowlane)</SelectItem>
-                    <SelectItem value="23">23% (stawka podstawowa)</SelectItem>
+                    <SelectItem value="8">{t('pdfGenerator.vat8')}</SelectItem>
+                    <SelectItem value="23">{t('pdfGenerator.vat23')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -253,14 +255,14 @@ export default function PdfGenerator() {
           <Button size="lg" onClick={handleGeneratePdf} className="w-full" disabled={savePdfData.isPending}>
             {savePdfData.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             <Download className="mr-2 h-5 w-5" />
-            Generuj i pobierz PDF
+            {t('pdfGenerator.generateButton')}
           </Button>
         </div>
 
         {/* Preview */}
         <Card>
           <CardHeader>
-            <CardTitle>Podgląd</CardTitle>
+            <CardTitle>{t('pdfGenerator.previewTitle')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div ref={printRef} className="rounded-lg border border-border bg-card p-6 text-sm" style={{ maxHeight: '70vh', overflow: 'auto' }}>
@@ -284,16 +286,16 @@ export default function PdfGenerator() {
                     {emailForOffers && <p>Email: {emailForOffers}</p>}
                   </div>
                 )}
-                <h1 className="mt-4 text-2xl font-bold">{title || 'Oferta'}</h1>
+                <h1 className="mt-4 text-2xl font-bold">{title || t('pdfGenerator.offerFallbackTitle')}</h1>
                 <p className="mt-1 opacity-80">Nr: {documentId}</p>
-                <p className="mt-1 opacity-80">Data wystawienia: {issuedAt.toLocaleDateString('pl-PL')}</p>
-                <p className="mt-1 opacity-80">Ważna do: {validUntil.toLocaleDateString('pl-PL')}</p>
+                <p className="mt-1 opacity-80">{t('pdfGenerator.issuedLabel')} {issuedAt.toLocaleDateString('pl-PL')}</p>
+                <p className="mt-1 opacity-80">{t('pdfGenerator.validUntilLabel')} {validUntil.toLocaleDateString('pl-PL')}</p>
               </div>
 
               {/* Client info */}
               {project.clients && (
                 <div className="mb-6 rounded-lg bg-muted p-4">
-                  <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Klient</h3>
+                  <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">{t('pdfGenerator.clientLabel')}</h3>
                   <p className="font-medium">{project.clients.name}</p>
                   {project.clients.address && <p className="text-muted-foreground">{project.clients.address}</p>}
                   {project.clients.phone && <p className="text-muted-foreground">{project.clients.phone}</p>}
@@ -311,10 +313,10 @@ export default function PdfGenerator() {
                 <table className="mb-6 w-full text-left">
                   <thead>
                     <tr className={version === 'premium' ? 'bg-primary text-primary-foreground' : 'bg-muted'}>
-                      <th className="p-3 font-medium">Pozycja</th>
-                      <th className="p-3 font-medium">Ilość</th>
-                      <th className="p-3 font-medium">Cena</th>
-                      <th className="p-3 font-medium text-right">Suma</th>
+                      <th className="p-3 font-medium">{t('pdfGenerator.colName')}</th>
+                      <th className="p-3 font-medium">{t('pdfGenerator.colQty')}</th>
+                      <th className="p-3 font-medium">{t('pdfGenerator.colPrice')}</th>
+                      <th className="p-3 font-medium text-right">{t('pdfGenerator.colTotal')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -330,7 +332,7 @@ export default function PdfGenerator() {
                 </table>
               ) : (
                 <div className="mb-6 rounded-lg bg-muted p-4 text-center text-muted-foreground">
-                  Brak pozycji w wycenie
+                  {t('pdfGenerator.noPositions')}
                 </div>
               )}
 
@@ -338,35 +340,35 @@ export default function PdfGenerator() {
               {quote && (
                 <div className="mb-6 rounded-lg bg-muted p-4">
                   <div className="mb-2 flex justify-between">
-                    <span>Materiały:</span>
+                    <span>{t('pdfGenerator.materialsLabel')}</span>
                     <span>{Number(quote.summary_materials || 0).toFixed(2)} zł</span>
                   </div>
                   <div className="mb-2 flex justify-between">
-                    <span>Robocizna:</span>
+                    <span>{t('pdfGenerator.laborLabel')}</span>
                     <span>{Number(quote.summary_labor || 0).toFixed(2)} zł</span>
                   </div>
                   <div className="mb-2 flex justify-between">
-                    <span>Marża ({quote.margin_percent || 0}%):</span>
+                    <span>{t('pdfGenerator.marginLabel', { percent: quote.margin_percent || 0 })}</span>
                     <span>{((Number(quote.summary_materials || 0) + Number(quote.summary_labor || 0)) * Number(quote.margin_percent || 0) / 100).toFixed(2)} zł</span>
                   </div>
                   {vatRate === null ? (
                     <div className="mt-3 flex justify-between border-t border-border pt-3 text-lg font-bold">
-                      <span>Razem:</span>
+                      <span>{t('pdfGenerator.totalLabel')}</span>
                       <span className="text-primary">{Number(quote.total || 0).toFixed(2)} zł</span>
                     </div>
                   ) : (
                     <>
                       <div className="mt-3 border-t border-border pt-3 space-y-1 text-sm">
                         <div className="flex justify-between">
-                          <span>Wartość netto:</span>
+                          <span>{t('pdfGenerator.netLabel')}</span>
                           <span>{Number(quote.total || 0).toFixed(2)} zł</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>VAT ({vatRate}%):</span>
+                          <span>{t('pdfGenerator.vatAmountLabel', { percent: vatRate })}</span>
                           <span>{(Number(quote.total || 0) * vatRate / 100).toFixed(2)} zł</span>
                         </div>
                         <div className="flex justify-between font-bold text-lg">
-                          <span>Wartość brutto:</span>
+                          <span>{t('pdfGenerator.grossLabel')}</span>
                           <span className="text-primary">{(Number(quote.total || 0) * (1 + vatRate / 100)).toFixed(2)} zł</span>
                         </div>
                       </div>
@@ -374,7 +376,7 @@ export default function PdfGenerator() {
                   )}
                   {vatRate === null && (
                     <p className="mt-2 text-xs italic text-muted-foreground">
-                      Sprzedawca zwolniony z podatku VAT (art. 43 ust. 1 ustawy o VAT)
+                      {t('pdfGenerator.vatExemptNote')}
                     </p>
                   )}
                 </div>
@@ -383,7 +385,7 @@ export default function PdfGenerator() {
               {/* Deadline */}
               {deadlineText && (
                 <div className="mb-4">
-                  <h3 className="mb-1 font-medium">Termin realizacji</h3>
+                  <h3 className="mb-1 font-medium">{t('pdfGenerator.deadlineSectionLabel')}</h3>
                   <p className="text-muted-foreground">{deadlineText}</p>
                 </div>
               )}
@@ -391,7 +393,7 @@ export default function PdfGenerator() {
               {/* Terms */}
               {terms && (
                 <div className="mb-6">
-                  <h3 className="mb-1 font-medium">Warunki</h3>
+                  <h3 className="mb-1 font-medium">{t('pdfGenerator.termsSectionLabel')}</h3>
                   <p className="whitespace-pre-wrap text-muted-foreground">{terms}</p>
                 </div>
               )}
@@ -399,14 +401,14 @@ export default function PdfGenerator() {
               {/* Bank account */}
               {bankAccount && (
                 <div className="mb-6 rounded-lg bg-accent/50 p-4">
-                  <h3 className="mb-1 text-sm font-medium">Numer konta do wpłat</h3>
+                  <h3 className="mb-1 text-sm font-medium">{t('pdfGenerator.bankAccountLabel')}</h3>
                   <p className="font-mono text-sm">{bankAccount}</p>
                 </div>
               )}
 
               {/* Footer */}
               <div className="mt-8 border-t border-border pt-4 text-center text-xs text-muted-foreground">
-                Oferta wygenerowana w Majster.AI
+                {t('pdfGenerator.footerText')}
               </div>
             </div>
           </CardContent>

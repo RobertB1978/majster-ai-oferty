@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useProfile, useUpdateProfile, useUploadLogo } from '@/hooks/useProfile';
 import { useAuth } from '@/contexts/AuthContext';
 import { profileSchema, ProfileFormData } from '@/lib/validations';
@@ -14,6 +15,7 @@ import { BiometricSetup } from '@/components/auth/BiometricSetup';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
 export default function CompanyProfile() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
@@ -81,7 +83,7 @@ export default function CompanyProfile() {
     e.preventDefault();
 
     if (!validateForm()) {
-      toast.error('Popraw błędy w formularzu');
+      toast.error(t('companyProfile.formErrors'));
       return;
     }
 
@@ -89,7 +91,7 @@ export default function CompanyProfile() {
       await updateProfile.mutateAsync(formData);
     } catch (err) {
       console.error('Profile update failed:', err);
-      toast.error('Nie udało się zapisać profilu. Spróbuj ponownie.');
+      toast.error(t('companyProfile.saveFailed'));
     }
   };
 
@@ -117,9 +119,9 @@ export default function CompanyProfile() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">Profil firmy</h1>
+        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{t('companyProfile.title')}</h1>
         <p className="mt-1 text-muted-foreground">
-          Dane firmowe używane w generowanych ofertach PDF
+          {t('companyProfile.subtitle')}
         </p>
       </div>
 
@@ -129,10 +131,10 @@ export default function CompanyProfile() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Image className="h-5 w-5" />
-              Logo firmy
+              {t('companyProfile.logoSection')}
             </CardTitle>
             <CardDescription>
-              Przesłane logo będzie widoczne na ofertach
+              {t('companyProfile.logoHint')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -141,7 +143,7 @@ export default function CompanyProfile() {
                 <div className="relative group">
                   <img
                     src={profile.logo_url}
-                    alt="Logo firmy"
+                    alt={t('companyProfile.logoAlt')}
                     className="h-32 w-32 rounded-lg border border-border object-contain transition-transform group-hover:scale-105"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
@@ -150,7 +152,7 @@ export default function CompanyProfile() {
                       size="sm"
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      Zmień
+                      {t('companyProfile.changeLogo')}
                     </Button>
                   </div>
                 </div>
@@ -176,17 +178,17 @@ export default function CompanyProfile() {
                 ) : (
                   <Upload className="mr-2 h-4 w-4" />
                 )}
-                Prześlij logo
+                {t('companyProfile.uploadLogo')}
               </Button>
               <p className="text-center text-xs text-muted-foreground">
-                Max 2MB, format: JPG, PNG
+                {t('companyProfile.logoSizeHint')}
               </p>
             </div>
 
             {/* PDF Preview mockup */}
             {profile?.logo_url && (
               <div className="mt-6 p-4 rounded-lg border bg-background">
-                <p className="text-xs text-muted-foreground mb-2">Podgląd na ofercie:</p>
+                <p className="text-xs text-muted-foreground mb-2">{t('companyProfile.logoPreview')}</p>
                 <div className="flex items-center gap-3">
                   <img
                     src={profile.logo_url}
@@ -194,8 +196,8 @@ export default function CompanyProfile() {
                     className="h-8 w-8 object-contain"
                   />
                   <div>
-                    <p className="text-sm font-medium">{formData.company_name || 'Nazwa firmy'}</p>
-                    <p className="text-xs text-muted-foreground">{formData.phone || 'Telefon'}</p>
+                    <p className="text-sm font-medium">{formData.company_name || t('companyProfile.companyName')}</p>
+                    <p className="text-xs text-muted-foreground">{formData.phone || t('companyProfile.phone')}</p>
                   </div>
                 </div>
               </div>
@@ -218,10 +220,10 @@ export default function CompanyProfile() {
                       <div>
                         <CardTitle className="flex items-center gap-2">
                           <Building2 className="h-5 w-5" />
-                          Dane firmy
+                          {t('companyProfile.companyDataSection')}
                         </CardTitle>
                         <CardDescription>
-                          Podstawowe informacje o firmie
+                          {t('companyProfile.companyDataDesc')}
                         </CardDescription>
                       </div>
                       <ChevronDown className={`h-5 w-5 transition-transform ${openSections.company ? 'rotate-180' : ''}`} />
@@ -235,13 +237,13 @@ export default function CompanyProfile() {
                       <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor="company_name" className="flex items-center gap-2">
                           <Building2 className="h-4 w-4" />
-                          Nazwa firmy *
+                          {t('companyProfile.companyNameLabel')}
                         </Label>
                         <Input
                           id="company_name"
                           value={formData.company_name}
                           onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                          placeholder="np. Remonty Kowalski"
+                          placeholder={t('companyProfile.companyNamePlaceholder')}
                           className={errors.company_name ? 'border-destructive' : ''}
                         />
                         {errors.company_name && (
@@ -253,13 +255,13 @@ export default function CompanyProfile() {
                       <div className="space-y-2">
                         <Label htmlFor="owner_name" className="flex items-center gap-2">
                           <User className="h-4 w-4" />
-                          Imię i nazwisko właściciela
+                          {t('companyProfile.ownerName')}
                         </Label>
                         <Input
                           id="owner_name"
                           value={formData.owner_name}
                           onChange={(e) => setFormData({ ...formData, owner_name: e.target.value })}
-                          placeholder="Jan Kowalski"
+                          placeholder={t('companyProfile.ownerNamePlaceholder')}
                           className={errors.owner_name ? 'border-destructive' : ''}
                         />
                         {errors.owner_name && (
@@ -271,7 +273,7 @@ export default function CompanyProfile() {
                       <div className="space-y-2">
                         <Label htmlFor="nip" className="flex items-center gap-2">
                           <FileText className="h-4 w-4" />
-                          NIP
+                          {t('companyProfile.nipLabel')}
                         </Label>
                         <Input
                           id="nip"
@@ -289,7 +291,7 @@ export default function CompanyProfile() {
                       <div className="space-y-2">
                         <Label htmlFor="street" className="flex items-center gap-2">
                           <MapPin className="h-4 w-4" />
-                          Ulica i numer
+                          {t('companyProfile.streetLabel')}
                         </Label>
                         <Input
                           id="street"
@@ -305,7 +307,7 @@ export default function CompanyProfile() {
 
                       {/* City */}
                       <div className="space-y-2">
-                        <Label htmlFor="city">Miasto</Label>
+                        <Label htmlFor="city">{t('companyProfile.cityLabel')}</Label>
                         <Input
                           id="city"
                           value={formData.city}
@@ -320,7 +322,7 @@ export default function CompanyProfile() {
 
                       {/* Postal Code */}
                       <div className="space-y-2">
-                        <Label htmlFor="postal_code">Kod pocztowy</Label>
+                        <Label htmlFor="postal_code">{t('companyProfile.postalCodeLabel')}</Label>
                         <Input
                           id="postal_code"
                           value={formData.postal_code}
@@ -337,7 +339,7 @@ export default function CompanyProfile() {
                       <div className="space-y-2">
                         <Label htmlFor="phone" className="flex items-center gap-2">
                           <Phone className="h-4 w-4" />
-                          Telefon
+                          {t('companyProfile.phoneLabel')}
                         </Label>
                         <Input
                           id="phone"
@@ -355,7 +357,7 @@ export default function CompanyProfile() {
                       <div className="space-y-2">
                         <Label htmlFor="email_for_offers" className="flex items-center gap-2">
                           <Mail className="h-4 w-4" />
-                          Email do ofert
+                          {t('companyProfile.emailLabel')}
                         </Label>
                         <Input
                           id="email_for_offers"
@@ -374,7 +376,7 @@ export default function CompanyProfile() {
                       <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor="bank_account" className="flex items-center gap-2">
                           <CreditCard className="h-4 w-4" />
-                          Numer konta bankowego
+                          {t('companyProfile.bankAccountLabel')}
                         </Label>
                         <Input
                           id="bank_account"
@@ -406,10 +408,10 @@ export default function CompanyProfile() {
                       <div>
                         <CardTitle className="flex items-center gap-2">
                           <MessageSquare className="h-5 w-5" />
-                          Ustawienia wiadomości e-mail
+                          {t('companyProfile.emailSettingsSection')}
                         </CardTitle>
                         <CardDescription>
-                          Personalizuj wiadomości wysyłane z ofertami
+                          {t('companyProfile.emailSettingsDesc')}
                         </CardDescription>
                       </div>
                       <ChevronDown className={`h-5 w-5 transition-transform ${openSections.email ? 'rotate-180' : ''}`} />
@@ -419,7 +421,7 @@ export default function CompanyProfile() {
                 <CollapsibleContent>
                   <CardContent className="pt-0 space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email_subject_template">Domyślny temat wiadomości</Label>
+                      <Label htmlFor="email_subject_template">{t('companyProfile.emailSubjectLabel')}</Label>
                       <Input
                         id="email_subject_template"
                         value={formData.email_subject_template}
@@ -428,41 +430,41 @@ export default function CompanyProfile() {
                         className={errors.email_subject_template ? 'border-destructive' : ''}
                       />
                       <p className="text-xs text-muted-foreground">
-                        Użyj {'{company_name}'} aby wstawić nazwę firmy
+                        {t('companyProfile.emailSubjectHint')}
                       </p>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email_greeting">Powitanie w wiadomości</Label>
+                      <Label htmlFor="email_greeting">{t('companyProfile.emailGreetingLabel')}</Label>
                       <Textarea
                         id="email_greeting"
                         value={formData.email_greeting}
                         onChange={(e) => setFormData({ ...formData, email_greeting: e.target.value })}
-                        placeholder="Szanowny Kliencie,"
+                        placeholder={t('companyProfile.emailGreetingPlaceholder')}
                         rows={2}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email_signature">Podpis w wiadomości</Label>
+                      <Label htmlFor="email_signature">{t('companyProfile.emailSignatureLabel')}</Label>
                       <Textarea
                         id="email_signature"
                         value={formData.email_signature}
                         onChange={(e) => setFormData({ ...formData, email_signature: e.target.value })}
-                        placeholder="Z poważaniem"
+                        placeholder={t('companyProfile.emailSignaturePlaceholder')}
                         rows={2}
                       />
                     </div>
 
                     {/* Email Preview */}
                     <div className="p-4 rounded-lg border bg-muted/30">
-                      <p className="text-xs text-muted-foreground mb-2">Podgląd wiadomości:</p>
+                      <p className="text-xs text-muted-foreground mb-2">{t('companyProfile.emailPreview')}</p>
                       <div className="text-sm space-y-2">
                         <p className="font-medium">Temat: {formData.email_subject_template.replace('{company_name}', formData.company_name || 'Twoja Firma')}</p>
                         <p className="text-muted-foreground">{formData.email_greeting}</p>
-                        <p className="text-muted-foreground italic">...treść wiadomości...</p>
+                        <p className="text-muted-foreground italic">{t('companyProfile.emailPreviewContent')}</p>
                         <p className="text-muted-foreground">{formData.email_signature}</p>
-                        <p className="text-muted-foreground">{formData.company_name || 'Nazwa firmy'}</p>
+                        <p className="text-muted-foreground">{formData.company_name || t('companyProfile.companyName')}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -478,7 +480,7 @@ export default function CompanyProfile() {
             >
               {updateProfile.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               <Save className="mr-2 h-5 w-5" />
-              Zapisz profil
+              {t('companyProfile.saveProfile')}
             </Button>
           </form>
 
