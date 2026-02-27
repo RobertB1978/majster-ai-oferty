@@ -43,7 +43,8 @@
     "gross": "Brutto",
     "saveError": "Błąd zapisu:",
     "nextPage": "następna strona",
-    "previousPage": "poprzednia strona"
+    "previousPage": "poprzednia strona",
+    "open": "Otwórz"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -186,7 +187,25 @@
       "aiOpening": "Otwieranie asystenta AI...",
       "manualTitle": "Ręcznie",
       "manualDesc": "Wypełnij formularz"
-    }
+    },
+    "yourLatestProjects": "Twoje najnowsze projekty",
+    "unknownClient": "Nieznany klient",
+    "createFirstProject": "Utwórz pierwszy projekt",
+    "projectStatus": "Status projektów",
+    "welcomeSubtitle": "Twój inteligentny asystent do tworzenia profesjonalnych wycen i zarządzania projektami budowlanymi.",
+    "benefitQuotesTitle": "Profesjonalne wyceny",
+    "benefitQuotesDesc": "Twórz szczegółowe wyceny z podziałem na materiały i robociznę",
+    "benefitRevenueTitle": "Śledź przychody",
+    "benefitRevenueDesc": "Analizuj rentowność projektów i optymalizuj cenniki",
+    "benefitTimeTitle": "Oszczędzaj czas",
+    "benefitTimeDesc": "Automatyczne obliczenia i szablony przyspieszają pracę",
+    "featureAI": "AI Sugestie",
+    "featureSecurity": "Bezpieczeństwo",
+    "featureAutomation": "Automatyzacja",
+    "allProjects": "Wszystkie projekty",
+    "clients": "Klienci",
+    "accepted": "Zaakceptowane",
+    "newLast7Days": "Nowe (7 dni)"
   },
   "projects": {
     "title": "Projekty",
@@ -614,7 +633,12 @@
       "prioritySupport": "Priorytetowe wsparcie",
       "unlimitedProjects": "Nieograniczone projekty",
       "unlimitedClients": "Nieograniczeni klienci"
-    }
+    },
+    "trialExpired": "Darmowy okres próbny zakończony.",
+    "trialExpiredDesc": "Twoje dane są bezpieczne. Wybierz plan, by kontynuować pracę.",
+    "trialDaysRemaining_one": "Pozostał {{count}} dzień darmowego okresu próbnego.",
+    "trialDaysRemaining_other": "Pozostało {{count}} dni darmowego okresu próbnego.",
+    "upgradeToMaintainAccess": "Przejdź na plan płatny, by nie utracić dostępu."
   },
   "profile": {
     "title": "Profil firmy",

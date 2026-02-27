@@ -90,8 +90,10 @@ export async function checkRateLimit(
     
     return { allowed: true, remaining: config.maxRequests - currentCount - 1, resetAt };
   } catch (error) {
-    console.error('Rate limit error:', error);
-    return { allowed: true, remaining: config.maxRequests, resetAt: new Date(Date.now() + config.windowMs) };
+    console.error('Rate limit error (DB unavailable) — failing closed for endpoint:', endpoint, error);
+    // Fail-closed: when the database is unavailable we cannot verify rate limits,
+    // so we deny the request to prevent abuse during outages.
+    return { allowed: false, remaining: 0, resetAt: new Date(Date.now() + config.windowMs) };
   }
 }
 

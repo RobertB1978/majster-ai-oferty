@@ -43,7 +43,8 @@
     "gross": "Gross",
     "saveError": "Save error:",
     "nextPage": "next page",
-    "previousPage": "previous page"
+    "previousPage": "previous page",
+    "open": "Open"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -186,7 +187,25 @@
       "inProgress": "In Progress",
       "new": "New",
       "sent": "Sent"
-    }
+    },
+    "yourLatestProjects": "Your latest projects",
+    "unknownClient": "Unknown client",
+    "createFirstProject": "Create your first project",
+    "projectStatus": "Project Status",
+    "welcomeSubtitle": "Your intelligent assistant for professional quotes and construction project management.",
+    "benefitQuotesTitle": "Professional Quotes",
+    "benefitQuotesDesc": "Create detailed quotes with material and labour breakdown",
+    "benefitRevenueTitle": "Track Revenue",
+    "benefitRevenueDesc": "Analyse project profitability and optimise pricing",
+    "benefitTimeTitle": "Save Time",
+    "benefitTimeDesc": "Automatic calculations and templates speed up your work",
+    "featureAI": "AI Suggestions",
+    "featureSecurity": "Security",
+    "featureAutomation": "Automation",
+    "allProjects": "All Projects",
+    "clients": "Clients",
+    "accepted": "Accepted",
+    "newLast7Days": "New (7 days)"
   },
   "projects": {
     "title": "Projects",
@@ -614,7 +633,12 @@
       "prioritySupport": "Priority Support",
       "unlimitedProjects": "Unlimited Projects",
       "unlimitedClients": "Unlimited Clients"
-    }
+    },
+    "trialExpired": "Free trial ended.",
+    "trialExpiredDesc": "Your data is safe. Choose a plan to continue working.",
+    "trialDaysRemaining_one": "{{count}} day of free trial remaining.",
+    "trialDaysRemaining_other": "{{count}} days of free trial remaining.",
+    "upgradeToMaintainAccess": "Upgrade to a paid plan to keep access."
   },
   "profile": {
     "title": "Company Profile",

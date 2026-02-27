@@ -43,7 +43,8 @@
     "gross": "Брутто",
     "saveError": "Помилка збереження:",
     "nextPage": "наступна сторінка",
-    "previousPage": "попередня сторінка"
+    "previousPage": "попередня сторінка",
+    "open": "Відкрити"
   },
   "nav": {
     "dashboard": "Панель",
@@ -186,7 +187,25 @@
       "inProgress": "В роботі",
       "sent": "Надіслані",
       "accepted": "Прийняті"
-    }
+    },
+    "yourLatestProjects": "Ваші останні проєкти",
+    "unknownClient": "Невідомий клієнт",
+    "createFirstProject": "Створіть перший проєкт",
+    "projectStatus": "Статус проєктів",
+    "welcomeSubtitle": "Ваш інтелектуальний помічник для створення професійних кошторисів та управління будівельними проєктами.",
+    "benefitQuotesTitle": "Професійні кошториси",
+    "benefitQuotesDesc": "Створюйте детальні кошториси з розбивкою на матеріали та роботу",
+    "benefitRevenueTitle": "Відстежуйте доходи",
+    "benefitRevenueDesc": "Аналізуйте рентабельність проєктів та оптимізуйте ціноутворення",
+    "benefitTimeTitle": "Економте час",
+    "benefitTimeDesc": "Автоматичні розрахунки та шаблони прискорюють роботу",
+    "featureAI": "AI Підказки",
+    "featureSecurity": "Безпека",
+    "featureAutomation": "Автоматизація",
+    "allProjects": "Усі проєкти",
+    "clients": "Клієнти",
+    "accepted": "Прийняті",
+    "newLast7Days": "Нові (7 днів)"
   },
   "projects": {
     "title": "Проєкти",
@@ -614,7 +633,12 @@
       "prioritySupport": "Пріоритетна підтримка",
       "unlimitedProjects": "Необмежені проєкти",
       "unlimitedClients": "Необмежені клієнти"
-    }
+    },
+    "trialExpired": "Безкоштовний пробний період завершено.",
+    "trialExpiredDesc": "Ваші дані в безпеці. Оберіть тариф, щоб продовжити роботу.",
+    "trialDaysRemaining_one": "Залишився {{count}} день безкоштовного пробного періоду.",
+    "trialDaysRemaining_other": "Залишилося {{count}} днів безкоштовного пробного періоду.",
+    "upgradeToMaintainAccess": "Перейдіть на платний тариф, щоб зберегти доступ."
   },
   "profile": {
     "title": "Профіль компанії",

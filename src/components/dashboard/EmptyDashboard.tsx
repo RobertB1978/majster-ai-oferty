@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -12,38 +13,39 @@ import {
   Shield
 } from 'lucide-react';
 
-const benefits = [
-  {
-    icon: FileText,
-    title: 'Profesjonalne wyceny',
-    description: 'Twórz szczegółowe wyceny z podziałem na materiały i robociznę',
-    bg: 'bg-primary/10',
-    iconBg: 'bg-primary',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Śledź przychody',
-    description: 'Analizuj rentowność projektów i optymalizuj cenniki',
-    bg: 'bg-success/10',
-    iconBg: 'bg-success',
-  },
-  {
-    icon: Clock,
-    title: 'Oszczędzaj czas',
-    description: 'Automatyczne obliczenia i szablony przyspieszają pracę',
-    bg: 'bg-warning/10',
-    iconBg: 'bg-warning',
-  },
-];
-
-const features = [
-  { icon: Zap, label: 'AI Sugestie' },
-  { icon: Shield, label: 'Bezpieczeństwo' },
-  { icon: Sparkles, label: 'Automatyzacja' },
-];
-
 export function EmptyDashboard() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const benefits = [
+    {
+      icon: FileText,
+      title: t('dashboard.benefitQuotesTitle'),
+      description: t('dashboard.benefitQuotesDesc'),
+      bg: 'bg-primary/10',
+      iconBg: 'bg-primary',
+    },
+    {
+      icon: TrendingUp,
+      title: t('dashboard.benefitRevenueTitle'),
+      description: t('dashboard.benefitRevenueDesc'),
+      bg: 'bg-success/10',
+      iconBg: 'bg-success',
+    },
+    {
+      icon: Clock,
+      title: t('dashboard.benefitTimeTitle'),
+      description: t('dashboard.benefitTimeDesc'),
+      bg: 'bg-warning/10',
+      iconBg: 'bg-warning',
+    },
+  ];
+
+  const features = [
+    { icon: Zap, label: t('dashboard.featureAI') },
+    { icon: Shield, label: t('dashboard.featureSecurity') },
+    { icon: Sparkles, label: t('dashboard.featureAutomation') },
+  ];
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4 animate-fade-in">
@@ -54,10 +56,10 @@ export function EmptyDashboard() {
       </div>
 
       <h1 className="text-4xl font-bold mb-3 text-foreground">
-        Witaj w Majster.AI
+        {t('dashboard.welcome')}
       </h1>
       <p className="text-muted-foreground max-w-lg mb-4 text-lg">
-        Twój inteligentny asystent do tworzenia profesjonalnych wycen i zarządzania projektami budowlanymi.
+        {t('dashboard.welcomeSubtitle')}
       </p>
 
       {/* Feature pills */}
@@ -80,7 +82,7 @@ export function EmptyDashboard() {
         className="mb-12 shadow-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 text-lg px-8 py-6"
       >
         <FolderPlus className="mr-2 h-5 w-5" />
-        Utwórz pierwszy projekt
+        {t('dashboard.createFirstProject')}
         <ArrowRight className="ml-2 h-5 w-5" />
       </Button>
 
