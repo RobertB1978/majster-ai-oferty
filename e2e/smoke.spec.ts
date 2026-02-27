@@ -110,7 +110,7 @@ test.describe('Smoke Tests', () => {
     await waitForReactHydration(page);
 
     // Verify landing page loaded (public, no redirect)
-    const heading = page.getByRole('heading', { name: /zarządzaj firmą/i });
+    const heading = page.getByRole('heading', { name: /zarządzaj.*profesjonalnie/i });
     await expect(heading).toBeVisible({ timeout: 15000 });
 
     // Verify login link is available in the header (footer also has one — scope to banner)
