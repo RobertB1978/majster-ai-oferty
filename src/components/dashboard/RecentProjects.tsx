@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { pl, enUS, uk } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,8 +28,16 @@ const statusColors: Record<string, string> = {
   'Zaakceptowany': 'bg-success/10 text-success border-success/20',
 };
 
+const dateLocales: Record<string, Locale> = {
+  pl,
+  en: enUS,
+  uk,
+};
+
 export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const dateLocale = dateLocales[i18n.language] ?? pl;
 
   return (
     <div
@@ -38,11 +47,11 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Ostatnie projekty</CardTitle>
-            <CardDescription>Twoje najnowsze projekty</CardDescription>
+            <CardTitle>{t('dashboard.recentProjects')}</CardTitle>
+            <CardDescription>{t('dashboard.yourLatestProjects')}</CardDescription>
           </div>
           <Button variant="outline" size="sm" onClick={() => navigate('/app/jobs')}>
-            Zobacz wszystkie
+            {t('dashboard.viewAll')}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </CardHeader>
@@ -63,13 +72,13 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
           ) : projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <FolderOpen className="h-12 w-12 text-muted-foreground/50 mb-3" />
-              <p className="text-muted-foreground">Brak projektów</p>
-              <Button 
-                variant="link" 
+              <p className="text-muted-foreground">{t('dashboard.noProjects')}</p>
+              <Button
+                variant="link"
                 onClick={() => navigate('/app/jobs/new')}
                 className="mt-2"
               >
-                Utwórz pierwszy projekt
+                {t('dashboard.createFirstProject')}
               </Button>
             </div>
           ) : (
@@ -89,12 +98,12 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
                         {project.project_name}
                       </p>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>{project.clients?.name || 'Nieznany klient'}</span>
+                        <span>{project.clients?.name || t('dashboard.unknownClient')}</span>
                         <span>•</span>
                         <span>
-                          {formatDistanceToNow(new Date(project.created_at), { 
+                          {formatDistanceToNow(new Date(project.created_at), {
                             addSuffix: true,
-                            locale: pl 
+                            locale: dateLocale
                           })}
                         </span>
                       </div>
@@ -109,7 +118,7 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
                       size="sm"
                       onClick={() => navigate(`/app/jobs/${project.id}`)}
                     >
-                      Otwórz
+                      {t('common.open')}
                     </Button>
                   </div>
                 </div>

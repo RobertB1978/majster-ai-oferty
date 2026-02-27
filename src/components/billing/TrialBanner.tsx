@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useUserSubscription } from '@/hooks/useSubscription';
 import { useAuth } from '@/contexts/AuthContext';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -12,6 +13,7 @@ function trialDaysRemaining(createdAt: string): number {
 
 export function TrialBanner() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { data: subscription, isLoading } = useUserSubscription();
 
@@ -34,11 +36,11 @@ export function TrialBanner() {
         <Zap className="h-4 w-4 text-destructive" />
         <AlertDescription className="flex items-center justify-between flex-wrap gap-2">
           <span className="text-sm">
-            <span className="font-semibold text-destructive">Darmowy okres próbny zakończony.</span>{' '}
-            Twoje dane są bezpieczne. Wybierz plan, by kontynuować pracę.
+            <span className="font-semibold text-destructive">{t('billing.trialExpired')}</span>{' '}
+            {t('billing.trialExpiredDesc')}
           </span>
           <Button size="sm" onClick={() => navigate('/app/plan')} className="shrink-0">
-            Wybierz plan
+            {t('billing.selectPlan')}
           </Button>
         </AlertDescription>
       </Alert>
@@ -53,11 +55,13 @@ export function TrialBanner() {
       <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
       <AlertDescription className="flex items-center justify-between flex-wrap gap-2">
         <span className="text-sm text-amber-800 dark:text-amber-300">
-          <span className="font-semibold">Pozostało {daysLeft} {daysLeft === 1 ? 'dzień' : 'dni'} darmowego okresu próbnego.</span>{' '}
-          Przejdź na plan płatny, by nie utracić dostępu.
+          <span className="font-semibold">
+            {t('billing.trialDaysRemaining', { count: daysLeft })}
+          </span>{' '}
+          {t('billing.upgradeToMaintainAccess')}
         </span>
         <Button size="sm" variant="outline" onClick={() => navigate('/app/plan')} className="shrink-0 border-amber-400 text-amber-700 hover:bg-amber-100 dark:text-amber-300">
-          Wybierz plan
+          {t('billing.selectPlan')}
         </Button>
       </AlertDescription>
     </Alert>

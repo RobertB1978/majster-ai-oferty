@@ -11,6 +11,23 @@ import { formatDualCurrency } from '@/config/currency';
 // Re-export for backwards compatibility (PlanyDetail.tsx imports from here)
 export { PLANS };
 
+const SITE_URL = 'https://majster-ai-oferty.vercel.app';
+
+const pricingStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Cennik Majster.AI — Plany i ceny',
+  url: `${SITE_URL}/plany`,
+  description: 'Wybierz plan Majster.AI dopasowany do Twojej firmy. Zacznij bezpłatnie.',
+  breadcrumb: {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Strona główna', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: 'Cennik', item: `${SITE_URL}/plany` },
+    ],
+  },
+};
+
 export default function Plany() {
   const { t, i18n } = useTranslation();
   return (
@@ -18,6 +35,19 @@ export default function Plany() {
       <Helmet>
         <title>{t('billing.pricingTitle', 'Pricing & Plans')} | Majster.AI</title>
         <meta name="description" content={t('billing.pricingDescription', 'Choose a Majster.AI plan that fits your business. Start for free.')} />
+        <link rel="canonical" href={`${SITE_URL}/plany`} />
+        <meta property="og:title" content={`${t('billing.pricingTitle', 'Pricing & Plans')} | Majster.AI`} />
+        <meta property="og:description" content={t('billing.pricingDescription', 'Choose a Majster.AI plan that fits your business. Start for free.')} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_URL}/plany`} />
+        <meta property="og:image" content={`${SITE_URL}/icon-512.png`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="alternate" hrefLang="pl" href={`${SITE_URL}/plany`} />
+        <link rel="alternate" hrefLang="en" href={`${SITE_URL}/plany?lang=en`} />
+        <link rel="alternate" hrefLang="uk" href={`${SITE_URL}/plany?lang=uk`} />
+        <link rel="alternate" hrefLang="x-default" href={`${SITE_URL}/plany`} />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <script type="application/ld+json">{JSON.stringify(pricingStructuredData)}</script>
       </Helmet>
 
       <div className="min-h-screen bg-background">

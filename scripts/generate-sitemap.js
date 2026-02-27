@@ -40,10 +40,19 @@ const getBaseUrl = () => {
 const generateSitemap = (baseUrl) => {
   const lastmod = new Date().toISOString().split('T')[0];
 
-  const entries = [
-    { path: '/', changefreq: 'weekly', priority: 1.0 },
+  // Pages with hreflang support (multilingual)
+  const multilingualEntries = [
+    { path: '/', changefreq: 'weekly', priority: 1.0, multilingual: true },
+    { path: '/plany', changefreq: 'weekly', priority: 0.9, multilingual: true },
+  ];
+
+  // Pages without hreflang (auth, legal — same content regardless of language)
+  const standardEntries = [
     { path: '/login', changefreq: 'monthly', priority: 0.8 },
-    { path: '/register', changefreq: 'monthly', priority: 0.8 },
+    { path: '/register', changefreq: 'monthly', priority: 0.9 },
+    { path: '/plany/starter', changefreq: 'monthly', priority: 0.7 },
+    { path: '/plany/business', changefreq: 'monthly', priority: 0.7 },
+    { path: '/plany/enterprise', changefreq: 'monthly', priority: 0.6 },
     { path: '/legal/privacy', changefreq: 'monthly', priority: 0.5 },
     { path: '/legal/terms', changefreq: 'monthly', priority: 0.5 },
     { path: '/legal/cookies', changefreq: 'monthly', priority: 0.4 },
@@ -51,7 +60,26 @@ const generateSitemap = (baseUrl) => {
     { path: '/legal/rodo', changefreq: 'yearly', priority: 0.4 },
   ];
 
-  const urls = entries
+  const renderHreflang = (path, baseUrl) => {
+    return `    <xhtml:link rel="alternate" hreflang="pl" href="${baseUrl}${path}"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}${path}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="${baseUrl}${path}?lang=uk"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}${path}"/>`;
+  };
+
+  const multilingualUrls = multilingualEntries
+    .map(
+      (entry) => `  <url>
+    <loc>${baseUrl}${entry.path}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${entry.changefreq}</changefreq>
+    <priority>${entry.priority}</priority>
+${renderHreflang(entry.path, baseUrl)}
+  </url>`
+    )
+    .join('\n');
+
+  const standardUrls = standardEntries
     .map(
       (entry) => `  <url>
     <loc>${baseUrl}${entry.path}</loc>
@@ -63,8 +91,10 @@ const generateSitemap = (baseUrl) => {
     .join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${multilingualUrls}
+${standardUrls}
 </urlset>
 `;
 };
