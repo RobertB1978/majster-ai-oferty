@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -11,6 +12,7 @@ interface BiometricSetupProps {
 }
 
 export function BiometricSetup({ email }: BiometricSetupProps) {
+  const { t } = useTranslation();
   const {
     isSupported,
     isEnabled: _isEnabled,
@@ -27,10 +29,10 @@ export function BiometricSetup({ email }: BiometricSetupProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Fingerprint className="h-5 w-5" />
-            Logowanie biometryczne
+            {t('auth.biometric.title')}
           </CardTitle>
           <CardDescription>
-            Twoje urządzenie nie obsługuje logowania biometrycznego
+            {t('auth.biometric.notSupported')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -42,14 +44,14 @@ export function BiometricSetup({ email }: BiometricSetupProps) {
       const success = await registerBiometric(email);
       if (success) {
         setEnabled(true);
-        toast.success('Logowanie biometryczne zostało włączone');
+        toast.success(t('auth.biometric.enabled'));
       } else {
-        toast.error('Nie udało się włączyć logowania biometrycznego');
+        toast.error(t('auth.biometric.enableFailed'));
       }
     } else {
       disableBiometric(email);
       setEnabled(false);
-      toast.success('Logowanie biometryczne zostało wyłączone');
+      toast.success(t('auth.biometric.disabled'));
     }
   };
 
@@ -58,10 +60,10 @@ export function BiometricSetup({ email }: BiometricSetupProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Shield className="h-5 w-5" />
-          Bezpieczeństwo
+          {t('auth.biometric.securityTitle')}
         </CardTitle>
         <CardDescription>
-          Skonfiguruj dodatkowe opcje bezpieczeństwa
+          {t('auth.biometric.securityDesc')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -72,10 +74,10 @@ export function BiometricSetup({ email }: BiometricSetupProps) {
             </div>
             <div>
               <Label htmlFor="biometric" className="font-medium">
-                Logowanie odciskiem palca
+                {t('auth.biometric.fingerprintLabel')}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Szybkie i bezpieczne logowanie biometryczne
+                {t('auth.biometric.fingerprintDesc')}
               </p>
             </div>
           </div>

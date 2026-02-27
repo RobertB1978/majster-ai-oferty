@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ import {
 } from '@/lib/publicOfferApi';
 
 export default function OfferPublicPage() {
+  const { t } = useTranslation();
   const { token } = useParams<{ token: string }>();
 
   const [offer, setOffer] = useState<PublicOfferData | null>(null);
@@ -60,7 +62,7 @@ export default function OfferPublicPage() {
       // Only fires if this is the first view (viewed_at is null) and the offer is active.
       void recordOfferViewed(token);
     } catch {
-      setError('Nie znaleziono oferty lub link jest nieprawidłowy.');
+      setError(t('offerPublicPage.notFoundError'));
     } finally {
       setIsLoading(false);
     }
@@ -73,24 +75,24 @@ export default function OfferPublicPage() {
   const handleAccept = async () => {
     if (!token) return;
     if (!clientName.trim()) {
-      toast.error('Podaj imię i nazwisko');
+      toast.error(t('offerPublicPage.nameRequired'));
       return;
     }
     if (!signature) {
-      toast.error('Podpis jest wymagany');
+      toast.error(t('offerPublicPage.signatureRequired'));
       return;
     }
 
     setIsAccepting(true);
     try {
       await acceptPublicOffer(token, clientName.trim(), signature, clientEmail.trim() || undefined);
-      toast.success('Oferta zaakceptowana!');
+      toast.success(t('offerPublicPage.acceptSuccess'));
       setAccepted(true);
       setOffer((prev) =>
         prev ? { ...prev, status: 'accepted', accepted_at: new Date().toISOString(), accepted_via: 'web_button' } : null,
       );
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Wystąpił błąd');
+      toast.error(err instanceof Error ? err.message : t('offerPublicPage.acceptError'));
     } finally {
       setIsAccepting(false);
     }
@@ -99,22 +101,22 @@ export default function OfferPublicPage() {
   const handleSendQuestion = async () => {
     if (!token) return;
     if (!questionText.trim()) {
-      toast.error('Wpisz treść pytania');
+      toast.error(t('offerPublicPage.questionRequired'));
       return;
     }
     if (questionText.trim().length < 3) {
-      toast.error('Pytanie jest za krótkie');
+      toast.error(t('offerPublicPage.questionTooShort'));
       return;
     }
 
     setIsSendingQuestion(true);
     try {
       await sendClientQuestion(token, questionText.trim());
-      toast.success('Pytanie wysłane do wykonawcy!');
+      toast.success(t('offerPublicPage.questionSentSuccess'));
       setQuestionSent(true);
       setQuestionText('');
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Nie udało się wysłać pytania');
+      toast.error(err instanceof Error ? err.message : t('offerPublicPage.questionError'));
     } finally {
       setIsSendingQuestion(false);
     }
@@ -136,8 +138,8 @@ export default function OfferPublicPage() {
         <Card className="max-w-md w-full">
           <CardContent className="flex flex-col items-center py-12 text-center">
             <XCircle className="h-16 w-16 text-destructive mb-4" />
-            <h1 className="text-xl font-bold mb-2">Nie znaleziono oferty</h1>
-            <p className="text-muted-foreground">{error ?? 'Link jest nieprawidłowy lub oferta wygasła.'}</p>
+            <h1 className="text-xl font-bold mb-2">{t('offerPublicPage.notFoundTitle')}</h1>
+            <p className="text-muted-foreground">{error ?? t('offerPublicPage.notFoundDesc')}</p>
           </CardContent>
         </Card>
       </div>
@@ -151,12 +153,12 @@ export default function OfferPublicPage() {
         <Card className="max-w-md w-full">
           <CardContent className="flex flex-col items-center py-12 text-center">
             <Clock className="h-16 w-16 text-amber-500 mb-4" />
-            <h1 className="text-xl font-bold mb-2">Oferta wygasła</h1>
+            <h1 className="text-xl font-bold mb-2">{t('offerPublicPage.expiredTitle')}</h1>
             <p className="text-muted-foreground">
               {offer.valid_until
-                ? `Ta oferta wygasła dnia ${new Date(offer.valid_until).toLocaleDateString('pl-PL')}.`
-                : 'Ta oferta już wygasła.'}
-              {' '}Skontaktuj się z wykonawcą, aby uzyskać nową wycenę.
+                ? t('offerPublicPage.expiredDescDate', { date: new Date(offer.valid_until).toLocaleDateString('pl-PL') })
+                : t('offerPublicPage.expiredDescNoDate')}
+              {' '}{t('offerPublicPage.expiredContactHint')}
             </p>
             {offer.company?.phone && (
               <a
@@ -180,9 +182,9 @@ export default function OfferPublicPage() {
         <Card className="max-w-md w-full">
           <CardContent className="flex flex-col items-center py-12 text-center">
             <Ban className="h-16 w-16 text-muted-foreground mb-4" />
-            <h1 className="text-xl font-bold mb-2">Oferta wycofana</h1>
+            <h1 className="text-xl font-bold mb-2">{t('offerPublicPage.withdrawnTitle')}</h1>
             <p className="text-muted-foreground">
-              Ta oferta została wycofana przez wykonawcę. Skontaktuj się z nim bezpośrednio.
+              {t('offerPublicPage.withdrawnDesc')}
             </p>
             {offer.company?.phone && (
               <a
@@ -207,8 +209,8 @@ export default function OfferPublicPage() {
   return (
     <>
       <Helmet>
-        <title>Oferta | Majster.AI</title>
-        <meta name="description" content="Przejrzyj i zaakceptuj ofertę od wykonawcy" />
+        <title>{t('offerPublicPage.pageTitle')}</title>
+        <meta name="description" content={t('offerPublicPage.metaDescription')} />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
@@ -217,8 +219,8 @@ export default function OfferPublicPage() {
 
           {/* ─── Header ─────────────────────────────────────────── */}
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-1">Oferta</h1>
-            <p className="text-muted-foreground text-sm">Przejrzyj szczegóły i zaakceptuj lub zadaj pytanie.</p>
+            <h1 className="text-3xl font-bold mb-1">{t('offerPublicPage.offerHeading')}</h1>
+            <p className="text-muted-foreground text-sm">{t('offerPublicPage.offerSubtitle')}</p>
           </div>
 
           {/* ─── Accepted banner ───────────────────────────────── */}
@@ -228,7 +230,7 @@ export default function OfferPublicPage() {
                 <div className="flex items-center gap-3">
                   <CheckCircle className="h-8 w-8 text-green-600 shrink-0" />
                   <div>
-                    <p className="font-semibold text-green-700 dark:text-green-400">Oferta zaakceptowana</p>
+                    <p className="font-semibold text-green-700 dark:text-green-400">{t('offerPublicPage.acceptedBanner')}</p>
                     {(offer.accepted_at ?? offer.approved_at) && (
                       <p className="text-sm text-green-600 dark:text-green-500">
                         {new Date(offer.accepted_at ?? offer.approved_at!).toLocaleString('pl-PL')}
@@ -245,7 +247,7 @@ export default function OfferPublicPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <FileText className="h-5 w-5" />
-                Szczegóły oferty
+                {t('offerPublicPage.detailsTitle')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -253,14 +255,14 @@ export default function OfferPublicPage() {
                 <div className="flex items-start gap-3">
                   <Building className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Projekt</p>
-                    <p className="font-medium">{offer.project?.project_name ?? 'Brak nazwy'}</p>
+                    <p className="text-sm text-muted-foreground">{t('offerPublicPage.projectLabel')}</p>
+                    <p className="font-medium">{offer.project?.project_name ?? t('offerPublicPage.noProjectName')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Calendar className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Data wystawienia</p>
+                    <p className="text-sm text-muted-foreground">{t('offerPublicPage.issuedLabel')}</p>
                     <p className="font-medium">{new Date(offer.created_at).toLocaleDateString('pl-PL')}</p>
                   </div>
                 </div>
@@ -268,7 +270,7 @@ export default function OfferPublicPage() {
                   <div className="flex items-start gap-3">
                     <Clock className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Ważna do</p>
+                      <p className="text-sm text-muted-foreground">{t('offerPublicPage.validUntilLabel')}</p>
                       <p className="font-medium">{new Date(offer.valid_until).toLocaleDateString('pl-PL')}</p>
                     </div>
                   </div>
@@ -278,15 +280,15 @@ export default function OfferPublicPage() {
               {/* Positions table */}
               {positions.length > 0 && (
                 <div className="mt-4">
-                  <h3 className="font-medium mb-3 text-sm">Zakres prac</h3>
+                  <h3 className="font-medium mb-3 text-sm">{t('offerPublicPage.scopeTitle')}</h3>
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
                       <thead className="bg-muted">
                         <tr>
-                          <th className="text-left p-3 font-medium">Pozycja</th>
-                          <th className="text-right p-3 font-medium">Ilość</th>
-                          <th className="text-right p-3 font-medium">Cena/jm</th>
-                          <th className="text-right p-3 font-medium">Suma</th>
+                          <th className="text-left p-3 font-medium">{t('offerPublicPage.colName')}</th>
+                          <th className="text-right p-3 font-medium">{t('offerPublicPage.colQty')}</th>
+                          <th className="text-right p-3 font-medium">{t('offerPublicPage.colPrice')}</th>
+                          <th className="text-right p-3 font-medium">{t('offerPublicPage.colTotal')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -307,10 +309,10 @@ export default function OfferPublicPage() {
               {/* Total summary */}
               <div className="border-t pt-4 flex flex-col gap-1 items-end">
                 <div className="flex justify-between w-full sm:w-auto sm:gap-12">
-                  <span className="text-sm text-muted-foreground">Razem brutto (z VAT):</span>
+                  <span className="text-sm text-muted-foreground">{t('offerPublicPage.totalLabel')}</span>
                   <span className="text-2xl font-bold text-primary">{formatCurrency(total)}</span>
                 </div>
-                <p className="text-xs text-muted-foreground">Cena zawiera podatek VAT</p>
+                <p className="text-xs text-muted-foreground">{t('offerPublicPage.vatNote')}</p>
               </div>
             </CardContent>
           </Card>
@@ -319,25 +321,25 @@ export default function OfferPublicPage() {
           {canAct && (
             <Card>
               <CardHeader>
-                <CardTitle>Twoja decyzja</CardTitle>
+                <CardTitle>{t('offerPublicPage.decisionTitle')}</CardTitle>
                 <CardDescription>
-                  Podaj swoje dane i złóż podpis, aby zaakceptować ofertę.
+                  {t('offerPublicPage.decisionDesc')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <Label htmlFor="clientName">Imię i nazwisko *</Label>
+                    <Label htmlFor="clientName">{t('offerPublicPage.fullNameLabel')}</Label>
                     <Input
                       id="clientName"
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
-                      placeholder="Jan Kowalski"
+                      placeholder={t('offerPublicPage.fullNamePlaceholder')}
                       aria-required="true"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="clientEmail">Email</Label>
+                    <Label htmlFor="clientEmail">{t('offerPublicPage.emailLabel')}</Label>
                     <Input
                       id="clientEmail"
                       type="email"
@@ -349,8 +351,8 @@ export default function OfferPublicPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label>Podpis *</Label>
-                  <p className="text-sm text-muted-foreground">Narysuj podpis w polu poniżej</p>
+                  <Label>{t('offerPublicPage.signatureLabel')}</Label>
+                  <p className="text-sm text-muted-foreground">{t('offerPublicPage.signatureHint')}</p>
                   <SignatureCanvas onSignatureChange={setSignature} />
                 </div>
 
@@ -364,11 +366,11 @@ export default function OfferPublicPage() {
                   ) : (
                     <CheckCircle className="h-5 w-5 mr-2" />
                   )}
-                  Akceptuję ofertę
+                  {t('offerPublicPage.acceptButton')}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">
-                  Akceptując ofertę, wyrażasz zgodę na wykonanie prac na warunkach określonych powyżej.
+                  {t('offerPublicPage.acceptTermsNote')}
                 </p>
               </CardContent>
             </Card>
@@ -380,27 +382,27 @@ export default function OfferPublicPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <MessageSquare className="h-5 w-5" />
-                  Mam pytanie
+                  {t('offerPublicPage.questionTitle')}
                 </CardTitle>
                 <CardDescription>
-                  Napisz do wykonawcy — odpowie najszybciej jak może.
+                  {t('offerPublicPage.questionDesc')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {questionSent ? (
                   <div className="flex items-center gap-2 text-green-600 dark:text-green-400 py-2">
                     <CheckCircle className="h-5 w-5 shrink-0" />
-                    <p className="text-sm font-medium">Pytanie zostało wysłane do wykonawcy!</p>
+                    <p className="text-sm font-medium">{t('offerPublicPage.questionSentConfirm')}</p>
                   </div>
                 ) : (
                   <>
                     <Textarea
                       value={questionText}
                       onChange={(e) => setQuestionText(e.target.value)}
-                      placeholder="Wpisz swoje pytanie dotyczące oferty..."
+                      placeholder={t('offerPublicPage.questionPlaceholder')}
                       rows={4}
                       maxLength={2000}
-                      aria-label="Treść pytania do wykonawcy"
+                      aria-label={t('offerPublicPage.questionAriaLabel')}
                     />
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-muted-foreground">
@@ -412,7 +414,7 @@ export default function OfferPublicPage() {
                         disabled={isSendingQuestion || questionText.trim().length < 3}
                       >
                         {isSendingQuestion && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                        Wyślij pytanie
+                        {t('offerPublicPage.sendQuestion')}
                       </Button>
                     </div>
                   </>
@@ -424,7 +426,7 @@ export default function OfferPublicPage() {
                     onClick={() => setQuestionSent(false)}
                     className="text-muted-foreground"
                   >
-                    Zadaj kolejne pytanie
+                    {t('offerPublicPage.anotherQuestion')}
                   </Button>
                 )}
               </CardContent>

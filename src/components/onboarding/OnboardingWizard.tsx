@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -28,6 +29,7 @@ interface OnboardingWizardProps {
 }
 
 export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: progress, isLoading } = useOnboardingProgress();
   const skipOnboarding = useSkipOnboarding();
@@ -66,38 +68,37 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 overflow-hidden" aria-describedby={undefined}>
-        <DialogTitle className="sr-only">Kreator konfiguracji Majster.AI</DialogTitle>
+        <DialogTitle className="sr-only">{t('onboarding.wizardTitle')}</DialogTitle>
         {showCongrats ? (
           <div className="p-8 text-center animate-fade-in">
             <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-success/10">
               <Sparkles className="h-10 w-10 text-success" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">Gratulacje!</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('onboarding.congratsTitle')}</h2>
             <p className="text-muted-foreground mb-6">
-              Zakończyłeś konfigurację Majster.AI. Jesteś gotowy do tworzenia 
-              profesjonalnych wycen i zarządzania projektami.
+              {t('onboarding.congratsDesc')}
             </p>
             <div className="grid grid-cols-3 gap-4 mb-8">
               <div className="p-4 rounded-lg bg-muted/50">
                 <p className="text-2xl font-bold text-primary">✓</p>
-                <p className="text-sm text-muted-foreground">Profil firmy</p>
+                <p className="text-sm text-muted-foreground">{t('onboarding.completionCompanyProfile')}</p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50">
                 <p className="text-2xl font-bold text-primary">✓</p>
-                <p className="text-sm text-muted-foreground">Pierwszy klient</p>
+                <p className="text-sm text-muted-foreground">{t('onboarding.completionFirstClient')}</p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50">
                 <p className="text-2xl font-bold text-primary">✓</p>
-                <p className="text-sm text-muted-foreground">Pierwszy projekt</p>
+                <p className="text-sm text-muted-foreground">{t('onboarding.completionFirstProject')}</p>
               </div>
             </div>
             <div className="flex gap-3 justify-center">
               <Button onClick={() => { onClose(); navigate('/app/jobs/new'); }}>
                 <FolderOpen className="mr-2 h-4 w-4" />
-                Nowy projekt
+                {t('onboarding.newProject')}
               </Button>
               <Button variant="outline" onClick={handleFinish}>
-                Przejdź do dashboardu
+                {t('onboarding.goToDashboard')}
               </Button>
             </div>
           </div>
@@ -107,9 +108,9 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
             <div className="p-6 pb-0">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-xl font-bold">Witaj w Majster.AI</h2>
+                  <h2 className="text-xl font-bold">{t('onboarding.welcome')}</h2>
                   <p className="text-sm text-muted-foreground">
-                    Skonfiguruj swoje konto w 5 prostych krokach
+                    {t('onboarding.setupSubtitle')}
                   </p>
                 </div>
                 <Button variant="ghost" size="icon" onClick={handleSkip}>
@@ -118,7 +119,7 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
               </div>
               <Progress value={progressPercent} className="h-2" />
               <p className="text-xs text-muted-foreground mt-2">
-                Ukończono {progress?.completed_steps.length || 0} z {ONBOARDING_STEPS.length} kroków
+                {t('onboarding.completedOf', { completed: progress?.completed_steps.length || 0, total: ONBOARDING_STEPS.length })}
               </p>
             </div>
 
@@ -159,15 +160,15 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
                       <p className="text-sm text-muted-foreground">{step.description}</p>
                     </div>
                     {!isCompleted && (
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant={isCurrent ? 'default' : 'outline'}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleGoToStep(step.id);
                         }}
                       >
-                        Rozpocznij
+                        {t('onboarding.startStep')}
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     )}
@@ -179,10 +180,10 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
             {/* Footer */}
             <div className="p-6 pt-0 flex justify-between items-center">
               <Button variant="ghost" onClick={handleSkip}>
-                Pomiń na razie
+                {t('onboarding.skipForNow')}
               </Button>
               <p className="text-xs text-muted-foreground">
-                Możesz wrócić do tego przewodnika w menu pomocy
+                {t('onboarding.returnHint')}
               </p>
             </div>
           </div>

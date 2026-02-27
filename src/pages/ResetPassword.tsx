@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { resetPasswordSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { Wrench, Lock, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ResetPassword() {
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -61,17 +63,17 @@ export default function ResetPassword() {
 
     if (error) {
       if (error.message.includes('same')) {
-        toast.error('Nowe hasło musi być inne niż poprzednie');
+        toast.error(t('auth.errors.passwordMustBeDifferent'));
       } else if (error.message.includes('weak')) {
-        toast.error('Hasło jest zbyt słabe');
+        toast.error(t('auth.errors.passwordTooWeak'));
       } else {
-        toast.error('Nie udało się zmienić hasła. Spróbuj ponownie.');
+        toast.error(t('auth.errors.changePasswordFailed'));
       }
       return;
     }
 
     setIsSuccess(true);
-    toast.success('Hasło zostało zmienione');
+    toast.success(t('auth.success.passwordChanged'));
     
     // Redirect to dashboard after 2 seconds
     setTimeout(() => {
@@ -97,14 +99,14 @@ export default function ResetPassword() {
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10">
               <XCircle className="h-8 w-8 text-destructive" />
             </div>
-            <CardTitle className="text-2xl font-bold">Link wygasł</CardTitle>
+            <CardTitle className="text-2xl font-bold">{t('auth.linkExpiredTitle')}</CardTitle>
             <CardDescription>
-              Link do resetu hasła wygasł lub jest nieprawidłowy
+              {t('auth.linkExpiredDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button className="w-full" onClick={() => navigate('/forgot-password')}>
-              Wyślij nowy link
+              {t('auth.sendNewLink')}
             </Button>
           </CardContent>
         </Card>
@@ -121,9 +123,9 @@ export default function ResetPassword() {
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-success/10">
               <CheckCircle className="h-8 w-8 text-success" />
             </div>
-            <CardTitle className="text-2xl font-bold">Hasło zmienione</CardTitle>
+            <CardTitle className="text-2xl font-bold">{t('auth.passwordChangedTitle')}</CardTitle>
             <CardDescription>
-              Za chwilę zostaniesz przekierowany do aplikacji...
+              {t('auth.passwordChangedDesc')}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -138,15 +140,15 @@ export default function ResetPassword() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary">
             <Wrench className="h-8 w-8 text-primary-foreground" />
           </div>
-          <CardTitle className="text-2xl font-bold">Nowe hasło</CardTitle>
+          <CardTitle className="text-2xl font-bold">{t('auth.newPasswordTitle')}</CardTitle>
           <CardDescription>
-            Wprowadź nowe hasło do swojego konta
+            {t('auth.newPasswordDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="password">Nowe hasło</Label>
+              <Label htmlFor="password">{t('auth.newPasswordLabel')}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -161,7 +163,7 @@ export default function ResetPassword() {
               {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Potwierdź hasło</Label>
+              <Label htmlFor="confirmPassword">{t('auth.confirmPasswordLabel')}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -179,10 +181,10 @@ export default function ResetPassword() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Zapisywanie...
+                  {t('auth.saving')}
                 </>
               ) : (
-                'Zmień hasło'
+                t('auth.changePassword')
               )}
             </Button>
           </form>

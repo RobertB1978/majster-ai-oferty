@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useClients } from '@/hooks/useClients';
 import { useAddProject } from '@/hooks/useProjects';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,7 @@ interface VoiceQuoteResult {
 }
 
 export default function NewProject() {
+  const { t } = useTranslation();
   const location = useLocation();
   const initialMode = (location.state?.mode as CreationMode) || 'manual';
   
@@ -100,7 +102,7 @@ export default function NewProject() {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
         if (event.error === 'not-allowed') {
-          toast.error('Brak dostępu do mikrofonu. Włącz mikrofon w ustawieniach przeglądarki.');
+          toast.error(t('errors.microphoneAccessDenied'));
         }
       };
       
@@ -121,10 +123,10 @@ export default function NewProject() {
 
   const handleVoiceToggle = () => {
     if (!recognition) {
-      toast.error('Rozpoznawanie mowy nie jest obsługiwane w tej przeglądarce. Użyj Chrome.');
+      toast.error(t('errors.speechRecognitionNotSupported'));
       return;
     }
-    
+
     if (isListening) {
       recognition.stop();
       setIsListening(false);
@@ -133,10 +135,10 @@ export default function NewProject() {
       try {
         recognition.start();
         setIsListening(true);
-        toast.info('Nagrywanie rozpoczęte. Mów wyraźnie...');
+        toast.info(t('messages.recordingStarted'));
       } catch (error) {
         console.error('Error starting recognition:', error);
-        toast.error('Nie udało się uruchomić mikrofonu');
+        toast.error(t('newProject.microphoneStartFailed'));
       }
     }
   };
@@ -144,7 +146,7 @@ export default function NewProject() {
   // Process voice input with AI
   const handleProcessVoice = async () => {
     if (!transcript.trim()) {
-      toast.error('Brak nagranego tekstu');
+      toast.error(t('newProject.noTranscript'));
       return;
     }
     
@@ -164,11 +166,11 @@ export default function NewProject() {
         setVoiceResult(data);
         setProjectName(data.projectName || '');
         setDescription(data.summary || '');
-        toast.success('Wycena przygotowana!');
+        toast.success(t('newProject.quotePreparedSuccess'));
       }
     } catch (error) {
       console.error('Error processing voice:', error);
-      toast.error('Błąd przetwarzania głosu. Spróbuj ponownie.');
+      toast.error(t('errors.processingFailed'));
     } finally {
       setIsProcessingVoice(false);
     }
@@ -197,13 +199,13 @@ export default function NewProject() {
         throw error;
       }
       
-      const aiReply = data?.response || data?.reply || 'Przepraszam, wystąpił błąd.';
+      const aiReply = data?.response || data?.reply || t('newProject.defaultAiError');
       setAiMessages(prev => [...prev, { role: 'assistant', content: aiReply }]);
-      
+
     } catch (error) {
       console.error('Error with AI:', error);
-      toast.error('Błąd komunikacji z AI. Spróbuj ponownie.');
-      setAiMessages(prev => [...prev, { role: 'assistant', content: 'Przepraszam, wystąpił problem z połączeniem. Spróbuj ponownie.' }]);
+      toast.error(t('newProject.aiError'));
+      setAiMessages(prev => [...prev, { role: 'assistant', content: t('newProject.connectionError') }]);
     } finally {
       setIsProcessingAi(false);
     }
@@ -213,19 +215,19 @@ export default function NewProject() {
     e.preventDefault();
 
     if (!projectName.trim()) {
-      toast.error('Podaj nazwę projektu');
+      toast.error(t('validation.projectNameRequired'));
       return;
     }
 
     if (!clientId) {
-      toast.error('Wybierz klienta');
+      toast.error(t('validation.clientRequired'));
       return;
     }
 
     const project = await addProject.mutateAsync({
       project_name: projectName,
       client_id: clientId,
-      status: 'Nowy',
+      status: t('newProject.statusNew'),
     });
 
     navigate(`/app/jobs/${project.id}`);
@@ -238,11 +240,11 @@ export default function NewProject() {
       <div className="flex items-center justify-between">
         <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Powrót do projektów
+          {t('newProject.backToProjects')}
         </Button>
         <Badge variant="secondary" className="bg-primary/10 text-primary">
           <Sparkles className="h-3 w-3 mr-1" />
-          Nowy projekt
+          {t('newProject.title')}
         </Badge>
       </div>
 
@@ -252,10 +254,10 @@ export default function NewProject() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
-              Sposób tworzenia
+              {t('newProject.creationMethod')}
             </CardTitle>
             <CardDescription>
-              Wybierz jak chcesz stworzyć projekt
+              {t('newProject.creationMethodDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -263,15 +265,15 @@ export default function NewProject() {
               <TabsList className="grid grid-cols-3 mb-6">
                 <TabsTrigger value="voice" className="flex items-center gap-2">
                   <Mic className="h-4 w-4" />
-                  Głosowo
+                  {t('newProject.voiceMode')}
                 </TabsTrigger>
                 <TabsTrigger value="ai" className="flex items-center gap-2">
                   <Bot className="h-4 w-4" />
-                  AI
+                  {t('newProject.aiMode')}
                 </TabsTrigger>
                 <TabsTrigger value="manual" className="flex items-center gap-2">
                   <PenTool className="h-4 w-4" />
-                  Ręcznie
+                  {t('newProject.manualMode')}
                 </TabsTrigger>
               </TabsList>
 
@@ -280,8 +282,8 @@ export default function NewProject() {
                 {!isVoiceSupported ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Mic className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>Rozpoznawanie mowy nie jest obsługiwane w tej przeglądarce.</p>
-                    <p className="text-sm mt-2">Użyj przeglądarki Chrome lub Edge.</p>
+                    <p>{t('newProject.voiceNotSupported')}</p>
+                    <p className="text-sm mt-2">{t('newProject.useChromeOrEdge')}</p>
                   </div>
                 ) : (
                   <>
@@ -309,7 +311,7 @@ export default function NewProject() {
                       </button>
                       
                       <p className="text-sm text-muted-foreground mt-4">
-                        {isListening ? 'Nagrywam... Kliknij aby zatrzymać' : 'Kliknij aby nagrywać'}
+                        {isListening ? t('newProject.recording') : t('newProject.clickToRecord')}
                       </p>
                     </div>
 
@@ -317,7 +319,7 @@ export default function NewProject() {
                       <div className="bg-muted/50 rounded-lg p-4 space-y-3">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <FileText className="h-4 w-4" />
-                          Rozpoznany tekst:
+                          {t('newProject.recognizedText')}
                         </div>
                         <p className="text-sm">{transcript}</p>
                         <div className="flex gap-2">
@@ -331,7 +333,7 @@ export default function NewProject() {
                             ) : (
                               <CheckCircle2 className="h-4 w-4 mr-2" />
                             )}
-                            Przetwórz z AI
+                            {t('newProject.processWithAI')}
                           </Button>
                           <Button 
                             variant="outline"
@@ -350,11 +352,11 @@ export default function NewProject() {
                       <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 space-y-2">
                         <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
                           <CheckCircle2 className="h-4 w-4" />
-                          <span className="font-medium">Wycena przygotowana</span>
+                          <span className="font-medium">{t('newProject.quotePrepared')}</span>
                         </div>
                         {voiceResult.items && voiceResult.items.length > 0 && (
                           <div className="text-sm text-muted-foreground">
-                            {voiceResult.items.length} pozycji | Suma: ~{voiceResult.items.reduce((acc, item) => acc + (item.qty * item.price), 0).toLocaleString('pl-PL')} zł
+                            {voiceResult.items.length} {t('newProject.quoteItemsSummary')}{voiceResult.items.reduce((acc, item) => acc + (item.qty * item.price), 0).toLocaleString('pl-PL')} zł
                           </div>
                         )}
                       </div>
@@ -369,9 +371,9 @@ export default function NewProject() {
                   {aiMessages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
                       <Bot className="h-12 w-12 mb-3 opacity-50" />
-                      <p className="text-sm text-center">Opisz projekt, który chcesz wycenić</p>
+                      <p className="text-sm text-center">{t('newProject.describeProject')}</p>
                       <p className="text-xs mt-2 text-center max-w-xs">
-                        np. "Remont łazienki 8m2, wymiana płytek, wanna na kabinę prysznicową"
+                        {t('newProject.describeProjectExample')}
                       </p>
                     </div>
                   ) : (
@@ -392,7 +394,7 @@ export default function NewProject() {
                   {isProcessingAi && (
                     <div className="flex items-center gap-2 text-muted-foreground p-3">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-sm">AI odpowiada...</span>
+                      <span className="text-sm">{t('newProject.aiResponding')}</span>
                     </div>
                   )}
                 </div>
@@ -401,7 +403,7 @@ export default function NewProject() {
                   <Input
                     value={aiInput}
                     onChange={(e) => setAiInput(e.target.value)}
-                    placeholder="Opisz projekt lub zadaj pytanie..."
+                    placeholder={t('newProject.aiPlaceholder')}
                     onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendAiMessage()}
                     disabled={isProcessingAi}
                   />
@@ -419,7 +421,7 @@ export default function NewProject() {
               <TabsContent value="manual" className="space-y-4">
                 <div className="text-center py-8 text-muted-foreground">
                   <PenTool className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Wypełnij formularz po prawej stronie</p>
+                  <p className="text-sm">{t('newProject.fillForm')}</p>
                 </div>
               </TabsContent>
             </Tabs>
@@ -431,29 +433,29 @@ export default function NewProject() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Dane projektu
+              {t('newProject.projectData')}
             </CardTitle>
             <CardDescription>
-              Uzupełnij lub zmodyfikuj dane projektu
+              {t('newProject.projectDataDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="projectName">Nazwa projektu *</Label>
+                <Label htmlFor="projectName">{t('newProject.projectNameLabel')}</Label>
                 <Input
                   id="projectName"
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
-                  placeholder="np. Remont łazienki ul. Warszawska 15"
+                  placeholder={t('newProject.projectNamePlaceholder')}
                 />
               </div>
-              
+
               <div className="space-y-2">
-                <Label htmlFor="client">Klient *</Label>
+                <Label htmlFor="client">{t('newProject.clientLabel')}</Label>
                 <Select value={clientId} onValueChange={setClientId}>
                   <SelectTrigger>
-                    <SelectValue placeholder={clientsLoading ? "Ładowanie..." : "Wybierz klienta"} />
+                    <SelectValue placeholder={clientsLoading ? t('common.loading') : t('validation.clientRequired')} />
                   </SelectTrigger>
                   <SelectContent>
                     {clients.map((client) => (
@@ -465,28 +467,28 @@ export default function NewProject() {
                 </Select>
                 {!clientsLoading && clients.length === 0 && (
                   <p className="text-sm text-muted-foreground">
-                    Brak klientów.{' '}
+                    {t('dashboard.noClients')}{' '}
                     <Button variant="link" className="h-auto p-0" onClick={() => navigate('/app/customers')}>
-                      Dodaj klienta
+                      {t('newProject.addClient')}
                     </Button>
                   </p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Opis projektu</Label>
+                <Label htmlFor="description">{t('newProject.descriptionLabel')}</Label>
                 <Textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Opisz zakres prac..."
+                  placeholder={t('newProject.descriptionPlaceholder')}
                   rows={4}
                 />
               </div>
 
               {voiceResult && voiceResult.items && voiceResult.items.length > 0 && (
                 <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-                  <Label>Pozycje z wyceny głosowej:</Label>
+                  <Label>{t('newProject.voiceQuoteItems')}</Label>
                   <div className="space-y-1 text-sm max-h-32 overflow-y-auto">
                     {voiceResult.items.map((item, i) => (
                       <div key={i} className="flex justify-between">
@@ -505,7 +507,7 @@ export default function NewProject() {
                 disabled={addProject.isPending}
               >
                 {addProject.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Utwórz projekt
+                {t('newProject.createProject')}
               </Button>
             </form>
           </CardContent>
