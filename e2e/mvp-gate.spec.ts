@@ -383,7 +383,7 @@ test.describe('MVP Gate - Public Pages', () => {
     await waitForReactHydration(page);
 
     // Verify landing page loaded
-    const heading = page.getByRole('heading', { name: /zarządzaj firmą/i });
+    const heading = page.getByRole('heading', { name: /zarządzaj.*profesjonalnie/i });
     await expect(heading).toBeVisible({ timeout: 15000 });
 
     // Check for cookie consent banner
@@ -518,7 +518,7 @@ test.describe('MVP Gate - i18n', () => {
     // Note: This is a baseline test - we're verifying the mechanism exists
 
     // Check initial language (default is Polish based on Landing.tsx content)
-    const polishHeading = page.getByRole('heading', { name: /zarządzaj firmą/i });
+    const polishHeading = page.getByRole('heading', { name: /zarządzaj.*profesjonalnie/i });
     const isPolishVisible = await polishHeading.isVisible({ timeout: 5000 }).catch(() => false);
 
     if (isPolishVisible) {
