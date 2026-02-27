@@ -1304,6 +1304,129 @@
     "labor": "Robocizna"
   },
   "landing": {
+    "header": {
+      "lightTheme": "Jasny motyw",
+      "darkTheme": "Ciemny motyw",
+      "switchToLight": "Przełącz na jasny motyw",
+      "switchToDark": "Przełącz na ciemny motyw"
+    },
+    "comingSoon": {
+      "sectionTitle": "Co planujemy",
+      "sectionSubtitle": "Aktywnie rozwijamy platformę. Poniżej funkcje, które są w przygotowaniu.",
+      "soonBadge": "Wkrótce",
+      "betaBadge": "Beta",
+      "features": {
+        "ai_assist": {
+          "title": "Asystent AI",
+          "desc": "Sugestie i automatyzacja wycen."
+        },
+        "voice": {
+          "title": "Wyceny głosem",
+          "desc": "Twórz oferty dyktując głosem."
+        },
+        "privacy": {
+          "title": "Prywatność danych",
+          "desc": "Prywatność danych i kontrola dostępu."
+        },
+        "offline": {
+          "title": "Tryb offline",
+          "desc": "Pracuj bez internetu. Sync po połączeniu."
+        },
+        "native_app": {
+          "title": "Aplikacja iOS/Android",
+          "desc": "Natywna aplikacja mobilna."
+        },
+        "api": {
+          "title": "API dla integratorów",
+          "desc": "Integruj Majster.AI ze swoimi systemami."
+        }
+      }
+    },
+    "demo": {
+      "calendar": {
+        "event1": "Remont łazienki — Nowak",
+        "event2": "Wycena — biuro ABC",
+        "event3": "Dostawa materiałów",
+        "event4": "Odbiór prac — Nowak"
+      },
+      "mobile": {
+        "project1": "Remont łazienki",
+        "project1Status": "3 145 zł · W toku",
+        "project2": "Malowanie klatki",
+        "project2Status": "1 200 zł · Zakończony"
+      },
+      "quotes": {
+        "header": "Podgląd wyceny — Remont łazienki",
+        "item1": "Kafelkowanie ściany 25m²",
+        "item2": "Montaż kabiny prysznicowej",
+        "item3": "Instalacja elektryczna",
+        "item4": "Materiały (szpachla, klej)",
+        "total": "RAZEM"
+      },
+      "pdf": {
+        "header": "Wygenerowany PDF — Oferta #2024/031",
+        "company": "Firma Remontowa Kowalski",
+        "pdfReady": "PDF gotowy",
+        "labelClient": "Klient:",
+        "labelDeadline": "Termin:",
+        "labelValidity": "Ważność:",
+        "labelTotal": "Suma:",
+        "days30": "30 dni"
+      },
+      "clients": {
+        "project1": "Remont łazienki",
+        "project2": "Malowanie klatki",
+        "project3": "Biuro — elektryka",
+        "tagActive": "Aktywny",
+        "tagNew": "Nowy"
+      },
+      "projects": {
+        "project1": "Remont łazienki — Nowak",
+        "project2": "Malowanie klatki",
+        "project3": "Biuro ABC — elektryka",
+        "statusInProgress": "W toku",
+        "statusCompleted": "Zakończony",
+        "statusPlanned": "Planowany",
+        "completedLabel": "ukończono"
+      },
+      "finance": {
+        "revenue": "Przychody",
+        "costs": "Koszty",
+        "profit": "Zysk",
+        "monthSummary": "Luty 2025 · 6 faktur wystawionych",
+        "momGrowth": "Wzrost MoM:"
+      },
+      "ai": {
+        "writing": "AI Asystent pisze wycenę:",
+        "quoteText": "\"Remont łazienki 8m² — płytki ścienne 25m², montaż kabiny, instalacja elektryczna. Szacowany czas: 5 dni roboczych. Koszt: {{amount}}.\"",
+        "btnEdit": "Popraw",
+        "btnApprove": "Zatwierdź wycenę"
+      },
+      "analytics": {
+        "header": "Przychody — ostatnie 4 miesiące",
+        "momGrowth": "Wzrost MoM:",
+        "nov": "Lis",
+        "dec": "Gru",
+        "jan": "Sty",
+        "feb": "Lut"
+      },
+      "photos": {
+        "before": "Przed",
+        "aiDetected": "AI wykryło: pęknięcia (3)",
+        "after": "Po"
+      },
+      "billing": {
+        "statusActive": "Aktywny",
+        "statusPaid": "Opłacona"
+      },
+      "security": {
+        "ssl": "Szyfrowanie SSL/TLS",
+        "gdpr": "Zgodność z RODO",
+        "rls": "Izolacja danych (RLS)",
+        "backup": "Kopie zapasowe co 6h",
+        "twofa": "Uwierzytelnianie 2FA"
+      }
+    },
     "nav": {
       "features": "Funkcje",
       "whyUs": "Dlaczego my",
@@ -1354,7 +1477,9 @@
       "vatNote": "Ceny netto · Do każdego zakupu doliczamy 23% VAT",
       "ctaFree": "Zacznij za darmo",
       "ctaTry": "Wypróbuj",
-      "cancelNote": "Anuluj w każdej chwili · Wystawiamy faktury VAT"
+      "cancelNote": "Anuluj w każdej chwili · Wystawiamy faktury VAT",
+      "prepBadge": "W przygotowaniu",
+      "planFeaturesLabel": "Funkcje planu"
     },
     "faq": {
       "sectionTitle": "Często zadawane pytania",
@@ -1395,7 +1520,17 @@
       "subtitle2": "Wyceny, projekty, klienci — wszystko w jednym miejscu.",
       "microcopy": "Pierwsze 30 dni bezpłatnie · Bez zobowiązań",
       "cta_start": "Zacznij za darmo",
-      "cta_features": "Zobacz funkcje"
+      "cta_features": "Zobacz funkcje",
+      "mock": {
+        "quoteTitle": "Wycena #042",
+        "projectName": "Remont łazienki",
+        "labour": "Robocizna",
+        "materials": "Materiały",
+        "extraLabour": "Robocizna dodatkowa",
+        "total": "Razem",
+        "sentToClient": "✓ Wysłano do klienta",
+        "activeProjects": "Projekty aktywne"
+      }
     },
     "stats": {
       "quoteTime": "Średni czas wyceny",
@@ -1495,6 +1630,10 @@
         "b1": "Szyfrowanie SSL",
         "b2": "Kopie zapasowe",
         "b3": "Zgodność z RODO"
+      },
+      "i18n": {
+        "title": "3 języki",
+        "description": "Polski, English, Українська. Przełączaj język w dowolnym momencie."
       }
     },
     "howItWorks": {

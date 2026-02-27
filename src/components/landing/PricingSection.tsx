@@ -3,13 +3,11 @@ import { Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PLANS } from '@/config/plans';
 
-// Features that are in beta/in-progress (cross-referenced with features.data.ts)
-// Evidence: features.data.ts ai_assist/voice status='beta', api status='soon'
-const PREP_FEATURES = new Set([
-  'Asystent AI',
-  'Dyktowanie głosem',
-  'Dostęp do API',
-  'Własne integracje (na zapytanie)',
+// Features that are in beta/in-progress — matched by i18n key (not Polish fallback)
+const PREP_KEYS = new Set([
+  'billing.plans.business.features.aiAssistant',
+  'billing.plans.business.features.voiceQuotes',
+  'billing.plans.enterprise.features.apiAccess',
 ]);
 
 const CTA_ROUTE = '/register';
@@ -60,30 +58,34 @@ export function PricingSection() {
 
               {/* Plan header */}
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{plan.name}</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                  {t(plan.displayNameKey, plan.name)}
+                </h3>
                 <div className="flex items-baseline gap-1 mb-2">
                   <span className="text-4xl font-bold text-gray-900 dark:text-white">
                     {plan.pricePLN === 0 ? '0' : plan.pricePLN}
                   </span>
                   <span className="text-sm text-gray-500 dark:text-[#A3A3A3]">
-                    {plan.pricePLN === 0 ? 'zł' : 'zł / mies'}
+                    {plan.pricePLN === 0 ? 'zł' : `zł ${t('landing.pricing.per_month', '/ mies')}`}
                   </span>
                 </div>
-                <p className="text-xs text-gray-400 dark:text-[#525252] leading-relaxed">{plan.description}</p>
+                <p className="text-xs text-gray-400 dark:text-[#525252] leading-relaxed">
+                  {t(plan.descriptionKey, plan.description)}
+                </p>
               </div>
 
               {/* Features list */}
-              <ul className="flex flex-col gap-2.5 flex-1" aria-label={`Funkcje planu ${plan.name}`}>
-                {plan.features.map((feature) => {
-                  const isPrep = PREP_FEATURES.has(feature);
+              <ul className="flex flex-col gap-2.5 flex-1" aria-label={`${t('landing.pricing.planFeaturesLabel', 'Funkcje planu')} ${t(plan.displayNameKey, plan.name)}`}>
+                {plan.featuresKeys.map((featureKey) => {
+                  const isPrep = PREP_KEYS.has(featureKey);
                   return (
-                    <li key={feature} className="flex items-start gap-2 text-sm">
+                    <li key={featureKey} className="flex items-start gap-2 text-sm">
                       <Check
                         className="w-4 h-4 text-amber-500 shrink-0 mt-0.5"
                         aria-hidden="true"
                       />
                       <span className={isPrep ? 'text-gray-300 dark:text-[#525252]' : 'text-gray-600 dark:text-[#A3A3A3]'}>
-                        {feature}
+                        {t(featureKey)}
                         {isPrep && (
                           <span className="ml-1.5 text-[10px] font-medium text-gray-400 dark:text-[#525252] border border-gray-200 dark:border-[#2A2A2A] rounded px-1 py-0.5 uppercase tracking-wide align-middle">
                             {t('landing.pricing.prepBadge', 'W przygotowaniu')}
@@ -106,7 +108,7 @@ export function PricingSection() {
               >
                 {plan.pricePLN === 0
                   ? t('landing.pricing.ctaFree', 'Zacznij za darmo')
-                  : `${t('landing.pricing.ctaTry', 'Wypróbuj')} ${plan.name}`}
+                  : `${t('landing.pricing.ctaTry', 'Wypróbuj')} ${t(plan.displayNameKey, plan.name)}`}
               </Link>
             </div>
           ))}

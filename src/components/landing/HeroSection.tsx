@@ -109,8 +109,8 @@ export function HeroSection() {
                     <FileText className="w-4 h-4 text-amber-500" aria-hidden="true" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-gray-900 dark:text-white text-sm font-semibold truncate">Wycena #042</div>
-                    <div className="text-gray-400 dark:text-[#525252] text-xs">Remont łazienki</div>
+                    <div className="text-gray-900 dark:text-white text-sm font-semibold truncate">{t('landing.hero.mock.quoteTitle')}</div>
+                    <div className="text-gray-400 dark:text-[#525252] text-xs">{t('landing.hero.mock.projectName')}</div>
                   </div>
                   <div className="ml-auto shrink-0">
                     <span className="text-xs bg-amber-500/20 text-amber-500 dark:text-amber-400 rounded-full px-2 py-0.5 font-medium">
@@ -122,19 +122,19 @@ export function HeroSection() {
                 {/* Line items */}
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600 dark:text-[#A3A3A3]">Robocizna</span>
+                    <span className="text-gray-600 dark:text-[#A3A3A3]">{t('landing.hero.mock.labour')}</span>
                     <span className="text-gray-900 dark:text-white font-medium">2 400 zł</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600 dark:text-[#A3A3A3]">Materiały</span>
+                    <span className="text-gray-600 dark:text-[#A3A3A3]">{t('landing.hero.mock.materials')}</span>
                     <span className="text-gray-900 dark:text-white font-medium">1 800 zł</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600 dark:text-[#A3A3A3]">Robocizna dodatkowa</span>
+                    <span className="text-gray-600 dark:text-[#A3A3A3]">{t('landing.hero.mock.extraLabour')}</span>
                     <span className="text-gray-900 dark:text-white font-medium">600 zł</span>
                   </div>
                   <div className="border-t border-gray-200 dark:border-[#2A2A2A] pt-2 flex justify-between font-semibold">
-                    <span className="text-gray-600 dark:text-[#A3A3A3]">Razem</span>
+                    <span className="text-gray-600 dark:text-[#A3A3A3]">{t('landing.hero.mock.total')}</span>
                     <span className="text-amber-500 text-base">4 800 zł</span>
                   </div>
                 </div>
@@ -142,7 +142,7 @@ export function HeroSection() {
                 {/* Status */}
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-center">
                   <span className="text-xs text-amber-500 dark:text-amber-400 font-medium">
-                    ✓ Wysłano do klienta
+                    {t('landing.hero.mock.sentToClient')}
                   </span>
                 </div>
               </div>
@@ -151,7 +151,7 @@ export function HeroSection() {
               <div className="mt-3 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-xl p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-gray-400 dark:text-[#525252] text-xs mb-1">Projekty aktywne</div>
+                    <div className="text-gray-400 dark:text-[#525252] text-xs mb-1">{t('landing.hero.mock.activeProjects')}</div>
                     <div className="text-gray-900 dark:text-white font-bold text-xl">12</div>
                   </div>
                   <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-[#0F0F0F] flex items-center justify-center">

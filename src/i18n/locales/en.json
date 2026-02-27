@@ -1304,6 +1304,129 @@
     "labor": "Labor"
   },
   "landing": {
+    "header": {
+      "lightTheme": "Light theme",
+      "darkTheme": "Dark theme",
+      "switchToLight": "Switch to light theme",
+      "switchToDark": "Switch to dark theme"
+    },
+    "comingSoon": {
+      "sectionTitle": "Coming soon",
+      "sectionSubtitle": "We're actively developing the platform. Here are the features in preparation.",
+      "soonBadge": "Coming soon",
+      "betaBadge": "Beta",
+      "features": {
+        "ai_assist": {
+          "title": "AI Assistant",
+          "desc": "Quote suggestions and automation."
+        },
+        "voice": {
+          "title": "Voice quotes",
+          "desc": "Create quotes by voice dictation."
+        },
+        "privacy": {
+          "title": "Data privacy",
+          "desc": "Data privacy and access control."
+        },
+        "offline": {
+          "title": "Offline mode",
+          "desc": "Work without internet. Sync when connected."
+        },
+        "native_app": {
+          "title": "iOS/Android app",
+          "desc": "Native mobile application."
+        },
+        "api": {
+          "title": "API for integrators",
+          "desc": "Integrate Majster.AI with your systems."
+        }
+      }
+    },
+    "demo": {
+      "calendar": {
+        "event1": "Bathroom renovation — Nowak",
+        "event2": "Quote — ABC office",
+        "event3": "Material delivery",
+        "event4": "Work handover — Nowak"
+      },
+      "mobile": {
+        "project1": "Bathroom renovation",
+        "project1Status": "3,145 PLN · In progress",
+        "project2": "Staircase painting",
+        "project2Status": "1,200 PLN · Completed"
+      },
+      "quotes": {
+        "header": "Quote preview — Bathroom renovation",
+        "item1": "Wall tiling 25m²",
+        "item2": "Shower cabin installation",
+        "item3": "Electrical installation",
+        "item4": "Materials (plaster, adhesive)",
+        "total": "TOTAL"
+      },
+      "pdf": {
+        "header": "Generated PDF — Offer #2024/031",
+        "company": "Kowalski Renovation Company",
+        "pdfReady": "PDF ready",
+        "labelClient": "Client:",
+        "labelDeadline": "Deadline:",
+        "labelValidity": "Validity:",
+        "labelTotal": "Total:",
+        "days30": "30 days"
+      },
+      "clients": {
+        "project1": "Bathroom renovation",
+        "project2": "Staircase painting",
+        "project3": "Office — electrics",
+        "tagActive": "Active",
+        "tagNew": "New"
+      },
+      "projects": {
+        "project1": "Bathroom renovation — Nowak",
+        "project2": "Staircase painting",
+        "project3": "ABC office — electrics",
+        "statusInProgress": "In progress",
+        "statusCompleted": "Completed",
+        "statusPlanned": "Planned",
+        "completedLabel": "completed"
+      },
+      "finance": {
+        "revenue": "Revenue",
+        "costs": "Costs",
+        "profit": "Profit",
+        "monthSummary": "Feb 2025 · 6 invoices issued",
+        "momGrowth": "MoM growth:"
+      },
+      "ai": {
+        "writing": "AI Assistant is writing a quote:",
+        "quoteText": "\"Bathroom renovation 8m² — wall tiles 25m², shower cabin installation, electrical wiring. Estimated time: 5 working days. Cost: {{amount}}.\"",
+        "btnEdit": "Edit",
+        "btnApprove": "Approve quote"
+      },
+      "analytics": {
+        "header": "Revenue — last 4 months",
+        "momGrowth": "MoM growth:",
+        "nov": "Nov",
+        "dec": "Dec",
+        "jan": "Jan",
+        "feb": "Feb"
+      },
+      "photos": {
+        "before": "Before",
+        "aiDetected": "AI detected: cracks (3)",
+        "after": "After"
+      },
+      "billing": {
+        "statusActive": "Active",
+        "statusPaid": "Paid"
+      },
+      "security": {
+        "ssl": "SSL/TLS encryption",
+        "gdpr": "GDPR compliant",
+        "rls": "Data isolation (RLS)",
+        "backup": "Backups every 6h",
+        "twofa": "2FA authentication"
+      }
+    },
     "nav": {
       "features": "Features",
       "whyUs": "Why us",
@@ -1330,7 +1453,17 @@
       "subtitle2": "Estimates, projects, clients — all in one place.",
       "cta_start": "Start for free",
       "cta_features": "See features",
-      "microcopy": "First 30 days free · No obligations"
+      "microcopy": "First 30 days free · No obligations",
+      "mock": {
+        "quoteTitle": "Quote #042",
+        "projectName": "Bathroom renovation",
+        "labour": "Labour",
+        "materials": "Materials",
+        "extraLabour": "Extra labour",
+        "total": "Total",
+        "sentToClient": "✓ Sent to client",
+        "activeProjects": "Active projects"
+      }
     },
     "stats": {
       "quoteTime": "Average quote time",
@@ -1430,6 +1563,10 @@
         "b1": "SSL encryption",
         "b2": "Backups",
         "b3": "GDPR compliant"
+      },
+      "i18n": {
+        "title": "3 languages",
+        "description": "Polish, English, Ukrainian. Switch language at any time."
       }
     },
     "howItWorks": {
@@ -1534,7 +1671,9 @@
       "cta_enterprise": "Contact us",
       "per_month": "/ mo",
       "no_card": "No credit card required",
-      "all_plans": "See all plans"
+      "all_plans": "See all plans",
+      "prepBadge": "In preparation",
+      "planFeaturesLabel": "Plan features"
     },
     "faq": {
       "sectionTitle": "Frequently asked questions",

@@ -16,6 +16,7 @@ import {
   Code2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { FEATURES } from './features.data';
 import type { Feature } from './features.data';
 
@@ -42,6 +43,7 @@ interface ComingSoonCardProps {
 }
 
 function ComingSoonCard({ feature }: ComingSoonCardProps) {
+  const { t } = useTranslation();
   const Icon = ICON_MAP[feature.icon] ?? FileText;
   const isBeta = feature.status === 'beta';
 
@@ -53,23 +55,28 @@ function ComingSoonCard({ feature }: ComingSoonCardProps) {
         </div>
         {isBeta ? (
           <span className="text-xs font-bold bg-amber-500 text-black rounded-full px-2.5 py-0.5 uppercase tracking-wide">
-            Beta
+            {t('landing.comingSoon.betaBadge')}
           </span>
         ) : (
           <span className="text-xs font-semibold border border-amber-500 text-amber-500 rounded-full px-2.5 py-0.5 uppercase tracking-wide">
-            Wkrótce
+            {t('landing.comingSoon.soonBadge')}
           </span>
         )}
       </div>
       <div>
-        <h3 className="text-sm font-semibold text-[#A3A3A3] mb-1">{feature.title}</h3>
-        <p className="text-xs text-[#525252] leading-relaxed">{feature.desc}</p>
+        <h3 className="text-sm font-semibold text-[#A3A3A3] mb-1">
+          {t(`landing.comingSoon.features.${feature.key}.title`, feature.title)}
+        </h3>
+        <p className="text-xs text-[#525252] leading-relaxed">
+          {t(`landing.comingSoon.features.${feature.key}.desc`, feature.desc)}
+        </p>
       </div>
     </div>
   );
 }
 
 export function ComingSoonSection() {
+  const { t } = useTranslation();
   const comingFeatures = FEATURES.filter((f) => f.status === 'beta' || f.status === 'soon');
 
   if (comingFeatures.length === 0) return null;
@@ -85,10 +92,10 @@ export function ComingSoonSection() {
             id="coming-soon-heading"
             className="text-3xl md:text-4xl font-bold text-white mb-4"
           >
-            Co planujemy
+            {t('landing.comingSoon.sectionTitle')}
           </h2>
           <p className="text-lg text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto">
-            Aktywnie rozwijamy platformę. Poniżej funkcje, które są w przygotowaniu.
+            {t('landing.comingSoon.sectionSubtitle')}
           </p>
         </div>
 

@@ -75,7 +75,7 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
           ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleDemo(); } }
           : undefined
       }
-      aria-label={hasDemo ? `Podgląd funkcji: ${feature.title}` : undefined}
+      aria-label={hasDemo ? `${t('landing.features.demoTitle')}: ${t(`landing.features.${feature.key}.title`, feature.title)}` : undefined}
     >
       <div className="flex items-center justify-between">
         <div className="w-11 h-11 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-amber-500/20">
@@ -90,8 +90,12 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
       </div>
 
       <div className="flex-1">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{feature.title}</h3>
-        <p className="text-sm text-gray-600 dark:text-[#A3A3A3] leading-relaxed">{feature.desc}</p>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          {t(`landing.features.${feature.key}.title`, feature.title)}
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-[#A3A3A3] leading-relaxed">
+          {t(`landing.features.${feature.key}.description`, feature.desc)}
+        </p>
       </div>
 
       {hasDemo && (

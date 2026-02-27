@@ -127,7 +127,7 @@ export function LandingHeader() {
             <button
               onClick={toggleTheme}
               className="hidden sm:flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 dark:border-[#2A2A2A] text-gray-600 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white hover:border-amber-500/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-              aria-label={isDark ? 'Przełącz na jasny motyw' : 'Przełącz na ciemny motyw'}
+              aria-label={isDark ? t('landing.header.switchToLight') : t('landing.header.switchToDark')}
             >
               {isDark ? (
                 <Sun className="w-4 h-4" aria-hidden="true" />
@@ -235,17 +235,17 @@ export function LandingHeader() {
           <button
             onClick={toggleTheme}
             className="flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-gray-200 dark:border-[#2A2A2A] text-gray-600 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white hover:border-amber-500/40 transition-colors duration-200 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-            aria-label={isDark ? 'Przełącz na jasny motyw' : 'Przełącz na ciemny motyw'}
+            aria-label={isDark ? t('landing.header.switchToLight') : t('landing.header.switchToDark')}
           >
             {isDark ? (
               <>
                 <Sun className="w-4 h-4" aria-hidden="true" />
-                Jasny motyw
+                {t('landing.header.lightTheme')}
               </>
             ) : (
               <>
                 <Moon className="w-4 h-4" aria-hidden="true" />
-                Ciemny motyw
+                {t('landing.header.darkTheme')}
               </>
             )}
           </button>
