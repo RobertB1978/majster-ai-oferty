@@ -1862,7 +1862,8 @@
     "bulkErrorsSkipped": "rows with errors — will be skipped",
     "bulkErrorSkipped": "row with error — will be skipped",
     "bulkConfirm": "Add items",
-    "bulkCancel": "Cancel"
+    "bulkCancel": "Cancel",
+    "paginationRange": "Items {{start}}–{{end}} of {{total}}"
   },
   "tradeOnboarding": {
     "step1Title": "What is your trade?",

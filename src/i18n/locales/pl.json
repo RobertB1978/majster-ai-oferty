@@ -1862,7 +1862,8 @@
     "bulkErrorsSkipped": "wiersze z błędami — zostaną pominięte",
     "bulkErrorSkipped": "wiersz z błędem — zostanie pominięty",
     "bulkConfirm": "Dodaj pozycje",
-    "bulkCancel": "Anuluj"
+    "bulkCancel": "Anuluj",
+    "paginationRange": "Pozycje {{start}}–{{end}} z {{total}}"
   },
   "tradeOnboarding": {
     "step1Title": "Czym się zajmujesz?",

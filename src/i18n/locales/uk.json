@@ -1862,7 +1862,8 @@
     "bulkErrorsSkipped": "рядки з помилками — будуть пропущені",
     "bulkErrorSkipped": "рядок з помилкою — буде пропущений",
     "bulkConfirm": "Додати позиції",
-    "bulkCancel": "Скасувати"
+    "bulkCancel": "Скасувати",
+    "paginationRange": "Позиції {{start}}–{{end}} з {{total}}"
   },
   "tradeOnboarding": {
     "step1Title": "Чим ви займаєтесь?",
