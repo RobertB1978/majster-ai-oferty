@@ -41,7 +41,9 @@
     "toggleTheme": "Toggle theme",
     "net": "Net",
     "gross": "Gross",
-    "saveError": "Save error:"
+    "saveError": "Save error:",
+    "nextPage": "next page",
+    "previousPage": "previous page"
   },
   "nav": {
     "dashboard": "Dashboard",

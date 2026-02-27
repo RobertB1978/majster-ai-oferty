@@ -41,7 +41,9 @@
     "toggleTheme": "Przełącz motyw",
     "net": "Netto",
     "gross": "Brutto",
-    "saveError": "Błąd zapisu:"
+    "saveError": "Błąd zapisu:",
+    "nextPage": "następna strona",
+    "previousPage": "poprzednia strona"
   },
   "nav": {
     "dashboard": "Dashboard",
