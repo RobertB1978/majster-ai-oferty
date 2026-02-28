@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -51,6 +52,7 @@ interface TradeCatalogPickerProps {
 }
 
 export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerProps) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<CatalogStep>('categories');
   const [selectedCategory, setSelectedCategory] = useState<CatalogCategory | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<CatalogSubcategory | null>(null);
@@ -83,10 +85,10 @@ export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerP
 
   const title =
     step === 'categories'
-      ? 'Wybierz kategorię'
+      ? t('quickEstimate.tradeCatalog.chooseCategory')
       : step === 'subcategories'
-        ? selectedCategory?.name ?? 'Podkategorie'
-        : selectedSubcategory?.name ?? 'Zawody';
+        ? selectedCategory?.name ?? t('quickEstimate.tradeCatalog.chooseSubcategory')
+        : selectedSubcategory?.name ?? t('quickEstimate.tradeCatalog.chooseTrade');
 
   return (
     <div className="space-y-3">
@@ -97,7 +99,7 @@ export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerP
           size="icon"
           className="h-7 w-7 shrink-0"
           onClick={handleBack}
-          aria-label="Wróć"
+          aria-label={t('common.back')}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
@@ -160,7 +162,7 @@ export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerP
                     <p className="text-xs text-muted-foreground mt-0.5">{trade.description}</p>
                     {pack && (
                       <p className="text-xs text-primary mt-1 font-medium">
-                        {pack.items.length} pozycji w pakiecie
+                        {pack.items.length} {t('quickEstimate.tradeCatalog.itemsInPack')}
                       </p>
                     )}
                   </div>

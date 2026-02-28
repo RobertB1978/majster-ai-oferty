@@ -388,7 +388,21 @@
     "grossAmount": "Kwota brutto",
     "ocrScan": "Skanowanie OCR",
     "cashflow": "Przepływ gotówki",
-    "profitAnalysis": "Analiza zysków"
+    "profitAnalysis": "Analiza zysków",
+    "noData": "Brak danych finansowych",
+    "noDataDesc": "Stwórz projekty i wyceny, aby śledzić swoje przychody, koszty i marżę w czasie.",
+    "createFirstProject": "Utwórz pierwszy projekt",
+    "marginPercent": "Marża %",
+    "revenueVsCosts": "Przychody vs Koszty",
+    "monthlyMargin": "Marża miesięczna",
+    "aiAnalysis": "Analiza AI",
+    "runAnalysis": "Uruchom analizę",
+    "analyzing": "Analizuję...",
+    "insights": "Wnioski",
+    "pricingTab": "Ceny",
+    "risks": "Ryzyka",
+    "actionItems": "Działania do podjęcia:",
+    "runAnalysisHint": "Kliknij \"Uruchom analizę\" aby AI przeanalizowało Twoje finanse"
   },
   "team": {
     "title": "Zespół",
@@ -660,7 +674,18 @@
     "trialExpiredDesc": "Twoje dane są bezpieczne. Wybierz plan, by kontynuować pracę.",
     "trialDaysRemaining_one": "Pozostał {{count}} dzień darmowego okresu próbnego.",
     "trialDaysRemaining_other": "Pozostało {{count}} dni darmowego okresu próbnego.",
-    "upgradeToMaintainAccess": "Przejdź na plan płatny, by nie utracić dostępu."
+    "upgradeToMaintainAccess": "Przejdź na plan płatny, by nie utracić dostępu.",
+    "managementSubtitle": "Zarządzaj swoją subskrypcją i płatnościami",
+    "freePlanActive": "Plan darmowy jest już aktywny",
+    "stripeSetupRequired": "Dodaj klucz API Stripe w ustawieniach, aby aktywować płatności",
+    "stripeManageRequired": "Dodaj klucz API Stripe, aby zarządzać płatnościami",
+    "pricingPlans": "Plany cenowe",
+    "invoices": "Faktury",
+    "invoicesDescription": "Pobierz faktury za płatności",
+    "noInvoices": "Brak faktur",
+    "noInvoicesDesc": "Faktury pojawią się tutaj po zakupie planu",
+    "paymentHistoryDescription": "Twoje ostatnie transakcje",
+    "noPaymentsDesc": "Płatności pojawią się tutaj po zakupie planu"
   },
   "profile": {
     "title": "Profil firmy",
@@ -1416,7 +1441,15 @@
       "lightTheme": "Jasny motyw",
       "darkTheme": "Ciemny motyw",
       "switchToLight": "Przełącz na jasny motyw",
-      "switchToDark": "Przełącz na ciemny motyw"
+      "switchToDark": "Przełącz na ciemny motyw",
+      "homeAriaLabel": "Majster.AI — strona główna",
+      "mainNav": "Nawigacja główna",
+      "languageSwitch": "Wybór języka",
+      "changeLangTo": "Zmień język na {{lang}}",
+      "openMenu": "Otwórz menu nawigacyjne",
+      "mobileMenu": "Menu nawigacyjne",
+      "closeMenu": "Zamknij menu",
+      "mobileNav": "Menu mobilne"
     },
     "comingSoon": {
       "sectionTitle": "Co planujemy",
@@ -1557,7 +1590,8 @@
       "mobile_sub": "działa na każdym telefonie",
       "pdfLabel": "Wyceny PDF",
       "mobileLabel": "Mobile-first",
-      "langLabel": "Języki"
+      "langLabel": "Języki",
+      "ariaLabel": "Kluczowe informacje o platformie"
     },
     "how": {
       "sectionTitle": "Jak to działa?",
@@ -1638,7 +1672,8 @@
         "total": "Razem",
         "sentToClient": "✓ Wysłano do klienta",
         "activeProjects": "Projekty aktywne"
-      }
+      },
+      "ariaLabel": "Sekcja główna"
     },
     "stats": {
       "quoteTime": "Średni czas wyceny",
@@ -1797,7 +1832,8 @@
       "link_terms": "Warunki korzystania",
       "link_cookies": "Cookies",
       "link_dpa": "Umowa powierzenia",
-      "link_gdpr": "RODO"
+      "link_gdpr": "RODO",
+      "ariaLabel": "Stopka strony"
     }
   },
   "addons": {
@@ -1861,7 +1897,10 @@
       "service": "Usługa",
       "travel": "Dojazd",
       "fixed": "Ryczałt"
-    }
+    },
+    "invalidQty": "Nieprawidłowa ilość",
+    "invalidPrice": "Nieprawidłowa cena",
+    "netto": "Netto"
   },
   "footer": {
     "tagline": "Profesjonalne wyceny dla fachowców. Szybko, łatwo, profesjonalnie.",
@@ -1924,7 +1963,32 @@
     "bulkErrorSkipped": "wiersz z błędem — zostanie pominięty",
     "bulkConfirm": "Dodaj pozycje",
     "bulkCancel": "Anuluj",
-    "paginationRange": "Pozycje {{start}}–{{end}} z {{total}}"
+    "paginationRange": "Pozycje {{start}}–{{end}} z {{total}}",
+    "noTemplatesCreate": "Brak szablonów. Utwórz je w zakładce \"Szablony pozycji\".",
+    "noTemplateResults": "Brak wyników dla podanej frazy.",
+    "tradeCatalogBtn": "Katalog branż",
+    "tradeCatalogBtnSub": "Załaduj pakiet startowy",
+    "templateBtnTitle": "Szablon",
+    "templateBtnDesc": "Gotowa pozycja",
+    "selectClientPlaceholder": "Wybierz klienta",
+    "noClients": "Brak klientów",
+    "addClientBtn": "Dodaj klienta",
+    "clientPhone": "Telefon",
+    "clientEmail": "Email",
+    "clientNamePlaceholder": "np. Jan Kowalski",
+    "clientPhonePlaceholder": "np. 600 100 200",
+    "clientEmailPlaceholder": "np. jan@example.com",
+    "bulkColName": "Nazwa",
+    "bulkColQty": "Ilość",
+    "bulkColUnit": "Jedn.",
+    "bulkColNetPrice": "Cena netto",
+    "bulkNamePlaceholder": "Nazwa pozycji",
+    "bulkUnitPlaceholder": "szt",
+    "bulkDeleteRow": "Usuń wiersz",
+    "bulkLoadCsvAriaLabel": "Wczytaj plik CSV",
+    "bulkConfirmCount_one": "Dodaj {{count}} pozycję",
+    "bulkConfirmCount_few": "Dodaj {{count}} pozycje",
+    "bulkConfirmCount_other": "Dodaj {{count}} pozycji"
   },
   "tradeOnboarding": {
     "step1Title": "Czym się zajmujesz?",

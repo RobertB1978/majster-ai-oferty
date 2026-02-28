@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -29,6 +30,7 @@ export function StartChoicePanel({
   onSelectPack,
   onEmptyStart,
 }: StartChoicePanelProps) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<Step>('choice');
   const [search, setSearch] = useState('');
   const { data: templates, isLoading } = useItemTemplates();
@@ -44,7 +46,7 @@ export function StartChoicePanel({
   const filtered = useMemo(() => {
     if (!templates) return [];
     const q = search.toLowerCase();
-    return templates.filter((t) => t.name.toLowerCase().includes(q));
+    return templates.filter((tpl) => tpl.name.toLowerCase().includes(q));
   }, [templates, search]);
 
   // Closing the dialog without choosing = empty start
@@ -54,10 +56,10 @@ export function StartChoicePanel({
 
   const dialogTitle =
     step === 'templates'
-      ? 'Wybierz szablon'
+      ? t('szybkaWycena.selectTemplate')
       : step === 'catalog'
-        ? 'Katalog branż'
-        : 'Jak zacząć wycenę?';
+        ? t('szybkaWycena.tradeCatalogBtn')
+        : t('szybkaWycena.startChoiceTitle');
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -90,9 +92,9 @@ export function StartChoicePanel({
                 <BookOpen className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-semibold text-xs">Katalog branż</p>
+                <p className="font-semibold text-xs">{t('szybkaWycena.tradeCatalogBtn')}</p>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
-                  Załaduj pakiet startowy
+                  {t('szybkaWycena.tradeCatalogBtnSub')}
                 </p>
               </div>
             </button>
@@ -106,9 +108,9 @@ export function StartChoicePanel({
                 <Package className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-semibold text-xs">Szablon</p>
+                <p className="font-semibold text-xs">{t('szybkaWycena.templateBtnTitle')}</p>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
-                  Gotowa pozycja
+                  {t('szybkaWycena.templateBtnDesc')}
                 </p>
               </div>
             </button>
@@ -122,9 +124,9 @@ export function StartChoicePanel({
                 <FileText className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-semibold text-xs">Pusta wycena</p>
+                <p className="font-semibold text-xs">{t('szybkaWycena.emptyQuote')}</p>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
-                  Wpisz ręcznie
+                  {t('szybkaWycena.emptyQuoteDesc')}
                 </p>
               </div>
             </button>
@@ -145,7 +147,7 @@ export function StartChoicePanel({
         {step === 'templates' && (
           <div className="space-y-3">
             <Input
-              placeholder="Szukaj szablonu..."
+              placeholder={t('templates.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               autoFocus
@@ -159,8 +161,8 @@ export function StartChoicePanel({
               ) : filtered.length === 0 ? (
                 <p className="text-center text-sm text-muted-foreground py-8">
                   {templates?.length === 0
-                    ? 'Brak szablonów. Utwórz je w zakładce "Szablony pozycji".'
-                    : 'Brak wyników dla podanej frazy.'}
+                    ? t('szybkaWycena.noTemplatesCreate')
+                    : t('szybkaWycena.noTemplateResults')}
                 </p>
               ) : (
                 filtered.map((template) => (
@@ -185,7 +187,9 @@ export function StartChoicePanel({
                               : 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
                           }`}
                         >
-                          {template.category}
+                          {template.category === 'Materiał'
+                            ? t('templates.categories.material')
+                            : t('templates.categories.labor')}
                         </span>
                         <Plus className="h-4 w-4 text-muted-foreground" />
                       </div>
@@ -201,7 +205,7 @@ export function StartChoicePanel({
               className="w-full"
               onClick={onEmptyStart}
             >
-              Pomiń — zacznij pustą wycenę
+              {t('szybkaWycena.skipToEmpty')}
             </Button>
           </div>
         )}

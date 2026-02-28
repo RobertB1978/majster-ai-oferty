@@ -60,6 +60,13 @@ export default function Projects() {
     { value: 'Zaakceptowany', label: t('projects.statuses.accepted') },
   ];
 
+  const statusLabels: Record<string, string> = {
+    'Nowy': t('projects.statuses.new'),
+    'Wycena w toku': t('projects.statuses.inProgress'),
+    'Oferta wysłana': t('projects.statuses.sent'),
+    'Zaakceptowany': t('projects.statuses.accepted'),
+  };
+
   // Reset to page 1 when filters change
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -150,7 +157,7 @@ export default function Projects() {
             <div className="mt-2 flex justify-center gap-2">
               {searchQuery && (
                 <Button variant="outline" size="sm" onClick={() => handleSearchChange('')}>
-                  Wyczyść wyszukiwanie
+                  {t('common.clearSearch')}
                 </Button>
               )}
               {statusFilter !== 'all' && (
@@ -175,7 +182,7 @@ export default function Projects() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Badge className={statusColors[project.status] || statusColors['Nowy']}>
-                      {project.status}
+                      {statusLabels[project.status] ?? project.status}
                     </Badge>
                     <Button
                       variant="outline"

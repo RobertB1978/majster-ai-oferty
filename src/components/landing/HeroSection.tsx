@@ -21,7 +21,7 @@ export function HeroSection() {
   return (
     <section
       className="relative overflow-hidden bg-white dark:bg-[#0F0F0F] pt-24 pb-20 md:pt-32 md:pb-28"
-      aria-label="Sekcja główna"
+      aria-label={t('landing.hero.ariaLabel')}
       style={{
         backgroundImage: `
           linear-gradient(rgba(245,158,11,0.04) 1px, transparent 1px),

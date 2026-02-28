@@ -95,12 +95,12 @@ export function TopBar() {
             {isOnline ? (
               <>
                 <Wifi className="h-3.5 w-3.5 text-success" />
-                <span className="text-success font-medium">Online</span>
+                <span className="text-success font-medium">{t('common.online')}</span>
               </>
             ) : (
               <>
                 <WifiOff className="h-3.5 w-3.5 text-destructive" />
-                <span className="text-destructive font-medium">Offline</span>
+                <span className="text-destructive font-medium">{t('common.offline')}</span>
               </>
             )}
           </div>

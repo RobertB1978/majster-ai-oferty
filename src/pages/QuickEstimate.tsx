@@ -154,7 +154,7 @@ function ManualTab({ items, setItems }: ManualTabProps) {
                 onChange={(e) => updateNumericInput(item.id, 'qty', e.target.value)}
                 className={`h-8 text-sm text-right${qtyInvalid ? ' border-destructive' : ''}`}
                 aria-invalid={qtyInvalid}
-                title={qtyInvalid ? 'Nieprawidłowa ilość' : undefined}
+                title={qtyInvalid ? t('quickEstimate.invalidQty') : undefined}
               />
               <Input
                 placeholder="m²"
@@ -170,7 +170,7 @@ function ManualTab({ items, setItems }: ManualTabProps) {
                   onChange={(e) => updateNumericInput(item.id, 'price', e.target.value)}
                   className={`h-8 text-sm text-right pr-8${priceInvalid ? ' border-destructive' : ''}`}
                   aria-invalid={priceInvalid}
-                  title={priceInvalid ? 'Nieprawidłowa cena' : undefined}
+                  title={priceInvalid ? t('quickEstimate.invalidPrice') : undefined}
                 />
                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
                   zł
@@ -487,7 +487,7 @@ export default function QuickEstimate() {
 
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Badge variant="outline" className="text-xs">
-                  Netto
+                  {t('quickEstimate.netto')}
                 </Badge>
                 {t(
                   'quickEstimate.vatNote',
