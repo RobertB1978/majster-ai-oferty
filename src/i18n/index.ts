@@ -12,6 +12,16 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 // for users who never change the language.
 import pl from './locales/pl.json';
 
+// Migrate stored language code: 'ua' → 'uk' (ISO 639-1 correction).
+// Older browser sessions may have the non-standard code 'ua' cached in localStorage.
+// This must run before i18n.init() so the LanguageDetector picks up the correct value.
+try {
+  const saved = window.localStorage.getItem('i18nextLng');
+  if (saved === 'ua') window.localStorage.setItem('i18nextLng', 'uk');
+} catch {
+  // No localStorage available (SSR / strict privacy mode) — ignore silently.
+}
+
 // Map of non-default language codes to dynamic import functions.
 // Each import resolves to the full translation JSON when the user switches language.
 const lazyLangLoaders: Record<string, () => Promise<{ default: Record<string, unknown> }>> = {
@@ -32,6 +42,9 @@ i18n
     // false = synchronous init; required because validations.ts calls i18n.t()
     // at module evaluation time (during Zod schema construction).
     initImmediate: false,
+    // Treat empty string values ("") as missing — triggers fallback to 'pl'.
+    // Prevents placeholder keys from rendering as blank UI labels.
+    returnEmptyString: false,
     interpolation: {
       escapeValue: false,
     },

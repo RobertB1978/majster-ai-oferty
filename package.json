@@ -32,6 +32,10 @@
     "clean": "rm -rf dist node_modules/.vite",
     "clean:all": "rm -rf dist node_modules",
     "check:placeholders": "bash scripts/check-placeholders.sh",
+    "check:i18n-parity": "node scripts/i18n/check-parity.mjs",
+    "check:i18n-parity:strict": "node scripts/i18n/check-parity.mjs --fail-on-empty",
+    "check:i18n-hardcodes": "bash scripts/check-i18n-hardcodes.sh",
+    "check:i18n": "npm run check:i18n-parity && npm run check:i18n-hardcodes",
     "prepare": "node -e \"try { require('husky').install() } catch (e) {}\""
   },
   "dependencies": {

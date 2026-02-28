@@ -1,0 +1,73 @@
+name: i18n Quality Gate
+
+# Runs on every PR and every push to main/develop.
+# Blocks merge if any i18n invariant is violated.
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+jobs:
+  i18n:
+    name: i18n Quality Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        timeout-minutes: 5
+
+      # ── 1. Key Parity Gate ────────────────────────────────────────────────
+      # PL / EN / UK must have an identical set of translation keys.
+      # --fail-on-empty is omitted here so that placeholder "" values are only
+      # reported as warnings on feature branches. Enable --fail-on-empty on
+      # release branches by adding a branch condition or a separate job.
+      - name: Check key parity (PL / EN / UK)
+        run: node scripts/i18n/check-parity.mjs
+
+      # ── 2. Hardcoded Polish Strings ───────────────────────────────────────
+      # Uses the existing bash scanner which detects Polish diacritics in
+      # component/page/hook source files. Report-only (no --fail-on-match)
+      # so that partial migrations don't block every PR. Escalate to
+      # --fail-on-match once the Zero-Hardcode migration is complete.
+      - name: Report hardcoded Polish strings
+        run: bash scripts/check-i18n-hardcodes.sh
+        continue-on-error: true
+
+      # ── 3. ESLint i18n Rules ──────────────────────────────────────────────
+      # Runs the full ESLint suite (includes i18next/no-literal-string).
+      # Errors fail the job; warnings are informational.
+      - name: ESLint (includes i18n/no-literal-string)
+        run: npm run lint
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'placeholder' }}
+
+      # ── 4. i18n Unit Tests ────────────────────────────────────────────────
+      # Vitest suite includes src/test/i18n/locale-completeness.test.ts which
+      # verifies runtime key parity, critical key presence and language switching.
+      - name: i18n unit tests
+        run: npx vitest run src/test/i18n/
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'placeholder' }}
+
+      # ── 5. TypeScript type-check ──────────────────────────────────────────
+      # Ensures typed i18n augmentation (src/@types/i18next.d.ts) compiles
+      # and that t() calls use valid keys from pl.json.
+      - name: TypeScript type-check
+        run: npm run type-check
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'placeholder' }}
