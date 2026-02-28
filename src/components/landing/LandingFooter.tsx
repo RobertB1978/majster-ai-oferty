@@ -37,7 +37,7 @@ export function LandingFooter() {
   return (
     <footer
       className="bg-white dark:bg-[#0F0F0F] border-t border-gray-200 dark:border-[#2A2A2A] pb-[env(safe-area-inset-bottom)]"
-      aria-label="Stopka strony"
+      aria-label={t('landing.footer.ariaLabel')}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-10">
@@ -100,7 +100,7 @@ export function LandingFooter() {
             <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-3">
               {t('landing.footer.language_title', 'Język')}
             </h4>
-            <div className="flex gap-2" role="group" aria-label="Wybór języka">
+            <div className="flex gap-2" role="group" aria-label={t('landing.header.languageSwitch')}>
               {LANGUAGES.map((lang) => (
                 <button
                   key={lang.code}
@@ -110,7 +110,7 @@ export function LandingFooter() {
                       ? 'bg-gray-200 dark:bg-[#2A2A2A] text-gray-900 dark:text-white'
                       : 'text-gray-500 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white'
                   }`}
-                  aria-label={`Zmień język na ${lang.label}`}
+                  aria-label={t('landing.header.changeLangTo', { lang: lang.label })}
                   aria-pressed={currentLang === lang.code}
                 >
                   {lang.flag} {lang.label}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * 2-second splash screen shown once per session on first load.
@@ -6,6 +7,7 @@ import { useEffect, useState } from 'react';
  * showing on every navigation.
  */
 export function SplashScreen() {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(() => {
     // Show only once per session
     if (typeof window === 'undefined') return false;
@@ -73,7 +75,7 @@ export function SplashScreen() {
 
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Majster.AI</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Ładowanie…</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t('common.loading')}</p>
         </div>
 
         {/* Loading bar */}

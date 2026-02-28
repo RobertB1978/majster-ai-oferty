@@ -1590,7 +1590,8 @@
       "mobile_sub": "działa na każdym telefonie",
       "pdfLabel": "Wyceny PDF",
       "mobileLabel": "Mobile-first",
-      "langLabel": "Języki"
+      "langLabel": "Języki",
+      "ariaLabel": "Kluczowe informacje o platformie"
     },
     "how": {
       "sectionTitle": "Jak to działa?",
@@ -1671,7 +1672,8 @@
         "total": "Razem",
         "sentToClient": "✓ Wysłano do klienta",
         "activeProjects": "Projekty aktywne"
-      }
+      },
+      "ariaLabel": "Sekcja główna"
     },
     "stats": {
       "quoteTime": "Średni czas wyceny",
@@ -1830,7 +1832,8 @@
       "link_terms": "Warunki korzystania",
       "link_cookies": "Cookies",
       "link_dpa": "Umowa powierzenia",
-      "link_gdpr": "RODO"
+      "link_gdpr": "RODO",
+      "ariaLabel": "Stopka strony"
     }
   },
   "addons": {
@@ -1894,7 +1897,10 @@
       "service": "Usługa",
       "travel": "Dojazd",
       "fixed": "Ryczałt"
-    }
+    },
+    "invalidQty": "Nieprawidłowa ilość",
+    "invalidPrice": "Nieprawidłowa cena",
+    "netto": "Netto"
   },
   "footer": {
     "tagline": "Profesjonalne wyceny dla fachowców. Szybko, łatwo, profesjonalnie.",

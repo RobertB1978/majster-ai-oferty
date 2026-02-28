@@ -1604,7 +1604,8 @@
         "total": "Total",
         "sentToClient": "✓ Sent to client",
         "activeProjects": "Active projects"
-      }
+      },
+      "ariaLabel": "Main section"
     },
     "stats": {
       "quoteTime": "Average quote time",
@@ -1774,7 +1775,8 @@
       "link_login": "Log in",
       "link_pricing": "Pricing",
       "copyright": "All rights reserved.",
-      "built_in": "Built in Poland 🇵🇱"
+      "built_in": "Built in Poland 🇵🇱",
+      "ariaLabel": "Page footer"
     },
     "trust": {
       "languages_label": "interface languages",
@@ -1786,7 +1788,8 @@
       "mobile_sub": "works on any phone",
       "pdfLabel": "PDF Quotes",
       "mobileLabel": "Mobile-first",
-      "langLabel": "Languages"
+      "langLabel": "Languages",
+      "ariaLabel": "Key platform information"
     },
     "how": {
       "sectionTitle": "How it works?",
@@ -1894,7 +1897,10 @@
       "service": "Service",
       "travel": "Travel",
       "fixed": "Fixed"
-    }
+    },
+    "invalidQty": "Invalid quantity",
+    "invalidPrice": "Invalid price",
+    "netto": "Net"
   },
   "footer": {
     "tagline": "Professional quotes for tradespeople. Fast, easy, professional.",

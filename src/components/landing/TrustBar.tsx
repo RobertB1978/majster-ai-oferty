@@ -49,7 +49,7 @@ export function TrustBar() {
   return (
     <div
       className="bg-gray-50 dark:bg-[#141414] border-y border-gray-200 dark:border-[#2A2A2A]"
-      aria-label="Kluczowe informacje o platformie"
+      aria-label={t('landing.trust.ariaLabel')}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
