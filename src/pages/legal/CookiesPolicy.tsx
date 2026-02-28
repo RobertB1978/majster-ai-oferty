@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,49 +8,50 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 export default function CookiesPolicy() {
   const navigate = useNavigate();
-  const lastUpdated = new Date().toLocaleDateString('pl-PL');
+  const { t, i18n } = useTranslation();
+  const lastUpdated = new Date().toLocaleDateString(i18n.language === 'pl' ? 'pl-PL' : i18n.language === 'uk' ? 'uk-UA' : 'en-GB');
 
   const cookies = [
     {
       name: 'sb-auth-token',
-      type: 'Niezbędne',
-      purpose: 'Autoryzacja użytkownika w systemie',
-      duration: 'Sesja / 7 dni',
+      type: t('legal.cookies.necessary'),
+      purpose: i18n.language === 'pl' ? 'Autoryzacja użytkownika w systemie' : i18n.language === 'uk' ? 'Автентифікація користувача' : 'User authentication',
+      duration: i18n.language === 'pl' ? 'Sesja / 7 dni' : i18n.language === 'uk' ? 'Сесія / 7 днів' : 'Session / 7 days',
       provider: 'Supabase',
     },
     {
       name: 'cookie_consent',
-      type: 'Niezbędne',
-      purpose: 'Zapamiętanie preferencji cookies',
-      duration: '1 rok',
+      type: t('legal.cookies.necessary'),
+      purpose: i18n.language === 'pl' ? 'Zapamiętanie preferencji cookies' : i18n.language === 'uk' ? 'Збереження налаштувань cookies' : 'Cookie preference storage',
+      duration: i18n.language === 'pl' ? '1 rok' : i18n.language === 'uk' ? '1 рік' : '1 year',
       provider: 'Majster.AI',
     },
     {
       name: 'theme',
-      type: 'Niezbędne',
-      purpose: 'Preferencja motywu (jasny/ciemny)',
-      duration: '1 rok',
+      type: t('legal.cookies.necessary'),
+      purpose: i18n.language === 'pl' ? 'Preferencja motywu (jasny/ciemny)' : i18n.language === 'uk' ? 'Налаштування теми (світла/темна)' : 'Theme preference (light/dark)',
+      duration: i18n.language === 'pl' ? '1 rok' : i18n.language === 'uk' ? '1 рік' : '1 year',
       provider: 'Majster.AI',
     },
     {
       name: 'i18nextLng',
-      type: 'Niezbędne',
-      purpose: 'Preferencja języka interfejsu',
-      duration: '1 rok',
+      type: t('legal.cookies.necessary'),
+      purpose: i18n.language === 'pl' ? 'Preferencja języka interfejsu' : i18n.language === 'uk' ? 'Мовні налаштування' : 'Language preference',
+      duration: i18n.language === 'pl' ? '1 rok' : i18n.language === 'uk' ? '1 рік' : '1 year',
       provider: 'Majster.AI',
     },
     {
       name: '_ga',
-      type: 'Analityczne',
-      purpose: 'Identyfikator Google Analytics',
-      duration: '2 lata',
+      type: t('legal.cookies.analytics'),
+      purpose: i18n.language === 'pl' ? 'Identyfikator Google Analytics' : i18n.language === 'uk' ? 'Ідентифікатор Google Analytics' : 'Google Analytics identifier',
+      duration: i18n.language === 'pl' ? '2 lata' : i18n.language === 'uk' ? '2 роки' : '2 years',
       provider: 'Google',
     },
     {
       name: '_gid',
-      type: 'Analityczne',
-      purpose: 'Rozróżnianie użytkowników',
-      duration: '24 godziny',
+      type: t('legal.cookies.analytics'),
+      purpose: i18n.language === 'pl' ? 'Rozróżnianie użytkowników' : i18n.language === 'uk' ? 'Розрізнення користувачів' : 'User distinction',
+      duration: i18n.language === 'pl' ? '24 godziny' : i18n.language === 'uk' ? '24 години' : '24 hours',
       provider: 'Google',
     },
   ];
@@ -57,11 +59,11 @@ export default function CookiesPolicy() {
   return (
     <>
       <SEOHead
-        title="Polityka Cookies"
-        description="Polityka plików cookies Majster.AI - dowiedz się jakich cookies używamy i jak nimi zarządzać."
-        keywords="cookies, ciasteczka, polityka cookies, RODO, Majster.AI"
+        title={t('legal.cookies.metaTitle')}
+        description={t('legal.cookies.metaDesc')}
+        keywords="cookies, cookie policy, GDPR, Majster.AI"
       />
-      
+
       <div className="min-h-screen bg-background">
         <div className="container max-w-4xl py-8 px-4">
           <Button
@@ -70,36 +72,38 @@ export default function CookiesPolicy() {
             className="mb-6"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Powrót
+            {t('legal.back')}
           </Button>
 
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
               <Cookie className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mb-2">Polityka Cookies</h1>
+            <h1 className="text-3xl font-bold mb-2">{t('legal.cookies.pageTitle')}</h1>
             <p className="text-muted-foreground">
-              Jak używamy plików cookies w Majster.AI
+              {t('legal.cookies.subtitle')}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              Ostatnia aktualizacja: {lastUpdated}
+              {t('legal.lastUpdated')} {lastUpdated}
             </p>
           </div>
+
+          {i18n.language !== 'pl' && t('legal.plVersionPrevails') && (
+            <div className="mb-6 p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20">
+              <p className="text-sm text-amber-700 dark:text-amber-400">{t('legal.plVersionPrevails')}</p>
+            </div>
+          )}
 
           <div className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
                   <Cookie className="h-5 w-5 text-primary" />
-                  Czym są pliki cookies?
+                  {t('legal.cookies.whatAreCookies')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground space-y-4">
-                <p>
-                  Pliki cookies (ciasteczka) to małe pliki tekstowe przechowywane na Twoim 
-                  urządzeniu podczas korzystania z naszej strony. Służą do zapamiętywania 
-                  Twoich preferencji i usprawnienia działania serwisu.
-                </p>
+                <p>{t('legal.cookies.whatAreCookiesText')}</p>
               </CardContent>
             </Card>
 
@@ -107,14 +111,11 @@ export default function CookiesPolicy() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
                   <Shield className="h-5 w-5 text-success" />
-                  Cookies niezbędne
+                  {t('legal.cookies.necessary')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground">
-                <p className="mb-4">
-                  Te cookies są niezbędne do prawidłowego działania serwisu. Nie można ich wyłączyć.
-                  Są używane do autoryzacji, bezpieczeństwa i podstawowych funkcji.
-                </p>
+                <p className="mb-4">{t('legal.cookies.necessaryText')}</p>
               </CardContent>
             </Card>
 
@@ -122,15 +123,11 @@ export default function CookiesPolicy() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
                   <BarChart className="h-5 w-5 text-info" />
-                  Cookies analityczne
+                  {t('legal.cookies.analytics')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground">
-                <p>
-                  Pomagają nam zrozumieć, jak korzystasz z serwisu. Zbierają anonimowe dane 
-                  o odwiedzanych stronach, czasie spędzonym w serwisie i ewentualnych błędach.
-                  Możesz je wyłączyć w ustawieniach.
-                </p>
+                <p>{t('legal.cookies.analyticsText')}</p>
               </CardContent>
             </Card>
 
@@ -138,31 +135,28 @@ export default function CookiesPolicy() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
                   <Megaphone className="h-5 w-5 text-warning" />
-                  Cookies marketingowe
+                  {t('legal.cookies.marketing')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground">
-                <p>
-                  Służą do personalizacji reklam i mierzenia skuteczności kampanii.
-                  Możesz je wyłączyć w ustawieniach bez wpływu na działanie serwisu.
-                </p>
+                <p>{t('legal.cookies.marketingText')}</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Lista używanych cookies</CardTitle>
+                <CardTitle>{t('legal.cookies.list')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Nazwa</TableHead>
-                        <TableHead>Typ</TableHead>
-                        <TableHead>Cel</TableHead>
-                        <TableHead>Czas życia</TableHead>
-                        <TableHead>Dostawca</TableHead>
+                        <TableHead>{t('legal.cookies.colName')}</TableHead>
+                        <TableHead>{t('legal.cookies.colType')}</TableHead>
+                        <TableHead>{t('legal.cookies.colPurpose')}</TableHead>
+                        <TableHead>{t('legal.cookies.colDuration')}</TableHead>
+                        <TableHead>{t('legal.cookies.colProvider')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -171,8 +165,8 @@ export default function CookiesPolicy() {
                           <TableCell className="font-mono text-sm">{cookie.name}</TableCell>
                           <TableCell>
                             <span className={`text-xs px-2 py-1 rounded-full ${
-                              cookie.type === 'Niezbędne' 
-                                ? 'bg-success/10 text-success' 
+                              cookie.type === t('legal.cookies.necessary')
+                                ? 'bg-success/10 text-success'
                                 : 'bg-info/10 text-info'
                             }`}>
                               {cookie.type}
@@ -193,30 +187,24 @@ export default function CookiesPolicy() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
                   <Settings className="h-5 w-5 text-primary" />
-                  Jak zarządzać cookies?
+                  {t('legal.cookies.howToManage')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground space-y-4">
-                <p>Masz kilka sposobów zarządzania cookies:</p>
+                <p>{t('legal.cookies.howToManageText')}</p>
                 <ul className="list-disc pl-5 space-y-2">
-                  <li>
-                    <strong>W naszym serwisie:</strong> Kliknij przycisk poniżej, aby zmienić ustawienia cookies.
-                  </li>
-                  <li>
-                    <strong>W przeglądarce:</strong> Możesz zablokować lub usunąć cookies w ustawieniach przeglądarki.
-                  </li>
-                  <li>
-                    <strong>Tryb incognito:</strong> Cookies nie są zapisywane w trybie prywatnym.
-                  </li>
+                  <li><strong>{t('legal.cookies.manageInApp')}</strong></li>
+                  <li><strong>{t('legal.cookies.manageInBrowser')}</strong></li>
+                  <li><strong>{t('legal.cookies.incognito')}</strong></li>
                 </ul>
-                <Button 
+                <Button
                   className="mt-4"
                   onClick={() => {
                     localStorage.removeItem('cookie_consent');
                     window.location.reload();
                   }}
                 >
-                  Zmień ustawienia cookies
+                  {t('legal.cookies.changeSettings')}
                 </Button>
               </CardContent>
             </Card>
@@ -224,8 +212,7 @@ export default function CookiesPolicy() {
 
           <div className="mt-8 p-6 rounded-xl bg-muted/50 text-center">
             <p className="text-sm text-muted-foreground">
-              Kontynuując korzystanie z serwisu bez zmiany ustawień przeglądarki, 
-              wyrażasz zgodę na używanie plików cookies zgodnie z powyższą polityką.
+              {t('legal.cookies.footer')}
             </p>
           </div>
         </div>

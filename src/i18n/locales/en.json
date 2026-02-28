@@ -2440,11 +2440,181 @@
     "back": "Back",
     "privacyTitle": "Privacy Policy | Majster.AI",
     "termsTitle": "Terms of Service | Majster.AI",
-    "cookiesTitle": "Cookie Policy | Majster.AI"
+    "cookiesTitle": "Cookie Policy | Majster.AI",
+    "lastUpdated": "Last updated:",
+    "dpaTitle": "Data Processing Agreement | Majster.AI",
+    "gdprTitle": "GDPR Centre | Majster.AI",
+    "terms": {
+      "pageTitle": "Terms of Service",
+      "subtitle": "Majster.AI — platform terms of use",
+      "agreement": "By using Majster.AI you confirm that you have read and accept these Terms of Service.",
+      "metaTitle": "Terms of Service",
+      "metaDesc": "Majster.AI Terms of Service — rules, rights and user obligations.",
+      "s1title": "1. General Provisions",
+      "s1content": "1.1. These Terms of Service govern the use of the Majster.AI platform.\n\n1.2. Majster.AI is a SaaS platform for creating quotes, estimates and invoices for construction and renovation professionals.\n\n1.3. By using the platform, you accept these Terms and the Privacy Policy.\n\n1.4. Definitions:\n• Service — the Majster.AI application\n• User — any person using the Service\n• Account — individual User account\n• Subscription — paid access plan",
+      "s2title": "2. Scope of Services",
+      "s2content": "2.1. Majster.AI offers:\n• Client and project management\n• Quote and estimate creation\n• Professional PDF generation\n• Offer delivery by email\n• AI assistant (paid plans)\n• Calendar and scheduling\n• Analytics and reports\n\n2.2. Access to features depends on subscription plan.\n\n2.3. We reserve the right to modify services with 30 days notice.",
+      "s3title": "3. Plans & Payments",
+      "s3content": "3.1. Available plans: FREE, STARTER, BUSINESS, ENTERPRISE.\n\n3.2. Payments are due upfront for each billing period.\n\n3.3. Prices are in PLN and include 23% VAT.\n\n3.4. Refunds available within 14 days of purchase.\n\n3.5. Non-payment results in downgrade to FREE plan.",
+      "s4title": "4. Restrictions & Prohibitions",
+      "s4content": "4.1. Prohibited:\n• Unlawful use of the Service\n• Bypassing security or limits\n• Sharing accounts with third parties\n• Automated data scraping\n• Sending spam or unsolicited messages\n• Publishing offensive or illegal content\n\n4.2. Violations may result in warning, suspension, or permanent account removal.",
+      "s5title": "5. Liability",
+      "s5content": "5.1. Majster.AI is not liable for:\n• User-submitted content\n• Outages caused by force majeure\n• Losses from errors in estimates\n• Technical issues on the User's side\n\n5.2. Total liability is limited to subscription fees paid in the past 12 months.\n\n5.3. Users are responsible for data accuracy, password security, and tax compliance.",
+      "s6title": "6. Final Provisions",
+      "s6content": "6.1. Governing law: Polish law.\n\n6.2. Disputes shall be resolved by the court having jurisdiction over Majster.AI's registered office.\n\n6.3. These Terms may be amended with 30 days notice.\n\n6.4. Contact: kontakt.majsterai@gmail.com\n\n6.5. These Terms are effective from the date of publication."
+    },
+    "privacy": {
+      "pageTitle": "Privacy Policy",
+      "subtitle": "Majster.AI — protection of your personal data",
+      "metaTitle": "Privacy Policy",
+      "metaDesc": "Majster.AI Privacy Policy — how we protect your personal data in compliance with GDPR.",
+      "footer": "This privacy policy complies with EU Regulation 2016/679 (GDPR).",
+      "s1title": "1. Data Controller",
+      "s1content": "Majster.AI is the controller of your personal data. We process data in compliance with GDPR (EU Regulation 2016/679).",
+      "s2title": "2. Data We Collect",
+      "s2content": "We collect:\n• Account data: email, password (hashed), company name\n• Company data: VAT no., address, phone, logo\n• Client data entered by the User\n• Project and quote data\n• Technical data: IP, User Agent, cookies\n• Analytics data",
+      "s3title": "3. Purposes of Processing",
+      "s3content": "We process data to:\n• Provide services (legal basis: contract)\n• Manage your account\n• Generate and send quotes\n• Analytics and service improvement\n• Own product marketing (consent)\n• Fulfil legal obligations",
+      "s4title": "4. Data Security",
+      "s4content": "We apply:\n• SSL/TLS encryption for all connections\n• Password hashing (bcrypt)\n• Row Level Security (RLS) in the database\n• Regular backups\n• 24/7 security monitoring\n• Restricted infrastructure access",
+      "s5title": "5. Your Rights (GDPR)",
+      "s5content": "You have the right to:\n• Access your data (Art. 15)\n• Rectification (Art. 16)\n• Erasure — right to be forgotten (Art. 17)\n• Restriction of processing (Art. 18)\n• Data portability (Art. 20)\n• Object to processing (Art. 21)\n• Withdraw consent at any time",
+      "s6title": "6. Data Transfers",
+      "s6content": "Data may be transferred to:\n• Hosting providers (Supabase — EU/USA)\n• Email providers (Resend)\n• Government authorities (on legal request)\n\nAll data processors are bound by DPA agreements.",
+      "s7title": "7. Contact",
+      "s7content": "For data protection enquiries:\n• Email: kontakt.majsterai@gmail.com\n• In-app: Settings → GDPR Centre\n\nYou have the right to lodge a complaint with the supervisory authority."
+    },
+    "cookies": {
+      "pageTitle": "Cookie Policy",
+      "subtitle": "How we use cookies in Majster.AI",
+      "metaTitle": "Cookie Policy",
+      "metaDesc": "Majster.AI Cookie Policy — how to manage cookies.",
+      "whatAreCookies": "What are cookies?",
+      "whatAreCookiesText": "Cookies are small text files stored on your device when you use our platform. They help remember your preferences and improve service performance.",
+      "necessary": "Necessary cookies",
+      "necessaryText": "Required for the service to function properly. Cannot be disabled. Used for authentication and security.",
+      "analytics": "Analytics cookies",
+      "analyticsText": "Help us understand how you use the service. They collect anonymous data. You can disable them in settings.",
+      "marketing": "Marketing cookies",
+      "marketingText": "Used for ad personalisation and campaign measurement. You can disable them without affecting service functionality.",
+      "list": "Cookies in use",
+      "howToManage": "How to manage cookies?",
+      "howToManageText": "You have several ways to manage cookies:",
+      "manageInApp": "On our platform: Click the button below to change cookie settings.",
+      "manageInBrowser": "In your browser: Block or delete cookies in browser settings.",
+      "incognito": "Incognito mode: Cookies are not saved in private browsing mode.",
+      "changeSettings": "Change cookie settings",
+      "footer": "By continuing to use the service without changing browser settings, you consent to cookies as described in this policy.",
+      "colName": "Name",
+      "colType": "Type",
+      "colPurpose": "Purpose",
+      "colDuration": "Duration",
+      "colProvider": "Provider"
+    },
+    "dpa": {
+      "pageTitle": "Data Processing Agreement",
+      "subtitle": "Data Processing Agreement (DPA) pursuant to Art. 28 GDPR",
+      "metaTitle": "Data Processing Agreement (DPA)",
+      "metaDesc": "Majster.AI Data Processing Agreement compliant with GDPR Art. 28.",
+      "acceptance": "Agreement Acceptance",
+      "acceptanceText": "By using Majster.AI, you accept this Data Processing Agreement. For questions: kontakt.majsterai@gmail.com",
+      "s1title": "1. Subject Matter",
+      "s1content": "This Data Processing Agreement (DPA) governs the processing of personal data by Majster.AI (Processor) on behalf of the User (Controller).\n\nThis Agreement forms an integral part of the Terms of Service and Privacy Policy.",
+      "s2title": "2. Scope of Processing",
+      "s2content": "The Processor processes:\n• Controller's client data\n• Project and quote data\n• Company documents\n\nPurpose: provision of Majster.AI platform services.\nDuration: for the service period + 30 days after termination.",
+      "s3title": "3. Security Measures",
+      "s3content": "Technical and organisational measures:\n• TLS 1.3 in-transit and AES-256 at-rest encryption\n• Role-Based Access Control (RBAC)\n• Row Level Security (RLS) in the database\n• Regular security audits\n• Staff data protection training\n• Incident response procedures\n• Data backups with 30-day retention",
+      "s4title": "4. Sub-processors",
+      "s4content": "We use:\n1. Supabase Inc. (USA) — database hosting and authentication, EU-US SCCs\n2. Resend (USA) — transactional email, EU-US SCCs\n\nThe Controller will be notified of any new sub-processor with 14 days notice.",
+      "s5title": "5. Obligations of the Parties",
+      "s5content": "Processor obligations:\n• Process data only on documented Controller instructions\n• Maintain staff confidentiality\n• Assist Controller in fulfilling data subject rights\n• Notify of data breaches within 72 hours\n• Delete data upon agreement termination\n\nController obligations:\n• Establish legal basis for processing\n• Inform data subjects\n• Fulfil data subject rights",
+      "s6title": "6. Audits & Inspections",
+      "s6content": "The Controller may:\n• Request information about processing\n• Conduct audits (once per year, with 30 days notice)\n• Inspect security documentation\n\nAudit costs are borne by the initiating party, unless the audit reveals violations."
+    },
+    "gdpr": {
+      "pageTitle": "GDPR Centre",
+      "subtitle": "Manage your personal data",
+      "metaTitle": "GDPR Centre",
+      "metaDesc": "Manage your personal data in compliance with GDPR.",
+      "loggedAs": "Logged in as",
+      "importantInfo": "Important information",
+      "importantText": "Under GDPR we have 30 days to fulfil your request. In complex cases the deadline may be extended by a further 60 days. Contact: kontakt.majsterai@gmail.com",
+      "rights": {
+        "access": {
+          "title": "Right of Access (Art. 15)",
+          "desc": "You have the right to know what data we hold about you.",
+          "action": "Review your data in your profile and settings."
+        },
+        "rectify": {
+          "title": "Right to Rectification (Art. 16)",
+          "desc": "You can correct your data if it is inaccurate.",
+          "action": "Edit your data in the company profile.",
+          "btn": "Edit profile"
+        },
+        "portability": {
+          "title": "Right to Portability (Art. 20)",
+          "desc": "You can download all your data as a JSON file.",
+          "action": "Click the button to download a copy of your data.",
+          "btn": "Download my data",
+          "btnLoading": "Exporting..."
+        },
+        "erasure": {
+          "title": "Right to Erasure (Art. 17)",
+          "desc": "You can request deletion of your account and all data.",
+          "action": "This action is irreversible. We will process your request within 30 days.",
+          "btn": "Request deletion"
+        }
+      },
+      "deleteDialog": {
+        "title": "Data deletion request",
+        "confirm": "Are you sure you want to request deletion of your account and all data?",
+        "willCause": "This action will result in:",
+        "effects": [
+          "Deletion of all your projects and quotes",
+          "Deletion of client data",
+          "Deletion of company profile and documents",
+          "Permanent account removal"
+        ],
+        "timeline": "The request will be processed within 30 days.",
+        "cancel": "Cancel",
+        "submit": "Submit request",
+        "submitting": "Submitting..."
+      },
+      "toast": {
+        "exportSuccess": "Data exported successfully",
+        "exportError": "Error exporting data",
+        "deleteSuccess": "Deletion request submitted",
+        "deleteSuccessDesc": "We will contact you within 30 days.",
+        "deleteError": "Error submitting deletion request"
+      }
+    }
   },
   "help": {
     "menu": "Help menu",
     "documentation": "Documentation",
     "docsComingSoon": "Documentation coming soon. Check the Settings tab or contact us."
+  },
+  "tradeCatalog": {
+    "categories": {
+      "lazienka": "Bathroom & WC Finishing",
+      "malowanie": "Painting & Plastering",
+      "podlogi": "Flooring",
+      "sucha-zabudowa": "Ceilings & Partition Walls",
+      "elektryka": "Electrical Installations",
+      "hydraulika": "Plumbing & Heating",
+      "murarstwo": "Masonry & Concrete Works",
+      "dach": "Roofing & Timber Frame",
+      "elewacja": "Facade & Insulation",
+      "stolarka": "Windows & Doors",
+      "transport": "Transport & Waste Removal",
+      "nadzor": "Supervision & Design"
+    }
+  },
+  "projectTimeline": {
+    "noProjects": "No projects with dates this month",
+    "noProjectsHint": "Add start and end dates to projects to see them on the timeline",
+    "title": "Project Timeline — {{month}}",
+    "statusLegend": "Project status:",
+    "unknownClient": "Unknown client"
   }
 }

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,94 +7,50 @@ import { ArrowLeft, FileText, Shield, Server, Lock, AlertTriangle, CheckCircle2 
 
 export default function DPA() {
   const navigate = useNavigate();
-  const lastUpdated = new Date().toLocaleDateString('pl-PL');
+  const { t, i18n } = useTranslation();
+  const lastUpdated = new Date().toLocaleDateString(i18n.language === 'pl' ? 'pl-PL' : i18n.language === 'uk' ? 'uk-UA' : 'en-GB');
 
   const sections = [
     {
       icon: FileText,
-      title: '1. Przedmiot umowy',
-      content: `Niniejsza Umowa Powierzenia Przetwarzania Danych (DPA) reguluje zasady 
-przetwarzania danych osobowych przez Majster.AI (Procesor) w imieniu Użytkownika (Administrator).
-
-Umowa stanowi integralną część Regulaminu i Polityki Prywatności Majster.AI.`,
+      title: t('legal.dpa.s1title'),
+      content: t('legal.dpa.s1content'),
     },
     {
       icon: Shield,
-      title: '2. Zakres przetwarzania',
-      content: `Procesor przetwarza następujące kategorie danych:
-• Dane klientów Administratora (imię, nazwisko, email, telefon, adres)
-• Dane projektów i wycen
-• Dokumenty firmowe
-
-Cel przetwarzania: świadczenie usług platformy Majster.AI zgodnie z umową.
-
-Czas przetwarzania: przez okres korzystania z usług + 30 dni po zakończeniu.`,
+      title: t('legal.dpa.s2title'),
+      content: t('legal.dpa.s2content'),
     },
     {
       icon: Lock,
-      title: '3. Środki bezpieczeństwa',
-      content: `Procesor stosuje następujące środki techniczne i organizacyjne:
-• Szyfrowanie danych w tranzycie (TLS 1.3) i w spoczynku (AES-256)
-• Kontrola dostępu oparta na rolach (RBAC)
-• Row Level Security (RLS) w bazie danych
-• Regularne audyty bezpieczeństwa
-• Szkolenia personelu z zakresu ochrony danych
-• Procedury reagowania na incydenty
-• Backup danych z retencją 30 dni`,
+      title: t('legal.dpa.s3title'),
+      content: t('legal.dpa.s3content'),
     },
     {
       icon: Server,
-      title: '4. Podprzetwarzcy',
-      content: `Procesor korzysta z następujących podprzetwarzców:
-
-1. Supabase Inc. (USA)
-   - Hosting bazy danych i autentykacji
-   - Standard Contractual Clauses (SCC) dla transferu UE-USA
-   
-2. Resend (USA)
-   - Wysyłka emaili transakcyjnych
-   - SCC dla transferu UE-USA
-
-Administrator wyraża zgodę na korzystanie z wymienionych podprzetwarzców.
-O każdym nowym podprzetwarzcy Administrator zostanie poinformowany z 14-dniowym wyprzedzeniem.`,
+      title: t('legal.dpa.s4title'),
+      content: t('legal.dpa.s4content'),
     },
     {
       icon: AlertTriangle,
-      title: '5. Obowiązki stron',
-      content: `Obowiązki Procesora:
-• Przetwarzanie danych wyłącznie na udokumentowane polecenie Administratora
-• Zapewnienie poufności przez personel
-• Pomoc Administratorowi w realizacji praw osób, których dane dotyczą
-• Powiadomienie o naruszeniu ochrony danych w ciągu 72 godzin
-• Usunięcie danych po zakończeniu umowy
-
-Obowiązki Administratora:
-• Zapewnienie podstawy prawnej przetwarzania
-• Informowanie osób, których dane dotyczą
-• Realizacja praw osób (dostęp, sprostowanie, usunięcie)`,
+      title: t('legal.dpa.s5title'),
+      content: t('legal.dpa.s5content'),
     },
     {
       icon: CheckCircle2,
-      title: '6. Audyty i kontrole',
-      content: `Administrator ma prawo do:
-• Żądania informacji o przetwarzaniu danych
-• Przeprowadzania audytów (raz w roku, z 30-dniowym wyprzedzeniem)
-• Inspekcji dokumentacji bezpieczeństwa
-
-Procesor zobowiązuje się do współpracy przy audytach organów nadzorczych.
-
-Koszty audytu ponosi strona inicjująca, chyba że audyt wykaże naruszenia.`,
+      title: t('legal.dpa.s6title'),
+      content: t('legal.dpa.s6content'),
     },
   ];
 
   return (
     <>
       <SEOHead
-        title="Umowa Powierzenia Danych (DPA)"
-        description="Umowa powierzenia przetwarzania danych osobowych Majster.AI zgodna z RODO art. 28."
-        keywords="DPA, umowa powierzenia, RODO, art 28, przetwarzanie danych"
+        title={t('legal.dpa.metaTitle')}
+        description={t('legal.dpa.metaDesc')}
+        keywords="DPA, data processing agreement, GDPR, art 28"
       />
-      
+
       <div className="min-h-screen bg-background">
         <div className="container max-w-4xl py-8 px-4">
           <Button
@@ -102,21 +59,27 @@ Koszty audytu ponosi strona inicjująca, chyba że audyt wykaże naruszenia.`,
             className="mb-6"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Powrót
+            {t('legal.back')}
           </Button>
 
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
               <FileText className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mb-2">Umowa Powierzenia Danych</h1>
+            <h1 className="text-3xl font-bold mb-2">{t('legal.dpa.pageTitle')}</h1>
             <p className="text-muted-foreground">
-              Data Processing Agreement (DPA) zgodnie z art. 28 RODO
+              {t('legal.dpa.subtitle')}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              Ostatnia aktualizacja: {lastUpdated}
+              {t('legal.lastUpdated')} {lastUpdated}
             </p>
           </div>
+
+          {i18n.language !== 'pl' && t('legal.plVersionPrevails') && (
+            <div className="mb-6 p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20">
+              <p className="text-sm text-amber-700 dark:text-amber-400">{t('legal.plVersionPrevails')}</p>
+            </div>
+          )}
 
           <div className="space-y-6">
             {sections.map((section) => (
@@ -143,10 +106,9 @@ Koszty audytu ponosi strona inicjująca, chyba że audyt wykaże naruszenia.`,
               <div className="flex gap-4">
                 <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium mb-1">Akceptacja umowy</p>
+                  <p className="font-medium mb-1">{t('legal.dpa.acceptance')}</p>
                   <p className="text-sm text-muted-foreground">
-                    Korzystając z Majster.AI, akceptujesz niniejszą Umowę Powierzenia 
-                    Przetwarzania Danych. W przypadku pytań skontaktuj się: kontakt.majsterai@gmail.com
+                    {t('legal.dpa.acceptanceText')}
                   </p>
                 </div>
               </div>

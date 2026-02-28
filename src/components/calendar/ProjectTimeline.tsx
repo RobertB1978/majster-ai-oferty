@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addMonths, subMonths } from 'date-fns';
 import { pl } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
+import { uk } from 'date-fns/locale';
 import { useProjects } from '@/hooks/useProjects';
 import { useClients } from '@/hooks/useClients';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,17 +13,34 @@ import { ChevronLeft, ChevronRight, Loader2, FolderOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
-const statusColors: Record<string, string> = {
+/** Map DB Polish status values → colour classes (keep Polish keys — these are legacy DB values) */
+const STATUS_COLOR: Record<string, string> = {
   'Nowy': 'bg-blue-500',
   'Wycena w toku': 'bg-amber-500',
   'Oferta wysłana': 'bg-purple-500',
   'Zaakceptowany': 'bg-emerald-500',
 };
 
+/** Map legacy Polish DB status → i18n key in projects.statuses */
+const STATUS_I18N: Record<string, string> = {
+  'Nowy': 'new',
+  'Wycena w toku': 'inProgress',
+  'Oferta wysłana': 'sent',
+  'Zaakceptowany': 'accepted',
+};
+
 const priorityColors: Record<string, string> = {
   'low': 'border-l-muted-foreground',
   'normal': 'border-l-primary',
   'high': 'border-l-destructive',
+};
+
+const getDateLocale = (lang: string) => {
+  switch (lang) {
+    case 'uk': return uk;
+    case 'en': return enUS;
+    default: return pl;
+  }
 };
 
 interface ProjectTimelineProps {
@@ -30,6 +50,9 @@ interface ProjectTimelineProps {
 
 export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimelineProps) {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const dateLocale = getDateLocale(i18n.language);
+
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
   const { data: clients = [] } = useClients();
 
@@ -73,7 +96,7 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
 
         return {
           ...p,
-          clientName: client?.name || 'Nieznany klient',
+          clientName: client?.name || t('projectTimeline.unknownClient'),
           startDate,
           endDate,
           leftPercent,
@@ -83,7 +106,7 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
         };
       })
       .filter(Boolean);
-  }, [projects, clients, monthStart, monthEnd, totalDays]);
+  }, [projects, clients, monthStart, monthEnd, totalDays, t]);
 
   // Week markers
   const weekMarkers = useMemo(() => {
@@ -92,12 +115,22 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
       if (day.getDay() === 1 || index === 0) { // Monday or first day
         markers.push({
           day: index,
-          label: format(day, 'd', { locale: pl }),
+          label: format(day, 'd', { locale: dateLocale }),
         });
       }
     });
     return markers;
-  }, [daysInMonth]);
+  }, [daysInMonth, dateLocale]);
+
+  /** Get translated label for a project status, mapping Polish legacy DB values to i18n keys */
+  const getStatusLabel = (status: string): string => {
+    const i18nKey = STATUS_I18N[status];
+    if (i18nKey) {
+      return t(`projects.statuses.${i18nKey}`, status);
+    }
+    // Non-legacy status — display as-is (user data or already localised)
+    return status;
+  };
 
   if (projectsLoading) {
     return (
@@ -114,7 +147,7 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="flex items-center gap-2">
           <FolderOpen className="h-5 w-5" />
-          Timeline Projektów - {format(currentMonth, 'LLLL yyyy', { locale: pl })}
+          {t('projectTimeline.title', { month: format(currentMonth, 'LLLL yyyy', { locale: dateLocale }) })}
         </CardTitle>
         <div className="flex gap-1">
           <Button variant="outline" size="icon" onClick={() => onMonthChange(subMonths(currentMonth, 1))}>
@@ -155,9 +188,9 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
         {timelineProjects.length === 0 ? (
           <div className="py-12 text-center">
             <FolderOpen className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-            <p className="text-muted-foreground">Brak projektów z datami w tym miesiącu</p>
+            <p className="text-muted-foreground">{t('projectTimeline.noProjects')}</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Dodaj daty rozpoczęcia i zakończenia do projektów, aby zobaczyć je na osi czasu
+              {t('projectTimeline.noProjectsHint')}
             </p>
           </div>
         ) : (
@@ -186,7 +219,7 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
                       'hover:brightness-110 hover:shadow-md',
                       'flex items-center px-2 gap-2 overflow-hidden',
                       'border-l-4',
-                      statusColors[project!.status] || 'bg-muted',
+                      STATUS_COLOR[project!.status] || 'bg-muted',
                       priorityColors[project!.priority || 'normal'],
                       project!.startsBeforeMonth && 'rounded-l-none',
                       project!.endsAfterMonth && 'rounded-r-none'
@@ -199,11 +232,11 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
                     <span className="text-xs text-white font-medium truncate">
                       {project!.project_name}
                     </span>
-                    <Badge 
-                      variant="secondary" 
+                    <Badge
+                      variant="secondary"
                       className="text-[10px] px-1 py-0 shrink-0 bg-white/20 text-white border-0"
                     >
-                      {project!.status}
+                      {getStatusLabel(project!.status)}
                     </Badge>
                   </button>
                 </div>
@@ -214,12 +247,12 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
 
         {/* Legend */}
         <div className="mt-6 pt-4 border-t border-border">
-          <p className="text-xs text-muted-foreground mb-2">Status projektów:</p>
+          <p className="text-xs text-muted-foreground mb-2">{t('projectTimeline.statusLegend')}</p>
           <div className="flex flex-wrap gap-3">
-            {Object.entries(statusColors).map(([status, color]) => (
+            {Object.entries(STATUS_COLOR).map(([status, color]) => (
               <div key={status} className="flex items-center gap-1.5">
                 <div className={cn('w-3 h-3 rounded-sm', color)} />
-                <span className="text-xs">{status}</span>
+                <span className="text-xs">{getStatusLabel(status)}</span>
               </div>
             ))}
           </div>
