@@ -89,13 +89,10 @@ export default tseslint.config(
         },
         // Allow common technical string patterns that are never user-facing
         // (hex colours, CSS units, icon names, route segments, etc.)
-        words: [
-          "^[0-9]+(%|px|rem|em|vh|vw)?$",   // CSS / numeric values
-          "^#[0-9a-fA-F]{3,8}$",             // hex colours
-          "^[A-Z][A-Z0-9_]+$",               // SCREAMING_SNAKE constants
-          "^/[a-z0-9/-]*$",                  // URL paths
-          "^[a-z]+:[a-z-]+$",                // namespaced tokens (e.g. "text:primary")
-        ],
+        // NOTE: eslint-plugin-i18next@6 expects `words` as an object (regex→bool map).
+        // The option is omitted here because mode:"jsx-only" already excludes
+        // plain TS bodies, and the jsx-attributes.exclude list covers all
+        // technical JSX attributes. Add per-file overrides if needed.
         // Don't require t() inside these call expressions (utility / library calls)
         callees: ["t", "i18n.t", "i18next.t", "Trans", "cn", "clsx", "cva"],
       }],
