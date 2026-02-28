@@ -46,7 +46,7 @@ function total(items: LineItem[]): number {
 }
 
 function fmt(n: number): string {
-  return n.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 /* ─────────────────────────── Manual tab ────────────────────────────────── */

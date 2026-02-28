@@ -160,7 +160,7 @@ export default function ProjectDetail() {
             </div>
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
-              {new Date(project.created_at).toLocaleDateString('pl-PL')}
+              {new Date(project.created_at).toLocaleDateString()}
             </div>
           </div>
         </div>

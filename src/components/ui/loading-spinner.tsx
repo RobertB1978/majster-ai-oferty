@@ -1,4 +1,5 @@
 import { Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 interface LoadingSpinnerProps {
@@ -22,10 +23,11 @@ export function LoadingSpinner({ className, size = 'md', text }: LoadingSpinnerP
   );
 }
 
-export function FullPageLoader({ text = 'Ładowanie...' }: { text?: string }) {
+export function FullPageLoader({ text }: { text?: string }) {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <LoadingSpinner size="lg" text={text} />
+      <LoadingSpinner size="lg" text={text ?? t('common.loading')} />
     </div>
   );
 }

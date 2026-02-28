@@ -32,14 +32,7 @@ interface SendOfferModalProps {
   pdfUrl?: string;
 }
 
-const EXPIRY_OPTIONS = [
-  { label: '7 dni', days: 7 },
-  { label: '14 dni', days: 14 },
-  { label: '30 dni', days: 30 },
-  { label: '60 dni', days: 60 },
-  { label: '90 dni', days: 90 },
-  { label: 'Własna data', days: -1 },
-] as const;
+const EXPIRY_DAYS = [7, 14, 30, 60, 90] as const;
 
 function daysFromNow(days: number): string {
   const d = new Date();
@@ -167,7 +160,7 @@ export function SendOfferModal({
 
     setIsGeneratingToken(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabase  // eslint-disable-line @typescript-eslint/no-unused-vars
         .from('offer_approvals')
         .insert({
           project_id: projectId,
@@ -184,7 +177,7 @@ export function SendOfferModal({
       return approval;
     } catch (err) {
       console.error('Failed to generate offer token:', err);
-      toast.error('Nie udało się wygenerować linku do oferty');
+      toast.error(t('sendOffer.tokenGenerateFailed'));
       return null;
     } finally {
       setIsGeneratingToken(false);
@@ -198,7 +191,7 @@ export function SendOfferModal({
     const link = `${window.location.origin}/oferta/${approval.public_token}`;
     await navigator.clipboard.writeText(link);
     setLinkCopied(true);
-    toast.success('Link do oferty skopiowany!');
+    toast.success(t('sendOffer.linkCopiedSuccess'));
     setTimeout(() => setLinkCopied(false), 2500);
   };
 
@@ -209,7 +202,7 @@ export function SendOfferModal({
     }
     if (!email.trim()) { toast.error(t('sendOffer.provideRecipientEmail')); return; }
     if (!subject.trim()) { toast.error(t('sendOffer.provideSubject')); return; }
-    if (!hasValidUntil) { toast.error('Ustaw termin ważności oferty'); return; }
+    if (!hasValidUntil) { toast.error(t('sendOffer.setExpiryRequired')); return; }
 
     setIsSending(true);
     try {
@@ -290,8 +283,8 @@ export function SendOfferModal({
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription className="text-sm">
-                <span className="font-medium">Brak adresu e-mail klienta.</span>{' '}
-                Wpisz adres poniżej lub skorzystaj z alternatywnych metod dostarczenia oferty.
+                <span className="font-medium">{t('sendOffer.noClientEmail')}</span>{' '}
+                {t('sendOffer.noClientEmailDesc')}
               </AlertDescription>
             </Alert>
           )}
@@ -303,20 +296,20 @@ export function SendOfferModal({
               <AlertDescription className="text-sm">
                 {emailSendFailedReason === 'not_configured' ? (
                   <>
-                    <span className="font-medium">Wysyłka e-mail nie jest skonfigurowana.</span>{' '}
-                    Skontaktuj się z administratorem lub skorzystaj z poniższych metod.{' '}
+                    <span className="font-medium">{t('sendOffer.emailNotConfiguredShort')}</span>{' '}
+                    {t('sendOffer.emailNotConfiguredDetail')}{' '}
                     <Link
                       to="/app/settings?tab=email"
                       className="underline underline-offset-2"
                       onClick={() => onOpenChange(false)}
                     >
-                      Przejdź do ustawień →
+                      {t('sendOffer.goToSettings')}
                     </Link>
                   </>
                 ) : (
                   <>
-                    <span className="font-medium">Nie udało się wysłać e-mail.</span>{' '}
-                    Spróbuj ponownie lub skorzystaj z poniższych metod.
+                    <span className="font-medium">{t('sendOffer.failedToSendShort')}</span>{' '}
+                    {t('sendOffer.retryOrUseFallback')}
                   </>
                 )}
               </AlertDescription>
@@ -328,7 +321,7 @@ export function SendOfferModal({
             <div className="rounded-lg border border-border bg-muted/40 p-4 space-y-3">
               <p className="text-sm font-medium flex items-center gap-2">
                 <Link2 className="h-4 w-4" />
-                Alternatywne sposoby dostarczenia oferty
+                {t('sendOffer.alternativeDelivery')}
               </p>
 
               {/* Copy public offer link */}
@@ -346,7 +339,7 @@ export function SendOfferModal({
                 ) : (
                   <Copy className="mr-2 h-4 w-4" />
                 )}
-                {linkCopied ? 'Link skopiowany!' : 'Skopiuj link do oferty'}
+                {linkCopied ? t('sendOffer.linkCopied') : t('sendOffer.copyLink')}
               </Button>
 
               {publicOfferLink && (
@@ -360,7 +353,7 @@ export function SendOfferModal({
                 <Button variant="outline" size="sm" className="w-full" asChild>
                   <a href={pdfUrl} target="_blank" rel="noopener noreferrer" download>
                     <Download className="mr-2 h-4 w-4" />
-                    Pobierz PDF oferty
+                    {t('sendOffer.downloadOfferPdf')}
                   </a>
                 </Button>
               ) : (
@@ -402,14 +395,14 @@ export function SendOfferModal({
                 <Alert>
                   <ShieldAlert className="h-4 w-4" />
                   <AlertDescription className="text-sm">
-                    <span className="font-medium">⚠️ Email do odpowiedzi niezweryfikowany.</span>{' '}
-                    Klienci nie będą mogli odpisać bezpośrednio na ofertę.{' '}
+                    <span className="font-medium">{t('sendOffer.replyEmailUnverified')}</span>{' '}
+                    {t('sendOffer.replyEmailUnverifiedDesc')}{' '}
                     <Link
                       to="/app/settings?tab=email"
                       className="text-primary underline underline-offset-2"
                       onClick={() => onOpenChange(false)}
                     >
-                      Zweryfikuj w Ustawieniach →
+                      {t('sendOffer.verifyInSettings')}
                     </Link>
                   </AlertDescription>
                 </Alert>
@@ -419,24 +412,23 @@ export function SendOfferModal({
               <div className="space-y-2">
                 <Label htmlFor="expiry" className="flex items-center gap-1.5">
                   <Clock className="h-4 w-4" />
-                  Ważność oferty
+                  {t('sendOffer.offerValidity')}
                   <span className="text-destructive ml-1">*</span>
                 </Label>
                 <Select value={expiryDays} onValueChange={setExpiryDays}>
                   <SelectTrigger id="expiry">
-                    <SelectValue placeholder="Wybierz termin ważności" />
+                    <SelectValue placeholder={t('sendOffer.selectExpiry')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {EXPIRY_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.days} value={String(opt.days)}>
-                        {opt.label}
-                        {opt.days > 0 && (
-                          <span className="text-muted-foreground text-xs ml-2">
-                            (do {daysFromNow(opt.days)})
-                          </span>
-                        )}
+                    {EXPIRY_DAYS.map((days) => (
+                      <SelectItem key={days} value={String(days)}>
+                        {t('sendOffer.days_many', { count: days })}
+                        <span className="text-muted-foreground text-xs ml-2">
+                          ({t('sendOffer.validUntil', { date: daysFromNow(days) })})
+                        </span>
                       </SelectItem>
                     ))}
+                    <SelectItem value="-1">{t('sendOffer.customDate')}</SelectItem>
                   </SelectContent>
                 </Select>
                 {expiryDays === '-1' && (
@@ -445,7 +437,7 @@ export function SendOfferModal({
                     value={customDate}
                     min={new Date().toISOString().split('T')[0]}
                     onChange={(e) => setCustomDate(e.target.value)}
-                    aria-label="Własna data ważności"
+                    aria-label={t('sendOffer.customDateAria')}
                   />
                 )}
               </div>
@@ -503,7 +495,7 @@ export function SendOfferModal({
               {/* Dual-token info */}
               {offerApproval && (
                 <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 text-xs text-muted-foreground">
-                  Email będzie zawierał dwa przyciski: <strong>OGLĄDAM OFERTĘ</strong> i <strong>✓ AKCEPTUJĘ (1 klik)</strong>.
+                  {t('sendOffer.dualTokenInfo')}
                 </div>
               )}
             </>

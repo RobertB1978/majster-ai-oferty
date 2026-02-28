@@ -1,26 +1,24 @@
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { pl, enUS, uk } from 'date-fns/locale';
 import { CheckCircle, Eye, Send, XCircle, Ban, Clock, FileText } from 'lucide-react';
 import type { OfferApproval } from '@/hooks/useOfferApprovals';
 
-interface TimelineEvent {
-  key: string;
-  label: string;
-  timestamp: string;
-  icon: React.ElementType;
-  colorClass: string;
-}
+const DATE_LOCALES: Record<string, Locale> = { pl, en: enUS, uk };
 
 interface OfferTrackingTimelineProps {
   approval: OfferApproval;
 }
 
-function buildEvents(approval: OfferApproval): TimelineEvent[] {
-  const events: TimelineEvent[] = [];
+export function OfferTrackingTimeline({ approval }: OfferTrackingTimelineProps) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = DATE_LOCALES[i18n.language] ?? enUS;
+
+  const events = [];
 
   events.push({
     key: 'created',
-    label: 'Oferta utworzona',
+    label: t('offers.tracking.created'),
     timestamp: approval.created_at,
     icon: FileText,
     colorClass: 'text-muted-foreground',
@@ -29,7 +27,7 @@ function buildEvents(approval: OfferApproval): TimelineEvent[] {
   if (approval.viewed_at) {
     events.push({
       key: 'viewed',
-      label: 'Klient otworzył ofertę',
+      label: t('offers.tracking.clientOpened'),
       timestamp: approval.viewed_at,
       icon: Eye,
       colorClass: 'text-blue-500',
@@ -37,7 +35,7 @@ function buildEvents(approval: OfferApproval): TimelineEvent[] {
   } else if (['sent', 'viewed', 'accepted', 'approved', 'rejected'].includes(approval.status)) {
     events.push({
       key: 'sent',
-      label: 'Oferta wysłana do klienta',
+      label: t('offers.tracking.sentToClient'),
       timestamp: approval.created_at,
       icon: Send,
       colorClass: 'text-muted-foreground',
@@ -48,7 +46,9 @@ function buildEvents(approval: OfferApproval): TimelineEvent[] {
   if (acceptedAt && ['accepted', 'approved'].includes(approval.status)) {
     events.push({
       key: 'accepted',
-      label: approval.accepted_via === 'email_1click' ? 'Zaakceptowana (e-mail)' : 'Zaakceptowana',
+      label: approval.accepted_via === 'email_1click'
+        ? t('offers.tracking.acceptedEmail')
+        : t('offers.tracking.accepted'),
       timestamp: acceptedAt,
       icon: CheckCircle,
       colorClass: 'text-green-500',
@@ -59,7 +59,7 @@ function buildEvents(approval: OfferApproval): TimelineEvent[] {
     const rejectedAt = approval.approved_at ?? approval.created_at;
     events.push({
       key: 'rejected',
-      label: 'Odrzucona przez klienta',
+      label: t('offers.tracking.rejected'),
       timestamp: rejectedAt,
       icon: XCircle,
       colorClass: 'text-destructive',
@@ -69,7 +69,7 @@ function buildEvents(approval: OfferApproval): TimelineEvent[] {
   if (approval.withdrawn_at) {
     events.push({
       key: 'withdrawn',
-      label: 'Oferta wycofana',
+      label: t('offers.tracking.withdrawn'),
       timestamp: approval.withdrawn_at,
       icon: Ban,
       colorClass: 'text-muted-foreground',
@@ -80,28 +80,26 @@ function buildEvents(approval: OfferApproval): TimelineEvent[] {
     const expiredAt = approval.valid_until ?? approval.expires_at ?? approval.created_at;
     events.push({
       key: 'expired',
-      label: 'Oferta wygasła',
+      label: t('offers.tracking.expired'),
       timestamp: expiredAt,
       icon: Clock,
       colorClass: 'text-amber-500',
     });
   }
 
-  return events.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-}
+  const sorted = [...events].sort(
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+  );
 
-export function OfferTrackingTimeline({ approval }: OfferTrackingTimelineProps) {
-  const events = buildEvents(approval);
-
-  if (events.length <= 1) return null;
+  if (sorted.length <= 1) return null;
 
   return (
     <div className="pt-3 border-t border-border/50">
-      <p className="text-xs font-medium text-muted-foreground mb-2">Aktywność</p>
+      <p className="text-xs font-medium text-muted-foreground mb-2">{t('offers.tracking.activity')}</p>
       <ol className="space-y-2">
-        {events.map((event, idx) => {
+        {sorted.map((event, idx) => {
           const Icon = event.icon;
-          const isLast = idx === events.length - 1;
+          const isLast = idx === sorted.length - 1;
           return (
             <li key={event.key} className="flex items-start gap-2">
               <div className="flex flex-col items-center">
@@ -111,7 +109,7 @@ export function OfferTrackingTimeline({ approval }: OfferTrackingTimelineProps) 
               <div className="pb-1">
                 <p className="text-xs font-medium leading-tight">{event.label}</p>
                 <p className="text-xs text-muted-foreground">
-                  {format(new Date(event.timestamp), 'dd MMM yyyy, HH:mm', { locale: pl })}
+                  {format(new Date(event.timestamp), 'dd MMM yyyy, HH:mm', { locale: dateLocale })}
                 </p>
               </div>
             </li>

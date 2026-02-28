@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 interface LoadingScreenProps {
@@ -5,7 +6,9 @@ interface LoadingScreenProps {
   variant?: 'default' | 'minimal' | 'fullscreen';
 }
 
-export function LoadingScreen({ message = 'Ładowanie...', variant = 'default' }: LoadingScreenProps) {
+export function LoadingScreen({ message, variant = 'default' }: LoadingScreenProps) {
+  const { t } = useTranslation();
+  const displayMessage = message ?? t('common.loading');
   if (variant === 'minimal') {
     return (
       <div className="flex items-center justify-center py-12">
@@ -13,7 +16,7 @@ export function LoadingScreen({ message = 'Ładowanie...', variant = 'default' }
           <div className="relative">
             <div className="h-8 w-8 rounded-full border-3 border-primary/20 border-t-primary animate-spin" />
           </div>
-          <p className="text-sm text-muted-foreground">{message}</p>
+          <p className="text-sm text-muted-foreground">{displayMessage}</p>
         </div>
       </div>
     );
@@ -43,7 +46,7 @@ export function LoadingScreen({ message = 'Ładowanie...', variant = 'default' }
         {/* Loading text */}
         <div className="flex flex-col items-center gap-2">
           <div className="flex items-center gap-1">
-            <span className="text-lg font-semibold text-foreground">{message}</span>
+            <span className="text-lg font-semibold text-foreground">{displayMessage}</span>
             <span className="flex gap-0.5">
               <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
               <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />

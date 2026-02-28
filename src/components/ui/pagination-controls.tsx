@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -20,6 +21,7 @@ export function PaginationControls({
   pageSize,
   totalItems,
 }: PaginationControlsProps) {
+  const { t } = useTranslation();
   const canGoPrevious = currentPage > 1;
   const canGoNext = currentPage < totalPages;
 
@@ -37,12 +39,11 @@ export function PaginationControls({
           disabled={!canGoPrevious}
         >
           <ChevronLeft className="h-4 w-4 mr-1" />
-          Poprzednia
+          {t('common.previous')}
         </Button>
 
         <div className="text-sm text-muted-foreground px-2">
-          Strona <span className="font-medium">{currentPage}</span> z{' '}
-          <span className="font-medium">{totalPages}</span>
+          {t('common.pageOf', { current: currentPage, total: totalPages })}
         </div>
 
         <Button
@@ -51,22 +52,18 @@ export function PaginationControls({
           onClick={() => onPageChange(currentPage + 1)}
           disabled={!canGoNext}
         >
-          Następna
+          {t('common.next')}
           <ChevronRight className="h-4 w-4 ml-1" />
         </Button>
       </div>
 
       {totalItems !== undefined && pageSize !== undefined && (
         <div className="text-sm text-muted-foreground">
-          Wyświetlanie{' '}
-          <span className="font-medium">
-            {(currentPage - 1) * pageSize + 1}
-          </span>
-          -
-          <span className="font-medium">
-            {Math.min(currentPage * pageSize, totalItems)}
-          </span>{' '}
-          z <span className="font-medium">{totalItems}</span>
+          {t('common.showingItems', {
+            from: (currentPage - 1) * pageSize + 1,
+            to: Math.min(currentPage * pageSize, totalItems),
+            total: totalItems,
+          })}
         </div>
       )}
     </div>

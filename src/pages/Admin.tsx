@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -31,6 +32,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function Admin() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user: _user } = useAuth();
 
   // Check both app-wide admin (platform admin) and organization admin
@@ -60,12 +62,12 @@ export default function Admin() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
         <AlertTriangle className="h-16 w-16 text-destructive mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Brak dostępu</h1>
+        <h1 className="text-2xl font-bold mb-2">{t('admin.noAccess')}</h1>
         <p className="text-muted-foreground mb-4">
-          Nie masz uprawnień do wyświetlenia tej strony.
+          {t('admin.noAccessDesc')}
         </p>
         <Button onClick={() => navigate('/dashboard')}>
-          Wróć do panelu
+          {t('admin.backToDashboard')}
         </Button>
       </div>
     );
@@ -74,7 +76,7 @@ export default function Admin() {
   return (
     <>
       <Helmet>
-        <title>Panel Administratora | Majster.AI</title>
+        <title>{t('admin.title')} | Majster.AI</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
@@ -84,16 +86,16 @@ export default function Admin() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
               <Shield className="h-6 w-6 text-primary" />
-              Panel Administratora
+              {t('admin.title')}
             </h1>
             <p className="text-muted-foreground">
-              Zarządzaj aplikacją, użytkownikami i ustawieniami
+              {t('admin.subtitle')}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="flex items-center gap-1">
               <Activity className="h-3 w-3" />
-              System aktywny
+              {t('admin.systemActive')}
             </Badge>
             {isAppAdmin && (
               <Badge className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30">
@@ -117,31 +119,31 @@ export default function Admin() {
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Użytkownicy
+              {t('admin.users')}
             </TabsTrigger>
             <TabsTrigger value="theme" className="flex items-center gap-2">
               <Palette className="h-4 w-4" />
-              Motyw
+              {t('admin.theme')}
             </TabsTrigger>
             <TabsTrigger value="content" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Treści
+              {t('admin.content')}
             </TabsTrigger>
             <TabsTrigger value="database" className="flex items-center gap-2">
               <Database className="h-4 w-4" />
-              Baza danych
+              {t('admin.database')}
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
-              System
+              {t('admin.system')}
             </TabsTrigger>
             <TabsTrigger value="api" className="flex items-center gap-2">
               <Key className="h-4 w-4" />
-              API
+              {t('admin.api')}
             </TabsTrigger>
             <TabsTrigger value="logs" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
-              Logi
+              {t('admin.logs')}
             </TabsTrigger>
           </TabsList>
 

@@ -128,7 +128,7 @@ function initRaw(item: LineItem): ItemRaw {
 /* ── Number formatter ────────────────────────────────────────────── */
 
 function fmt(n: number): string {
-  return n.toLocaleString('pl-PL', {
+  return n.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

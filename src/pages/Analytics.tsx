@@ -108,14 +108,14 @@ export default function Analytics() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">{t('analytics.totalValue')}</p>
-                  <p className="text-3xl font-bold">{stats.totalValue.toLocaleString('pl-PL')} zł</p>
+                  <p className="text-3xl font-bold">{stats.totalValue.toLocaleString()} zł</p>
                 </div>
                 <div className="h-12 w-12 rounded-lg bg-success/10 flex items-center justify-center">
                   <DollarSign className="h-6 w-6 text-success" />
                 </div>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">
-                {t('analytics.averageValue')}: {stats.avgValue.toLocaleString('pl-PL', { maximumFractionDigits: 0 })} zł
+                {t('analytics.averageValue')}: {stats.avgValue.toLocaleString(undefined, { maximumFractionDigits: 0 })} zł
               </p>
             </CardContent>
           </Card>

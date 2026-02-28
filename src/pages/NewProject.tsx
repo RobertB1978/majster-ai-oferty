@@ -356,7 +356,7 @@ export default function NewProject() {
                         </div>
                         {voiceResult.items && voiceResult.items.length > 0 && (
                           <div className="text-sm text-muted-foreground">
-                            {voiceResult.items.length} {t('newProject.quoteItemsSummary')}{voiceResult.items.reduce((acc, item) => acc + (item.qty * item.price), 0).toLocaleString('pl-PL')} zł
+                            {voiceResult.items.length} {t('newProject.quoteItemsSummary')}{voiceResult.items.reduce((acc, item) => acc + (item.qty * item.price), 0).toLocaleString()} zł
                           </div>
                         )}
                       </div>
@@ -493,7 +493,7 @@ export default function NewProject() {
                     {voiceResult.items.map((item, i) => (
                       <div key={i} className="flex justify-between">
                         <span>{item.name} ({item.qty} {item.unit})</span>
-                        <span className="font-medium">{(item.qty * item.price).toLocaleString('pl-PL')} zł</span>
+                        <span className="font-medium">{(item.qty * item.price).toLocaleString()} zł</span>
                       </div>
                     ))}
                   </div>
