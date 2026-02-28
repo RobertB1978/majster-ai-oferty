@@ -3,31 +3,26 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 import { useUserSubscription } from '@/hooks/useSubscription';
 
-const PLAN_LABELS: Record<string, { pl: string; en: string; uk: string; color: string }> = {
-  free: { pl: 'Darmowy', en: 'Free', uk: 'Безкоштовний', color: 'secondary' },
-  pro: { pl: 'Pro', en: 'Pro', uk: 'Про', color: 'default' },
-  starter: { pl: 'Pro', en: 'Pro', uk: 'Про', color: 'default' },
-  business: { pl: 'Biznes', en: 'Business', uk: 'Бізнес', color: 'default' },
-  enterprise: { pl: 'Enterprise', en: 'Enterprise', uk: 'Корпоративний', color: 'default' },
-};
+const PLAN_FALLBACK_IDS = ['free', 'pro', 'starter', 'business', 'enterprise'] as const;
+type PlanId = typeof PLAN_FALLBACK_IDS[number];
 
 export function PlanBadge() {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { t } = useTranslation();
   const { data: subscription, isLoading } = useUserSubscription();
 
   if (isLoading) return null;
 
-  const planId = subscription?.plan_id ?? 'free';
-  const lang = i18n.language.startsWith('uk') ? 'uk' : i18n.language.startsWith('en') ? 'en' : 'pl';
-  const planLabel = PLAN_LABELS[planId]?.[lang] ?? planId;
+  const planId = (subscription?.plan_id ?? 'free') as string;
+  const i18nPlanId: PlanId = PLAN_FALLBACK_IDS.includes(planId as PlanId) ? planId as PlanId : 'free';
+  const planLabel = t(`billing.plans.${i18nPlanId}.name`, planId);
   const isPaid = planId !== 'free';
 
   return (
     <button
       onClick={() => navigate('/app/plan')}
       className="flex items-center gap-1 rounded-full border border-border bg-muted/60 px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-      aria-label={`Plan: ${planLabel}. Kliknij, by zobaczyć plany`}
+      aria-label={t('billing.planBadge.ariaLabel', { plan: planLabel })}
     >
       <span className={isPaid ? 'text-primary font-semibold' : ''}>
         Plan: {planLabel}

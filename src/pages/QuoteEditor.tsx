@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useProject } from '@/hooks/useProjects';
 import { useQuote, useSaveQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useCreateItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
@@ -17,7 +18,7 @@ import { QuoteSnapshot } from '@/hooks/useQuoteVersions';
 import { VoiceInputButton } from '@/components/voice/VoiceInputButton';
 import { parseDecimal } from '@/lib/numberParsing';
 
-/** Surowy tekst wpisany przez użytkownika dla pól numerycznych jednej pozycji */
+/** Raw text entered by the user for numeric fields of a single item */
 interface PositionInputs {
   qty: string;
   price: string;
@@ -28,6 +29,7 @@ const categories = ['Materiał', 'Robocizna'] as const;
 
 export default function QuoteEditor() {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
   const { data: project, isLoading: projectLoading } = useProject(id || '');
   const { data: existingQuote, isLoading: quoteLoading } = useQuote(id || '');
   const saveQuote = useSaveQuote();
@@ -39,26 +41,20 @@ export default function QuoteEditor() {
   const [marginPercent, setMarginPercent] = useState(10);
   const [isInitialized, setIsInitialized] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  /** Surowe ciągi znaków wpisane przez użytkownika (oddzielnie od wartości numerycznych) */
   const [positionInputs, setPositionInputs] = useState<Record<string, PositionInputs>>({});
 
   useEffect(() => {
     if (existingQuote && !isInitialized) {
       setPositions(existingQuote.positions || []);
       setMarginPercent(Number(existingQuote.margin_percent) || 10);
-      // Inicjalizacja surowych inputów ze wczytanych pozycji
       const inputs: Record<string, PositionInputs> = {};
-      (existingQuote.positions || []).forEach((p) => {
+      (existingQuote.positions || []).forEach((p: QuotePosition) => {
         inputs[p.id] = { qty: String(p.qty), price: String(p.price) };
       });
       setPositionInputs(inputs);
       setIsInitialized(true);
-    } else if (!quoteLoading && !existingQuote && !isInitialized) {
-      setIsInitialized(true);
     }
-  }, [existingQuote, quoteLoading, isInitialized]);
-
-  if (!id) return <Navigate to="/app/jobs" replace />;
+  }, [existingQuote, isInitialized]);
 
   if (projectLoading || quoteLoading) {
     return (
@@ -68,21 +64,7 @@ export default function QuoteEditor() {
     );
   }
 
-  if (!project) {
-    return (
-      <div className="space-y-6 animate-fade-in">
-        <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Powrót
-        </Button>
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">Projekt nie został znaleziony.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  if (!id) return <Navigate to="/app/jobs" replace />;
 
   const addPosition = () => {
     const newPosition: QuotePosition = {
@@ -115,15 +97,15 @@ export default function QuoteEditor() {
         price: String(Number(template.default_price)),
       },
     }));
-    toast.success(`Dodano: ${template.name}`);
+    toast.success(t('quotes.addedTemplate', { name: template.name }));
   };
 
   const saveAsTemplate = async (position: QuotePosition) => {
     if (!position.name.trim()) {
-      toast.error('Podaj nazwę pozycji przed zapisaniem jako szablon');
+      toast.error(t('quotes.saveTemplateNameRequired'));
       return;
     }
-    
+
     await createTemplate.mutateAsync({
       name: position.name,
       unit: position.unit,
@@ -145,18 +127,11 @@ export default function QuoteEditor() {
     });
   };
 
-  /**
-   * Obsługuje zmianę pola numerycznego (qty lub price).
-   * Przechowuje surowy tekst w positionInputs; aktualizuje wartość numeryczną
-   * w positions tylko jeśli parsowanie się powiedzie.
-   * Przy błędzie parsowania zachowuje wpisany tekst i ustawia stan błędu.
-   */
   const updateNumericInput = (
     positionId: string,
     field: 'qty' | 'price',
     rawValue: string,
   ) => {
-    // Zawsze zapisuj surowy tekst użytkownika
     setPositionInputs((prev) => ({
       ...prev,
       [positionId]: { ...prev[positionId], [field]: rawValue },
@@ -166,9 +141,7 @@ export default function QuoteEditor() {
     if (parsed !== null) {
       updatePosition(positionId, field, parsed);
     } else {
-      // Zachowaj ostatnią poprawną wartość numeryczną w positions,
-      // ale zasygnalizuj błąd w UI
-      const label = field === 'qty' ? 'Nieprawidłowa ilość' : 'Nieprawidłowa cena';
+      const label = field === 'qty' ? t('quotes.invalidQty') : t('quotes.invalidPrice');
       setValidationErrors((prev) => ({ ...prev, [`${positionId}_${field}`]: label }));
     }
   };
@@ -181,30 +154,30 @@ export default function QuoteEditor() {
     const errors: Record<string, string> = {};
 
     if (positions.length === 0) {
-      toast.error('Dodaj przynajmniej jedną pozycję');
+      toast.error(t('quotes.addAtLeastOne'));
       return false;
     }
 
     positions.forEach((pos) => {
       if (!pos.name.trim()) {
-        errors[`${pos.id}_name`] = 'Nazwa jest wymagana';
+        errors[`${pos.id}_name`] = t('quotes.nameRequired');
       }
       if (pos.qty <= 0) {
-        errors[`${pos.id}_qty`] = 'Ilość musi być > 0';
+        errors[`${pos.id}_qty`] = t('quotes.qtyGtZero');
       }
       if (pos.price < 0) {
-        errors[`${pos.id}_price`] = 'Cena nie może być ujemna';
+        errors[`${pos.id}_price`] = t('quotes.priceNotNegative');
       }
     });
 
     if (marginPercent < 0 || marginPercent > 100) {
-      errors['marginPercent'] = 'Marża: 0-100%';
+      errors['marginPercent'] = t('quotes.marginRange');
     }
 
     setValidationErrors(errors);
 
     if (Object.keys(errors).length > 0) {
-      toast.error('Popraw błędy w formularzu');
+      toast.error(t('quotes.fixErrors'));
       return false;
     }
 
@@ -233,7 +206,6 @@ export default function QuoteEditor() {
   const handleLoadVersion = (snapshot: QuoteSnapshot) => {
     setPositions(snapshot.positions);
     setMarginPercent(snapshot.margin_percent);
-    // Sync surowych inputów z wczytaną wersją
     const inputs: Record<string, PositionInputs> = {};
     snapshot.positions.forEach((p) => {
       inputs[p.id] = { qty: String(p.qty), price: String(p.price) };
@@ -243,9 +215,9 @@ export default function QuoteEditor() {
 
   const handleAiSuggestions = async () => {
     if (!project) return;
-    
+
     const existingPositions = positions.map(p => ({ name: p.name, category: p.category }));
-    
+
     try {
       const suggestions = await aiSuggestions.mutateAsync({
         projectName: project.project_name,
@@ -263,15 +235,14 @@ export default function QuoteEditor() {
         }));
 
         setPositions([...positions, ...newPositions]);
-        // Inicjalizacja inputów dla pozycji wygenerowanych przez AI
         const newInputs: Record<string, PositionInputs> = {};
         newPositions.forEach((p) => {
           newInputs[p.id] = { qty: String(p.qty), price: String(p.price) };
         });
         setPositionInputs((prev) => ({ ...prev, ...newInputs }));
-        toast.success(`Dodano ${suggestions.length} sugestii AI`);
+        toast.success(t('quotes.aiAdded', { count: suggestions.length }));
       } else {
-        toast.info('Brak sugestii dla tego projektu');
+        toast.info(t('quotes.noSuggestions'));
       }
     } catch {
       // Error handled by hook
@@ -293,16 +264,19 @@ export default function QuoteEditor() {
     }
   };
 
+  const categoryLabel = (cat: string) =>
+    cat === 'Materiał' ? t('templates.categories.material') : t('templates.categories.labor');
+
   return (
     <div className="space-y-6 animate-fade-in">
-      <Button variant="ghost" onClick={() => navigate(`/projects/${id}`)}>
+      <Button variant="ghost" onClick={() => navigate(`/app/jobs/${id}`)}>
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Powrót do projektu
+        {t('quotes.backToProject')}
       </Button>
 
       <div>
         <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-          Wycena — {project.project_name}
+          {t('quotes.titleFor', { name: project?.project_name ?? '' })}
         </h1>
       </div>
 
@@ -317,12 +291,12 @@ export default function QuoteEditor() {
       <div className="flex flex-wrap gap-3">
         <Button size="lg" onClick={addPosition}>
           <Plus className="mr-2 h-5 w-5" />
-          Dodaj pozycję
+          {t('quotes.addPosition')}
         </Button>
         <TemplateSelector onSelectTemplate={addFromTemplate} />
-        <Button 
-          size="lg" 
-          variant="outline" 
+        <Button
+          size="lg"
+          variant="outline"
           onClick={handleAiSuggestions}
           disabled={aiSuggestions.isPending}
         >
@@ -331,7 +305,7 @@ export default function QuoteEditor() {
           ) : (
             <Sparkles className="mr-2 h-5 w-5" />
           )}
-          AI Sugestie
+          {t('quotes.aiSuggestions')}
         </Button>
       </div>
 
@@ -342,7 +316,7 @@ export default function QuoteEditor() {
             <CardContent className="py-8 text-center">
               <AlertCircle className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">
-                Brak pozycji. Kliknij "Dodaj pozycję" lub wybierz szablon.
+                {t('quotes.noPositionsHint')}
               </p>
             </CardContent>
           </Card>
@@ -352,7 +326,7 @@ export default function QuoteEditor() {
               <CardContent className="p-4">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-xs font-medium text-muted-foreground">
-                    Pozycja #{index + 1}
+                    {t('quotes.positionLabel', { n: index + 1 })}
                   </span>
                   <div className="flex gap-1">
                     <Button
@@ -363,7 +337,7 @@ export default function QuoteEditor() {
                       disabled={createTemplate.isPending}
                     >
                       <Bookmark className="mr-1 h-4 w-4" />
-                      Zapisz szablon
+                      {t('quotes.saveTemplate')}
                     </Button>
                     <Button
                       variant="ghost"
@@ -372,21 +346,21 @@ export default function QuoteEditor() {
                       onClick={() => removePosition(position.id)}
                     >
                       <Trash2 className="mr-1 h-4 w-4" />
-                      Usuń
+                      {t('common.delete')}
                     </Button>
                   </div>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-12">
                   <div className="sm:col-span-4">
-                    <Label className="text-xs text-muted-foreground">Nazwa pozycji *</Label>
+                    <Label className="text-xs text-muted-foreground">{t('quotes.itemName')} *</Label>
                     <div className="flex gap-2">
                       <Input
                         value={position.name}
                         onChange={(e) => updatePosition(position.id, 'name', e.target.value)}
-                        placeholder="np. Płytki ceramiczne"
+                        placeholder={t('szybkaWycena.itemPlaceholder')}
                         className={validationErrors[`${position.id}_name`] ? 'border-destructive' : ''}
                       />
-                      <VoiceInputButton 
+                      <VoiceInputButton
                         onTranscript={(text) => updatePosition(position.id, 'name', position.name + ' ' + text)}
                       />
                     </div>
@@ -395,7 +369,7 @@ export default function QuoteEditor() {
                     )}
                   </div>
                   <div className="sm:col-span-2">
-                    <Label className="text-xs text-muted-foreground">Ilość *</Label>
+                    <Label className="text-xs text-muted-foreground">{t('quotes.quantity')} *</Label>
                     <Input
                       type="text"
                       inputMode="decimal"
@@ -408,7 +382,7 @@ export default function QuoteEditor() {
                     )}
                   </div>
                   <div className="sm:col-span-2">
-                    <Label className="text-xs text-muted-foreground">Jednostka</Label>
+                    <Label className="text-xs text-muted-foreground">{t('quotes.unit')}</Label>
                     <Select value={position.unit} onValueChange={(v) => updatePosition(position.id, 'unit', v)}>
                       <SelectTrigger>
                         <SelectValue />
@@ -421,7 +395,7 @@ export default function QuoteEditor() {
                     </Select>
                   </div>
                   <div className="sm:col-span-2">
-                    <Label className="text-xs text-muted-foreground">Cena jedn. (zł)</Label>
+                    <Label className="text-xs text-muted-foreground">{t('quotes.unitPriceShort')}</Label>
                     <Input
                       type="text"
                       inputMode="decimal"
@@ -434,21 +408,21 @@ export default function QuoteEditor() {
                     )}
                   </div>
                   <div className="sm:col-span-2">
-                    <Label className="text-xs text-muted-foreground">Kategoria *</Label>
+                    <Label className="text-xs text-muted-foreground">{t('quotes.category')} *</Label>
                     <Select value={position.category} onValueChange={(v) => updatePosition(position.id, 'category', v as 'Materiał' | 'Robocizna')}>
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue>{categoryLabel(position.category)}</SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((cat) => (
-                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                          <SelectItem key={cat} value={cat}>{categoryLabel(cat)}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
                 <div className="mt-3 text-right text-sm font-medium">
-                  Suma: <span className="text-primary">{(position.qty * position.price).toFixed(2)} zł</span>
+                  {t('quotes.itemTotal')} <span className="text-primary">{(position.qty * position.price).toFixed(2)} zł</span>
                 </div>
               </CardContent>
             </Card>
@@ -459,19 +433,19 @@ export default function QuoteEditor() {
       {/* Summary */}
       <Card>
         <CardHeader>
-          <CardTitle>Podsumowanie</CardTitle>
+          <CardTitle>{t('quotes.summary')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Suma materiałów:</span>
+            <span className="text-muted-foreground">{t('quotes.materialsTotal')}</span>
             <span className="font-medium">{summaryMaterials.toFixed(2)} zł</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Suma robocizny:</span>
+            <span className="text-muted-foreground">{t('quotes.laborTotal')}</span>
             <span className="font-medium">{summaryLabor.toFixed(2)} zł</span>
           </div>
           <div className="flex items-center justify-between gap-4">
-            <span className="text-muted-foreground">Marża (%):</span>
+            <span className="text-muted-foreground">{t('quotes.marginPercent')}:</span>
             <div>
               <Input
                 type="number"
@@ -488,22 +462,22 @@ export default function QuoteEditor() {
           </div>
           <div className="border-t border-border pt-4">
             <div className="flex justify-between text-lg font-bold">
-              <span>Kwota całkowita:</span>
+              <span>{t('quotes.totalAmount')}:</span>
               <span className="text-primary">{total.toFixed(2)} zł</span>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Button 
-        size="lg" 
-        onClick={handleSave} 
+      <Button
+        size="lg"
+        onClick={handleSave}
         className="w-full sm:w-auto"
         disabled={saveQuote.isPending}
       >
         {saveQuote.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         <Save className="mr-2 h-5 w-5" />
-        Zapisz wycenę
+        {t('quotes.saveQuote')}
       </Button>
     </div>
   );

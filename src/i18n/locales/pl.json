@@ -273,7 +273,26 @@
     "open": "Otwórz",
     "searchPlaceholder": "Szukaj projektów...",
     "exportBtn": "Eksportuj CSV",
-    "filterByStatus": "Filtruj wg statusu"
+    "filterByStatus": "Filtruj wg statusu",
+    "tabs": {
+      "overview": "Przegląd",
+      "evidence": "Dowody",
+      "aiPhotos": "Zdjęcia AI",
+      "esignature": "E-Podpis",
+      "pdfPreview": "Podgląd PDF"
+    },
+    "quoteSummary": "Podsumowanie wyceny",
+    "unknownClient": "Nieznany klient",
+    "noQuote": "Brak wyceny. Kliknij \"Edytuj wycenę\" aby dodać pozycje kosztorysu.",
+    "offerStats": "Statystyki ofert",
+    "loadError": "Błąd podczas wczytywania projektu",
+    "loadErrorDesc": "Nie udało się wczytać szczegółów projektu. Spróbuj ponownie.",
+    "errorDetails": "Szczegóły błędu",
+    "notFound": "Projekt nie został znaleziony.",
+    "refreshPage": "Odśwież stronę",
+    "backToList": "Wróć do listy",
+    "generateOfferPdf": "Generuj ofertę PDF",
+    "exportExcelError": "Błąd podczas eksportu do Excel"
   },
   "clients": {
     "title": "Klienci",
@@ -402,7 +421,18 @@
     "pricingTab": "Ceny",
     "risks": "Ryzyka",
     "actionItems": "Działania do podjęcia:",
-    "runAnalysisHint": "Kliknij \"Uruchom analizę\" aby AI przeanalizowało Twoje finanse"
+    "runAnalysisHint": "Kliknij \"Uruchom analizę\" aby AI przeanalizowało Twoje finanse",
+    "purchaseCostsOcr": "Koszty zakupu (OCR)",
+    "addInvoice": "Dodaj fakturę",
+    "addInvoicesHint": "Dodaj faktury zakupowe, a AI automatycznie odczyta dane",
+    "netTotal": "Suma netto",
+    "vatTotal": "Suma VAT",
+    "grossTotal": "Suma brutto",
+    "ocrDone": "Gotowe",
+    "ocrWaiting": "Oczekuje",
+    "ocrError": "Błąd OCR",
+    "date": "Data",
+    "status": "Status"
   },
   "team": {
     "title": "Zespół",
@@ -513,7 +543,39 @@
     "restoreVersion": "Przywróć wersję",
     "aiSuggestions": "Sugestie AI",
     "getAiSuggestions": "Pobierz sugestie AI",
-    "applyTemplate": "Zastosuj szablon"
+    "applyTemplate": "Zastosuj szablon",
+    "saveTemplate": "Zapisz szablon",
+    "positionLabel": "Pozycja #{{n}}",
+    "itemTotal": "Suma:",
+    "materialsTotal": "Suma materiałów:",
+    "laborTotal": "Suma robocizny:",
+    "unitPriceShort": "Cena jedn. (zł)",
+    "noPositionsHint": "Brak pozycji. Kliknij \"Dodaj pozycję\" lub wybierz szablon.",
+    "addedTemplate": "Dodano: {{name}}",
+    "saveTemplateNameRequired": "Podaj nazwę pozycji przed zapisaniem jako szablon",
+    "invalidQty": "Nieprawidłowa ilość",
+    "invalidPrice": "Nieprawidłowa cena",
+    "addAtLeastOne": "Dodaj przynajmniej jedną pozycję",
+    "nameRequired": "Nazwa jest wymagana",
+    "qtyGtZero": "Ilość musi być > 0",
+    "priceNotNegative": "Cena nie może być ujemna",
+    "marginRange": "Marża: 0-100%",
+    "fixErrors": "Popraw błędy w formularzu",
+    "aiAdded": "Dodano {{count}} sugestii AI",
+    "noSuggestions": "Brak sugestii dla tego projektu",
+    "backToProject": "Powrót do projektu",
+    "titleFor": "Wycena — {{name}}",
+    "saveVersion": "Zapisz wersję",
+    "versionLoaded": "Wersja załadowana do edytora",
+    "versionNameRequired": "Podaj nazwę wersji",
+    "versionName": "Nazwa wersji",
+    "versionNamePlaceholder": "np. V2 - po poprawkach",
+    "saveVersionDialog": "Zapisz wersję wyceny",
+    "previewVersion": "Podgląd wersji",
+    "loadToEditor": "Załaduj do edytora",
+    "deleteVersion": "Usunąć wersję?",
+    "irreversible": "Ta operacja jest nieodwracalna.",
+    "noVersionsHint": "Brak zapisanych wersji. Kliknij \"Zapisz wersję\" aby zachować aktualny stan wyceny."
   },
   "settings": {
     "title": "Ustawienia",
@@ -685,7 +747,10 @@
     "noInvoices": "Brak faktur",
     "noInvoicesDesc": "Faktury pojawią się tutaj po zakupie planu",
     "paymentHistoryDescription": "Twoje ostatnie transakcje",
-    "noPaymentsDesc": "Płatności pojawią się tutaj po zakupie planu"
+    "noPaymentsDesc": "Płatności pojawią się tutaj po zakupie planu",
+    "planBadge": {
+      "ariaLabel": "Plan: {{plan}}. Kliknij, by zobaczyć plany"
+    }
   },
   "profile": {
     "title": "Profil firmy",
@@ -1434,7 +1499,10 @@
     "category": "Kategoria",
     "allCategories": "Wszystkie",
     "material": "Materiał",
-    "labor": "Robocizna"
+    "labor": "Robocizna",
+    "noTemplates": "Brak szablonów. Utwórz szablony w zakładce \"Szablony pozycji\".",
+    "searching": "Wyszukiwanie...",
+    "noResults": "Brak wyników."
   },
   "landing": {
     "header": {
@@ -2216,5 +2284,23 @@
     "termsSectionLabel": "Warunki",
     "bankAccountLabel": "Numer konta do wpłat",
     "footerText": "Oferta wygenerowana w Majster.AI"
+  },
+  "itemTemplates": {
+    "created": "Szablon utworzony",
+    "updated": "Szablon zaktualizowany",
+    "deleted": "Szablon usunięty",
+    "createError": "Błąd przy tworzeniu szablonu",
+    "updateError": "Błąd przy aktualizacji szablonu",
+    "deleteError": "Błąd przy usuwaniu szablonu"
+  },
+  "planyDetail": {
+    "allPlans": "Wszystkie plany",
+    "perMonthNet": "/ miesiąc netto",
+    "vatNote": "Cena netto, do ceny doliczamy 23% VAT. Wystawiamy fakturę VAT.",
+    "whatIncluded": "Co zawiera plan {{name}}?",
+    "buyNow": "Kup teraz — {{price}}/mies.",
+    "faq": "Często zadawane pytania",
+    "comparePlansDesc": "Porównaj wszystkie plany i wybierz ten właściwy dla siebie.",
+    "comparePlans": "Porównaj plany"
   }
 }

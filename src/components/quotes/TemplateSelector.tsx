@@ -86,17 +86,17 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
           ) : filteredTemplates.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
               {templates?.length === 0
-                ? 'Brak szablonów. Utwórz szablony w zakładce "Szablony pozycji".'
+                ? t('templateSelector.noTemplates')
                 : search.length > 0 && debouncedSearch !== search
-                ? 'Wyszukiwanie...'
-                : 'Brak wyników.'
+                ? t('templateSelector.searching')
+                : t('templateSelector.noResults')
               }
             </div>
           ) : (
             <div className="space-y-2">
               {filteredTemplates.map((template) => (
-                <Card 
-                  key={template.id} 
+                <Card
+                  key={template.id}
                   className="cursor-pointer transition-colors hover:bg-accent"
                   onClick={() => handleSelect(template)}
                 >
@@ -109,11 +109,13 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`rounded-full px-2 py-0.5 text-xs ${
-                        template.category === 'Materiał' 
-                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' 
+                        template.category === 'Materiał'
+                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
                           : 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
                       }`}>
-                        {template.category}
+                        {template.category === 'Materiał'
+                          ? t('templateSelector.material')
+                          : t('templateSelector.labor')}
                       </span>
                       <Plus className="h-4 w-4 text-muted-foreground" />
                     </div>
