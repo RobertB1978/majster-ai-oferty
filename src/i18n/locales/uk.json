@@ -2214,6 +2214,7 @@
     "emailSettingsDesc": "Персоналізуйте повідомлення, що надсилаються з пропозиціями",
     "emailSubjectLabel": "Стандартна тема повідомлення",
     "emailSubjectHint": "Використовуйте {company_name} для вставки назви компанії",
+    "emailSubjectDefault": "Пропозиція від {company_name}",
     "emailGreetingLabel": "Вітання в повідомленні",
     "emailGreetingPlaceholder": "Шановний Клієнте,",
     "emailSignatureLabel": "Підпис у повідомленні",
@@ -2440,5 +2441,10 @@
     "privacyTitle": "Політика конфіденційності | Majster.AI",
     "termsTitle": "Умови використання | Majster.AI",
     "cookiesTitle": "Політика файлів cookie | Majster.AI"
+  },
+  "help": {
+    "menu": "Меню допомоги",
+    "documentation": "Документація",
+    "docsComingSoon": "Документація незабаром буде доступна. Перевірте вкладку Налаштування або напишіть нам."
   }
 }

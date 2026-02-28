@@ -14,6 +14,11 @@ import { toast } from 'sonner';
 import { BiometricSetup } from '@/components/auth/BiometricSetup';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
+// Legacy Polish default values stored in DB before i18n was implemented
+const LEGACY_EMAIL_SUBJECT = 'Oferta od {company_name}';
+const LEGACY_EMAIL_GREETING = 'Szanowny Kliencie,';
+const LEGACY_EMAIL_SIGNATURE = 'Z poważaniem';
+
 export default function CompanyProfile() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -56,9 +61,15 @@ export default function CompanyProfile() {
         phone: profile.phone || '',
         email_for_offers: profile.email_for_offers || '',
         bank_account: profile.bank_account || '',
-        email_subject_template: profile.email_subject_template || 'Oferta od {company_name}',
-        email_greeting: profile.email_greeting || 'Szanowny Kliencie,',
-        email_signature: profile.email_signature || 'Z poważaniem',
+        email_subject_template: (!profile.email_subject_template || profile.email_subject_template === LEGACY_EMAIL_SUBJECT)
+          ? t('companyProfile.emailSubjectDefault')
+          : profile.email_subject_template,
+        email_greeting: (!profile.email_greeting || profile.email_greeting === LEGACY_EMAIL_GREETING)
+          ? t('companyProfile.emailGreetingPlaceholder')
+          : profile.email_greeting,
+        email_signature: (!profile.email_signature || profile.email_signature === LEGACY_EMAIL_SIGNATURE)
+          ? t('companyProfile.emailSignaturePlaceholder')
+          : profile.email_signature,
       });
     }
   }, [profile]);
@@ -426,7 +437,7 @@ export default function CompanyProfile() {
                         id="email_subject_template"
                         value={formData.email_subject_template}
                         onChange={(e) => setFormData({ ...formData, email_subject_template: e.target.value })}
-                        placeholder="Oferta od {company_name}"
+                        placeholder={t('companyProfile.emailSubjectDefault')}
                         className={errors.email_subject_template ? 'border-destructive' : ''}
                       />
                       <p className="text-xs text-muted-foreground">
