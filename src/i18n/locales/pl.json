@@ -1499,7 +1499,10 @@
     "category": "Kategoria",
     "allCategories": "Wszystkie",
     "material": "Materiał",
-    "labor": "Robocizna"
+    "labor": "Robocizna",
+    "noTemplates": "Brak szablonów. Utwórz szablony w zakładce \"Szablony pozycji\".",
+    "searching": "Wyszukiwanie...",
+    "noResults": "Brak wyników."
   },
   "landing": {
     "header": {
@@ -2281,5 +2284,23 @@
     "termsSectionLabel": "Warunki",
     "bankAccountLabel": "Numer konta do wpłat",
     "footerText": "Oferta wygenerowana w Majster.AI"
+  },
+  "itemTemplates": {
+    "created": "Szablon utworzony",
+    "updated": "Szablon zaktualizowany",
+    "deleted": "Szablon usunięty",
+    "createError": "Błąd przy tworzeniu szablonu",
+    "updateError": "Błąd przy aktualizacji szablonu",
+    "deleteError": "Błąd przy usuwaniu szablonu"
+  },
+  "planyDetail": {
+    "allPlans": "Wszystkie plany",
+    "perMonthNet": "/ miesiąc netto",
+    "vatNote": "Cena netto, do ceny doliczamy 23% VAT. Wystawiamy fakturę VAT.",
+    "whatIncluded": "Co zawiera plan {{name}}?",
+    "buyNow": "Kup teraz — {{price}}/mies.",
+    "faq": "Często zadawane pytania",
+    "comparePlansDesc": "Porównaj wszystkie plany i wybierz ten właściwy dla siebie.",
+    "comparePlans": "Porównaj plany"
   }
 }

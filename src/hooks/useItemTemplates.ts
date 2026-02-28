@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import i18n from '@/i18n';
 
 export interface ItemTemplate {
   id: string;
@@ -134,10 +135,10 @@ export function useCreateItemTemplate() {
     onSuccess: () => {
       // Invalidate all item templates queries (both paginated and non-paginated)
       queryClient.invalidateQueries({ queryKey: itemTemplatesKeys.all });
-      toast.success('Szablon utworzony');
+      toast.success(i18n.t('itemTemplates.created'));
     },
     onError: () => {
-      toast.error('Błąd przy tworzeniu szablonu');
+      toast.error(i18n.t('itemTemplates.createError'));
     },
   });
 }
@@ -160,10 +161,10 @@ export function useUpdateItemTemplate() {
     onSuccess: () => {
       // Invalidate all item templates queries (both paginated and non-paginated)
       queryClient.invalidateQueries({ queryKey: itemTemplatesKeys.all });
-      toast.success('Szablon zaktualizowany');
+      toast.success(i18n.t('itemTemplates.updated'));
     },
     onError: () => {
-      toast.error('Błąd przy aktualizacji szablonu');
+      toast.error(i18n.t('itemTemplates.updateError'));
     },
   });
 }
@@ -183,10 +184,10 @@ export function useDeleteItemTemplate() {
     onSuccess: () => {
       // Invalidate all item templates queries (both paginated and non-paginated)
       queryClient.invalidateQueries({ queryKey: itemTemplatesKeys.all });
-      toast.success('Szablon usunięty');
+      toast.success(i18n.t('itemTemplates.deleted'));
     },
     onError: () => {
-      toast.error('Błąd przy usuwaniu szablonu');
+      toast.error(i18n.t('itemTemplates.deleteError'));
     },
   });
 }

@@ -2,15 +2,24 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Polish is the primary/default language for this app (target market: Poland).
-// It is loaded statically so that:
-//   1. i18n.t() calls in validations.ts (evaluated at module load time) always work.
-//   2. Synchronous initialization (initImmediate: false) is preserved.
+// All locale bundles are imported statically so that i18next has every
+// translation available synchronously at startup — regardless of which
+// language the user's browser/localStorage reports.
 //
-// English and Ukrainian are loaded on-demand when the user switches language.
-// This avoids shipping ~two extra locale JSON files in the initial JS bundle
-// for users who never change the language.
+// Why not lazy-load EN/UK?
+//   Lazy loading created a race condition: i18next would fire
+//   "languageChanged" and start a dynamic import, but React already
+//   rendered the first frame using the PL fallback bundle.  The result
+//   was visible "flash of Polish" and deterministic test failures in
+//   Playwright (networkidle fired before addResourceBundle re-render).
+//
+// Size trade-off:
+//   All three JSON files together are ~320 KB (uncompressed); gzipped
+//   they compress to ~60 KB total.  This is acceptable given the
+//   multi-language requirement and the elimination of the flash.
 import pl from './locales/pl.json';
+import en from './locales/en.json';
+import uk from './locales/uk.json';
 
 // Migrate stored language code: 'ua' → 'uk' (ISO 639-1 correction).
 // Older browser sessions may have the non-standard code 'ua' cached in localStorage.
@@ -22,20 +31,14 @@ try {
   // No localStorage available (SSR / strict privacy mode) — ignore silently.
 }
 
-// Map of non-default language codes to dynamic import functions.
-// Each import resolves to the full translation JSON when the user switches language.
-const lazyLangLoaders: Record<string, () => Promise<{ default: Record<string, unknown> }>> = {
-  en: () => import('./locales/en.json'),
-  uk: () => import('./locales/uk.json'),
-};
-
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources: {
-      // Only the default language is bundled upfront.
       pl: { translation: pl },
+      en: { translation: en },
+      uk: { translation: uk },
     },
     fallbackLng: 'pl',
     supportedLngs: ['pl', 'en', 'uk'],
@@ -52,23 +55,6 @@ i18n
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
     },
-    // Allow the instance to serve requests even when a language bundle is not
-    // yet fully loaded (i.e. while the dynamic import for EN/UK is in-flight).
-    partialBundledLanguages: true,
   });
-
-// Lazy-load EN or UK translations the first time the user switches to that language.
-// After addResourceBundle() the i18next instance re-renders all subscribed components.
-i18n.on('languageChanged', async (lang: string) => {
-  const loader = lazyLangLoaders[lang];
-  if (loader && !i18n.hasResourceBundle(lang, 'translation')) {
-    try {
-      const module = await loader();
-      i18n.addResourceBundle(lang, 'translation', module.default, true, true);
-    } catch {
-      // Network error or chunk load failure — fall back to Polish silently.
-    }
-  }
-});
 
 export default i18n;

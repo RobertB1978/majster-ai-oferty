@@ -1499,7 +1499,10 @@
     "category": "Category",
     "allCategories": "All",
     "material": "Material",
-    "labor": "Labor"
+    "labor": "Labor",
+    "noTemplates": "No templates found. Create templates in the \"Item Templates\" tab.",
+    "searching": "Searching...",
+    "noResults": "No results."
   },
   "landing": {
     "header": {
@@ -2281,5 +2284,23 @@
     "termsSectionLabel": "Terms",
     "bankAccountLabel": "Bank account number",
     "footerText": "Offer generated in Majster.AI"
+  },
+  "itemTemplates": {
+    "created": "Template created",
+    "updated": "Template updated",
+    "deleted": "Template deleted",
+    "createError": "Error creating template",
+    "updateError": "Error updating template",
+    "deleteError": "Error deleting template"
+  },
+  "planyDetail": {
+    "allPlans": "All plans",
+    "perMonthNet": "/ month net",
+    "vatNote": "Net price, 23% VAT added. VAT invoice provided.",
+    "whatIncluded": "What's included in {{name}}?",
+    "buyNow": "Buy now — {{price}}/mo",
+    "faq": "Frequently Asked Questions",
+    "comparePlansDesc": "Compare all plans and choose the right one for you.",
+    "comparePlans": "Compare plans"
   }
 }
