@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ interface AIAnalysisResult {
 }
 
 export function FinanceDashboard() {
+  const { t } = useTranslation();
   const { data: summary, isLoading } = useFinancialSummary();
   const aiAnalysis = useAIFinancialAnalysis();
   const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
@@ -59,10 +61,10 @@ export function FinanceDashboard() {
     return (
       <EmptyState
         icon={TrendingUp}
-        title="Brak danych finansowych"
-        description="Stwórz projekty i wyceny, aby śledzić swoje przychody, koszty i marżę w czasie."
+        title={t('finance.noData')}
+        description={t('finance.noDataDesc')}
         action={{
-          label: "Utwórz pierwszy projekt",
+          label: t('finance.createFirstProject'),
           onClick: () => navigate('/app/jobs/new'),
         }}
         className="min-h-[400px]"
@@ -76,7 +78,7 @@ export function FinanceDashboard() {
 
   const kpiCards = [
     {
-      label: 'Przychody',
+      label: t('finance.revenue'),
       value: summary.totalRevenue,
       icon: DollarSign,
       gradient: 'from-emerald-500 to-green-600',
@@ -84,7 +86,7 @@ export function FinanceDashboard() {
       iconBg: 'bg-success',
     },
     {
-      label: 'Koszty',
+      label: t('finance.costs'),
       value: summary.totalCosts,
       icon: Receipt,
       gradient: 'from-rose-500 to-red-600',
@@ -92,7 +94,7 @@ export function FinanceDashboard() {
       iconBg: 'bg-destructive',
     },
     {
-      label: 'Marża brutto',
+      label: t('finance.grossMargin'),
       value: summary.grossMargin,
       icon: marginTrend >= 0 ? TrendingUp : TrendingDown,
       gradient: 'from-primary to-primary',
@@ -101,7 +103,7 @@ export function FinanceDashboard() {
       trend: marginTrend,
     },
     {
-      label: 'Marża %',
+      label: t('finance.marginPercent'),
       value: summary.marginPercent,
       isPercent: true,
       icon: PiggyBank,
@@ -116,18 +118,17 @@ export function FinanceDashboard() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpiCards.map((card, index) => (
-          <Card 
+          <Card
             key={card.label}
             className={`relative overflow-hidden border-0 bg-gradient-to-br ${card.bgGradient} backdrop-blur-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-xl`}
             style={{ animationDelay: `${index * 100}ms` }}
           >
-            {/* Decorative element removed */}
             <CardContent className="p-5 relative">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">{card.label}</p>
                   <p className="text-2xl sm:text-3xl font-bold tracking-tight">
-                    {card.isPercent 
+                    {card.isPercent
                       ? `${card.value.toFixed(1)}%`
                       : `${card.value.toLocaleString()} zł`
                     }
@@ -162,7 +163,7 @@ export function FinanceDashboard() {
               <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
                 <BarChart3 className="h-4 w-4 text-white" />
               </div>
-              Przychody vs Koszty
+              {t('finance.revenueVsCosts')}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
@@ -207,7 +208,7 @@ export function FinanceDashboard() {
                   stroke="hsl(142, 76%, 36%)"
                   strokeWidth={2}
                   fill="url(#colorRevenue)"
-                  name="Przychody"
+                  name={t('finance.revenue')}
                 />
                 <Area
                   type="monotone"
@@ -215,7 +216,7 @@ export function FinanceDashboard() {
                   stroke="hsl(0, 84%, 60%)"
                   strokeWidth={2}
                   fill="url(#colorCosts)"
-                  name="Koszty"
+                  name={t('finance.costs')}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -228,7 +229,7 @@ export function FinanceDashboard() {
               <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
                 <TrendingUp className="h-4 w-4 text-white" />
               </div>
-              Marża miesięczna
+              {t('finance.monthlyMargin')}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
@@ -266,7 +267,7 @@ export function FinanceDashboard() {
                 <Bar
                   dataKey="margin"
                   fill="url(#barGradient)"
-                  name="Marża"
+                  name={t('finance.margin')}
                   radius={[6, 6, 0, 0]}
                 />
               </BarChart>
@@ -281,10 +282,10 @@ export function FinanceDashboard() {
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
               <Sparkles className="h-5 w-5" />
-              Analiza AI
+              {t('finance.aiAnalysis')}
             </span>
             <Button onClick={handleRunAnalysis} disabled={aiAnalysis.isPending}>
-              {aiAnalysis.isPending ? 'Analizuję...' : 'Uruchom analizę'}
+              {aiAnalysis.isPending ? t('finance.analyzing') : t('finance.runAnalysis')}
             </Button>
           </CardTitle>
         </CardHeader>
@@ -292,11 +293,11 @@ export function FinanceDashboard() {
           {analysisResult ? (
             <Tabs defaultValue="insights">
               <TabsList>
-                <TabsTrigger value="insights">Wnioski</TabsTrigger>
-                <TabsTrigger value="pricing">Ceny</TabsTrigger>
-                <TabsTrigger value="risks">Ryzyka</TabsTrigger>
+                <TabsTrigger value="insights">{t('finance.insights')}</TabsTrigger>
+                <TabsTrigger value="pricing">{t('finance.pricingTab')}</TabsTrigger>
+                <TabsTrigger value="risks">{t('finance.risks')}</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="insights" className="space-y-4 mt-4">
                 {analysisResult.keyInsights?.map((insight: string, i: number) => (
                   <div key={i} className="flex items-start gap-3 p-3 bg-muted rounded-lg">
@@ -304,10 +305,10 @@ export function FinanceDashboard() {
                     <p>{insight}</p>
                   </div>
                 ))}
-                
+
                 {analysisResult.actionItems?.length > 0 && (
                   <div className="mt-4">
-                    <h4 className="font-medium mb-2">Działania do podjęcia:</h4>
+                    <h4 className="font-medium mb-2">{t('finance.actionItems')}</h4>
                     <ul className="space-y-2">
                       {analysisResult.actionItems.map((action: string, i: number) => (
                         <li key={i} className="flex items-center gap-2 text-sm">
@@ -319,7 +320,7 @@ export function FinanceDashboard() {
                   </div>
                 )}
               </TabsContent>
-              
+
               <TabsContent value="pricing" className="space-y-4 mt-4">
                 {analysisResult.pricingRecommendations?.map((rec: PricingRecommendation, i: number) => (
                   <div key={i} className="p-3 border rounded-lg">
@@ -338,7 +339,7 @@ export function FinanceDashboard() {
                   </div>
                 ))}
               </TabsContent>
-              
+
               <TabsContent value="risks" className="space-y-4 mt-4">
                 {analysisResult.riskFactors?.map((risk: string, i: number) => (
                   <div key={i} className="flex items-start gap-3 p-3 bg-destructive/10 rounded-lg">
@@ -351,7 +352,7 @@ export function FinanceDashboard() {
           ) : (
             <div className="text-center py-8 text-muted-foreground">
               <Sparkles className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>Kliknij "Uruchom analizę" aby AI przeanalizowało Twoje finanse</p>
+              <p>{t('finance.runAnalysisHint')}</p>
             </div>
           )}
         </CardContent>

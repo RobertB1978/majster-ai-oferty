@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useClients, useAddClient } from '@/hooks/useClients';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +35,7 @@ interface NewClientForm {
 }
 
 export function ClientPicker({ value, onChange, hasError = false }: ClientPickerProps) {
+  const { t } = useTranslation();
   const { data: clients = [], isLoading } = useClients();
   const addClient = useAddClient();
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -65,7 +67,7 @@ export function ClientPicker({ value, onChange, hasError = false }: ClientPicker
         <CardHeader className="pb-2 pt-4">
           <CardTitle className="text-sm flex items-center gap-2">
             <UserCircle className="h-4 w-4" />
-            Klient
+            {t('szybkaWycena.clientRequired')}
             <span className="text-destructive" aria-hidden="true">*</span>
           </CardTitle>
         </CardHeader>
@@ -73,7 +75,7 @@ export function ClientPicker({ value, onChange, hasError = false }: ClientPicker
           <Select value={value} onValueChange={onChange}>
             <SelectTrigger className={cn(hasError && 'border-destructive focus:ring-destructive')}>
               <SelectValue
-                placeholder={isLoading ? 'Ładowanie...' : 'Wybierz klienta'}
+                placeholder={isLoading ? t('common.loading') : t('szybkaWycena.selectClientPlaceholder')}
               />
             </SelectTrigger>
             <SelectContent>
@@ -84,7 +86,7 @@ export function ClientPicker({ value, onChange, hasError = false }: ClientPicker
               ))}
               {!isLoading && clients.length === 0 && (
                 <div className="p-2 text-sm text-muted-foreground text-center">
-                  Brak klientów
+                  {t('szybkaWycena.noClients')}
                 </div>
               )}
             </SelectContent>
@@ -93,7 +95,7 @@ export function ClientPicker({ value, onChange, hasError = false }: ClientPicker
           {hasError && (
             <p className="text-xs text-destructive flex items-center gap-1">
               <AlertCircle className="h-3 w-3 shrink-0" />
-              Wybierz klienta przed zapisaniem wyceny
+              {t('szybkaWycena.clientErrorMsg')}
             </p>
           )}
 
@@ -104,7 +106,7 @@ export function ClientPicker({ value, onChange, hasError = false }: ClientPicker
             onClick={() => setShowAddDialog(true)}
           >
             <Plus className="h-4 w-4 mr-2" />
-            Dodaj nowego klienta
+            {t('szybkaWycena.addNewClient')}
           </Button>
         </CardContent>
       </Card>
@@ -112,36 +114,36 @@ export function ClientPicker({ value, onChange, hasError = false }: ClientPicker
       <Dialog open={showAddDialog} onOpenChange={handleDialogClose}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Nowy klient</DialogTitle>
+            <DialogTitle>{t('szybkaWycena.newClient')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div className="space-y-1">
               <Label htmlFor="new-client-name">
-                Nazwa <span className="text-destructive">*</span>
+                {t('common.name')} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="new-client-name"
-                placeholder="np. Jan Kowalski"
+                placeholder={t('szybkaWycena.clientNamePlaceholder')}
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 autoFocus
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="new-client-phone">Telefon</Label>
+              <Label htmlFor="new-client-phone">{t('szybkaWycena.clientPhone')}</Label>
               <Input
                 id="new-client-phone"
-                placeholder="np. 600 100 200"
+                placeholder={t('szybkaWycena.clientPhonePlaceholder')}
                 value={form.phone}
                 onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="new-client-email">Email</Label>
+              <Label htmlFor="new-client-email">{t('szybkaWycena.clientEmail')}</Label>
               <Input
                 id="new-client-email"
                 type="email"
-                placeholder="np. jan@example.com"
+                placeholder={t('szybkaWycena.clientEmailPlaceholder')}
                 value={form.email}
                 onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
               />
@@ -149,7 +151,7 @@ export function ClientPicker({ value, onChange, hasError = false }: ClientPicker
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddDialog(false)}>
-              Anuluj
+              {t('common.cancel')}
             </Button>
             <Button
               onClick={handleAdd}
@@ -158,7 +160,7 @@ export function ClientPicker({ value, onChange, hasError = false }: ClientPicker
               {addClient.isPending && (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               )}
-              Dodaj klienta
+              {t('szybkaWycena.addClientBtn')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -15,21 +15,21 @@ export function BillingDashboard() {
 
   const handleSelectPlan = async (planId: string, priceId?: string) => {
     if (!priceId) {
-      toast.info('Plan darmowy jest już aktywny');
+      toast.info(t('billing.freePlanActive'));
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     // Stripe checkout would be handled here
     // For now, show a message that Stripe needs to be configured
-    toast.info('Dodaj klucz API Stripe w ustawieniach, aby aktywować płatności');
-    
+    toast.info(t('billing.stripeSetupRequired'));
+
     setIsLoading(false);
   };
 
   const handleManageBilling = () => {
-    toast.info('Dodaj klucz API Stripe, aby zarządzać płatnościami');
+    toast.info(t('billing.stripeManageRequired'));
   };
 
   return (
@@ -37,7 +37,7 @@ export function BillingDashboard() {
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold">{t('billing.title')}</h2>
-          <p className="text-muted-foreground">Zarządzaj swoją subskrypcją i płatnościami</p>
+          <p className="text-muted-foreground">{t('billing.managementSubtitle')}</p>
         </div>
         <Button variant="outline" onClick={handleManageBilling}>
           <Settings className="h-4 w-4 mr-2" />
@@ -48,38 +48,38 @@ export function BillingDashboard() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Aktualny plan</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('billing.currentPlan')}</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
               <span className="text-2xl font-bold capitalize">{currentPlan}</span>
-              <Badge variant="secondary">Aktywny</Badge>
+              <Badge variant="secondary">{t('billing.active')}</Badge>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Następna płatność</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('billing.nextPayment')}</CardTitle>
             <Receipt className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">-</div>
-            <p className="text-xs text-muted-foreground">Plan darmowy</p>
+            <p className="text-xs text-muted-foreground">{t('billing.plans.free.name')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Status</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('common.status')}</CardTitle>
             <CheckCircle className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
               <span className="text-2xl font-bold">OK</span>
               <Badge variant="outline" className="text-success border-success">
-                Aktywny
+                {t('billing.active')}
               </Badge>
             </div>
           </CardContent>
@@ -88,9 +88,9 @@ export function BillingDashboard() {
 
       <Tabs defaultValue="plans" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="plans">Plany cenowe</TabsTrigger>
-          <TabsTrigger value="history">Historia płatności</TabsTrigger>
-          <TabsTrigger value="invoices">Faktury</TabsTrigger>
+          <TabsTrigger value="plans">{t('billing.pricingPlans')}</TabsTrigger>
+          <TabsTrigger value="history">{t('billing.paymentHistory')}</TabsTrigger>
+          <TabsTrigger value="invoices">{t('billing.invoices')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="plans">
@@ -104,15 +104,15 @@ export function BillingDashboard() {
         <TabsContent value="history">
           <Card>
             <CardHeader>
-              <CardTitle>Historia płatności</CardTitle>
-              <CardDescription>Twoje ostatnie transakcje</CardDescription>
+              <CardTitle>{t('billing.paymentHistory')}</CardTitle>
+              <CardDescription>{t('billing.paymentHistoryDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">Brak historii płatności</p>
+                <p className="text-muted-foreground">{t('billing.noPayments')}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Płatności pojawią się tutaj po zakupie planu
+                  {t('billing.noPaymentsDesc')}
                 </p>
               </div>
             </CardContent>
@@ -122,15 +122,15 @@ export function BillingDashboard() {
         <TabsContent value="invoices">
           <Card>
             <CardHeader>
-              <CardTitle>Faktury</CardTitle>
-              <CardDescription>Pobierz faktury za płatności</CardDescription>
+              <CardTitle>{t('billing.invoices')}</CardTitle>
+              <CardDescription>{t('billing.invoicesDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <Receipt className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">Brak faktur</p>
+                <p className="text-muted-foreground">{t('billing.noInvoices')}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Faktury pojawią się tutaj po zakupie planu
+                  {t('billing.noInvoicesDesc')}
                 </p>
               </div>
             </CardContent>

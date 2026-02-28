@@ -251,8 +251,8 @@ export default function ItemTemplates() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('common.all')}</SelectItem>
-            <SelectItem value="Materiał">Materiał</SelectItem>
-            <SelectItem value="Robocizna">Robocizna</SelectItem>
+            <SelectItem value="Materiał">{t('templates.categories.material')}</SelectItem>
+            <SelectItem value="Robocizna">{t('templates.categories.labor')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -280,11 +280,13 @@ export default function ItemTemplates() {
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
                   <CardTitle className="text-sm font-medium leading-tight">{template.name}</CardTitle>
-                  <Badge 
+                  <Badge
                     variant={template.category === 'Materiał' ? 'default' : 'secondary'}
                     className="shrink-0 text-xs"
                   >
-                    {template.category}
+                    {template.category === 'Materiał'
+                      ? t('templates.categories.material')
+                      : t('templates.categories.labor')}
                   </Badge>
                 </div>
               </CardHeader>
@@ -379,7 +381,8 @@ export default function ItemTemplates() {
                 <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v as 'Materiał' | 'Robocizna' })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {categories.map((cat) => (<SelectItem key={cat} value={cat}>{cat}</SelectItem>))}
+                    <SelectItem value="Materiał">{t('templates.categories.material')}</SelectItem>
+                    <SelectItem value="Robocizna">{t('templates.categories.labor')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -453,7 +456,9 @@ export default function ItemTemplates() {
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm truncate">{template.name}</span>
                         <Badge variant={template.category === 'Materiał' ? 'default' : 'secondary'} className="text-xs shrink-0">
-                          {template.category}
+                          {template.category === 'Materiał'
+                            ? t('templates.categories.material')
+                            : t('templates.categories.labor')}
                         </Badge>
                         {template.trade && (
                           <Badge variant="outline" className="text-xs shrink-0">

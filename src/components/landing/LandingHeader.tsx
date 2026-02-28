@@ -77,7 +77,7 @@ export function LandingHeader() {
           <Link
             to="/"
             className="flex items-center gap-1 text-xl font-bold text-gray-900 dark:text-white tracking-tight shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black rounded"
-            aria-label="Majster.AI — strona główna"
+            aria-label={t('landing.header.homeAriaLabel')}
           >
             Majster
             <span className="text-amber-500">.</span>
@@ -85,7 +85,7 @@ export function LandingHeader() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-x-6 flex-nowrap" aria-label="Nawigacja główna">
+          <nav className="hidden md:flex items-center gap-x-6 flex-nowrap" aria-label={t('landing.header.mainNav')}>
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.id}
@@ -104,7 +104,7 @@ export function LandingHeader() {
             <div
               className="hidden sm:flex items-center gap-0.5 rounded-lg border border-gray-200 dark:border-[#2A2A2A] bg-gray-100/80 dark:bg-[#1A1A1A]/60 p-0.5"
               role="group"
-              aria-label="Wybór języka"
+              aria-label={t('landing.header.languageSwitch')}
             >
               {LANGUAGES.map((lang) => (
                 <button
@@ -115,7 +115,7 @@ export function LandingHeader() {
                       ? 'bg-gray-200 dark:bg-[#2A2A2A] text-gray-900 dark:text-white'
                       : 'text-gray-500 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white'
                   }`}
-                  aria-label={`Zmień język na ${lang.label}`}
+                  aria-label={t('landing.header.changeLangTo', { lang: lang.label })}
                   aria-pressed={currentLang === lang.code}
                 >
                   {lang.flag} {lang.label}
@@ -154,7 +154,7 @@ export function LandingHeader() {
             <button
               className="md:hidden flex items-center justify-center w-11 h-11 rounded-xl border border-gray-200 dark:border-[#2A2A2A] text-gray-600 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white hover:border-amber-500/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               onClick={() => setDrawerOpen(true)}
-              aria-label="Otwórz menu nawigacyjne"
+              aria-label={t('landing.header.openMenu')}
               aria-expanded={drawerOpen}
               aria-controls="mobile-drawer"
             >
@@ -180,7 +180,7 @@ export function LandingHeader() {
         id="mobile-drawer"
         role="dialog"
         aria-modal="true"
-        aria-label="Menu nawigacyjne"
+        aria-label={t('landing.header.mobileMenu')}
         className={`fixed top-0 right-0 bottom-0 z-[51] w-72 bg-white dark:bg-[#0F0F0F] border-l border-gray-200 dark:border-[#2A2A2A] transform transition-transform duration-300 md:hidden ${
           drawerOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
@@ -192,13 +192,13 @@ export function LandingHeader() {
           <button
             onClick={closeDrawer}
             className="flex items-center justify-center w-10 h-10 rounded-xl text-gray-500 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#1A1A1A] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-            aria-label="Zamknij menu"
+            aria-label={t('landing.header.closeMenu')}
           >
             <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
-        <nav className="p-4 flex flex-col gap-1" aria-label="Menu mobilne">
+        <nav className="p-4 flex flex-col gap-1" aria-label={t('landing.header.mobileNav')}>
           {NAV_ITEMS.map((item) => (
             <a
               key={item.id}
@@ -213,7 +213,7 @@ export function LandingHeader() {
 
         <div className="p-4 border-t border-gray-200 dark:border-[#2A2A2A] flex flex-col gap-3">
           {/* Language switcher mobile */}
-          <div className="flex gap-1" role="group" aria-label="Wybór języka">
+          <div className="flex gap-1" role="group" aria-label={t('landing.header.languageSwitch')}>
             {LANGUAGES.map((lang) => (
               <button
                 key={lang.code}
@@ -223,7 +223,7 @@ export function LandingHeader() {
                     ? 'bg-gray-200 dark:bg-[#2A2A2A] text-gray-900 dark:text-white'
                     : 'text-gray-500 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white'
                 }`}
-                aria-label={`Zmień język na ${lang.label}`}
+                aria-label={t('landing.header.changeLangTo', { lang: lang.label })}
                 aria-pressed={currentLang === lang.code}
               >
                 {lang.flag} {lang.label}
