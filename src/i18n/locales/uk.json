@@ -273,7 +273,26 @@
     "createFirst": "Створіть свій перший проєкт",
     "editQuote": "Редагувати кошторис",
     "exportExcel": "Експорт Excel",
-    "sendEmail": "Надіслати email"
+    "sendEmail": "Надіслати email",
+    "tabs": {
+      "overview": "Огляд",
+      "evidence": "Докази",
+      "aiPhotos": "Фото AI",
+      "esignature": "Е-Підпис",
+      "pdfPreview": "Перегляд PDF"
+    },
+    "quoteSummary": "Підсумок кошторису",
+    "unknownClient": "Невідомий клієнт",
+    "noQuote": "Немає кошторису. Натисніть «Редагувати кошторис», щоб додати позиції.",
+    "offerStats": "Статистика пропозицій",
+    "loadError": "Помилка завантаження проекту",
+    "loadErrorDesc": "Не вдалося завантажити деталі проекту. Спробуйте ще раз.",
+    "errorDetails": "Деталі помилки",
+    "notFound": "Проект не знайдено.",
+    "refreshPage": "Оновити сторінку",
+    "backToList": "Назад до списку",
+    "generateOfferPdf": "Створити PDF пропозиції",
+    "exportExcelError": "Помилка експорту до Excel"
   },
   "clients": {
     "title": "Клієнти",
@@ -402,7 +421,18 @@
     "pricingTab": "Ціни",
     "risks": "Ризики",
     "actionItems": "Дії для виконання:",
-    "runAnalysisHint": "Натисніть \"Запустити аналіз\", щоб ШІ проаналізував ваші фінанси"
+    "runAnalysisHint": "Натисніть \"Запустити аналіз\", щоб ШІ проаналізував ваші фінанси",
+    "purchaseCostsOcr": "Витрати на закупівлю (OCR)",
+    "addInvoice": "Додати рахунок-фактуру",
+    "addInvoicesHint": "Додайте рахунки-фактури, і AI автоматично зчитає дані",
+    "netTotal": "Чиста сума",
+    "vatTotal": "Сума ПДВ",
+    "grossTotal": "Загальна сума",
+    "ocrDone": "Готово",
+    "ocrWaiting": "Очікування",
+    "ocrError": "Помилка OCR",
+    "date": "Дата",
+    "status": "Статус"
   },
   "team": {
     "title": "Команда",
@@ -513,7 +543,39 @@
     "total": "Всього",
     "totalAmount": "Загальна сума",
     "summary": "Підсумок",
-    "addFirst": "Додайте першу позицію кошторису"
+    "addFirst": "Додайте першу позицію кошторису",
+    "saveTemplate": "Зберегти шаблон",
+    "positionLabel": "Позиція #{{n}}",
+    "itemTotal": "Сума:",
+    "materialsTotal": "Сума матеріалів:",
+    "laborTotal": "Сума роботи:",
+    "unitPriceShort": "Ціна одиниці",
+    "noPositionsHint": "Немає позицій. Натисніть «Додати позицію» або виберіть шаблон.",
+    "addedTemplate": "Додано: {{name}}",
+    "saveTemplateNameRequired": "Введіть назву позиції перед збереженням як шаблон",
+    "invalidQty": "Недійсна кількість",
+    "invalidPrice": "Недійсна ціна",
+    "addAtLeastOne": "Додайте хоча б одну позицію",
+    "nameRequired": "Назва є обов'язковою",
+    "qtyGtZero": "Кількість повинна бути > 0",
+    "priceNotNegative": "Ціна не може бути від'ємною",
+    "marginRange": "Маржа: 0–100%",
+    "fixErrors": "Виправте помилки у формі",
+    "aiAdded": "Додано {{count}} пропозицій AI",
+    "noSuggestions": "Немає пропозицій для цього проекту",
+    "backToProject": "Назад до проекту",
+    "titleFor": "Кошторис — {{name}}",
+    "saveVersion": "Зберегти версію",
+    "versionLoaded": "Версію завантажено в редактор",
+    "versionNameRequired": "Введіть назву версії",
+    "versionName": "Назва версії",
+    "versionNamePlaceholder": "напр. V2 - після правок",
+    "saveVersionDialog": "Зберегти версію кошторису",
+    "previewVersion": "Перегляд версії",
+    "loadToEditor": "Завантажити в редактор",
+    "deleteVersion": "Видалити версію?",
+    "irreversible": "Ця операція незворотна.",
+    "noVersionsHint": "Немає збережених версій. Натисніть «Зберегти версію», щоб зберегти поточний стан."
   },
   "settings": {
     "title": "Налаштування",
@@ -685,7 +747,10 @@
     "noInvoices": "Немає рахунків",
     "noInvoicesDesc": "Рахунки з'являться тут після придбання плану",
     "paymentHistoryDescription": "Ваші останні транзакції",
-    "noPaymentsDesc": "Платежі з'являться тут після придбання плану"
+    "noPaymentsDesc": "Платежі з'являться тут після придбання плану",
+    "planBadge": {
+      "ariaLabel": "План: {{plan}}. Натисніть, щоб переглянути плани"
+    }
   },
   "profile": {
     "title": "Профіль компанії",

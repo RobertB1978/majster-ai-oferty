@@ -273,7 +273,26 @@
     "createFirst": "Create your first project",
     "editQuote": "Edit quote",
     "exportExcel": "Export Excel",
-    "sendEmail": "Send via email"
+    "sendEmail": "Send via email",
+    "tabs": {
+      "overview": "Overview",
+      "evidence": "Evidence",
+      "aiPhotos": "AI Photos",
+      "esignature": "E-Signature",
+      "pdfPreview": "PDF Preview"
+    },
+    "quoteSummary": "Quote Summary",
+    "unknownClient": "Unknown client",
+    "noQuote": "No quote yet. Click \"Edit quote\" to add items.",
+    "offerStats": "Offer statistics",
+    "loadError": "Error loading project",
+    "loadErrorDesc": "Failed to load project details. Please try again.",
+    "errorDetails": "Error details",
+    "notFound": "Project not found.",
+    "refreshPage": "Refresh page",
+    "backToList": "Back to list",
+    "generateOfferPdf": "Generate offer PDF",
+    "exportExcelError": "Error exporting to Excel"
   },
   "clients": {
     "title": "Clients",
@@ -402,7 +421,18 @@
     "pricingTab": "Pricing",
     "risks": "Risks",
     "actionItems": "Action items:",
-    "runAnalysisHint": "Click \"Run analysis\" for AI to analyze your finances"
+    "runAnalysisHint": "Click \"Run analysis\" for AI to analyze your finances",
+    "purchaseCostsOcr": "Purchase costs (OCR)",
+    "addInvoice": "Add invoice",
+    "addInvoicesHint": "Add purchase invoices and AI will automatically read the data",
+    "netTotal": "Net total",
+    "vatTotal": "VAT total",
+    "grossTotal": "Gross total",
+    "ocrDone": "Done",
+    "ocrWaiting": "Waiting",
+    "ocrError": "OCR error",
+    "date": "Date",
+    "status": "Status"
   },
   "team": {
     "title": "Team",
@@ -513,7 +543,39 @@
     "position": "Item",
     "summary": "Summary",
     "total": "Total",
-    "totalAmount": "Total amount"
+    "totalAmount": "Total amount",
+    "saveTemplate": "Save template",
+    "positionLabel": "Item #{{n}}",
+    "itemTotal": "Total:",
+    "materialsTotal": "Materials total:",
+    "laborTotal": "Labor total:",
+    "unitPriceShort": "Unit price",
+    "noPositionsHint": "No items. Click \"Add item\" or select a template.",
+    "addedTemplate": "Added: {{name}}",
+    "saveTemplateNameRequired": "Enter item name before saving as template",
+    "invalidQty": "Invalid quantity",
+    "invalidPrice": "Invalid price",
+    "addAtLeastOne": "Add at least one item",
+    "nameRequired": "Name is required",
+    "qtyGtZero": "Quantity must be > 0",
+    "priceNotNegative": "Price cannot be negative",
+    "marginRange": "Margin: 0–100%",
+    "fixErrors": "Fix form errors",
+    "aiAdded": "Added {{count}} AI suggestions",
+    "noSuggestions": "No suggestions for this project",
+    "backToProject": "Back to project",
+    "titleFor": "Quote — {{name}}",
+    "saveVersion": "Save version",
+    "versionLoaded": "Version loaded into editor",
+    "versionNameRequired": "Enter version name",
+    "versionName": "Version name",
+    "versionNamePlaceholder": "e.g. V2 - after revisions",
+    "saveVersionDialog": "Save quote version",
+    "previewVersion": "Version preview",
+    "loadToEditor": "Load into editor",
+    "deleteVersion": "Delete version?",
+    "irreversible": "This operation is irreversible.",
+    "noVersionsHint": "No saved versions. Click \"Save version\" to preserve the current state."
   },
   "settings": {
     "title": "Settings",
@@ -685,7 +747,10 @@
     "noInvoices": "No invoices",
     "noInvoicesDesc": "Invoices will appear here after purchasing a plan",
     "paymentHistoryDescription": "Your recent transactions",
-    "noPaymentsDesc": "Payments will appear here after purchasing a plan"
+    "noPaymentsDesc": "Payments will appear here after purchasing a plan",
+    "planBadge": {
+      "ariaLabel": "Plan: {{plan}}. Click to view plans"
+    }
   },
   "profile": {
     "title": "Company Profile",

@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,8 +14,9 @@ interface PurchaseCostsPanelProps {
 }
 
 export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const { data: costs = [] } = usePurchaseCosts(projectId);
   const uploadInvoice = useUploadInvoice();
   const processOCR = useProcessInvoiceOCR();
@@ -25,7 +27,7 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
     if (!file) return;
 
     const result = await uploadInvoice.mutateAsync({ projectId, file });
-    
+
     // Auto-start OCR
     if (result.document_url) {
       await processOCR.mutateAsync({
@@ -34,7 +36,7 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
         documentUrl: result.document_url
       });
     }
-    
+
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -45,23 +47,40 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
   const totalGross = costs.reduce((sum, c) => sum + Number(c.gross_amount), 0);
 
   const exportToCSV = () => {
-    const headers = ['Dostawca', 'Nr faktury', 'Data', 'Netto', 'VAT', 'Brutto'];
+    const headers = [
+      t('finance.supplier'),
+      t('finance.invoiceNumber'),
+      t('finance.date'),
+      t('finance.netAmount'),
+      t('finance.vatAmount'),
+      t('finance.grossAmount'),
+    ];
     const rows = costs.map(c => [
       c.supplier_name || '',
       c.invoice_number || '',
-      c.invoice_date || '',
-      c.net_amount,
-      c.vat_amount,
-      c.gross_amount
+      c.invoice_date ? format(new Date(c.invoice_date), 'dd MMM yyyy', { locale: pl }) : '',
+      String(c.net_amount),
+      String(c.vat_amount),
+      String(c.gross_amount),
     ]);
-    
-    const csv = [headers, ...rows].map(row => row.join(';')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `koszty_zakupu_${projectId}.csv`;
-    link.click();
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'costs.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const ocrStatusLabel = (status: string) => {
+    switch (status) {
+      case 'completed': return t('finance.ocrDone');
+      case 'processing': return 'OCR...';
+      case 'pending': return t('finance.ocrWaiting');
+      case 'failed': return t('finance.ocrError');
+      default: return status;
+    }
   };
 
   return (
@@ -70,7 +89,7 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <Receipt className="h-5 w-5" />
-            Koszty zakupu (OCR)
+            {t('finance.purchaseCostsOcr')}
           </span>
           <div className="flex gap-2">
             <Button onClick={exportToCSV} variant="outline" size="sm" disabled={costs.length === 0}>
@@ -87,7 +106,7 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
               ) : (
                 <Upload className="h-4 w-4 mr-2" />
               )}
-              {uploadInvoice.isPending ? 'Przesyłanie...' : 'Dodaj fakturę'}
+              {uploadInvoice.isPending ? t('messages.uploading') : t('finance.addInvoice')}
             </Button>
           </div>
         </CardTitle>
@@ -105,7 +124,7 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
           <div className="text-center py-8 border-2 border-dashed rounded-lg">
             <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
             <p className="text-muted-foreground">
-              Dodaj faktury zakupowe, a AI automatycznie odczyta dane
+              {t('finance.addInvoicesHint')}
             </p>
           </div>
         ) : (
@@ -113,13 +132,13 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Dostawca</TableHead>
-                  <TableHead>Nr faktury</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead className="text-right">Netto</TableHead>
-                  <TableHead className="text-right">VAT</TableHead>
-                  <TableHead className="text-right">Brutto</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>{t('finance.supplier')}</TableHead>
+                  <TableHead>{t('finance.invoiceNumber')}</TableHead>
+                  <TableHead>{t('finance.date')}</TableHead>
+                  <TableHead className="text-right">{t('finance.netAmount')}</TableHead>
+                  <TableHead className="text-right">{t('finance.vatAmount')}</TableHead>
+                  <TableHead className="text-right">{t('finance.grossAmount')}</TableHead>
+                  <TableHead>{t('finance.status')}</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -129,7 +148,7 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
                     <TableCell>{cost.supplier_name || '-'}</TableCell>
                     <TableCell>{cost.invoice_number || '-'}</TableCell>
                     <TableCell>
-                      {cost.invoice_date 
+                      {cost.invoice_date
                         ? format(new Date(cost.invoice_date), 'dd MMM yyyy', { locale: pl })
                         : '-'
                       }
@@ -144,17 +163,14 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
                       {Number(cost.gross_amount).toLocaleString()} zł
                     </TableCell>
                     <TableCell>
-                      <Badge 
+                      <Badge
                         variant={
                           cost.ocr_status === 'completed' ? 'default' :
                           cost.ocr_status === 'processing' ? 'secondary' :
                           cost.ocr_status === 'failed' ? 'destructive' : 'outline'
                         }
                       >
-                        {cost.ocr_status === 'completed' && 'Gotowe'}
-                        {cost.ocr_status === 'processing' && 'OCR...'}
-                        {cost.ocr_status === 'pending' && 'Oczekuje'}
-                        {cost.ocr_status === 'failed' && 'Błąd'}
+                        {ocrStatusLabel(cost.ocr_status)}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -185,18 +201,18 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
                 ))}
               </TableBody>
             </Table>
-            
+
             <div className="mt-4 p-4 bg-muted rounded-lg grid grid-cols-3 gap-4 text-center">
               <div>
-                <p className="text-sm text-muted-foreground">Suma netto</p>
+                <p className="text-sm text-muted-foreground">{t('finance.netTotal')}</p>
                 <p className="font-bold text-lg">{totalNet.toLocaleString()} zł</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Suma VAT</p>
+                <p className="text-sm text-muted-foreground">{t('finance.vatTotal')}</p>
                 <p className="font-bold text-lg">{totalVat.toLocaleString()} zł</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Suma brutto</p>
+                <p className="text-sm text-muted-foreground">{t('finance.grossTotal')}</p>
                 <p className="font-bold text-lg">{totalGross.toLocaleString()} zł</p>
               </div>
             </div>

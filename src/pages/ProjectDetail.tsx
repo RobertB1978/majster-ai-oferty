@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useProject, useUpdateProject } from '@/hooks/useProjects';
 import { useQuote } from '@/hooks/useQuotes';
 import { Button } from '@/components/ui/button';
@@ -26,14 +27,22 @@ const statuses = ['Nowy', 'Wycena w toku', 'Oferta wysłana', 'Zaakceptowany'] a
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [sendModalOpen, setSendModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
-  const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null); // Phase 5C: Track generated PDF URL
+  const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
 
   // Call hooks at top level (before any conditionals)
   const { data: project, isLoading: projectLoading, error, isError } = useProject(id || '');
   const { data: quote, isLoading: quoteLoading } = useQuote(id || '');
   const updateProject = useUpdateProject();
+
+  const statusLabels: Record<string, string> = {
+    'Nowy': t('projects.statuses.new'),
+    'Wycena w toku': t('projects.statuses.inProgress'),
+    'Oferta wysłana': t('projects.statuses.sent'),
+    'Zaakceptowany': t('projects.statuses.accepted'),
+  };
 
   // Validate id parameter exists
   if (!id) {
@@ -41,11 +50,11 @@ export default function ProjectDetail() {
       <div className="space-y-6 animate-fade-in">
         <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Powrót do projektów
+          {t('newProject.backToProjects')}
         </Button>
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">Projekt nie został znaleziony.</p>
+            <p className="text-muted-foreground">{t('projects.notFound')}</p>
           </CardContent>
         </Card>
       </div>
@@ -58,22 +67,22 @@ export default function ProjectDetail() {
       <div className="space-y-6 animate-fade-in">
         <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Powrót do projektów
+          {t('newProject.backToProjects')}
         </Button>
         <Card>
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
               <AlertTriangle className="h-6 w-6 text-destructive" />
             </div>
-            <CardTitle>Błąd podczas wczytywania projektu</CardTitle>
+            <CardTitle>{t('projects.loadError')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground text-center text-sm">
-              Nie udało się wczytać szczegółów projektu. Spróbuj ponownie.
+              {t('projects.loadErrorDesc')}
             </p>
             {error && import.meta.env.DEV && (
               <details className="text-xs text-muted-foreground bg-muted p-3 rounded-md">
-                <summary className="cursor-pointer font-medium">Szczegóły błędu</summary>
+                <summary className="cursor-pointer font-medium">{t('projects.errorDetails')}</summary>
                 <pre className="mt-2 whitespace-pre-wrap break-words">
                   {error instanceof Error ? error.message : String(error)}
                 </pre>
@@ -81,11 +90,11 @@ export default function ProjectDetail() {
             )}
             <div className="flex gap-2 justify-center">
               <Button variant="outline" onClick={() => navigate('/app/jobs')}>
-                Wróć do listy
+                {t('projects.backToList')}
               </Button>
               <Button onClick={() => window.location.reload()}>
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Odśwież stronę
+                {t('projects.refreshPage')}
               </Button>
             </div>
           </CardContent>
@@ -107,11 +116,11 @@ export default function ProjectDetail() {
       <div className="space-y-6 animate-fade-in">
         <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Powrót do projektów
+          {t('newProject.backToProjects')}
         </Button>
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">Projekt nie został znaleziony.</p>
+            <p className="text-muted-foreground">{t('projects.notFound')}</p>
           </CardContent>
         </Card>
       </div>
@@ -119,9 +128,9 @@ export default function ProjectDetail() {
   }
 
   const handleStatusChange = async (status: string) => {
-    await updateProject.mutateAsync({ 
-      id: project.id, 
-      status: status as typeof statuses[number] 
+    await updateProject.mutateAsync({
+      id: project.id,
+      status: status as typeof statuses[number]
     });
   };
 
@@ -134,7 +143,7 @@ export default function ProjectDetail() {
     <div className="space-y-6 animate-fade-in">
       <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Powrót do zleceń
+        {t('newProject.backToProjects')}
       </Button>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -146,7 +155,7 @@ export default function ProjectDetail() {
             <div className="flex items-center gap-1">
               <User className="h-4 w-4" />
               <Link to="/app/clients" className="hover:text-primary hover:underline">
-                {project.clients?.name || 'Nieznany klient'}
+                {project.clients?.name || t('projects.unknownClient')}
               </Link>
             </div>
             <div className="flex items-center gap-1">
@@ -157,7 +166,7 @@ export default function ProjectDetail() {
         </div>
         <div className="flex flex-col items-end gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Status:</span>
+            <span className="text-sm text-muted-foreground">{t('projects.status')}:</span>
             <Select value={project.status} onValueChange={handleStatusChange}>
               <SelectTrigger className="w-44">
                 <SelectValue />
@@ -165,7 +174,7 @@ export default function ProjectDetail() {
               <SelectContent>
                 {statuses.map((status) => (
                   <SelectItem key={status} value={status}>
-                    {status}
+                    {statusLabels[status] ?? status}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -183,15 +192,15 @@ export default function ProjectDetail() {
       <div className="flex flex-wrap gap-3">
         <Button size="lg" onClick={() => navigate(`/app/jobs/${id}/quote`)}>
           <Calculator className="mr-2 h-5 w-5" />
-          Edytuj wycenę
+          {t('projects.editQuote')}
         </Button>
         <Button size="lg" variant="outline" onClick={() => navigate(`/app/jobs/${id}/pdf`)}>
           <FileText className="mr-2 h-5 w-5" />
-          Generuj ofertę PDF
+          {t('projects.generateOfferPdf')}
         </Button>
         <Button size="lg" variant="outline" onClick={() => setSendModalOpen(true)}>
           <Mail className="mr-2 h-5 w-5" />
-          Wyślij mailem
+          {t('projects.sendEmail')}
         </Button>
         {quote && (
           <Button
@@ -208,18 +217,18 @@ export default function ProjectDetail() {
                 });
               } catch (error) {
                 console.error('Failed to export Excel:', error);
-                toast.error('Błąd podczas eksportu do Excel');
+                toast.error(t('projects.exportExcelError'));
               }
             }}
           >
             <Download className="mr-2 h-4 w-4" />
-            Eksport Excel
+            {t('projects.exportExcel')}
           </Button>
         )}
         <VoiceMemoButton />
       </div>
 
-      {/* Send Offer Modal - Phase 5C: Include PDF URL if generated */}
+      {/* Send Offer Modal */}
       <SendOfferModal
         open={sendModalOpen}
         onOpenChange={setSendModalOpen}
@@ -235,27 +244,27 @@ export default function ProjectDetail() {
         <TabsList className="bg-muted/50">
           <TabsTrigger value="overview" className="gap-2 data-[state=active]:bg-background">
             <FileText className="h-4 w-4" />
-            Przegląd
+            {t('projects.tabs.overview')}
           </TabsTrigger>
           <TabsTrigger value="photo-proof" className="gap-2 data-[state=active]:bg-background">
             <HardHat className="h-4 w-4" />
-            Dowody
+            {t('projects.tabs.evidence')}
           </TabsTrigger>
           <TabsTrigger value="photos" className="gap-2 data-[state=active]:bg-background">
             <Camera className="h-4 w-4" />
-            Zdjęcia AI
+            {t('projects.tabs.aiPhotos')}
           </TabsTrigger>
           <TabsTrigger value="costs" className="gap-2 data-[state=active]:bg-background">
             <Receipt className="h-4 w-4" />
-            Koszty
+            {t('projects.tabs.costs')}
           </TabsTrigger>
           <TabsTrigger value="approval" className="gap-2 data-[state=active]:bg-background">
             <FileSignature className="h-4 w-4" />
-            E-Podpis
+            {t('projects.tabs.esignature')}
           </TabsTrigger>
           <TabsTrigger value="pdf" className="gap-2 data-[state=active]:bg-background">
             <Eye className="h-4 w-4" />
-            Podgląd PDF
+            {t('projects.tabs.pdfPreview')}
           </TabsTrigger>
         </TabsList>
 
@@ -270,27 +279,27 @@ export default function ProjectDetail() {
           ) : quote ? (
             <Card>
               <CardHeader>
-                <CardTitle>Podsumowanie wyceny</CardTitle>
+                <CardTitle>{t('projects.quoteSummary')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Materiały:</span>
+                    <span className="text-muted-foreground">{t('quotes.materials')}:</span>
                     <span className="font-medium">{Number(quote.summary_materials).toFixed(2)} zł</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Robocizna:</span>
+                    <span className="text-muted-foreground">{t('quotes.labor')}:</span>
                     <span className="font-medium">{Number(quote.summary_labor).toFixed(2)} zł</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Marża ({quote.margin_percent}%):</span>
+                    <span className="text-muted-foreground">{t('quotes.margin')} ({quote.margin_percent}%):</span>
                     <span className="font-medium">
                       {((Number(quote.summary_materials) + Number(quote.summary_labor)) * Number(quote.margin_percent) / 100).toFixed(2)} zł
                     </span>
                   </div>
                   <div className="border-t border-border pt-3">
                     <div className="flex justify-between text-lg font-bold">
-                      <span>Kwota całkowita:</span>
+                      <span>{t('quotes.totalAmount')}:</span>
                       <span className="text-primary">{Number(quote.total).toFixed(2)} zł</span>
                     </div>
                   </div>
@@ -301,16 +310,16 @@ export default function ProjectDetail() {
             <Card>
               <CardContent className="py-8 text-center">
                 <p className="text-muted-foreground">
-                  Brak wyceny. Kliknij "Edytuj wycenę" aby dodać pozycje kosztorysu.
+                  {t('projects.noQuote')}
                 </p>
               </CardContent>
             </Card>
           )}
 
-          {/* Phase 6A: Offer Statistics */}
+          {/* Offer Statistics */}
           <PanelErrorBoundary>
             <div className="mt-6">
-              <h3 className="text-lg font-semibold mb-4">Statystyki ofert</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('projects.offerStats')}</h3>
               <OfferStatsPanel />
             </div>
           </PanelErrorBoundary>

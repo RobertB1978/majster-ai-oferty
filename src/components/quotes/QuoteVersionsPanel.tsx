@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuoteVersions, useCreateQuoteVersion, useSetActiveVersion, useDeleteQuoteVersion, QuoteSnapshot } from '@/hooks/useQuoteVersions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +17,7 @@ interface QuoteVersionsPanelProps {
 }
 
 export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }: QuoteVersionsPanelProps) {
+  const { t } = useTranslation();
   const { data: versions, isLoading } = useQuoteVersions(projectId);
   const createVersion = useCreateQuoteVersion();
   const setActive = useSetActiveVersion();
@@ -29,7 +31,7 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
 
   const handleSaveVersion = async () => {
     if (!versionName.trim()) {
-      toast.error('Podaj nazwę wersji');
+      toast.error(t('quotes.versionNameRequired'));
       return;
     }
 
@@ -64,7 +66,7 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
     if (onLoadVersion) {
       onLoadVersion(snapshot);
       setShowPreviewDialog(false);
-      toast.success('Wersja załadowana do edytora');
+      toast.success(t('quotes.versionLoaded'));
     }
   };
 
@@ -74,11 +76,11 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-base">
             <History className="h-4 w-4" />
-            Wersje wyceny
+            {t('quotes.versions')}
           </CardTitle>
           <Button size="sm" onClick={() => setShowSaveDialog(true)}>
             <Plus className="mr-1 h-4 w-4" />
-            Zapisz wersję
+            {t('quotes.saveVersion')}
           </Button>
         </div>
       </CardHeader>
@@ -89,13 +91,13 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
           </div>
         ) : versions?.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Brak zapisanych wersji. Kliknij "Zapisz wersję" aby zachować aktualny stan wyceny.
+            {t('quotes.noVersionsHint')}
           </p>
         ) : (
           <div className="space-y-2">
             {versions?.map((version) => (
-              <div 
-                key={version.id} 
+              <div
+                key={version.id}
                 className={`flex items-center justify-between rounded-lg border p-2 ${
                   version.is_active ? 'border-primary bg-primary/5' : ''
                 }`}
@@ -134,21 +136,21 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
       <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Zapisz wersję wyceny</DialogTitle>
+            <DialogTitle>{t('quotes.saveVersionDialog')}</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <Label>Nazwa wersji</Label>
+            <Label>{t('quotes.versionName')}</Label>
             <Input
               value={versionName}
               onChange={(e) => setVersionName(e.target.value)}
-              placeholder="np. V2 - po poprawkach"
+              placeholder={t('quotes.versionNamePlaceholder')}
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowSaveDialog(false)}>Anuluj</Button>
+            <Button variant="outline" onClick={() => setShowSaveDialog(false)}>{t('common.cancel')}</Button>
             <Button onClick={handleSaveVersion} disabled={createVersion.isPending}>
               {createVersion.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Zapisz
+              {t('common.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -158,7 +160,7 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
       <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Podgląd wersji</DialogTitle>
+            <DialogTitle>{t('quotes.previewVersion')}</DialogTitle>
           </DialogHeader>
           {previewSnapshot && (
             <div className="max-h-96 space-y-4 overflow-y-auto py-4">
@@ -172,29 +174,29 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
               </div>
               <div className="border-t pt-4">
                 <div className="flex justify-between text-sm">
-                  <span>Materiały:</span>
+                  <span>{t('quotes.materials')}:</span>
                   <span>{Number(previewSnapshot.summary_materials).toFixed(2)} zł</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Robocizna:</span>
+                  <span>{t('quotes.labor')}:</span>
                   <span>{Number(previewSnapshot.summary_labor).toFixed(2)} zł</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Marża ({previewSnapshot.margin_percent}%):</span>
+                  <span>{t('quotes.margin')} ({previewSnapshot.margin_percent}%):</span>
                   <span>{((previewSnapshot.summary_materials + previewSnapshot.summary_labor) * previewSnapshot.margin_percent / 100).toFixed(2)} zł</span>
                 </div>
                 <div className="mt-2 flex justify-between font-bold">
-                  <span>SUMA:</span>
+                  <span>{t('quotes.grandTotal')}:</span>
                   <span>{Number(previewSnapshot.total).toFixed(2)} zł</span>
                 </div>
               </div>
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPreviewDialog(false)}>Zamknij</Button>
+            <Button variant="outline" onClick={() => setShowPreviewDialog(false)}>{t('common.cancel')}</Button>
             {previewSnapshot && onLoadVersion && (
               <Button onClick={() => handleLoadVersion(previewSnapshot)}>
-                Załaduj do edytora
+                {t('quotes.loadToEditor')}
               </Button>
             )}
           </DialogFooter>
@@ -205,15 +207,15 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
       <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Usunąć wersję?</AlertDialogTitle>
+            <AlertDialogTitle>{t('quotes.deleteVersion')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Ta operacja jest nieodwracalna.
+              {t('quotes.irreversible')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Anuluj</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
-              Usuń
+              {t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
