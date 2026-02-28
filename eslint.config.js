@@ -87,14 +87,22 @@ export default tseslint.config(
             "role",
           ],
         },
-        // Allow common technical string patterns that are never user-facing
-        // (hex colours, CSS units, icon names, route segments, etc.)
-        // NOTE: eslint-plugin-i18next@6 expects `words` as an object (regex→bool map).
-        // The option is omitted here because mode:"jsx-only" already excludes
-        // plain TS bodies, and the jsx-attributes.exclude list covers all
-        // technical JSX attributes. Add per-file overrides if needed.
-        // Don't require t() inside these call expressions (utility / library calls)
-        callees: ["t", "i18n.t", "i18next.t", "Trans", "cn", "clsx", "cva"],
+        // Literal strings inside these call expressions are exempt from the rule.
+        // cn/clsx/cva compose class names (never user-visible text).
+        // t/i18n.t are already understood by the plugin but listed for clarity.
+        callees: {
+          exclude: ["cn", "clsx", "cva", "t", "i18n.t", "i18next.t"],
+        },
+        // Regex patterns for string values that are always technical (never UI text).
+        // v6 schema: words.exclude is an array of regex strings.
+        words: {
+          exclude: [
+            "[0-9]+(px|rem|em|vh|vw|%)?",  // CSS numeric values
+            "#[0-9a-fA-F]{3,8}",            // hex colours
+            "[A-Z][A-Z0-9_]+",              // SCREAMING_SNAKE constants
+            "/[a-z0-9/-]*",                 // URL path segments
+          ],
+        },
       }],
     },
   },
@@ -117,7 +125,9 @@ export default tseslint.config(
             "aria-hidden", "aria-describedby", "fill", "stroke", "role",
           ],
         },
-        callees: ["t", "i18n.t", "i18next.t", "Trans", "cn", "clsx", "cva"],
+        callees: {
+          exclude: ["cn", "clsx", "cva", "t", "i18n.t", "i18next.t"],
+        },
       }],
     },
   },
