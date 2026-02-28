@@ -2214,6 +2214,7 @@
     "emailSettingsDesc": "Customize messages sent with offers",
     "emailSubjectLabel": "Default message subject",
     "emailSubjectHint": "Use {company_name} to insert company name",
+    "emailSubjectDefault": "Offer from {company_name}",
     "emailGreetingLabel": "Greeting in message",
     "emailGreetingPlaceholder": "Dear Client,",
     "emailSignatureLabel": "Signature in message",
@@ -2440,5 +2441,10 @@
     "privacyTitle": "Privacy Policy | Majster.AI",
     "termsTitle": "Terms of Service | Majster.AI",
     "cookiesTitle": "Cookie Policy | Majster.AI"
+  },
+  "help": {
+    "menu": "Help menu",
+    "documentation": "Documentation",
+    "docsComingSoon": "Documentation coming soon. Check the Settings tab or contact us."
   }
 }

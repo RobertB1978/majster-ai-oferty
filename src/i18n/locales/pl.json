@@ -2214,6 +2214,7 @@
     "emailSettingsDesc": "Personalizuj wiadomości wysyłane z ofertami",
     "emailSubjectLabel": "Domyślny temat wiadomości",
     "emailSubjectHint": "Użyj {company_name} aby wstawić nazwę firmy",
+    "emailSubjectDefault": "Oferta od {company_name}",
     "emailGreetingLabel": "Powitanie w wiadomości",
     "emailGreetingPlaceholder": "Szanowny Kliencie,",
     "emailSignatureLabel": "Podpis w wiadomości",
@@ -2440,5 +2441,10 @@
     "privacyTitle": "Polityka Prywatności | Majster.AI",
     "termsTitle": "Regulamin | Majster.AI",
     "cookiesTitle": "Polityka Cookies | Majster.AI"
+  },
+  "help": {
+    "menu": "Menu pomocy",
+    "documentation": "Dokumentacja",
+    "docsComingSoon": "Dokumentacja wkrótce dostępna. Sprawdź zakładkę Ustawienia lub napisz do nas."
   }
 }

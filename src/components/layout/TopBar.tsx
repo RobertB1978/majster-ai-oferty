@@ -166,17 +166,17 @@ export function TopBar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10" aria-label={t('help.menu', 'Menu pomocy')}>
+                <Button variant="ghost" size="icon" className="h-10 w-10" aria-label={t('help.menu')}>
                   <HelpCircle className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem onClick={() => navigate('/app/profile')}>
-                  {t('nav.companyProfile', 'Profil firmy')}
+                  {t('nav.profile')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => toast.info(t('help.docsComingSoon', 'Dokumentacja wkrótce dostępna. Sprawdź zakładkę Ustawienia lub napisz do nas.'))}>
-                  {t('help.documentation', 'Dokumentacja')}
+                <DropdownMenuItem onClick={() => toast.info(t('help.docsComingSoon'))}>
+                  {t('help.documentation')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
