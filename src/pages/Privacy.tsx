@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Lock, Eye, Database, UserCheck, Mail, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,11 +7,14 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Privacy() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const disclaimer = t('legal.plVersionPrevails');
+  const isNonPl = i18n.language !== 'pl';
 
   return (
     <>
       <Helmet>
-        <title>Polityka Prywatności | Majster.AI</title>
+        <title>{t('legal.privacyTitle')}</title>
         <meta name="description" content="Polityka prywatności aplikacji Majster.AI - dowiedz się jak chronimy Twoje dane." />
       </Helmet>
 
@@ -18,8 +22,13 @@ export default function Privacy() {
         <div className="max-w-4xl mx-auto space-y-8">
           <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Powrót
+            {t('legal.back')}
           </Button>
+          {isNonPl && disclaimer && (
+            <div className="rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+              {disclaimer}
+            </div>
+          )}
 
           <div className="text-center space-y-4">
             <div className="inline-flex items-center justify-center p-4 rounded-full bg-primary/10 mb-4">

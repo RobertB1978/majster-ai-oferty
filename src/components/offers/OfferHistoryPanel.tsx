@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useOfferSends } from '@/hooks/useOfferSends';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,14 +8,15 @@ interface OfferHistoryPanelProps {
   projectId: string;
 }
 
-const statusConfig = {
-  pending: { label: 'Oczekuje', icon: Clock, className: 'bg-warning/10 text-warning' },
-  sent: { label: 'Wysłano', icon: CheckCircle, className: 'bg-success/10 text-success' },
-  failed: { label: 'Błąd', icon: XCircle, className: 'bg-destructive/10 text-destructive' },
-};
-
 export function OfferHistoryPanel({ projectId }: OfferHistoryPanelProps) {
+  const { t } = useTranslation();
   const { data: sends, isLoading } = useOfferSends(projectId);
+
+  const statusConfig = {
+    pending: { label: t('common.status'), icon: Clock, className: 'bg-warning/10 text-warning' },
+    sent: { label: t('offers.history.sent'), icon: CheckCircle, className: 'bg-success/10 text-success' },
+    failed: { label: t('offers.history.failed'), icon: XCircle, className: 'bg-destructive/10 text-destructive' },
+  };
 
   if (isLoading) {
     return (
@@ -35,7 +37,7 @@ export function OfferHistoryPanel({ projectId }: OfferHistoryPanelProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Mail className="h-4 w-4" />
-          Historia wysyłek ofert
+          {t('offers.history.title')}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -52,11 +54,11 @@ export function OfferHistoryPanel({ projectId }: OfferHistoryPanelProps) {
                 <div className="space-y-1">
                   <p className="text-sm font-medium">{send.client_email}</p>
                   <p className="text-xs text-muted-foreground">
-                    {new Date(send.sent_at).toLocaleString('pl-PL')}
+                    {new Date(send.sent_at).toLocaleString()}
                   </p>
                   {send.subject && (
                     <p className="text-xs text-muted-foreground">
-                      Temat: {send.subject}
+                      {send.subject}
                     </p>
                   )}
                 </div>

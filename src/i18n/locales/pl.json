@@ -12,7 +12,7 @@
     "success": "Sukces",
     "confirm": "Potwierdź",
     "back": "Wróć",
-    "next": "Dalej",
+    "next": "Następna",
     "close": "Zamknij",
     "yes": "Tak",
     "no": "Nie",
@@ -44,7 +44,11 @@
     "saveError": "Błąd zapisu:",
     "nextPage": "następna strona",
     "previousPage": "poprzednia strona",
-    "open": "Otwórz"
+    "open": "Otwórz",
+    "clearSearch": "Wyczyść wyszukiwanie",
+    "pageOf": "Strona {{current}} z {{total}}",
+    "showingItems": "Wyświetlanie {{from}}-{{to}} z {{total}}",
+    "previous": "Poprzednia"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -923,7 +927,8 @@
     "ogImage": "OG Image URL",
     "unsavedChanges": "Niezapisane zmiany",
     "systemActive": "System aktywny",
-    "noAccessDesc": "Nie masz uprawnień do wyświetlenia tej strony"
+    "noAccessDesc": "Nie masz uprawnień do wyświetlenia tej strony",
+    "backToDashboard": "Wróć do panelu"
   },
   "adminConfig": {
     "pageTitle": "Konfiguracja",
@@ -962,7 +967,13 @@
     "visible": "Widoczny",
     "comingSoon": "Wkrótce",
     "moveUp": "Przesuń w górę",
-    "moveDown": "Przesuń w dół"
+    "moveDown": "Przesuń w dół",
+    "expandMenu": "Rozwiń menu",
+    "collapseMenu": "Zwiń menu",
+    "backToApp": "Wróć do aplikacji",
+    "config": "Konfiguracja",
+    "plans": "Plany",
+    "diagnostics": "Diagnostyka"
   },
   "adminDiag": {
     "pageTitle": "Diagnostyka",
@@ -1160,7 +1171,8 @@
       "noName": "Brak nazwy",
       "date": "Data oferty",
       "value": "Wartość oferty",
-      "noQuote": "Brak wyceny"
+      "noQuote": "Brak wyceny",
+      "validUntil": "Ważna do"
     },
     "positions": {
       "title": "Pozycje kosztorysu:",
@@ -1178,18 +1190,50 @@
       "signature": "Podpis",
       "signatureHint": "Podpisz się poniżej, aby zaakceptować ofertę",
       "approve": "Akceptuję ofertę",
-      "reject": "Odrzuć"
+      "reject": "Odrzuć",
+      "rejectReasonToggle": "Chcę podać powód odrzucenia",
+      "rejectReasonPlaceholder": "Powód odrzucenia (opcjonalnie)...",
+      "questionPrefix": "Mam pytanie →",
+      "contactLink": "napisz do wykonawcy"
     },
     "errors": {
       "notFound": "Nie znaleziono oferty",
       "nameRequired": "Podaj swoje imię i nazwisko",
       "signatureRequired": "Dodaj podpis",
       "approvalFailed": "Błąd akceptacji oferty",
-      "rejectionFailed": "Błąd odrzucenia oferty"
+      "rejectionFailed": "Błąd odrzucenia oferty",
+      "cancelFailed": "Nie udało się cofnąć akceptacji"
     },
     "success": {
       "approved": "Oferta została zaakceptowana!",
-      "rejected": "Oferta została odrzucona"
+      "rejected": "Oferta została odrzucona",
+      "canceledWithNotification": "Akceptacja cofnięta. Wykonawca został powiadomiony."
+    },
+    "expired": {
+      "title": "Oferta wygasła",
+      "expiredOnDate": "Ta oferta wygasła dnia {{date}}.",
+      "alreadyExpired": "Ta oferta już wygasła.",
+      "contactContractor": "Skontaktuj się z fachowcem, aby uzyskać nową wycenę."
+    },
+    "withdrawn": {
+      "title": "Oferta wycofana",
+      "description": "Ta oferta została wycofana przez wykonawcę. Skontaktuj się z nim bezpośrednio, jeśli masz pytania."
+    },
+    "states": {
+      "accepting": "Akceptowanie oferty..."
+    },
+    "cancelWindow": {
+      "timeLeft": "Masz jeszcze {{seconds}}s na cofnięcie akceptacji.",
+      "buttonLabel": "Zgłoś korektę / cofnij akceptację"
+    },
+    "actions": {
+      "downloadPdf": "Pobierz PDF"
+    },
+    "contractor": {
+      "title": "Kontakt z wykonawcą"
+    },
+    "readonly": {
+      "alreadyRejected": "Ta oferta została już odrzucona."
     }
   },
   "audit": {
@@ -1361,7 +1405,33 @@
     "provideRecipientEmail": "Podaj adres e-mail odbiorcy",
     "provideSubject": "Podaj temat wiadomości",
     "emailNotConfigured": "Wysyłka e-mail nie jest skonfigurowana. Skontaktuj się z administratorem.",
-    "failedToSend": "Nie udało się wysłać oferty"
+    "failedToSend": "Nie udało się wysłać oferty",
+    "noClientEmail": "Brak adresu e-mail klienta.",
+    "noClientEmailDesc": "Wpisz adres poniżej lub skorzystaj z alternatywnych metod dostarczenia oferty.",
+    "emailNotConfiguredShort": "Wysyłka e-mail nie jest skonfigurowana.",
+    "emailNotConfiguredDetail": "Skontaktuj się z administratorem lub skorzystaj z poniższych metod.",
+    "goToSettings": "Przejdź do ustawień →",
+    "failedToSendShort": "Nie udało się wysłać e-mail.",
+    "retryOrUseFallback": "Spróbuj ponownie lub skorzystaj z poniższych metod.",
+    "alternativeDelivery": "Alternatywne sposoby dostarczenia oferty",
+    "linkCopied": "Link skopiowany!",
+    "copyLink": "Skopiuj link do oferty",
+    "downloadOfferPdf": "Pobierz PDF oferty",
+    "replyEmailUnverified": "⚠️ Email do odpowiedzi niezweryfikowany.",
+    "replyEmailUnverifiedDesc": "Klienci nie będą mogli odpisać bezpośrednio na ofertę.",
+    "verifyInSettings": "Zweryfikuj w Ustawieniach →",
+    "offerValidity": "Ważność oferty",
+    "selectExpiry": "Wybierz termin ważności",
+    "customDate": "Własna data",
+    "customDateAria": "Własna data ważności",
+    "validUntil": "do {{date}}",
+    "dualTokenInfo": "Email będzie zawierał dwa przyciski: OGLĄDAM OFERTĘ i ✓ AKCEPTUJĘ (1 klik).",
+    "tokenGenerateFailed": "Nie udało się wygenerować linku do oferty",
+    "linkCopiedSuccess": "Link do oferty skopiowany!",
+    "setExpiryRequired": "Ustaw termin ważności oferty",
+    "days_one": "{{count}} dzień",
+    "days_few": "{{count}} dni",
+    "days_many": "{{count}} dni"
   },
   "onboarding": {
     "welcome": "Witaj w Majster.AI!",
@@ -2302,5 +2372,73 @@
     "faq": "Często zadawane pytania",
     "comparePlansDesc": "Porównaj wszystkie plany i wybierz ten właściwy dla siebie.",
     "comparePlans": "Porównaj plany"
+  },
+  "offers": {
+    "approvalPanel": {
+      "createLink": "Utwórz link",
+      "createLinkTitle": "Utwórz link do akceptacji",
+      "clientName": "Imię i nazwisko klienta",
+      "createLinkButton": "Utwórz link do akceptacji",
+      "noLinks": "Brak linków do akceptacji",
+      "noLinksDesc": "Utwórz link, aby klient mógł zaakceptować ofertę online",
+      "extend": "Przedłuż",
+      "extendTooltip": "Przedłuż ważność o 30 dni",
+      "sendReminderTooltip": "Wyślij przypomnienie email",
+      "expired": "Wygasła",
+      "fillAllFields": "Wypełnij wszystkie pola",
+      "reminderSent": "Przypomnienie wysłane do klienta",
+      "reminderFailed": "Błąd podczas wysyłania przypomnienia"
+    },
+    "history": {
+      "title": "Historia wysyłek ofert",
+      "sent": "Wysłano",
+      "failed": "Błąd"
+    },
+    "stats": {
+      "sentOffers": "Wysłane oferty",
+      "acceptanceRate": "Zaakceptowane / Wysłane",
+      "followUpRequired": "Oferty wymagające follow-up"
+    },
+    "tracking": {
+      "activity": "Aktywność",
+      "clientOpened": "Klient otworzył ofertę",
+      "sentToClient": "Oferta wysłana do klienta",
+      "expired": "Oferta wygasła",
+      "created": "Oferta utworzona",
+      "acceptedEmail": "Zaakceptowana (e-mail)",
+      "accepted": "Zaakceptowana",
+      "rejected": "Odrzucona przez klienta",
+      "withdrawn": "Oferta wycofana"
+    },
+    "pdf": {
+      "signatureLabel": "Podpis i pieczęć wykonawcy",
+      "validDays": "Oferta ważna 30 dni od daty wystawienia",
+      "sendToClient": "Wyślij do klienta",
+      "offerTitle": "Tytuł oferty",
+      "introText": "Tekst wstępny",
+      "introPlaceholder": "Szanowni Państwo...",
+      "termsPlaceholder": "Warunki płatności, gwarancja...",
+      "vatLabel": "8% (usługi budowlane)",
+      "editCta": "Kliknij \"Edytuj\" aby skonfigurować treść oferty",
+      "offerValue": "Wartość oferty",
+      "pdfGenerated": "PDF oferty został wygenerowany",
+      "openPdf": "Otwórz PDF",
+      "quantity": "Ilość",
+      "value": "Wartość",
+      "materials": "Materiały:",
+      "netValue": "Wartość netto:",
+      "grossValue": "Wartość brutto:"
+    },
+    "signature": {
+      "hint": "Podpisz powyżej",
+      "clear": "Wyczyść"
+    }
+  },
+  "legal": {
+    "plVersionPrevails": "",
+    "back": "Powrót",
+    "privacyTitle": "Polityka Prywatności | Majster.AI",
+    "termsTitle": "Regulamin | Majster.AI",
+    "cookiesTitle": "Polityka Cookies | Majster.AI"
   }
 }

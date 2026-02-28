@@ -107,7 +107,7 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
                   <div>
                     <p className="text-sm font-medium">{version.version_name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(version.created_at).toLocaleString('pl-PL')} • {Number(version.quote_snapshot.total).toFixed(2)} zł
+                      {new Date(version.created_at).toLocaleString()} • {Number(version.quote_snapshot.total).toFixed(2)} zł
                     </p>
                   </div>
                 </div>

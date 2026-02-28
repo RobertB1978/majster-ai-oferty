@@ -116,7 +116,7 @@ describe('Typography Consistency - H1 Standardization', () => {
     const h1Elements = container.querySelectorAll('h1');
     // Admin page has main H1 (should be responsive)
     const mainH1 = Array.from(h1Elements).find(h1 =>
-      h1.textContent?.includes('Panel Administratora')
+      h1.textContent?.includes('admin.title')
     );
 
     expect(mainH1).toBeDefined();

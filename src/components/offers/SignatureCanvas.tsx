@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Eraser } from 'lucide-react';
 
@@ -9,6 +10,7 @@ interface SignatureCanvasProps {
 }
 
 export function SignatureCanvas({ onSignatureChange, width = 400, height = 150 }: SignatureCanvasProps) {
+  const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
@@ -113,10 +115,10 @@ export function SignatureCanvas({ onSignatureChange, width = 400, height = 150 }
         />
       </div>
       <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">Podpisz powyżej</p>
+        <p className="text-sm text-muted-foreground">{t('offers.signature.hint')}</p>
         <Button variant="outline" size="sm" onClick={clearCanvas}>
           <Eraser className="h-4 w-4 mr-2" />
-          Wyczyść
+          {t('offers.signature.clear')}
         </Button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Search, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -10,6 +11,7 @@ interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
   ({ className, value, onChange, onClear, ...props }, ref) => {
+    const { t } = useTranslation();
     const hasValue = Boolean(value && String(value).length > 0);
 
     return (
@@ -29,7 +31,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
             size="icon"
             className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             onClick={onClear}
-            aria-label="Wyczyść wyszukiwanie"
+            aria-label={t('common.clearSearch')}
           >
             <X className="h-4 w-4" />
           </Button>

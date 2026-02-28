@@ -7,7 +7,7 @@ import { calcTotals } from '@/lib/estimateCalc';
 import type { LineItem } from './WorkspaceLineItems';
 
 function fmt(n: number): string {
-  return n.toLocaleString('pl-PL', {
+  return n.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

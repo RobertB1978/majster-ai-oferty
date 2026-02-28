@@ -150,7 +150,7 @@ export default function Photos() {
                   )}
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-xs text-muted-foreground">
-                      {new Date(photo.created_at).toLocaleDateString('pl-PL')}
+                      {new Date(photo.created_at).toLocaleDateString()}
                     </span>
                     <Button asChild variant="ghost" size="icon" className="h-7 w-7">
                       <Link to={`/app/jobs/${photo.project_id}`}>

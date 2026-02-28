@@ -122,7 +122,7 @@ export default function OfferApproval() {
         setSubmitted(true);
       }
     } catch {
-      setError(t('offerApproval.notFound.description', 'Nie znaleziono oferty lub link jest nieprawidłowy.'));
+      setError(t('offerApproval.notFound.description'));
     } finally {
       setIsLoading(false);
     }
@@ -188,7 +188,7 @@ export default function OfferApproval() {
         throw new Error(result.error || t('offerApproval.errors.approvalFailed'));
       }
 
-      toast.success(t('offerApproval.success.approved', 'Oferta została zaakceptowana!'));
+      toast.success(t('offerApproval.success.approved'));
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'accepted', accepted_via: 'email_1click', accepted_at: new Date().toISOString() } : null);
     } catch (err) {
@@ -200,11 +200,11 @@ export default function OfferApproval() {
 
   const handleApprove = async () => {
     if (!clientName.trim()) {
-      toast.error(t('offerApproval.errors.nameRequired', 'Podaj imię i nazwisko'));
+      toast.error(t('offerApproval.errors.nameRequired'));
       return;
     }
     if (!signature) {
-      toast.error(t('offerApproval.errors.signatureRequired', 'Podpis jest wymagany'));
+      toast.error(t('offerApproval.errors.signatureRequired'));
       return;
     }
 
@@ -239,7 +239,7 @@ export default function OfferApproval() {
         throw new Error(result.error || t('offerApproval.errors.approvalFailed'));
       }
 
-      toast.success(t('offerApproval.success.approved', 'Oferta zaakceptowana!'));
+      toast.success(t('offerApproval.success.approved'));
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'accepted', accepted_via: 'web_button', accepted_at: new Date().toISOString() } : null);
     } catch (err) {
@@ -280,7 +280,7 @@ export default function OfferApproval() {
         throw new Error(result.error || t('offerApproval.errors.rejectionFailed'));
       }
 
-      toast.success(t('offerApproval.success.rejected', 'Odpowiedź wysłana'));
+      toast.success(t('offerApproval.success.rejected'));
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'rejected' } : null);
     } catch (err) {
@@ -306,10 +306,10 @@ export default function OfferApproval() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Nie udało się cofnąć akceptacji');
+        throw new Error(result.error || t('offerApproval.errors.cancelFailed'));
       }
 
-      toast.success('Akceptacja cofnięta. Wykonawca został powiadomiony.');
+      toast.success(t('offerApproval.success.canceledWithNotification'));
       setSubmitted(false);
       setOffer((prev) => prev ? { ...prev, status: 'pending', accepted_at: null } : null);
     } catch (err) {
@@ -335,7 +335,7 @@ export default function OfferApproval() {
         <Card className="max-w-md w-full mx-4">
           <CardContent className="flex flex-col items-center py-12">
             <XCircle className="h-16 w-16 text-destructive mb-4" />
-            <h1 className="text-xl font-bold mb-2">{t('offerApproval.notFound.title', 'Nie znaleziono oferty')}</h1>
+            <h1 className="text-xl font-bold mb-2">{t('offerApproval.notFound.title')}</h1>
             <p className="text-muted-foreground text-center">
               {error ?? t('offerApproval.notFound.description')}
             </p>
@@ -350,19 +350,19 @@ export default function OfferApproval() {
   // ─── EXPIRED ───────────────────────────────────────
   if (status === 'expired') {
     const expiredDate = offer.valid_until
-      ? new Date(offer.valid_until).toLocaleDateString('pl-PL')
+      ? new Date(offer.valid_until).toLocaleDateString()
       : null;
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="max-w-md w-full">
           <CardContent className="flex flex-col items-center py-12 text-center">
             <Clock className="h-16 w-16 text-amber-500 mb-4" />
-            <h1 className="text-xl font-bold mb-2">Oferta wygasła</h1>
+            <h1 className="text-xl font-bold mb-2">{t('offerApproval.expired.title')}</h1>
             <p className="text-muted-foreground">
               {expiredDate
-                ? `Ta oferta wygasła dnia ${expiredDate}.`
-                : 'Ta oferta już wygasła.'}
-              {' '}Skontaktuj się z fachowcem, aby uzyskać nową wycenę.
+                ? t('offerApproval.expired.expiredOnDate', { date: expiredDate })
+                : t('offerApproval.expired.alreadyExpired')}
+              {' '}{t('offerApproval.expired.contactContractor')}
             </p>
             {offer.company?.phone && (
               <a
@@ -386,9 +386,9 @@ export default function OfferApproval() {
         <Card className="max-w-md w-full">
           <CardContent className="flex flex-col items-center py-12 text-center">
             <Ban className="h-16 w-16 text-muted-foreground mb-4" />
-            <h1 className="text-xl font-bold mb-2">Oferta wycofana</h1>
+            <h1 className="text-xl font-bold mb-2">{t('offerApproval.withdrawn.title')}</h1>
             <p className="text-muted-foreground">
-              Ta oferta została wycofana przez wykonawcę. Skontaktuj się z nim bezpośrednio, jeśli masz pytania.
+              {t('offerApproval.withdrawn.description')}
             </p>
             {offer.company?.phone && (
               <a
@@ -410,7 +410,7 @@ export default function OfferApproval() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <p className="text-muted-foreground">Akceptowanie oferty...</p>
+        <p className="text-muted-foreground">{t('offerApproval.states.accepting')}</p>
       </div>
     );
   }
@@ -422,17 +422,17 @@ export default function OfferApproval() {
   return (
     <>
       <Helmet>
-        <title>{t('offerApproval.pageTitle', 'Oferta')} | Majster.AI</title>
-        <meta name="description" content={t('offerApproval.pageDescription', 'Przejrzyj i zaakceptuj ofertę')} />
+        <title>{t('offerApproval.pageTitle')} | Majster.AI</title>
+        <meta name="description" content={t('offerApproval.pageDescription')} />
       </Helmet>
 
       <div className="min-h-screen bg-background py-8 px-4">
         <div className="max-w-2xl mx-auto space-y-6">
           {/* Header */}
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-2">{t('offerApproval.title', 'Oferta')}</h1>
+            <h1 className="text-3xl font-bold mb-2">{t('offerApproval.title')}</h1>
             <p className="text-muted-foreground">
-              {t('offerApproval.subtitle', 'Przejrzyj szczegóły oferty i zaakceptuj lub odrzuć.')}
+              {t('offerApproval.subtitle')}
             </p>
           </div>
 
@@ -455,12 +455,12 @@ export default function OfferApproval() {
                   <div>
                     <p className={`font-semibold ${isAccepted ? 'text-green-700' : 'text-red-700'}`}>
                       {isAccepted
-                        ? t('offerApproval.status.approved', 'Oferta zaakceptowana')
-                        : t('offerApproval.status.rejected', 'Oferta odrzucona')}
+                        ? t('offerApproval.status.approved')
+                        : t('offerApproval.status.rejected')}
                     </p>
                     {acceptedAt && isAccepted && (
                       <p className="text-sm text-green-600">
-                        {new Date(acceptedAt).toLocaleString('pl-PL')}
+                        {new Date(acceptedAt).toLocaleString()}
                         {offer.accepted_via === 'email_1click' && ' (1-klik email)'}
                       </p>
                     )}
@@ -471,9 +471,7 @@ export default function OfferApproval() {
                 {isAccepted && canCancel(acceptedAt) && (
                   <div className="mt-4 pt-4 border-t border-green-200 dark:border-green-800">
                     <p className="text-sm text-green-700 dark:text-green-400 mb-2">
-                      Masz jeszcze{' '}
-                      <span className="font-bold">{cancelCountdown}s</span>{' '}
-                      na cofnięcie akceptacji.
+                      {t('offerApproval.cancelWindow.timeLeft', { seconds: cancelCountdown })}
                     </p>
                     <Button
                       variant="outline"
@@ -483,7 +481,7 @@ export default function OfferApproval() {
                       className="border-green-400 text-green-700 hover:bg-green-100 dark:text-green-400"
                     >
                       {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                      Zgłoś korektę / cofnij akceptację
+                      {t('offerApproval.cancelWindow.buttonLabel')}
                     </Button>
                   </div>
                 )}
@@ -496,7 +494,7 @@ export default function OfferApproval() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                {t('offerApproval.details.title', 'Szczegóły oferty')}
+                {t('offerApproval.details.title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -504,32 +502,32 @@ export default function OfferApproval() {
                 <div className="flex items-center gap-3">
                   <Building className="h-5 w-5 text-muted-foreground shrink-0" />
                   <div>
-                    <p className="text-sm text-muted-foreground">{t('offerApproval.details.project', 'Projekt')}</p>
-                    <p className="font-medium">{offer.project?.project_name ?? t('offerApproval.details.noName', 'Brak nazwy')}</p>
+                    <p className="text-sm text-muted-foreground">{t('offerApproval.details.project')}</p>
+                    <p className="font-medium">{offer.project?.project_name ?? t('offerApproval.details.noName')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
                   <div>
-                    <p className="text-sm text-muted-foreground">{t('offerApproval.details.date', 'Data')}</p>
-                    <p className="font-medium">{new Date(offer.created_at).toLocaleDateString('pl-PL')}</p>
+                    <p className="text-sm text-muted-foreground">{t('offerApproval.details.date')}</p>
+                    <p className="font-medium">{new Date(offer.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
                 {offer.valid_until && (
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-muted-foreground shrink-0" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Ważna do</p>
-                      <p className="font-medium">{new Date(offer.valid_until).toLocaleDateString('pl-PL')}</p>
+                      <p className="text-sm text-muted-foreground">{t('offerApproval.details.validUntil')}</p>
+                      <p className="font-medium">{new Date(offer.valid_until).toLocaleDateString()}</p>
                     </div>
                   </div>
                 )}
                 <div className="flex items-center gap-3 md:col-span-2">
                   <DollarSign className="h-5 w-5 text-muted-foreground shrink-0" />
                   <div>
-                    <p className="text-sm text-muted-foreground">{t('offerApproval.details.value', 'Wartość')}</p>
+                    <p className="text-sm text-muted-foreground">{t('offerApproval.details.value')}</p>
                     <p className="text-2xl font-bold text-primary">
-                      {offer.quote ? formatCurrency(offer.quote.total) : t('offerApproval.details.noQuote', 'Brak wyceny')}
+                      {offer.quote ? formatCurrency(offer.quote.total) : t('offerApproval.details.noQuote')}
                     </p>
                   </div>
                 </div>
@@ -538,15 +536,15 @@ export default function OfferApproval() {
               {/* Quote line items */}
               {offer.quote && Array.isArray(offer.quote.positions) && offer.quote.positions.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="font-medium mb-3">{t('offerApproval.positions.title', 'Zakres prac')}</h3>
+                  <h3 className="font-medium mb-3">{t('offerApproval.positions.title')}</h3>
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
                       <thead className="bg-muted">
                         <tr>
-                          <th className="text-left p-3">{t('offerApproval.positions.item', 'Pozycja')}</th>
-                          <th className="text-right p-3">{t('offerApproval.positions.quantity', 'Ilość')}</th>
-                          <th className="text-right p-3">{t('offerApproval.positions.price', 'Cena/jm')}</th>
-                          <th className="text-right p-3">{t('offerApproval.positions.value', 'Suma')}</th>
+                          <th className="text-left p-3">{t('offerApproval.positions.item')}</th>
+                          <th className="text-right p-3">{t('offerApproval.positions.quantity')}</th>
+                          <th className="text-right p-3">{t('offerApproval.positions.price')}</th>
+                          <th className="text-right p-3">{t('offerApproval.positions.value')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -568,7 +566,7 @@ export default function OfferApproval() {
               <div className="pt-2">
                 <Button variant="outline" size="sm" className="gap-2">
                   <Download className="h-4 w-4" />
-                  Pobierz PDF
+                  {t('offerApproval.actions.downloadPdf')}
                 </Button>
               </div>
             </CardContent>
@@ -578,7 +576,7 @@ export default function OfferApproval() {
           {isAccepted && offer.company && (
             <Card className="border-green-200 dark:border-green-800">
               <CardHeader>
-                <CardTitle className="text-lg">Kontakt z wykonawcą</CardTitle>
+                <CardTitle className="text-lg">{t('offerApproval.contractor.title')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {offer.company.company_name && (
@@ -604,15 +602,15 @@ export default function OfferApproval() {
           {!submitted && ['pending', 'sent', 'viewed'].includes(status) && (
             <Card>
               <CardHeader>
-                <CardTitle>{t('offerApproval.form.title', 'Twoja decyzja')}</CardTitle>
+                <CardTitle>{t('offerApproval.form.title')}</CardTitle>
                 <CardDescription>
-                  {t('offerApproval.form.description', 'Zaakceptuj lub odrzuć ofertę. Po akceptacji masz 10 minut na cofnięcie decyzji.')}
+                  {t('offerApproval.form.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <Label>{t('offerApproval.form.name', 'Imię i nazwisko')} *</Label>
+                    <Label>{t('offerApproval.form.name')} *</Label>
                     <Input
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
@@ -632,19 +630,19 @@ export default function OfferApproval() {
                 </div>
 
                 <div>
-                  <Label>{t('offerApproval.form.comment', 'Komentarz')}</Label>
+                  <Label>{t('offerApproval.form.comment')}</Label>
                   <Textarea
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    placeholder={t('offerApproval.form.commentPlaceholder', 'Opcjonalne uwagi...')}
+                    placeholder={t('offerApproval.form.commentPlaceholder')}
                     rows={3}
                   />
                 </div>
 
                 <div>
-                  <Label>{t('offerApproval.form.signature', 'Podpis')} *</Label>
+                  <Label>{t('offerApproval.form.signature')} *</Label>
                   <p className="text-sm text-muted-foreground mb-2">
-                    {t('offerApproval.form.signatureHint', 'Narysuj podpis w polu poniżej')}
+                    {t('offerApproval.form.signatureHint')}
                   </p>
                   <SignatureCanvas onSignatureChange={setSignature} />
                 </div>
@@ -660,7 +658,7 @@ export default function OfferApproval() {
                     ) : (
                       <CheckCircle className="h-4 w-4 mr-2" />
                     )}
-                    {t('offerApproval.form.approve', 'Akceptuję')}
+                    {t('offerApproval.form.approve')}
                   </Button>
                   <Button
                     variant="outline"
@@ -669,7 +667,7 @@ export default function OfferApproval() {
                     className="min-h-[48px]"
                   >
                     <XCircle className="h-4 w-4 mr-2" />
-                    {t('offerApproval.form.reject', 'Odrzucam')}
+                    {t('offerApproval.form.reject')}
                   </Button>
                 </div>
 
@@ -677,13 +675,13 @@ export default function OfferApproval() {
                 <div className="border-t pt-4">
                   <details>
                     <summary className="text-sm text-muted-foreground cursor-pointer hover:text-foreground">
-                      Chcę podać powód odrzucenia
+                      {t('offerApproval.form.rejectReasonToggle')}
                     </summary>
                     <div className="mt-3">
                       <Textarea
                         value={rejectedReason}
                         onChange={(e) => setRejectedReason(e.target.value)}
-                        placeholder="Powód odrzucenia (opcjonalnie)..."
+                        placeholder={t('offerApproval.form.rejectReasonPlaceholder')}
                         rows={2}
                       />
                     </div>
@@ -693,12 +691,12 @@ export default function OfferApproval() {
                 {/* Question link */}
                 {offer.company?.contact_email && (
                   <div className="text-center text-sm text-muted-foreground">
-                    Mam pytanie →{' '}
+                    {t('offerApproval.form.questionPrefix')}{' '}
                     <a
                       href={`mailto:${offer.company.contact_email}?subject=Pytanie dot. oferty`}
                       className="text-primary hover:underline"
                     >
-                      napisz do wykonawcy
+                      {t('offerApproval.form.contactLink')}
                     </a>
                   </div>
                 )}
@@ -711,7 +709,7 @@ export default function OfferApproval() {
             <Card className="border-dashed">
               <CardContent className="py-6 text-center text-muted-foreground">
                 <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-amber-500" />
-                <p className="text-sm">Ta oferta została już odrzucona.</p>
+                <p className="text-sm">{t('offerApproval.readonly.alreadyRejected')}</p>
               </CardContent>
             </Card>
           )}

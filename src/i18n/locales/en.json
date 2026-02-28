@@ -44,7 +44,11 @@
     "saveError": "Save error:",
     "nextPage": "next page",
     "previousPage": "previous page",
-    "open": "Open"
+    "open": "Open",
+    "clearSearch": "Clear search",
+    "pageOf": "Page {{current}} of {{total}}",
+    "showingItems": "Showing {{from}}-{{to}} of {{total}}",
+    "previous": "Previous"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -923,7 +927,8 @@
     "active": "Active",
     "noAccessDescription": "You don't have permission to view this page",
     "systemStatus": "System Status",
-    "userManagement": "User Management"
+    "userManagement": "User Management",
+    "backToDashboard": "Back to Dashboard"
   },
   "adminConfig": {
     "pageTitle": "Configuration",
@@ -962,7 +967,13 @@
     "visible": "Visible",
     "comingSoon": "Soon",
     "moveUp": "Move up",
-    "moveDown": "Move down"
+    "moveDown": "Move down",
+    "expandMenu": "Expand menu",
+    "collapseMenu": "Collapse menu",
+    "backToApp": "Back to App",
+    "config": "Configuration",
+    "plans": "Plans",
+    "diagnostics": "Diagnostics"
   },
   "adminDiag": {
     "pageTitle": "Diagnostics",
@@ -1189,7 +1200,8 @@
       "noName": "No name",
       "date": "Offer Date",
       "value": "Offer Value",
-      "noQuote": "No quote"
+      "noQuote": "No quote",
+      "validUntil": "Valid until"
     },
     "positions": {
       "title": "Quote Items:",
@@ -1207,18 +1219,50 @@
       "signature": "Signature",
       "signatureHint": "Sign below to accept the offer",
       "approve": "Accept Offer",
-      "reject": "Reject"
+      "reject": "Reject",
+      "rejectReasonToggle": "I want to provide a rejection reason",
+      "rejectReasonPlaceholder": "Rejection reason (optional)...",
+      "questionPrefix": "Have a question →",
+      "contactLink": "contact the contractor"
     },
     "errors": {
       "notFound": "Offer not found",
       "nameRequired": "Please enter your name",
       "signatureRequired": "Please add your signature",
       "approvalFailed": "Failed to approve offer",
-      "rejectionFailed": "Failed to reject offer"
+      "rejectionFailed": "Failed to reject offer",
+      "cancelFailed": "Failed to cancel the approval"
     },
     "success": {
       "approved": "Offer has been approved!",
-      "rejected": "Offer has been rejected"
+      "rejected": "Offer has been rejected",
+      "canceledWithNotification": "Approval cancelled. The contractor has been notified."
+    },
+    "expired": {
+      "title": "Offer Expired",
+      "expiredOnDate": "This offer expired on {{date}}.",
+      "alreadyExpired": "This offer has already expired.",
+      "contactContractor": "Contact the contractor to get a new quote."
+    },
+    "withdrawn": {
+      "title": "Offer Withdrawn",
+      "description": "This offer has been withdrawn by the contractor. Contact them directly if you have any questions."
+    },
+    "states": {
+      "accepting": "Accepting the offer..."
+    },
+    "cancelWindow": {
+      "timeLeft": "You have {{seconds}}s left to cancel the approval.",
+      "buttonLabel": "Request correction / cancel approval"
+    },
+    "actions": {
+      "downloadPdf": "Download PDF"
+    },
+    "contractor": {
+      "title": "Contractor Contact"
+    },
+    "readonly": {
+      "alreadyRejected": "This offer has already been rejected."
     }
   },
   "organizations": {
@@ -1361,7 +1405,33 @@
     "provideRecipientEmail": "Provide recipient email address",
     "provideSubject": "Provide message subject",
     "emailNotConfigured": "Email sending is not configured. Contact the administrator.",
-    "failedToSend": "Failed to send offer"
+    "failedToSend": "Failed to send offer",
+    "noClientEmail": "No client email address.",
+    "noClientEmailDesc": "Enter an address below or use one of the alternative delivery methods.",
+    "emailNotConfiguredShort": "Email sending is not configured.",
+    "emailNotConfiguredDetail": "Contact your administrator or use the methods below.",
+    "goToSettings": "Go to Settings →",
+    "failedToSendShort": "Failed to send email.",
+    "retryOrUseFallback": "Try again or use the methods below.",
+    "alternativeDelivery": "Alternative offer delivery methods",
+    "linkCopied": "Link copied!",
+    "copyLink": "Copy offer link",
+    "downloadOfferPdf": "Download offer PDF",
+    "replyEmailUnverified": "⚠️ Reply-to email not verified.",
+    "replyEmailUnverifiedDesc": "Clients will not be able to reply directly to the offer.",
+    "verifyInSettings": "Verify in Settings →",
+    "offerValidity": "Offer Validity",
+    "selectExpiry": "Select expiry period",
+    "customDate": "Custom date",
+    "customDateAria": "Custom expiry date",
+    "validUntil": "until {{date}}",
+    "dualTokenInfo": "The email will include two buttons: VIEW OFFER and ✓ ACCEPT (1 click).",
+    "tokenGenerateFailed": "Failed to generate offer link",
+    "linkCopiedSuccess": "Offer link copied!",
+    "setExpiryRequired": "Set the offer expiry date",
+    "days_one": "{{count}} day",
+    "days_few": "{{count}} days",
+    "days_many": "{{count}} days"
   },
   "onboarding": {
     "welcome": "Welcome to Majster.AI!",
@@ -2302,5 +2372,73 @@
     "faq": "Frequently Asked Questions",
     "comparePlansDesc": "Compare all plans and choose the right one for you.",
     "comparePlans": "Compare plans"
+  },
+  "offers": {
+    "approvalPanel": {
+      "createLink": "Create link",
+      "createLinkTitle": "Create approval link",
+      "clientName": "Client name",
+      "createLinkButton": "Create approval link",
+      "noLinks": "No approval links",
+      "noLinksDesc": "Create a link so the client can approve the offer online",
+      "extend": "Extend",
+      "extendTooltip": "Extend validity by 30 days",
+      "sendReminderTooltip": "Send email reminder",
+      "expired": "Expired",
+      "fillAllFields": "Fill in all fields",
+      "reminderSent": "Reminder sent to client",
+      "reminderFailed": "Failed to send reminder"
+    },
+    "history": {
+      "title": "Offer send history",
+      "sent": "Sent",
+      "failed": "Failed"
+    },
+    "stats": {
+      "sentOffers": "Sent offers",
+      "acceptanceRate": "Accepted / Sent",
+      "followUpRequired": "Offers requiring follow-up"
+    },
+    "tracking": {
+      "activity": "Activity",
+      "clientOpened": "Client opened the offer",
+      "sentToClient": "Offer sent to client",
+      "expired": "Offer expired",
+      "created": "Offer created",
+      "acceptedEmail": "Accepted (email)",
+      "accepted": "Accepted",
+      "rejected": "Rejected by client",
+      "withdrawn": "Offer withdrawn"
+    },
+    "pdf": {
+      "signatureLabel": "Contractor's signature and stamp",
+      "validDays": "Offer valid for 30 days from the date of issue",
+      "sendToClient": "Send to client",
+      "offerTitle": "Offer title",
+      "introText": "Introductory text",
+      "introPlaceholder": "Dear Client...",
+      "termsPlaceholder": "Payment terms, warranty...",
+      "vatLabel": "8% (construction services)",
+      "editCta": "Click \"Edit\" to configure the offer content",
+      "offerValue": "Offer value",
+      "pdfGenerated": "Offer PDF has been generated",
+      "openPdf": "Open PDF",
+      "quantity": "Qty",
+      "value": "Value",
+      "materials": "Materials:",
+      "netValue": "Net value:",
+      "grossValue": "Gross value:"
+    },
+    "signature": {
+      "hint": "Sign above",
+      "clear": "Clear"
+    }
+  },
+  "legal": {
+    "plVersionPrevails": "This document is available in Polish only. The Polish version is the legally binding version.",
+    "back": "Back",
+    "privacyTitle": "Privacy Policy | Majster.AI",
+    "termsTitle": "Terms of Service | Majster.AI",
+    "cookiesTitle": "Cookie Policy | Majster.AI"
   }
 }

@@ -161,15 +161,15 @@ export default function Billing() {
           <TabsContent value="history">
             <Card>
               <CardHeader>
-                <CardTitle>Historia płatności</CardTitle>
+                <CardTitle>{t('billing.paymentHistory')}</CardTitle>
                 <CardDescription>Twoje ostatnie transakcje</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <Receipt className="h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">Brak historii płatności</p>
+                  <p className="text-muted-foreground">{t('billing.noPayments')}</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Płatności pojawią się tutaj po zakupie planu
+                    {t('billing.noPaymentsDesc')}
                   </p>
                 </div>
               </CardContent>
