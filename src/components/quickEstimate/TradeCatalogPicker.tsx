@@ -51,6 +51,46 @@ interface TradeCatalogPickerProps {
   onBack: () => void;
 }
 
+/** Translate a catalog category id to a localised label, falling back to the Polish name */
+function useCatalogLabel(id: string, fallback: string): string {
+  const { t } = useTranslation();
+  const translated = t(`tradeCatalog.categories.${id}`, '');
+  return translated || fallback;
+}
+
+function CategoryTile({ cat, onClick }: { cat: CatalogCategory; onClick: (c: CatalogCategory) => void }) {
+  const label = useCatalogLabel(cat.id, cat.name);
+  return (
+    <button
+      onClick={() => onClick(cat)}
+      className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-muted hover:border-primary hover:bg-primary/5 transition-all text-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+        <CatalogIcon name={cat.icon} className="h-4 w-4 text-primary" />
+      </div>
+      <p className="text-xs font-medium leading-tight">{label}</p>
+    </button>
+  );
+}
+
+function SubcategoryRow({ sub, onClick }: { sub: CatalogSubcategory; onClick: (s: CatalogSubcategory) => void }) {
+  const label = useCatalogLabel(sub.id, sub.name);
+  return (
+    <button
+      onClick={() => onClick(sub)}
+      className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-muted hover:border-primary hover:bg-primary/5 transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span className="text-sm font-medium text-left">{label}</span>
+      <div className="flex items-center gap-1.5 shrink-0">
+        <Badge variant="secondary" className="text-xs tabular-nums">
+          {sub.trades.length}
+        </Badge>
+        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+      </div>
+    </button>
+  );
+}
+
 export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerProps) {
   const { t } = useTranslation();
   const [step, setStep] = useState<CatalogStep>('categories');
@@ -83,12 +123,15 @@ export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerP
     }
   };
 
+  const categoryLabel = useCatalogLabel(selectedCategory?.id ?? '', selectedCategory?.name ?? '');
+  const subcategoryLabel = useCatalogLabel(selectedSubcategory?.id ?? '', selectedSubcategory?.name ?? '');
+
   const title =
     step === 'categories'
       ? t('quickEstimate.tradeCatalog.chooseCategory')
       : step === 'subcategories'
-        ? selectedCategory?.name ?? t('quickEstimate.tradeCatalog.chooseSubcategory')
-        : selectedSubcategory?.name ?? t('quickEstimate.tradeCatalog.chooseTrade');
+        ? categoryLabel || t('quickEstimate.tradeCatalog.chooseSubcategory')
+        : subcategoryLabel || t('quickEstimate.tradeCatalog.chooseTrade');
 
   return (
     <div className="space-y-3">
@@ -110,16 +153,7 @@ export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerP
       {step === 'categories' && (
         <div className="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
           {tradeCategories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => handleSelectCategory(cat)}
-              className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-muted hover:border-primary hover:bg-primary/5 transition-all text-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <CatalogIcon name={cat.icon} className="h-4 w-4 text-primary" />
-              </div>
-              <p className="text-xs font-medium leading-tight">{cat.name}</p>
-            </button>
+            <CategoryTile key={cat.id} cat={cat} onClick={handleSelectCategory} />
           ))}
         </div>
       )}
@@ -128,19 +162,7 @@ export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerP
       {step === 'subcategories' && selectedCategory && (
         <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
           {selectedCategory.subcategories.map((sub) => (
-            <button
-              key={sub.id}
-              onClick={() => handleSelectSubcategory(sub)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-muted hover:border-primary hover:bg-primary/5 transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <span className="text-sm font-medium text-left">{sub.name}</span>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <Badge variant="secondary" className="text-xs tabular-nums">
-                  {sub.trades.length}
-                </Badge>
-                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-              </div>
-            </button>
+            <SubcategoryRow key={sub.id} sub={sub} onClick={handleSelectSubcategory} />
           ))}
         </div>
       )}

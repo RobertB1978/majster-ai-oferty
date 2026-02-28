@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,89 +7,55 @@ import { ArrowLeft, Shield, Database, Eye, Lock, UserCheck, Globe, Mail } from '
 
 export default function PrivacyPolicy() {
   const navigate = useNavigate();
-  const lastUpdated = new Date().toLocaleDateString('pl-PL');
+  const { t, i18n } = useTranslation();
+  const lastUpdated = new Date().toLocaleDateString(i18n.language === 'pl' ? 'pl-PL' : i18n.language === 'uk' ? 'uk-UA' : 'en-GB');
 
   const sections = [
     {
       icon: Shield,
-      title: '1. Administrator danych',
-      content: `Administratorem Twoich danych osobowych jest Majster.AI. Dokładamy wszelkich starań, 
-      aby Twoje dane były bezpieczne i przetwarzane zgodnie z RODO (Rozporządzenie UE 2016/679).`,
+      title: t('legal.privacy.s1title'),
+      content: t('legal.privacy.s1content'),
     },
     {
       icon: Database,
-      title: '2. Jakie dane zbieramy',
-      content: `Zbieramy następujące dane:
-      • Dane konta: adres email, hasło (zaszyfrowane), nazwa firmy
-      • Dane firmowe: NIP, adres, telefon, logo
-      • Dane klientów: imię/nazwisko, kontakt, adres (wprowadzane przez Ciebie)
-      • Dane projektów: wyceny, pozycje, PDF-y, historia wysyłek
-      • Dane techniczne: adres IP, User Agent, cookies
-      • Dane analityczne: sposób korzystania z aplikacji`,
+      title: t('legal.privacy.s2title'),
+      content: t('legal.privacy.s2content'),
     },
     {
       icon: Eye,
-      title: '3. Cele przetwarzania',
-      content: `Twoje dane przetwarzamy w celu:
-      • Świadczenia usług Majster.AI (podstawa: umowa)
-      • Obsługi konta użytkownika
-      • Generowania i wysyłania wycen
-      • Analityki i ulepszania usług
-      • Marketingu własnych produktów (zgoda)
-      • Wypełnienia obowiązków prawnych`,
+      title: t('legal.privacy.s3title'),
+      content: t('legal.privacy.s3content'),
     },
     {
       icon: Lock,
-      title: '4. Bezpieczeństwo danych',
-      content: `Stosujemy następujące środki bezpieczeństwa:
-      • Szyfrowanie SSL/TLS dla wszystkich połączeń
-      • Szyfrowanie haseł algorytmem bcrypt
-      • Row Level Security (RLS) w bazie danych
-      • Regularne kopie zapasowe
-      • Monitoring bezpieczeństwa 24/7
-      • Ograniczony dostęp do infrastruktury`,
+      title: t('legal.privacy.s4title'),
+      content: t('legal.privacy.s4content'),
     },
     {
       icon: UserCheck,
-      title: '5. Twoje prawa (RODO)',
-      content: `Masz prawo do:
-      • Dostępu do swoich danych (art. 15 RODO)
-      • Sprostowania danych (art. 16 RODO)
-      • Usunięcia danych "prawo do bycia zapomnianym" (art. 17 RODO)
-      • Ograniczenia przetwarzania (art. 18 RODO)
-      • Przenoszenia danych (art. 20 RODO)
-      • Sprzeciwu wobec przetwarzania (art. 21 RODO)
-      • Wycofania zgody w dowolnym momencie`,
+      title: t('legal.privacy.s5title'),
+      content: t('legal.privacy.s5content'),
     },
     {
       icon: Globe,
-      title: '6. Przekazywanie danych',
-      content: `Twoje dane mogą być przekazywane:
-      • Dostawcom usług hostingowych (Supabase - UE/USA)
-      • Dostawcom usług email (Resend)
-      • Organom państwowym (na żądanie prawne)
-      
-      Wszystkie podmioty przetwarzające dane są zobowiązane umową powierzenia (DPA).`,
+      title: t('legal.privacy.s6title'),
+      content: t('legal.privacy.s6content'),
     },
     {
       icon: Mail,
-      title: '7. Kontakt',
-      content: `W sprawach ochrony danych osobowych możesz się z nami skontaktować:
-      • Email: kontakt.majsterai@gmail.com
-      • Formularz w aplikacji: Ustawienia → Centrum RODO
-      
-      Masz prawo wnieść skargę do Prezesa UODO.`,
+      title: t('legal.privacy.s7title'),
+      content: t('legal.privacy.s7content'),
     },
   ];
 
   return (
     <>
       <SEOHead
-        title="Polityka Prywatności"
-        description="Polityka prywatności Majster.AI - dowiedz się jak chronimy Twoje dane osobowe zgodnie z RODO."
-        keywords="polityka prywatności, RODO, GDPR, ochrona danych, Majster.AI"
+        title={t('legal.privacy.metaTitle')}
+        description={t('legal.privacy.metaDesc')}
+        keywords="privacy policy, GDPR, data protection, Majster.AI"
       />
-      
+
       <div className="min-h-screen bg-background">
         <div className="container max-w-4xl py-8 px-4">
           <Button
@@ -97,21 +64,27 @@ export default function PrivacyPolicy() {
             className="mb-6"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Powrót
+            {t('legal.back')}
           </Button>
 
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
               <Shield className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mb-2">Polityka Prywatności</h1>
+            <h1 className="text-3xl font-bold mb-2">{t('legal.privacy.pageTitle')}</h1>
             <p className="text-muted-foreground">
-              Majster.AI - ochrona Twoich danych osobowych
+              {t('legal.privacy.subtitle')}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              Ostatnia aktualizacja: {lastUpdated}
+              {t('legal.lastUpdated')} {lastUpdated}
             </p>
           </div>
+
+          {i18n.language !== 'pl' && t('legal.plVersionPrevails') && (
+            <div className="mb-6 p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20">
+              <p className="text-sm text-amber-700 dark:text-amber-400">{t('legal.plVersionPrevails')}</p>
+            </div>
+          )}
 
           <div className="space-y-6">
             {sections.map((section) => (
@@ -135,8 +108,7 @@ export default function PrivacyPolicy() {
 
           <div className="mt-8 p-6 rounded-xl bg-muted/50 text-center">
             <p className="text-sm text-muted-foreground">
-              Ta polityka prywatności jest zgodna z Rozporządzeniem Parlamentu Europejskiego 
-              i Rady (UE) 2016/679 (RODO) oraz polską ustawą o ochronie danych osobowych.
+              {t('legal.privacy.footer')}
             </p>
           </div>
         </div>

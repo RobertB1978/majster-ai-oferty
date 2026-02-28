@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  ArrowLeft, 
-  Shield, 
-  Download, 
-  Trash2, 
-  Eye, 
+import {
+  ArrowLeft,
+  Shield,
+  Download,
+  Trash2,
+  Eye,
   FileEdit,
   AlertTriangle,
   CheckCircle2,
@@ -31,6 +32,7 @@ import { useLogAuditEvent } from '@/hooks/useAuditLog';
 
 export default function GDPRCenter() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const logAudit = useLogAuditEvent();
   const [isExporting, setIsExporting] = useState(false);
@@ -39,7 +41,7 @@ export default function GDPRCenter() {
 
   const handleExportData = async () => {
     if (!user) return;
-    
+
     setIsExporting(true);
     try {
       // Fetch all user data
@@ -91,10 +93,10 @@ export default function GDPRCenter() {
         entityId: user.id,
       });
 
-      toast.success('Dane zostały wyeksportowane');
+      toast.success(t('legal.gdpr.toast.exportSuccess'));
     } catch (error) {
       console.error('Export error:', error);
-      toast.error('Błąd podczas eksportu danych');
+      toast.error(t('legal.gdpr.toast.exportError'));
     } finally {
       setIsExporting(false);
     }
@@ -102,17 +104,16 @@ export default function GDPRCenter() {
 
   const handleDeleteRequest = async () => {
     if (!user) return;
-    
+
     setIsDeleting(true);
     try {
-      // Log the deletion request
       await logAudit.mutateAsync({
         action: 'user.data_delete_request',
         entityType: 'user',
         entityId: user.id,
       });
 
-      // Create a notification for admin
+      // Create a notification for admin (stored in PL as system data)
       await supabase.from('notifications').insert({
         user_id: user.id,
         title: 'Żądanie usunięcia konta',
@@ -120,14 +121,14 @@ export default function GDPRCenter() {
         type: 'warning',
       });
 
-      toast.success('Żądanie usunięcia zostało wysłane', {
-        description: 'Skontaktujemy się z Tobą w ciągu 30 dni.',
+      toast.success(t('legal.gdpr.toast.deleteSuccess'), {
+        description: t('legal.gdpr.toast.deleteSuccessDesc'),
       });
-      
+
       setShowDeleteDialog(false);
     } catch (error) {
       console.error('Delete request error:', error);
-      toast.error('Błąd podczas wysyłania żądania');
+      toast.error(t('legal.gdpr.toast.deleteError'));
     } finally {
       setIsDeleting(false);
     }
@@ -136,51 +137,53 @@ export default function GDPRCenter() {
   const rights = [
     {
       icon: Eye,
-      title: 'Prawo dostępu (art. 15)',
-      description: 'Masz prawo wiedzieć, jakie dane o Tobie przetwarzamy.',
-      action: 'Przeglądaj dane w swoim profilu i ustawieniach.',
+      title: t('legal.gdpr.rights.access.title'),
+      description: t('legal.gdpr.rights.access.desc'),
+      action: t('legal.gdpr.rights.access.action'),
       button: null,
     },
     {
       icon: FileEdit,
-      title: 'Prawo do sprostowania (art. 16)',
-      description: 'Możesz poprawić swoje dane, jeśli są nieprawidłowe.',
-      action: 'Edytuj swoje dane w profilu firmy.',
-      button: { label: 'Edytuj profil', onClick: () => navigate('/profile') },
+      title: t('legal.gdpr.rights.rectify.title'),
+      description: t('legal.gdpr.rights.rectify.desc'),
+      action: t('legal.gdpr.rights.rectify.action'),
+      button: { label: t('legal.gdpr.rights.rectify.btn'), onClick: () => navigate('/profile') },
     },
     {
       icon: Download,
-      title: 'Prawo do przenoszenia (art. 20)',
-      description: 'Możesz pobrać wszystkie swoje dane w formacie JSON.',
-      action: 'Kliknij przycisk, aby pobrać kopię swoich danych.',
-      button: { 
-        label: isExporting ? 'Eksportowanie...' : 'Pobierz moje dane', 
+      title: t('legal.gdpr.rights.portability.title'),
+      description: t('legal.gdpr.rights.portability.desc'),
+      action: t('legal.gdpr.rights.portability.action'),
+      button: {
+        label: isExporting ? t('legal.gdpr.rights.portability.btnLoading') : t('legal.gdpr.rights.portability.btn'),
         onClick: handleExportData,
         loading: isExporting,
       },
     },
     {
       icon: Trash2,
-      title: 'Prawo do usunięcia (art. 17)',
-      description: 'Możesz zażądać usunięcia swojego konta i wszystkich danych.',
-      action: 'To działanie jest nieodwracalne. Rozpatrzymy żądanie w ciągu 30 dni.',
-      button: { 
-        label: 'Żądaj usunięcia', 
+      title: t('legal.gdpr.rights.erasure.title'),
+      description: t('legal.gdpr.rights.erasure.desc'),
+      action: t('legal.gdpr.rights.erasure.action'),
+      button: {
+        label: t('legal.gdpr.rights.erasure.btn'),
         onClick: () => setShowDeleteDialog(true),
         variant: 'destructive' as const,
       },
     },
   ];
 
+  const deleteEffects: string[] = t('legal.gdpr.deleteDialog.effects', { returnObjects: true }) as string[];
+
   return (
     <>
       <SEOHead
-        title="Centrum RODO"
-        description="Zarządzaj swoimi danymi osobowymi zgodnie z RODO - eksportuj, edytuj lub usuń swoje dane."
-        keywords="RODO, GDPR, prawa użytkownika, ochrona danych, eksport danych"
+        title={t('legal.gdpr.metaTitle')}
+        description={t('legal.gdpr.metaDesc')}
+        keywords="RODO, GDPR, user rights, data protection, data export"
         noIndex={true}
       />
-      
+
       <div className="min-h-screen bg-background">
         <div className="container max-w-4xl py-8 px-4">
           <Button
@@ -189,16 +192,16 @@ export default function GDPRCenter() {
             className="mb-6"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Powrót
+            {t('legal.back')}
           </Button>
 
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
               <Shield className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mb-2">Centrum RODO</h1>
+            <h1 className="text-3xl font-bold mb-2">{t('legal.gdpr.pageTitle')}</h1>
             <p className="text-muted-foreground">
-              Zarządzaj swoimi danymi osobowymi
+              {t('legal.gdpr.subtitle')}
             </p>
           </div>
 
@@ -210,7 +213,7 @@ export default function GDPRCenter() {
                   <CheckCircle2 className="h-6 w-6 text-success" />
                 </div>
                 <div>
-                  <p className="font-medium">Zalogowany jako</p>
+                  <p className="font-medium">{t('legal.gdpr.loggedAs')}</p>
                   <p className="text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
@@ -250,11 +253,9 @@ export default function GDPRCenter() {
             <div className="flex gap-4">
               <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium mb-1">Ważne informacje</p>
+                <p className="font-medium mb-1">{t('legal.gdpr.importantInfo')}</p>
                 <p className="text-sm text-muted-foreground">
-                  Zgodnie z RODO mamy 30 dni na realizację Twojego żądania. W przypadku 
-                  skomplikowanych żądań termin może zostać przedłużony o kolejne 60 dni.
-                  W razie pytań skontaktuj się: kontakt.majsterai@gmail.com
+                  {t('legal.gdpr.importantText')}
                 </p>
               </div>
             </div>
@@ -267,36 +268,34 @@ export default function GDPRCenter() {
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              Żądanie usunięcia danych
+              {t('legal.gdpr.deleteDialog.title')}
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-4">
               <p>
-                Czy na pewno chcesz zażądać usunięcia swojego konta i wszystkich danych?
+                {t('legal.gdpr.deleteDialog.confirm')}
               </p>
               <div className="rounded-lg bg-destructive/10 p-4 text-sm">
-                <p className="font-medium text-destructive mb-2">To działanie spowoduje:</p>
+                <p className="font-medium text-destructive mb-2">{t('legal.gdpr.deleteDialog.willCause')}</p>
                 <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                  <li>Usunięcie wszystkich Twoich projektów i wycen</li>
-                  <li>Usunięcie danych klientów</li>
-                  <li>Usunięcie profilu firmy i dokumentów</li>
-                  <li>Trwałe usunięcie konta</li>
+                  {Array.isArray(deleteEffects) && deleteEffects.map((effect, i) => (
+                    <li key={i}>{effect}</li>
+                  ))}
                 </ul>
               </div>
               <p className="text-sm">
-                Żądanie zostanie rozpatrzone w ciągu 30 dni. Przed usunięciem 
-                zalecamy pobranie kopii swoich danych.
+                {t('legal.gdpr.deleteDialog.timeline')}
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Anuluj</AlertDialogCancel>
+            <AlertDialogCancel>{t('legal.gdpr.deleteDialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteRequest}
               disabled={isDeleting}
               className="bg-destructive hover:bg-destructive/90"
             >
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Wyślij żądanie
+              {isDeleting ? t('legal.gdpr.deleteDialog.submitting') : t('legal.gdpr.deleteDialog.submit')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

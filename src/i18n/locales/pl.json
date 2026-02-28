@@ -2440,11 +2440,181 @@
     "back": "Powrót",
     "privacyTitle": "Polityka Prywatności | Majster.AI",
     "termsTitle": "Regulamin | Majster.AI",
-    "cookiesTitle": "Polityka Cookies | Majster.AI"
+    "cookiesTitle": "Polityka Cookies | Majster.AI",
+    "lastUpdated": "Ostatnia aktualizacja:",
+    "dpaTitle": "Umowa Powierzenia Danych | Majster.AI",
+    "gdprTitle": "Centrum RODO | Majster.AI",
+    "terms": {
+      "pageTitle": "Regulamin Serwisu",
+      "subtitle": "Majster.AI — zasady korzystania z platformy",
+      "agreement": "Korzystając z Majster.AI potwierdzasz, że zapoznałeś się z Regulaminem i akceptujesz jego postanowienia.",
+      "metaTitle": "Regulamin Serwisu",
+      "metaDesc": "Regulamin korzystania z serwisu Majster.AI — zasady, prawa i obowiązki użytkowników.",
+      "s1title": "1. Postanowienia ogólne",
+      "s1content": "1.1. Niniejszy Regulamin określa zasady korzystania z serwisu Majster.AI.\n\n1.2. Majster.AI to platforma SaaS umożliwiająca tworzenie wycen, ofert i kosztorysów dla fachowców z branży budowlanej i usługowej.\n\n1.3. Korzystając z serwisu, akceptujesz niniejszy Regulamin oraz Politykę Prywatności.\n\n1.4. Definicje:\n• Serwis — aplikacja Majster.AI\n• Użytkownik — osoba korzystająca z Serwisu\n• Konto — indywidualne konto Użytkownika\n• Subskrypcja — płatny plan dostępu do funkcji Serwisu",
+      "s2title": "2. Zakres usług",
+      "s2content": "2.1. Majster.AI oferuje:\n• Zarządzanie klientami i projektami\n• Tworzenie wycen i kosztorysów\n• Generowanie profesjonalnych PDF-ów\n• Wysyłkę ofert emailem\n• Asystenta AI (plany płatne)\n• Kalendarz i harmonogram prac\n• Analitykę i raporty\n\n2.2. Dostęp do funkcji zależy od planu subskrypcji.\n\n2.3. Zastrzegamy prawo do modyfikacji zakresu usług z 30-dniowym wyprzedzeniem.",
+      "s3title": "3. Plany i płatności",
+      "s3content": "3.1. Dostępne plany: FREE, STARTER, BUSINESS, ENTERPRISE.\n\n3.2. Płatności realizowane z góry za okres rozliczeniowy.\n\n3.3. Ceny w PLN, zawierają VAT 23%.\n\n3.4. Zwroty możliwe w ciągu 14 dni od zakupu.\n\n3.5. Brak płatności powoduje degradację do planu FREE.",
+      "s4title": "4. Ograniczenia i zakazy",
+      "s4content": "4.1. Zabrania się:\n• Wykorzystywania niezgodnie z prawem\n• Obejścia zabezpieczeń\n• Udostępniania konta osobom trzecim\n• Automatycznego pobierania danych\n• Wysyłania spamu\n• Publikowania treści obraźliwych lub nielegalnych\n\n4.2. Naruszenia mogą skutkować ostrzeżeniem, zawieszeniem lub trwałym usunięciem konta.",
+      "s5title": "5. Odpowiedzialność",
+      "s5content": "5.1. Majster.AI nie ponosi odpowiedzialności za:\n• Treści Użytkowników\n• Przerwy spowodowane siłą wyższą\n• Straty z błędów w wycenach\n• Problemy techniczne po stronie Użytkownika\n\n5.2. Odpowiedzialność ograniczona do kwoty opłat z ostatnich 12 miesięcy.\n\n5.3. Użytkownik odpowiada za poprawność danych i bezpieczeństwo hasła.",
+      "s6title": "6. Postanowienia końcowe",
+      "s6content": "6.1. Prawem właściwym jest prawo polskie.\n\n6.2. Spory rozstrzygane przez sąd właściwy dla siedziby Majster.AI.\n\n6.3. Regulamin może być zmieniony z 30-dniowym wyprzedzeniem.\n\n6.4. Kontakt: kontakt.majsterai@gmail.com\n\n6.5. Regulamin wchodzi w życie z dniem publikacji."
+    },
+    "privacy": {
+      "pageTitle": "Polityka Prywatności",
+      "subtitle": "Majster.AI — ochrona Twoich danych osobowych",
+      "metaTitle": "Polityka Prywatności",
+      "metaDesc": "Polityka prywatności Majster.AI — jak chronimy Twoje dane osobowe zgodnie z RODO.",
+      "footer": "Ta polityka prywatności jest zgodna z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 (RODO).",
+      "s1title": "1. Administrator danych",
+      "s1content": "Administratorem danych jest Majster.AI. Przetwarzamy dane zgodnie z RODO (Rozporządzenie UE 2016/679).",
+      "s2title": "2. Jakie dane zbieramy",
+      "s2content": "Zbieramy:\n• Dane konta: email, hasło (zaszyfrowane), nazwa firmy\n• Dane firmowe: NIP, adres, telefon, logo\n• Dane klientów wprowadzane przez Użytkownika\n• Dane projektów i wycen\n• Dane techniczne: IP, User Agent, cookies\n• Dane analityczne",
+      "s3title": "3. Cele przetwarzania",
+      "s3content": "Dane przetwarzamy w celu:\n• Świadczenia usług (podstawa: umowa)\n• Obsługi konta\n• Generowania wycen\n• Analityki\n• Marketingu własnych produktów (zgoda)\n• Wypełnienia obowiązków prawnych",
+      "s4title": "4. Bezpieczeństwo danych",
+      "s4content": "Stosujemy:\n• Szyfrowanie SSL/TLS\n• Szyfrowanie haseł bcrypt\n• Row Level Security (RLS)\n• Regularne kopie zapasowe\n• Monitoring bezpieczeństwa 24/7\n• Ograniczony dostęp do infrastruktury",
+      "s5title": "5. Twoje prawa (RODO)",
+      "s5content": "Masz prawo do:\n• Dostępu (art. 15)\n• Sprostowania (art. 16)\n• Usunięcia (art. 17)\n• Ograniczenia przetwarzania (art. 18)\n• Przenoszenia danych (art. 20)\n• Sprzeciwu (art. 21)\n• Wycofania zgody w dowolnym momencie",
+      "s6title": "6. Przekazywanie danych",
+      "s6content": "Dane mogą być przekazywane:\n• Dostawcom hostingu (Supabase — UE/USA)\n• Dostawcom email (Resend)\n• Organom państwowym (na żądanie prawne)\n\nWszyscy procesorzy danych posiadają umowy DPA.",
+      "s7title": "7. Kontakt",
+      "s7content": "W sprawach danych osobowych:\n• Email: kontakt.majsterai@gmail.com\n• Aplikacja: Ustawienia → Centrum RODO\n\nMasz prawo wnieść skargę do Prezesa UODO."
+    },
+    "cookies": {
+      "pageTitle": "Polityka Cookies",
+      "subtitle": "Jak używamy plików cookies w Majster.AI",
+      "metaTitle": "Polityka Cookies",
+      "metaDesc": "Polityka plików cookies Majster.AI — jak zarządzać cookies.",
+      "whatAreCookies": "Czym są pliki cookies?",
+      "whatAreCookiesText": "Pliki cookies to małe pliki tekstowe przechowywane na Twoim urządzeniu. Służą do zapamiętywania preferencji i usprawnienia działania serwisu.",
+      "necessary": "Cookies niezbędne",
+      "necessaryText": "Niezbędne do prawidłowego działania serwisu. Nie można ich wyłączyć. Używane do autoryzacji i bezpieczeństwa.",
+      "analytics": "Cookies analityczne",
+      "analyticsText": "Pomagają nam zrozumieć, jak korzystasz z serwisu. Zbierają anonimowe dane. Możesz je wyłączyć w ustawieniach.",
+      "marketing": "Cookies marketingowe",
+      "marketingText": "Służą do personalizacji reklam. Możesz je wyłączyć bez wpływu na działanie serwisu.",
+      "list": "Lista używanych cookies",
+      "howToManage": "Jak zarządzać cookies?",
+      "howToManageText": "Masz kilka sposobów zarządzania cookies:",
+      "manageInApp": "W naszym serwisie: Kliknij przycisk poniżej, aby zmienić ustawienia.",
+      "manageInBrowser": "W przeglądarce: Możesz zablokować lub usunąć cookies w ustawieniach.",
+      "incognito": "Tryb incognito: Cookies nie są zapisywane w trybie prywatnym.",
+      "changeSettings": "Zmień ustawienia cookies",
+      "footer": "Kontynuując korzystanie z serwisu, wyrażasz zgodę na używanie plików cookies.",
+      "colName": "Nazwa",
+      "colType": "Typ",
+      "colPurpose": "Cel",
+      "colDuration": "Czas życia",
+      "colProvider": "Dostawca"
+    },
+    "dpa": {
+      "pageTitle": "Umowa Powierzenia Danych",
+      "subtitle": "Data Processing Agreement (DPA) zgodnie z art. 28 RODO",
+      "metaTitle": "Umowa Powierzenia Danych (DPA)",
+      "metaDesc": "Umowa powierzenia przetwarzania danych Majster.AI zgodna z RODO art. 28.",
+      "acceptance": "Akceptacja umowy",
+      "acceptanceText": "Korzystając z Majster.AI, akceptujesz niniejszą Umowę Powierzenia Przetwarzania Danych. Kontakt: kontakt.majsterai@gmail.com",
+      "s1title": "1. Przedmiot umowy",
+      "s1content": "Umowa Powierzenia (DPA) reguluje zasady przetwarzania danych osobowych przez Majster.AI (Procesor) w imieniu Użytkownika (Administrator).\n\nUmowa stanowi integralną część Regulaminu i Polityki Prywatności.",
+      "s2title": "2. Zakres przetwarzania",
+      "s2content": "Procesor przetwarza:\n• Dane klientów Administratora\n• Dane projektów i wycen\n• Dokumenty firmowe\n\nCel: świadczenie usług platformy.\nCzas: przez okres korzystania z usług + 30 dni po zakończeniu.",
+      "s3title": "3. Środki bezpieczeństwa",
+      "s3content": "Środki techniczne i organizacyjne:\n• Szyfrowanie TLS 1.3 i AES-256\n• Kontrola dostępu RBAC\n• Row Level Security (RLS)\n• Regularne audyty\n• Szkolenia personelu\n• Procedury reagowania na incydenty\n• Backup z retencją 30 dni",
+      "s4title": "4. Podprzetwarzcy",
+      "s4content": "Korzystamy z:\n1. Supabase Inc. (USA) — hosting i autentykacja, SCC dla transferu UE-USA\n2. Resend (USA) — email transakcyjny, SCC dla transferu UE-USA\n\nAdministrator zostanie poinformowany o każdym nowym podprzetwarzcy z 14-dniowym wyprzedzeniem.",
+      "s5title": "5. Obowiązki stron",
+      "s5content": "Obowiązki Procesora:\n• Przetwarzanie wyłącznie na polecenie Administratora\n• Poufność przez personel\n• Pomoc w realizacji praw osób\n• Powiadomienie o naruszeniu w ciągu 72 godzin\n• Usunięcie danych po zakończeniu umowy\n\nObowiązki Administratora:\n• Podstawa prawna przetwarzania\n• Informowanie osób, których dane dotyczą\n• Realizacja praw osób",
+      "s6title": "6. Audyty i kontrole",
+      "s6content": "Administrator ma prawo do:\n• Żądania informacji o przetwarzaniu\n• Audytów (raz w roku, 30-dniowe wyprzedzenie)\n• Inspekcji dokumentacji\n\nKoszty audytu ponosi strona inicjująca, chyba że wykaże naruszenia."
+    },
+    "gdpr": {
+      "pageTitle": "Centrum RODO",
+      "subtitle": "Zarządzaj swoimi danymi osobowymi",
+      "metaTitle": "Centrum RODO",
+      "metaDesc": "Zarządzaj swoimi danymi osobowymi zgodnie z RODO.",
+      "loggedAs": "Zalogowany jako",
+      "importantInfo": "Ważne informacje",
+      "importantText": "Zgodnie z RODO mamy 30 dni na realizację Twojego żądania. W przypadku skomplikowanych żądań termin może zostać przedłużony o kolejne 60 dni. Kontakt: kontakt.majsterai@gmail.com",
+      "rights": {
+        "access": {
+          "title": "Prawo dostępu (art. 15)",
+          "desc": "Masz prawo wiedzieć, jakie dane o Tobie przetwarzamy.",
+          "action": "Przeglądaj dane w swoim profilu i ustawieniach."
+        },
+        "rectify": {
+          "title": "Prawo do sprostowania (art. 16)",
+          "desc": "Możesz poprawić swoje dane, jeśli są nieprawidłowe.",
+          "action": "Edytuj swoje dane w profilu firmy.",
+          "btn": "Edytuj profil"
+        },
+        "portability": {
+          "title": "Prawo do przenoszenia (art. 20)",
+          "desc": "Możesz pobrać wszystkie swoje dane w formacie JSON.",
+          "action": "Kliknij przycisk, aby pobrać kopię swoich danych.",
+          "btn": "Pobierz moje dane",
+          "btnLoading": "Eksportowanie..."
+        },
+        "erasure": {
+          "title": "Prawo do usunięcia (art. 17)",
+          "desc": "Możesz zażądać usunięcia swojego konta i wszystkich danych.",
+          "action": "To działanie jest nieodwracalne. Rozpatrzymy żądanie w ciągu 30 dni.",
+          "btn": "Żądaj usunięcia"
+        }
+      },
+      "deleteDialog": {
+        "title": "Żądanie usunięcia danych",
+        "confirm": "Czy na pewno chcesz zażądać usunięcia swojego konta i wszystkich danych?",
+        "willCause": "To działanie spowoduje:",
+        "effects": [
+          "Usunięcie wszystkich Twoich projektów i wycen",
+          "Usunięcie danych klientów",
+          "Usunięcie profilu firmy i dokumentów",
+          "Trwałe usunięcie konta"
+        ],
+        "timeline": "Żądanie zostanie rozpatrzone w ciągu 30 dni.",
+        "cancel": "Anuluj",
+        "submit": "Wyślij żądanie",
+        "submitting": "Wysyłanie..."
+      },
+      "toast": {
+        "exportSuccess": "Dane zostały wyeksportowane",
+        "exportError": "Błąd podczas eksportu danych",
+        "deleteSuccess": "Żądanie usunięcia zostało wysłane",
+        "deleteSuccessDesc": "Skontaktujemy się z Tobą w ciągu 30 dni.",
+        "deleteError": "Błąd podczas wysyłania żądania"
+      }
+    }
   },
   "help": {
     "menu": "Menu pomocy",
     "documentation": "Dokumentacja",
     "docsComingSoon": "Dokumentacja wkrótce dostępna. Sprawdź zakładkę Ustawienia lub napisz do nas."
+  },
+  "tradeCatalog": {
+    "categories": {
+      "lazienka": "Wykończenie łazienki i WC",
+      "malowanie": "Malowanie i tynkowanie",
+      "podlogi": "Podłogi",
+      "sucha-zabudowa": "Sufity i ścianki działowe",
+      "elektryka": "Instalacje elektryczne",
+      "hydraulika": "Instalacje sanitarne i ogrzewanie",
+      "murarstwo": "Ściany murowane i betonowanie",
+      "dach": "Dach i więźba dachowa",
+      "elewacja": "Elewacja i ocieplenie",
+      "stolarka": "Stolarka okienna i drzwiowa",
+      "transport": "Transport i wywóz odpadów",
+      "nadzor": "Nadzór i projektowanie"
+    }
+  },
+  "projectTimeline": {
+    "noProjects": "Brak projektów z datami w tym miesiącu",
+    "noProjectsHint": "Dodaj daty rozpoczęcia i zakończenia do projektów, aby zobaczyć je na osi czasu",
+    "title": "Timeline Projektów — {{month}}",
+    "statusLegend": "Status projektów:",
+    "unknownClient": "Nieznany klient"
   }
 }
