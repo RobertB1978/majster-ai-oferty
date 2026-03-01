@@ -1,10 +1,11 @@
 /**
- * WizardStepReview — PR-10 Step 3
+ * WizardStepReview — PR-10 Step 3 (extended in PR-11)
  * Display totals and save the draft.
- * Drafts are always allowed — quota applies only to SEND (PR-11+).
+ * PR-11: Added "Preview & Send" button that saves draft then opens OfferPreviewModal.
+ * Drafts are always allowed — quota applies only to SEND (ADR-0004).
  */
 import { useTranslation } from 'react-i18next';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Eye, Send } from 'lucide-react';
 
 import type { WizardFormData } from '@/hooks/useOfferWizard';
 import { computeTotals } from '@/hooks/useOfferWizard';
@@ -18,6 +19,8 @@ interface Props {
   form: WizardFormData;
   onChange: (partial: Partial<WizardFormData>) => void;
   onSave: () => void;
+  /** PR-11: Saves draft then opens PDF preview + send modal */
+  onPreviewAndSend?: () => void;
   isSaving: boolean;
   saveError: string | null;
   errors: Record<string, string>;
@@ -27,7 +30,7 @@ function formatMoney(val: number): string {
   return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
 }
 
-export function WizardStepReview({ form, onChange, onSave, isSaving, saveError, errors }: Props) {
+export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isSaving, saveError, errors }: Props) {
   const { t } = useTranslation();
   const totals = computeTotals(form.items);
   const { data: allClients = [] } = useClients();
@@ -86,15 +89,33 @@ export function WizardStepReview({ form, onChange, onSave, isSaving, saveError, 
         </div>
       )}
 
-      {/* Save button */}
-      <Button
-        type="button"
-        onClick={onSave}
-        disabled={isSaving}
-        className="w-full"
-      >
-        {isSaving ? t('offerWizard.reviewStep.saving') : t('offerWizard.reviewStep.saveDraft')}
-      </Button>
+      {/* Actions — PR-11: two buttons */}
+      <div className="flex flex-col gap-2 sm:flex-row">
+        {/* Save Draft (always available) */}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onSave}
+          disabled={isSaving}
+          className="flex-1"
+        >
+          {isSaving ? t('offerWizard.reviewStep.saving') : t('offerWizard.reviewStep.saveDraft')}
+        </Button>
+
+        {/* Preview & Send (PR-11) */}
+        {onPreviewAndSend && (
+          <Button
+            type="button"
+            onClick={onPreviewAndSend}
+            disabled={isSaving}
+            className="flex-1"
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            <Send className="mr-1 h-3 w-3" />
+            {t('offerWizard.reviewStep.previewAndSend')}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

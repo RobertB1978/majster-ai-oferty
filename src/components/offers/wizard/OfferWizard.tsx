@@ -1,10 +1,15 @@
 /**
- * OfferWizard — PR-10
+ * OfferWizard — PR-10 (extended in PR-11)
  *
  * 3-step wizard for creating/editing DRAFT offers.
  * Step 1: Client
  * Step 2: Items
- * Step 3: Review + Save
+ * Step 3: Review + Save / Preview & Send
+ *
+ * PR-11: Added "Preview & Send" flow:
+ *   1. Save draft (get offerId)
+ *   2. Open OfferPreviewModal (HTML preview + Send action)
+ *   3. On send → offer transitions to SENT, quota counted
  *
  * Works with FF_NEW_SHELL ON/OFF (embedded in OfferDetail page).
  * Quota not checked here — drafts always allowed (PR-06 rule).
@@ -20,6 +25,7 @@ import { useLoadOfferDraft, useSaveDraft } from '@/hooks/useOfferWizard';
 import { WizardStepClient } from './WizardStepClient';
 import { WizardStepItems } from './WizardStepItems';
 import { WizardStepReview } from './WizardStepReview';
+import { OfferPreviewModal } from '@/components/offers/OfferPreviewModal';
 
 import { Button } from '@/components/ui/button';
 import { SkeletonList } from '@/components/ui/skeleton';
@@ -82,6 +88,9 @@ export function OfferWizard({ offerId }: Props) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  // PR-11: Preview modal state
+  const [previewOfferId, setPreviewOfferId] = useState<string | null>(null);
+
   // Load existing draft when editing
   const { data: existing, isLoading, isError, refetch } = useLoadOfferDraft(offerId ?? null);
   const saveDraft = useSaveDraft();
@@ -135,6 +144,23 @@ export function OfferWizard({ offerId }: Props) {
     }
   };
 
+  // PR-11: Save draft then open preview modal
+  const handlePreviewAndSend = async () => {
+    setSaveError(null);
+    const errs = validateStep(2, form);
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
+    }
+    try {
+      const savedOfferId = await saveDraft.mutateAsync(form);
+      setPreviewOfferId(savedOfferId);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : t('offerWizard.saveErrorGeneric');
+      setSaveError(msg);
+    }
+  };
+
   // Loading state (editing existing)
   if (offerId && isLoading) {
     return <SkeletonList rows={4} />;
@@ -152,6 +178,20 @@ export function OfferWizard({ offerId }: Props) {
   }
 
   return (
+    <>
+      {/* PR-11: Preview + Send modal */}
+      {previewOfferId && (
+        <OfferPreviewModal
+          open={!!previewOfferId}
+          onClose={() => setPreviewOfferId(null)}
+          offerId={previewOfferId}
+          onSent={() => {
+            setPreviewOfferId(null);
+            navigate('/app/offers');
+          }}
+        />
+      )}
+
     <div className="space-y-6">
       {/* Step indicator */}
       <nav aria-label={t('offerWizard.stepsAriaLabel')} className="flex items-center gap-1">
@@ -196,6 +236,7 @@ export function OfferWizard({ offerId }: Props) {
             form={form}
             onChange={handleChange}
             onSave={handleSave}
+            onPreviewAndSend={handlePreviewAndSend}
             isSaving={saveDraft.isPending}
             saveError={saveError}
             errors={errors}
@@ -219,5 +260,6 @@ export function OfferWizard({ offerId }: Props) {
         )}
       </div>
     </div>
+    </>
   );
 }
