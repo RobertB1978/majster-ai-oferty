@@ -76,6 +76,9 @@ export const profileSchema = z.object({
   street: z.string()
     .max(100, i18n.t('validations.profile.streetMaxLength', { max: 100 }))
     .optional(),
+  address_line2: z.string()
+    .max(100, i18n.t('validations.profile.streetMaxLength', { max: 100 }))
+    .optional(),
   city: z.string()
     .max(50, i18n.t('validations.profile.cityMaxLength', { max: 50 }))
     .optional(),
@@ -84,6 +87,9 @@ export const profileSchema = z.object({
     .refine(val => !val || /^\d{2}-\d{3}$/.test(val), {
       message: i18n.t('validations.profile.postalCodeFormat'),
     }),
+  country: z.string()
+    .max(50)
+    .optional(),
   phone: z.string()
     .optional()
     .refine(val => !val || val.replace(/\D/g, '').length >= 9, {
@@ -97,6 +103,12 @@ export const profileSchema = z.object({
   bank_account: z.string()
     .max(50, i18n.t('validations.profile.bankAccountMaxLength', { max: 50 }))
     .optional(),
+  website: z.string()
+    .max(200)
+    .optional()
+    .refine(val => !val || /^https?:\/\/.+/.test(val), {
+      message: i18n.t('validations.profile.websiteInvalid'),
+    }),
   email_subject_template: z.string()
     .max(200, i18n.t('validations.profile.emailSubjectMaxLength', { max: 200 }))
     .optional(),

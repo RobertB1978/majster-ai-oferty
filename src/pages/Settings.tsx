@@ -2,16 +2,18 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings as SettingsIcon, Bell, Globe, Calendar, FileText, Scale, Fingerprint, Mail } from 'lucide-react';
+import { Settings as SettingsIcon, Bell, Globe, Calendar, FileText, Scale, Fingerprint, Mail, Building2, UserX } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/settings/LanguageSwitcher';
 import { ContactEmailSettings } from '@/components/settings/ContactEmailSettings';
+import { DeleteAccountSection } from '@/components/settings/DeleteAccountSection';
 import { CalendarSync } from '@/components/calendar/CalendarSync';
 import { CompanyDocuments } from '@/components/documents/CompanyDocuments';
 import { PushNotificationSettings } from '@/components/notifications/PushNotificationSettings';
 import { BiometricSettings } from '@/components/settings/BiometricSettings';
+import CompanyProfile from '@/pages/CompanyProfile';
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -34,10 +36,14 @@ export default function Settings() {
           </p>
         </div>
 
-        <Tabs defaultValue="general">
+        <Tabs defaultValue="company">
           {/* Horizontally scrollable on mobile to prevent text overlap */}
           <div className="overflow-x-auto -mx-1 px-1">
             <TabsList className="inline-flex h-auto min-w-full gap-1 p-1">
+              <TabsTrigger value="company" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <span>{t('settings.companyProfileTab')}</span>
+              </TabsTrigger>
               <TabsTrigger value="general" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <Globe className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                 <span>{t('settings.language')}</span>
@@ -62,8 +68,17 @@ export default function Settings() {
                 <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                 <span>{t('settings.contactEmailTab')}</span>
               </TabsTrigger>
+              <TabsTrigger value="account" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                <UserX className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <span>{t('settings.accountTab')}</span>
+              </TabsTrigger>
             </TabsList>
           </div>
+
+          {/* Company Profile tab — issuer data for PDF */}
+          <TabsContent value="company" className="mt-4">
+            <CompanyProfile />
+          </TabsContent>
 
           <TabsContent value="general" className="mt-4 space-y-4">
             <Card>
@@ -137,6 +152,11 @@ export default function Settings() {
 
           <TabsContent value="email" className="mt-4">
             <ContactEmailSettings />
+          </TabsContent>
+
+          {/* Account tab — delete account (GDPR Art. 17 + Apple App Store requirement) */}
+          <TabsContent value="account" className="mt-4">
+            <DeleteAccountSection />
           </TabsContent>
         </Tabs>
       </div>

@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Building2, Upload, Loader2, Save, User, Phone, Mail, MapPin, CreditCard, FileText, MessageSquare, ChevronDown, Image } from 'lucide-react';
+import { Building2, Upload, Loader2, Save, User, Phone, Mail, MapPin, CreditCard, FileText, MessageSquare, ChevronDown, Image, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import { BiometricSetup } from '@/components/auth/BiometricSetup';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
@@ -32,11 +32,14 @@ export default function CompanyProfile() {
     owner_name: '',
     nip: '',
     street: '',
+    address_line2: '',
     city: '',
     postal_code: '',
+    country: 'PL',
     phone: '',
     email_for_offers: '',
     bank_account: '',
+    website: '',
     email_subject_template: '',
     email_greeting: '',
     email_signature: '',
@@ -56,11 +59,14 @@ export default function CompanyProfile() {
         owner_name: profile.owner_name || '',
         nip: profile.nip || '',
         street: profile.street || '',
+        address_line2: profile.address_line2 || '',
         city: profile.city || '',
         postal_code: profile.postal_code || '',
+        country: profile.country || 'PL',
         phone: profile.phone || '',
         email_for_offers: profile.email_for_offers || '',
         bank_account: profile.bank_account || '',
+        website: profile.website || '',
         email_subject_template: (!profile.email_subject_template || profile.email_subject_template === LEGACY_EMAIL_SUBJECT)
           ? t('companyProfile.emailSubjectDefault')
           : profile.email_subject_template,
@@ -316,6 +322,19 @@ export default function CompanyProfile() {
                         )}
                       </div>
 
+                      {/* Address Line 2 */}
+                      <div className="space-y-2">
+                        <Label htmlFor="address_line2">
+                          {t('companyProfile.addressLine2Label')}
+                        </Label>
+                        <Input
+                          id="address_line2"
+                          value={formData.address_line2 ?? ''}
+                          onChange={(e) => setFormData({ ...formData, address_line2: e.target.value })}
+                          placeholder={t('companyProfile.addressLine2Placeholder')}
+                        />
+                      </div>
+
                       {/* City */}
                       <div className="space-y-2">
                         <Label htmlFor="city">{t('companyProfile.cityLabel')}</Label>
@@ -344,6 +363,17 @@ export default function CompanyProfile() {
                         {errors.postal_code && (
                           <p className="text-sm text-destructive">{errors.postal_code}</p>
                         )}
+                      </div>
+
+                      {/* Country */}
+                      <div className="space-y-2">
+                        <Label htmlFor="country">{t('companyProfile.countryLabel')}</Label>
+                        <Input
+                          id="country"
+                          value={formData.country ?? 'PL'}
+                          onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                          placeholder={t('companyProfile.countryDefault')}
+                        />
                       </div>
 
                       {/* Phone */}
@@ -398,6 +428,25 @@ export default function CompanyProfile() {
                         />
                         {errors.bank_account && (
                           <p className="text-sm text-destructive">{errors.bank_account}</p>
+                        )}
+                      </div>
+
+                      {/* Website */}
+                      <div className="space-y-2 sm:col-span-2">
+                        <Label htmlFor="website" className="flex items-center gap-2">
+                          <Globe className="h-4 w-4" />
+                          {t('companyProfile.websiteLabel')}
+                        </Label>
+                        <Input
+                          id="website"
+                          type="url"
+                          value={formData.website ?? ''}
+                          onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                          placeholder={t('companyProfile.websitePlaceholder')}
+                          className={errors.website ? 'border-destructive' : ''}
+                        />
+                        {errors.website && (
+                          <p className="text-sm text-destructive">{errors.website}</p>
                         )}
                       </div>
                     </div>

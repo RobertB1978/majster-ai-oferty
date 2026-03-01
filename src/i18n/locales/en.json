@@ -627,7 +627,9 @@
       "light": "Light",
       "system": "System"
     },
-    "contactEmailTab": "Offer Email"
+    "contactEmailTab": "Offer Email",
+    "companyProfileTab": "Company",
+    "accountTab": "Account"
   },
   "billing": {
     "title": "Billing & Subscriptions",
@@ -1369,7 +1371,8 @@
       "bankAccountMaxLength": "Bank account max {{max}} characters",
       "emailSubjectMaxLength": "Subject max {{max}} characters",
       "emailGreetingMaxLength": "Greeting max {{max}} characters",
-      "emailSignatureMaxLength": "Signature max {{max}} characters"
+      "emailSignatureMaxLength": "Signature max {{max}} characters",
+      "websiteInvalid": "Website must start with http:// or https://"
     },
     "password": {
       "minLength": "Password must be at least {{min}} characters",
@@ -2234,7 +2237,13 @@
     "emailPreviewContent": "...message content...",
     "saveProfile": "Save profile",
     "formErrors": "Please fix errors in the form",
-    "saveFailed": "Failed to save profile. Please try again."
+    "saveFailed": "Failed to save profile. Please try again.",
+    "websiteLabel": "Website",
+    "websitePlaceholder": "https://www.mycompany.com",
+    "addressLine2Label": "Address line 2",
+    "addressLine2Placeholder": "Apt/Suite/Unit (optional)",
+    "countryLabel": "Country",
+    "countryDefault": "Poland"
   },
   "marketplacePage": {
     "addSubcontractor": "Add subcontractor",
@@ -2627,5 +2636,38 @@
     "title": "Project Timeline — {{month}}",
     "statusLegend": "Project status:",
     "unknownClient": "Unknown client"
+  },
+  "deleteAccount": {
+    "dangerZoneTitle": "Danger Zone",
+    "dangerZoneDescription": "Irreversible actions affecting your account",
+    "warningText": "Deleting your account is irreversible. All your data, projects, clients, quotes and documents will be permanently deleted.",
+    "whatWillBeDeleted": "What will be deleted:",
+    "item": {
+      "projects": "All projects and quotes",
+      "clients": "All clients and their contact data",
+      "finance": "Financial history and invoices",
+      "calendar": "Calendar and events",
+      "templates": "Item templates and settings",
+      "profile": "Company profile and documents",
+      "account": "User account and login credentials"
+    },
+    "triggerButton": "Delete Account Permanently",
+    "dialogTitle": "Are you sure you want to delete your account?",
+    "dialogWarning": "This operation is IRREVERSIBLE. All your data will be permanently deleted from our systems in accordance with GDPR.",
+    "dialogConsider": "Before deleting your account, consider:",
+    "consider": {
+      "exportData": "Export important data (projects, clients)",
+      "downloadDocs": "Download copies of invoices and documents",
+      "cancelSubscription": "Cancel any active subscription"
+    },
+    "typeToConfirm": "Type {{keyword}} to confirm:",
+    "wrongKeyword": "Please type {{keyword}} to confirm",
+    "deleting": "Deleting...",
+    "confirmButton": "Delete Account Permanently",
+    "successTitle": "Account deleted",
+    "successDescription": "All your data has been permanently deleted.",
+    "errorTitle": "Error deleting account",
+    "errorDescription": "Please try again later or contact support.",
+    "gdprNote": "Under Art. 17 GDPR (Right to Be Forgotten), you have the right to delete all your personal data. Data is deleted immediately; encrypted backups are retained for up to 30 days for disaster recovery, then purged automatically. Financial records may be retained separately as required by law."
   }
 }
