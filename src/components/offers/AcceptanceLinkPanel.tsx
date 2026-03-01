@@ -26,6 +26,7 @@ import {
   buildAcceptanceLinkUrl,
   daysUntilExpiry,
 } from '@/hooks/useAcceptanceLink';
+import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
 
 interface Props {
   offerId: string;
@@ -38,9 +39,11 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const [creatingProject, setCreatingProject] = useState(false);
 
   const { data: link, isLoading } = useAcceptanceLink(offerId);
   const createLink = useCreateAcceptanceLink(offerId);
+  const createProject = useCreateProjectV2();
 
   const isAccepted = offerStatus === 'ACCEPTED';
   const isRejected = offerStatus === 'REJECTED';
@@ -88,11 +91,26 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
           </p>
           <Button
             size="sm"
-            onClick={() => navigate('/app/jobs/new')}
+            onClick={async () => {
+              setCreatingProject(true);
+              try {
+                const project = await createProject.mutateAsync({
+                  title: t('projectsV2.defaultTitle'),
+                  source_offer_id: offerId,
+                });
+                toast.success(t('projectsV2.createSuccess'));
+                navigate(`/app/projects/${project.id}`);
+              } catch {
+                toast.error(t('projectsV2.createError'));
+              } finally {
+                setCreatingProject(false);
+              }
+            }}
+            disabled={creatingProject}
             className="gap-2"
           >
-            <FolderPlus className="h-4 w-4" />
-            {t('acceptanceLink.createProjectCta')}
+            {creatingProject ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderPlus className="h-4 w-4" />}
+            {creatingProject ? t('projectsV2.creating') : t('acceptanceLink.createProjectCta')}
           </Button>
         </div>
       </div>

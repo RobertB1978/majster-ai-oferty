@@ -5,6 +5,8 @@ import { toast } from 'sonner';
 import { differenceInDays } from 'date-fns';
 import { FileText, MoreHorizontal, Copy, ExternalLink, FolderPlus } from 'lucide-react';
 
+import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
+
 import { useOffers, NO_RESPONSE_DAYS } from '@/hooks/useOffers';
 import type { Offer, OfferStatus, OfferSort } from '@/hooks/useOffers';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -83,9 +85,10 @@ interface OfferRowProps {
   onOpen: (id: string) => void;
   onDuplicate: () => void;
   onCreateProject: (id: string) => void;
+  isCreatingProject?: boolean;
 }
 
-function OfferRow({ offer, onOpen, onDuplicate, onCreateProject }: OfferRowProps) {
+function OfferRow({ offer, onOpen, onDuplicate, onCreateProject, isCreatingProject }: OfferRowProps) {
   const { t } = useTranslation();
   const noResp = offer.status === 'SENT' ? noResponseDays(offer.sent_at) : null;
   const amount = formatAmount(offer.total_net, offer.currency);
@@ -124,7 +127,7 @@ function OfferRow({ offer, onOpen, onDuplicate, onCreateProject }: OfferRowProps
           {amount && <span>{amount}</span>}
           <span>{t('offersList.updatedAgo', { time: updatedAgo })}</span>
         </div>
-        {/* PR-12: ACCEPTED CTA — create project */}
+        {/* PR-13: ACCEPTED CTA — create project */}
         {isAccepted && (
           <div className="mt-2">
             <Button
@@ -132,9 +135,10 @@ function OfferRow({ offer, onOpen, onDuplicate, onCreateProject }: OfferRowProps
               variant="default"
               className="gap-1.5 h-7 text-xs bg-green-600 hover:bg-green-700 text-white"
               onClick={(e) => { e.stopPropagation(); onCreateProject(offer.id); }}
+              disabled={isCreatingProject}
             >
               <FolderPlus className="h-3.5 w-3.5" />
-              {t('acceptanceLink.createProjectCta')}
+              {isCreatingProject ? t('projectsV2.creating') : t('acceptanceLink.createProjectCta')}
             </Button>
           </div>
         )}
@@ -177,8 +181,10 @@ export default function Offers() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
   const [searchRaw, setSearchRaw] = useState('');
   const [sort, setSort] = useState<OfferSort>('last_activity_at');
+  const [creatingProjectId, setCreatingProjectId] = useState<string | null>(null);
 
   const search = useDebounce(searchRaw, 300);
+  const createProject = useCreateProjectV2();
 
   const { data: offers = [], isLoading, isError, refetch } = useOffers({
     status: statusFilter,
@@ -189,8 +195,27 @@ export default function Offers() {
   const handleOpen = (id: string) => navigate(`/app/offers/${id}`);
   const handleDuplicate = () => toast.info(t('offersList.duplicateComingSoon'));
   const handleCreateFirst = () => navigate('/app/offers/new');
-  // PR-12: After acceptance, route to new project (PR-13 will implement actual creation)
-  const handleCreateProject = (_offerId: string) => navigate('/app/jobs/new');
+
+  // PR-13: Create project from accepted offer then navigate to project hub
+  const handleCreateProject = async (offerId: string) => {
+    const offer = offers.find(o => o.id === offerId);
+    if (!offer) return;
+    setCreatingProjectId(offerId);
+    try {
+      const project = await createProject.mutateAsync({
+        title: offer.title ?? t('projectsV2.defaultTitle'),
+        client_id: offer.client_id ?? null,
+        source_offer_id: offerId,
+        total_from_offer: offer.total_net ?? null,
+      });
+      toast.success(t('projectsV2.createSuccess'));
+      navigate(`/app/projects/${project.id}`);
+    } catch {
+      toast.error(t('projectsV2.createError'));
+    } finally {
+      setCreatingProjectId(null);
+    }
+  };
 
   const isFiltering = statusFilter !== 'ALL' || searchRaw.trim() !== '';
 
@@ -273,6 +298,7 @@ export default function Offers() {
               onOpen={handleOpen}
               onDuplicate={handleDuplicate}
               onCreateProject={handleCreateProject}
+              isCreatingProject={creatingProjectId === offer.id}
             />
           ))}
         </div>

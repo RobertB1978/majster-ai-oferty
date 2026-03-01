@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-12 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-13 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -38,7 +38,7 @@
 | **PR-10** | Oferty B1: Wizard bez PDF | ✅ DONE | `claude/offer-wizard-draft-mUypo` | 2026-03-01 | offer_items migration + RLS, OfferWizard (3 kroki: klient/pozycje/podsumowanie), inline new client, Price Library search, live totals, i18n PL/EN/UK, FF_NEW_SHELL ON/OFF |
 | **PR-11** | Oferty B2: PDF + wysyłka | ✅ DONE | `claude/pr-11-offers-pdf-send-UtBtT` | 2026-03-01 | OfferPreviewModal (podgląd HTML A4 + download PDF + Send), useSendOffer (quota check + SENT status + PDF upload + email best-effort), offerPdfPayloadBuilder (payload z offer_items), migracja quota fn (+ offers table), i18n PL/EN/UK (offerPreview.*), FF_NEW_SHELL ON/OFF |
 | **PR-12** | Oferty C: domykanie | ✅ DONE | `claude/pr-12-acceptance-links-zAx3e` | 2026-03-01 | acceptance_links + offer_public_actions (migration + RLS + SECURITY DEFINER fn), publiczna strona akceptacji (/a/:token), AcceptanceLinkPanel (SENT/ACCEPTED/REJECTED), BulkAddItems (paste + CSV import), CTA "Utwórz projekt" po akceptacji, i18n PL/EN/UK (acceptanceLink.* + publicOffer.* + bulkAdd.*) |
-| **PR-13** | Projekty + QR status | ⬜ TODO | — | — | Wymaga merge PR-12 |
+| **PR-13** | Projekty + QR status | ✅ DONE | `claude/pr-13-projects-module-BilaR` | 2026-03-01 | v2_projects + project_public_status_tokens (migration + RLS + SECURITY DEFINER), ProjectsList (ACTIVE/COMPLETED/ON_HOLD, search), ProjectHub (accordion: stages/costs/docs/photos placeholders, progress slider, QR link), ProjectPublicStatus (/p/:token — NO prices), create-from-offer CTA (Offers + AcceptanceLinkPanel), i18n PL/EN/UK (projectsV2.*), FF_NEW_SHELL ON (BottomNav /app/projects) + OFF, IDOR documented |
 | **PR-14** | Burn Bar BASIC | ⬜ TODO | — | — | Wymaga merge PR-13 |
 | **PR-15** | Fotoprotokół + podpis | ⬜ TODO | — | — | Wymaga merge PR-13 |
 | **PR-16** | Teczka dokumentów | ⬜ TODO | — | — | Wymaga merge PR-13 |
@@ -223,6 +223,8 @@ Przed każdym merge wypełnij i wklej w opis PR:
 | 2026-03-01 | PR-09 | `claude/offers-list-pr-09-bppeV` | Tabela `offers` (migration 20260301140000) + RLS 4 polityki + typy TS, useOffers hook (TanStack Query), Offers page (status tabs ALL/DRAFT/SENT/ACCEPTED/REJECTED/ARCHIVED, search, sort, OfferRow z badge "brak odpowiedzi X dni"), OfferDetail placeholder, routing /app/offers + /app/offers/:id + /app/offers/new, Navigation+defaultConfig (oferty w starym shellu), i18n PL/EN/UK (offersList.*), ROADMAP_STATUS PR-09 DONE |
 | 2026-03-01 | PR-10 | `claude/offer-wizard-draft-mUypo` | Migration offer_items (+ FK offers.client_id + total_vat), useOfferWizard hook (load+save draft), OfferWizard 3-krokowy (WizardStepClient/Items/Review), inline new client, Price Library search, live totals (net/VAT/gross), i18n PL/EN/UK (offerWizard.*), FF_NEW_SHELL ON/OFF, ROADMAP_STATUS PR-10 DONE |
 | 2026-03-01 | PR-11 | `claude/pr-11-offers-pdf-send-UtBtT` | Migration 20260301160000 (quota fn update: counts offers+offer_approvals, index offers.sent_at), offerPdfPayloadBuilder.ts, useSendOffer hook (idempotent, quota check, SENT status, PDF upload, email best-effort), OfferPreviewModal (HTML A4 preview, Download PDF, Send+quota gate, shareable link, FreeTierPaywallModal), WizardStepReview+OfferWizard (Preview & Send button), i18n PL/EN/UK (offerPreview.* 30 kluczy), ROADMAP_STATUS PR-11 DONE |
+| 2026-03-01 | PR-12 | `claude/pr-12-acceptance-links-zAx3e` | acceptance_links + offer_public_actions (migration + RLS + SECURITY DEFINER fn), OfferPublicAccept (/a/:token), AcceptanceLinkPanel, BulkAddItems, CTA Utwórz projekt, i18n PL/EN/UK |
+| 2026-03-01 | PR-13 | `claude/pr-13-projects-module-BilaR` | Migration 20260301180000 (v2_projects + project_public_status_tokens, RLS, SECURITY DEFINER resolve_project_public_token — NO prices), useProjectsV2 hook, ProjectsList (/app/projects, ACTIVE/COMPLETED/ON_HOLD + search), ProjectHub (accordion: stages + progress slider + QR link; costs/docs/photos placeholders), ProjectPublicStatus (/p/:token — NO prices), create-from-offer w Offers.tsx + AcceptanceLinkPanel, NewShellBottomNav /app/projects, i18n PL/EN/UK (projectsV2.* 55 kluczy), FF_NEW_SHELL ON+OFF |
 
 > *Uzupełniaj tabelę po każdym merge. Format: `docs: aktualizuj status PR-XX`*
 
@@ -367,11 +369,11 @@ Faza 0 (Fundament):     3/3 PR  ██████████  100%
 Faza 1 (Dostęp):        3/3 PR  ██████████  100%
 Faza 2 (Shell):         1/1 PR  ██████████  100%
 Faza 3 (Dane/Oferty):   1/2 PR  █████░░░░░  50%
-Faza 4 (Oferty flow):   2/3 PR  ██████░░░░  67%
-Faza 5 (Projekty):      0/6 PR  ░░░░░░░░░░  0%
+Faza 4 (Oferty flow):   3/3 PR  ██████████  100%
+Faza 5 (Projekty):      1/6 PR  ██░░░░░░░░  17%
 Faza 6 (Offline+$):     0/2 PR  ░░░░░░░░░░  0%
 ─────────────────────────────────────────
-RAZEM:                  10/20 PR █████░░░░░  50%
+RAZEM:                  11/20 PR ██████░░░░  55%
 (PR-00 nie wliczany do progresu funkcjonalnego)
 ```
 
@@ -747,3 +749,129 @@ DRAFT → [user kliknie "Podgląd i Wyślij"]
 - Publiczna strona `/a/:token` tłumaczona na PL/EN/UK (zależy od localStorage `i18nextLng`)
 
 *Tracker: v1.0 | Data: 2026-03-01 | Właściciel: Robert B. + Claude*
+
+---
+
+## PR-13 — Projekty + QR Status: co zostało wdrożone
+
+### Baza danych
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260301180000_pr13_projects_v2.sql` | Tabela `v2_projects` (RLS 4 polityki + indeksy + trigger updated_at), `project_public_status_tokens` (RLS 4 polityki), SECURITY DEFINER `resolve_project_public_token()` — zwraca TYLKO tytuł/etapy/postęp, BEZ cen |
+
+### Schemat v2_projects
+
+```sql
+v2_projects (
+  id               uuid PK,
+  user_id          uuid NOT NULL → auth.users(id) ON DELETE CASCADE,
+  client_id        uuid NULL → clients(id) ON DELETE SET NULL,
+  source_offer_id  uuid NULL → offers(id) ON DELETE SET NULL,
+  title            text NOT NULL,
+  status           text DEFAULT 'ACTIVE' CHECK IN ('ACTIVE','COMPLETED','ON_HOLD'),
+  start_date       date NULL,
+  end_date         date NULL,
+  progress_percent integer DEFAULT 0 CHECK (0..100),
+  stages_json      jsonb DEFAULT '[]',  -- [{name, due_date, is_done, sort_order}]
+  total_from_offer numeric(14,2) NULL,  -- STORED but NOT exposed in QR view
+  created_at, updated_at
+)
+```
+
+### Zakres QR — co NIE jest ujawniane
+
+Funkcja `resolve_project_public_token()` zwraca WYŁĄCZNIE:
+- `title`, `status`, `progress_percent`, `start_date`, `end_date`, `stages_json`, `created_at`
+- **NIE zwraca:** `total_from_offer`, `client_id`, `user_id`, żadnych kwot finansowych
+- Publiczna strona `/p/:token` nie wyświetla żadnych cen
+
+### Pliki zmienione / dodane
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260301180000_pr13_projects_v2.sql` | Schemat DB (v2_projects + tokens + SECURITY DEFINER) |
+| `src/hooks/useProjectsV2.ts` | Hooki: list, single, create, update, token fetch/create |
+| `src/pages/ProjectsList.tsx` | Lista projektów (/app/projects) — filtry status + search |
+| `src/pages/ProjectHub.tsx` | Hub projektu (/app/projects/:id) — accordion + progress + QR |
+| `src/pages/ProjectPublicStatus.tsx` | Publiczna strona QR (/p/:token) — bez logowania, bez cen |
+| `src/pages/Offers.tsx` | Aktualizacja handleCreateProject → useCreateProjectV2 + navigate |
+| `src/components/offers/AcceptanceLinkPanel.tsx` | CTA "Utwórz projekt" → useCreateProjectV2 + navigate do hub |
+| `src/App.tsx` | Trasy: /app/projects, /app/projects/:id, /p/:token |
+| `src/components/layout/NewShellBottomNav.tsx` | Projekty → /app/projects (było: /app/jobs) |
+| `src/i18n/locales/pl.json` | projectsV2.* (55 kluczy PL) |
+| `src/i18n/locales/en.json` | projectsV2.* (55 kluczy EN) |
+| `src/i18n/locales/uk.json` | projectsV2.* (55 kluczy UK) |
+| `docs/ROADMAP_STATUS.md` | Ten plik — aktualizacja statusu PR-13 DONE |
+
+### RLS — weryfikacja IDOR (kroki testowe)
+
+```sql
+-- W Supabase Dashboard → SQL Editor
+
+-- 1. User A tworzy projekt
+INSERT INTO public.v2_projects (user_id, title, status, progress_percent, stages_json)
+VALUES ('user-a-uuid', 'Projekt Testowy A', 'ACTIVE', 0, '[]');
+-- Zapisz: projekt_a_id
+
+-- 2. Symuluj User B (zmień JWT)
+SET SESSION "request.jwt.claims" = '{"sub": "user-b-uuid"}';
+
+-- 3. User B NIE widzi projektu User A (RLS blokuje)
+SELECT count(*) FROM public.v2_projects WHERE user_id = 'user-a-uuid';
+-- Oczekiwane: count = 0
+
+-- 4. User B NIE może modyfikować projektu User A
+UPDATE public.v2_projects SET title = 'hacked' WHERE user_id = 'user-a-uuid';
+-- Oczekiwane: UPDATE 0
+
+DELETE FROM public.v2_projects WHERE user_id = 'user-a-uuid';
+-- Oczekiwane: DELETE 0
+
+-- 5. Token projektu A — publiczny dostęp przez SECURITY DEFINER
+-- Utwórz token dla projektu A (jako User A):
+INSERT INTO public.project_public_status_tokens (user_id, project_id)
+VALUES ('user-a-uuid', '<projekt_a_id>');
+-- Pobierz token UUID
+
+-- 6. Wywołaj SECURITY DEFINER function (anon key, bez RLS):
+SELECT public.resolve_project_public_token('<token-uuid>');
+-- Oczekiwane: tylko title/status/progress/stages — BEZ total_from_offer
+
+-- 7. Token projektu A nie ujawnia projektu User B
+-- Sprawdź że response NIE zawiera user_id, client_id, total_from_offer
+```
+
+### Jak testować PR-13
+
+**Flow: oferta → projekt:**
+1. Przejdź do `/app/offers` → znajdź ofertę ze statusem ACCEPTED
+2. Kliknij "Utwórz projekt" → toast sukcesu → przekierowanie na `/app/projects/:id`
+3. Projekt powinien mieć tytuł z oferty + klienta + total_from_offer (stored)
+
+**ProjectsList:**
+1. `/app/projects` → lista projektów z filtrem ACTIVE/COMPLETED/ON_HOLD
+2. Wyszukaj po tytule → filtruje na żywo (debounce 300ms)
+3. EmptyState z CTA → prowadzi do `/app/offers?filter=ACCEPTED`
+
+**ProjectHub:**
+1. Otwórz projekt → sekcja "Etapy prac" otwarta domyślnie
+2. Dodaj etap (wpisz nazwę → Enter lub kliknij +) → pojawia się na liście
+3. Kliknij checkbox etapu → oznacza jako ukończony, progress aktualizuje się
+4. Suwak postępu → przeciągnij → "Zapisz postęp" lub auto-save (onValueCommit)
+5. Sekcje "Koszty", "Dokumenty", "Zdjęcia" → placeholder informuje o przyszłych PR
+
+**QR link:**
+1. W ProjectHub → panel "Link statusu dla klienta" → kliknij "Wygeneruj link"
+2. Skopiuj URL `/p/<token>`
+3. Otwórz URL bez logowania → widać tytuł, postęp, etapy — BEZ cen
+4. Strona wyświetla notatkę "Strona statusu nie zawiera informacji o cenach"
+
+**FF_NEW_SHELL:**
+- ON: BottomNav zakładka "Projekty" → `/app/projects` (nowa lista)
+- OFF: `/app/projects` dostępne przez URL (stary shell bez dolnej nawigacji)
+- Obie ścieżki: `/app/jobs` nadal działa (stary system — nie usunięty)
+
+**i18n PL/EN/UK:**
+- Zmień język → ProjectsList, ProjectHub, ProjectPublicStatus — wszystkie napisy tłumaczone
+- Klucze: `projectsV2.*` (55 kluczy w każdym języku)

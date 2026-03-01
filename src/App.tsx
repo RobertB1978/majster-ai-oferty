@@ -73,6 +73,11 @@ const MoreScreen = lazy(() => import("./pages/MoreScreen"));
 const OffersPage = lazy(() => import("./pages/Offers"));
 const OfferDetail = lazy(() => import("./pages/OfferDetail"));
 
+// === ZONE 2d: PROJECTS V2 PR-13 ===
+const ProjectsList = lazy(() => import("./pages/ProjectsList"));
+const ProjectHub = lazy(() => import("./pages/ProjectHub"));
+const ProjectPublicStatus = lazy(() => import("./pages/ProjectPublicStatus"));
+
 // === ZONE 3: OWNER CONSOLE (lazy - admin only, separate chunk) ===
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
 const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
@@ -179,6 +184,9 @@ const App = () => (
                   {/* PR-12: Tokenized acceptance page (new offers system) */}
                   <Route path="/a/:token" element={<OfferPublicAccept />} />
 
+                  {/* PR-13: Public project status page (no login, no prices) */}
+                  <Route path="/p/:token" element={<ProjectPublicStatus />} />
+
                   {/* Environment diagnostic */}
                   <Route path="/env-check" element={<EnvCheck />} />
 
@@ -213,6 +221,9 @@ const App = () => (
                     <Route path="offers" element={<OffersPage />} />
                     <Route path="offers/new" element={<OfferDetail />} />
                     <Route path="offers/:id" element={<OfferDetail />} />
+                    {/* PR-13: Projects V2 */}
+                    <Route path="projects" element={<ProjectsList />} />
+                    <Route path="projects/:id" element={<ProjectHub />} />
                     <Route path="more" element={<MoreScreen />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="customers" element={<Clients />} />
@@ -237,7 +248,6 @@ const App = () => (
 
                     {/* Canonical redirects for legacy/wrong paths within /app */}
                     <Route path="clients" element={<Navigate to="/app/customers" replace />} />
-                    <Route path="projects" element={<Navigate to="/app/jobs" replace />} />
                     <Route path="dash%20board" element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="dash board" element={<Navigate to="/app/dashboard" replace />} />
                   </Route>
