@@ -15,7 +15,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'home',     path: '/app/home',     icon: Home,          labelKey: 'newShell.nav.home' },
   { id: 'offers',   path: '/app/offers',   icon: FileText,      labelKey: 'newShell.nav.offers' },
   // slot środkowy (id='fab') jest renderowany jako pusty spacer — FAB renderuje NewShellFAB
-  { id: 'projects', path: '/app/jobs',     icon: FolderKanban,  labelKey: 'newShell.nav.projects' },
+  { id: 'projects', path: '/app/projects', icon: FolderKanban,  labelKey: 'newShell.nav.projects' },
   { id: 'more',     path: '/app/more',     icon: MoreHorizontal, labelKey: 'newShell.nav.more' },
 ];
 

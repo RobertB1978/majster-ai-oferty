@@ -1,0 +1,220 @@
+/**
+ * ProjectPublicStatus — PR-13
+ *
+ * Public QR status page for clients. No login required.
+ * Route: /p/:token
+ *
+ * Security:
+ *   - Token resolved via SECURITY DEFINER function (server-side expiry + validation)
+ *   - Returns ONLY: title, stages, progress_percent, dates — NO prices/amounts
+ *   - Cross-tenant access impossible (token → single project FK)
+ */
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { CheckCircle2, Circle, Clock, FolderKanban, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface PublicStage {
+  name: string;
+  due_date: string | null;
+  is_done: boolean;
+  sort_order: number;
+}
+
+interface PublicProjectData {
+  title: string;
+  status: string;
+  progress_percent: number;
+  start_date: string | null;
+  end_date: string | null;
+  stages_json: PublicStage[];
+  created_at: string;
+}
+
+type LoadState =
+  | { state: 'loading' }
+  | { state: 'error'; code: 'not_found' | 'expired' | 'server_error' }
+  | { state: 'ok'; project: PublicProjectData; expiresAt: string };
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
+export default function ProjectPublicStatus() {
+  const { token } = useParams<{ token: string }>();
+  const { t } = useTranslation();
+  const [load, setLoad] = useState<LoadState>({ state: 'loading' });
+
+  useEffect(() => {
+    if (!token) {
+      setLoad({ state: 'error', code: 'not_found' });
+      return;
+    }
+
+    (async () => {
+      try {
+        const { data, error } = await supabase.rpc('resolve_project_public_token', {
+          p_token: token,
+        });
+
+        if (error) {
+          setLoad({ state: 'error', code: 'server_error' });
+          return;
+        }
+
+        const result = data as Record<string, unknown>;
+
+        if (result.error === 'expired') {
+          setLoad({ state: 'error', code: 'expired' });
+          return;
+        }
+
+        if (result.error) {
+          setLoad({ state: 'error', code: 'not_found' });
+          return;
+        }
+
+        setLoad({
+          state: 'ok',
+          project: result.project as PublicProjectData,
+          expiresAt: result.expires_at as string,
+        });
+      } catch {
+        setLoad({ state: 'error', code: 'server_error' });
+      }
+    })();
+  }, [token]);
+
+  // ── Loading ──────────────────────────────────────────────────────────────────
+  if (load.state === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // ── Error ────────────────────────────────────────────────────────────────────
+  if (load.state === 'error') {
+    const msgKey =
+      load.code === 'expired'
+        ? 'projectsV2.public.errorExpired'
+        : 'projectsV2.public.errorNotFound';
+
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="max-w-sm w-full text-center space-y-3">
+          <Clock className="h-12 w-12 mx-auto text-muted-foreground" />
+          <h1 className="text-lg font-semibold">{t(msgKey)}</h1>
+          <p className="text-sm text-muted-foreground">{t('projectsV2.public.errorDesc')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Success ──────────────────────────────────────────────────────────────────
+  const { project } = load;
+  const stages = (project.stages_json ?? []).sort((a, b) => a.sort_order - b.sort_order);
+  const doneCount = stages.filter(s => s.is_done).length;
+
+  const STATUS_LABEL: Record<string, string> = {
+    ACTIVE:    t('projectsV2.statusActive'),
+    COMPLETED: t('projectsV2.statusCompleted'),
+    ON_HOLD:   t('projectsV2.statusOnHold'),
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="bg-card border-b px-4 py-5 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 shrink-0">
+          <FolderKanban className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('projectsV2.public.label')}</p>
+          <h1 className="font-bold text-lg leading-tight">{project.title}</h1>
+        </div>
+      </div>
+
+      <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
+        {/* Status + Progress */}
+        <div className="rounded-lg border bg-card p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">{t('projectsV2.public.status')}</span>
+            <span className="text-sm font-semibold">
+              {STATUS_LABEL[project.status] ?? project.status}
+            </span>
+          </div>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">{t('projectsV2.public.progress')}</span>
+              <span className="font-semibold">{project.progress_percent}%</span>
+            </div>
+            <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
+              <div
+                className="h-full rounded-full bg-primary transition-all duration-500"
+                style={{ width: `${project.progress_percent}%` }}
+              />
+            </div>
+          </div>
+          {project.start_date && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">{t('projectsV2.startDate')}</span>
+              <span>{new Date(project.start_date).toLocaleDateString('pl-PL')}</span>
+            </div>
+          )}
+          {project.end_date && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">{t('projectsV2.hub.endDate')}</span>
+              <span>{new Date(project.end_date).toLocaleDateString('pl-PL')}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Stages */}
+        {stages.length > 0 && (
+          <div className="rounded-lg border bg-card p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-sm">{t('projectsV2.public.stages')}</h2>
+              <span className="text-xs text-muted-foreground">
+                {t('projectsV2.public.stagesProgress', { done: doneCount, total: stages.length })}
+              </span>
+            </div>
+            <ul className="space-y-2">
+              {stages.map((stage, idx) => (
+                <li key={idx} className="flex items-center gap-2.5 text-sm">
+                  {stage.is_done ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                  ) : (
+                    <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
+                  )}
+                  <span className={cn(stage.is_done && 'line-through text-muted-foreground')}>
+                    {stage.name}
+                  </span>
+                  {stage.due_date && (
+                    <span className="ml-auto text-xs text-muted-foreground shrink-0">
+                      {new Date(stage.due_date).toLocaleDateString('pl-PL')}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Footer note: no prices shown (PR-13 scope) */}
+        <p className="text-xs text-muted-foreground text-center">
+          {t('projectsV2.public.noPricesNote')}
+        </p>
+
+        {/* Powered by */}
+        <p className="text-xs text-center text-muted-foreground/60">
+          Majster.AI
+        </p>
+      </div>
+    </div>
+  );
+}
