@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-01 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-02 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -27,7 +27,7 @@
 |----|-------|--------|-----------------|------------|-------|
 | **PR-00** | Roadmap-as-code | 🔵 IN PROGRESS | `claude/pr-00-roadmap-as-code-ZDfe2` | — | Ten PR |
 | **PR-01** | Tooling: i18n Gate + Sentry | ✅ DONE | `claude/tooling-fundamentals-pr-01-VoocS` | 2026-03-01 | i18n gate + Sentry release tag + version metadata |
-| **PR-02** | Security Baseline + RLS | ⬜ TODO | — | — | Wymaga merge PR-01 |
+| **PR-02** | Security Baseline + RLS | ✅ DONE | `claude/security-baseline-rls-Ad5Tx` | 2026-03-01 | SECURITY_BASELINE.md + RLS template + IDOR procedure |
 | **PR-03** | Design System + UI States | ⬜ TODO | — | — | Wymaga merge PR-02 |
 | **PR-04** | Social Login PACK | ⬜ TODO | — | — | Wymaga merge PR-03 |
 | **PR-05** | Profil firmy + Ustawienia | ⬜ TODO | — | — | Wymaga merge PR-04 |
@@ -77,6 +77,33 @@
 
 ---
 
+## PR-02 — Security Baseline + RLS Standard: co zostało wdrożone
+
+### Dokumentacja bezpieczeństwa
+- **Główny dokument:** `docs/SECURITY_BASELINE.md` — pełny standard RLS, procedura IDOR, wytyczne logowania, CSP, rate limiting, backup/erasure
+- **Szablon polityk:** `supabase/policies/rls_policy_template.sql` — 4 wzorce RLS (prywatny, org, token, systemowy) + helper SQL weryfikujący RLS
+
+### Kluczowe sekcje SECURITY_BASELINE.md
+1. **RLS-by-default** — każda tabela musi mieć `user_id` + RLS + 4 polityki
+2. **Szablon migracji** — copy/paste snippet dla nowych tabel (wzorzec A i B)
+3. **Procedura IDOR** — kroki dla 2 kont testowych: SELECT/UPDATE/DELETE + curl API
+4. **Logowanie i higiena** — co logować, co nie (PII), request-id pattern
+5. **CSP** — dokumentacja istniejących nagłówków w vercel.json + procedura zmian
+6. **Rate limiting** — gdzie stosować, wzorzec kodu (do użycia przy konkretnych PR)
+7. **Cookies/sesje** — stan obecny Supabase Auth, uwagi bezpieczeństwa
+8. **Backup/erasure** — retencja 30 dni, kaskadowe usunięcie, snapshoty
+
+### Stan istniejącego RLS (audyt przy PR-02)
+- Wszystkie tabele core (`clients`, `projects`, `quotes`, `pdf_data`) mają RLS włączone od migracji `20251205160746`
+- Tabele admin (`admin_system_settings`, `admin_audit_log`, `admin_theme_config`) mają RLS org-based od `20260203141118`
+- `vercel.json` zawiera kompletny zestaw nagłówków bezpieczeństwa (CSP, HSTS, X-Frame-Options)
+- Brak tabel bez RLS (weryfikacja SQL w `supabase/policies/rls_policy_template.sql`)
+
+### Co przyszłe PR-y muszą spełniać
+Każdy PR tworzący tabele z danymi użytkownika musi użyć szablonu z `SECURITY_BASELINE.md Sekcja 2` i przeprowadzić test IDOR z `Sekcji 3`. Wyniki testu IDOR wklejone w opis PR.
+
+---
+
 ## Checklista DoD per PR (skopiuj przy każdym PR)
 
 Przed każdym merge wypełnij i wklej w opis PR:
@@ -122,6 +149,7 @@ Przed każdym merge wypełnij i wklej w opis PR:
 |------|----|--------|-------|
 | 2026-03-01 | PR-00 | *(po merge)* | Roadmap-as-code — źródło prawdy |
 | 2026-03-01 | PR-01 | `claude/tooling-fundamentals-pr-01-VoocS` | i18n gate (gate-pr-changes.sh) + Sentry release + version.ts |
+| 2026-03-01 | PR-02 | `claude/security-baseline-rls-Ad5Tx` | SECURITY_BASELINE.md + RLS template (4 wzorce) + procedura IDOR |
 
 > *Uzupełniaj tabelę po każdym merge. Format: `docs: aktualizuj status PR-XX`*
 
@@ -130,7 +158,7 @@ Przed każdym merge wypełnij i wklej w opis PR:
 ## Wskaźniki postępu
 
 ```
-Faza 0 (Fundament):     1/3 PR  ███░░░░░░░  33%
+Faza 0 (Fundament):     2/3 PR  ██████░░░░  67%
 Faza 1 (Dostęp):        0/3 PR  ░░░░░░░░░░  0%
 Faza 2 (Shell):         0/1 PR  ░░░░░░░░░░  0%
 Faza 3 (Dane/Oferty):   0/2 PR  ░░░░░░░░░░  0%
