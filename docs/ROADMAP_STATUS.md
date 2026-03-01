@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-10 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-11 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -36,7 +36,7 @@
 | **PR-08** | CRM + Cennik | ⬜ TODO | — | — | Wymaga merge PR-07 |
 | **PR-09** | Oferty A: lista + statusy | ✅ DONE | `claude/offers-list-pr-09-bppeV` | 2026-03-01 | Tabela offers + RLS, lista z filtrami/wyszukiwaniem/sortowaniem, badge "brak odpowiedzi X dni", FF_NEW_SHELL ON/OFF, i18n PL/EN/UK |
 | **PR-10** | Oferty B1: Wizard bez PDF | ✅ DONE | `claude/offer-wizard-draft-mUypo` | 2026-03-01 | offer_items migration + RLS, OfferWizard (3 kroki: klient/pozycje/podsumowanie), inline new client, Price Library search, live totals, i18n PL/EN/UK, FF_NEW_SHELL ON/OFF |
-| **PR-11** | Oferty B2: PDF + wysyłka | ⬜ TODO | — | — | Wymaga merge PR-10 |
+| **PR-11** | Oferty B2: PDF + wysyłka | ✅ DONE | `claude/pr-11-offers-pdf-send-UtBtT` | 2026-03-01 | OfferPreviewModal (podgląd HTML A4 + download PDF + Send), useSendOffer (quota check + SENT status + PDF upload + email best-effort), offerPdfPayloadBuilder (payload z offer_items), migracja quota fn (+ offers table), i18n PL/EN/UK (offerPreview.*), FF_NEW_SHELL ON/OFF |
 | **PR-12** | Oferty C: domykanie | ⬜ TODO | — | — | Wymaga merge PR-11 |
 | **PR-13** | Projekty + QR status | ⬜ TODO | — | — | Wymaga merge PR-12 |
 | **PR-14** | Burn Bar BASIC | ⬜ TODO | — | — | Wymaga merge PR-13 |
@@ -222,6 +222,7 @@ Przed każdym merge wypełnij i wklej w opis PR:
 | 2026-03-01 | PR-07 | `claude/new-shell-bottom-nav-Hr4DV` | FF_NEW_SHELL flag (env+localStorage), NewShellLayout, NewShellBottomNav (5 tabs), NewShellFAB+sheet (7 akcji), HomeLobby (3 bloki), MoreScreen (3 grupy), NewShellOnboarding (3 kroki, localStorage persist), i18n PL/EN/UK, routing /app/home + /app/more |
 | 2026-03-01 | PR-09 | `claude/offers-list-pr-09-bppeV` | Tabela `offers` (migration 20260301140000) + RLS 4 polityki + typy TS, useOffers hook (TanStack Query), Offers page (status tabs ALL/DRAFT/SENT/ACCEPTED/REJECTED/ARCHIVED, search, sort, OfferRow z badge "brak odpowiedzi X dni"), OfferDetail placeholder, routing /app/offers + /app/offers/:id + /app/offers/new, Navigation+defaultConfig (oferty w starym shellu), i18n PL/EN/UK (offersList.*), ROADMAP_STATUS PR-09 DONE |
 | 2026-03-01 | PR-10 | `claude/offer-wizard-draft-mUypo` | Migration offer_items (+ FK offers.client_id + total_vat), useOfferWizard hook (load+save draft), OfferWizard 3-krokowy (WizardStepClient/Items/Review), inline new client, Price Library search, live totals (net/VAT/gross), i18n PL/EN/UK (offerWizard.*), FF_NEW_SHELL ON/OFF, ROADMAP_STATUS PR-10 DONE |
+| 2026-03-01 | PR-11 | `claude/pr-11-offers-pdf-send-UtBtT` | Migration 20260301160000 (quota fn update: counts offers+offer_approvals, index offers.sent_at), offerPdfPayloadBuilder.ts, useSendOffer hook (idempotent, quota check, SENT status, PDF upload, email best-effort), OfferPreviewModal (HTML A4 preview, Download PDF, Send+quota gate, shareable link, FreeTierPaywallModal), WizardStepReview+OfferWizard (Preview & Send button), i18n PL/EN/UK (offerPreview.* 30 kluczy), ROADMAP_STATUS PR-11 DONE |
 
 > *Uzupełniaj tabelę po każdym merge. Format: `docs: aktualizuj status PR-XX`*
 
@@ -366,11 +367,11 @@ Faza 0 (Fundament):     3/3 PR  ██████████  100%
 Faza 1 (Dostęp):        3/3 PR  ██████████  100%
 Faza 2 (Shell):         1/1 PR  ██████████  100%
 Faza 3 (Dane/Oferty):   1/2 PR  █████░░░░░  50%
-Faza 4 (Oferty flow):   1/3 PR  ███░░░░░░░  33%
+Faza 4 (Oferty flow):   2/3 PR  ██████░░░░  67%
 Faza 5 (Projekty):      0/6 PR  ░░░░░░░░░░  0%
 Faza 6 (Offline+$):     0/2 PR  ░░░░░░░░░░  0%
 ─────────────────────────────────────────
-RAZEM:                  9/20 PR ████░░░░░░  45%
+RAZEM:                  10/20 PR █████░░░░░  50%
 (PR-00 nie wliczany do progresu funkcjonalnego)
 ```
 
@@ -603,5 +604,90 @@ W obu trybach: `/app/offers/new` otwiera wizard poprawnie.
 1. Zmień język w ustawieniach
 2. Wszystkie etykiety wizarda przetłumaczone (tytuł, przyciski, komunikaty błędów)
 3. Brak hardcoded polskich tekstów w nowych komponentach
+
+---
+
+## PR-11 — Oferty B2: PDF + wysyłka: co zostało wdrożone
+
+### Baza danych
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260301160000_pr11_quota_fn_update.sql` | Aktualizacja `count_monthly_finalized_offers()` — teraz zlicza z OBYDWU tabel: `offer_approvals` (stary flow) + `offers` (nowy flow PR-11). Index `idx_offers_user_status_sent_at`. Backward-compatible. |
+
+### Reguła kwoty (ADR-0004 — niezmieniona)
+
+- ✅ Drafty **NIE** blokowane (quota = 0 dla szkiców)
+- ✅ SEND → quota +1 (zliczane przez `sent_at` w nowym flow)
+- ✅ **Idempotentność**: re-wysyłka tej samej oferty (status już SENT) → quota nie zmienia się, `sent_at` nie nadpisywany
+- ✅ Dwa flow (stary przez `offer_approvals`, nowy przez `offers`) → bez double-countingu (różne tabele)
+
+### Pliki zmienione / dodane
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260301160000_pr11_quota_fn_update.sql` | Migracja DB — aktualizacja funkcji quota |
+| `src/lib/offerPdfPayloadBuilder.ts` | Buduje `OfferPdfPayload` z tabel `offers + offer_items + clients + profiles` |
+| `src/hooks/useSendOffer.ts` | Mutation: idempotency check → SENT status → PDF upload → email (best-effort) |
+| `src/components/offers/OfferPreviewModal.tsx` | Modal: podgląd HTML A4, Download PDF, Send (quota gate), link kopiowania |
+| `src/components/offers/wizard/WizardStepReview.tsx` | Dodano prop `onPreviewAndSend` + przycisk "Podgląd i Wyślij" |
+| `src/components/offers/wizard/OfferWizard.tsx` | Dodano `handlePreviewAndSend`, stan `previewOfferId`, `<OfferPreviewModal>` |
+| `src/i18n/locales/pl.json` | Klucze `offerPreview.*` (32 klucze PL) + `offerWizard.reviewStep.previewAndSend` |
+| `src/i18n/locales/en.json` | Klucze `offerPreview.*` (32 klucze EN) |
+| `src/i18n/locales/uk.json` | Klucze `offerPreview.*` (32 klucze UK) |
+| `docs/ROADMAP_STATUS.md` | Ten plik — aktualizacja statusu PR-11 DONE |
+
+### Architektura decyzji (send flow)
+
+```
+DRAFT → [user kliknie "Podgląd i Wyślij"]
+  → saveDraft() → offerId
+  → OfferPreviewModal otwiera się
+  → [user kliknie "Wyślij do klienta"]
+    → useFreeTierOfferQuota check (canSend?)
+    → TAK: useSendOffer.mutate(offerId, clientEmail)
+      → offers.status = 'SENT', sent_at = now()    ← kwota +1
+      → generateOfferPdf() → uploadOfferPdf()       ← non-fatal
+      → send-offer-email EF                          ← non-fatal
+      → invalidate: offers + quota caches
+    → NIE: FreeTierPaywallModal
+```
+
+### Jak testować PR-11
+
+**Happy path (nowa oferta → wyślij):**
+1. Idź na `/app/offers/new`
+2. Krok 1: Wybierz klienta (lub dodaj nowego z emailem)
+3. Krok 2: Dodaj 2-3 pozycje z cenami
+4. Krok 3: Wpisz tytuł → kliknij "Podgląd i Wyślij"
+5. Modal podglądu otwiera się → widać logo firmy, dane klienta, tabelę pozycji, sumy
+6. Kliknij "Pobierz PDF" → PDF pobierany lokalnie
+7. Kliknij "Wyślij do klienta" → toast sukcesu, status = SENT
+8. Na liście ofert → oferta z badge "Wysłana"
+
+**Quota gating (free plan 3/3):**
+1. Miej 3 wysłane oferty w bieżącym miesiącu
+2. Utwórz nowy szkic → krok 3 → "Podgląd i Wyślij"
+3. Modal otwiera się → alert o wyczerpaniu limitu
+4. Kliknij "Wyślij" → FreeTierPaywallModal się otwiera (nie wysyła)
+5. Zamknij modal → szkic niezmieniony (wciąż DRAFT)
+
+**Idempotentność:**
+1. Wyślij ofertę → status SENT (kwota +1)
+2. Otwórz tę samą ofertę → przycisk "Wyślij" niewidoczny (już SENT)
+3. (Przez API) wywołaj useSendOffer ponownie → `alreadySent = true`, quota niezmieniona
+
+**FF_NEW_SHELL:**
+- OFF: `/app/offers/:id` otwiera wizard → Krok 3 → "Podgląd i Wyślij" działa
+- ON: zakładka "Oferty" → wybierz szkic → to samo działanie
+
+**i18n:**
+- Zmień język na EN → wszystkie napisy modalu przetłumaczone
+- Zmień na UK → "Попередній перегляд пропозиції"
+
+### RLS / bezpieczeństwo
+- Nowe migracje nie tworzą nowych tabel — tylko aktualizują funkcję DB
+- Funkcja `count_monthly_finalized_offers` jest `SECURITY DEFINER` — użytkownik widzi tylko swoje dane
+- `useSendOffer` aktualizuje tylko wiersz z `eq('id', offerId)` — RLS oferuje dodatkową ochronę
 
 *Tracker: v1.0 | Data: 2026-03-01 | Właściciel: Robert B. + Claude*
