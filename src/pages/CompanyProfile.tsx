@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useProfile, useUpdateProfile, useUploadLogo } from '@/hooks/useProfile';
+import { useCompanyProfile, useUpsertCompanyProfile } from '@/hooks/useCompanyProfile';
 import { useAuth } from '@/contexts/AuthContext';
 import { profileSchema, ProfileFormData } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Building2, Upload, Loader2, Save, User, Phone, Mail, MapPin, CreditCard, FileText, MessageSquare, ChevronDown, Image } from 'lucide-react';
+import { Building2, Upload, Loader2, Save, User, Phone, Mail, MapPin, CreditCard, FileText, MessageSquare, ChevronDown, Image, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import { BiometricSetup } from '@/components/auth/BiometricSetup';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
@@ -23,9 +24,13 @@ export default function CompanyProfile() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { data: profile, isLoading } = useProfile();
+  const { data: companyProfile } = useCompanyProfile();
   const updateProfile = useUpdateProfile();
+  const upsertCompanyProfile = useUpsertCompanyProfile();
   const uploadLogo = useUploadLogo();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [website, setWebsite] = useState('');
 
   const [formData, setFormData] = useState<ProfileFormData>({
     company_name: '',
@@ -74,6 +79,12 @@ export default function CompanyProfile() {
     }
   }, [profile]);
 
+  useEffect(() => {
+    if (companyProfile) {
+      setWebsite(companyProfile.website || '');
+    }
+  }, [companyProfile]);
+
   const validateForm = (): boolean => {
     const result = profileSchema.safeParse(formData);
     if (!result.success) {
@@ -99,7 +110,22 @@ export default function CompanyProfile() {
     }
 
     try {
+      // Zapisz do tabeli profiles (email/auth settings)
       await updateProfile.mutateAsync(formData);
+
+      // Synchronizuj dane wydawcy PDF do tabeli company_profiles (PR-05)
+      await upsertCompanyProfile.mutateAsync({
+        company_name: formData.company_name,
+        nip: formData.nip || null,
+        address_line1: formData.street || null,
+        city: formData.city || null,
+        postal_code: formData.postal_code || null,
+        email: formData.email_for_offers || null,
+        phone: formData.phone || null,
+        bank_account: formData.bank_account || null,
+        website: website || null,
+        logo_url: profile?.logo_url || null,
+      });
     } catch (err) {
       console.error('Profile update failed:', err);
       toast.error(t('companyProfile.saveFailed'));
@@ -399,6 +425,21 @@ export default function CompanyProfile() {
                         {errors.bank_account && (
                           <p className="text-sm text-destructive">{errors.bank_account}</p>
                         )}
+                      </div>
+
+                      {/* Website (optional — saves to company_profiles PR-05) */}
+                      <div className="space-y-2 sm:col-span-2">
+                        <Label htmlFor="website" className="flex items-center gap-2">
+                          <Globe className="h-4 w-4" />
+                          {t('companyProfile.websiteLabel')}
+                        </Label>
+                        <Input
+                          id="website"
+                          type="url"
+                          value={website}
+                          onChange={(e) => setWebsite(e.target.value)}
+                          placeholder={t('companyProfile.websitePlaceholder')}
+                        />
                       </div>
                     </div>
                   </CardContent>

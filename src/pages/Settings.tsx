@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings as SettingsIcon, Bell, Globe, Calendar, FileText, Scale, Fingerprint, Mail } from 'lucide-react';
+import { Settings as SettingsIcon, Bell, Globe, Calendar, FileText, Scale, Fingerprint, Mail, UserX } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { CalendarSync } from '@/components/calendar/CalendarSync';
 import { CompanyDocuments } from '@/components/documents/CompanyDocuments';
 import { PushNotificationSettings } from '@/components/notifications/PushNotificationSettings';
 import { BiometricSettings } from '@/components/settings/BiometricSettings';
+import { DeleteAccountSection } from '@/components/settings/DeleteAccountSection';
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -61,6 +62,10 @@ export default function Settings() {
               <TabsTrigger value="email" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                 <span>{t('settings.contactEmailTab')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="account" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                <UserX className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <span>{t('deleteAccount.title')}</span>
               </TabsTrigger>
             </TabsList>
           </div>
@@ -137,6 +142,10 @@ export default function Settings() {
 
           <TabsContent value="email" className="mt-4">
             <ContactEmailSettings />
+          </TabsContent>
+
+          <TabsContent value="account" className="mt-4">
+            <DeleteAccountSection />
           </TabsContent>
         </Tabs>
       </div>

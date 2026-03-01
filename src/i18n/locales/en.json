@@ -627,7 +627,8 @@
       "light": "Light",
       "system": "System"
     },
-    "contactEmailTab": "Offer Email"
+    "contactEmailTab": "Offer Email",
+    "accountTab": "Account"
   },
   "billing": {
     "title": "Billing & Subscriptions",
@@ -2234,7 +2235,13 @@
     "emailPreviewContent": "...message content...",
     "saveProfile": "Save profile",
     "formErrors": "Please fix errors in the form",
-    "saveFailed": "Failed to save profile. Please try again."
+    "saveFailed": "Failed to save profile. Please try again.",
+    "websiteLabel": "Website (optional)",
+    "websitePlaceholder": "https://www.company.com",
+    "address2Label": "Address line 2 (optional)",
+    "address2Placeholder": "Apartment, floor...",
+    "countryLabel": "Country",
+    "countryPlaceholder": "Poland"
   },
   "marketplacePage": {
     "addSubcontractor": "Add subcontractor",
@@ -2627,5 +2634,42 @@
     "title": "Project Timeline — {{month}}",
     "statusLegend": "Project status:",
     "unknownClient": "Unknown client"
+  },
+  "deleteAccount": {
+    "title": "Delete account",
+    "dangerZoneTitle": "Danger zone",
+    "dangerZoneSubtitle": "Irreversible actions for your account",
+    "warning": "Deleting your account is irreversible. All your data, projects, clients, quotes and documents will be permanently deleted.",
+    "willBeDeleted": "What will be deleted:",
+    "deletedItems": {
+      "projects": "All projects and quotes",
+      "clients": "All clients and their contact data",
+      "finance": "Financial history and invoices",
+      "calendar": "Calendar and events",
+      "templates": "Item templates and settings",
+      "profile": "Company profile and documents",
+      "account": "User account and login data"
+    },
+    "buttonLabel": "Delete account permanently",
+    "dialogTitle": "Are you sure you want to delete your account?",
+    "dialogDescriptionMain": "This operation is IRREVERSIBLE. All your data will be permanently deleted from our systems in accordance with GDPR.",
+    "dialogBeforeDeleting": "Before deleting your account, consider:",
+    "dialogConsider": {
+      "export": "Exporting important data (projects, clients)",
+      "download": "Downloading copies of invoices and documents",
+      "cancel": "Cancelling active subscription"
+    },
+    "confirmLabel": "Type USUŃ to confirm:",
+    "confirmKeyword": "USUŃ",
+    "confirmPlaceholder": "USUŃ",
+    "cancelButton": "Cancel",
+    "confirmButton": "Delete account permanently",
+    "deletingButton": "Deleting...",
+    "gdprNote": "Under Art. 17 GDPR (Right to be Forgotten), you have the right to delete all your personal data.",
+    "successTitle": "Account deleted",
+    "successMessage": "All your data has been permanently deleted.",
+    "errorTitle": "Error deleting account",
+    "errorFallback": "Please try again later",
+    "invalidKeyword": "Please type USUŃ to confirm"
   }
 }

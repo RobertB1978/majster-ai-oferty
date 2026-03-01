@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-04 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-05 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -30,7 +30,7 @@
 | **PR-02** | Security Baseline + RLS | ✅ DONE | `claude/security-baseline-rls-Ad5Tx` | 2026-03-01 | SECURITY_BASELINE.md + RLS template + IDOR procedure |
 | **PR-03** | Design System + UI States | ✅ DONE | `claude/design-system-ui-states-ufHHS` | 2026-03-01 | Tokens (CSS vars), SkeletonBlock/List, EmptyState, ErrorState, touch targets, UI_SYSTEM.md |
 | **PR-04** | Social Login PACK | ✅ DONE | `claude/social-login-pack-ouzu9` | 2026-03-01 | Google + Apple OAuth + email/password fallback; SocialLoginButtons, AuthCallback, docs/AUTH_SETUP.md |
-| **PR-05** | Profil firmy + Ustawienia | ⬜ TODO | — | — | Wymaga merge PR-04 |
+| **PR-05** | Profil firmy + Ustawienia | ✅ DONE | `claude/pr-05-company-profile-eBtcn` | 2026-03-01 | company_profiles table + RLS + DeleteAccount i18n (USUŃ) + Edge Function fix + docs/COMPLIANCE/ACCOUNT_DELETION.md |
 | **PR-06** | Free plan + paywall | ⬜ TODO | — | — | Wymaga merge PR-05 |
 | **PR-07** | Shell (FF_NEW_SHELL) | ⬜ TODO | — | — | **PIVOT** — wymaga PR-06 |
 | **PR-08** | CRM + Cennik | ⬜ TODO | — | — | Wymaga merge PR-07 |
@@ -152,8 +152,80 @@ Przed każdym merge wypełnij i wklej w opis PR:
 | 2026-03-01 | PR-02 | `claude/security-baseline-rls-Ad5Tx` | SECURITY_BASELINE.md + RLS template (4 wzorce) + procedura IDOR |
 | 2026-03-01 | PR-03 | `claude/design-system-ui-states-ufHHS` | SkeletonBlock/List, EmptyState (ctaLabel/onCta), ErrorState, .touch-target, UI_SYSTEM.md |
 | 2026-03-01 | PR-04 | `claude/social-login-pack-ouzu9` | Google + Apple OAuth, AuthCallback, SocialLoginButtons, i18n PL/EN/UK, AUTH_SETUP.md |
+| 2026-03-01 | PR-05 | `claude/pr-05-company-profile-eBtcn` | company_profiles table (RLS), useCompanyProfile hook, DeleteAccountSection (i18n+USUŃ), Edge Function fix, ACCOUNT_DELETION.md |
 
 > *Uzupełniaj tabelę po każdym merge. Format: `docs: aktualizuj status PR-XX`*
+
+---
+
+## PR-05 — Profil firmy + Usuń konto: co zostało wdrożone
+
+### Nowa tabela: `company_profiles`
+- **Migracja:** `supabase/migrations/20260301120000_company_profiles.sql`
+- **Kolumny:** `id, user_id, company_name, nip, address_line1, address_line2, postal_code, city, country, email, phone, website, bank_account, logo_url, created_at, updated_at`
+- **RLS:** 4 polityki (`_select_own`, `_insert_own`, `_update_own`, `_delete_own`) — user_id = auth.uid()
+- **Trigger:** auto-create rekordu przy rejestracji użytkownika
+
+### Nowy hook: `useCompanyProfile` / `useUpsertCompanyProfile`
+- **Plik:** `src/hooks/useCompanyProfile.ts`
+- **Funkcja:** odczyt i zapis danych wydawcy PDF do tabeli `company_profiles`
+
+### Zaktualizowany `CompanyProfile.tsx`
+- **Dodane pole:** `website` (opcjonalne, zapisuje do `company_profiles`)
+- **Zapis:** przy "Zapisz profil" synchronizuje dane do obu tabel: `profiles` i `company_profiles`
+- Strona dostępna pod `/app/profile`
+
+### Naprawiony `DeleteAccountSection.tsx`
+- **Pełne i18n:** wszystkie teksty przez `t('deleteAccount.xxx')` (PL/EN/UK)
+- **Słowo potwierdzające:** `USUŃ` (zamiast "DELETE" — wymóg spec PR-05)
+- **Bezpieczne wywołanie:** token z sesji w nagłówku Authorization (nie userId w body)
+
+### Zaktualizowana Edge Function `delete-user-account`
+- **Słowo potwierdzające:** `USUŃ` (server-side walidacja)
+- **Dodane usuwanie:** `company_profiles` + `profiles` (wcześniej tylko pseudotabela `user_profiles`)
+- **Usunięto:** błędne odwołanie do nieistniejącej tabeli `user_profiles`
+
+### `Settings.tsx`
+- **Nowa zakładka:** "Usuń konto" z ikoną `UserX` — renderuje `<DeleteAccountSection />`
+
+### i18n (PL/EN/UK)
+- **Nowy namespace:** `deleteAccount` (20+ kluczy) w `pl.json`, `en.json`, `uk.json`
+- **Rozszerzony `companyProfile`:** `websiteLabel`, `address2Label`, `countryLabel`
+
+### Dokumentacja
+- **Nowy plik:** `docs/COMPLIANCE/ACCOUNT_DELETION.md` — pełny opis flow usuwania, retencja danych, test IDOR, testy manualne, znane ograniczenia
+
+### Jak testować (krok po kroku)
+
+**1. Profil firmy:**
+```
+1. Zaloguj się → Profil firmy (/app/profile)
+2. Wypełnij: nazwa firmy, NIP, adres, telefon, email, konto bankowe
+3. Opcjonalnie: wpisz stronę www (nowe pole)
+4. Kliknij "Zapisz profil"
+5. Oczekiwane: toast sukcesu + dane zapisane w tabelach profiles + company_profiles
+6. Weryfikacja RLS (Supabase Studio):
+   SELECT * FROM company_profiles; -- widać tylko swój rekord
+```
+
+**2. Usuń konto:**
+```
+1. Ustawienia → zakładka "Usuń konto"
+2. Kliknij "Usuń konto całkowicie"
+3. W modalu WPISZ: USUŃ (dokładnie tak)
+4. Kliknij "Usuń konto trwale"
+5. Oczekiwane: toast sukcesu → przekierowanie /login → próba logowania = błąd
+6. Weryfikacja: w Supabase Dashboard → Auth → user nieobecny
+   SELECT * FROM company_profiles WHERE user_id = '<id>'; → 0 wierszy
+   SELECT * FROM profiles WHERE user_id = '<id>'; → 0 wierszy
+```
+
+**3. Ochrona przed przypadkowym usunięciem:**
+```
+- Wpisz "delete" (małe) → przycisk nieaktywny ✓
+- Wpisz "DELETE" (angielski) → przycisk nieaktywny ✓
+- Kliknij "Anuluj" → konto nienaruszone ✓
+```
 
 ---
 
@@ -161,14 +233,14 @@ Przed każdym merge wypełnij i wklej w opis PR:
 
 ```
 Faza 0 (Fundament):     3/3 PR  ██████████  100%
-Faza 1 (Dostęp):        1/3 PR  ███░░░░░░░  33%
+Faza 1 (Dostęp):        2/3 PR  ██████░░░░  67%
 Faza 2 (Shell):         0/1 PR  ░░░░░░░░░░  0%
 Faza 3 (Dane/Oferty):   0/2 PR  ░░░░░░░░░░  0%
 Faza 4 (Oferty flow):   0/3 PR  ░░░░░░░░░░  0%
 Faza 5 (Projekty):      0/6 PR  ░░░░░░░░░░  0%
 Faza 6 (Offline+$):     0/2 PR  ░░░░░░░░░░  0%
 ─────────────────────────────────────────
-RAZEM:                  1/20 PR █░░░░░░░░░  5%
+RAZEM:                  5/20 PR ██░░░░░░░░  25%
 (PR-00 nie wliczany do progresu funkcjonalnego)
 ```
 

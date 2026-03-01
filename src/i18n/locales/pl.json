@@ -627,7 +627,8 @@
     "pushNotifications": "Powiadomienia push",
     "enablePush": "Włącz powiadomienia push",
     "emailNotifications": "Powiadomienia email",
-    "contactEmailTab": "Email oferty"
+    "contactEmailTab": "Email oferty",
+    "accountTab": "Konto"
   },
   "billing": {
     "title": "Płatności i subskrypcje",
@@ -2234,7 +2235,13 @@
     "emailPreviewContent": "...treść wiadomości...",
     "saveProfile": "Zapisz profil",
     "formErrors": "Popraw błędy w formularzu",
-    "saveFailed": "Nie udało się zapisać profilu. Spróbuj ponownie."
+    "saveFailed": "Nie udało się zapisać profilu. Spróbuj ponownie.",
+    "websiteLabel": "Strona internetowa (opcjonalnie)",
+    "websitePlaceholder": "https://www.firma.pl",
+    "address2Label": "Adres cd. (opcjonalnie)",
+    "address2Placeholder": "Lokal, piętro...",
+    "countryLabel": "Kraj",
+    "countryPlaceholder": "Polska"
   },
   "marketplacePage": {
     "addSubcontractor": "Dodaj podwykonawcę",
@@ -2627,5 +2634,42 @@
     "title": "Timeline Projektów — {{month}}",
     "statusLegend": "Status projektów:",
     "unknownClient": "Nieznany klient"
+  },
+  "deleteAccount": {
+    "title": "Usuń konto",
+    "dangerZoneTitle": "Strefa niebezpieczna",
+    "dangerZoneSubtitle": "Nieodwracalne działania dotyczące Twojego konta",
+    "warning": "Usunięcie konta jest nieodwracalne. Wszystkie Twoje dane, projekty, klienci, wyceny i dokumenty zostaną trwale usunięte.",
+    "willBeDeleted": "Co zostanie usunięte:",
+    "deletedItems": {
+      "projects": "Wszystkie projekty i wyceny",
+      "clients": "Wszyscy klienci i ich dane kontaktowe",
+      "finance": "Historia finansowa i faktury",
+      "calendar": "Kalendarz i wydarzenia",
+      "templates": "Szablony pozycji i ustawienia",
+      "profile": "Profil firmowy i dokumenty",
+      "account": "Konto użytkownika i dane logowania"
+    },
+    "buttonLabel": "Usuń konto całkowicie",
+    "dialogTitle": "Czy na pewno chcesz usunąć konto?",
+    "dialogDescriptionMain": "Ta operacja jest NIEODWRACALNA. Wszystkie Twoje dane zostaną trwale usunięte z naszych systemów zgodnie z RODO.",
+    "dialogBeforeDeleting": "Przed usunięciem konta rozważ:",
+    "dialogConsider": {
+      "export": "Eksport ważnych danych (projekty, klienci)",
+      "download": "Pobranie kopii faktur i dokumentów",
+      "cancel": "Anulowanie aktywnej subskrypcji"
+    },
+    "confirmLabel": "Wpisz USUŃ aby potwierdzić:",
+    "confirmKeyword": "USUŃ",
+    "confirmPlaceholder": "USUŃ",
+    "cancelButton": "Anuluj",
+    "confirmButton": "Usuń konto trwale",
+    "deletingButton": "Usuwanie...",
+    "gdprNote": "Zgodnie z Art. 17 RODO (Prawo do Bycia Zapomnianym), masz prawo do usunięcia wszystkich swoich danych osobowych.",
+    "successTitle": "Konto zostało usunięte",
+    "successMessage": "Wszystkie Twoje dane zostały trwale usunięte.",
+    "errorTitle": "Błąd przy usuwaniu konta",
+    "errorFallback": "Spróbuj ponownie później",
+    "invalidKeyword": "Proszę wpisać USUŃ aby potwierdzić"
   }
 }

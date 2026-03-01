@@ -1,19 +1,22 @@
 /**
  * GDPR-compliant User Account Deletion
- * Security Pack Δ1 - Enhanced Validation
+ * PR-05 — Company Profile + Delete Account (RODO/Apple)
  *
  * Edge Function do całkowitego usunięcia konta użytkownika i wszystkich powiązanych danych
- * zgodnie z Art. 17 RODO (Right to Erasure).
+ * zgodnie z Art. 17 RODO (Right to Erasure / Right to be Forgotten).
  *
  * Usuwa:
+ * - company_profiles (dane firmy PDF) — anonimizacja PII
+ * - profiles (email/auth settings)
  * - Wszystkie projekty użytkownika
  * - Wszystkich klientów
  * - Wszystkie wyceny i pozycje wycen
  * - Wydarzenia kalendarza
  * - Szablony pozycji
  * - Powiadomienia
- * - Profil użytkownika
  * - Konto auth
+ *
+ * Słowo potwierdzające: "USUŃ" (wymagane przez spec PR-05 + App Store)
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -131,8 +134,8 @@ serve(async (req) => {
       return createValidationErrorResponse(validation.errors, corsHeaders);
     }
 
-    // Check exact confirmation phrase (case-sensitive)
-    const expectedPhrase = 'DELETE MY ACCOUNT';
+    // Check exact confirmation phrase (case-sensitive) — PR-05: "USUŃ" per spec
+    const expectedPhrase = 'USUŃ';
     if (confirmationPhrase !== expectedPhrase) {
       return new Response(
         JSON.stringify({
@@ -153,6 +156,48 @@ serve(async (req) => {
     // ========================================
 
     const deletionResults: Record<string, { success: boolean; count?: number; error?: string }> = {};
+
+    // Company profiles (PR-05) — dane wydawcy PDF (PII!)
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('company_profiles')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
+
+      deletionResults.companyProfiles = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting company profiles:', error.code);
+    } catch (error) {
+      deletionResults.companyProfiles = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+
+    // Profiles (email/auth settings — PII!)
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('profiles')
+        .delete()
+        .eq('user_id', userId)
+        .select('id');
+
+      deletionResults.profiles = {
+        success: !error,
+        count: data?.length || 0,
+        error: error?.message
+      };
+      if (error) console.error('Error deleting profiles:', error.code);
+    } catch (error) {
+      deletionResults.profiles = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
 
     // Quotes items (cascade delete przez FK, ale dla pewności)
     try {
@@ -317,27 +362,6 @@ serve(async (req) => {
       if (error) console.error('Error deleting offer approvals:', error);
     } catch (error) {
       deletionResults.offerApprovals = {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
-
-    // User profile
-    try {
-      const { data, error } = await supabaseAdmin
-        .from('user_profiles')
-        .delete()
-        .eq('user_id', userId)
-        .select('id');
-
-      deletionResults.userProfiles = {
-        success: !error,
-        count: data?.length || 0,
-        error: error?.message
-      };
-      if (error) console.error('Error deleting user profile:', error);
-    } catch (error) {
-      deletionResults.userProfiles = {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'
       };
