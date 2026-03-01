@@ -36,14 +36,25 @@ jobs:
       - name: Check key parity (PL / EN / UK)
         run: node scripts/i18n/check-parity.mjs
 
-      # ── 2. Hardcoded Polish Strings ───────────────────────────────────────
-      # Uses the existing bash scanner which detects Polish diacritics in
-      # component/page/hook source files. Report-only (no --fail-on-match)
-      # so that partial migrations don't block every PR. Escalate to
-      # --fail-on-match once the Zero-Hardcode migration is complete.
-      - name: Report hardcoded Polish strings
+      # ── 2a. Hardcoded Strings — full audit (report-only) ─────────────────
+      # Shows total count across the codebase. continue-on-error: true so
+      # pre-existing legacy violations do not block the whole PR. Used for
+      # trend monitoring only.
+      - name: Report hardcoded Polish strings (full audit)
         run: bash scripts/check-i18n-hardcodes.sh
         continue-on-error: true
+
+      # ── 2b. Hardcoded Strings — PR-01 GATE (blocks merge) ─────────────────
+      # PR-01 Tooling Fundamentals: this step is the enforcing gate.
+      # It checks ONLY the files changed in this PR vs the merge base.
+      # Any newly-introduced Polish diacritic in a component/page/hook causes
+      # an immediate failure — even before ESLint. Legacy files are unaffected.
+      # See scripts/i18n/gate-pr-changes.sh for logic.
+      - name: i18n Gate — block new hardcoded strings in changed files
+        run: |
+          # Fetch base branch so git diff has the reference
+          git fetch origin ${{ github.base_ref || 'main' }} --depth=1 2>/dev/null || true
+          bash scripts/i18n/gate-pr-changes.sh "origin/${{ github.base_ref || 'main' }}"
 
       # ── 3. ESLint i18n Rules ──────────────────────────────────────────────
       # Runs the full ESLint suite (includes i18next/no-literal-string).

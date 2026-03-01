@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/react";
 import { onCLS, onINP, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals';
+import { APP_VERSION } from './version';
 
 /**
  * Check if Sentry is properly configured
@@ -45,6 +46,8 @@ export function initSentry() {
     Sentry.init({
       dsn,
       environment,
+      // Tag every event with the app version for release tracking (PR-01)
+      release: `majster-ai@${APP_VERSION}`,
 
       // Performance Monitoring
       integrations: [

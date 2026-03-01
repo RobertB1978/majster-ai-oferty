@@ -33,6 +33,10 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    // Inject package.json version at build time — consumed by src/lib/version.ts
+    define: {
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? '0.0.0'),
+    },
     server: {
       host: "::",
       port: 8080,
