@@ -21,6 +21,9 @@ import { formatCurrency } from '@/lib/formatters';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
+import { useFreeTierOfferQuota } from '@/hooks/useFreeTierOfferQuota';
+import { FreeTierPaywallModal } from '@/components/billing/FreeTierPaywallModal';
+import { OfferQuotaIndicator } from '@/components/billing/OfferQuotaIndicator';
 
 interface SendOfferModalProps {
   open: boolean;
@@ -55,6 +58,10 @@ export function SendOfferModal({
   const { data: quote } = useQuote(projectId);
   const createOfferSend = useCreateOfferSend();
   const updateOfferSend = useUpdateOfferSend();
+
+  // PR-06: Free-plan monthly quota
+  const offerQuota = useFreeTierOfferQuota();
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const [email, setEmail] = useState(clientEmail);
   const [subject, setSubject] = useState('');
@@ -196,6 +203,12 @@ export function SendOfferModal({
   };
 
   const handleSend = async () => {
+    // PR-06: Free-plan monthly quota check — block before any other validation
+    if (!offerQuota.canSend) {
+      setShowPaywall(true);
+      return;
+    }
+
     if (!quote || !quote.positions || quote.positions.length === 0) {
       toast.error(t('sendOffer.createQuoteFirst'));
       return;
@@ -270,13 +283,32 @@ export function SendOfferModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      {/* PR-06: Paywall modal — shown when free quota is exceeded */}
+      <FreeTierPaywallModal open={showPaywall} onOpenChange={setShowPaywall} />
+
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('sendOffer.title')}</DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle>{t('sendOffer.title')}</DialogTitle>
+            {/* PR-06: Quota indicator visible in modal header */}
+            <OfferQuotaIndicator />
+          </div>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
+
+          {/* ── PR-06: Quota limit warning ───────────────────────────────────── */}
+          {!offerQuota.canSend && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-sm">
+                <span className="font-medium">{t('paywall.sendBlockedTitle')}</span>{' '}
+                {t('paywall.sendBlockedDesc')}
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* ── Case B: no client email ─────────────────────────────────────── */}
           {!hasClientEmail && (
@@ -515,5 +547,6 @@ export function SendOfferModal({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

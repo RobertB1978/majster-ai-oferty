@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-05 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-06 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -31,7 +31,7 @@
 | **PR-03** | Design System + UI States | ✅ DONE | `claude/design-system-ui-states-ufHHS` | 2026-03-01 | Tokens (CSS vars), SkeletonBlock/List, EmptyState, ErrorState, touch targets, UI_SYSTEM.md |
 | **PR-04** | Social Login PACK | ✅ DONE | `claude/social-login-pack-ouzu9` | 2026-03-01 | Google + Apple OAuth + email/password fallback; SocialLoginButtons, AuthCallback, docs/AUTH_SETUP.md |
 | **PR-05** | Profil firmy + Ustawienia | ✅ DONE | `claude/company-profile-settings-2eKBa` | 2026-03-01 | Company Profile form (profiles table + address_line2/country/website), Settings tabs (Company + Account), DeleteAccountSection (USUŃ keyword), delete-user-account EF fix, i18n PL/EN/UK, docs/COMPLIANCE/ACCOUNT_DELETION.md |
-| **PR-06** | Free plan + paywall | ⬜ TODO | — | — | Wymaga merge PR-05 |
+| **PR-06** | Free plan + paywall | ✅ DONE | `claude/free-tier-paywall-0b5OO` | 2026-03-01 | FREE_TIER_OFFER_LIMIT=3, canSendOffer(), DB function count_monthly_finalized_offers(), useFreeTierOfferQuota hook, OfferQuotaIndicator, FreeTierPaywallModal, SendOfferModal quota check, i18n PL/EN/UK, unit tests, ADR-0004 |
 | **PR-07** | Shell (FF_NEW_SHELL) | ⬜ TODO | — | — | **PIVOT** — wymaga PR-06 |
 | **PR-08** | CRM + Cennik | ⬜ TODO | — | — | Wymaga merge PR-07 |
 | **PR-09** | Oferty A: lista + statusy | ⬜ TODO | — | — | Wymaga merge PR-08 |
@@ -218,8 +218,76 @@ Przed każdym merge wypełnij i wklej w opis PR:
 | 2026-03-01 | PR-03 | `claude/design-system-ui-states-ufHHS` | SkeletonBlock/List, EmptyState (ctaLabel/onCta), ErrorState, .touch-target, UI_SYSTEM.md |
 | 2026-03-01 | PR-04 | `claude/social-login-pack-ouzu9` | Google + Apple OAuth, AuthCallback, SocialLoginButtons, i18n PL/EN/UK, AUTH_SETUP.md |
 | 2026-03-01 | PR-05 | `claude/company-profile-settings-2eKBa` | Company Profile (profiles + address_line2/country/website), Settings tabs, DeleteAccountSection (USUŃ), delete-user-account EF fixes, i18n, COMPLIANCE/ACCOUNT_DELETION.md |
+| 2026-03-01 | PR-06 | `claude/free-tier-paywall-0b5OO` | FREE_TIER_OFFER_LIMIT=3, DB function, quota hook, OfferQuotaIndicator, FreeTierPaywallModal, SendOfferModal gate, i18n, unit tests |
 
 > *Uzupełniaj tabelę po każdym merge. Format: `docs: aktualizuj status PR-XX`*
+
+---
+
+## PR-06 — Free plan limit + paywall + haczyk retencyjny: co zostało wdrożone
+
+### Reguła (ADR-0004 — niezmieniona)
+
+```typescript
+// src/config/entitlements.ts
+export const FREE_TIER_OFFER_LIMIT = 3; // oferty/miesiąc
+// Liczone: sent | accepted | rejected (NIE drafty)
+// Reset: 1. dzień każdego miesiąca UTC
+```
+
+### Pliki zmienione
+
+| Plik | Opis |
+|------|------|
+| `src/config/entitlements.ts` | Jedyne źródło prawdy: stała + czyste funkcje `canSendOffer()`, `remainingOfferQuota()` |
+| `supabase/migrations/20260301130000_pr06_monthly_offer_quota.sql` | Funkcja DB `count_monthly_finalized_offers(user_id)` + indeks |
+| `src/hooks/useFreeTierOfferQuota.ts` | Hook React: pobiera miesięczny licznik, zwraca `{ used, limit, remaining, canSend, plan }` |
+| `src/components/billing/OfferQuotaIndicator.tsx` | Wskaźnik kwoty (np. `1/3 ofert w mies.`) — widoczny w nagłówku SendOfferModal |
+| `src/components/billing/FreeTierPaywallModal.tsx` | Modal paywalla — wyjaśnia limit, CTA → `/app/billing` |
+| `src/components/offers/SendOfferModal.tsx` | Sprawdzanie kwoty PRZED wysyłką; pokazuje paywall modal gdy limit wyczerpany |
+| `src/i18n/locales/{pl,en,uk}.json` | Klucze i18n: `offerQuota.*`, `paywall.*` |
+| `src/test/features/entitlements.test.ts` | Testy jednostkowe logiki limit/canSend |
+| `docs/ROADMAP_STATUS.md` | Ten plik — aktualizacja statusu |
+
+### Zachowanie paywall (DoD)
+
+- ✅ Drafty **NIE** blokowane — użytkownik może tworzyć i edytować bez ograniczeń
+- ✅ Blokowana tylko akcja SEND (4. oferta w miesiącu)
+- ✅ CRM i historia ofert zawsze dostępne
+- ✅ Wskaźnik `X/3 ofert w mies.` widoczny w nagłówku modalu SendOffer
+- ✅ Modal paywalla z wyjaśnieniem i CTA → `/app/billing`
+- ✅ `/app/billing` to placeholder (Stripe wchodzi w PR-20)
+
+### Jak testować PR-06
+
+**Logika jednostkowa (automatyczne):**
+```bash
+npm test -- entitlements
+```
+Oczekiwane: wszystkie testy zielone (canSendOffer/remainingOfferQuota).
+
+**Ręczne — quota indicator:**
+1. Zaloguj się jako użytkownik z planem free
+2. Otwórz SendOffer modal dla dowolnego projektu
+3. Sprawdź nagłówek modalu → wskaźnik `X/3 ofert w mies.` widoczny
+
+**Ręczne — paywall:**
+1. Jako free-plan user wyślij 3 oferty (zmień statusy na 'sent' w bazie lub wyślij realnie)
+2. Otwórz SendOffer modal dla 4. projektu
+3. Kliknij "Wyślij" → modal paywalla powinien się pojawić
+4. CRM i lista ofert: sprawdź że nadal dostępne (nie zablokowane)
+
+**RLS funkcji DB:**
+```sql
+-- W Supabase SQL Editor:
+-- Jako user A nie może odczytać danych user B przez count_monthly_finalized_offers
+SELECT public.count_monthly_finalized_offers('user-a-uuid'); -- zwraca 0 dla user B
+```
+
+**Izolacja planów:**
+- Free plan (0/3 used) → canSend = true
+- Free plan (3/3 used) → canSend = false, paywall pojawia się
+- Pro/Business plan → canSend = zawsze true, wskaźnik ukryty
 
 ---
 
@@ -227,14 +295,14 @@ Przed każdym merge wypełnij i wklej w opis PR:
 
 ```
 Faza 0 (Fundament):     3/3 PR  ██████████  100%
-Faza 1 (Dostęp):        2/3 PR  ██████░░░░  67%
+Faza 1 (Dostęp):        3/3 PR  ██████████  100%
 Faza 2 (Shell):         0/1 PR  ░░░░░░░░░░  0%
 Faza 3 (Dane/Oferty):   0/2 PR  ░░░░░░░░░░  0%
 Faza 4 (Oferty flow):   0/3 PR  ░░░░░░░░░░  0%
 Faza 5 (Projekty):      0/6 PR  ░░░░░░░░░░  0%
 Faza 6 (Offline+$):     0/2 PR  ░░░░░░░░░░  0%
 ─────────────────────────────────────────
-RAZEM:                  2/20 PR ██░░░░░░░░  10%
+RAZEM:                  6/20 PR ███░░░░░░░  30%
 (PR-00 nie wliczany do progresu funkcjonalnego)
 ```
 
