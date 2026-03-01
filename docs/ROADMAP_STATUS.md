@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-14 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-15 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -40,7 +40,7 @@
 | **PR-12** | Oferty C: domykanie | ✅ DONE | `claude/pr-12-acceptance-links-zAx3e` | 2026-03-01 | acceptance_links + offer_public_actions (migration + RLS + SECURITY DEFINER fn), publiczna strona akceptacji (/a/:token), AcceptanceLinkPanel (SENT/ACCEPTED/REJECTED), BulkAddItems (paste + CSV import), CTA "Utwórz projekt" po akceptacji, i18n PL/EN/UK (acceptanceLink.* + publicOffer.* + bulkAdd.*) |
 | **PR-13** | Projekty + QR status | ✅ DONE | `claude/pr-13-projects-module-BilaR` | 2026-03-01 | v2_projects + project_public_status_tokens (migration + RLS + SECURITY DEFINER), ProjectsList (ACTIVE/COMPLETED/ON_HOLD, search), ProjectHub (accordion: stages/costs/docs/photos placeholders, progress slider, QR link), ProjectPublicStatus (/p/:token — NO prices), create-from-offer CTA (Offers + AcceptanceLinkPanel), i18n PL/EN/UK (projectsV2.*), FF_NEW_SHELL ON (BottomNav /app/projects) + OFF, IDOR documented |
 | **PR-14** | Burn Bar BASIC | ✅ DONE | `claude/add-burn-bar-feature-UWliG` | 2026-03-01 | project_costs table + RLS, budget_net/source/updated_at on v2_projects, BurnBarSection (burn bar + cost list), AddCostSheet (≤3 taps), i18n PL/EN/UK (burnBar.* 37 kluczy), IDOR documented |
-| **PR-15** | Fotoprotokół + podpis | ⬜ TODO | — | — | Wymaga merge PR-13 |
+| **PR-15** | Fotoprotokół + podpis | ✅ DONE | `claude/pr-15-photo-report-f9udo` | 2026-03-01 | PhotoReportPanel (BEFORE/DURING/AFTER/ISSUE phases, kompresja kliencka 1600px/0.75, optimistic UI + retry), AcceptanceChecklistPanel (4 szablony: general/plumbing/electrical/painting), SignaturePad (canvas), CameraPermissionGate (denied → EmptyState + OpenSettings), migracja: phase+metadata col na project_photos + project_checklists + project_acceptance (RLS on all), private bucket + signed URLs, i18n PL/EN/UK (photoReport.* + checklist.* + signature.*), FF_NEW_SHELL ON/OFF, docs: PHOTO_REPORT_NOTES.md |
 | **PR-16** | Teczka dokumentów | ⬜ TODO | — | — | Wymaga merge PR-13 |
 | **PR-17** | Wzory dokumentów | ⬜ TODO | — | — | Wymaga merge PR-16 |
 | **PR-18** | Gwarancje + przypomnienia | ⬜ TODO | — | — | Wymaga merge PR-13 |

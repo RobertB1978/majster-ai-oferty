@@ -3006,7 +3006,7 @@
       "loadErrorDesc": "The project may have been deleted or you don't have access.",
       "costsPlaceholder": "Cost management available in next release (PR-14).",
       "documentsPlaceholder": "Document folder available in next release (PR-16).",
-      "photosPlaceholder": "Photo report available in next release (PR-15).",
+      "photosPlaceholder": "Photo report loaded (PR-15).",
       "qrTitle": "Client status link",
       "qrHint": "Generate a QR link clients can open without login — they'll see stages and progress (no prices).",
       "qrCreate": "Generate link",
@@ -3017,7 +3017,9 @@
       "qrLinkError": "Error generating link.",
       "qrRefresh": "Refresh link",
       "qrExpired": "Expired",
-      "qrExpiresIn": "Valid for {{days}} days"
+      "qrExpiresIn": "Valid for {{days}} days",
+      "sectionPhotoReport": "Photo Report",
+      "sectionChecklist": "Acceptance Checklist"
     },
     "public": {
       "label": "Project status",
@@ -3069,5 +3071,102 @@
     "costDeleted": "Cost deleted.",
     "deleteError": "Error deleting cost.",
     "deleteCost": "Delete cost"
+  },
+  "photoReport": {
+    "title": "Photo Report",
+    "addPhoto": "Add Photo",
+    "addPhotoAriaLabel": "Add photo to {{phase}} phase",
+    "noPhotos": "No photos in this phase",
+    "emptyTitle": "No Photos Yet",
+    "emptyDesc": "Add photos for each phase: Before / During / After / Issue",
+    "uploading": "Uploading...",
+    "uploadSuccess": "Photo uploaded successfully",
+    "uploadFailed": "Upload failed",
+    "retry": "Retry",
+    "deletePhoto": "Delete photo",
+    "deleteSuccess": "Photo deleted",
+    "deleteError": "Error deleting photo",
+    "loadError": "Failed to load photos",
+    "loadErrorDesc": "Could not load the project photo report.",
+    "phase": {
+      "BEFORE": "Before",
+      "DURING": "During",
+      "AFTER": "After",
+      "ISSUE": "Issue / Note"
+    },
+    "permissionDenied": {
+      "title": "Camera Access Denied",
+      "description": "The app does not have camera access. Allow access in system settings to add photos to the photo report and acceptance documentation.",
+      "openSettings": "Open System Settings"
+    }
+  },
+  "checklist": {
+    "title": "Acceptance Checklist",
+    "selectTemplate": "Select Template",
+    "items": "Items to Check",
+    "progress": "{{done}} of {{total}} completed",
+    "allDone": "All done!",
+    "save": "Save Checklist",
+    "saved": "Checklist saved",
+    "saveError": "Error saving checklist",
+    "toggleItem": "Toggle: {{label}}",
+    "template": {
+      "general_basic": "General",
+      "plumbing_basic": "Plumbing",
+      "electrical_basic": "Electrical",
+      "painting_basic": "Painting"
+    },
+    "templates": {
+      "general_basic": {
+        "site_clean": "Construction site is clean",
+        "materials_removed": "Building materials removed",
+        "surfaces_inspected": "Surfaces inspected",
+        "client_walkthrough": "Walkthrough with client completed",
+        "defects_noted": "Defects noted (if any)",
+        "photos_taken": "Final photos taken"
+      },
+      "plumbing_basic": {
+        "no_leaks": "No water leaks",
+        "water_pressure": "Water pressure correct",
+        "drains_flow": "Drains flow properly",
+        "seals_checked": "Seals checked",
+        "hot_cold_labels": "Hot/cold water labeling correct",
+        "shutoffs_accessible": "Shutoff valves accessible",
+        "site_clean": "Work area cleaned"
+      },
+      "electrical_basic": {
+        "breakers_labeled": "Circuit breakers labeled",
+        "outlets_tested": "Outlets tested",
+        "gfci_ok": "GFCI breakers functioning",
+        "lights_work": "Lighting works",
+        "no_exposed_wires": "No exposed wiring",
+        "panels_closed": "Panels closed",
+        "site_clean": "Work area cleaned"
+      },
+      "painting_basic": {
+        "coverage_even": "Coverage is even",
+        "no_drips": "No paint drips",
+        "trim_clean": "Trim and finish clean",
+        "color_match": "Color matches order",
+        "tape_removed": "Painter tape removed",
+        "furniture_restored": "Furniture moved back",
+        "site_clean": "Work area cleaned"
+      }
+    }
+  },
+  "signature": {
+    "title": "Acceptance Signature",
+    "instruction": "Draw client signature with finger or mouse:",
+    "placeholder": "Sign here",
+    "clear": "Clear",
+    "save": "Save Signature",
+    "saved": "Saved",
+    "savedSuccess": "Signature saved successfully",
+    "saveError": "Error saving signature",
+    "currentSignature": "Current signature:",
+    "savedAlt": "Saved client signature",
+    "canvasAriaLabel": "Signature area",
+    "alreadySigned": "(signed)",
+    "completeChecklistFirst": "{{remaining}} items remaining"
   }
 }
