@@ -25,6 +25,7 @@ import {
   daysUntilTokenExpiry,
   type ProjectStage,
 } from '@/hooks/useProjectsV2';
+import { BurnBarSection } from '@/components/costs/BurnBarSection';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -383,9 +384,7 @@ export default function ProjectHub() {
                     />
                   )}
                   {section.id === 'costs' && (
-                    <p className="text-sm text-muted-foreground py-4 text-center">
-                      {t('projectsV2.hub.costsPlaceholder')}
-                    </p>
+                    <BurnBarSection project={project} />
                   )}
                   {section.id === 'documents' && (
                     <p className="text-sm text-muted-foreground py-4 text-center">

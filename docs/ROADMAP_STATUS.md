@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-13 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-14 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -39,7 +39,7 @@
 | **PR-11** | Oferty B2: PDF + wysyłka | ✅ DONE | `claude/pr-11-offers-pdf-send-UtBtT` | 2026-03-01 | OfferPreviewModal (podgląd HTML A4 + download PDF + Send), useSendOffer (quota check + SENT status + PDF upload + email best-effort), offerPdfPayloadBuilder (payload z offer_items), migracja quota fn (+ offers table), i18n PL/EN/UK (offerPreview.*), FF_NEW_SHELL ON/OFF |
 | **PR-12** | Oferty C: domykanie | ✅ DONE | `claude/pr-12-acceptance-links-zAx3e` | 2026-03-01 | acceptance_links + offer_public_actions (migration + RLS + SECURITY DEFINER fn), publiczna strona akceptacji (/a/:token), AcceptanceLinkPanel (SENT/ACCEPTED/REJECTED), BulkAddItems (paste + CSV import), CTA "Utwórz projekt" po akceptacji, i18n PL/EN/UK (acceptanceLink.* + publicOffer.* + bulkAdd.*) |
 | **PR-13** | Projekty + QR status | ✅ DONE | `claude/pr-13-projects-module-BilaR` | 2026-03-01 | v2_projects + project_public_status_tokens (migration + RLS + SECURITY DEFINER), ProjectsList (ACTIVE/COMPLETED/ON_HOLD, search), ProjectHub (accordion: stages/costs/docs/photos placeholders, progress slider, QR link), ProjectPublicStatus (/p/:token — NO prices), create-from-offer CTA (Offers + AcceptanceLinkPanel), i18n PL/EN/UK (projectsV2.*), FF_NEW_SHELL ON (BottomNav /app/projects) + OFF, IDOR documented |
-| **PR-14** | Burn Bar BASIC | ⬜ TODO | — | — | Wymaga merge PR-13 |
+| **PR-14** | Burn Bar BASIC | ✅ DONE | `claude/add-burn-bar-feature-UWliG` | 2026-03-01 | project_costs table + RLS, budget_net/source/updated_at on v2_projects, BurnBarSection (burn bar + cost list), AddCostSheet (≤3 taps), i18n PL/EN/UK (burnBar.* 37 kluczy), IDOR documented |
 | **PR-15** | Fotoprotokół + podpis | ⬜ TODO | — | — | Wymaga merge PR-13 |
 | **PR-16** | Teczka dokumentów | ⬜ TODO | — | — | Wymaga merge PR-13 |
 | **PR-17** | Wzory dokumentów | ⬜ TODO | — | — | Wymaga merge PR-16 |
@@ -225,6 +225,7 @@ Przed każdym merge wypełnij i wklej w opis PR:
 | 2026-03-01 | PR-11 | `claude/pr-11-offers-pdf-send-UtBtT` | Migration 20260301160000 (quota fn update: counts offers+offer_approvals, index offers.sent_at), offerPdfPayloadBuilder.ts, useSendOffer hook (idempotent, quota check, SENT status, PDF upload, email best-effort), OfferPreviewModal (HTML A4 preview, Download PDF, Send+quota gate, shareable link, FreeTierPaywallModal), WizardStepReview+OfferWizard (Preview & Send button), i18n PL/EN/UK (offerPreview.* 30 kluczy), ROADMAP_STATUS PR-11 DONE |
 | 2026-03-01 | PR-12 | `claude/pr-12-acceptance-links-zAx3e` | acceptance_links + offer_public_actions (migration + RLS + SECURITY DEFINER fn), OfferPublicAccept (/a/:token), AcceptanceLinkPanel, BulkAddItems, CTA Utwórz projekt, i18n PL/EN/UK |
 | 2026-03-01 | PR-13 | `claude/pr-13-projects-module-BilaR` | Migration 20260301180000 (v2_projects + project_public_status_tokens, RLS, SECURITY DEFINER resolve_project_public_token — NO prices), useProjectsV2 hook, ProjectsList (/app/projects, ACTIVE/COMPLETED/ON_HOLD + search), ProjectHub (accordion: stages + progress slider + QR link; costs/docs/photos placeholders), ProjectPublicStatus (/p/:token — NO prices), create-from-offer w Offers.tsx + AcceptanceLinkPanel, NewShellBottomNav /app/projects, i18n PL/EN/UK (projectsV2.* 55 kluczy), FF_NEW_SHELL ON+OFF |
+| 2026-03-01 | PR-14 | `claude/add-burn-bar-feature-UWliG` | Migration 20260301190000 (project_costs RLS 4 polityki + budget_net/source/updated_at na v2_projects), useProjectCosts hook (list/add/delete/updateBudget), BurnBarSection (burn bar wizualny + statystyki + lista kosztów), AddCostSheet (bottom sheet ≤3 dotknięcia: typ/kwota/notatka/data), ProjectHub: placeholder → BurnBarSection, budget_net auto z offer total_net przy tworzeniu projektu (OFFER_NET), i18n PL/EN/UK (burnBar.* 37 kluczy), IDOR test SQL |
 
 > *Uzupełniaj tabelę po każdym merge. Format: `docs: aktualizuj status PR-XX`*
 
@@ -370,10 +371,10 @@ Faza 1 (Dostęp):        3/3 PR  ██████████  100%
 Faza 2 (Shell):         1/1 PR  ██████████  100%
 Faza 3 (Dane/Oferty):   1/2 PR  █████░░░░░  50%
 Faza 4 (Oferty flow):   3/3 PR  ██████████  100%
-Faza 5 (Projekty):      1/6 PR  ██░░░░░░░░  17%
+Faza 5 (Projekty):      2/6 PR  ███░░░░░░░  33%
 Faza 6 (Offline+$):     0/2 PR  ░░░░░░░░░░  0%
 ─────────────────────────────────────────
-RAZEM:                  11/20 PR ██████░░░░  55%
+RAZEM:                  12/20 PR ███████░░░  60%
 (PR-00 nie wliczany do progresu funkcjonalnego)
 ```
 
@@ -875,3 +876,114 @@ SELECT public.resolve_project_public_token('<token-uuid>');
 **i18n PL/EN/UK:**
 - Zmień język → ProjectsList, ProjectHub, ProjectPublicStatus — wszystkie napisy tłumaczone
 - Klucze: `projectsV2.*` (55 kluczy w każdym języku)
+
+---
+
+## PR-14 — Burn Bar BASIC: co zostało wdrożone
+
+### Baza danych
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260301190000_pr14_burn_bar.sql` | Nowe kolumny `budget_net`, `budget_source`, `budget_updated_at` na `v2_projects`. Nowa tabela `project_costs` z RLS (4 polityki) + indeksy + trigger updated_at. |
+
+### Schemat project_costs
+
+```sql
+project_costs (
+  id           uuid PK,
+  user_id      uuid NOT NULL → auth.users(id) ON DELETE CASCADE,
+  project_id   uuid NOT NULL → v2_projects(id) ON DELETE CASCADE,
+  cost_type    text NOT NULL  CHECK IN ('MATERIAL','LABOR','TRAVEL','OTHER'),
+  amount_net   numeric(14,2) NOT NULL CHECK (>= 0),
+  note         text NULL,
+  incurred_at  date NOT NULL DEFAULT CURRENT_DATE,
+  created_at, updated_at
+)
+```
+
+### Kolumny budżetowe v2_projects
+
+```sql
+budget_net        numeric(14,2) NULL  -- edytowalny, default: offer.total_net
+budget_source     text NULL           -- 'OFFER_NET' | 'MANUAL'
+budget_updated_at timestamptz NULL    -- ostatnia zmiana budżetu
+```
+
+**Reguła domyślna:** Przy tworzeniu projektu z zaakceptowanej oferty → `budget_net = offer.total_net`, `budget_source = 'OFFER_NET'`. Edycja przez użytkownika → `budget_source = 'MANUAL'`.
+
+### Pliki zmienione / dodane
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260301190000_pr14_burn_bar.sql` | Migracja DB |
+| `src/hooks/useProjectCosts.ts` | Hooki: `useProjectCosts`, `useAddProjectCost`, `useDeleteProjectCost`, `useUpdateProjectBudget`, `sumCosts()` |
+| `src/hooks/useProjectsV2.ts` | Dodano pola `budget_net/source/updated_at` do typów i logikę auto-ustawiania budżetu przy `useCreateProjectV2` |
+| `src/components/costs/BurnBarSection.tsx` | Główna sekcja Burn Bar: pasek postępu, statystyki (wydano/budżet/%), lista kosztów, BudgetEditor (inline) |
+| `src/components/costs/AddCostSheet.tsx` | Bottom sheet dodawania kosztu: kategoria + kwota netto + notatka + data |
+| `src/pages/ProjectHub.tsx` | Zastąpiono placeholder kosztów → `<BurnBarSection project={project} />` |
+| `src/i18n/locales/pl.json` | `burnBar.*` (37 kluczy PL) |
+| `src/i18n/locales/en.json` | `burnBar.*` (37 kluczy EN) |
+| `src/i18n/locales/uk.json` | `burnBar.*` (37 kluczy UK) |
+| `docs/ROADMAP_STATUS.md` | Ten plik — aktualizacja statusu PR-14 DONE |
+
+### RLS — weryfikacja IDOR (kroki testowe)
+
+```sql
+-- W Supabase Dashboard → SQL Editor
+
+-- 1. User A tworzy projekt z budżetem
+INSERT INTO public.v2_projects (user_id, title, status, budget_net, budget_source, budget_updated_at)
+VALUES ('user-a-uuid', 'Projekt A', 'ACTIVE', 5000.00, 'OFFER_NET', now());
+-- Zapisz: projekt_a_id
+
+-- 2. User A dodaje koszt
+INSERT INTO public.project_costs (user_id, project_id, cost_type, amount_net, note)
+VALUES ('user-a-uuid', '<projekt_a_id>', 'MATERIAL', 1200.00, 'Farba');
+-- Zapisz: cost_a_id
+
+-- 3. Symuluj User B (zmień JWT)
+SET SESSION "request.jwt.claims" = '{"sub": "user-b-uuid"}';
+
+-- 4. User B NIE widzi kosztów User A (RLS blokuje)
+SELECT count(*) FROM public.project_costs WHERE user_id = 'user-a-uuid';
+-- Oczekiwane: count = 0
+
+-- 5. User B NIE może usunąć kosztu User A
+DELETE FROM public.project_costs WHERE id = '<cost_a_id>';
+-- Oczekiwane: DELETE 0
+
+-- 6. User B NIE może modyfikować budżetu projektu User A
+UPDATE public.v2_projects SET budget_net = 0 WHERE user_id = 'user-a-uuid';
+-- Oczekiwane: UPDATE 0
+```
+
+### Jak testować PR-14
+
+**Budget default z oferty:**
+1. Miej ofertę w statusie ACCEPTED z `total_net` np. 8500 PLN
+2. Kliknij "Utwórz projekt" przy tej ofercie
+3. Otwórz ProjectHub → zakładka "Koszty"
+4. Budżet = 8500 PLN, badge "z oferty" widoczny
+
+**Edycja budżetu:**
+1. W sekcji Koszty kliknij ikonę ołówka obok budżetu
+2. Wpisz nową wartość → Enter lub kliknij ✓
+3. Toast "Budżet zaktualizowany." — badge "z oferty" znika
+
+**Dodanie kosztu (≤3 dotknięcia):**
+1. Kliknij "+ Dodaj koszt"
+2. Wybierz kategorię (Materiały/Robocizna/Dojazd/Inne)
+3. Wpisz kwotę → Zapisz koszt
+4. Toast "Koszt dodany!" — burn bar aktualizuje się w czasie rzeczywistym
+
+**Burn bar z 2 kosztami:**
+1. Budżet 5000 PLN
+2. Dodaj koszt 1: Materiały 1200 PLN
+3. Dodaj koszt 2: Robocizna 2000 PLN
+4. Burn bar: 64% (3200/5000), kolor normalny
+5. Dodaj koszt 3: Inne 2500 PLN → bar czerwony (112%, nad budżetem)
+
+**i18n:**
+1. Zmień język → EN: "Budget", "Spent", "Remaining", "Materials", etc.
+2. UK: "Бюджет", "Витрачено", "Залишок", etc.
