@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-09 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-10 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -35,7 +35,7 @@
 | **PR-07** | Shell (FF_NEW_SHELL) | ✅ DONE | `claude/new-shell-bottom-nav-Hr4DV` | 2026-03-01 | FF_NEW_SHELL flag, NewShellLayout, BottomNav5, FAB+sheet, HomeLobby, MoreScreen, 3-step onboarding, i18n PL/EN/UK |
 | **PR-08** | CRM + Cennik | ⬜ TODO | — | — | Wymaga merge PR-07 |
 | **PR-09** | Oferty A: lista + statusy | ✅ DONE | `claude/offers-list-pr-09-bppeV` | 2026-03-01 | Tabela offers + RLS, lista z filtrami/wyszukiwaniem/sortowaniem, badge "brak odpowiedzi X dni", FF_NEW_SHELL ON/OFF, i18n PL/EN/UK |
-| **PR-10** | Oferty B1: Wizard bez PDF | ⬜ TODO | — | — | Wymaga merge PR-09 |
+| **PR-10** | Oferty B1: Wizard bez PDF | ✅ DONE | `claude/offer-wizard-draft-mUypo` | 2026-03-01 | offer_items migration + RLS, OfferWizard (3 kroki: klient/pozycje/podsumowanie), inline new client, Price Library search, live totals, i18n PL/EN/UK, FF_NEW_SHELL ON/OFF |
 | **PR-11** | Oferty B2: PDF + wysyłka | ⬜ TODO | — | — | Wymaga merge PR-10 |
 | **PR-12** | Oferty C: domykanie | ⬜ TODO | — | — | Wymaga merge PR-11 |
 | **PR-13** | Projekty + QR status | ⬜ TODO | — | — | Wymaga merge PR-12 |
@@ -221,6 +221,7 @@ Przed każdym merge wypełnij i wklej w opis PR:
 | 2026-03-01 | PR-06 | `claude/free-tier-paywall-0b5OO` | FREE_TIER_OFFER_LIMIT=3, DB function, quota hook, OfferQuotaIndicator, FreeTierPaywallModal, SendOfferModal gate, i18n, unit tests |
 | 2026-03-01 | PR-07 | `claude/new-shell-bottom-nav-Hr4DV` | FF_NEW_SHELL flag (env+localStorage), NewShellLayout, NewShellBottomNav (5 tabs), NewShellFAB+sheet (7 akcji), HomeLobby (3 bloki), MoreScreen (3 grupy), NewShellOnboarding (3 kroki, localStorage persist), i18n PL/EN/UK, routing /app/home + /app/more |
 | 2026-03-01 | PR-09 | `claude/offers-list-pr-09-bppeV` | Tabela `offers` (migration 20260301140000) + RLS 4 polityki + typy TS, useOffers hook (TanStack Query), Offers page (status tabs ALL/DRAFT/SENT/ACCEPTED/REJECTED/ARCHIVED, search, sort, OfferRow z badge "brak odpowiedzi X dni"), OfferDetail placeholder, routing /app/offers + /app/offers/:id + /app/offers/new, Navigation+defaultConfig (oferty w starym shellu), i18n PL/EN/UK (offersList.*), ROADMAP_STATUS PR-09 DONE |
+| 2026-03-01 | PR-10 | `claude/offer-wizard-draft-mUypo` | Migration offer_items (+ FK offers.client_id + total_vat), useOfferWizard hook (load+save draft), OfferWizard 3-krokowy (WizardStepClient/Items/Review), inline new client, Price Library search, live totals (net/VAT/gross), i18n PL/EN/UK (offerWizard.*), FF_NEW_SHELL ON/OFF, ROADMAP_STATUS PR-10 DONE |
 
 > *Uzupełniaj tabelę po każdym merge. Format: `docs: aktualizuj status PR-XX`*
 
@@ -365,11 +366,11 @@ Faza 0 (Fundament):     3/3 PR  ██████████  100%
 Faza 1 (Dostęp):        3/3 PR  ██████████  100%
 Faza 2 (Shell):         1/1 PR  ██████████  100%
 Faza 3 (Dane/Oferty):   1/2 PR  █████░░░░░  50%
-Faza 4 (Oferty flow):   0/3 PR  ░░░░░░░░░░  0%
+Faza 4 (Oferty flow):   1/3 PR  ███░░░░░░░  33%
 Faza 5 (Projekty):      0/6 PR  ░░░░░░░░░░  0%
 Faza 6 (Offline+$):     0/2 PR  ░░░░░░░░░░  0%
 ─────────────────────────────────────────
-RAZEM:                  8/20 PR ████░░░░░░  40%
+RAZEM:                  9/20 PR ████░░░░░░  45%
 (PR-00 nie wliczany do progresu funkcjonalnego)
 ```
 
@@ -495,5 +496,112 @@ SET SESSION "request.jwt.claims" = '{"sub": "user-b-uuid"}';
 SELECT count(*) FROM public.offers WHERE user_id = 'user-a-uuid';
 -- Oczekiwane: count = 0
 ```
+
+---
+
+## PR-10 — Oferty B1: Wizard bez PDF: co zostało wdrożone
+
+### Baza danych
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260301150000_pr10_offer_items.sql` | Nowa tabela `offer_items` (RLS 4 polityki + indeksy + trigger) + FK `offers.client_id → clients.id` + kolumna `total_vat` w `offers` |
+
+### Tabela offer_items — schemat
+
+```sql
+offer_items (
+  id               uuid PK,
+  user_id          uuid NOT NULL  → auth.users(id) ON DELETE CASCADE,
+  offer_id         uuid NOT NULL  → offers(id) ON DELETE CASCADE,
+  item_type        text           CHECK IN ('labor','material','service','travel','lump_sum'),
+  name             text NOT NULL,
+  unit             text NULL,
+  qty              numeric NOT NULL DEFAULT 1,
+  unit_price_net   numeric NOT NULL DEFAULT 0,
+  vat_rate         numeric NULL,
+  line_total_net   numeric NOT NULL,
+  created_at, updated_at
+)
+```
+
+### RLS — weryfikacja IDOR (test SQL)
+
+```sql
+-- 1. User A tworzy ofertę + pozycje
+INSERT INTO public.offers (user_id, title, status)
+VALUES ('user-a-uuid', 'Oferta A', 'DRAFT');
+
+INSERT INTO public.offer_items (user_id, offer_id, name, qty, unit_price_net, line_total_net)
+VALUES ('user-a-uuid', '<offer-a-id>', 'Malowanie', 1, 100, 100);
+
+-- 2. Symuluj User B
+SET SESSION "request.jwt.claims" = '{"sub": "user-b-uuid"}';
+
+-- 3. User B NIE widzi pozycji User A (RLS blokuje)
+SELECT count(*) FROM public.offer_items WHERE user_id = 'user-a-uuid';
+-- Oczekiwane: count = 0
+
+-- 4. User B NIE może usunąć pozycji User A
+DELETE FROM public.offer_items WHERE user_id = 'user-a-uuid';
+-- Oczekiwane: DELETE 0
+```
+
+### Pliki zmienione / dodane
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260301150000_pr10_offer_items.sql` | Migracja offer_items + FK + total_vat |
+| `src/hooks/useOfferWizard.ts` | Types WizardItem/WizardFormData, computeTotals(), useLoadOfferDraft(), useSaveDraft() |
+| `src/components/offers/wizard/OfferWizard.tsx` | Główny kontener 3-krokowy (step indicator, walidacja, nawigacja) |
+| `src/components/offers/wizard/WizardStepClient.tsx` | Krok 1: wyszukiwanie klientów + inline nowy klient |
+| `src/components/offers/wizard/WizardStepItems.tsx` | Krok 2: biblioteka cennika + manualne dodawanie + live totals |
+| `src/components/offers/wizard/WizardStepReview.tsx` | Krok 3: podsumowanie + tytuł + zapisz szkic |
+| `src/pages/OfferDetail.tsx` | Zastąpiono placeholder → OfferWizard (new/edit) |
+| `src/i18n/locales/pl.json` | Klucze `offerWizard.*` (PL) |
+| `src/i18n/locales/en.json` | Klucze `offerWizard.*` (EN) |
+| `src/i18n/locales/uk.json` | Klucze `offerWizard.*` (UK) |
+| `docs/ROADMAP_STATUS.md` | Ten plik — aktualizacja statusu PR-10 DONE |
+
+### Reguła draftów (ADR-0004 respektowana)
+
+- ✅ Szkice **NIE** liczą się do limitu `FREE_TIER_OFFER_LIMIT`
+- ✅ `useSaveDraft` zawsze pozwala zapisać — bez sprawdzania kwoty
+- ✅ Kwota sprawdzana dopiero przy SEND (PR-11+)
+
+### Jak testować PR-10 — 5-krokowa lista kontrolna
+
+**Krok 1 — Nowa oferta z empty state:**
+1. Idź na `/app/offers` → lista pusta → kliknij CTA "Utwórz pierwszą ofertę"
+2. Otwiera się wizard na `/app/offers/new`
+3. Krok 1 (Klient): wybierz klienta z listy LUB kliknij "Dodaj nowego klienta" → wypełnij imię
+4. Krok "Następna" → Krok 2 (Pozycje): wyszukaj cennik lub "Dodaj ręcznie"
+5. Dodaj 2-3 pozycje, edytuj qty/cenę → totals aktualizują się na żywo
+6. "Następna" → Krok 3 (Podsumowanie): wpisz tytuł, kliknij "Zapisz szkic"
+7. Toast sukcesu → przekierowanie na listę → szkic widoczny na liście
+
+**Krok 2 — Edycja szkicu:**
+1. Na liście kliknij szkic → otwiera się wizard w trybie edycji
+2. Dane wczytane poprawnie (klient, pozycje, tytuł)
+3. Zmień pozycję → zapisz → lista zaktualizowana
+
+**Krok 3 — Walidacja:**
+1. Na kroku 1: kliknij "Następna" bez wyboru klienta → pojawia się błąd
+2. Na kroku 2: kliknij "Następna" bez pozycji → pojawia się błąd
+3. Na kroku 2: zostaw nazwę pozycji pustą → błąd przy próbie przejścia
+
+**Krok 4 — FF_NEW_SHELL ON/OFF:**
+```js
+// ON
+localStorage.setItem('FF_NEW_SHELL', 'true'); location.reload();
+// OFF
+localStorage.setItem('FF_NEW_SHELL', 'false'); location.reload();
+```
+W obu trybach: `/app/offers/new` otwiera wizard poprawnie.
+
+**Krok 5 — i18n PL/EN/UK:**
+1. Zmień język w ustawieniach
+2. Wszystkie etykiety wizarda przetłumaczone (tytuł, przyciski, komunikaty błędów)
+3. Brak hardcoded polskich tekstów w nowych komponentach
 
 *Tracker: v1.0 | Data: 2026-03-01 | Właściciel: Robert B. + Claude*

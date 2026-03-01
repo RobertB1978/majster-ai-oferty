@@ -2781,5 +2781,54 @@
     "noTitle": "Oferta bez tytułu",
     "valueNet": "Netto: {{value}} {{currency}}",
     "loadingAriaLabel": "Ładowanie ofert..."
+  },
+  "offerWizard": {
+    "titleNew": "Nowa oferta",
+    "titleEdit": "Edytuj ofertę",
+    "stepsAriaLabel": "Kroki wizarda oferty",
+    "steps": {
+      "client": "Klient",
+      "items": "Pozycje",
+      "review": "Podsumowanie"
+    },
+    "savedSuccess": "Szkic oferty zapisany",
+    "saveErrorGeneric": "Błąd zapisu. Spróbuj ponownie.",
+    "loadError": "Błąd wczytywania oferty",
+    "loadErrorDesc": "Nie udało się wczytać oferty. Sprawdź połączenie i spróbuj ponownie.",
+    "clientStep": {
+      "hint": "Wybierz klienta z listy lub dodaj nowego.",
+      "searchPlaceholder": "Szukaj klienta...",
+      "noClients": "Brak klientów. Dodaj nowego poniżej.",
+      "selected": "Wybrany klient: {{name}}",
+      "createNew": "Dodaj nowego klienta",
+      "newClientTitle": "Nowy klient",
+      "name": "Imię / nazwa firmy",
+      "namePlaceholder": "Jan Kowalski",
+      "phone": "Telefon",
+      "email": "Email"
+    },
+    "itemsStep": {
+      "libraryTitle": "Biblioteka cennika",
+      "libSearch": "Szukaj w cenniku...",
+      "noTemplates": "Brak pozycji w cenniku.",
+      "addedItems": "Dodane pozycje",
+      "itemName": "Nazwa pozycji",
+      "itemNamePlaceholder": "Np. Malowanie ścian",
+      "qty": "Ilość",
+      "unitPrice": "Cena netto",
+      "vatRate": "VAT %",
+      "lineTotal": "Łącznie netto",
+      "addManual": "Dodaj ręcznie",
+      "defaultUnit": "szt."
+    },
+    "reviewStep": {
+      "title": "Tytuł oferty",
+      "titlePlaceholder": "Np. Oferta remontowa 2026",
+      "client": "Klient",
+      "itemCount": "Liczba pozycji",
+      "draftInfo": "Szkic nie zużywa limitu miesięcznych ofert. Możesz edytować i zapisywać bez ograniczeń.",
+      "saveDraft": "Zapisz szkic",
+      "saving": "Zapisywanie..."
+    }
   }
 }
