@@ -441,6 +441,57 @@ export type Database = {
         }
         Relationships: []
       }
+      offers: {
+        Row: {
+          id: string
+          user_id: string
+          client_id: string | null
+          status: string
+          title: string | null
+          total_net: number | null
+          total_gross: number | null
+          currency: string
+          sent_at: string | null
+          accepted_at: string | null
+          rejected_at: string | null
+          last_activity_at: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          client_id?: string | null
+          status?: string
+          title?: string | null
+          total_net?: number | null
+          total_gross?: number | null
+          currency?: string
+          sent_at?: string | null
+          accepted_at?: string | null
+          rejected_at?: string | null
+          last_activity_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          client_id?: string | null
+          status?: string
+          title?: string | null
+          total_net?: number | null
+          total_gross?: number | null
+          currency?: string
+          sent_at?: string | null
+          accepted_at?: string | null
+          rejected_at?: string | null
+          last_activity_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       onboarding_progress: {
         Row: {
           completed_at: string | null

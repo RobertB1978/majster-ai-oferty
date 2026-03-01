@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-07 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-09 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -34,7 +34,7 @@
 | **PR-06** | Free plan + paywall | ✅ DONE | `claude/free-tier-paywall-0b5OO` | 2026-03-01 | FREE_TIER_OFFER_LIMIT=3, canSendOffer(), DB function count_monthly_finalized_offers(), useFreeTierOfferQuota hook, OfferQuotaIndicator, FreeTierPaywallModal, SendOfferModal quota check, i18n PL/EN/UK, unit tests, ADR-0004 |
 | **PR-07** | Shell (FF_NEW_SHELL) | ✅ DONE | `claude/new-shell-bottom-nav-Hr4DV` | 2026-03-01 | FF_NEW_SHELL flag, NewShellLayout, BottomNav5, FAB+sheet, HomeLobby, MoreScreen, 3-step onboarding, i18n PL/EN/UK |
 | **PR-08** | CRM + Cennik | ⬜ TODO | — | — | Wymaga merge PR-07 |
-| **PR-09** | Oferty A: lista + statusy | ⬜ TODO | — | — | Wymaga merge PR-08 |
+| **PR-09** | Oferty A: lista + statusy | ✅ DONE | `claude/offers-list-pr-09-bppeV` | 2026-03-01 | Tabela offers + RLS, lista z filtrami/wyszukiwaniem/sortowaniem, badge "brak odpowiedzi X dni", FF_NEW_SHELL ON/OFF, i18n PL/EN/UK |
 | **PR-10** | Oferty B1: Wizard bez PDF | ⬜ TODO | — | — | Wymaga merge PR-09 |
 | **PR-11** | Oferty B2: PDF + wysyłka | ⬜ TODO | — | — | Wymaga merge PR-10 |
 | **PR-12** | Oferty C: domykanie | ⬜ TODO | — | — | Wymaga merge PR-11 |
@@ -220,6 +220,7 @@ Przed każdym merge wypełnij i wklej w opis PR:
 | 2026-03-01 | PR-05 | `claude/company-profile-settings-2eKBa` | Company Profile (profiles + address_line2/country/website), Settings tabs, DeleteAccountSection (USUŃ), delete-user-account EF fixes, i18n, COMPLIANCE/ACCOUNT_DELETION.md |
 | 2026-03-01 | PR-06 | `claude/free-tier-paywall-0b5OO` | FREE_TIER_OFFER_LIMIT=3, DB function, quota hook, OfferQuotaIndicator, FreeTierPaywallModal, SendOfferModal gate, i18n, unit tests |
 | 2026-03-01 | PR-07 | `claude/new-shell-bottom-nav-Hr4DV` | FF_NEW_SHELL flag (env+localStorage), NewShellLayout, NewShellBottomNav (5 tabs), NewShellFAB+sheet (7 akcji), HomeLobby (3 bloki), MoreScreen (3 grupy), NewShellOnboarding (3 kroki, localStorage persist), i18n PL/EN/UK, routing /app/home + /app/more |
+| 2026-03-01 | PR-09 | `claude/offers-list-pr-09-bppeV` | Tabela `offers` (migration 20260301140000) + RLS 4 polityki + typy TS, useOffers hook (TanStack Query), Offers page (status tabs ALL/DRAFT/SENT/ACCEPTED/REJECTED/ARCHIVED, search, sort, OfferRow z badge "brak odpowiedzi X dni"), OfferDetail placeholder, routing /app/offers + /app/offers/:id + /app/offers/new, Navigation+defaultConfig (oferty w starym shellu), i18n PL/EN/UK (offersList.*), ROADMAP_STATUS PR-09 DONE |
 
 > *Uzupełniaj tabelę po każdym merge. Format: `docs: aktualizuj status PR-XX`*
 
@@ -363,17 +364,136 @@ SELECT public.count_monthly_finalized_offers('user-a-uuid'); -- zwraca 0 dla use
 Faza 0 (Fundament):     3/3 PR  ██████████  100%
 Faza 1 (Dostęp):        3/3 PR  ██████████  100%
 Faza 2 (Shell):         1/1 PR  ██████████  100%
-Faza 3 (Dane/Oferty):   0/2 PR  ░░░░░░░░░░  0%
+Faza 3 (Dane/Oferty):   1/2 PR  █████░░░░░  50%
 Faza 4 (Oferty flow):   0/3 PR  ░░░░░░░░░░  0%
 Faza 5 (Projekty):      0/6 PR  ░░░░░░░░░░  0%
 Faza 6 (Offline+$):     0/2 PR  ░░░░░░░░░░  0%
 ─────────────────────────────────────────
-RAZEM:                  7/20 PR ███░░░░░░░  35%
+RAZEM:                  8/20 PR ████░░░░░░  40%
 (PR-00 nie wliczany do progresu funkcjonalnego)
 ```
 
 *Aktualizuj ręcznie po każdym merge.*
 
 ---
+
+---
+
+## PR-09 — Oferty A: Lista + Statusy + Filtry + Quick Actions: co zostało wdrożone
+
+### Baza danych
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260301140000_pr09_offers_table.sql` | Nowa tabela `offers` z pełnym RLS (4 polityki) + indeksy + trigger `updated_at` |
+| `src/integrations/supabase/types.ts` | Dodane typy TS dla tabeli `offers` (Row/Insert/Update) |
+
+### Tabela offers — schemat
+
+```sql
+offers (
+  id               uuid PK,
+  user_id          uuid NOT NULL  → auth.users(id) ON DELETE CASCADE,
+  client_id        uuid NULL,     -- wypełni PR-10
+  status           text           CHECK IN ('DRAFT','SENT','ACCEPTED','REJECTED','ARCHIVED'),
+  title            text NULL,
+  total_net        numeric(14,2) NULL,
+  total_gross      numeric(14,2) NULL,
+  currency         text DEFAULT 'PLN',
+  sent_at          timestamptz NULL,
+  accepted_at      timestamptz NULL,
+  rejected_at      timestamptz NULL,
+  last_activity_at timestamptz DEFAULT now(),
+  created_at       timestamptz DEFAULT now(),
+  updated_at       timestamptz DEFAULT now()
+)
+```
+
+### RLS — weryfikacja IDOR (test SQL)
+
+```sql
+-- W Supabase Dashboard → SQL Editor (symulacja 2 kont):
+-- 1. Zaloguj się jako User A, utwórz ofertę → zapisz offer_id
+-- 2. Przełącz JWT na User B:
+SET SESSION "request.jwt.claims" = '{"sub": "user-b-uuid"}';
+
+-- 3. Próba SELECT cudzej oferty → 0 wierszy (RLS blokuje):
+SELECT * FROM public.offers WHERE user_id = 'user-a-uuid';
+-- Oczekiwane: 0 rows
+
+-- 4. Próba UPDATE cudzej oferty → 0 rows affected:
+UPDATE public.offers SET title = 'hacked' WHERE user_id = 'user-a-uuid';
+-- Oczekiwane: UPDATE 0
+
+-- 5. Próba DELETE cudzej oferty → 0 rows affected:
+DELETE FROM public.offers WHERE user_id = 'user-a-uuid';
+-- Oczekiwane: DELETE 0
+```
+
+### Pliki zmienione / dodane
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260301140000_pr09_offers_table.sql` | Nowa migracja — tabela + RLS + indeksy |
+| `src/integrations/supabase/types.ts` | Typy TS dla tabeli `offers` |
+| `src/hooks/useOffers.ts` | TanStack Query hook: `useOffers({ status, search, sort })` |
+| `src/pages/Offers.tsx` | Strona listy ofert (status tabs, search, sort, OfferRow, EmptyState, ErrorState, SkeletonList) |
+| `src/pages/OfferDetail.tsx` | Placeholder dla /app/offers/:id i /app/offers/new (PR-10) |
+| `src/App.tsx` | Trasy: `/app/offers`, `/app/offers/new`, `/app/offers/:id` (zastąpiono redirect) |
+| `src/data/defaultConfig.ts` | Dodano `offers` do domyślnej nawigacji (order=1, między dashboard a jobs) |
+| `src/components/layout/Navigation.tsx` | `NAV_LABEL_KEYS['offers']` + fallback gwarantowany dla starych konfigów |
+| `src/i18n/locales/pl.json` | `nav.offers`, `offersList.*` (35 kluczy) |
+| `src/i18n/locales/en.json` | `nav.offers`, `offersList.*` (35 kluczy) |
+| `src/i18n/locales/uk.json` | `nav.offers`, `offersList.*` (35 kluczy) |
+| `docs/ROADMAP_STATUS.md` | Ten plik — aktualizacja statusu PR-09 DONE |
+
+### Jak testować PR-09
+
+**5-krokowa lista kontrolna (manualna):**
+
+1. **FF_NEW_SHELL=ON — zakładka "Oferty":**
+   ```js
+   localStorage.setItem('FF_NEW_SHELL', 'true'); location.reload();
+   ```
+   - Dolna nawigacja: zakładka "Oferty" → `/app/offers`
+   - Strona pokazuje: nagłówek "Oferty", tabs statusów, pole wyszukiwania, select sortowania
+   - Przy pustej bazie: EmptyState z CTA "Utwórz pierwszą ofertę"
+
+2. **FF_NEW_SHELL=OFF — stary shell:**
+   ```js
+   localStorage.setItem('FF_NEW_SHELL', 'false'); location.reload();
+   ```
+   - Nawigacja górna (desktop) → link "Oferty" widoczny
+   - `/app/offers` otwiera listę ofert
+   - Hamburger menu (mobile) → link "Oferty"
+
+3. **Filtrowanie i wyszukiwanie:**
+   - Kliknij zakładkę "Wysłane" → lista filtruje się do statusu SENT
+   - Wpisz tekst → oferty filtrują się po tytule
+   - Zmień sortowanie → kolejność się zmienia
+   - Brak wyników z filtrem → EmptyState z informacją o filtrze (bez CTA)
+
+4. **Badge "Brak odpowiedzi":**
+   - W bazie: ustaw ofertę na status `SENT`, `sent_at` = 8 dni temu
+   - Na liście: amber badge "Brak odpowiedzi 8 dni" widoczny przy tej ofercie
+
+5. **i18n PL/EN/UK:**
+   - Zmień język na angielski → napisy "Offers", "Draft", "Sent", itd.
+   - Zmień na ukraiński → "Пропозиції", "Чернетка", "Надіслані", itd.
+   - Wszystkie napisy tłumaczone bez hardcoded polskiego
+
+**RLS/IDOR — pełny test (Supabase SQL Editor):**
+```sql
+-- 1. User A tworzy ofertę
+INSERT INTO public.offers (user_id, title, status)
+VALUES ('user-a-uuid', 'Oferta testowa A', 'DRAFT');
+
+-- 2. Symuluj User B (zmień JWT)
+SET SESSION "request.jwt.claims" = '{"sub": "user-b-uuid"}';
+
+-- 3. User B NIE widzi oferty User A
+SELECT count(*) FROM public.offers WHERE user_id = 'user-a-uuid';
+-- Oczekiwane: count = 0
+```
 
 *Tracker: v1.0 | Data: 2026-03-01 | Właściciel: Robert B. + Claude*

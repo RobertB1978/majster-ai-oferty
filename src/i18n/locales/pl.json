@@ -67,7 +67,8 @@
     "plan": "Mój plan",
     "menu": "Menu",
     "comingSoon": "Wkrótce",
-    "quickEstimate": "Szybka Wycena"
+    "quickEstimate": "Szybka Wycena",
+    "offers": "Oferty"
   },
   "auth": {
     "login": "Zaloguj się",
@@ -2750,5 +2751,35 @@
       "next": "Dalej",
       "finish": "Zaczynamy!"
     }
+  },
+  "offersList": {
+    "pageTitle": "Oferty",
+    "searchPlaceholder": "Szukaj oferty...",
+    "sortLabel": "Sortuj",
+    "sortRecentUpdated": "Ostatnio zmienione",
+    "sortNewest": "Najnowsze",
+    "sortValue": "Wartość",
+    "statusAll": "Wszystkie",
+    "statusDraft": "Szkic",
+    "statusSent": "Wysłane",
+    "statusAccepted": "Zaakceptowane",
+    "statusRejected": "Odrzucone",
+    "statusArchived": "Zarchiwizowane",
+    "noResponseBadge": "Brak odpowiedzi {{days}} dni",
+    "updatedAgo": "zm. {{time}}",
+    "emptyTitle": "Brak ofert",
+    "emptyDesc": "Nie masz jeszcze żadnych ofert. Stwórz pierwszą!",
+    "emptyCta": "Utwórz pierwszą ofertę",
+    "emptyFilterTitle": "Brak wyników",
+    "emptyFilterDesc": "Brak ofert pasujących do wybranych filtrów.",
+    "errorTitle": "Błąd ładowania ofert",
+    "errorDesc": "Nie udało się wczytać listy ofert. Sprawdź połączenie i spróbuj ponownie.",
+    "errorRetry": "Spróbuj ponownie",
+    "actionOpen": "Otwórz",
+    "actionDuplicate": "Duplikuj",
+    "duplicateComingSoon": "Duplikowanie ofert — wkrótce dostępne",
+    "noTitle": "Oferta bez tytułu",
+    "valueNet": "Netto: {{value}} {{currency}}",
+    "loadingAriaLabel": "Ładowanie ofert..."
   }
 }

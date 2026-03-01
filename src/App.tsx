@@ -67,6 +67,10 @@ const Plan = lazy(() => import("./pages/Plan"));
 const HomeLobby = lazy(() => import("./pages/HomeLobby"));
 const MoreScreen = lazy(() => import("./pages/MoreScreen"));
 
+// === ZONE 2c: OFFERS PR-09 ===
+const OffersPage = lazy(() => import("./pages/Offers"));
+const OfferDetail = lazy(() => import("./pages/OfferDetail"));
+
 // === ZONE 3: OWNER CONSOLE (lazy - admin only, separate chunk) ===
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
 const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
@@ -201,7 +205,9 @@ const App = () => (
                     <Route index element={<Navigate to={FF_NEW_SHELL ? "/app/home" : "/app/dashboard"} replace />} />
                     {/* Trasy nowego shella (dostępne tylko przy FF_NEW_SHELL=true, ale bezpieczne także przy false) */}
                     <Route path="home" element={<HomeLobby />} />
-                    <Route path="offers" element={<Navigate to="/app/jobs" replace />} />
+                    <Route path="offers" element={<OffersPage />} />
+                    <Route path="offers/new" element={<OfferDetail />} />
+                    <Route path="offers/:id" element={<OfferDetail />} />
                     <Route path="more" element={<MoreScreen />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="customers" element={<Clients />} />

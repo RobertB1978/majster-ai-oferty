@@ -67,7 +67,8 @@
     "plan": "My Plan",
     "menu": "Menu",
     "comingSoon": "Soon",
-    "quickEstimate": "Quick Estimate"
+    "quickEstimate": "Quick Estimate",
+    "offers": "Offers"
   },
   "auth": {
     "login": "Login",
@@ -2750,5 +2751,35 @@
       "next": "Next",
       "finish": "Let's go!"
     }
+  },
+  "offersList": {
+    "pageTitle": "Offers",
+    "searchPlaceholder": "Search offers...",
+    "sortLabel": "Sort",
+    "sortRecentUpdated": "Recently updated",
+    "sortNewest": "Newest",
+    "sortValue": "Value",
+    "statusAll": "All",
+    "statusDraft": "Draft",
+    "statusSent": "Sent",
+    "statusAccepted": "Accepted",
+    "statusRejected": "Rejected",
+    "statusArchived": "Archived",
+    "noResponseBadge": "No response {{days}} days",
+    "updatedAgo": "upd. {{time}}",
+    "emptyTitle": "No offers yet",
+    "emptyDesc": "You don't have any offers yet. Create your first one!",
+    "emptyCta": "Create first offer",
+    "emptyFilterTitle": "No results",
+    "emptyFilterDesc": "No offers match the selected filters.",
+    "errorTitle": "Failed to load offers",
+    "errorDesc": "Could not load the offers list. Check your connection and try again.",
+    "errorRetry": "Try again",
+    "actionOpen": "Open",
+    "actionDuplicate": "Duplicate",
+    "duplicateComingSoon": "Offer duplication — coming soon",
+    "noTitle": "Untitled offer",
+    "valueNet": "Net: {{value}} {{currency}}",
+    "loadingAriaLabel": "Loading offers..."
   }
 }
