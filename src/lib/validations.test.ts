@@ -18,6 +18,7 @@ describe('validations - Comprehensive Tests', () => {
   describe('clientSchema', () => {
     it('should accept valid client data', () => {
       const result = clientSchema.safeParse({
+        type: 'person',
         name: 'Jan Kowalski',
         phone: '123456789',
         email: 'jan@example.com',
@@ -28,6 +29,7 @@ describe('validations - Comprehensive Tests', () => {
 
     it('should require client name', () => {
       const result = clientSchema.safeParse({
+        type: 'person',
         name: '',
       });
       expect(result.success).toBe(false);
@@ -38,6 +40,7 @@ describe('validations - Comprehensive Tests', () => {
 
     it('should limit name to 100 characters', () => {
       const result = clientSchema.safeParse({
+        type: 'person',
         name: 'a'.repeat(101),
       });
       expect(result.success).toBe(false);
@@ -48,6 +51,7 @@ describe('validations - Comprehensive Tests', () => {
 
     it('should validate phone number with minimum 9 digits', () => {
       const result = clientSchema.safeParse({
+        type: 'person',
         name: 'Test',
         phone: '12345678', // tylko 8 cyfr
       });
@@ -59,6 +63,7 @@ describe('validations - Comprehensive Tests', () => {
 
     it('should accept phone with formatting', () => {
       const result = clientSchema.safeParse({
+        type: 'person',
         name: 'Test',
         phone: '+48 123-456-789',
       });
@@ -67,6 +72,7 @@ describe('validations - Comprehensive Tests', () => {
 
     it('should validate email format', () => {
       const result = clientSchema.safeParse({
+        type: 'person',
         name: 'Test',
         email: 'invalid-email',
       });
@@ -78,6 +84,7 @@ describe('validations - Comprehensive Tests', () => {
 
     it('should accept optional fields as empty', () => {
       const result = clientSchema.safeParse({
+        type: 'person',
         name: 'Test Client',
       });
       expect(result.success).toBe(true);
@@ -85,6 +92,7 @@ describe('validations - Comprehensive Tests', () => {
 
     it('should limit address to 200 characters', () => {
       const result = clientSchema.safeParse({
+        type: 'person',
         name: 'Test',
         address: 'a'.repeat(201),
       });

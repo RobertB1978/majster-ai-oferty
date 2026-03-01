@@ -12,6 +12,7 @@ describe('Validation Schemas', () => {
   describe('clientSchema', () => {
     it('validates correct client data', () => {
       const validClient = {
+        type: 'person' as const,
         name: 'Test Client',
         phone: '123456789',
         email: 'test@example.com',
@@ -24,6 +25,7 @@ describe('Validation Schemas', () => {
 
     it('requires name', () => {
       const invalidClient = {
+        type: 'person' as const,
         name: '',
         phone: '123456789',
       };
@@ -34,6 +36,7 @@ describe('Validation Schemas', () => {
 
     it('validates phone format', () => {
       const clientWithShortPhone = {
+        type: 'person' as const,
         name: 'Test',
         phone: '12345', // Too short
       };
@@ -44,6 +47,7 @@ describe('Validation Schemas', () => {
 
     it('validates email format', () => {
       const clientWithInvalidEmail = {
+        type: 'person' as const,
         name: 'Test',
         email: 'invalid-email',
       };
@@ -54,6 +58,7 @@ describe('Validation Schemas', () => {
 
     it('allows empty optional fields', () => {
       const minimalClient = {
+        type: 'person' as const,
         name: 'Test Client',
       };
 

@@ -3,9 +3,18 @@ import i18n from '@/i18n';
 
 // Client validation
 export const clientSchema = z.object({
+  type: z.enum(['person', 'company']),
   name: z.string()
     .min(1, i18n.t('validations.client.nameRequired'))
     .max(100, i18n.t('validations.client.nameMaxLength', { max: 100 })),
+  company_name: z.string()
+    .max(200, i18n.t('validations.client.companyNameMaxLength', { max: 200 }))
+    .optional(),
+  nip: z.string()
+    .optional()
+    .refine(val => !val || /^\d{10}$/.test(val.replace(/[\s-]/g, '')), {
+      message: i18n.t('validations.client.nipFormat', { digits: 10 }),
+    }),
   phone: z.string()
     .optional()
     .refine(val => !val || val.replace(/\D/g, '').length >= 9, {
@@ -18,6 +27,9 @@ export const clientSchema = z.object({
     }),
   address: z.string()
     .max(200, i18n.t('validations.client.addressMaxLength', { max: 200 }))
+    .optional(),
+  notes: z.string()
+    .max(2000, i18n.t('validations.client.notesMaxLength', { max: 2000 }))
     .optional(),
 });
 
@@ -247,3 +259,19 @@ export const resetPasswordSchema = z.object({
   message: i18n.t('validations.auth.passwordsNotMatch'),
   path: ['confirmPassword'],
 });
+
+// Line item (price library) validation
+export const lineItemSchema = z.object({
+  name: z.string()
+    .min(1, i18n.t('validations.lineItem.nameRequired'))
+    .max(200, i18n.t('validations.lineItem.nameMaxLength', { max: 200 })),
+  category: z.string().max(100).optional(),
+  description: z.string().max(1000).optional(),
+  unit: z.string().min(1, i18n.t('validations.lineItem.unitRequired')).max(20),
+  unit_price_net: z.number().min(0, i18n.t('validations.lineItem.priceNonNegative')),
+  vat_rate: z.number().min(0).max(100).optional(),
+  item_type: z.enum(['labor', 'material', 'service', 'travel', 'lump_sum']),
+  favorite: z.boolean().optional(),
+});
+
+export type LineItemFormData = z.infer<typeof lineItemSchema>;

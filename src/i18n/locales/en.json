@@ -46,6 +46,7 @@
     "previousPage": "previous page",
     "open": "Open",
     "clearSearch": "Clear search",
+    "clearFilters": "Clear filters",
     "pageOf": "Page {{current}} of {{total}}",
     "showingItems": "Showing {{from}}-{{to}} of {{total}}",
     "previous": "Previous"
@@ -61,6 +62,7 @@
     "marketplace": "Marketplace",
     "settings": "Settings",
     "templates": "Templates",
+    "priceLibrary": "Price Library",
     "billing": "Billing",
     "profile": "Company Profile",
     "admin": "Admin Panel",
@@ -332,7 +334,58 @@
     "emailPlaceholder": "john@example.com",
     "addressPlaceholder": "123 Main St, 00-001 Warsaw",
     "clearSearch": "Clear search",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "type": "Client type",
+    "typePerson": "Individual",
+    "typeCompany": "Company",
+    "companyName": "Company name",
+    "companyNamePlaceholder": "Building Co. Ltd.",
+    "nip": "Tax ID (NIP)",
+    "nipPlaceholder": "1234567890",
+    "notes": "Notes",
+    "notesPlaceholder": "Notes, preferences, cooperation history..."
+  },
+  "priceLibrary": {
+    "title": "Price Library",
+    "subtitle": "Item catalog for quotes",
+    "addItem": "Add item",
+    "addFirstItem": "Add first item",
+    "newItem": "New item",
+    "editItem": "Edit item",
+    "create": "Create",
+    "noItems": "No items in price library",
+    "noItemsDesc": "Add items to the price library for faster quoting",
+    "noResults": "No results for applied filters",
+    "searchPlaceholder": "Search items...",
+    "filterByType": "Filter by type",
+    "itemType": "Item type",
+    "category": "Category",
+    "categoryPlaceholder": "e.g. Tiling, Installation, Transport",
+    "unit": "Unit",
+    "unitPriceNet": "Net price / unit",
+    "vatRate": "VAT rate",
+    "vatRatePlaceholder": "Select VAT",
+    "currencyNet": "PLN net",
+    "vat": "VAT",
+    "description": "Description",
+    "descriptionPlaceholder": "Description, specifications, notes...",
+    "namePlaceholder": "e.g. Tile laying, Wall painting",
+    "deleteTitle": "Delete this item?",
+    "favorite": "Add to favorites",
+    "unfavorite": "Remove from favorites",
+    "successCreate": "Item added",
+    "successUpdate": "Item updated",
+    "successDelete": "Item deleted",
+    "errorCreate": "Error adding item",
+    "errorUpdate": "Error updating item",
+    "errorDelete": "Error deleting item",
+    "types": {
+      "labor": "Labor",
+      "material": "Material",
+      "service": "Service",
+      "travel": "Travel",
+      "lump_sum": "Lump sum"
+    }
   },
   "calendar": {
     "title": "Calendar",
@@ -1338,9 +1391,18 @@
     "client": {
       "nameRequired": "Client name is required",
       "nameMaxLength": "Name max {{max}} characters",
+      "companyNameMaxLength": "Company name max {{max}} characters",
+      "nipFormat": "Tax ID must have {{digits}} digits",
       "phoneMinDigits": "Phone number must have at least {{min}} digits",
       "emailInvalid": "Invalid email format",
-      "addressMaxLength": "Address max {{max}} characters"
+      "addressMaxLength": "Address max {{max}} characters",
+      "notesMaxLength": "Notes max {{max}} characters"
+    },
+    "lineItem": {
+      "nameRequired": "Item name is required",
+      "nameMaxLength": "Name max {{max}} characters",
+      "unitRequired": "Unit is required",
+      "priceNonNegative": "Price cannot be negative"
     },
     "project": {
       "nameRequired": "Project name is required",
@@ -2736,6 +2798,7 @@
       "finance": "Finance",
       "quality": "Quality Control",
       "clients": "Clients",
+      "priceLibrary": "Price Library",
       "settings": "Settings",
       "deleteAccount": "Delete Account"
     },

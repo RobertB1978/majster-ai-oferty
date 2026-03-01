@@ -8,19 +8,36 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SearchInput } from '@/components/ui/search-input';
 import { PaginationControls } from '@/components/ui/pagination-controls';
-import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Users } from 'lucide-react';
+import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Users, Building2, Loader2, FileText } from 'lucide-react';
 import { ClientsGridSkeleton } from '@/components/ui/skeleton-screens';
 import { toast } from 'sonner';
 
 interface ClientFormData {
+  type: 'person' | 'company';
   name: string;
+  company_name: string;
+  nip: string;
   phone: string;
   email: string;
   address: string;
+  notes: string;
 }
+
+const INITIAL_FORM: ClientFormData = {
+  type: 'person',
+  name: '',
+  company_name: '',
+  nip: '',
+  phone: '',
+  email: '',
+  address: '',
+  notes: '',
+};
 
 const PAGE_SIZE = 20;
 
@@ -30,10 +47,8 @@ export default function Clients() {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Debounce search to avoid excessive API calls
   const debouncedSearch = useDebounce(searchQuery, 300);
 
-  // Paginated query with server-side search
   const {
     data: paginatedResult,
     isLoading
@@ -49,35 +64,27 @@ export default function Clients() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
-  const [formData, setFormData] = useState<ClientFormData>({
-    name: '',
-    phone: '',
-    email: '',
-    address: '',
-  });
+  const [formData, setFormData] = useState<ClientFormData>(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const clients = paginatedResult?.data || [];
   const totalPages = paginatedResult?.totalPages || 1;
   const totalCount = paginatedResult?.totalCount || 0;
 
-  // Auto-open modal when navigating to /app/customers/new
   useEffect(() => {
     if (searchParams.get('new') === '1') {
       setIsOpen(true);
-      // Clean up the URL by removing the query param
       setSearchParams({}, { replace: true });
     }
   }, [searchParams, setSearchParams]);
 
-  // Reset to page 1 when search changes
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
     setPage(1);
   };
 
   const resetForm = () => {
-    setFormData({ name: '', phone: '', email: '', address: '' });
+    setFormData(INITIAL_FORM);
     setEditingClient(null);
     setErrors({});
   };
@@ -86,10 +93,14 @@ export default function Clients() {
     if (client) {
       setEditingClient(client);
       setFormData({
+        type: client.type || 'person',
         name: client.name,
+        company_name: client.company_name || '',
+        nip: client.nip || '',
         phone: client.phone || '',
         email: client.email || '',
         address: client.address || '',
+        notes: client.notes || '',
       });
     } else {
       resetForm();
@@ -115,17 +126,25 @@ export default function Clients() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) {
       toast.error(t('errors.formValidation'));
       return;
     }
-
     try {
+      const payload = {
+        type: formData.type,
+        name: formData.name,
+        company_name: formData.company_name || null,
+        nip: formData.nip || null,
+        phone: formData.phone || null,
+        email: formData.email || null,
+        address: formData.address || null,
+        notes: formData.notes || null,
+      };
       if (editingClient) {
-        await updateClient.mutateAsync({ id: editingClient.id, ...formData });
+        await updateClient.mutateAsync({ id: editingClient.id, ...payload });
       } else {
-        await addClient.mutateAsync(formData);
+        await addClient.mutateAsync(payload);
       }
       setIsOpen(false);
       resetForm();
@@ -162,7 +181,7 @@ export default function Clients() {
               {t('clients.addClient')}
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-primary" />
@@ -170,6 +189,21 @@ export default function Clients() {
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Type selector */}
+              <div className="space-y-2">
+                <Label>{t('clients.type')}</Label>
+                <Select value={formData.type} onValueChange={(v) => setFormData({ ...formData, type: v as 'person' | 'company' })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="person">{t('clients.typePerson')}</SelectItem>
+                    <SelectItem value="company">{t('clients.typeCompany')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Name */}
               <div className="space-y-2">
                 <Label htmlFor="name">{t('clients.name')} *</Label>
                 <Input
@@ -181,6 +215,38 @@ export default function Clients() {
                 />
                 {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
               </div>
+
+              {/* Company name (visible for company type) */}
+              {formData.type === 'company' && (
+                <div className="space-y-2">
+                  <Label htmlFor="company_name">{t('clients.companyName')}</Label>
+                  <Input
+                    id="company_name"
+                    value={formData.company_name}
+                    onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
+                    placeholder={t('clients.companyNamePlaceholder')}
+                    className={errors.company_name ? 'border-destructive' : ''}
+                  />
+                  {errors.company_name && <p className="text-sm text-destructive">{errors.company_name}</p>}
+                </div>
+              )}
+
+              {/* NIP (visible for company type) */}
+              {formData.type === 'company' && (
+                <div className="space-y-2">
+                  <Label htmlFor="nip">{t('clients.nip')}</Label>
+                  <Input
+                    id="nip"
+                    value={formData.nip}
+                    onChange={(e) => setFormData({ ...formData, nip: e.target.value })}
+                    placeholder={t('clients.nipPlaceholder')}
+                    className={errors.nip ? 'border-destructive' : ''}
+                  />
+                  {errors.nip && <p className="text-sm text-destructive">{errors.nip}</p>}
+                </div>
+              )}
+
+              {/* Phone */}
               <div className="space-y-2">
                 <Label htmlFor="phone">{t('clients.phone')}</Label>
                 <Input
@@ -192,6 +258,8 @@ export default function Clients() {
                 />
                 {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
               </div>
+
+              {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email">{t('clients.email')}</Label>
                 <Input
@@ -204,6 +272,8 @@ export default function Clients() {
                 />
                 {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
               </div>
+
+              {/* Address */}
               <div className="space-y-2">
                 <Label htmlFor="address">{t('clients.address')}</Label>
                 <Input
@@ -215,6 +285,21 @@ export default function Clients() {
                 />
                 {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
               </div>
+
+              {/* Notes */}
+              <div className="space-y-2">
+                <Label htmlFor="notes">{t('clients.notes')}</Label>
+                <Textarea
+                  id="notes"
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  placeholder={t('clients.notesPlaceholder')}
+                  rows={3}
+                  className={errors.notes ? 'border-destructive' : ''}
+                />
+                {errors.notes && <p className="text-sm text-destructive">{errors.notes}</p>}
+              </div>
+
               <Button
                 type="submit"
                 className="w-full"
@@ -274,8 +359,15 @@ export default function Clients() {
               <Card key={client.id} className="group hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300" style={{ animationDelay: `${index * 50}ms` }}>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-start justify-between text-lg">
-                    <span className="line-clamp-2">{client.name}</span>
-                    <div className="flex gap-1">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                        {client.type === 'company'
+                          ? <Building2 className="h-4 w-4 text-primary" />
+                          : <Users className="h-4 w-4 text-primary" />}
+                      </div>
+                      <span className="line-clamp-1">{client.name}</span>
+                    </div>
+                    <div className="flex gap-1 shrink-0">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -296,16 +388,40 @@ export default function Clients() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
+                  {client.company_name && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Building2 className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{client.company_name}</span>
+                    </div>
+                  )}
+                  {client.nip && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <FileText className="h-4 w-4 shrink-0" />
+                      <span>{t('clients.nip')}: {client.nip}</span>
+                    </div>
+                  )}
                   {client.phone && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Phone className="h-4 w-4" />
-                      <span>{client.phone}</span>
+                      <Phone className="h-4 w-4 shrink-0" />
+                      <a
+                        href={`tel:${client.phone}`}
+                        className="hover:text-primary transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {client.phone}
+                      </a>
                     </div>
                   )}
                   {client.email && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-4 w-4" />
-                      <span className="truncate">{client.email}</span>
+                      <Mail className="h-4 w-4 shrink-0" />
+                      <a
+                        href={`mailto:${client.email}`}
+                        className="truncate hover:text-primary transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {client.email}
+                      </a>
                     </div>
                   )}
                   {client.address && (
@@ -319,7 +435,6 @@ export default function Clients() {
             ))}
           </div>
 
-          {/* Pagination Controls */}
           <PaginationControls
             currentPage={page}
             totalPages={totalPages}

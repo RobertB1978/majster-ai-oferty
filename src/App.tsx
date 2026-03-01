@@ -53,6 +53,7 @@ const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 const QuoteEditor = lazy(() => import("./pages/QuoteEditor"));
 const CompanyProfile = lazy(() => import("./pages/CompanyProfile"));
 const ItemTemplates = lazy(() => import("./pages/ItemTemplates"));
+const PriceLibrary = lazy(() => import("./pages/PriceLibrary"));
 const Settings = lazy(() => import("./pages/Settings"));
 const PdfGenerator = lazy(() => import("./pages/PdfGenerator"));
 const Calendar = lazy(() => import("./pages/Calendar"));
@@ -220,6 +221,7 @@ const App = () => (
                     <Route path="marketplace" element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="analytics" element={<Analytics />} />
                     <Route path="templates" element={<ItemTemplates />} />
+                    <Route path="price-library" element={<PriceLibrary />} />
                     <Route path="plan" element={<Plan />} />
                     <Route path="profile" element={<CompanyProfile />} />
                     <Route path="settings" element={<Settings />} />

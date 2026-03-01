@@ -46,6 +46,7 @@
     "previousPage": "попередня сторінка",
     "open": "Відкрити",
     "clearSearch": "Очистити пошук",
+    "clearFilters": "Очистити фільтри",
     "pageOf": "Сторінка {{current}} з {{total}}",
     "showingItems": "Відображення {{from}}-{{to}} з {{total}}",
     "previous": "Попередня"
@@ -61,6 +62,7 @@
     "marketplace": "Маркетплейс",
     "settings": "Налаштування",
     "templates": "Шаблони",
+    "priceLibrary": "Прайс-лист",
     "billing": "Платежі",
     "profile": "Профіль компанії",
     "admin": "Адмін панель",
@@ -332,7 +334,58 @@
     "emailPlaceholder": "ivan@example.com",
     "addressPlaceholder": "вул. Хрещатик 1, 01001 Київ",
     "clearSearch": "Очистити пошук",
-    "saveChanges": "Зберегти зміни"
+    "saveChanges": "Зберегти зміни",
+    "type": "Тип контрагента",
+    "typePerson": "Фізична особа",
+    "typeCompany": "Компанія",
+    "companyName": "Назва компанії",
+    "companyNamePlaceholder": "ТОВ Будівельна Компанія",
+    "nip": "ІПН / ЄДРПОУ",
+    "nipPlaceholder": "1234567890",
+    "notes": "Нотатки",
+    "notesPlaceholder": "Нотатки, уподобання, історія співпраці..."
+  },
+  "priceLibrary": {
+    "title": "Прайс-лист",
+    "subtitle": "Каталог позицій для кошторисів",
+    "addItem": "Додати позицію",
+    "addFirstItem": "Додати першу позицію",
+    "newItem": "Нова позиція",
+    "editItem": "Редагувати позицію",
+    "create": "Створити",
+    "noItems": "Немає позицій у прайс-листі",
+    "noItemsDesc": "Додайте позиції до прайс-листа для швидкого складання кошторисів",
+    "noResults": "Немає результатів для заданих фільтрів",
+    "searchPlaceholder": "Пошук позицій...",
+    "filterByType": "Фільтр за типом",
+    "itemType": "Тип позиції",
+    "category": "Категорія",
+    "categoryPlaceholder": "напр. Плитка, Монтаж, Транспорт",
+    "unit": "Одиниця",
+    "unitPriceNet": "Ціна нетто / одиниця",
+    "vatRate": "Ставка ПДВ",
+    "vatRatePlaceholder": "Оберіть ПДВ",
+    "currencyNet": "грн нетто",
+    "vat": "ПДВ",
+    "description": "Опис",
+    "descriptionPlaceholder": "Опис, специфікація, примітки...",
+    "namePlaceholder": "напр. Укладання плитки, Фарбування стін",
+    "deleteTitle": "Видалити цю позицію?",
+    "favorite": "Додати до обраних",
+    "unfavorite": "Прибрати з обраних",
+    "successCreate": "Позицію додано",
+    "successUpdate": "Позицію оновлено",
+    "successDelete": "Позицію видалено",
+    "errorCreate": "Помилка при додаванні позиції",
+    "errorUpdate": "Помилка при оновленні позиції",
+    "errorDelete": "Помилка при видаленні позиції",
+    "types": {
+      "labor": "Робота",
+      "material": "Матеріал",
+      "service": "Послуга",
+      "travel": "Виїзд",
+      "lump_sum": "Паушальна сума"
+    }
   },
   "calendar": {
     "title": "Календар",
@@ -1320,9 +1373,18 @@
     "client": {
       "nameRequired": "Ім'я клієнта обов'язкове",
       "nameMaxLength": "Ім'я макс {{max}} символів",
+      "companyNameMaxLength": "Назва компанії макс {{max}} символів",
+      "nipFormat": "ІПН повинен мати {{digits}} цифр",
       "phoneMinDigits": "Номер телефону повинен мати щонайменше {{min}} цифр",
       "emailInvalid": "Неправильний формат email",
-      "addressMaxLength": "Адреса макс {{max}} символів"
+      "addressMaxLength": "Адреса макс {{max}} символів",
+      "notesMaxLength": "Нотатки макс {{max}} символів"
+    },
+    "lineItem": {
+      "nameRequired": "Назва позиції обов'язкова",
+      "nameMaxLength": "Назва макс {{max}} символів",
+      "unitRequired": "Одиниця обов'язкова",
+      "priceNonNegative": "Ціна не може бути від'ємною"
     },
     "project": {
       "nameRequired": "Назва проекту обов'язкова",
@@ -2736,6 +2798,7 @@
       "finance": "Фінанси",
       "quality": "Контроль якості",
       "clients": "Клієнти",
+      "priceLibrary": "Прайс-лист",
       "settings": "Налаштування",
       "deleteAccount": "Видалити акаунт"
     },

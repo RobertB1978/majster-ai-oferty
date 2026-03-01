@@ -11,6 +11,7 @@ import {
   CalendarDays,
   Shield,
   ChevronRight,
+  BookOpen,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -41,10 +42,11 @@ const MORE_GROUPS: MoreGroup[] = [
   {
     titleKey: 'newShell.more.groupOrg',
     items: [
-      { id: 'profile',   labelKey: 'newShell.more.profile',   icon: Building2, route: '/app/profile' },
-      { id: 'finance',   labelKey: 'newShell.more.finance',   icon: TrendingUp, route: '/app/finance' },
-      { id: 'quality',   labelKey: 'newShell.more.quality',   icon: Star,      placeholder: true },
-      { id: 'clients',   labelKey: 'newShell.more.clients',   icon: Users,     route: '/app/customers' },
+      { id: 'profile',      labelKey: 'newShell.more.profile',      icon: Building2, route: '/app/profile' },
+      { id: 'finance',      labelKey: 'newShell.more.finance',      icon: TrendingUp, route: '/app/finance' },
+      { id: 'clients',      labelKey: 'newShell.more.clients',      icon: Users,     route: '/app/customers' },
+      { id: 'priceLibrary', labelKey: 'newShell.more.priceLibrary', icon: BookOpen,  route: '/app/price-library' },
+      { id: 'quality',      labelKey: 'newShell.more.quality',      icon: Star,      placeholder: true },
     ],
   },
   {

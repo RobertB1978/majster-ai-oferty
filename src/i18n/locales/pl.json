@@ -46,6 +46,7 @@
     "previousPage": "poprzednia strona",
     "open": "Otwórz",
     "clearSearch": "Wyczyść wyszukiwanie",
+    "clearFilters": "Wyczyść filtry",
     "pageOf": "Strona {{current}} z {{total}}",
     "showingItems": "Wyświetlanie {{from}}-{{to}} z {{total}}",
     "previous": "Poprzednia"
@@ -61,6 +62,7 @@
     "marketplace": "Marketplace",
     "settings": "Ustawienia",
     "templates": "Szablony",
+    "priceLibrary": "Cennik",
     "billing": "Płatności",
     "profile": "Profil firmy",
     "admin": "Panel administratora",
@@ -332,7 +334,58 @@
     "emailPlaceholder": "jan@example.pl",
     "addressPlaceholder": "ul. Przykładowa 1, 00-001 Warszawa",
     "clearSearch": "Wyczyść wyszukiwanie",
-    "saveChanges": "Zapisz zmiany"
+    "saveChanges": "Zapisz zmiany",
+    "type": "Typ kontrahenta",
+    "typePerson": "Osoba fizyczna",
+    "typeCompany": "Firma",
+    "companyName": "Nazwa firmy",
+    "companyNamePlaceholder": "Firma Budowlana Sp. z o.o.",
+    "nip": "NIP",
+    "nipPlaceholder": "1234567890",
+    "notes": "Notatki",
+    "notesPlaceholder": "Uwagi, preferencje, historia współpracy..."
+  },
+  "priceLibrary": {
+    "title": "Cennik",
+    "subtitle": "Biblioteka pozycji do wycen",
+    "addItem": "Dodaj pozycję",
+    "addFirstItem": "Dodaj pierwszą pozycję",
+    "newItem": "Nowa pozycja",
+    "editItem": "Edytuj pozycję",
+    "create": "Utwórz",
+    "noItems": "Brak pozycji w cenniku",
+    "noItemsDesc": "Dodaj pozycje do cennika, aby szybko tworzyć wyceny",
+    "noResults": "Brak wyników dla podanych filtrów",
+    "searchPlaceholder": "Szukaj pozycji...",
+    "filterByType": "Filtruj po typie",
+    "itemType": "Typ pozycji",
+    "category": "Kategoria",
+    "categoryPlaceholder": "np. Glazura, Instalacja, Transport",
+    "unit": "Jednostka",
+    "unitPriceNet": "Cena netto / jednostka",
+    "vatRate": "Stawka VAT",
+    "vatRatePlaceholder": "Wybierz VAT",
+    "currencyNet": "zł netto",
+    "vat": "VAT",
+    "description": "Opis",
+    "descriptionPlaceholder": "Opis, specyfikacja, uwagi...",
+    "namePlaceholder": "np. Układanie glazury, Malowanie ścian",
+    "deleteTitle": "Usunąć tę pozycję?",
+    "favorite": "Dodaj do ulubionych",
+    "unfavorite": "Usuń z ulubionych",
+    "successCreate": "Pozycja dodana",
+    "successUpdate": "Pozycja zaktualizowana",
+    "successDelete": "Pozycja usunięta",
+    "errorCreate": "Błąd przy dodawaniu pozycji",
+    "errorUpdate": "Błąd przy aktualizacji pozycji",
+    "errorDelete": "Błąd przy usuwaniu pozycji",
+    "types": {
+      "labor": "Robocizna",
+      "material": "Materiał",
+      "service": "Usługa",
+      "travel": "Dojazd",
+      "lump_sum": "Ryczałt"
+    }
   },
   "calendar": {
     "title": "Kalendarz",
@@ -1338,9 +1391,18 @@
     "client": {
       "nameRequired": "Nazwa klienta jest wymagana",
       "nameMaxLength": "Nazwa max {{max}} znaków",
+      "companyNameMaxLength": "Nazwa firmy max {{max}} znaków",
+      "nipFormat": "NIP musi mieć {{digits}} cyfr",
       "phoneMinDigits": "Numer telefonu musi mieć min. {{min}} cyfr",
       "emailInvalid": "Nieprawidłowy format email",
-      "addressMaxLength": "Adres max {{max}} znaków"
+      "addressMaxLength": "Adres max {{max}} znaków",
+      "notesMaxLength": "Notatki max {{max}} znaków"
+    },
+    "lineItem": {
+      "nameRequired": "Nazwa pozycji jest wymagana",
+      "nameMaxLength": "Nazwa max {{max}} znaków",
+      "unitRequired": "Jednostka jest wymagana",
+      "priceNonNegative": "Cena nie może być ujemna"
     },
     "project": {
       "nameRequired": "Nazwa projektu jest wymagana",
@@ -2736,6 +2798,7 @@
       "finance": "Finanse",
       "quality": "Kontrola jakości",
       "clients": "Klienci",
+      "priceLibrary": "Cennik",
       "settings": "Ustawienia",
       "deleteAccount": "Usuń konto"
     },

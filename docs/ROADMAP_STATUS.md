@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-07 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-08 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -33,7 +33,7 @@
 | **PR-05** | Profil firmy + Ustawienia | ✅ DONE | `claude/company-profile-settings-2eKBa` | 2026-03-01 | Company Profile form (profiles table + address_line2/country/website), Settings tabs (Company + Account), DeleteAccountSection (USUŃ keyword), delete-user-account EF fix, i18n PL/EN/UK, docs/COMPLIANCE/ACCOUNT_DELETION.md |
 | **PR-06** | Free plan + paywall | ✅ DONE | `claude/free-tier-paywall-0b5OO` | 2026-03-01 | FREE_TIER_OFFER_LIMIT=3, canSendOffer(), DB function count_monthly_finalized_offers(), useFreeTierOfferQuota hook, OfferQuotaIndicator, FreeTierPaywallModal, SendOfferModal quota check, i18n PL/EN/UK, unit tests, ADR-0004 |
 | **PR-07** | Shell (FF_NEW_SHELL) | ✅ DONE | `claude/new-shell-bottom-nav-Hr4DV` | 2026-03-01 | FF_NEW_SHELL flag, NewShellLayout, BottomNav5, FAB+sheet, HomeLobby, MoreScreen, 3-step onboarding, i18n PL/EN/UK |
-| **PR-08** | CRM + Cennik | ⬜ TODO | — | — | Wymaga merge PR-07 |
+| **PR-08** | CRM + Cennik | ✅ DONE | `claude/pr-08-crm-price-library-qkxxP` | 2026-03-01 | clients extend (type/company_name/nip/notes/updated_at), line_items table + RLS, PriceLibrary page, Clients upgrade, i18n PL/EN/UK, nav links |
 | **PR-09** | Oferty A: lista + statusy | ⬜ TODO | — | — | Wymaga merge PR-08 |
 | **PR-10** | Oferty B1: Wizard bez PDF | ⬜ TODO | — | — | Wymaga merge PR-09 |
 | **PR-11** | Oferty B2: PDF + wysyłka | ⬜ TODO | — | — | Wymaga merge PR-10 |
@@ -220,8 +220,115 @@ Przed każdym merge wypełnij i wklej w opis PR:
 | 2026-03-01 | PR-05 | `claude/company-profile-settings-2eKBa` | Company Profile (profiles + address_line2/country/website), Settings tabs, DeleteAccountSection (USUŃ), delete-user-account EF fixes, i18n, COMPLIANCE/ACCOUNT_DELETION.md |
 | 2026-03-01 | PR-06 | `claude/free-tier-paywall-0b5OO` | FREE_TIER_OFFER_LIMIT=3, DB function, quota hook, OfferQuotaIndicator, FreeTierPaywallModal, SendOfferModal gate, i18n, unit tests |
 | 2026-03-01 | PR-07 | `claude/new-shell-bottom-nav-Hr4DV` | FF_NEW_SHELL flag (env+localStorage), NewShellLayout, NewShellBottomNav (5 tabs), NewShellFAB+sheet (7 akcji), HomeLobby (3 bloki), MoreScreen (3 grupy), NewShellOnboarding (3 kroki, localStorage persist), i18n PL/EN/UK, routing /app/home + /app/more |
+| 2026-03-01 | PR-08 | `claude/pr-08-crm-price-library-qkxxP` | clients extend (type/company_name/nip/notes/updated_at + trigger), line_items table + full RLS + 4 policies, PriceLibrary.tsx (CRUD + search + filter + favorite), Clients.tsx upgrade (company/person type, NIP, notes, quick call/email), useLineItems hook, priceLibrary i18n PL/EN/UK, nav old shell + MoreScreen new shell |
 
 > *Uzupełniaj tabelę po każdym merge. Format: `docs: aktualizuj status PR-XX`*
+
+---
+
+## PR-08 — CRM + Cennik: co zostało wdrożone
+
+### Baza danych
+
+- **Migracja:** `supabase/migrations/20260301200000_pr08_clients_extension_and_line_items.sql`
+
+**Rozszerzenie tabeli `clients`:**
+- Dodane kolumny: `type` ('person'|'company'), `company_name`, `nip`, `notes`, `updated_at`
+- Trigger `clients_updated_at` auto-aktualizuje `updated_at` przy każdej zmianie
+
+**Nowa tabela `line_items` (Cennik):**
+- Kolumny: `id, user_id, category, name, description, unit, unit_price_net, vat_rate, item_type, favorite, last_used_at, created_at, updated_at`
+- `item_type`: labor | material | service | travel | lump_sum
+- Trigger `line_items_updated_at` auto-aktualizuje `updated_at`
+- Indeksy: `user_id`, `user_id + item_type`, `user_id + favorite` (partial)
+
+### RLS — Polityki bezpieczeństwa
+
+Obie tabele mają pełne RLS (`user_id = auth.uid()`):
+```sql
+-- line_items: 4 polityki
+CREATE POLICY "line_items_select_own" ... FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "line_items_insert_own" ... FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "line_items_update_own" ... FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "line_items_delete_own" ... FOR DELETE USING (auth.uid() = user_id);
+```
+
+### RLS — Test IDOR (2 konta)
+
+```sql
+-- W Supabase Dashboard → SQL Editor
+-- 1. Utwórz dwa konta testowe i pobierz ich UUID
+-- 2. Jako user A: próba odczytu pozycji cennika user B → 0 wierszy
+SELECT * FROM public.line_items WHERE user_id = 'user-b-uuid';
+-- Oczekiwane: 0 rows (RLS blokuje)
+
+-- 3. Próba INSERT z cudzym user_id → błąd RLS
+INSERT INTO public.line_items (user_id, name, unit, item_type)
+VALUES ('user-b-uuid', 'Test', 'szt.', 'material');
+-- Oczekiwane: ERROR: new row violates row-level security policy
+```
+
+### Pliki zmienione
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260301200000_pr08_clients_extension_and_line_items.sql` | Migracja: rozszerzenie clients + tabela line_items + RLS + indeksy |
+| `src/hooks/useClients.ts` | Rozszerzenie interfejsu Client o nowe pola; zaktualizowane query selectors |
+| `src/hooks/useLineItems.ts` | Nowy hook: useLineItemsPaginated, useCreateLineItem, useUpdateLineItem, useDeleteLineItem, useToggleLineItemFavorite |
+| `src/lib/validations.ts` | clientSchema rozszerzona o type/company_name/nip/notes; nowa lineItemSchema |
+| `src/pages/Clients.tsx` | Nowe pola w formularzu: typ, nazwa firmy, NIP, notatki; szybkie akcje tel/email |
+| `src/pages/PriceLibrary.tsx` | Nowa strona: lista + search + filter by item_type + CRUD + ulubione |
+| `src/App.tsx` | Nowa trasa `/app/price-library` |
+| `src/data/defaultConfig.ts` | Dodany nav item `priceLibrary` (order 6, visible=true) |
+| `src/components/layout/Navigation.tsx` | NAV_LABEL_KEYS + BookOpen icon |
+| `src/pages/MoreScreen.tsx` | Dodany link "Cennik" → `/app/price-library` w grupie Org |
+| `src/i18n/locales/{pl,en,uk}.json` | Klucze: `clients.*` (nowe), `priceLibrary.*`, `nav.priceLibrary`, `newShell.more.priceLibrary`, `validations.lineItem.*` |
+| `src/lib/validations.test.ts` | Testy zaktualizowane (type: 'person' required) |
+| `src/test/utils/validations.test.ts` | Testy zaktualizowane (type: 'person' required) |
+| `src/test/pages/Clients.test.tsx` | Test addClient zaktualizowany o nowe pola |
+| `docs/ROADMAP_STATUS.md` | Ten plik — aktualizacja statusu |
+
+### Jak testować PR-08 (5 kroków)
+
+**1. Klienci — nowe pola:**
+- Zaloguj się → `/app/customers`
+- Kliknij "Dodaj Klienta" → wybierz typ "Firma"
+- Wypełnij: Nazwa, Nazwa firmy, NIP (10 cyfr), Telefon, Email, Notatki → "Dodaj Klienta"
+- Na karcie klienta: kliknij numer telefonu → apka dzwoni (`tel:` link)
+- Kliknij email → otwiera klient poczty (`mailto:` link)
+
+**2. Cennik — CRUD:**
+- Przejdź do `/app/price-library` (stary shell: sidebar; nowy shell: Więcej → Cennik)
+- Pusta strona → CTA "Dodaj pierwszą pozycję" → formularz
+- Wypełnij: Nazwa, Typ (np. Robocizna), Jednostka, Cena netto/jed., VAT → Utwórz
+- Na karcie: kliknij ★ → pozycja "ulubiona" (sortuje na górze)
+- Edytuj, Usuń — działają z potwierdzeniem
+
+**3. Wyszukiwanie i filtrowanie (Cennik):**
+- Wpisz fragment nazwy → lista filtruje się w czasie rzeczywistym (debounce 300ms)
+- Wybierz filtr "Robocizna" → pokazuje tylko pozycje labor
+- Wyczyść filtry → wszystkie pozycje z powrotem
+
+**4. FF_NEW_SHELL — nawigacja:**
+```js
+// Włącz nowy shell
+localStorage.setItem('FF_NEW_SHELL', 'true'); location.reload();
+```
+- Zakładka "Więcej" → "Organizacja" → "Cennik" → strona cennika
+- "Klienci" → strona klientów (istniejący link)
+- Wyłącz FF_NEW_SHELL → stary shell, sidebar pokazuje "Cennik" w nawigacji
+
+**5. i18n — zmiana języka:**
+- Ustawienia → EN → etykiety w Price Library po angielsku ("Net price / unit")
+- Przełącz na UK → etykiety po ukraińsku ("Прайс-лист")
+- Wróć na PL → "Cennik"
+
+### RLS wyniki (automatyczne testy)
+
+```bash
+npx vitest run src/lib/validations.test.ts src/test/utils/validations.test.ts src/test/pages/Clients.test.tsx
+# Oczekiwane: 95 passed, 0 failed
+```
 
 ---
 
@@ -363,12 +470,12 @@ SELECT public.count_monthly_finalized_offers('user-a-uuid'); -- zwraca 0 dla use
 Faza 0 (Fundament):     3/3 PR  ██████████  100%
 Faza 1 (Dostęp):        3/3 PR  ██████████  100%
 Faza 2 (Shell):         1/1 PR  ██████████  100%
-Faza 3 (Dane/Oferty):   0/2 PR  ░░░░░░░░░░  0%
+Faza 3 (Dane/Oferty):   1/2 PR  █████░░░░░  50%
 Faza 4 (Oferty flow):   0/3 PR  ░░░░░░░░░░  0%
 Faza 5 (Projekty):      0/6 PR  ░░░░░░░░░░  0%
 Faza 6 (Offline+$):     0/2 PR  ░░░░░░░░░░  0%
 ─────────────────────────────────────────
-RAZEM:                  7/20 PR ███░░░░░░░  35%
+RAZEM:                  8/20 PR ████░░░░░░  40%
 (PR-00 nie wliczany do progresu funkcjonalnego)
 ```
 

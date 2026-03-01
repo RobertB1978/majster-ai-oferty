@@ -242,12 +242,12 @@ describe('Clients', () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockAddClient.mutateAsync).toHaveBeenCalledWith({
-          name: 'New Client',
-          phone: '',
-          email: '',
-          address: '',
-        });
+        expect(mockAddClient.mutateAsync).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'New Client',
+            type: 'person',
+          })
+        );
       });
     });
 

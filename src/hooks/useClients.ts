@@ -7,11 +7,16 @@ import { toast } from 'sonner';
 export interface Client {
   id: string;
   user_id: string;
+  type: 'person' | 'company';
   name: string;
+  company_name: string | null;
+  nip: string | null;
   phone: string | null;
   email: string | null;
   address: string | null;
+  notes: string | null;
   created_at: string;
+  updated_at: string;
 }
 
 interface ClientsQueryParams {
@@ -52,11 +57,11 @@ export function useClientsPaginated(params: ClientsQueryParams = {}) {
       let query = supabase
         .from('clients')
         // Only select columns needed for list view (not SELECT *)
-        .select('id, name, email, phone, created_at', { count: 'exact' });
+        .select('id, type, name, company_name, nip, email, phone, created_at, updated_at', { count: 'exact' });
 
       // Server-side search filter
       if (search?.trim()) {
-        query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
+        query = query.or(`name.ilike.%${search}%,company_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%,nip.ilike.%${search}%`);
       }
 
       // Pagination using range
@@ -96,8 +101,8 @@ export function useClients() {
       const { data, error } = await supabase
         .from('clients')
         // Optimized: removed SELECT * - only necessary columns
-        .select('id, name, email, phone, created_at')
-        .order('created_at', { ascending: false });
+        .select('id, type, name, company_name, nip, email, phone, created_at, updated_at')
+        .order('updated_at', { ascending: false });
 
       if (error) throw error;
       return data as Client[];
@@ -114,8 +119,8 @@ export function useClient(id: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('clients')
-        // Detail view: fetch all columns including address
-        .select('id, name, phone, email, address, created_at')
+        // Detail view: fetch all columns
+        .select('id, type, name, company_name, nip, phone, email, address, notes, created_at, updated_at')
         .eq('id', id)
         .maybeSingle();
 
@@ -131,11 +136,11 @@ export function useAddClient() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async (client: Omit<Client, 'id' | 'user_id' | 'created_at'>) => {
+    mutationFn: async (client: Omit<Client, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
       const { data, error } = await supabase
         .from('clients')
         .insert({ ...client, user_id: user!.id })
-        .select('id, name, email, phone, created_at')
+        .select('id, type, name, company_name, nip, email, phone, created_at, updated_at')
         .single();
 
       if (error) throw error;
@@ -168,7 +173,7 @@ export function useUpdateClient() {
         .from('clients')
         .update(client)
         .eq('id', id)
-        .select('id, name, email, phone, created_at')
+        .select('id, type, name, company_name, nip, email, phone, created_at, updated_at')
         .single();
 
       if (error) throw error;
