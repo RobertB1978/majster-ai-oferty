@@ -1,321 +1,449 @@
-# Majster.AI — ENTERPRISE ROADMAP
+# Majster.AI — ROADMAP MARZEC 2026 (ŹRÓDŁO PRAWDY v5)
 
-> **SUPERSEDED** — This document has been replaced by [`ROADMAP_ENTERPRISE.md`](./ROADMAP_ENTERPRISE.md) (v4) as per [ADR-0000](./ADR/ADR-0000-source-of-truth.md). This file is kept for historical reference only. Do not update this file.
+> **STATUS:** AKTYWNY — zastępuje `ROADMAP_ENTERPRISE.md` (v4) jako jedyne źródło prawdy od 2026-03-01.
+> Patrz: [ADR-0000](./ADR/ADR-0000-source-of-truth.md) (zaktualizowany) i [ADR-0004](./ADR/ADR-0004-free-tier-limit.md).
 
-## Production-Ready Repository (Existing Codebase)
-
-**Version**: 1.0 (ARCHIVED)
-**Date**: February 3, 2026
-**Status**: SUPERSEDED by ROADMAP_ENTERPRISE.md v4
-**Last Updated**: After PR#6 merged
-**Repository**: RobertB1978/majster-ai-oferty
-**Current Grade**: **A+ (95/100)** (FINAL_GRADE_2026.md) — *Note: grade contested in v4 assessment*
+**Wersja:** 5.0
+**Data:** 2026-03-01
+**Właściciel:** Product Owner (Robert B.) + Tech Lead (Claude)
+**Repozytorium:** RobertB1978/majster-ai-oferty
 
 ---
 
-## 📋 CORE PRINCIPLES
+## DLA LAIKA (bez żargonu)
 
-### "No Green No Finish" Protocol
-Every PR MUST pass before merge:
-- ✅ `npm run lint` (0 errors allowed)
-- ✅ `npm test` (281/281 tests passing)
-- ✅ `npm run build` (production build succeeds)
-- ✅ `npm run type-check` (TypeScript strict mode, 0 errors)
-- ✅ CI/CD workflows (5 workflows green)
-- ✅ Security audit (`npm audit --audit-level=high`)
+Ten dokument to **mapa pracy Majster.AI na rok 2026** — 21 PR-ów podzielonych na 6 faz.
+Każdy PR ma **jeden cel**, **jasne warunki ukończenia** i **nie rusza niczego poza swoim zakresem**.
 
-### Development Rules
-1. **1 PR = 1 Goal** — Single responsibility per PR
-2. **PRE-FLIGHT Always** — Run all checks before starting work
-3. **Zero Refactor "At the Same Time"** — No scope creep
-4. **Docs-Only PRs Separate** — Documentation changes isolated
-5. **Evidence-Based** — Every decision backed by data (git log, test output, audit reports)
-
-### PR Size Limits (Quality Gate)
-- **Preferred**: <120 LOC, <10 files
-- **Maximum**: 200-300 LOC, 10-15 files
-- **Exception**: Generated code, migrations, dependency updates
+- **PR** = Pull Request = jedna porcja zmiany w kodzie, sprawdzana i zatwierdzana przed wdrożeniem
+- **ADR** = Architecture Decision Record = zapis decyzji „dlaczego tak, a nie inaczej"
+- **RLS** = Row Level Security = zamki bazodanowe — „user A nie widzi danych user B"
+- **FF** = Feature Flag = przełącznik — „włącz nową funkcję bez ryzyka"
+- **DoD** = Definition of Done = lista warunków, po których PR jest naprawdę skończony
 
 ---
 
-## ✅ ZROBIONE (Merged & Verified)
+## REGUŁY GLOBALNE (obowiązują od PR-00)
 
-| PR # | Goal | Evidence (Commit/PR) | Risk Level | Status |
-|------|------|---------------------|-----------|--------|
-| **PR-1** | Admin Control Plane + Audit Log | Commit: `92e8d80`, PR #121<br/>Tables: `admin_system_settings`, `admin_audit_log`, `admin_theme_config`<br/>RLS policies verified | 🔴 CRITICAL | ✅ **MERGED**<br/>2025-01-18 |
-| **PR-2** | Critical i18n (Error/Success Messages) | Commit: `f33af96`, PR #122<br/>~90 strings wrapped with `t()`<br/>Namespaces: `errors.json`, `auth.json` | 🟡 MEDIUM | ✅ **MERGED**<br/>2025-01-18 |
-| **PR-3** | Admin Panel i18n | Commit: `16d6487`, PR #123<br/>ACTION_LABELS moved to i18n<br/>~40 admin strings localized | 🟡 MEDIUM | ✅ **MERGED**<br/>2025-01-18 |
-| **PR-4A** | i18n Coverage (Login.tsx, OfferApproval.tsx) | Commits: `c4247f5`, `92de880`<br/>2/8 components completed | 🟢 LOW | ⚠️ **PARTIAL**<br/>50% done |
-| **PR-5** | E2E & CI/CD Hardening | Commits: `73a5142` (#124), `8f1a91a`<br/>E2E required checks, npm audit aligned | 🟡 MEDIUM | ✅ **MERGED**<br/>2025-01-18 |
-| **PR-6** | Security Hardening (RLS, npm audit) | Commits: `91c3382`, `67a5599`<br/>Admin panel RLS + dual-role auth<br/>Critical npm vulns fixed | 🟠 HIGH | ✅ **MERGED**<br/>2025-01-22 |
-
-### Summary of Achievements
-- **Admin Control**: localStorage → database-backed with realtime sync + audit trail ✅
-- **i18n Foundation**: 130+ strings localized (Polish/English) ✅
-- **CI/CD Pipeline**: 5 workflows, blocking checks enforced ✅
-- **Security Grade**: A (92/100) — RLS, Sentry, server-side validation ✅
-- **Test Coverage**: 281/281 tests passing (100%) ✅
-- **Build Health**: All checks green (lint/test/build/type-check) ✅
+| # | Reguła | Co to znaczy w praktyce |
+|---|--------|--------------------------|
+| G1 | **Main zawsze deployowalny** | Duże zmiany = feature flag / ukryta ścieżka, nie „broken main" |
+| G2 | **No Green, No Finish** | Bez zielonych checków CI nie ma merge |
+| G3 | **1 zmiana = 1 PR** | Zero „przy okazji" |
+| G4 | **i18n: zero hardcode** | Każdy tekst w PL/EN/UK przez system tłumaczeń |
+| G5 | **RLS od razu** | Każda nowa tabela ma RLS i test „2 konta" |
+| G6 | **FF_NEW_SHELL od PR-07** | Każdy PR-07..PR-20 musi działać przy fladze ON i OFF |
+| G7 | **Scope Fence** | PR dotyka tylko plików zadeklarowanych w planie |
+| G8 | **Evidence-First** | Decyzja = dowód (git log / test output / screenshot) |
+| G9 | **Max 200-300 LOC** | Wyjątek: migracje, wygenerowany kod |
+| G10 | **Język: Polski** | Komunikacja, commity, PR opisy — po polsku |
 
 ---
 
-## 🎯 NASTĘPNE (Planned — Remaining Work)
+## ZIELONE CHECKLISTY CI (No Green No Finish)
 
-### PR-4B: Complete i18n Coverage (FINISH PR-4)
-**Status**: IN PROGRESS (50% complete)
-**Priority**: 🟢 MEDIUM (Polish before v1.0)
-**Estimated Effort**: 150-200 LOC, 6-8 files
-**Timeline**: 2-3 days
+Każdy PR musi zdać PRZED merge:
 
-#### Scope Fence
-**Folders/Files to Change:**
-- `src/components/offers/*.tsx` (placeholders, helper text)
-- `src/components/projects/*.tsx` (empty states)
-- `src/components/settings/*.tsx` (descriptions)
-- `src/pages/*.tsx` (remaining 6 pages)
-- `src/i18n/namespaces/offers.json` (new)
-- `src/i18n/namespaces/projects.json` (new)
-- `src/i18n/namespaces/settings.json` (new)
-- `src/i18n/namespaces/messages.json` (new)
-
-**OUT OF SCOPE:**
-- ❌ Admin panel (already done in PR-3)
-- ❌ Error messages (already done in PR-2)
-- ❌ Auth components (already done in PR-2)
-- ❌ Refactoring existing i18n structure
-
-#### Acceptance Criteria
-```gherkin
-GIVEN a user views any page in the application
-WHEN they switch language (en/pl)
-THEN all placeholders, helper text, and empty states are translated
-AND no hardcoded Polish strings remain in /src/components or /src/pages
-AND ESLint rule prevents new hardcoded strings (optional enhancement)
 ```
-
-#### Verification Commands
-```bash
-# Pre-flight
-npm ci
-npm run lint          # Must pass: 0 errors
-npm test              # Must pass: 281/281
-npm run build         # Must succeed
-
-# i18n coverage check
-grep -r "placeholder=" src/components/ | grep -v "t('"  # Should return 0 results
-grep -r "Brak" src/components/ | grep -v "t('"          # Should return 0 results (Polish word "No")
-grep -r "Dodaj" src/components/ | grep -v "t('"         # Should return 0 results (Polish word "Add")
-
-# Post-merge
-npm run type-check    # 0 TypeScript errors
+☑ npm run lint          → 0 błędów
+☑ npm test              → wszystkie testy zielone
+☑ npm run build         → build produkcyjny OK
+☑ npm run type-check    → TypeScript strict, 0 błędów
+☑ npm audit --audit-level=high → 0 wysokich CVE
 ```
 
 ---
 
-### PR-7 (THIS PR): Roadmap Documentation
-**Status**: ✅ IN PROGRESS (docs-only)
-**Priority**: 🟢 LOW (Documentation)
-**Estimated Effort**: 1 file (docs/ROADMAP.md)
+## MAPA FAZY I PR-ów
 
-#### Scope Fence
-**Files to Change:**
-- ✅ `docs/ROADMAP.md` (new, this file)
+### PR-00 — Roadmap-as-code *(TEN PR)*
 
-**OUT OF SCOPE:**
-- ❌ Code changes (zero changes in src/, supabase/, workflows/)
-- ❌ Config changes
-- ❌ Refactoring
+**Faza:** Przed Fazą 0
+**Cel:** Wrzucić tę roadmapę do repo jako jedyne źródło prawdy — status, decyzje, DoD dla każdego PR.
+**Zakres:** tylko `/docs/**`, `/.github/**`
 
-#### Verification Commands
-```bash
-git diff --stat              # Only docs/ROADMAP.md changed
-npm run lint                 # Must pass (no code changed)
-npm run build                # Must pass (no code changed)
+**DoD:**
+- [ ] `docs/ROADMAP.md` istnieje i zawiera PR-00..PR-20
+- [ ] `docs/ROADMAP_STATUS.md` z tabelą statusów i checklistami
+- [ ] `docs/ADR/` ma 6 nowych ADR (0004–0009) z kluczowymi decyzjami
+- [ ] `.github/pull_request_template.md` wskazuje na nową roadmapę
+- [ ] Diff nie zawiera zmian poza `/docs` i `/.github`
+
+---
+
+### FAZA 0 — Fundament
+
+#### PR-01 — Tooling Fundamentów
+
+**Cel:** Bramka CI na hardcode i18n + stały monitoring błędów (Sentry) + wersjonowanie.
+**Dla laika:** „Alarm gdy ktoś napisze tekst po polsku bez systemu tłumaczeń + rejestr crashy."
+**Zakres:** `src/`, `.github/workflows/`, config ESLint
+
+**Kluczowe zmiany:**
+- ESLint plugin blokujący hardcoded string poza i18n
+- Integracja Sentry (DSN w zmiennych środowiskowych)
+- Reguła semantycznego wersjonowania w CI
+
+**DoD:**
+- [ ] CI odrzuca PR z hardcoded tekstem poza i18n
+- [ ] Sentry rejestruje pierwsze zdarzenie testowe
+- [ ] `npm run lint` czyste po zmianach
+- [ ] Testy komponentów z hardcoded tekstem zaktualizowane
+
+---
+
+#### PR-02 — Security Baseline + RLS jako standard
+
+**Cel:** Izolacja tenantów — zanim wejdą nowe tabele, standard RLS jest udokumentowany i wymuszony.
+**Dla laika:** „User A naprawdę nie zobaczy danych user B — to twarda własność systemu."
+**Zakres:** `supabase/migrations/` (nowe), `supabase/functions/_shared/`, `docs/`
+
+**DoD:**
+- [ ] Procedura sprawdzenia RLS w CI udokumentowana
+- [ ] Test IDOR (2 konta) napisany i zielony
+- [ ] Nowa migracja z `enable_rls` dla każdej tabeli bez RLS
+- [ ] `docs/SECURITY_RLS_STANDARD.md` istnieje
+
+---
+
+#### PR-03 — Design System + UI States
+
+**Cel:** Spójny wygląd premium + gotowe komponenty: skeleton / empty / error / toast.
+**Dla laika:** „Każdy ekran wygląda tak samo, a użytkownik wie co się dzieje (ładowanie, błąd, brak danych)."
+**Zakres:** `src/components/ui/`, `src/components/design-system/`, tokeny Tailwind
+
+**DoD:**
+- [ ] Tokeny kolorów i typografii w `tailwind.config.ts`
+- [ ] Komponenty: `<Skeleton>`, `<EmptyState>`, `<ErrorBoundary>`, `<Toast>`
+- [ ] Wszystkie istniejące ekrany korzystają z nowych stanów UI
+
+---
+
+### FAZA 1 — Dostęp i ustawienia
+
+#### PR-04 — Social Login PACK
+
+**Cel:** Google + Apple login + bezpieczny fallback email/hasło.
+**Dla laika:** „Logowanie jednym kliknięciem na budowie."
+**Zakres:** `src/components/auth/`, `supabase/` (OAuth config)
+
+**Decyzja:** Apple login WYMAGANY (wymóg App Store dla app z social login).
+
+**DoD:**
+- [ ] Google OAuth działa (test e2e lub manualny)
+- [ ] Apple OAuth działa (test manualny na urządzeniu Apple)
+- [ ] Fallback email/hasło działa i jest przetestowany
+- [ ] i18n dla wszystkich komunikatów auth
+
+---
+
+#### PR-05 — Profil firmy + Ustawienia + „Usuń konto" + dane do PDF
+
+**Cel:** Logo / NIP / adres / telefon / konto + wymagania RODO i Apple.
+**Dla laika:** „Dane firmy trafiają do PDF, a użytkownik może usunąć konto (wymóg Apple i GDPR)."
+**Zakres:** `src/components/settings/`, `src/pages/Settings.tsx`, `supabase/functions/delete-user-account/`
+
+**DoD:**
+- [ ] Formularz profilu firmy z walidacją Zod
+- [ ] Dane firmy widoczne w wygenerowanym PDF
+- [ ] Przycisk „Usuń konto" działa i usuwa dane zgodnie z RODO
+- [ ] i18n dla wszystkich ekranów ustawień
+
+---
+
+#### PR-06 — Free plan: limit 3 ofert/miesiąc + paywall + haczyk retencyjny
+
+**Cel:** Monetyzacja — limit ofert + paywall + CRM/historia zostają (bo wtedy użytkownik nie kasuje apki).
+**Dla laika:** „Darmowy plan: 3 oferty miesięcznie. Po przekroczeniu — propozycja płatności. Ale kontakty i historia zawsze dostępne."
+**Zakres:** `src/`, `supabase/migrations/`, `supabase/functions/`
+
+**Kluczowe stałe (niezmienne — patrz ADR-0004):**
+```typescript
+export const FREE_TIER_OFFER_LIMIT = 3; // oferty/miesiąc
+// Liczony po statusie: 'sent' | 'accepted' | 'rejected' — NIE drafty
+```
+
+**DoD:**
+- [ ] Stała `FREE_TIER_OFFER_LIMIT = 3` w kodzie (nie magic number)
+- [ ] Licznik oparty na statusie finalizacji (nie draftach)
+- [ ] Paywall modal z wyjaśnieniem i CTA upgrade
+- [ ] CRM / historia zawsze dostępne (nie blokowane limitem)
+- [ ] Test: po 3 finalnych ofertach 4. jest blokowana
+
+---
+
+### FAZA 2 — Shell aplikacji
+
+#### PR-07 — Shell za flagą FF_NEW_SHELL
+
+**Cel:** Nowa struktura nawigacji bez ryzyka — wszystko przełączalne feature flagiem.
+**Dla laika:** „Nowy wygląd apki z bezpiecznym przełącznikiem — jeśli coś nie działa, włączamy stary wygląd."
+**Zakres:** `src/components/layout/`, `src/App.tsx`, feature flag system
+
+**⚠️ PIVOT: Od tego PR każdy kolejny (PR-08..PR-20) musi działać przy `FF_NEW_SHELL=ON` i `FF_NEW_SHELL=OFF`.**
+
+**Zawartość:**
+- Nowa nawigacja: dolny nav + FAB (Floating Action Button) + „Więcej"
+- Home screen (dashboard uproszczony)
+- Lekki onboarding (3 kroki, tylko pierwsze logowanie — patrz ADR-0009)
+
+**DoD:**
+- [ ] `FF_NEW_SHELL` zaimplementowany jako feature flag
+- [ ] Nawigacja działa przy OFF (stara) i ON (nowa)
+- [ ] Onboarding 3 kroków pokazuje się tylko raz (localStorage)
+- [ ] Testy nawigacji zielone
+
+---
+
+### FAZA 3 — Kotwice danych + oferty (start)
+
+#### PR-08 — CRM + Cennik (Klienci + Biblioteka pozycji)
+
+**Cel:** Baza: kontrahenci + klocki cenowe, zanim powstanie wizard ofert.
+**Dla laika:** „Zamiast wpisywać dane klienta za każdym razem — wybierasz z listy. Zamiast pisać ceny od zera — wybierasz z cennika."
+**Zakres:** `src/components/`, `supabase/migrations/` (tabele: `clients`, `price_items`)
+
+**DoD:**
+- [ ] CRUD klientów z walidacją NIP/adres
+- [ ] CRUD pozycji cennika z jednostkami
+- [ ] RLS: user widzi tylko swoje dane
+- [ ] Test IDOR (2 konta)
+- [ ] i18n kompletne
+
+---
+
+#### PR-09 — Oferty A: lista + statusy + filtry + szybkie akcje
+
+**Cel:** Kontrola pipeline — co domknąć, gdzie utknęło.
+**Dla laika:** „Lista wszystkich ofert z kolorem statusu i możliwością szybkiej akcji."
+**Zakres:** `src/components/offers/`, `src/pages/Offers.tsx`
+
+**Statusy oferty:** `draft` → `sent` → `accepted` | `rejected` | `expired`
+
+**DoD:**
+- [ ] Lista z filtrem po statusie i dacie
+- [ ] Szybkie akcje: wyślij, duplikuj, archiwizuj
+- [ ] Sortowanie (data, wartość, klient)
+- [ ] Paginacja lub infinite scroll
+
+---
+
+### FAZA 4 — Oferty jako proces
+
+#### PR-10 — Oferty B1: Wizard bez PDF
+
+**Cel:** UX tworzenia oferty bez ryzyka PDF-owego piekła.
+**Dla laika:** „Krok po kroku: klient → pozycje → podsumowanie — i dopiero potem PDF."
+**Zakres:** `src/components/offers/wizard/`
+
+**DoD:**
+- [ ] Wizard 3-4 kroki: klient / pozycje / podsumowanie / walidacja
+- [ ] Zapis jako draft w każdym kroku
+- [ ] Walidacja Zod na każdym etapie
+- [ ] Test: cały flow bez błędu
+
+---
+
+#### PR-11 — Oferty B2: PDF + podgląd + wysyłka
+
+**Cel:** Render PDF, preview, wysyłka, obsługa błędów.
+**Dla laika:** „Kliknij → zobaczysz jak wygląda PDF → wyślij emailem."
+**Zakres:** `src/components/offers/`, `supabase/functions/send-offer-email/`
+
+**DoD:**
+- [ ] Podgląd PDF (iframe lub nowa karta)
+- [ ] Generowanie PDF z danymi oferty i firmy
+- [ ] Wysyłka emailem (Resend)
+- [ ] Obsługa błędów (brak email klienta, błąd wysyłki)
+- [ ] Test end-to-end: stworzono → PDF → wysłano
+
+---
+
+#### PR-12 — Oferty C: domykanie + link akceptacji + bulk add
+
+**Cel:** Konwersja „wysłana → zaakceptowana" + szybkie dodawanie pozycji.
+**Dla laika:** „Klient dostaje link i klika 'Akceptuję'. Majster widzi status w czasie rzeczywistym."
+**Zakres:** `src/`, `supabase/functions/approve-offer/`
+
+**DoD:**
+- [ ] Publiczny link akceptacji (token, bez logowania)
+- [ ] Strona akceptacji: podgląd oferty + przycisk
+- [ ] Po akceptacji: status → `accepted`, powiadomienie dla majstra
+- [ ] Bulk add pozycji z cennika
+- [ ] Test IDOR: token nie daje dostępu do innych ofert
+
+---
+
+### FAZA 5 — Projekty i przewagi
+
+#### PR-13 — Projekty: lista + hub + powiązanie z ofertą + QR status
+
+**Cel:** Projekt = centrum realizacji. Klient przestaje dzwonić co 2 dni.
+**Dla laika:** „Każdy projekt ma stronę dla klienta z postępem prac — bez logowania, przez link/QR."
+**Zakres:** `src/components/projects/`, `supabase/migrations/`
+
+**QR Status dla klienta (patrz ADR-0006):**
+- ✅ Etapy prac (lista)
+- ✅ Terminy (daty)
+- ✅ % postępu
+- ❌ Kwoty / ceny (POZA ZAKRESEM — nie pokazujemy klientowi kwot)
+
+**DoD:**
+- [ ] CRUD projektów z powiązaniem do oferty
+- [ ] Publiczna strona QR dla klienta (token, bez logowania)
+- [ ] Aktualizacja postępu przez majstra
+- [ ] Test IDOR: token nie daje dostępu do innych projektów
+
+---
+
+#### PR-14 — Burn Bar BASIC
+
+**Cel:** Majster widzi czy zarabia w trakcie, a nie po fakcie.
+**Dla laika:** „Pasek postępu: tyle zabudżetowano vs tyle wydano do tej pory."
+**Zakres:** `src/components/projects/`, `src/components/finance/`
+
+**Kluczowa decyzja (patrz ADR-0007):**
+- Budżet domyślny: z zaakceptowanej oferty netto (edytowalny ręcznie)
+- Koszty: materiały + robocizna wprowadzane ręcznie
+
+**DoD:**
+- [ ] Burn bar widoczny w hub projektu
+- [ ] Budżet = oferta netto (domyślnie) lub ręczny
+- [ ] Alert przy >80% budżetu
+- [ ] Test: burn bar aktualizuje się po dodaniu kosztu
+
+---
+
+#### PR-15 — Fotoprotokół + Checklist + podpis + uprawnienia OS
+
+**Cel:** Dowody wykonania + podpis — mniej sporów z klientami.
+**Dla laika:** „Zdjęcia przed/po + lista kontrolna + podpis klienta w jednym miejscu."
+**Zakres:** `src/components/photos/`, Capacitor Camera API
+
+**DoD:**
+- [ ] Upload zdjęć z aparatu (Capacitor) i galerii
+- [ ] Checklist z krokami odbioru
+- [ ] Podpis cyfrowy (canvas)
+- [ ] Prawidłowe zapytanie o uprawnienia aparatu (iOS + Android)
+- [ ] Zdjęcia zapisane w Supabase Storage
+
+---
+
+#### PR-16 — Teczka dokumentów + eksport + bezpieczny link
+
+**Cel:** Komplet dokumentacji projektu w 30 sekund.
+**Dla laika:** „Jedno miejsce na wszystkie dokumenty — pobierz ZIP lub wyślij link klientowi."
+**Zakres:** `src/components/documents/`, Supabase Storage
+
+**DoD:**
+- [ ] Kategorie dokumentów (umowa, faktura, protokół, inne)
+- [ ] Eksport ZIP
+- [ ] Bezpieczny link z czasem wygaśnięcia
+- [ ] Test: link wygasa po czasie
+
+---
+
+#### PR-17 — Wzory dokumentów (auto-fill + edycja + zapis do teczki)
+
+**Cel:** Umowy/protokoły gotowe i uzupełnione danymi projektu w kilka minut.
+**Dla laika:** „Wybierasz wzór → dane projektu się wstawiają → edytujesz → zapisujesz."
+**Zakres:** `src/components/documents/templates/`
+
+**DoD:**
+- [ ] Min. 3 wzory: umowa o dzieło, protokół odbioru, oferta prosta
+- [ ] Auto-fill z danych projektu/klienta/firmy
+- [ ] Edycja przed zapisem
+- [ ] Zapis do teczki projektu
+
+---
+
+#### PR-18 — Gwarancje + karta PDF + przypomnienia
+
+**Cel:** Gwarancja jako mechanizm retencji i leadów.
+**Dla laika:** „Klient dostaje kartę gwarancyjną PDF. Apka sama przypomina 30 i 7 dni przed końcem gwarancji."
+**Zakres:** `src/components/`, `supabase/functions/send-expiring-offer-reminders/`
+
+**DoD:**
+- [ ] Karta gwarancyjna PDF z danymi projektu
+- [ ] Wysyłka karty do klienta emailem
+- [ ] Przypomnienia T-30 i T-7 (Supabase scheduled functions)
+- [ ] Test: przypomnienie wysyłane w odpowiednim czasie
+
+---
+
+### FAZA 6 — Offline + Stripe (najtrudniejsze na koniec)
+
+#### PR-19 — PWA Offline (minimum)
+
+**Cel:** Piwnica bez zasięgu nie zabija użycia.
+**Dla laika:** „Bez internetu nadal widać listę ofert i szczegóły projektu."
+**Zakres:** `vite.config.ts` (workbox), Service Worker
+
+**Minimum offline (patrz ADR-0008 — NIE WIĘCEJ):**
+- ✅ Read-only: lista ofert (ostatnie 20)
+- ✅ Read-only: szczegół projektu
+- ❌ Tworzenie/edycja offline (poza zakresem)
+- ❌ Synchronizacja konfliktów (poza zakresem)
+
+**DoD:**
+- [ ] Service Worker zarejestrowany
+- [ ] Cache: lista ofert + szczegół projektu
+- [ ] Komunikat „Tryb offline" widoczny
+- [ ] Test: wyłącz network → lista ofert widoczna
+
+---
+
+#### PR-20 — Stripe Billing (finalny)
+
+**Cel:** Paywall z PR-06 nie jest ślepą uliczką — płatność naprawdę działa.
+**Dla laika:** „Kliknij 'Przejdź na PRO' → formularz Stripe → zapłać → dostęp odblokowany."
+**Zakres:** `src/components/billing/`, `supabase/functions/create-checkout-session/`, `supabase/functions/stripe-webhook/`
+
+**DoD:**
+- [ ] Checkout Session Stripe (redirect)
+- [ ] Webhook: `checkout.session.completed` → aktualizacja planu
+- [ ] Upgrade flow: paywall modal → Stripe → powrót do apki
+- [ ] Test: zakup testowy (Stripe test mode)
+- [ ] Dane finansowe obsłużone zgodnie z RODO
+
+---
+
+## ZALEŻNOŚCI MIĘDZY PR-ami
+
+```
+PR-00 (docs)
+    └── PR-01 (tooling i18n + Sentry)
+        └── PR-02 (security RLS)
+            └── PR-03 (design system)
+                └── PR-04 (social login)
+                    └── PR-05 (profil firmy)
+                        └── PR-06 (free plan + paywall)
+                            └── PR-07 (shell FF_NEW_SHELL) ← PIVOT
+                                ├── PR-08 (CRM + cennik)
+                                │   └── PR-09 (oferty lista)
+                                │       └── PR-10 (wizard bez PDF)
+                                │           └── PR-11 (PDF + wysyłka)
+                                │               └── PR-12 (domykanie + akceptacja)
+                                │                   └── PR-13 (projekty + QR)
+                                │                       ├── PR-14 (burn bar)
+                                │                       ├── PR-15 (fotoprotokół)
+                                │                       ├── PR-16 (teczka)
+                                │                       │   └── PR-17 (wzory)
+                                │                       └── PR-18 (gwarancje)
+                                └── PR-19 (offline PWA)
+PR-20 (Stripe) ← wymaga PR-06 i PR-07
 ```
 
 ---
 
-## 🔒 QUALITY GATES (Every PR)
+## ZASADY AKTUALIZACJI TEGO DOKUMENTU
 
-### Pre-Flight Checklist (MANDATORY)
-Run these commands BEFORE starting any PR work:
-```bash
-# 1. Verify clean state
-git status                    # Should show: "nothing to commit, working tree clean"
-
-# 2. Install dependencies
-npm ci --engine-strict=false  # (Node 22.x requires --engine-strict=false)
-
-# 3. Run all checks
-npm run lint                  # Target: 0 errors (warnings OK if <30)
-npm run type-check            # Target: 0 TypeScript errors
-npm test                      # Target: 281/281 passing
-npm run build                 # Target: Build succeeds, dist/ created
-
-# 4. Check recent commits
-git log --oneline -10         # Verify main branch health
-```
-
-**STOP if any check fails.** Fix issues before starting PR work.
+1. Po każdym merge → zaktualizuj `ROADMAP_STATUS.md` (status + link PR + data)
+2. Jeśli zmienia się zakres PR → stwórz ADR z uzasadnieniem, zaktualizuj ten plik
+3. Nowe PR-y dodaj NA KOŃCU — nie przepisuj istniejących
+4. Każda zmiana zakresu musi być zatwierdzona przez Product Ownera
+5. Format commitów do tego pliku: `docs: aktualizuj status PR-XX w ROADMAP`
 
 ---
 
-### CI/CD Workflows (Automated)
-All PRs trigger 5 workflows:
-
-| Workflow | File | Purpose | Required |
-|----------|------|---------|----------|
-| **CI Pipeline** | `.github/workflows/ci.yml` | lint → test → build (sequential) | ✅ YES |
-| **E2E Tests** | `.github/workflows/e2e.yml` | Playwright smoke tests (4 suites) | ✅ YES |
-| **Security Audit** | `.github/workflows/security.yml` | npm audit + CodeQL | ✅ YES |
-| **Bundle Analysis** | `.github/workflows/bundle-analysis.yml` | Track bundle size | ⚠️ INFO |
-| **Supabase Deploy** | `.github/workflows/supabase-deploy.yml` | Migrations + Edge Functions | Manual |
-
-**Required Checks (must pass to merge):**
-- ✅ CI: lint + test + build
-- ✅ E2E: All smoke tests passing
-- ✅ Security: npm audit level `high`, CodeQL clean
-- ✅ TypeScript: 0 errors (strict mode)
-
----
-
-### Code Review Standards
-Before submitting PR:
-- ✅ Self-review completed (read your own diff)
-- ✅ Commit message follows convention: `<type>: <description>`
-  - Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `style`
-  - Example: `feat(i18n): add i18n coverage to Projects page`
-- ✅ PR description includes:
-  - Summary of changes
-  - Testing performed
-  - Screenshots (if UI change)
-  - Link to issue/task (if applicable)
-- ✅ No console.log() statements (use logger utility)
-- ✅ No commented-out code (delete it)
-- ✅ No TODOs without context/issue link
-
----
-
-## ⚠️ RYZYKA I ANTY-SCOPE
-
-### What We DON'T Do (Scope Fence)
-This roadmap explicitly **excludes**:
-- ❌ **Biometric feature enhancements** — Optional, not blocking v1.0
-- ❌ **New features** — Only finishing PR-4, no new features
-- ❌ **Database schema changes** — PR-1 already migrated, no new migrations
-- ❌ **Refactoring "while we're at it"** — Zero refactor without explicit approval
-- ❌ **UI redesigns** — Existing UI is production-ready (A+ grade)
-- ❌ **Performance tuning** — Already A+ (96/100), no further optimization needed
-- ❌ **Dependency upgrades** — Not blocking, defer to maintenance window
-- ❌ **Documentation rewrites** — Only roadmap + PR-specific docs
-
-### STOP Conditions (When to Halt Work)
-Stop work immediately if:
-1. **2x Same Test Failure** — Same test fails twice in a row → investigate root cause
-2. **Build Breaks on Main** — Main branch health degraded → rollback + fix
-3. **Security Audit Fails** — npm audit finds HIGH/CRITICAL vuln → address first
-4. **Missing Data** — Cannot verify PR success due to missing logs/evidence → gather data
-5. **Out of Scope Detected** — Work drifts beyond defined scope → reassess with owner
-
-### Risk Mitigation Table
-
-| Risk | Probability | Impact | Mitigation |
-|------|------------|--------|-----------|
-| **PR-4B breaks i18n** | LOW | MEDIUM | All tests include i18n mocks, gradual rollout |
-| **New hardcoded strings added** | MEDIUM | LOW | Code review catches, ESLint rule can be added |
-| **Translation keys missing** | MEDIUM | MEDIUM | Pre-merge check: `grep "undefined" locales/*.json` |
-| **Node version mismatch** | LOW | LOW | CI enforces Node 20.x, local uses `--engine-strict=false` |
-| **E2E flaky tests** | MEDIUM | LOW | Retry logic in place, can disable if needed |
-| **Bundle size increase** | LOW | LOW | Bundle analysis workflow tracks, 940KB is acceptable |
-
----
-
-## 📊 EXPECTED IMPACT (Post-PR-4B Completion)
-
-### Metrics: Before vs. After
-
-| Metric | Before (Jan 2025) | After (Feb 2026) | Change |
-|--------|------------------|------------------|--------|
-| **i18n Coverage** | 70% (130/200 strings) | 100% (200/200 strings) | +30% ✅ |
-| **Hardcoded Polish Strings** | ~70 remaining | 0 | -100% ✅ |
-| **Multi-language Support** | Partial (errors/admin only) | Full (all UI) | Complete ✅ |
-| **Production Readiness** | 90% (PR-4 blocker) | 100% (all PRs done) | +10% ✅ |
-| **Test Coverage** | 281 tests | 281+ tests (i18n tests added) | Maintained ✅ |
-| **Build Health** | 100% passing | 100% passing | Maintained ✅ |
-| **Security Grade** | A (92/100) | A (92/100) | Maintained ✅ |
-| **Overall Grade** | A+ (95/100) | A+ (95/100) | Maintained ✅ |
-
-### Success Criteria (Definition of Done for Roadmap)
-✅ **All PRs 1-6**: Merged and verified
-⚠️ **PR-4B**: 50% complete, needs 2-3 days to finish
-✅ **Quality Gates**: All checks passing (lint/test/build/E2E)
-✅ **Documentation**: Roadmap (this file) + ATOMIC_PR_PLAN.md aligned
-✅ **No Regressions**: Grade remains A+ (95/100)
-
----
-
-## 🚀 NEXT ACTIONS
-
-### Immediate (Owner/Team)
-1. **Review this ROADMAP** — Approve scope for PR-4B
-2. **Schedule PR-4B** — Allocate 2-3 days for completion
-3. **Assign Work** — Who will complete remaining 6 components?
-
-### For Claude Code (Next Session)
-1. **Resume PR-4B** — Complete remaining i18n coverage (6 components)
-2. **Follow Pre-Flight** — Run all checks before starting
-3. **Verify Quality Gates** — Ensure 0 errors, 281/281 tests
-4. **Create PR** — Small, focused PR with evidence
-
-### Maintenance (Ongoing)
-- **Weekly**: Run `npm audit --audit-level=high` (security.yml automates)
-- **Monthly**: Review bundle size trends (bundle-analysis.yml tracks)
-- **Quarterly**: Re-run comprehensive audit (update FINAL_GRADE_2026.md)
-
----
-
-## 📚 REFERENCE DOCUMENTS
-
-### Source Documents (Single Source of Truth)
-- **ATOMIC_PR_PLAN.md** (root) — Original PR breakdown
-- **REPO_HEALTH_AUDIT_2025-01-18.md** (root) — Health audit report
-- **FINAL_GRADE_2026.md** (docs/) — A+ (95/100) grading
-- **CLAUDE.md** (root) — Development standards and rules
-
-### Supporting Documentation
-- **COMPREHENSIVE_AUDIT_2026.md** (docs/) — Detailed technical audit
-- **CI_STATUS.md** (docs/) — CI/CD pipeline status
-- **PRODUCTION_READINESS.md** (docs/) — Deployment checklist
-- **DEPLOYMENT_VERIFICATION_CHECKLIST.md** (docs/) — Pre-deploy verification
-
-### Related PRs (GitHub)
-- PR #121 — Admin Control Plane (feat: implement admin control plane with database-backed settings and audit logging)
-- PR #122 — Critical i18n (feat: wrap critical i18n strings in error and success messages)
-- PR #123 — Admin Panel i18n (feat: add admin panel i18n keys foundation)
-- PR #124 — E2E & CI/CD Hardening (feat: CI/CD hardening and MVP verification)
-
----
-
-## 🔐 SIGN-OFF
-
-**Prepared By**: Claude Code Web (Session: claude/add-roadmap-docs-82rIq)
-**Date**: February 3, 2026
-**Status**: ✅ **READY FOR REVIEW**
-**Next Step**: Owner approval → Schedule PR-4B completion
-
-**Verification Hash** (for integrity):
-```
-git log --oneline -5:
-91c3382 feat(security): harden admin panel with server-side RLS and dual-role authorization
-8f1a91a feat(ci): harden E2E workflow and standardize security audit
-92de880 feat(i18n): add i18n coverage to OfferApproval.tsx (PR-4A complete)
-c4247f5 feat(i18n): add i18n coverage to Login.tsx (PR-4A partial)
-3731d99 fix(p0): prevent runtime crashes in notifications/templates/offer-approval
-```
-
-**Repository Health**: ✅ All checks GREEN
-**Production Ready**: ⚠️ 90% (PR-4B needed for 100%)
-
----
-
-_This roadmap is the single source of truth for project planning. Update this document when PRs are completed or scope changes occur._
+*Dokument: v5.0 | Data: 2026-03-01 | Autor: Claude (Tech Lead Majster.AI) | Właściciel: Robert B.*
