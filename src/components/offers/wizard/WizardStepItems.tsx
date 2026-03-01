@@ -16,6 +16,7 @@ import { computeTotals } from '@/hooks/useOfferWizard';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { BulkAddItems } from '@/components/offers/BulkAddItems';
 
 interface Props {
   form: WizardFormData;
@@ -207,10 +208,14 @@ export function WizardStepItems({ form, onChange, errors }: Props) {
         <p className="text-sm text-destructive">{errors.items}</p>
       )}
 
-      <Button type="button" variant="outline" size="sm" onClick={addManual} className="gap-2">
-        <Plus className="h-4 w-4" />
-        {t('offerWizard.itemsStep.addManual')}
-      </Button>
+      <div className="flex gap-2 flex-wrap">
+        <Button type="button" variant="outline" size="sm" onClick={addManual} className="gap-2">
+          <Plus className="h-4 w-4" />
+          {t('offerWizard.itemsStep.addManual')}
+        </Button>
+        {/* PR-12: Bulk add items from paste or CSV */}
+        <BulkAddItems onAdd={(newItems) => onChange({ items: [...form.items, ...newItems] })} />
+      </div>
 
       {/* Live totals */}
       {form.items.length > 0 && (
