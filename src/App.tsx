@@ -34,6 +34,8 @@ import EnvCheck from "./pages/EnvCheck";
 const Landing = lazy(() => import("./pages/Landing"));
 const OfferApproval = lazy(() => import("./pages/OfferApproval"));
 const OfferPublicPage = lazy(() => import("./pages/OfferPublicPage"));
+// PR-12: New tokenized acceptance page
+const OfferPublicAccept = lazy(() => import("./pages/OfferPublicAccept"));
 const PlanyPage = lazy(() => import("./pages/Plany"));
 const PlanyDetailPage = lazy(() => import("./pages/PlanyDetail"));
 
@@ -173,6 +175,9 @@ const App = () => (
 
                   {/* Public client portal (Polish URL) */}
                   <Route path="/oferta/:token" element={<OfferPublicPage />} />
+
+                  {/* PR-12: Tokenized acceptance page (new offers system) */}
+                  <Route path="/a/:token" element={<OfferPublicAccept />} />
 
                   {/* Environment diagnostic */}
                   <Route path="/env-check" element={<EnvCheck />} />

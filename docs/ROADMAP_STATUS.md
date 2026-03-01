@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-11 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-12 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -37,7 +37,7 @@
 | **PR-09** | Oferty A: lista + statusy | ✅ DONE | `claude/offers-list-pr-09-bppeV` | 2026-03-01 | Tabela offers + RLS, lista z filtrami/wyszukiwaniem/sortowaniem, badge "brak odpowiedzi X dni", FF_NEW_SHELL ON/OFF, i18n PL/EN/UK |
 | **PR-10** | Oferty B1: Wizard bez PDF | ✅ DONE | `claude/offer-wizard-draft-mUypo` | 2026-03-01 | offer_items migration + RLS, OfferWizard (3 kroki: klient/pozycje/podsumowanie), inline new client, Price Library search, live totals, i18n PL/EN/UK, FF_NEW_SHELL ON/OFF |
 | **PR-11** | Oferty B2: PDF + wysyłka | ✅ DONE | `claude/pr-11-offers-pdf-send-UtBtT` | 2026-03-01 | OfferPreviewModal (podgląd HTML A4 + download PDF + Send), useSendOffer (quota check + SENT status + PDF upload + email best-effort), offerPdfPayloadBuilder (payload z offer_items), migracja quota fn (+ offers table), i18n PL/EN/UK (offerPreview.*), FF_NEW_SHELL ON/OFF |
-| **PR-12** | Oferty C: domykanie | ⬜ TODO | — | — | Wymaga merge PR-11 |
+| **PR-12** | Oferty C: domykanie | ✅ DONE | `claude/pr-12-acceptance-links-zAx3e` | 2026-03-01 | acceptance_links + offer_public_actions (migration + RLS + SECURITY DEFINER fn), publiczna strona akceptacji (/a/:token), AcceptanceLinkPanel (SENT/ACCEPTED/REJECTED), BulkAddItems (paste + CSV import), CTA "Utwórz projekt" po akceptacji, i18n PL/EN/UK (acceptanceLink.* + publicOffer.* + bulkAdd.*) |
 | **PR-13** | Projekty + QR status | ⬜ TODO | — | — | Wymaga merge PR-12 |
 | **PR-14** | Burn Bar BASIC | ⬜ TODO | — | — | Wymaga merge PR-13 |
 | **PR-15** | Fotoprotokół + podpis | ⬜ TODO | — | — | Wymaga merge PR-13 |
@@ -689,5 +689,61 @@ DRAFT → [user kliknie "Podgląd i Wyślij"]
 - Nowe migracje nie tworzą nowych tabel — tylko aktualizują funkcję DB
 - Funkcja `count_monthly_finalized_offers` jest `SECURITY DEFINER` — użytkownik widzi tylko swoje dane
 - `useSendOffer` aktualizuje tylko wiersz z `eq('id', offerId)` — RLS oferuje dodatkową ochronę
+
+---
+
+## PR-12 — Oferty C: Acceptance Link + Bulk Add: co zostało wdrożone
+
+### Pliki dotknięte
+
+| Plik | Zmiana |
+|------|--------|
+| `supabase/migrations/20260301170000_pr12_acceptance_links.sql` | Nowe tabele: `acceptance_links` + `offer_public_actions`, RLS, SECURITY DEFINER functions |
+| `src/hooks/useAcceptanceLink.ts` | Hook: fetch/create/delete acceptance link (owner side) |
+| `src/components/offers/AcceptanceLinkPanel.tsx` | Panel w offer detail: utwórz/kopiuj link, status ACCEPTED/REJECTED, CTA "Utwórz projekt" |
+| `src/components/offers/BulkAddItems.tsx` | Dialog: wklej linie lub upload CSV, podgląd + walidacja, dodaj pozycje |
+| `src/pages/OfferPublicAccept.tsx` | Publiczna strona `/a/:token`: podgląd oferty + Accept/Reject bez logowania |
+| `src/pages/OfferDetail.tsx` | DRAFT → wizard; SENT/ACCEPTED/REJECTED → AcceptanceLinkPanel |
+| `src/pages/Offers.tsx` | OfferRow: CTA "Utwórz projekt" dla ACCEPTED ofert |
+| `src/components/offers/wizard/WizardStepItems.tsx` | Dodano BulkAddItems obok "Dodaj ręcznie" |
+| `src/App.tsx` | Nowa trasa: `/a/:token` → `OfferPublicAccept` |
+| `src/i18n/locales/pl.json` | Klucze: `acceptanceLink.*`, `publicOffer.*`, `bulkAdd.*` |
+| `src/i18n/locales/en.json` | Jak wyżej (EN) |
+| `src/i18n/locales/uk.json` | Jak wyżej (UK) |
+| `docs/ROADMAP_STATUS.md` | Ten plik — aktualizacja statusu |
+
+### Architektura bezpieczeństwa
+
+- **Token:** UUID v4 generowany przez PostgreSQL (`gen_random_uuid()`) — 122 bity entropii, niemożliwy do zgadnięcia
+- **Wygaśnięcie:** 30 dni, egzekwowane server-side w funkcji DB (nie tylko klient)
+- **Cross-tenant:** niemożliwy — token → jeden offer_id (FK + UNIQUE)
+- **Publiczny dostęp:** SECURITY DEFINER function `resolve_offer_acceptance_link()` — omija RLS bezpiecznie, zwraca tylko dane tej jednej oferty
+- **Akcja (ACCEPT/REJECT):** SECURITY DEFINER function `process_offer_acceptance_action()` — waliduje token, wygaśnięcie, status SENT, idempotentna
+- **Rate limiting:** Dokumentacja w SECURITY_BASELINE.md — zastosuj na warstwie CDN/Edge (Vercel Edge Middleware lub Supabase rate limiter), nie wymaga nowej infrastruktury
+
+### Jak testować PR-12
+
+**Flow akceptacji:**
+1. Utwórz ofertę → wyślij → status SENT
+2. Otwórz `/app/offers/:id` → kliknij "Utwórz link akceptacji" → skopiuj URL
+3. Otwórz URL `/a/<token>` w przeglądarce (bez logowania) → widać ofertę
+4. Kliknij "Akceptuję ofertę" → status zmienia się na ACCEPTED, wyświetla banner
+5. Wróć do `/app/offers` → oferta ma badge "Zaakceptowana" + CTA "Utwórz projekt"
+6. Ścieżka REJECT też działa
+7. Stary/wygasły token → strona pokazuje "Link wygasł"
+
+**Bulk add:**
+1. Utwórz nową ofertę → Krok 2 (pozycje) → kliknij "Dodaj wiele pozycji"
+2. Wklej 3 linie w formacie "Nazwa; Ilość; Jedn.; Cena"
+3. Kliknij "Podgląd" → tabela z walidacją
+4. Nieprawidłowa linia pokazuje błąd i nie zapisuje się
+5. Kliknij "Dodaj X pozycji" → pozycje pojawiają się w ofercie
+
+**FF_NEW_SHELL:**
+- OFF: `/app/offers` + `/app/offers/:id` działają normalnie
+- ON: zakładka "Oferty" → to samo działanie
+
+**i18n:**
+- Publiczna strona `/a/:token` tłumaczona na PL/EN/UK (zależy od localStorage `i18nextLng`)
 
 *Tracker: v1.0 | Data: 2026-03-01 | Właściciel: Robert B. + Claude*

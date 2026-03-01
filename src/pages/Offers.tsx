@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { differenceInDays } from 'date-fns';
-import { FileText, MoreHorizontal, Copy, ExternalLink } from 'lucide-react';
+import { FileText, MoreHorizontal, Copy, ExternalLink, FolderPlus } from 'lucide-react';
 
 import { useOffers, NO_RESPONSE_DAYS } from '@/hooks/useOffers';
 import type { Offer, OfferStatus, OfferSort } from '@/hooks/useOffers';
@@ -82,25 +82,30 @@ interface OfferRowProps {
   offer: Offer;
   onOpen: (id: string) => void;
   onDuplicate: () => void;
+  onCreateProject: (id: string) => void;
 }
 
-function OfferRow({ offer, onOpen, onDuplicate }: OfferRowProps) {
+function OfferRow({ offer, onOpen, onDuplicate, onCreateProject }: OfferRowProps) {
   const { t } = useTranslation();
   const noResp = offer.status === 'SENT' ? noResponseDays(offer.sent_at) : null;
   const amount = formatAmount(offer.total_net, offer.currency);
   const updatedAgo = formatRelativeDays(offer.last_activity_at);
   const status = offer.status as OfferStatus;
+  const isAccepted = status === 'ACCEPTED';
 
   return (
     <div
-      className="flex items-start gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/30 cursor-pointer"
+      className={cn(
+        'flex items-start gap-3 rounded-lg border bg-card p-4 transition-colors hover:bg-accent/30 cursor-pointer',
+        isAccepted ? 'border-green-300 dark:border-green-700' : 'border-border'
+      )}
       onClick={() => onOpen(offer.id)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && onOpen(offer.id)}
       aria-label={offer.title ?? t('offersList.noTitle')}
     >
-      {/* Left: title + badges */}
+      {/* Left: title + badges + create project CTA */}
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2 mb-1">
           <span className="font-medium truncate">
@@ -119,6 +124,20 @@ function OfferRow({ offer, onOpen, onDuplicate }: OfferRowProps) {
           {amount && <span>{amount}</span>}
           <span>{t('offersList.updatedAgo', { time: updatedAgo })}</span>
         </div>
+        {/* PR-12: ACCEPTED CTA — create project */}
+        {isAccepted && (
+          <div className="mt-2">
+            <Button
+              size="sm"
+              variant="default"
+              className="gap-1.5 h-7 text-xs bg-green-600 hover:bg-green-700 text-white"
+              onClick={(e) => { e.stopPropagation(); onCreateProject(offer.id); }}
+            >
+              <FolderPlus className="h-3.5 w-3.5" />
+              {t('acceptanceLink.createProjectCta')}
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Right: actions menu */}
@@ -170,6 +189,8 @@ export default function Offers() {
   const handleOpen = (id: string) => navigate(`/app/offers/${id}`);
   const handleDuplicate = () => toast.info(t('offersList.duplicateComingSoon'));
   const handleCreateFirst = () => navigate('/app/offers/new');
+  // PR-12: After acceptance, route to new project (PR-13 will implement actual creation)
+  const handleCreateProject = (_offerId: string) => navigate('/app/jobs/new');
 
   const isFiltering = statusFilter !== 'ALL' || searchRaw.trim() !== '';
 
@@ -251,6 +272,7 @@ export default function Offers() {
               offer={offer}
               onOpen={handleOpen}
               onDuplicate={handleDuplicate}
+              onCreateProject={handleCreateProject}
             />
           ))}
         </div>
