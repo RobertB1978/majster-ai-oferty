@@ -2669,5 +2669,23 @@
     "errorTitle": "Error deleting account",
     "errorDescription": "Please try again later or contact support.",
     "gdprNote": "Under Art. 17 GDPR (Right to Be Forgotten), you have the right to delete all your personal data. Data is deleted immediately; encrypted backups are retained for up to 30 days for disaster recovery, then purged automatically. Financial records may be retained separately as required by law."
+  },
+  "offerQuota": {
+    "badge": "{{used}}/{{limit}} offers this mo.",
+    "ariaLabel": "Offer quota: {{used}} of {{limit}} used this month"
+  },
+  "paywall": {
+    "freePlan": "Free Plan",
+    "title": "Monthly limit of {{limit}} offers reached",
+    "description": "On the free plan you can send {{limit}} offers per month. Your next offer will be available on the 1st of next month or after upgrading your plan.",
+    "retentionTitle": "Still accessible:",
+    "retentionCrm": "Client contacts and CRM — no limits",
+    "retentionHistory": "History and preview of all offers",
+    "retentionDrafts": "Creating and editing draft offers",
+    "billingComingSoon": "Stripe payments coming soon. Click below to view available plans.",
+    "close": "Close",
+    "upgrade": "View Plans",
+    "sendBlockedTitle": "Offer limit reached.",
+    "sendBlockedDesc": "You cannot send more offers this month. Upgrade your plan or wait until next month."
   }
 }

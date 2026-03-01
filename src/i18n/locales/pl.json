@@ -2669,5 +2669,23 @@
     "errorTitle": "Błąd przy usuwaniu konta",
     "errorDescription": "Spróbuj ponownie później lub skontaktuj się z pomocą techniczną.",
     "gdprNote": "Zgodnie z Art. 17 RODO (Prawo do Bycia Zapomnianym), masz prawo do usunięcia wszystkich swoich danych osobowych. Dane usuwane są natychmiast; szyfrowane kopie zapasowe są przechowywane do 30 dni na potrzeby odtwarzania po awarii, następnie automatycznie kasowane. Dokumenty finansowe mogą być przechowywane oddzielnie zgodnie z wymogami prawa."
+  },
+  "offerQuota": {
+    "badge": "{{used}}/{{limit}} ofert w mies.",
+    "ariaLabel": "Wykorzystanie limitu ofert: {{used}} z {{limit}} w tym miesiącu"
+  },
+  "paywall": {
+    "freePlan": "Plan darmowy",
+    "title": "Osiągnięto limit {{limit}} ofert miesięcznie",
+    "description": "W planie darmowym możesz wysłać {{limit}} oferty miesięcznie. Następna oferta będzie dostępna od 1. dnia przyszłego miesiąca lub po przejściu na plan płatny.",
+    "retentionTitle": "Co nadal dostępne:",
+    "retentionCrm": "Kontakty klientów i CRM — bez ograniczeń",
+    "retentionHistory": "Historia i podgląd wszystkich ofert",
+    "retentionDrafts": "Tworzenie i edycja wersji roboczych (draft)",
+    "billingComingSoon": "Płatności (Stripe) wkrótce dostępne. Kliknij poniżej, aby sprawdzić plany.",
+    "close": "Zamknij",
+    "upgrade": "Sprawdź plany",
+    "sendBlockedTitle": "Limit ofert osiągnięty.",
+    "sendBlockedDesc": "Nie możesz wysłać więcej ofert w tym miesiącu. Uaktualnij plan lub poczekaj do nowego miesiąca."
   }
 }
