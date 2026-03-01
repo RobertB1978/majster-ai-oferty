@@ -2781,5 +2781,54 @@
     "noTitle": "Untitled offer",
     "valueNet": "Net: {{value}} {{currency}}",
     "loadingAriaLabel": "Loading offers..."
+  },
+  "offerWizard": {
+    "titleNew": "New Offer",
+    "titleEdit": "Edit Offer",
+    "stepsAriaLabel": "Offer wizard steps",
+    "steps": {
+      "client": "Client",
+      "items": "Items",
+      "review": "Review"
+    },
+    "savedSuccess": "Draft saved",
+    "saveErrorGeneric": "Save failed. Please try again.",
+    "loadError": "Failed to load offer",
+    "loadErrorDesc": "Could not load the offer. Check your connection and try again.",
+    "clientStep": {
+      "hint": "Select an existing client or add a new one.",
+      "searchPlaceholder": "Search clients...",
+      "noClients": "No clients yet. Add one below.",
+      "selected": "Selected: {{name}}",
+      "createNew": "Add new client",
+      "newClientTitle": "New client",
+      "name": "Name / company",
+      "namePlaceholder": "John Smith",
+      "phone": "Phone",
+      "email": "Email"
+    },
+    "itemsStep": {
+      "libraryTitle": "Price Library",
+      "libSearch": "Search price library...",
+      "noTemplates": "No items in price library.",
+      "addedItems": "Added items",
+      "itemName": "Item name",
+      "itemNamePlaceholder": "E.g. Wall painting",
+      "qty": "Qty",
+      "unitPrice": "Unit price (net)",
+      "vatRate": "VAT %",
+      "lineTotal": "Line total (net)",
+      "addManual": "Add manually",
+      "defaultUnit": "pcs."
+    },
+    "reviewStep": {
+      "title": "Offer title",
+      "titlePlaceholder": "E.g. Renovation offer 2026",
+      "client": "Client",
+      "itemCount": "Items",
+      "draftInfo": "Saving as draft does not use your monthly offer quota. Edit freely.",
+      "saveDraft": "Save draft",
+      "saving": "Saving..."
+    }
   }
 }
