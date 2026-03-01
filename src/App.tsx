@@ -13,6 +13,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ConfigProvider } from "@/contexts/ConfigContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { NewShellLayout } from "@/components/layout/NewShellLayout";
+import { FF_NEW_SHELL } from "@/config/featureFlags";
 import { PageLoader } from "@/components/layout/PageLoader";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { OfflineFallback } from "@/components/pwa/OfflineFallback";
@@ -60,6 +62,10 @@ const QuickEstimate = lazy(() => import("./pages/QuickEstimate"));
 const QuickEstimateWorkspace = lazy(() => import("./pages/QuickEstimateWorkspace"));
 const Photos = lazy(() => import("./pages/Photos"));
 const Plan = lazy(() => import("./pages/Plan"));
+
+// === ZONE 2b: NEW SHELL screens (lazy - only when FF_NEW_SHELL=true) ===
+const HomeLobby = lazy(() => import("./pages/HomeLobby"));
+const MoreScreen = lazy(() => import("./pages/MoreScreen"));
 
 // === ZONE 3: OWNER CONSOLE (lazy - admin only, separate chunk) ===
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
@@ -188,9 +194,15 @@ const App = () => (
 
                   {/* ============================================
                       ZONE 2: CUSTOMER APP (auth required)
+                      FF_NEW_SHELL=true  → NewShellLayout (Home / Offers / Projects / More)
+                      FF_NEW_SHELL=false → AppLayout (stary shell — bez zmian)
                       ============================================ */}
-                  <Route path="/app" element={<AppLayout />}>
-                    <Route index element={<Navigate to="/app/dashboard" replace />} />
+                  <Route path="/app" element={FF_NEW_SHELL ? <NewShellLayout /> : <AppLayout />}>
+                    <Route index element={<Navigate to={FF_NEW_SHELL ? "/app/home" : "/app/dashboard"} replace />} />
+                    {/* Trasy nowego shella (dostępne tylko przy FF_NEW_SHELL=true, ale bezpieczne także przy false) */}
+                    <Route path="home" element={<HomeLobby />} />
+                    <Route path="offers" element={<Navigate to="/app/jobs" replace />} />
+                    <Route path="more" element={<MoreScreen />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="customers" element={<Clients />} />
                     <Route path="customers/new" element={<Navigate to="/app/customers?new=1" replace />} />

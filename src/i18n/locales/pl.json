@@ -2687,5 +2687,68 @@
     "upgrade": "Sprawdź plany",
     "sendBlockedTitle": "Limit ofert osiągnięty.",
     "sendBlockedDesc": "Nie możesz wysłać więcej ofert w tym miesiącu. Uaktualnij plan lub poczekaj do nowego miesiąca."
+  },
+  "newShell": {
+    "nav": {
+      "home": "Dom",
+      "offers": "Oferty",
+      "projects": "Projekty",
+      "more": "Więcej",
+      "ariaLabel": "Nawigacja"
+    },
+    "fab": {
+      "open": "Utwórz",
+      "sheetTitle": "Szybkie akcje",
+      "newOffer": "Nowa oferta",
+      "voiceNote": "Notatka głosowa",
+      "addClient": "Dodaj klienta",
+      "addCost": "Dodaj koszt",
+      "addDocument": "Dodaj dokument",
+      "addDate": "Dodaj datę",
+      "reminder": "Przypomnienie"
+    },
+    "home": {
+      "title": "Majster.AI",
+      "subtitle": "Twoje centrum zarządzania",
+      "continueTitle": "Kontynuuj",
+      "continueEmpty": "Brak ostatnio otwartych elementów",
+      "todayTitle": "Dziś",
+      "todayOffers": "Oferty",
+      "todayProjects": "Projekty",
+      "todayTasks": "Zadania",
+      "quickStartTitle": "Szybki start",
+      "qs": {
+        "newOffer": "Nowa wycena",
+        "projects": "Projekty",
+        "clients": "Klienci",
+        "quickEst": "Szybka wycena"
+      }
+    },
+    "more": {
+      "title": "Więcej",
+      "groupDocs": "Dokumenty",
+      "groupOrg": "Organizacja",
+      "groupSettings": "Ustawienia",
+      "documents": "Dokumenty",
+      "calendar": "Kalendarz",
+      "guarantees": "Gwarancje",
+      "profile": "Profil firmy",
+      "finance": "Finanse",
+      "quality": "Kontrola jakości",
+      "clients": "Klienci",
+      "settings": "Ustawienia",
+      "deleteAccount": "Usuń konto"
+    },
+    "onboarding": {
+      "step1Title": "Witaj w nowym Majster.AI",
+      "step1Desc": "Nowy interfejs jest zaprojektowany tak, abyś mógł działać szybciej na budowie. Dolna nawigacja zawsze jest pod ręką.",
+      "step2Title": "Przycisk + to Twój asystent",
+      "step2Desc": "Naciśnij środkowy przycisk + aby szybko dodać ofertę, klienta, koszt lub notatkę — jednym dotknięciem.",
+      "step3Title": "Wszystko w zakładce Więcej",
+      "step3Desc": "Ustawienia, dokumenty, finanse i gwarancje — znajdziesz je w zakładce Więcej na dole ekranu.",
+      "skip": "Pomiń",
+      "next": "Dalej",
+      "finish": "Zaczynamy!"
+    }
   }
 }
