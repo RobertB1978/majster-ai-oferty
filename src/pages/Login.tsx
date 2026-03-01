@@ -14,6 +14,7 @@ import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthDiagnostics } from '@/components/auth/AuthDiagnostics';
 import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWidget';
+import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
 import { useTheme } from '@/hooks/useTheme';
 
 const CAPTCHA_FAIL_THRESHOLD = 3;
@@ -164,7 +165,9 @@ export default function Login() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <SocialLoginButtons disabled={isLoading} />
+
+          <form onSubmit={handleSubmit} className="mt-4 space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">{t('auth.email')}</Label>
               <div className="relative">

@@ -156,6 +156,17 @@
       "error": "Помилка CAPTCHA. Спробуйте ще раз.",
       "label": "Перевірка безпеки"
     },
+    "social": {
+      "orContinueWith": "або увійти через",
+      "continueWithGoogle": "Продовжити з Google",
+      "continueWithApple": "Продовжити з Apple",
+      "signingIn": "Вхід...",
+      "oauthError": "Помилка входу через провайдера. Спробуйте ще раз.",
+      "callbackLoading": "Завершення входу...",
+      "callbackError": "Помилка входу",
+      "callbackErrorDesc": "Не вдалося завершити процес входу. Поверніться на сторінку входу та спробуйте ще раз.",
+      "backToLogin": "Назад до входу"
+    },
     "newPasswordTitle": "Новий пароль",
     "newPasswordDesc": "Введіть новий пароль для вашого облікового запису",
     "newPasswordLabel": "Новий пароль",
