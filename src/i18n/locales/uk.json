@@ -67,7 +67,8 @@
     "plan": "Мій план",
     "menu": "Меню",
     "comingSoon": "Незабаром",
-    "quickEstimate": "Швидкий кошторис"
+    "quickEstimate": "Швидкий кошторис",
+    "offers": "Пропозиції"
   },
   "auth": {
     "login": "Увійти",
@@ -2750,5 +2751,35 @@
       "next": "Далі",
       "finish": "Почнемо!"
     }
+  },
+  "offersList": {
+    "pageTitle": "Пропозиції",
+    "searchPlaceholder": "Пошук пропозицій...",
+    "sortLabel": "Сортування",
+    "sortRecentUpdated": "Нещодавно змінені",
+    "sortNewest": "Найновіші",
+    "sortValue": "Вартість",
+    "statusAll": "Всі",
+    "statusDraft": "Чернетка",
+    "statusSent": "Надіслані",
+    "statusAccepted": "Прийняті",
+    "statusRejected": "Відхилені",
+    "statusArchived": "Архівовані",
+    "noResponseBadge": "Немає відповіді {{days}} дн.",
+    "updatedAgo": "зм. {{time}}",
+    "emptyTitle": "Немає пропозицій",
+    "emptyDesc": "У вас ще немає пропозицій. Створіть першу!",
+    "emptyCta": "Створити першу пропозицію",
+    "emptyFilterTitle": "Немає результатів",
+    "emptyFilterDesc": "Пропозиції не відповідають обраним фільтрам.",
+    "errorTitle": "Помилка завантаження",
+    "errorDesc": "Не вдалося завантажити список пропозицій. Перевірте з'єднання.",
+    "errorRetry": "Спробувати знову",
+    "actionOpen": "Відкрити",
+    "actionDuplicate": "Дублювати",
+    "duplicateComingSoon": "Дублювання пропозицій — незабаром",
+    "noTitle": "Пропозиція без назви",
+    "valueNet": "Нетто: {{value}} {{currency}}",
+    "loadingAriaLabel": "Завантаження пропозицій..."
   }
 }

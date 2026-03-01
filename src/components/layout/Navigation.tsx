@@ -39,6 +39,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
 /** Map config item IDs to i18n translation keys so nav labels react to language changes. */
 const NAV_LABEL_KEYS: Record<string, string> = {
   dashboard: 'nav.dashboard',
+  offers: 'nav.offers',
   jobs: 'nav.projects',
   clients: 'nav.clients',
   calendar: 'nav.calendar',
@@ -72,8 +73,11 @@ export function Navigation() {
         comingSoon: item.comingSoon,
       }));
 
-    // Always include profile + settings at the end if not in config
+    // Always include offers + profile + settings if not in config
     const paths = new Set(configItems.map((i) => i.to));
+    if (!paths.has('/app/offers')) {
+      configItems.splice(1, 0, { to: '/app/offers', label: t('nav.offers'), icon: FileText, comingSoon: false });
+    }
     if (!paths.has('/app/profile')) {
       configItems.push({ to: '/app/profile', label: t('nav.profile'), icon: Building2, comingSoon: false });
     }
