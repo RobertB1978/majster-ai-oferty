@@ -39,6 +39,10 @@ export interface ProjectV2 {
   progress_percent: number;
   stages_json: ProjectStage[];
   total_from_offer: number | null;
+  // PR-14: Burn Bar budget fields
+  budget_net: number | null;
+  budget_source: 'OFFER_NET' | 'MANUAL' | null;
+  budget_updated_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -59,6 +63,9 @@ export interface CreateProjectInput {
   total_from_offer?: number | null;
   start_date?: string | null;
   end_date?: string | null;
+  // PR-14: optional budget override (default: total_from_offer)
+  budget_net?: number | null;
+  budget_source?: 'OFFER_NET' | 'MANUAL' | null;
 }
 
 export interface UpdateProjectInput {
@@ -69,6 +76,10 @@ export interface UpdateProjectInput {
   stages_json?: ProjectStage[];
   start_date?: string | null;
   end_date?: string | null;
+  // PR-14: budget fields
+  budget_net?: number | null;
+  budget_source?: 'OFFER_NET' | 'MANUAL' | null;
+  budget_updated_at?: string | null;
 }
 
 // ── Query keys ────────────────────────────────────────────────────────────────
@@ -142,6 +153,12 @@ export function useCreateProjectV2() {
     mutationFn: async (input: CreateProjectInput): Promise<ProjectV2> => {
       if (!user) throw new Error('Not authenticated');
 
+      // PR-14: budget defaults from offer net total
+      const budgetNet = input.budget_net ?? input.total_from_offer ?? null;
+      const budgetSource = budgetNet != null
+        ? (input.budget_source ?? (input.total_from_offer != null ? 'OFFER_NET' : 'MANUAL'))
+        : null;
+
       const { data, error } = await supabase
         .from('v2_projects')
         .insert({
@@ -155,6 +172,9 @@ export function useCreateProjectV2() {
           status: 'ACTIVE',
           progress_percent: 0,
           stages_json: [],
+          budget_net: budgetNet,
+          budget_source: budgetSource,
+          budget_updated_at: budgetNet != null ? new Date().toISOString() : null,
         })
         .select('*')
         .single();
