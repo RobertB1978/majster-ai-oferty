@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-06 DONE)
+**Ostatnia aktualizacja:** 2026-03-01 (PR-07 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -32,7 +32,7 @@
 | **PR-04** | Social Login PACK | ✅ DONE | `claude/social-login-pack-ouzu9` | 2026-03-01 | Google + Apple OAuth + email/password fallback; SocialLoginButtons, AuthCallback, docs/AUTH_SETUP.md |
 | **PR-05** | Profil firmy + Ustawienia | ✅ DONE | `claude/company-profile-settings-2eKBa` | 2026-03-01 | Company Profile form (profiles table + address_line2/country/website), Settings tabs (Company + Account), DeleteAccountSection (USUŃ keyword), delete-user-account EF fix, i18n PL/EN/UK, docs/COMPLIANCE/ACCOUNT_DELETION.md |
 | **PR-06** | Free plan + paywall | ✅ DONE | `claude/free-tier-paywall-0b5OO` | 2026-03-01 | FREE_TIER_OFFER_LIMIT=3, canSendOffer(), DB function count_monthly_finalized_offers(), useFreeTierOfferQuota hook, OfferQuotaIndicator, FreeTierPaywallModal, SendOfferModal quota check, i18n PL/EN/UK, unit tests, ADR-0004 |
-| **PR-07** | Shell (FF_NEW_SHELL) | ⬜ TODO | — | — | **PIVOT** — wymaga PR-06 |
+| **PR-07** | Shell (FF_NEW_SHELL) | ✅ DONE | `claude/new-shell-bottom-nav-Hr4DV` | 2026-03-01 | FF_NEW_SHELL flag, NewShellLayout, BottomNav5, FAB+sheet, HomeLobby, MoreScreen, 3-step onboarding, i18n PL/EN/UK |
 | **PR-08** | CRM + Cennik | ⬜ TODO | — | — | Wymaga merge PR-07 |
 | **PR-09** | Oferty A: lista + statusy | ⬜ TODO | — | — | Wymaga merge PR-08 |
 | **PR-10** | Oferty B1: Wizard bez PDF | ⬜ TODO | — | — | Wymaga merge PR-09 |
@@ -219,8 +219,74 @@ Przed każdym merge wypełnij i wklej w opis PR:
 | 2026-03-01 | PR-04 | `claude/social-login-pack-ouzu9` | Google + Apple OAuth, AuthCallback, SocialLoginButtons, i18n PL/EN/UK, AUTH_SETUP.md |
 | 2026-03-01 | PR-05 | `claude/company-profile-settings-2eKBa` | Company Profile (profiles + address_line2/country/website), Settings tabs, DeleteAccountSection (USUŃ), delete-user-account EF fixes, i18n, COMPLIANCE/ACCOUNT_DELETION.md |
 | 2026-03-01 | PR-06 | `claude/free-tier-paywall-0b5OO` | FREE_TIER_OFFER_LIMIT=3, DB function, quota hook, OfferQuotaIndicator, FreeTierPaywallModal, SendOfferModal gate, i18n, unit tests |
+| 2026-03-01 | PR-07 | `claude/new-shell-bottom-nav-Hr4DV` | FF_NEW_SHELL flag (env+localStorage), NewShellLayout, NewShellBottomNav (5 tabs), NewShellFAB+sheet (7 akcji), HomeLobby (3 bloki), MoreScreen (3 grupy), NewShellOnboarding (3 kroki, localStorage persist), i18n PL/EN/UK, routing /app/home + /app/more |
 
 > *Uzupełniaj tabelę po każdym merge. Format: `docs: aktualizuj status PR-XX`*
+
+---
+
+## PR-07 — Shell za flagą FF_NEW_SHELL: co zostało wdrożone
+
+### Jak włączyć / wyłączyć FF_NEW_SHELL
+
+**Metoda 1 — localStorage (runtime, bez rebuildu):**
+```js
+// Włącz nowy shell
+localStorage.setItem('FF_NEW_SHELL', 'true')
+// Wyłącz (powrót do starego shella)
+localStorage.setItem('FF_NEW_SHELL', 'false')
+// Następnie odśwież stronę
+```
+
+**Metoda 2 — zmienna środowiskowa (build-time):**
+```env
+# .env lub Vercel Environment Variables
+VITE_FF_NEW_SHELL=true   # nowy shell
+VITE_FF_NEW_SHELL=false  # stary shell (domyślnie)
+```
+`VITE_FF_NEW_SHELL` ma pierwszeństwo przed localStorage.
+
+### Pliki zmienione
+
+| Plik | Opis |
+|------|------|
+| `src/config/featureFlags.ts` | Definicja FF_NEW_SHELL (env + localStorage + default=false) |
+| `src/App.tsx` | Routing: wybór AppLayout vs NewShellLayout + trasy /home, /offers, /more |
+| `src/components/layout/NewShellLayout.tsx` | Nowy shell — wrapper z auth guard |
+| `src/components/layout/NewShellBottomNav.tsx` | Dolna nawigacja 5 zakładek (Home/Oferty/[FAB]/Projekty/Więcej) |
+| `src/components/layout/NewShellFAB.tsx` | FAB + bottom sheet 7 akcji |
+| `src/pages/HomeLobby.tsx` | Ekran Home (3 bloki: Continue/Today/QuickStart) |
+| `src/pages/MoreScreen.tsx` | Ekran Więcej (3 grupy: Dokumenty/Org/Ustawienia) |
+| `src/components/onboarding/NewShellOnboarding.tsx` | Onboarding 3-krokowy (localStorage: onboarding_new_shell_completed) |
+| `src/i18n/locales/{pl,en,uk}.json` | Klucze i18n: `newShell.*` (nav/fab/home/more/onboarding) |
+| `docs/ROADMAP_STATUS.md` | Ten plik — aktualizacja statusu |
+
+### Architektura (decyzja)
+
+- **FF_NEW_SHELL=false** (domyślnie): `<AppLayout>` — stary shell bez żadnych zmian
+- **FF_NEW_SHELL=true**: `<NewShellLayout>` — nowy shell z dolną nawigacją
+- Routing `/app/home` i `/app/more` dostępny w obu shellach (nie crashuje przy OFF)
+- `/app/offers` → redirect do `/app/jobs` (tabela ofert = PR-09)
+- Onboarding: 1 lokalny klucz `onboarding_new_shell_completed` w localStorage
+
+### Jak testować PR-07
+
+**FF_NEW_SHELL=OFF (domyślnie):**
+1. Otwórz `/app/dashboard` → stary shell, topbar + poziomy nav
+2. Brak nowej dolnej nawigacji
+3. Ustawienia dostępne: `/app/settings`
+
+**FF_NEW_SHELL=ON:**
+```js
+localStorage.setItem('FF_NEW_SHELL', 'true'); location.reload();
+```
+1. `/app/home` → ekran Home z 3 blokami
+2. Dolna nawigacja: Home / Oferty / [FAB] / Projekty / Więcej
+3. FAB (środkowy +) → bottom sheet z 7 akcjami
+4. Zakładka "Więcej" → grupy linków, Ustawienia dostępne
+5. Pierwsze uruchomienie → modal onboardingu 3-krokowy
+6. Drugi raz → onboarding NIE pokazuje się
+7. Zmiana języka (PL/EN/UK) → wszystkie napisy przetłumaczone
 
 ---
 
@@ -296,13 +362,13 @@ SELECT public.count_monthly_finalized_offers('user-a-uuid'); -- zwraca 0 dla use
 ```
 Faza 0 (Fundament):     3/3 PR  ██████████  100%
 Faza 1 (Dostęp):        3/3 PR  ██████████  100%
-Faza 2 (Shell):         0/1 PR  ░░░░░░░░░░  0%
+Faza 2 (Shell):         1/1 PR  ██████████  100%
 Faza 3 (Dane/Oferty):   0/2 PR  ░░░░░░░░░░  0%
 Faza 4 (Oferty flow):   0/3 PR  ░░░░░░░░░░  0%
 Faza 5 (Projekty):      0/6 PR  ░░░░░░░░░░  0%
 Faza 6 (Offline+$):     0/2 PR  ░░░░░░░░░░  0%
 ─────────────────────────────────────────
-RAZEM:                  6/20 PR ███░░░░░░░  30%
+RAZEM:                  7/20 PR ███░░░░░░░  35%
 (PR-00 nie wliczany do progresu funkcjonalnego)
 ```
 

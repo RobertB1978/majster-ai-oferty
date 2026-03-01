@@ -2687,5 +2687,68 @@
     "upgrade": "View Plans",
     "sendBlockedTitle": "Offer limit reached.",
     "sendBlockedDesc": "You cannot send more offers this month. Upgrade your plan or wait until next month."
+  },
+  "newShell": {
+    "nav": {
+      "home": "Home",
+      "offers": "Offers",
+      "projects": "Projects",
+      "more": "More",
+      "ariaLabel": "Navigation"
+    },
+    "fab": {
+      "open": "Create",
+      "sheetTitle": "Quick actions",
+      "newOffer": "New offer",
+      "voiceNote": "Voice note",
+      "addClient": "Add client",
+      "addCost": "Add cost",
+      "addDocument": "Add document",
+      "addDate": "Add date",
+      "reminder": "Reminder"
+    },
+    "home": {
+      "title": "Majster.AI",
+      "subtitle": "Your management hub",
+      "continueTitle": "Continue",
+      "continueEmpty": "No recently opened items",
+      "todayTitle": "Today",
+      "todayOffers": "Offers",
+      "todayProjects": "Projects",
+      "todayTasks": "Tasks",
+      "quickStartTitle": "Quick start",
+      "qs": {
+        "newOffer": "New estimate",
+        "projects": "Projects",
+        "clients": "Clients",
+        "quickEst": "Quick estimate"
+      }
+    },
+    "more": {
+      "title": "More",
+      "groupDocs": "Documents",
+      "groupOrg": "Organisation",
+      "groupSettings": "Settings",
+      "documents": "Documents",
+      "calendar": "Calendar",
+      "guarantees": "Guarantees",
+      "profile": "Company Profile",
+      "finance": "Finance",
+      "quality": "Quality Control",
+      "clients": "Clients",
+      "settings": "Settings",
+      "deleteAccount": "Delete Account"
+    },
+    "onboarding": {
+      "step1Title": "Welcome to the new Majster.AI",
+      "step1Desc": "The new interface is designed so you can work faster on site. The bottom navigation is always within reach.",
+      "step2Title": "The + button is your assistant",
+      "step2Desc": "Press the centre + button to quickly add an offer, client, cost or note — with a single tap.",
+      "step3Title": "Everything in the More tab",
+      "step3Desc": "Settings, documents, finance and guarantees — find them in the More tab at the bottom of the screen.",
+      "skip": "Skip",
+      "next": "Next",
+      "finish": "Let's go!"
+    }
   }
 }
