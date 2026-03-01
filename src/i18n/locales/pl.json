@@ -627,7 +627,9 @@
     "pushNotifications": "Powiadomienia push",
     "enablePush": "Włącz powiadomienia push",
     "emailNotifications": "Powiadomienia email",
-    "contactEmailTab": "Email oferty"
+    "contactEmailTab": "Email oferty",
+    "companyProfileTab": "Firma",
+    "accountTab": "Konto"
   },
   "billing": {
     "title": "Płatności i subskrypcje",
@@ -1369,7 +1371,8 @@
       "bankAccountMaxLength": "Numer konta max {{max}} znaków",
       "emailSubjectMaxLength": "Temat max {{max}} znaków",
       "emailGreetingMaxLength": "Powitanie max {{max}} znaków",
-      "emailSignatureMaxLength": "Podpis max {{max}} znaków"
+      "emailSignatureMaxLength": "Podpis max {{max}} znaków",
+      "websiteInvalid": "Adres strony musi zaczynać się od http:// lub https://"
     },
     "password": {
       "minLength": "Hasło musi mieć minimum {{min}} znaków",
@@ -2234,7 +2237,13 @@
     "emailPreviewContent": "...treść wiadomości...",
     "saveProfile": "Zapisz profil",
     "formErrors": "Popraw błędy w formularzu",
-    "saveFailed": "Nie udało się zapisać profilu. Spróbuj ponownie."
+    "saveFailed": "Nie udało się zapisać profilu. Spróbuj ponownie.",
+    "websiteLabel": "Strona internetowa",
+    "websitePlaceholder": "https://www.mojafirma.pl",
+    "addressLine2Label": "Adres — linia 2",
+    "addressLine2Placeholder": "Nr lokalu / piętro (opcjonalne)",
+    "countryLabel": "Kraj",
+    "countryDefault": "Polska"
   },
   "marketplacePage": {
     "addSubcontractor": "Dodaj podwykonawcę",
@@ -2627,5 +2636,38 @@
     "title": "Timeline Projektów — {{month}}",
     "statusLegend": "Status projektów:",
     "unknownClient": "Nieznany klient"
+  },
+  "deleteAccount": {
+    "dangerZoneTitle": "Strefa Niebezpieczna",
+    "dangerZoneDescription": "Nieodwracalne działania dotyczące Twojego konta",
+    "warningText": "Usunięcie konta jest nieodwracalne. Wszystkie Twoje dane, projekty, klienci, wyceny i dokumenty zostaną trwale usunięte.",
+    "whatWillBeDeleted": "Co zostanie usunięte:",
+    "item": {
+      "projects": "Wszystkie projekty i wyceny",
+      "clients": "Wszyscy klienci i ich dane kontaktowe",
+      "finance": "Historia finansowa i faktury",
+      "calendar": "Kalendarz i wydarzenia",
+      "templates": "Szablony pozycji i ustawienia",
+      "profile": "Profil firmowy i dokumenty",
+      "account": "Konto użytkownika i dane logowania"
+    },
+    "triggerButton": "Usuń Konto Całkowicie",
+    "dialogTitle": "Czy na pewno chcesz usunąć konto?",
+    "dialogWarning": "Ta operacja jest NIEODWRACALNA. Wszystkie Twoje dane zostaną trwale usunięte z naszych systemów zgodnie z RODO.",
+    "dialogConsider": "Przed usunięciem konta rozważ:",
+    "consider": {
+      "exportData": "Eksport ważnych danych (projekty, klienci)",
+      "downloadDocs": "Pobranie kopii faktur i dokumentów",
+      "cancelSubscription": "Anulowanie aktywnej subskrypcji"
+    },
+    "typeToConfirm": "Wpisz {{keyword}} aby potwierdzić:",
+    "wrongKeyword": "Proszę wpisać {{keyword}} aby potwierdzić",
+    "deleting": "Usuwanie...",
+    "confirmButton": "Usuń Konto Trwale",
+    "successTitle": "Konto zostało usunięte",
+    "successDescription": "Wszystkie Twoje dane zostały trwale usunięte.",
+    "errorTitle": "Błąd przy usuwaniu konta",
+    "errorDescription": "Spróbuj ponownie później lub skontaktuj się z pomocą techniczną.",
+    "gdprNote": "Zgodnie z Art. 17 RODO (Prawo do Bycia Zapomnianym), masz prawo do usunięcia wszystkich swoich danych osobowych. Dane usuwane są natychmiast; szyfrowane kopie zapasowe są przechowywane do 30 dni na potrzeby odtwarzania po awarii, następnie automatycznie kasowane. Dokumenty finansowe mogą być przechowywane oddzielnie zgodnie z wymogami prawa."
   }
 }

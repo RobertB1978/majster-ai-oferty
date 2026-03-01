@@ -12,11 +12,14 @@ export interface Profile {
   owner_name: string | null;
   nip: string | null;
   street: string | null;
+  address_line2: string | null;
   city: string | null;
   postal_code: string | null;
+  country: string | null;
   phone: string | null;
   email_for_offers: string | null;
   bank_account: string | null;
+  website: string | null;
   logo_url: string | null;
   email_subject_template: string | null;
   email_greeting: string | null;

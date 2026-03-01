@@ -132,7 +132,8 @@ serve(async (req) => {
     }
 
     // Check exact confirmation phrase (case-sensitive)
-    const expectedPhrase = 'DELETE MY ACCOUNT';
+    // PR-05: Changed to 'USUŃ' per RODO/Apple compliance requirement
+    const expectedPhrase = 'USUŃ';
     if (confirmationPhrase !== expectedPhrase) {
       return new Response(
         JSON.stringify({
@@ -322,10 +323,10 @@ serve(async (req) => {
       };
     }
 
-    // User profile
+    // User profile (company profile data — stored in 'profiles' table)
     try {
       const { data, error } = await supabaseAdmin
-        .from('user_profiles')
+        .from('profiles')
         .delete()
         .eq('user_id', userId)
         .select('id');

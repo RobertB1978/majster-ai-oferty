@@ -199,9 +199,12 @@ export interface ProfileInput {
   phone?: string;
   email_for_offers?: string;
   street?: string;
+  address_line2?: string;
   city?: string;
   postal_code?: string;
+  country?: string;
   bank_account?: string;
+  website?: string;
 }
 
 export interface NormalizedProfile {
@@ -211,9 +214,12 @@ export interface NormalizedProfile {
   phone?: string;
   email_for_offers?: string;
   street?: string;
+  address_line2?: string;
   city?: string;
   postal_code?: string;
+  country?: string;
   bank_account?: string;
+  website?: string;
 }
 
 export function normalizeProfileData(profile: ProfileInput): NormalizedProfile {
@@ -243,6 +249,10 @@ export function normalizeProfileData(profile: ProfileInput): NormalizedProfile {
     normalized.street = normalizeString(profile.street, '', 200);
   }
 
+  if (profile.address_line2 !== undefined) {
+    normalized.address_line2 = normalizeString(profile.address_line2, '', 200);
+  }
+
   if (profile.city !== undefined) {
     normalized.city = normalizeString(profile.city, '', 100);
   }
@@ -251,8 +261,16 @@ export function normalizeProfileData(profile: ProfileInput): NormalizedProfile {
     normalized.postal_code = normalizeString(profile.postal_code, '', 10);
   }
 
+  if (profile.country !== undefined) {
+    normalized.country = normalizeString(profile.country, '', 50);
+  }
+
   if (profile.bank_account !== undefined) {
     normalized.bank_account = normalizeString(profile.bank_account, '', 50).replace(/\s/g, '');
+  }
+
+  if (profile.website !== undefined) {
+    normalized.website = normalizeString(profile.website, '', 200);
   }
 
   return normalized;
