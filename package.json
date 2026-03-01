@@ -36,6 +36,7 @@
     "check:i18n-parity:strict": "node scripts/i18n/check-parity.mjs --fail-on-empty",
     "check:i18n-hardcodes": "bash scripts/check-i18n-hardcodes.sh",
     "check:i18n": "npm run check:i18n-parity && npm run check:i18n-hardcodes",
+    "check:i18n-gate": "bash scripts/i18n/gate-pr-changes.sh HEAD~1",
     "check:no-hardcoded-polish": "node scripts/check-no-hardcoded-polish.mjs",
     "check:no-hardcoded-polish:fail": "node scripts/check-no-hardcoded-polish.mjs --fail",
     "prepare": "node -e \"try { require('husky').install() } catch (e) {}\""
