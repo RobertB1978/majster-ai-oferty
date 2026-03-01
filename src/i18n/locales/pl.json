@@ -156,6 +156,17 @@
       "error": "Błąd CAPTCHA. Spróbuj ponownie.",
       "label": "Weryfikacja bezpieczeństwa"
     },
+    "social": {
+      "orContinueWith": "lub zaloguj przez",
+      "continueWithGoogle": "Kontynuuj z Google",
+      "continueWithApple": "Kontynuuj z Apple",
+      "signingIn": "Logowanie...",
+      "oauthError": "Błąd logowania przez dostawcę. Spróbuj ponownie.",
+      "callbackLoading": "Finalizowanie logowania...",
+      "callbackError": "Błąd logowania",
+      "callbackErrorDesc": "Nie udało się zakończyć procesu logowania. Wróć do strony logowania i spróbuj ponownie.",
+      "backToLogin": "Wróć do logowania"
+    },
     "newPasswordTitle": "Nowe hasło",
     "newPasswordDesc": "Wprowadź nowe hasło do swojego konta",
     "newPasswordLabel": "Nowe hasło",

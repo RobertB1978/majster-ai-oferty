@@ -156,6 +156,17 @@
       "error": "CAPTCHA error. Please try again.",
       "label": "Security verification"
     },
+    "social": {
+      "orContinueWith": "or continue with",
+      "continueWithGoogle": "Continue with Google",
+      "continueWithApple": "Continue with Apple",
+      "signingIn": "Signing in...",
+      "oauthError": "Provider sign-in error. Please try again.",
+      "callbackLoading": "Completing sign-in...",
+      "callbackError": "Sign-in failed",
+      "callbackErrorDesc": "Could not complete the sign-in process. Go back to the login page and try again.",
+      "backToLogin": "Back to login"
+    },
     "newPasswordTitle": "New password",
     "newPasswordDesc": "Enter a new password for your account",
     "newPasswordLabel": "New password",

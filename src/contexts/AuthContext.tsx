@@ -11,6 +11,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ error: string | null; data?: { user: User | null; session: Session | null } }>;
   register: (email: string, password: string) => Promise<{ error: string | null }>;
   logout: () => Promise<void>;
+  loginWithGoogle: () => Promise<{ error: string | null }>;
+  loginWithApple: () => Promise<{ error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -115,6 +117,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null };
   };
 
+  const loginWithGoogle = async (): Promise<{ error: string | null }> => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) return { error: error.message };
+      return { error: null };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      return { error: message };
+    }
+  };
+
+  const loginWithApple = async (): Promise<{ error: string | null }> => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) return { error: error.message };
+      return { error: null };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      return { error: message };
+    }
+  };
+
   const logout = async () => {
     try {
       await supabase.auth.signOut();
@@ -130,7 +164,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, session, isLoading, login, register, logout, loginWithGoogle, loginWithApple }}>
       {children}
     </AuthContext.Provider>
   );
