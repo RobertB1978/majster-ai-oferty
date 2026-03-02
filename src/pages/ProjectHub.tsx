@@ -1,9 +1,10 @@
 /**
- * ProjectHub — PR-13 + PR-15
+ * ProjectHub — PR-13 + PR-15 + PR-16
  *
  * Project detail "hub" screen with accordion sections.
- * Sections: Stages | Costs | Documents | Photo Report | Acceptance Checklist
+ * Sections: Stages | Costs | Documents (Dossier) | Photo Report | Acceptance Checklist
  * PR-15: Photo Report (BEFORE/DURING/AFTER/ISSUE) + Checklist + Signature.
+ * PR-16: Dossier — document folder with categories, upload, export, share link.
  * Works with FF_NEW_SHELL ON/OFF.
  */
 
@@ -28,6 +29,7 @@ import {
 import { BurnBarSection } from '@/components/costs/BurnBarSection';
 import { PhotoReportPanel } from '@/components/photos/PhotoReportPanel';
 import { AcceptanceChecklistPanel } from '@/components/photos/AcceptanceChecklistPanel';
+import { DossierPanel } from '@/components/documents/DossierPanel';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -390,9 +392,10 @@ export default function ProjectHub() {
                     <BurnBarSection project={project} />
                   )}
                   {section.id === 'documents' && (
-                    <p className="text-sm text-muted-foreground py-4 text-center">
-                      {t('projectsV2.hub.documentsPlaceholder')}
-                    </p>
+                    <DossierPanel
+                      projectId={project.id}
+                      projectTitle={project.title}
+                    />
                   )}
                   {section.id === 'photoReport' && (
                     <PhotoReportPanel projectId={project.id} />
