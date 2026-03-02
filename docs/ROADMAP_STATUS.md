@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-02 (PR-16 DONE)
+**Ostatnia aktualizacja:** 2026-03-02 (PR-18 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -42,8 +42,8 @@
 | **PR-14** | Burn Bar BASIC | ✅ DONE | `claude/add-burn-bar-feature-UWliG` | 2026-03-01 | project_costs table + RLS, budget_net/source/updated_at on v2_projects, BurnBarSection (burn bar + cost list), AddCostSheet (≤3 taps), i18n PL/EN/UK (burnBar.* 37 kluczy), IDOR documented |
 | **PR-15** | Fotoprotokół + podpis | ✅ DONE | `claude/pr-15-photo-report-f9udo` | 2026-03-01 | PhotoReportPanel (BEFORE/DURING/AFTER/ISSUE phases, kompresja kliencka 1600px/0.75, optimistic UI + retry), AcceptanceChecklistPanel (4 szablony: general/plumbing/electrical/painting), SignaturePad (canvas), CameraPermissionGate (denied → EmptyState + OpenSettings), migracja: phase+metadata col na project_photos + project_checklists + project_acceptance (RLS on all), private bucket + signed URLs, i18n PL/EN/UK (photoReport.* + checklist.* + signature.*), FF_NEW_SHELL ON/OFF, docs: PHOTO_REPORT_NOTES.md |
 | **PR-16** | Teczka dokumentów | ✅ DONE | `claude/document-folder-export-share-THSXi` | 2026-03-02 | Teczka (CONTRACT/PROTOCOL/RECEIPT/PHOTO/GUARANTEE/OTHER), upload + signed URLs, eksport PDF (Option B: jsPDF summary), bezpieczne linki (UUID token + 30d expiry + allowed_categories), publiczna strona /d/:token, RLS, i18n PL/EN/UK |
-| **PR-17** | Wzory dokumentów | ⬜ TODO | — | — | Wymaga merge PR-16 |
-| **PR-18** | Gwarancje + przypomnienia | ⬜ TODO | — | — | Wymaga merge PR-13 |
+| **PR-17** | Wzory dokumentów | ✅ DONE | `claude/document-templates-library-l0viJ` | 2026-03-02 | 25 szablonów (5 umów + 9 protokołów + 6 załączników + 5 przeglądów), document_instances (RLS), templatePdfGenerator (jsPDF), auto-fill (Company/Client/Offer/Project), save-to-dossier, referencje prawne w PDF, docs/COMPLIANCE/INSPECTIONS_PL.md + ADR-0010, i18n PL/EN/UK (300+ kluczy), TemplatesLibrary + TemplateEditor, route /app/document-templates |
+| **PR-18** | Gwarancje + przypomnienia | ✅ DONE | `claude/document-templates-library-l0viJ` | 2026-03-02 | project_warranties (migration + RLS + view), WarrantySection (form + PDF card + email send), warrantyPdfGenerator (jsPDF, karta gwarancyjna A4, podpisy, podstawa prawna), useWarranty hook (CRUD + upsert), send-expiring-offer-reminders rozszerzony o T-30/T-7, i18n PL/EN/UK (50+ kluczy), testy jednostkowe |
 | **PR-19** | PWA Offline minimum | ⬜ TODO | — | — | Wymaga merge PR-07 |
 | **PR-20** | Stripe Billing | ⬜ TODO | — | — | Wymaga merge PR-06 i PR-07 |
 
@@ -1035,3 +1035,115 @@ UPDATE public.v2_projects SET budget_net = 0 WHERE user_id = 'user-a-uuid';
 - Bucket: `dossier` (private — wymaga utworzenia w Supabase Dashboard)
 - Signed URLs: 1h TTL dla DossierPanel (owner), po walidacji tokenu dla /d/:token
 - Ścieżka: `{user_id}/{project_id}/{category_lower}/{timestamp}_{filename}`
+
+---
+
+## PR-17: Document Templates Library — szczegóły implementacji
+
+**Status:** ✅ DONE | **Branch:** `claude/document-templates-library-l0viJ` | **Data:** 2026-03-02
+
+### Nowe pliki
+
+| Plik | Opis |
+|------|------|
+| `supabase/migrations/20260302100000_pr17_document_instances.sql` | Tabela `document_instances` + RLS (4 polityki) + trigger `updated_at` |
+| `docs/COMPLIANCE/INSPECTIONS_PL.md` | Źródło prawdy dla szablonów inspekcji (5 typów, podstawy prawne) |
+| `docs/ADR/ADR-0010-compliance-inspections-source-of-truth.md` | ADR — INSPECTIONS_PL.md jako źródło prawdy |
+| `src/data/documentTemplates.ts` | Definicje 25 szablonów + typy + helpery |
+| `src/hooks/useDocumentInstances.ts` | Hook TanStack Query + `resolveAutofill()` |
+| `src/lib/templatePdfGenerator.ts` | Generowanie PDF (jsPDF) + upload do dossier bucket |
+| `src/components/documents/templates/TemplatesLibrary.tsx` | UI: karty szablonów, filtry kategorii, wyszukiwanie |
+| `src/components/documents/templates/TemplateEditor.tsx` | UI: edytor pól, auto-wypełnianie, generowanie PDF, zapis do Teczki |
+| `src/pages/DocumentTemplates.tsx` | Strona-kontener (`/app/document-templates`) |
+
+### Zmodyfikowane pliki
+
+| Plik | Zmiana |
+|------|--------|
+| `src/App.tsx` | Dodano lazy route `/app/document-templates` |
+| `src/pages/MoreScreen.tsx` | Dodano pozycję "Wzory dokumentów" (FileText) |
+| `src/i18n/locales/pl.json` | Dodano `docTemplates.*` (~300 kluczy PL) |
+| `src/i18n/locales/en.json` | Dodano `docTemplates.*` (~300 kluczy EN) |
+| `src/i18n/locales/uk.json` | Dodano `docTemplates.*` (~300 kluczy UK) |
+| `docs/ROADMAP_STATUS.md` | Aktualizacja PR-17 → DONE |
+
+### Szablony (25 szt.)
+
+**Umowy (5):**
+`contract_fixed_price`, `contract_cost_plus`, `contract_with_materials`, `contract_with_advance`, `contract_simple_order`
+
+**Protokoły (9):**
+`protocol_final_acceptance`, `protocol_partial_acceptance`, `protocol_site_handover`, `protocol_defect_report`, `protocol_necessity_change`, `protocol_key_handover`, `protocol_warranty_inspection`, `protocol_hidden_works`, `protocol_damage`
+
+**Aneksy/Załączniki (6):**
+`annex_contract_change`, `annex_cost_estimate`, `annex_milestone_schedule`, `annex_materials_card`, `annex_hse_checklist`, `annex_client_statement`
+
+**Zgodność/Inspekcje (5):**
+`compliance_annual_building`, `compliance_five_year_building`, `compliance_electrical_lightning`, `compliance_gas_chimney`, `compliance_large_building`
+
+### Schemat DB (`document_instances`)
+
+```
+id             uuid PK default gen_random_uuid()
+user_id        uuid REFERENCES auth.users NOT NULL
+project_id     uuid NULL (opcjonalny)
+client_id      uuid NULL
+offer_id       uuid NULL
+template_key   text NOT NULL
+template_version text NOT NULL DEFAULT '1.0'
+locale         text NOT NULL DEFAULT 'pl' CHECK IN ('pl','en','uk')
+title          text NOT NULL
+data_json      jsonb NOT NULL DEFAULT '{}'
+references_json jsonb NOT NULL DEFAULT '[]'
+pdf_path       text NULL
+dossier_item_id uuid NULL
+created_at     timestamptz DEFAULT now()
+updated_at     timestamptz DEFAULT now()
+```
+
+**RLS (4 polityki):** SELECT/INSERT/UPDATE/DELETE — `auth.uid() = user_id`
+
+### System auto-wypełniania
+
+`AutofillSource` mapuje 15 wartości:
+- `company.*` → tabela `profiles` (name, nip, address, phone, email)
+- `client.*` → tabela `clients`
+- `offer.*` → tabela `offers` (number, total_gross, title)
+- `project.*` → tabela `v2_projects` (title, address)
+- `current.date` → bieżąca data ISO
+
+### Generowanie PDF
+
+Wzorzec analogiczny do PR-11/PR-16 (jsPDF + jspdf-autotable, dynamiczny import):
+- Nagłówek z niebieską wstążką (rgb 37,99,235) + dane firmy
+- Tytuł + auto-numer (`PREFIX/YYYYMMDD/RAND`)
+- Sekcje z polami (text/textarea/date/number/select/checkbox)
+- Załącznik z referencjami prawnymi
+- Stopki z numerem dokumentu + stronicowaniem
+- Upload do bucketu `dossier`, zapis ścieżki w `document_instances`
+
+### i18n
+
+- `newShell.more.documentTemplates` → PL: "Wzory dokumentów" / EN: "Document Templates" / UK: "Шаблони документів"
+- `docTemplates.*` → ~300 kluczy na język × 3 języki
+- Przestrzeń kluczy: `docTemplates.page.*`, `docTemplates.library.*`, `docTemplates.category.*`, `docTemplates.editor.*`, `docTemplates.pdf.*`, `docTemplates.fields.*`, `docTemplates.selectValues.*`, `docTemplates.contracts.*`, `docTemplates.protocols.*`, `docTemplates.annexes.*`, `docTemplates.compliance.*`
+
+### Checklist weryfikacji
+
+- [x] TypeScript: `npx tsc --noEmit` — 0 błędów
+- [x] TypeScript strict: `npx tsc --noEmit --strict` — 0 błędów
+- [x] JSON locales: `node -e "JSON.parse(...)"` — pl/en/uk — wszystkie poprawne
+- [x] 25 szablonów zdefiniowanych w `ALL_TEMPLATES`
+- [x] Auto-fill: 15 źródeł danych, `resolveAutofill()` + `useAutofillContext()`
+- [x] Zapis do Teczki: `project_dossier_items` + aktualizacja `dossier_item_id`
+- [x] RLS: 4 polityki (SELECT/INSERT/UPDATE/DELETE)
+- [x] i18n: PL + EN + UK kompletne
+- [x] Routing: `/app/document-templates` + query params `?projectId&clientId&offerId`
+- [x] MoreScreen: pozycja "Wzory dokumentów" w grupie "Dokumenty"
+- [x] ROADMAP_STATUS.md zaktualizowany
+
+### Uwagi
+
+- `docs/COMPLIANCE/INSPECTIONS_PL.md` — należy zaktualizować przy zmianie przepisów
+- ADR-0010 definiuje procedurę aktualizacji (cykl 12 miesięcy)
+- PDF auto-numer: `PREFIX/YYYYMMDD/RAND` — nie jest to numer seryjny z DB; dla pełnej numeracji sekwencyjnej wymagana osobna tabela counter (poza scopem PR-17)

@@ -2731,6 +2731,7 @@
       "groupOrg": "Organisation",
       "groupSettings": "Settings",
       "documents": "Documents",
+      "documentTemplates": "Document Templates",
       "calendar": "Calendar",
       "guarantees": "Guarantees",
       "profile": "Company Profile",
@@ -3232,6 +3233,412 @@
       "expiredDesc": "This share link has expired. Contact the contractor to get a new link.",
       "notFoundTitle": "Link not found",
       "notFoundDesc": "This link is invalid or has been revoked."
+    }
+  },
+  "docTemplates": {
+    "page": {
+      "title": "Document Templates Library",
+      "subtitle": "Contracts, protocols, annexes and technical inspections",
+      "projectContext": "Filled fields will be linked to the selected project"
+    },
+    "library": {
+      "searchPlaceholder": "Search document templates...",
+      "searchAriaLabel": "Search document templates",
+      "noResults": "No templates match your search",
+      "referencesCount": "{{count}} legal references"
+    },
+    "category": {
+      "CONTRACTS": "Contracts",
+      "PROTOCOLS": "Protocols",
+      "ANNEXES": "Annexes",
+      "COMPLIANCE": "Technical Inspections",
+      "OTHER": "Other"
+    },
+    "editor": {
+      "autofill": "Auto-fill",
+      "autofillAll": "Fill from data",
+      "autofillAllDone": "Data filled automatically",
+      "autofillField": "Fill field {{field}} from project data",
+      "selectPlaceholder": "Select...",
+      "checkboxYes": "Yes",
+      "references": "Legal basis / references",
+      "generatePdf": "Generate PDF",
+      "generatingPdf": "Generating...",
+      "pdfDownloaded": "PDF downloaded successfully",
+      "pdfError": "PDF generation failed. Please try again.",
+      "saveToDossier": "Save to dossier",
+      "saving": "Saving...",
+      "savedToDossier": "Document saved to project dossier",
+      "saveError": "Save failed. Please try again.",
+      "saveDraft": "Save draft",
+      "draftSaved": "Draft saved",
+      "requiredFields": "Please fill required fields: {{fields}}",
+      "projectRequired": "Select a project to save to dossier"
+    },
+    "pdf": {
+      "docNumber": "Document number",
+      "generatedAt": "Generated on",
+      "contractorSignature": "Contractor signature",
+      "clientSignature": "Client signature",
+      "references": "Legal basis",
+      "page": "Page",
+      "unknownCompany": "Company"
+    },
+    "section": {
+      "parties": "Parties",
+      "scope": "Scope of work",
+      "financial": "Remuneration",
+      "timeline": "Timeline",
+      "conditions": "Additional conditions",
+      "materials": "Materials",
+      "milestones": "Milestones & payments",
+      "orderDetails": "Order details",
+      "stageDetails": "Stage details",
+      "siteData": "Site handover data",
+      "defectDetails": "Defect details",
+      "changeDetails": "Change details",
+      "keyData": "Key handover data",
+      "warrantyData": "Warranty data",
+      "hiddenWorksData": "Hidden/covered works",
+      "damageData": "Damage data",
+      "annexDetails": "Annex details",
+      "estimateData": "Cost estimate data",
+      "scheduleData": "Schedule",
+      "materialsData": "Materials list",
+      "hseData": "H&S and property protection",
+      "statementData": "Statement content",
+      "objectData": "Object data",
+      "inspectionParties": "Inspection parties",
+      "inspectionScope": "Inspection scope",
+      "electricalScope": "Electrical installation",
+      "lightningScope": "Lightning protection",
+      "gasScope": "Gas installation",
+      "chimneyScope": "Chimney/flue ducts",
+      "findings": "Findings",
+      "datesSign": "Dates & signatures",
+      "workDetails": "Work details",
+      "acceptance": "Acceptance"
+    },
+    "fields": {
+      "contractorName": "Contractor / company",
+      "contractorNip": "Contractor VAT ID",
+      "contractorAddress": "Contractor address",
+      "contractorPhone": "Contractor phone",
+      "clientName": "Client / ordering party",
+      "clientAddress": "Client address",
+      "clientPhone": "Client phone",
+      "clientEmail": "Client email",
+      "projectTitle": "Subject of contract",
+      "projectAddress": "Site address",
+      "contractDate": "Contract date",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "netAmount": "Net amount (PLN)",
+      "totalAmount": "Total gross amount (PLN)",
+      "paymentTerms": "Payment terms",
+      "scopeDescription": "Scope of work description",
+      "additionalNotes": "Additional notes",
+      "vatInfo": "VAT information",
+      "marginRate": "Contractor margin (%)",
+      "billingCycle": "Billing cycle",
+      "materialsSource": "Materials source",
+      "materialsDesc": "Materials description",
+      "materialsDelivery": "Delivery and responsibility",
+      "milestonesDesc": "Stages and payments",
+      "advanceAmount": "Advance payment (PLN)",
+      "advanceDueDate": "Advance payment due date",
+      "acceptanceDate": "Acceptance date",
+      "defectsList": "Defects found",
+      "defectsDeadline": "Defects remedy deadline",
+      "acceptanceResult": "Acceptance result",
+      "warrantyPeriodMonths": "Warranty period (months)",
+      "stageName": "Stage name",
+      "stageAmount": "Stage value (PLN)",
+      "handoverDate": "Handover date",
+      "keysCount": "Number of keys",
+      "meterElectricity": "Electricity meter reading",
+      "meterWater": "Water meter reading",
+      "siteCondition": "Site condition at handover",
+      "accessRestrictions": "Access conditions",
+      "defectDate": "Defect report date",
+      "defectDescription": "Defect / fault description",
+      "urgency": "Urgency",
+      "immediateActions": "Immediate actions taken",
+      "repairDeadline": "Repair deadline",
+      "photosAttached": "Attached photos",
+      "changeDate": "Document date",
+      "changeReason": "Reason for change",
+      "originalScope": "Original scope",
+      "newScope": "New scope",
+      "timeImpact": "Time impact",
+      "costImpact": "Cost impact",
+      "keyTypes": "Key types",
+      "handoverDirection": "Handover direction",
+      "warrantyEndDate": "Warranty expiry date",
+      "issuesFound": "Issues found",
+      "worksDescription": "Hidden/covered works description",
+      "complianceConfirmed": "Compliance with drawings confirmed",
+      "damageDate": "Damage date",
+      "damageType": "Damage type",
+      "damageDescription": "Damage description",
+      "estimatedDamage": "Estimated damage value",
+      "baseContractDate": "Base contract date",
+      "annexNumber": "Annex number",
+      "changesDescription": "Changes description",
+      "newCompletionDate": "New completion date",
+      "newTotalAmount": "New total amount (PLN)",
+      "estimateDate": "Estimate date",
+      "itemsList": "Cost estimate items",
+      "scheduleTable": "Milestone schedule",
+      "materialsList": "Materials list",
+      "hseDate": "Document date",
+      "ppeProvided": "PPE provided",
+      "propertyProtection": "Property protection",
+      "emergencyContacts": "Emergency contacts",
+      "wasteDisposal": "Waste disposal",
+      "legalTitle": "Legal title to property",
+      "consents": "Consents granted",
+      "statementDate": "Statement date",
+      "objectAddress": "Object address",
+      "objectType": "Object type / purpose",
+      "ownerName": "Owner / manager",
+      "ownerAddress": "Owner address",
+      "inspectorName": "Inspector name",
+      "inspectorLicense": "License / qualification number",
+      "inspectionDate": "Inspection date",
+      "nextInspectionDate": "Next inspection date",
+      "findings": "Findings / defects noted",
+      "riskRating": "Risk rating",
+      "recommendedActions": "Recommended actions",
+      "attachmentsDesc": "Attachments (photos, measurements)",
+      "roofCondition": "Roof and flashing condition",
+      "facadeCondition": "Facade and external elements condition",
+      "chimneyCondition": "Chimney and ventilation condition",
+      "windowsDoorsCondition": "External windows and doors condition",
+      "structuralCondition": "Structural elements condition",
+      "installationsCondition": "Installations condition (visible)",
+      "staircaseCondition": "Staircase condition",
+      "overallAssessment": "Overall object assessment",
+      "switchboardCondition": "Switchboard condition",
+      "wiringCondition": "Wiring condition",
+      "measurementContinuity": "Protective circuit continuity measurement",
+      "measurementInsulation": "Insulation resistance measurement",
+      "rcdTest": "RCD test result",
+      "lightningRodsCondition": "Lightning rods condition",
+      "earthingResistance": "Earthing resistance",
+      "connectionsCondition": "Connections and joints condition",
+      "gasTightnessTest": "Gas tightness test",
+      "gasValvesCondition": "Gas valves and hoses condition",
+      "gasAppliances": "Gas appliances list",
+      "ventilationOk": "Room ventilation with gas installation OK",
+      "chimneyFlueCondition": "Chimney flue condition and clearance",
+      "chimneyOutlets": "Chimney outlet condition above roof",
+      "chimneyDeposits": "Deposits, moisture, damage",
+      "floorAreaM2": "Floor area (m²)",
+      "roofAreaM2": "Roof area (m²)",
+      "inspectionType": "Inspection type",
+      "roofOverall": "Overall roof condition",
+      "snowLoadAssessment": "Snow load assessment",
+      "skylightsCondition": "Skylights and smoke vents condition",
+      "drainageCondition": "Roof drainage condition"
+    },
+    "selectValues": {
+      "accepted": "Accepted without reservations",
+      "acceptedWithDefects": "Accepted with defects",
+      "rejected": "Rejected",
+      "contractor": "Contractor materials",
+      "client": "Client-supplied materials",
+      "mixed": "Partly contractor / partly client",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical",
+      "emergency": "Emergency — immediate action",
+      "owner": "Owner",
+      "tenant": "Tenant",
+      "coOwner": "Co-owner",
+      "attorney": "Attorney / proxy",
+      "contractorToClient": "From contractor to client",
+      "clientToContractor": "From client to contractor",
+      "flood": "Flood / water damage",
+      "fire": "Fire",
+      "mechanical": "Mechanical damage",
+      "other": "Other",
+      "fitForUse": "Fit for use",
+      "requiresRepairs": "Requires repairs",
+      "requiresDemolition": "Requires demolition",
+      "springBefore31May": "Spring inspection (before 31 May)",
+      "autumnBefore30Nov": "Autumn inspection (before 30 Nov)"
+    },
+    "contracts": {
+      "fixedPrice": {
+        "title": "Fixed-price construction contract",
+        "desc": "Lump-sum remuneration for works. The simplest form for a fixed price."
+      },
+      "costPlus": {
+        "title": "Cost-plus contract (cost + margin)",
+        "desc": "Materials and labour costs plus contractor margin."
+      },
+      "withMaterials": {
+        "title": "Contract with materials clause",
+        "desc": "Defines who supplies materials: contractor, client or both."
+      },
+      "withAdvance": {
+        "title": "Contract with advance & milestones",
+        "desc": "Stage payments with an advance. Clear payment schedule for both parties."
+      },
+      "simpleOrder": {
+        "title": "Simple order / mini-contract",
+        "desc": "Brief order confirmation for small renovation works."
+      }
+    },
+    "protocols": {
+      "finalAcceptance": {
+        "title": "Final acceptance protocol",
+        "desc": "Formal acceptance of all works. Documents completion status and defects."
+      },
+      "partialAcceptance": {
+        "title": "Partial / stage acceptance protocol",
+        "desc": "Acceptance of a completed stage. Basis for stage payment."
+      },
+      "siteHandover": {
+        "title": "Site handover / entry to site protocol",
+        "desc": "Keys, meters, site handover. Transfers responsibility."
+      },
+      "defectReport": {
+        "title": "Defect / fault report protocol",
+        "desc": "Documents a defect: description, urgency, immediate actions, repair deadline."
+      },
+      "necessityChange": {
+        "title": "Necessity / scope change protocol",
+        "desc": "Formal confirmation of scope change, impact on time and cost."
+      },
+      "keyHandover": {
+        "title": "Key handover protocol",
+        "desc": "Confirms handover of keys to the premises."
+      },
+      "warrantyInspection": {
+        "title": "Warranty / service inspection protocol",
+        "desc": "Inspection during warranty period, documents defects to remedy."
+      },
+      "hiddenWorks": {
+        "title": "Hidden / covered works protocol",
+        "desc": "Confirms hidden works before covering (reinforcement, sub-floor installations)."
+      },
+      "damage": {
+        "title": "Damage / flood protocol",
+        "desc": "Documents damage or flooding: scope, value, immediate actions."
+      }
+    },
+    "annexes": {
+      "contractChange": {
+        "title": "Contract annex (change of conditions)",
+        "desc": "Formally changes the deadline, cost or scope of the base contract."
+      },
+      "costEstimate": {
+        "title": "Cost estimate / scope list (attachment)",
+        "desc": "Detailed list of work items with prices. Attachment to contract."
+      },
+      "milestoneSchedule": {
+        "title": "Milestone schedule & payments",
+        "desc": "Table of stages with dates and payment amounts. Attachment to contract."
+      },
+      "materialsCard": {
+        "title": "Materials card / shopping list",
+        "desc": "Materials needed for the works with quantities and suppliers."
+      },
+      "hseChecklist": {
+        "title": "H&S and property protection checklist",
+        "desc": "Documents PPE and property protection measures for the client's premises."
+      },
+      "clientStatement": {
+        "title": "Client statement on rights / consents",
+        "desc": "Client confirms right to use the property and consents granted."
+      }
+    },
+    "compliance": {
+      "annualBuilding": {
+        "title": "Annual building inspection",
+        "desc": "Annual inspection of elements exposed to weather (Art. 62(1)(1) Building Law)."
+      },
+      "fiveYearBuilding": {
+        "title": "5-year building inspection",
+        "desc": "5-year inspection of overall technical condition and fitness for use (Art. 62(1)(2) Building Law)."
+      },
+      "electricalLightning": {
+        "title": "5-year electrical & lightning protection inspection",
+        "desc": "5-year inspection of electrical installations and lightning protection with measurements."
+      },
+      "gasChimney": {
+        "title": "Annual gas & chimney inspection",
+        "desc": "Annual gas tightness check and chimney/flue clearance inspection."
+      },
+      "largeBuilding": {
+        "title": "Large-area building inspection (twice yearly)",
+        "desc": "Buildings > 2000 m²: spring (before 31 May) and autumn (before 30 Nov) inspections (Art. 62(1)(1b) Building Law)."
+      }
+    }
+  },
+  "warranty": {
+    "sectionTitle": "Warranty",
+    "noWarranty": "No warranty card",
+    "noWarrantyDesc": "Add a warranty so the client receives a card with an expiry date.",
+    "addWarranty": "Add warranty",
+    "editWarranty": "Edit warranty",
+    "deleteWarranty": "Delete warranty",
+    "deleteConfirm": "Are you sure you want to delete the warranty card?",
+    "saveWarranty": "Save warranty",
+    "cancel": "Cancel",
+    "downloadPdf": "Download PDF card",
+    "saveToDossier": "Save to dossier",
+    "savedToDossier": "Saved to dossier (Guarantees)",
+    "sendEmail": "Send to client",
+    "emailSent": "Warranty card sent to {{email}}",
+    "emailError": "Send error. Please try again.",
+    "generating": "Generating PDF…",
+    "expiresIn": "Expires in {{days}} days",
+    "expired": "Warranty expired",
+    "active": "Active",
+    "fields": {
+      "clientName": "Client name",
+      "clientEmail": "Client e-mail",
+      "contactPhone": "Contact phone",
+      "warrantyMonths": "Warranty period (months)",
+      "startDate": "Start date",
+      "scopeOfWork": "Scope of works covered",
+      "exclusions": "Exclusions"
+    },
+    "placeholders": {
+      "clientName": "e.g. John Smith",
+      "clientEmail": "e.g. john@smith.com",
+      "contactPhone": "e.g. +48 600 000 000",
+      "scopeOfWork": "Describe the scope of works covered by the warranty…",
+      "exclusions": "e.g. mechanical damage, flooding…"
+    },
+    "pdf": {
+      "title": "WARRANTY CARD",
+      "docNo": "Document no.",
+      "issueDate": "Issue date",
+      "sectionParties": "Warranty parties",
+      "warrantor": "Warrantor (Contractor)",
+      "phone": "Phone",
+      "beneficiary": "Warranty beneficiary",
+      "email": "E-mail",
+      "contactPhone": "Contact phone",
+      "sectionObject": "Subject of warranty",
+      "projectName": "Project / works name",
+      "sectionPeriod": "Warranty period",
+      "startDate": "Start date",
+      "endDate": "Expiry date",
+      "duration": "Duration",
+      "months": "months",
+      "sectionScope": "Warranty scope",
+      "sectionExclusions": "Exclusions",
+      "sectionLegal": "Legal basis",
+      "legalText": "Warranty granted pursuant to Art. 577–582 of the Polish Civil Code (Journal of Laws 1964 No. 16, item 93, as amended). Warranty rights do not exclude claims under statutory implied warranty (Art. 579 CC). The warrantor undertakes to remedy defects free of charge within 30 days of notification.",
+      "sigWarrantor": "Warrantor signature",
+      "sigBeneficiary": "Beneficiary signature",
+      "footerGenerated": "generated"
     }
   }
 }
