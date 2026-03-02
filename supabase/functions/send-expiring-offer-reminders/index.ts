@@ -261,13 +261,132 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ── PR-18: Warranty expiry reminders (T-30 and T-7) ─────────────────────
+
+    const now = new Date();
+
+    // Helper: ISO date string for today + N days
+    const isoDatePlusDays = (n: number): string => {
+      const d = new Date(now);
+      d.setDate(d.getDate() + n);
+      return d.toISOString().split('T')[0];
+    };
+
+    const warrantyErrors: string[] = [];
+    const warrantySent: string[] = [];
+
+    for (const [daysAhead, reminderField] of [
+      [30, 'reminder_30_sent_at'],
+      [7,  'reminder_7_sent_at'],
+    ] as [number, string][]) {
+      const targetDate = isoDatePlusDays(daysAhead);
+
+      // project_warranties has computed end_date in the view
+      const { data: expiringWarranties, error: wErr } = await supabase
+        .from('project_warranties_with_end')
+        .select('id, user_id, client_email, client_name, end_date, reminder_30_sent_at, reminder_7_sent_at')
+        .eq('end_date', targetDate)
+        .is(reminderField, null)
+        .not('client_email', 'is', null);
+
+      if (wErr) {
+        console.error(`warranty reminder T-${daysAhead} fetch error:`, wErr);
+        warrantyErrors.push(`T-${daysAhead} fetch: ${wErr.message}`);
+        continue;
+      }
+
+      console.log(`Found ${expiringWarranties?.length ?? 0} warranties expiring in ${daysAhead} days`);
+
+      for (const w of (expiringWarranties ?? [])) {
+        try {
+          const clientEmail = w.client_email as string;
+          const clientName  = (w.client_name as string | null) ?? 'Kliencie';
+          const endDateStr  = new Date(w.end_date as string).toLocaleDateString('pl-PL', {
+            year: 'numeric', month: 'long', day: 'numeric',
+          });
+
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('company_name')
+            .eq('user_id', w.user_id)
+            .maybeSingle();
+          const companyName = (profile?.company_name as string | null) ?? 'Wykonawca';
+
+          const subject = daysAhead === 30
+            ? `Gwarancja wygasa za 30 dni — ${companyName}`
+            : `Gwarancja wygasa za 7 dni — ${companyName}`;
+
+          const emailHtml = `<!DOCTYPE html>
+<html lang="pl">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;font-family:'Segoe UI',Tahoma,sans-serif;background:#f5f5f5;">
+  <table role="presentation" style="width:100%;border-collapse:collapse;">
+    <tr><td align="center" style="padding:40px 0;">
+      <table role="presentation" style="width:600px;max-width:100%;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,.1);">
+        <tr><td style="background:linear-gradient(135deg,#1e5ac8,#1348a8);padding:30px;text-align:center;">
+          <h1 style="color:#fff;margin:0;font-size:22px;">🛡️ Przypomnienie o gwarancji</h1>
+        </td></tr>
+        <tr><td style="padding:36px 30px;">
+          <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 16px;">
+            Szanowny/a <strong>${clientName}</strong>,
+          </p>
+          <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 20px;">
+            Gwarancja udzielona przez firmę <strong>${companyName}</strong> wygasa za
+            <strong style="color:#1e5ac8;">${daysAhead} dni</strong> — dnia <strong>${endDateStr}</strong>.
+          </p>
+          <div style="background:#eff6ff;border-left:4px solid #1e5ac8;padding:14px 18px;margin:20px 0;border-radius:0 8px 8px 0;">
+            <p style="color:#1e40af;font-size:14px;margin:0;">
+              Jeśli zauważyłeś/aś usterki lub problemy, skontaktuj się z wykonawcą przed upływem gwarancji.
+            </p>
+          </div>
+          <p style="color:#6b7280;font-size:13px;margin:24px 0 0;">
+            Ta wiadomość została wysłana automatycznie przez system Majster.AI
+          </p>
+        </td></tr>
+        <tr><td style="background:#f9fafb;padding:20px 30px;text-align:center;border-top:1px solid #e5e7eb;">
+          <p style="color:#9ca3af;font-size:12px;margin:0;">© ${new Date().getFullYear()} ${companyName}</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+
+          const emailResp = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from: 'Majster.AI <noreply@resend.dev>', to: [clientEmail], subject, html: emailHtml }),
+          });
+
+          if (!emailResp.ok) {
+            const txt = await emailResp.text();
+            throw new Error(`Resend: ${txt}`);
+          }
+
+          // Mark reminder sent
+          await supabase
+            .from('project_warranties')
+            .update({ [reminderField]: new Date().toISOString() })
+            .eq('id', w.id);
+
+          warrantySent.push(`${clientEmail} (T-${daysAhead})`);
+          console.log(`Warranty reminder T-${daysAhead} sent to ${clientEmail}`);
+
+        } catch (wEmailErr: unknown) {
+          const msg = wEmailErr instanceof Error ? wEmailErr.message : 'Unknown error';
+          console.error(`Warranty reminder error for ${w.id}:`, wEmailErr);
+          warrantyErrors.push(`${w.id}: ${msg}`);
+        }
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
-        message: `Sent ${sentEmails.length} reminder emails`,
-        sent: sentEmails.length,
-        emails: sentEmails,
-        errors: errors.length > 0 ? errors : undefined,
+        message: `Sent ${sentEmails.length} offer + ${warrantySent.length} warranty reminders`,
+        offersSent: sentEmails.length,
+        warrantiesSent: warrantySent.length,
+        emails: [...sentEmails, ...warrantySent],
+        errors: [...errors, ...warrantyErrors].length > 0 ? [...errors, ...warrantyErrors] : undefined,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

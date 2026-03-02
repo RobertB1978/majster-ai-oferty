@@ -3578,5 +3578,67 @@
         "desc": "Buildings > 2000 m²: spring (before 31 May) and autumn (before 30 Nov) inspections (Art. 62(1)(1b) Building Law)."
       }
     }
+  },
+  "warranty": {
+    "sectionTitle": "Warranty",
+    "noWarranty": "No warranty card",
+    "noWarrantyDesc": "Add a warranty so the client receives a card with an expiry date.",
+    "addWarranty": "Add warranty",
+    "editWarranty": "Edit warranty",
+    "deleteWarranty": "Delete warranty",
+    "deleteConfirm": "Are you sure you want to delete the warranty card?",
+    "saveWarranty": "Save warranty",
+    "cancel": "Cancel",
+    "downloadPdf": "Download PDF card",
+    "saveToDossier": "Save to dossier",
+    "savedToDossier": "Saved to dossier (Guarantees)",
+    "sendEmail": "Send to client",
+    "emailSent": "Warranty card sent to {{email}}",
+    "emailError": "Send error. Please try again.",
+    "generating": "Generating PDF…",
+    "expiresIn": "Expires in {{days}} days",
+    "expired": "Warranty expired",
+    "active": "Active",
+    "fields": {
+      "clientName": "Client name",
+      "clientEmail": "Client e-mail",
+      "contactPhone": "Contact phone",
+      "warrantyMonths": "Warranty period (months)",
+      "startDate": "Start date",
+      "scopeOfWork": "Scope of works covered",
+      "exclusions": "Exclusions"
+    },
+    "placeholders": {
+      "clientName": "e.g. John Smith",
+      "clientEmail": "e.g. john@smith.com",
+      "contactPhone": "e.g. +48 600 000 000",
+      "scopeOfWork": "Describe the scope of works covered by the warranty…",
+      "exclusions": "e.g. mechanical damage, flooding…"
+    },
+    "pdf": {
+      "title": "WARRANTY CARD",
+      "docNo": "Document no.",
+      "issueDate": "Issue date",
+      "sectionParties": "Warranty parties",
+      "warrantor": "Warrantor (Contractor)",
+      "phone": "Phone",
+      "beneficiary": "Warranty beneficiary",
+      "email": "E-mail",
+      "contactPhone": "Contact phone",
+      "sectionObject": "Subject of warranty",
+      "projectName": "Project / works name",
+      "sectionPeriod": "Warranty period",
+      "startDate": "Start date",
+      "endDate": "Expiry date",
+      "duration": "Duration",
+      "months": "months",
+      "sectionScope": "Warranty scope",
+      "sectionExclusions": "Exclusions",
+      "sectionLegal": "Legal basis",
+      "legalText": "Warranty granted pursuant to Art. 577–582 of the Polish Civil Code (Journal of Laws 1964 No. 16, item 93, as amended). Warranty rights do not exclude claims under statutory implied warranty (Art. 579 CC). The warrantor undertakes to remedy defects free of charge within 30 days of notification.",
+      "sigWarrantor": "Warrantor signature",
+      "sigBeneficiary": "Beneficiary signature",
+      "footerGenerated": "generated"
+    }
   }
 }

@@ -1,10 +1,11 @@
 /**
- * ProjectHub — PR-13 + PR-15 + PR-16
+ * ProjectHub — PR-13 + PR-15 + PR-16 + PR-18
  *
  * Project detail "hub" screen with accordion sections.
- * Sections: Stages | Costs | Documents (Dossier) | Photo Report | Acceptance Checklist
+ * Sections: Stages | Costs | Documents (Dossier) | Photo Report | Acceptance Checklist | Warranty
  * PR-15: Photo Report (BEFORE/DURING/AFTER/ISSUE) + Checklist + Signature.
  * PR-16: Dossier — document folder with categories, upload, export, share link.
+ * PR-18: Warranty card — PDF generation, save to dossier, email to client.
  * Works with FF_NEW_SHELL ON/OFF.
  */
 
@@ -30,6 +31,7 @@ import { BurnBarSection } from '@/components/costs/BurnBarSection';
 import { PhotoReportPanel } from '@/components/photos/PhotoReportPanel';
 import { AcceptanceChecklistPanel } from '@/components/photos/AcceptanceChecklistPanel';
 import { DossierPanel } from '@/components/documents/DossierPanel';
+import { WarrantySection } from '@/components/documents/WarrantySection';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -40,7 +42,7 @@ import { cn } from '@/lib/utils';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type SectionId = 'stages' | 'costs' | 'documents' | 'photoReport' | 'checklist';
+type SectionId = 'stages' | 'costs' | 'documents' | 'photoReport' | 'checklist' | 'warranty';
 
 interface AccordionSection {
   id: SectionId;
@@ -53,6 +55,7 @@ const SECTIONS: AccordionSection[] = [
   { id: 'documents',   titleKey: 'projectsV2.hub.sectionDocuments' },
   { id: 'photoReport', titleKey: 'projectsV2.hub.sectionPhotoReport' },
   { id: 'checklist',   titleKey: 'projectsV2.hub.sectionChecklist' },
+  { id: 'warranty',    titleKey: 'warranty.sectionTitle' },
 ];
 
 const STATUS_BADGE: Record<string, string> = {
@@ -402,6 +405,12 @@ export default function ProjectHub() {
                   )}
                   {section.id === 'checklist' && (
                     <AcceptanceChecklistPanel projectId={project.id} />
+                  )}
+                  {section.id === 'warranty' && (
+                    <WarrantySection
+                      projectId={project.id}
+                      projectTitle={project.title}
+                    />
                   )}
                 </div>
               )}

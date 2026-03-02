@@ -3578,5 +3578,67 @@
         "desc": "Obiekty > 2000 m²: przegląd wiosenny (przed 31.05) i jesienny (przed 30.11) (art. 62 ust. 1 pkt 1b PB)."
       }
     }
+  },
+  "warranty": {
+    "sectionTitle": "Gwarancja",
+    "noWarranty": "Brak karty gwarancyjnej",
+    "noWarrantyDesc": "Dodaj gwarancję, aby klient otrzymał kartę z datą ważności.",
+    "addWarranty": "Dodaj gwarancję",
+    "editWarranty": "Edytuj gwarancję",
+    "deleteWarranty": "Usuń gwarancję",
+    "deleteConfirm": "Czy na pewno chcesz usunąć kartę gwarancyjną?",
+    "saveWarranty": "Zapisz gwarancję",
+    "cancel": "Anuluj",
+    "downloadPdf": "Pobierz kartę PDF",
+    "saveToDossier": "Zapisz do teczki",
+    "savedToDossier": "Zapisano do teczki (Gwarancje)",
+    "sendEmail": "Wyślij do klienta",
+    "emailSent": "Karta gwarancyjna wysłana na {{email}}",
+    "emailError": "Błąd wysyłki. Spróbuj ponownie.",
+    "generating": "Generowanie PDF…",
+    "expiresIn": "Wygasa za {{days}} dni",
+    "expired": "Gwarancja wygasła",
+    "active": "Aktywna",
+    "fields": {
+      "clientName": "Imię i nazwisko klienta",
+      "clientEmail": "E-mail klienta",
+      "contactPhone": "Telefon kontaktowy",
+      "warrantyMonths": "Okres gwarancji (miesiące)",
+      "startDate": "Data rozpoczęcia",
+      "scopeOfWork": "Zakres robót objętych gwarancją",
+      "exclusions": "Wyłączenia z gwarancji"
+    },
+    "placeholders": {
+      "clientName": "np. Jan Kowalski",
+      "clientEmail": "np. jan@kowalski.pl",
+      "contactPhone": "np. +48 600 000 000",
+      "scopeOfWork": "Opisz zakres robót objętych gwarancją…",
+      "exclusions": "np. uszkodzenia mechaniczne, zalania…"
+    },
+    "pdf": {
+      "title": "KARTA GWARANCYJNA",
+      "docNo": "Nr dokumentu",
+      "issueDate": "Data wystawienia",
+      "sectionParties": "Strony umowy gwarancyjnej",
+      "warrantor": "Gwarant (Wykonawca)",
+      "phone": "Telefon",
+      "beneficiary": "Uprawniony z gwarancji",
+      "email": "E-mail",
+      "contactPhone": "Tel. kontaktowy",
+      "sectionObject": "Przedmiot gwarancji",
+      "projectName": "Nazwa projektu / robót",
+      "sectionPeriod": "Okres gwarancji",
+      "startDate": "Data rozpoczęcia",
+      "endDate": "Data wygaśnięcia",
+      "duration": "Czas trwania",
+      "months": "miesięcy",
+      "sectionScope": "Zakres gwarancji",
+      "sectionExclusions": "Wyłączenia",
+      "sectionLegal": "Podstawa prawna",
+      "legalText": "Gwarancja udzielona na podstawie art. 577–582 Kodeksu cywilnego (Dz.U. 1964 nr 16 poz. 93 z późn. zm.). Uprawnienia z tytułu gwarancji nie wyłączają prawa do roszczeń z tytułu rękojmi (art. 579 KC). Gwarant zobowiązuje się do bezpłatnego usunięcia wady w terminie 30 dni od zgłoszenia.",
+      "sigWarrantor": "Podpis Gwaranta",
+      "sigBeneficiary": "Podpis Uprawnionego",
+      "footerGenerated": "wygenerowano"
+    }
   }
 }
