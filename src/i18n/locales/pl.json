@@ -2731,6 +2731,7 @@
       "groupOrg": "Organizacja",
       "groupSettings": "Ustawienia",
       "documents": "Dokumenty",
+      "documentTemplates": "Wzory dokumentów",
       "calendar": "Kalendarz",
       "guarantees": "Gwarancje",
       "profile": "Profil firmy",
@@ -3232,6 +3233,350 @@
       "expiredDesc": "Ten link udostepniania wygasl. Skontaktuj sie z wykonawca, aby uzyskac nowy link.",
       "notFoundTitle": "Link nie znaleziony",
       "notFoundDesc": "Ten link jest nieprawidlowy lub zostal odwolany."
+    }
+  },
+  "docTemplates": {
+    "page": {
+      "title": "Biblioteka wzorów dokumentów",
+      "subtitle": "Umowy, protokoły, załączniki i przeglądy techniczne",
+      "projectContext": "Wypełnione pola zostaną powiązane z wybranym projektem"
+    },
+    "library": {
+      "searchPlaceholder": "Szukaj wzoru dokumentu...",
+      "searchAriaLabel": "Wyszukaj wzór dokumentu",
+      "noResults": "Brak wzorów pasujących do wyszukiwania",
+      "referencesCount": "{{count}} referencje prawne"
+    },
+    "category": {
+      "CONTRACTS": "Umowy",
+      "PROTOCOLS": "Protokoły",
+      "ANNEXES": "Załączniki",
+      "COMPLIANCE": "Przeglądy techniczne",
+      "OTHER": "Inne"
+    },
+    "editor": {
+      "autofill": "Auto-wypełnij",
+      "autofillAll": "Wypełnij z danych",
+      "autofillAllDone": "Dane zostały wstawione automatycznie",
+      "autofillField": "Wypełnij pole {{field}} z danych projektu",
+      "selectPlaceholder": "Wybierz...",
+      "checkboxYes": "Tak",
+      "references": "Podstawa prawna / referencje",
+      "generatePdf": "Generuj PDF",
+      "generatingPdf": "Generowanie...",
+      "pdfDownloaded": "PDF pobrany pomyślnie",
+      "pdfError": "Błąd generowania PDF. Spróbuj ponownie.",
+      "saveToDossier": "Zapisz do teczki",
+      "saving": "Zapisywanie...",
+      "savedToDossier": "Dokument zapisany do teczki projektu",
+      "saveError": "Błąd zapisu. Spróbuj ponownie.",
+      "saveDraft": "Zapisz szkic",
+      "draftSaved": "Szkic zapisany",
+      "requiredFields": "Uzupełnij wymagane pola: {{fields}}",
+      "projectRequired": "Wybierz projekt aby zapisać do teczki"
+    },
+    "pdf": {
+      "docNumber": "Nr dokumentu",
+      "generatedAt": "Data wygenerowania",
+      "contractorSignature": "Podpis wykonawcy",
+      "clientSignature": "Podpis klienta/zamawiającego",
+      "references": "Podstawa prawna",
+      "page": "Strona",
+      "unknownCompany": "Firma"
+    },
+    "section": {
+      "parties": "Strony umowy",
+      "scope": "Zakres prac",
+      "financial": "Wynagrodzenie",
+      "timeline": "Terminy",
+      "conditions": "Warunki dodatkowe",
+      "materials": "Materiały",
+      "milestones": "Etapy i płatności",
+      "orderDetails": "Szczegóły zlecenia",
+      "stageDetails": "Szczegóły etapu",
+      "siteData": "Dane obiektu i przekazania",
+      "defectDetails": "Szczegóły usterki",
+      "changeDetails": "Szczegóły zmiany",
+      "keyData": "Dane przekazania kluczy",
+      "warrantyData": "Dane gwarancji",
+      "hiddenWorksData": "Roboty zanikające",
+      "damageData": "Dane szkody",
+      "annexDetails": "Szczegóły aneksu",
+      "estimateData": "Dane kosztorysu",
+      "scheduleData": "Harmonogram",
+      "materialsData": "Lista materiałów",
+      "hseData": "BHP i zabezpieczenia",
+      "statementData": "Treść oświadczenia",
+      "objectData": "Dane obiektu",
+      "inspectionParties": "Strony przeglądu",
+      "inspectionScope": "Zakres przeglądu",
+      "electricalScope": "Instalacja elektryczna",
+      "lightningScope": "Instalacja odgromowa",
+      "gasScope": "Instalacja gazowa",
+      "chimneyScope": "Przewody kominowe",
+      "findings": "Wyniki / ustalenia",
+      "datesSign": "Daty i podpisy",
+      "workDetails": "Szczegóły prac",
+      "acceptance": "Odbiór"
+    },
+    "fields": {
+      "contractorName": "Wykonawca / firma",
+      "contractorNip": "NIP wykonawcy",
+      "contractorAddress": "Adres wykonawcy",
+      "contractorPhone": "Telefon wykonawcy",
+      "clientName": "Zamawiający / klient",
+      "clientAddress": "Adres klienta",
+      "clientPhone": "Telefon klienta",
+      "clientEmail": "E-mail klienta",
+      "projectTitle": "Nazwa przedmiotu umowy",
+      "projectAddress": "Adres inwestycji",
+      "contractDate": "Data zawarcia umowy",
+      "startDate": "Termin rozpoczęcia",
+      "endDate": "Termin zakończenia",
+      "netAmount": "Kwota netto (PLN)",
+      "totalAmount": "Kwota całkowita brutto (PLN)",
+      "paymentTerms": "Warunki płatności",
+      "scopeDescription": "Opis zakresu prac",
+      "additionalNotes": "Uwagi dodatkowe",
+      "vatInfo": "Informacja o VAT",
+      "marginRate": "Marża wykonawcy (%)",
+      "billingCycle": "Cykl rozliczeniowy",
+      "materialsSource": "Źródło materiałów",
+      "materialsDesc": "Opis materiałów",
+      "materialsDelivery": "Dostawa i odpowiedzialność za materiały",
+      "milestonesDesc": "Etapy prac i płatności",
+      "advanceAmount": "Zaliczka (PLN)",
+      "advanceDueDate": "Termin płatności zaliczki",
+      "acceptanceDate": "Data odbioru",
+      "defectsList": "Stwierdzone usterki",
+      "defectsDeadline": "Termin usunięcia usterek",
+      "acceptanceResult": "Wynik odbioru",
+      "warrantyPeriodMonths": "Okres gwarancji (miesiące)",
+      "stageName": "Nazwa etapu",
+      "stageAmount": "Wartość etapu (PLN)",
+      "handoverDate": "Data przekazania",
+      "keysCount": "Liczba kluczy",
+      "meterElectricity": "Stan licznika prądu",
+      "meterWater": "Stan wodomierza",
+      "siteCondition": "Stan lokalu przy przekazaniu",
+      "accessRestrictions": "Warunki dostępu",
+      "defectDate": "Data stwierdzenia usterki",
+      "defectDescription": "Opis usterki / awarii",
+      "urgency": "Pilność",
+      "immediateActions": "Działania doraźne",
+      "repairDeadline": "Termin naprawy",
+      "photosAttached": "Załączone zdjęcia",
+      "changeDate": "Data sporządzenia",
+      "changeReason": "Przyczyna konieczności",
+      "originalScope": "Zakres pierwotny",
+      "newScope": "Zakres po zmianie",
+      "timeImpact": "Wpływ na termin",
+      "costImpact": "Wpływ na koszt",
+      "keyTypes": "Rodzaj kluczy",
+      "handoverDirection": "Kierunek przekazania",
+      "warrantyEndDate": "Data wygaśnięcia gwarancji",
+      "issuesFound": "Stwierdzone usterki",
+      "worksDescription": "Opis robót zanikających",
+      "complianceConfirmed": "Zgodność z projektem potwierdzona",
+      "damageDate": "Data szkody",
+      "damageType": "Rodzaj szkody",
+      "damageDescription": "Opis szkody",
+      "estimatedDamage": "Szacowana wartość szkody",
+      "baseContractDate": "Data umowy podstawowej",
+      "annexNumber": "Numer aneksu",
+      "changesDescription": "Opis zmian",
+      "newCompletionDate": "Nowy termin zakończenia",
+      "newTotalAmount": "Nowa kwota całkowita (PLN)",
+      "estimateDate": "Data kosztorysu",
+      "itemsList": "Lista pozycji kosztorysu",
+      "scheduleTable": "Harmonogram etapów",
+      "materialsList": "Lista materiałów",
+      "hseDate": "Data sporządzenia",
+      "ppeProvided": "Dostarczone środki ochrony (ŚOI)",
+      "propertyProtection": "Zabezpieczenie mienia",
+      "emergencyContacts": "Kontakty alarmowe",
+      "wasteDisposal": "Wywóz odpadów",
+      "legalTitle": "Tytuł prawny do lokalu",
+      "consents": "Udzielone zgody",
+      "statementDate": "Data oświadczenia",
+      "objectAddress": "Adres obiektu",
+      "objectType": "Typ / przeznaczenie obiektu",
+      "ownerName": "Właściciel / zarządca",
+      "ownerAddress": "Adres właściciela",
+      "inspectorName": "Imię i nazwisko inspektora",
+      "inspectorLicense": "Nr uprawnień / kwalifikacji",
+      "inspectionDate": "Data przeglądu",
+      "nextInspectionDate": "Termin następnego przeglądu",
+      "findings": "Stwierdzone nieprawidłowości",
+      "riskRating": "Ocena ryzyka",
+      "recommendedActions": "Zalecane działania",
+      "attachmentsDesc": "Załączniki (zdjęcia, pomiary)",
+      "roofCondition": "Stan dachu i obróbek blacharskich",
+      "facadeCondition": "Stan elewacji i elementów zewnętrznych",
+      "chimneyCondition": "Stan kominów i wentylacji",
+      "windowsDoorsCondition": "Stan okien i drzwi zewnętrznych",
+      "structuralCondition": "Stan elementów konstrukcyjnych",
+      "installationsCondition": "Stan instalacji (widoczne)",
+      "staircaseCondition": "Stan klatki schodowej",
+      "overallAssessment": "Ocena ogólna obiektu",
+      "switchboardCondition": "Stan rozdzielnic",
+      "wiringCondition": "Stan okablowania",
+      "measurementContinuity": "Pomiar ciągłości obwodów ochronnych",
+      "measurementInsulation": "Pomiar rezystancji izolacji",
+      "rcdTest": "Test wyłączników RCD",
+      "lightningRodsCondition": "Stan zwodów pionowych i poziomych",
+      "earthingResistance": "Rezystancja uziemienia",
+      "connectionsCondition": "Stan połączeń i złączy",
+      "gasTightnessTest": "Próba szczelności instalacji gazowej",
+      "gasValvesCondition": "Stan kurków i węży gazowych",
+      "gasAppliances": "Lista urządzeń gazowych",
+      "ventilationOk": "Wentylacja pomieszczenia z instalacją gazową w porządku",
+      "chimneyFlueCondition": "Drożność i stan przewodów kominowych",
+      "chimneyOutlets": "Stan wylotów ponad dachem",
+      "chimneyDeposits": "Osady, zawilgocenie, uszkodzenia",
+      "floorAreaM2": "Powierzchnia zabudowy (m²)",
+      "roofAreaM2": "Powierzchnia dachu (m²)",
+      "inspectionType": "Typ przeglądu",
+      "roofOverall": "Stan całości połaci dachowej",
+      "snowLoadAssessment": "Ocena przeciążenia śniegiem",
+      "skylightsCondition": "Stan świetlików i klap dymowych",
+      "drainageCondition": "Stan odwodnienia dachowego"
+    },
+    "selectValues": {
+      "accepted": "Przyjęty bez zastrzeżeń",
+      "acceptedWithDefects": "Przyjęty z usterkami",
+      "rejected": "Odrzucony",
+      "contractor": "Materiały wykonawcy",
+      "client": "Materiały powierzone przez klienta",
+      "mixed": "Częściowo wykonawcy / częściowo klienta",
+      "low": "Niskie",
+      "medium": "Średnie",
+      "high": "Wysokie",
+      "critical": "Krytyczne",
+      "emergency": "Awaria — natychmiastowa interwencja",
+      "owner": "Właściciel",
+      "tenant": "Najemca",
+      "coOwner": "Współwłaściciel",
+      "attorney": "Pełnomocnik",
+      "contractorToClient": "Od wykonawcy do klienta",
+      "clientToContractor": "Od klienta do wykonawcy",
+      "flood": "Zalanie / woda",
+      "fire": "Pożar",
+      "mechanical": "Uszkodzenie mechaniczne",
+      "other": "Inne",
+      "fitForUse": "Zdatny do użytkowania",
+      "requiresRepairs": "Wymaga napraw",
+      "requiresDemolition": "Wymaga rozbiórki",
+      "springBefore31May": "Wiosenny (przed 31 maja)",
+      "autumnBefore30Nov": "Jesienny (przed 30 listopada)"
+    },
+    "contracts": {
+      "fixedPrice": {
+        "title": "Umowa o roboty budowlane — ryczałt",
+        "desc": "Wynagrodzenie ryczałtowe za wykonanie prac. Najprostsza forma umowy dla stałej ceny."
+      },
+      "costPlus": {
+        "title": "Umowa kosztorysowa (koszt + marża)",
+        "desc": "Rozliczenie kosztów materiałów i robocizny powiększonych o marżę wykonawcy."
+      },
+      "withMaterials": {
+        "title": "Umowa z klauzulą materiałową",
+        "desc": "Umowa określająca kto dostarcza materiały: wykonawca, klient lub obaj."
+      },
+      "withAdvance": {
+        "title": "Umowa z zaliczką i etapami",
+        "desc": "Płatność w etapach z zaliczką. Jasny harmonogram płatności dla obu stron."
+      },
+      "simpleOrder": {
+        "title": "Zlecenie / mini-umowa",
+        "desc": "Prosta forma potwierdzenia zlecenia dla drobnych prac remontowych."
+      }
+    },
+    "protocols": {
+      "finalAcceptance": {
+        "title": "Protokół odbioru końcowego",
+        "desc": "Formalny odbiór całości prac. Dokumentuje stan wykonania i ewentualne usterki."
+      },
+      "partialAcceptance": {
+        "title": "Protokół odbioru częściowego (etapowego)",
+        "desc": "Odbiór zakończonego etapu robót. Podstawa płatności częściowej."
+      },
+      "siteHandover": {
+        "title": "Protokół przekazania frontu robót",
+        "desc": "Przekazanie kluczy, liczników i placu budowy. Dokument zdania odpowiedzialności."
+      },
+      "defectReport": {
+        "title": "Protokół zgłoszenia usterki / awarii",
+        "desc": "Dokumentacja usterki: opis, pilność, działania doraźne, termin naprawy."
+      },
+      "necessityChange": {
+        "title": "Protokół konieczności (zmiana zakresu)",
+        "desc": "Formalne potwierdzenie zmiany zakresu prac, wpływ na czas i koszt."
+      },
+      "keyHandover": {
+        "title": "Protokół przekazania kluczy",
+        "desc": "Potwierdzenie przekazania kluczy do obiektu z obu stron."
+      },
+      "warrantyInspection": {
+        "title": "Protokół przeglądu gwarancyjnego / serwisowego",
+        "desc": "Przegląd w okresie gwarancji, dokumentacja usterek do usunięcia."
+      },
+      "hiddenWorks": {
+        "title": "Protokół robót zanikających (zakrywanych)",
+        "desc": "Potwierdzenie wykonania robót ulegających zakryciu (zbrojenie, instalacje)."
+      },
+      "damage": {
+        "title": "Protokół szkody / zalania",
+        "desc": "Dokumentacja szkody lub zalania: zakres, wartość, działania doraźne."
+      }
+    },
+    "annexes": {
+      "contractChange": {
+        "title": "Aneks do umowy (zmiana warunków)",
+        "desc": "Formalnie zmienia termin, koszt lub zakres umowy podstawowej."
+      },
+      "costEstimate": {
+        "title": "Kosztorys / wykaz prac (załącznik)",
+        "desc": "Szczegółowa lista pozycji robót z cenami. Załącznik do umowy."
+      },
+      "milestoneSchedule": {
+        "title": "Harmonogram etapów i płatności",
+        "desc": "Tabela etapów z terminami i kwotami płatności. Załącznik do umowy."
+      },
+      "materialsCard": {
+        "title": "Karta materiałowa / lista zakupów",
+        "desc": "Lista materiałów potrzebnych do realizacji prac z ilościami i dostawcami."
+      },
+      "hseChecklist": {
+        "title": "Checklista BHP i zabezpieczenie mienia",
+        "desc": "Dokumentacja środków BHP i zabezpieczenia mieszkania klienta."
+      },
+      "clientStatement": {
+        "title": "Oświadczenie klienta o prawie do dysponowania lokalem",
+        "desc": "Klient potwierdza prawo do dysponowania nieruchomością i udzielone zgody."
+      }
+    },
+    "compliance": {
+      "annualBuilding": {
+        "title": "Przegląd roczny budowlany",
+        "desc": "Coroczny przegląd elementów narażonych na warunki atmosferyczne (art. 62 ust. 1 pkt 1 PB)."
+      },
+      "fiveYearBuilding": {
+        "title": "Przegląd pięcioletni budowlany",
+        "desc": "Pięcioletni przegląd stanu technicznego i przydatności do użytkowania całego obiektu (art. 62 ust. 1 pkt 2 PB)."
+      },
+      "electricalLightning": {
+        "title": "Przegląd 5-letni instalacji elektrycznej i odgromowej",
+        "desc": "Pięcioletni przegląd instalacji elektrycznych i ochrony odgromowej z pomiarami."
+      },
+      "gasChimney": {
+        "title": "Przegląd roczny instalacji gazowej i kominów",
+        "desc": "Coroczny przegląd szczelności instalacji gazowej i drożności przewodów kominowych."
+      },
+      "largeBuilding": {
+        "title": "Przegląd obiektu wielkopowierzchniowego (2× w roku)",
+        "desc": "Obiekty > 2000 m²: przegląd wiosenny (przed 31.05) i jesienny (przed 30.11) (art. 62 ust. 1 pkt 1b PB)."
+      }
     }
   }
 }

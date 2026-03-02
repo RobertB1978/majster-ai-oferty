@@ -79,6 +79,8 @@ const ProjectHub = lazy(() => import("./pages/ProjectHub"));
 const ProjectPublicStatus = lazy(() => import("./pages/ProjectPublicStatus"));
 // === ZONE 2e: DOSSIER PR-16 ===
 const DossierPublicPage = lazy(() => import("./pages/DossierPublicPage"));
+// === ZONE 2f: DOCUMENT TEMPLATES PR-17 ===
+const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
 
 // === ZONE 3: OWNER CONSOLE (lazy - admin only, separate chunk) ===
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
@@ -250,6 +252,8 @@ const App = () => (
                     <Route path="plan" element={<Plan />} />
                     <Route path="profile" element={<CompanyProfile />} />
                     <Route path="settings" element={<Settings />} />
+                    {/* PR-17: Document Templates Library */}
+                    <Route path="document-templates" element={<DocumentTemplates />} />
 
                     {/* Canonical redirects for legacy/wrong paths within /app */}
                     <Route path="clients" element={<Navigate to="/app/customers" replace />} />

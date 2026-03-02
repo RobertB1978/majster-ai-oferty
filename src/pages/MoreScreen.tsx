@@ -10,6 +10,7 @@ import {
   Trash2,
   CalendarDays,
   Shield,
+  FileText,
   ChevronRight,
   type LucideIcon,
 } from 'lucide-react';
@@ -33,9 +34,10 @@ const MORE_GROUPS: MoreGroup[] = [
   {
     titleKey: 'newShell.more.groupDocs',
     items: [
-      { id: 'documents',  labelKey: 'newShell.more.documents',  icon: FolderOpen,    placeholder: true },
-      { id: 'calendar',   labelKey: 'newShell.more.calendar',   icon: CalendarDays,  route: '/app/calendar' },
-      { id: 'guarantees', labelKey: 'newShell.more.guarantees', icon: Shield,        placeholder: true },
+      { id: 'documents',          labelKey: 'newShell.more.documents',          icon: FolderOpen,  placeholder: true },
+      { id: 'document-templates', labelKey: 'newShell.more.documentTemplates',  icon: FileText,    route: '/app/document-templates' },
+      { id: 'calendar',           labelKey: 'newShell.more.calendar',           icon: CalendarDays, route: '/app/calendar' },
+      { id: 'guarantees',         labelKey: 'newShell.more.guarantees',         icon: Shield,      placeholder: true },
     ],
   },
   {
