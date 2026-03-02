@@ -3640,5 +3640,82 @@
       "sigBeneficiary": "Podpis Uprawnionego",
       "footerGenerated": "wygenerowano"
     }
+  },
+  "inspection": {
+    "sectionTitle": "Przeglądy techniczne",
+    "noInspections": "Brak zarejestrowanych przeglądów",
+    "noInspectionsDesc": "Dodaj przegląd, aby śledzić terminy obowiązkowych przeglądów budynku.",
+    "addInspection": "Dodaj przegląd",
+    "saveInspection": "Zapisz przegląd",
+    "cancel": "Anuluj",
+    "created": "Przegląd zapisany",
+    "markDone": "Oznacz jako wykonany",
+    "markedDone": "Przegląd oznaczony jako wykonany",
+    "savedToDossier": "Protokół zapisano do teczki",
+    "deleteConfirm": "Czy na pewno chcesz usunąć ten przegląd?",
+    "saveProtocol": "Zapisz protokół do teczki",
+    "updateProtocol": "Zaktualizuj protokół",
+    "completedAt": "Wykonano",
+    "types": {
+      "annualBuilding": "Przegląd roczny budowlany (art. 62 PB)",
+      "fiveYearBuilding": "Przegląd 5-letni budowlany (art. 62 PB)",
+      "fiveYearElectrical": "Przegląd 5-letni — instalacja elektryczna i odgromowa",
+      "annualGasChimney": "Przegląd roczny — gaz i kominy",
+      "largeAreaSemiannual": "Przegląd obiektu >2000 m² (2x/rok)",
+      "other": "Inny"
+    },
+    "status": {
+      "planned": "Zaplanowany",
+      "done": "Wykonany",
+      "overdue": "Przeterminowany"
+    },
+    "sections": {
+      "overdue": "Przeterminowane",
+      "planned": "Zaplanowane",
+      "done": "Wykonane"
+    },
+    "fields": {
+      "type": "Typ przeglądu",
+      "address": "Adres obiektu",
+      "dueDate": "Termin przeglądu",
+      "notes": "Uwagi"
+    },
+    "placeholders": {
+      "address": "np. ul. Budowlana 1, 00-001 Warszawa",
+      "notes": "Dodatkowe informacje o przeglądzie…"
+    },
+    "errors": {
+      "dueDateRequired": "Termin przeglądu jest wymagany"
+    },
+    "protocol": {
+      "title": "PROTOKOL PRZEGLADU TECHNICZNEGO",
+      "type": "Typ przegladu",
+      "dueDate": "Data przegladu",
+      "project": "Obiekt/Projekt",
+      "address": "Adres",
+      "status": "Status",
+      "notes": "Uwagi",
+      "generated": "Wygenerowano"
+    }
+  },
+  "reminders": {
+    "sectionTitle": "Przypomnienia",
+    "noReminders": "Brak aktywnych przypomnień",
+    "noRemindersDesc": "Przypomnienia pojawią się tutaj na 30 i 7 dni przed upływem gwarancji lub terminem przeglądu.",
+    "warrantyReminder": "Gwarancja wkrótce wygaśnie",
+    "inspectionReminder": "Zbliża się termin przeglądu",
+    "overdue": "Termin minął",
+    "due": "Termin",
+    "dismiss": "Odrzuć",
+    "notificationDenied": "Powiadomienia systemowe są zablokowane",
+    "notificationDeniedDesc": "Zezwól na powiadomienia w ustawieniach przeglądarki, aby otrzymywać alerty. Przypomnienia są nadal widoczne w aplikacji.",
+    "openSystemSettings": "Otwórz ustawienia systemu",
+    "inAppRemindersFallback": "Przypomnienia są widoczne w aplikacji bez powiadomień systemowych.",
+    "enableNotificationsPrompt": "Włącz powiadomienia, aby otrzymywać alerty o wygasających gwarancjach i przeglądach.",
+    "enableNotifications": "Włącz powiadomienia",
+    "warrantyExpiresIn30": "Gwarancja wygasa za 30 dni ({{date}})",
+    "warrantyExpiresIn7": "Gwarancja wygasa za 7 dni ({{date}})",
+    "inspectionDueIn30": "Przegląd za 30 dni ({{date}})",
+    "inspectionDueIn7": "Przegląd za 7 dni ({{date}})"
   }
 }

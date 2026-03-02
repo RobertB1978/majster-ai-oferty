@@ -3640,5 +3640,82 @@
       "sigBeneficiary": "Підпис вигодонабувача",
       "footerGenerated": "згенеровано"
     }
+  },
+  "inspection": {
+    "sectionTitle": "Технічні огляди",
+    "noInspections": "Немає зареєстрованих оглядів",
+    "noInspectionsDesc": "Додайте огляд, щоб відстежувати терміни обов'язкових технічних оглядів будівлі.",
+    "addInspection": "Додати огляд",
+    "saveInspection": "Зберегти огляд",
+    "cancel": "Скасувати",
+    "created": "Огляд збережено",
+    "markDone": "Позначити як виконаний",
+    "markedDone": "Огляд позначено як виконаний",
+    "savedToDossier": "Протокол збережено в досьє",
+    "deleteConfirm": "Ви впевнені, що хочете видалити цей огляд?",
+    "saveProtocol": "Зберегти протокол у досьє",
+    "updateProtocol": "Оновити протокол",
+    "completedAt": "Виконано",
+    "types": {
+      "annualBuilding": "Щорічний будівельний огляд (ст. 62 PB)",
+      "fiveYearBuilding": "5-річний будівельний огляд (ст. 62 PB)",
+      "fiveYearElectrical": "5-річний огляд — електрична та блискавкозахисна установка",
+      "annualGasChimney": "Щорічний огляд — газ і димарі",
+      "largeAreaSemiannual": "Огляд об'єкту >2000 м² (2р/рік)",
+      "other": "Інший"
+    },
+    "status": {
+      "planned": "Заплановано",
+      "done": "Виконано",
+      "overdue": "Прострочено"
+    },
+    "sections": {
+      "overdue": "Прострочені",
+      "planned": "Заплановані",
+      "done": "Виконані"
+    },
+    "fields": {
+      "type": "Тип огляду",
+      "address": "Адреса об'єкту",
+      "dueDate": "Дата огляду",
+      "notes": "Примітки"
+    },
+    "placeholders": {
+      "address": "напр. вул. Будівельна 1, 00-001 Варшава",
+      "notes": "Додаткова інформація про огляд…"
+    },
+    "errors": {
+      "dueDateRequired": "Дата огляду є обов'язковою"
+    },
+    "protocol": {
+      "title": "PROTOKOL TEKHNICHNOHO OHLYADU",
+      "type": "Typ ohlyadu",
+      "dueDate": "Data ohlyadu",
+      "project": "Obiekt/Proekt",
+      "address": "Adresa",
+      "status": "Status",
+      "notes": "Prymitky",
+      "generated": "Zgenerovano"
+    }
+  },
+  "reminders": {
+    "sectionTitle": "Нагадування",
+    "noReminders": "Немає активних нагадувань",
+    "noRemindersDesc": "Нагадування з'являться тут за 30 і 7 днів до закінчення гарантії або терміну огляду.",
+    "warrantyReminder": "Гарантія незабаром закінчиться",
+    "inspectionReminder": "Наближається термін огляду",
+    "overdue": "Термін минув",
+    "due": "Термін",
+    "dismiss": "Відхилити",
+    "notificationDenied": "Системні сповіщення заблоковані",
+    "notificationDeniedDesc": "Дозвольте сповіщення в налаштуваннях браузера для отримання сповіщень. Нагадування все одно видно в застосунку.",
+    "openSystemSettings": "Відкрити системні налаштування",
+    "inAppRemindersFallback": "Нагадування видно в застосунку без системних сповіщень.",
+    "enableNotificationsPrompt": "Увімкніть сповіщення, щоб отримувати сповіщення про гарантії та огляди.",
+    "enableNotifications": "Увімкнути сповіщення",
+    "warrantyExpiresIn30": "Гарантія закінчується через 30 днів ({{date}})",
+    "warrantyExpiresIn7": "Гарантія закінчується через 7 днів ({{date}})",
+    "inspectionDueIn30": "Огляд за 30 днів ({{date}})",
+    "inspectionDueIn7": "Огляд за 7 днів ({{date}})"
   }
 }
