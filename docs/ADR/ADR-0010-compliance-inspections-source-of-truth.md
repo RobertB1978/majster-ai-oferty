@@ -3,7 +3,9 @@
 **Status:** ZAAKCEPTOWANE
 **Data:** 2026-03-02
 **Autorzy:** Tech Lead (Claude), Product Owner (Robert B.)
-**Kontekst:** PR-17 — Biblioteka wzorów dokumentów
+**Kontekst:** PR-17 — Biblioteka wzorów dokumentów; PR-18 — Rejestr przeglądów + przypomnienia
+
+> ⚠️ **OBOWIĄZEK AKTUALIZACJI:** Przy każdej zmianie przepisów prawa budowlanego (Ustawa PB, rozporządzenia MEiB, normy SEP, przepisy gazowe/kominowe) MUSISZ zaktualizować `/docs/COMPLIANCE/INSPECTIONS_PL.md`. Brak aktualizacji = potencjalnie nieaktualne typy przeglądów w module InspectionSection. Patrz: Procedura aktualizacji → sekcja "Obowiązki przy zmianie przepisów".
 
 ---
 
@@ -61,4 +63,17 @@ Zalecana częstotliwość przeglądu INSPECTIONS_PL.md: **co 12 miesięcy** lub 
 
 ---
 
-*Dokument: ADR-0010 v1.0 | Data: 2026-03-02 | PR: PR-17*
+## Rozszerzenie — PR-18 (2026-03-02)
+
+PR-18 wprowadza `project_inspections` — tabelę DB z typami przeglądów bezpośrednio pochodnymi z tego pliku.
+Typy enum w migracji `20260302210000_pr18_inspections.sql` MUSZĄ być zsynchronizowane z sekcją 3 INSPECTIONS_PL.md.
+
+**Przy dodaniu nowego typu przeglądu:**
+1. Dodaj nową wartość do `CHECK` constraint w migracji (nowy plik SQL, NIE modyfikuj istniejącej migracji)
+2. Dodaj odpowiedni klucz do `INSPECTION_TYPE_LABELS` w `src/hooks/useInspection.ts`
+3. Dodaj tłumaczenia `inspection.types.*` do PL/EN/UK locales
+4. Zaktualizuj `/docs/COMPLIANCE/INSPECTIONS_PL.md`
+
+---
+
+*Dokument: ADR-0010 v1.1 | Aktualizacja: 2026-03-02 (PR-18) | PR: PR-17, PR-18*

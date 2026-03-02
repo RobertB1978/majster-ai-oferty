@@ -43,7 +43,7 @@
 | **PR-15** | Fotoprotokół + podpis | ✅ DONE | `claude/pr-15-photo-report-f9udo` | 2026-03-01 | PhotoReportPanel (BEFORE/DURING/AFTER/ISSUE phases, kompresja kliencka 1600px/0.75, optimistic UI + retry), AcceptanceChecklistPanel (4 szablony: general/plumbing/electrical/painting), SignaturePad (canvas), CameraPermissionGate (denied → EmptyState + OpenSettings), migracja: phase+metadata col na project_photos + project_checklists + project_acceptance (RLS on all), private bucket + signed URLs, i18n PL/EN/UK (photoReport.* + checklist.* + signature.*), FF_NEW_SHELL ON/OFF, docs: PHOTO_REPORT_NOTES.md |
 | **PR-16** | Teczka dokumentów | ✅ DONE | `claude/document-folder-export-share-THSXi` | 2026-03-02 | Teczka (CONTRACT/PROTOCOL/RECEIPT/PHOTO/GUARANTEE/OTHER), upload + signed URLs, eksport PDF (Option B: jsPDF summary), bezpieczne linki (UUID token + 30d expiry + allowed_categories), publiczna strona /d/:token, RLS, i18n PL/EN/UK |
 | **PR-17** | Wzory dokumentów | ✅ DONE | `claude/document-templates-library-l0viJ` | 2026-03-02 | 25 szablonów (5 umów + 9 protokołów + 6 załączników + 5 przeglądów), document_instances (RLS), templatePdfGenerator (jsPDF), auto-fill (Company/Client/Offer/Project), save-to-dossier, referencje prawne w PDF, docs/COMPLIANCE/INSPECTIONS_PL.md + ADR-0010, i18n PL/EN/UK (300+ kluczy), TemplatesLibrary + TemplateEditor, route /app/document-templates |
-| **PR-18** | Gwarancje + przypomnienia | ✅ DONE | `claude/document-templates-library-l0viJ` | 2026-03-02 | project_warranties (migration + RLS + view), WarrantySection (form + PDF card + email send), warrantyPdfGenerator (jsPDF, karta gwarancyjna A4, podpisy, podstawa prawna), useWarranty hook (CRUD + upsert), send-expiring-offer-reminders rozszerzony o T-30/T-7, i18n PL/EN/UK (50+ kluczy), testy jednostkowe |
+| **PR-18** | Gwarancje + Przeglądy + Przypomnienia | ✅ DONE | `claude/enterprise-compliance-features-48LQF` | 2026-03-02 | project_warranties + project_inspections + project_reminders (migration + RLS + views), WarrantySection (PDF karta A4 + dossier GUARANTEE + email), InspectionSection (lista PLANNED/OVERDUE/DONE, 6 typów z INSPECTIONS_PL.md, protokół → dossier PROTOCOL), RemindersPanel (in-app T-30/T-7), NotificationPermissionPrompt (denied→EmptyState+OpenSettings), useWarranty+useInspection+useReminders hooks, i18n PL/EN/UK (inspection.* + reminders.* 60+ kluczy), testy jednostkowe, ADR-0010 zaktualizowane |
 | **PR-19** | PWA Offline minimum | ⬜ TODO | — | — | Wymaga merge PR-07 |
 | **PR-20** | Stripe Billing | ⬜ TODO | — | — | Wymaga merge PR-06 i PR-07 |
 
@@ -1147,3 +1147,78 @@ Wzorzec analogiczny do PR-11/PR-16 (jsPDF + jspdf-autotable, dynamiczny import):
 - `docs/COMPLIANCE/INSPECTIONS_PL.md` — należy zaktualizować przy zmianie przepisów
 - ADR-0010 definiuje procedurę aktualizacji (cykl 12 miesięcy)
 - PDF auto-numer: `PREFIX/YYYYMMDD/RAND` — nie jest to numer seryjny z DB; dla pełnej numeracji sekwencyjnej wymagana osobna tabela counter (poza scopem PR-17)
+
+---
+
+## PR-18: Gwarancje + Przeglądy Techniczne + Przypomnienia — szczegóły implementacji
+
+**Branch:** `claude/enterprise-compliance-features-48LQF`
+**Data:** 2026-03-02
+**Status:** ✅ DONE
+
+### Pliki zmienione / dodane
+
+| Plik | Zmiana |
+|------|--------|
+| `supabase/migrations/20260302210000_pr18_inspections.sql` | Nowa tabela `project_inspections` + RLS + view `project_inspections_with_status` |
+| `supabase/migrations/20260302220000_pr18_reminders.sql` | Nowa tabela `project_reminders` + RLS |
+| `src/hooks/useInspection.ts` | CRUD inspections + auto-tworzenie reminders T-30/T-7 |
+| `src/hooks/useReminders.ts` | Fetch + dismiss reminders + `upsertWarrantyReminders()` |
+| `src/components/documents/InspectionSection.tsx` | UI lista przeglądów (PLANNED/OVERDUE/DONE) + form + protokół → dossier |
+| `src/components/documents/InspectionSection.test.tsx` | Testy: `calcNextDueDate` + empty state |
+| `src/components/documents/RemindersPanel.tsx` | Panel przypomnień in-app |
+| `src/components/notifications/NotificationPermissionPrompt.tsx` | Obsługa uprawnień notyfikacji (denied→EmptyState+OpenSettings) |
+| `src/i18n/locales/pl.json` | Dodano `inspection.*` + `reminders.*` (PL) |
+| `src/i18n/locales/en.json` | Dodano `inspection.*` + `reminders.*` (EN) |
+| `src/i18n/locales/uk.json` | Dodano `inspection.*` + `reminders.*` (UK) |
+| `docs/ROADMAP_STATUS.md` | Ten plik — aktualizacja PR-18 → DONE |
+
+### Architektura przypomnień (MVP)
+
+- **In-app first** — zawsze działa bez uprawnień systemowych
+- Przy tworzeniu inspekcji/gwarancji → auto-upsert 2 rekordów w `project_reminders` (T-30, T-7)
+- Panel `RemindersPanel` odpytuje PENDING reminders z oknem -90d / +35d
+- Dismiss → status `DISMISSED`, znika z listy
+- Brak potrzeby schedulera — obliczane on-the-fly przy każdym otwarciu app
+
+### Typy inspekcji (z INSPECTIONS_PL.md / ADR-0010)
+
+| Typ DB | Opis | Podstawa prawna |
+|--------|------|-----------------|
+| `ANNUAL_BUILDING` | Przegląd roczny budowlany | Art. 62 ust. 1 pkt 1 PB |
+| `FIVE_YEAR_BUILDING` | Przegląd 5-letni budowlany | Art. 62 ust. 1 pkt 2 PB |
+| `FIVE_YEAR_ELECTRICAL` | Przegląd elektryczny i odgromowy | Art. 62 ust. 1 pkt 2 PB + normy |
+| `ANNUAL_GAS_CHIMNEY` | Przegląd gazowy i kominiarski | Art. 62 ust. 1 pkt 1 PB |
+| `LARGE_AREA_SEMIANNUAL` | Obiekty >2000 m² (2x/rok) | Art. 62 ust. 1 pkt 1b PB |
+| `OTHER` | Inny / niestandardowy | — |
+
+### Obsługa uprawnień notyfikacji
+
+- `granted` → nic nie renderowane
+- `denied` → EmptyState z przyciskiem "Otwórz ustawienia systemu" (best-effort `about:preferences#privacy`)
+- `default` → soft prompt "Włącz powiadomienia"
+- `unsupported` → info o trybie in-app
+- **Aplikacja działa bez powiadomień** — lista przypomnień zawsze dostępna
+
+### RLS / IDOR
+
+- Wszystkie nowe tabele mają RLS ON
+- Polityki: `user_id = auth.uid()` dla SELECT/INSERT/UPDATE/DELETE
+- Użytkownik B nie może odczytać gwarancji/przeglądów/przypomnień użytkownika A
+
+### Kroki weryfikacji (testy)
+
+1. `npm test` — testy `calcNextDueDate` + `daysUntilExpiry` + empty states przechodzą
+2. RLS: `SELECT * FROM project_inspections WHERE user_id = 'other_user_id'` → 0 wyników
+3. Tworzenie gwarancji → GenerujPDF → wpis w `project_dossier_items` (category=GUARANTEE)
+4. Tworzenie inspekcji → pojawia się w RemindersPanel (T-30, T-7)
+5. Oznacz jako DONE → status zmienia się na DONE
+6. Permissions denied → brak crasha + EmptyState z przyciskiem ustawień
+7. FF_NEW_SHELL ON/OFF → nawigacja działa (InspectionSection jest panelem w ProjectHub)
+
+### Uwagi
+
+- ⚠️ **WAŻNE:** `docs/COMPLIANCE/INSPECTIONS_PL.md` MUSI być aktualizowany przy każdej zmianie prawa budowlanego — patrz ADR-0010
+- Protokoły inspekcji zapisywane jako dossier category `PROTOCOL` (zgodnie z PR-16 model)
+- Warranty PDF zapisywane jako dossier category `GUARANTEE`
+- Natywne push notifications (Capacitor) poza scopem PR-18 — dokumentacja w `usePushNotifications.ts`

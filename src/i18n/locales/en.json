@@ -3640,5 +3640,82 @@
       "sigBeneficiary": "Beneficiary signature",
       "footerGenerated": "generated"
     }
+  },
+  "inspection": {
+    "sectionTitle": "Technical inspections",
+    "noInspections": "No inspections registered",
+    "noInspectionsDesc": "Add an inspection to track mandatory building inspection deadlines.",
+    "addInspection": "Add inspection",
+    "saveInspection": "Save inspection",
+    "cancel": "Cancel",
+    "created": "Inspection saved",
+    "markDone": "Mark as done",
+    "markedDone": "Inspection marked as done",
+    "savedToDossier": "Protocol saved to dossier",
+    "deleteConfirm": "Are you sure you want to delete this inspection?",
+    "saveProtocol": "Save protocol to dossier",
+    "updateProtocol": "Update protocol",
+    "completedAt": "Completed on",
+    "types": {
+      "annualBuilding": "Annual building inspection (Art. 62 PB)",
+      "fiveYearBuilding": "5-year building inspection (Art. 62 PB)",
+      "fiveYearElectrical": "5-year inspection — electrical & lightning protection",
+      "annualGasChimney": "Annual inspection — gas & chimneys",
+      "largeAreaSemiannual": "Large area inspection >2000 m² (2x/year)",
+      "other": "Other"
+    },
+    "status": {
+      "planned": "Planned",
+      "done": "Done",
+      "overdue": "Overdue"
+    },
+    "sections": {
+      "overdue": "Overdue",
+      "planned": "Planned",
+      "done": "Done"
+    },
+    "fields": {
+      "type": "Inspection type",
+      "address": "Object address",
+      "dueDate": "Due date",
+      "notes": "Notes"
+    },
+    "placeholders": {
+      "address": "e.g. 1 Building St, Warsaw",
+      "notes": "Additional information about the inspection…"
+    },
+    "errors": {
+      "dueDateRequired": "Inspection due date is required"
+    },
+    "protocol": {
+      "title": "TECHNICAL INSPECTION PROTOCOL",
+      "type": "Inspection type",
+      "dueDate": "Inspection date",
+      "project": "Object/Project",
+      "address": "Address",
+      "status": "Status",
+      "notes": "Notes",
+      "generated": "Generated"
+    }
+  },
+  "reminders": {
+    "sectionTitle": "Reminders",
+    "noReminders": "No active reminders",
+    "noRemindersDesc": "Reminders will appear here 30 and 7 days before a warranty expires or an inspection is due.",
+    "warrantyReminder": "Warranty expiring soon",
+    "inspectionReminder": "Inspection due soon",
+    "overdue": "Overdue",
+    "due": "Due",
+    "dismiss": "Dismiss",
+    "notificationDenied": "System notifications are blocked",
+    "notificationDeniedDesc": "Allow notifications in your browser settings to receive alerts. Reminders are still visible in the app.",
+    "openSystemSettings": "Open system settings",
+    "inAppRemindersFallback": "Reminders are visible in the app without system notifications.",
+    "enableNotificationsPrompt": "Enable notifications to receive alerts about expiring warranties and upcoming inspections.",
+    "enableNotifications": "Enable notifications",
+    "warrantyExpiresIn30": "Warranty expires in 30 days ({{date}})",
+    "warrantyExpiresIn7": "Warranty expires in 7 days ({{date}})",
+    "inspectionDueIn30": "Inspection due in 30 days ({{date}})",
+    "inspectionDueIn7": "Inspection due in 7 days ({{date}})"
   }
 }
