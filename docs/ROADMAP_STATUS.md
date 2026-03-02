@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-01 (PR-15 DONE)
+**Ostatnia aktualizacja:** 2026-03-02 (PR-16 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -41,7 +41,7 @@
 | **PR-13** | Projekty + QR status | ✅ DONE | `claude/pr-13-projects-module-BilaR` | 2026-03-01 | v2_projects + project_public_status_tokens (migration + RLS + SECURITY DEFINER), ProjectsList (ACTIVE/COMPLETED/ON_HOLD, search), ProjectHub (accordion: stages/costs/docs/photos placeholders, progress slider, QR link), ProjectPublicStatus (/p/:token — NO prices), create-from-offer CTA (Offers + AcceptanceLinkPanel), i18n PL/EN/UK (projectsV2.*), FF_NEW_SHELL ON (BottomNav /app/projects) + OFF, IDOR documented |
 | **PR-14** | Burn Bar BASIC | ✅ DONE | `claude/add-burn-bar-feature-UWliG` | 2026-03-01 | project_costs table + RLS, budget_net/source/updated_at on v2_projects, BurnBarSection (burn bar + cost list), AddCostSheet (≤3 taps), i18n PL/EN/UK (burnBar.* 37 kluczy), IDOR documented |
 | **PR-15** | Fotoprotokół + podpis | ✅ DONE | `claude/pr-15-photo-report-f9udo` | 2026-03-01 | PhotoReportPanel (BEFORE/DURING/AFTER/ISSUE phases, kompresja kliencka 1600px/0.75, optimistic UI + retry), AcceptanceChecklistPanel (4 szablony: general/plumbing/electrical/painting), SignaturePad (canvas), CameraPermissionGate (denied → EmptyState + OpenSettings), migracja: phase+metadata col na project_photos + project_checklists + project_acceptance (RLS on all), private bucket + signed URLs, i18n PL/EN/UK (photoReport.* + checklist.* + signature.*), FF_NEW_SHELL ON/OFF, docs: PHOTO_REPORT_NOTES.md |
-| **PR-16** | Teczka dokumentów | ⬜ TODO | — | — | Wymaga merge PR-13 |
+| **PR-16** | Teczka dokumentów | ✅ DONE | `claude/document-folder-export-share-THSXi` | 2026-03-02 | Teczka (CONTRACT/PROTOCOL/RECEIPT/PHOTO/GUARANTEE/OTHER), upload + signed URLs, eksport PDF (Option B: jsPDF summary), bezpieczne linki (UUID token + 30d expiry + allowed_categories), publiczna strona /d/:token, RLS, i18n PL/EN/UK |
 | **PR-17** | Wzory dokumentów | ⬜ TODO | — | — | Wymaga merge PR-16 |
 | **PR-18** | Gwarancje + przypomnienia | ⬜ TODO | — | — | Wymaga merge PR-13 |
 | **PR-19** | PWA Offline minimum | ⬜ TODO | — | — | Wymaga merge PR-07 |
@@ -987,3 +987,51 @@ UPDATE public.v2_projects SET budget_net = 0 WHERE user_id = 'user-a-uuid';
 **i18n:**
 1. Zmień język → EN: "Budget", "Spent", "Remaining", "Materials", etc.
 2. UK: "Бюджет", "Витрачено", "Залишок", etc.
+
+---
+
+## PR-16 — Teczka dokumentów: co zostało wdrożone
+
+### Moduł Teczka w Project Hub
+- **Kategorie:** CONTRACT (Umowy), PROTOCOL (Protokoły), RECEIPT (Rachunki), PHOTO (Fotoprotokół), GUARANTEE (Gwarancje), OTHER (Inne)
+- **Karty kategorii** z licznikiem plików, rozwijane akordeonem
+- **Upload** per kategoria — prywatny bucket `dossier`, signed URLs (1h TTL)
+- **Usuwanie** z potwierdzeniem (double-tap) — usuwa z DB i Storage
+- **Podgląd/download** przez signed URL
+
+### Strategia eksportu (Opcja B — bezpieczny MVP)
+- **Wybrana opcja:** Eksport PDF client-side via jsPDF (jspdf + jspdf-autotable — już w zależnościach)
+- **Zawartość PDF:** strona tytułowa (tytuł projektu, data, liczba plików) + tabela indeksu (kategoria, nazwa pliku, rozmiar, data, status linku)
+- **Brak merge'owania** plików — zamiast tego indeks z linkami (ważne: linki wygasają po 1h)
+- **Uzasadnienie:** Merge PDF po stronie mobilnej może crashować. Rozwiązanie Option B jest niezawodne na każdym urządzeniu.
+- **Plik:** `src/hooks/useDossier.ts` → `useExportDossierPdf()` — dynamic import jsPDF (lazy bundle)
+
+### Bezpieczne linki udostępniania
+- **Tabela:** `project_dossier_share_tokens` — UUID token, expires_at (default +30 dni), allowed_categories[]
+- **Funkcja SQL:** `resolve_dossier_share_token(p_token uuid)` — SECURITY DEFINER, zwraca TYLKO: tytuł projektu + pliki z allowed_categories (BEZ cen)
+- **Publiczna strona:** `/d/:token` → `DossierPublicPage` — brak logowania, signed URLs generowane po walidacji tokenu
+- **Wygasłe tokeny:** odrzucane server-side, strona public wyświetla generic error (brak wycieku informacji)
+- **IDOR:** token → projekt (FK), cross-tenant access niemożliwy
+
+### RLS
+- `project_dossier_items` — `user_id = auth.uid()` (4 polityki: SELECT/INSERT/UPDATE/DELETE)
+- `project_dossier_share_tokens` — `user_id = auth.uid()` (4 polityki)
+- Token resolution: SECURITY DEFINER (anon + authenticated)
+
+### Auto-ingestion (MVP)
+- Zdjęcia z PR-15 (`project_photos`) **nie** są automatycznie kopiowane do dossier (wymagałoby trigger/edge function, poza scopem MVP)
+- Użytkownik może ręcznie uploadować zdjęcia do kategorii PHOTO
+- `source` column gotowe na: PHOTO_REPORT / OFFER_PDF / SIGNATURE / MANUAL
+
+### i18n
+- Klucze `dossier.*` — PL + EN + UK (19 kluczy głównych + zagnieżdżone `share.*` i `public.*`)
+- Etykieta "Dokumenty" → "Teczka" (PL) / "Dossier" (EN) / "Тека" (UK) w ProjectHub
+
+### Routing
+- `/d/:token` — publiczna strona teczki (lazy-loaded, bez logowania)
+- `/app/projects/:id` → sekcja Teczka w ProjectHub (accordion)
+
+### Storage
+- Bucket: `dossier` (private — wymaga utworzenia w Supabase Dashboard)
+- Signed URLs: 1h TTL dla DossierPanel (owner), po walidacji tokenu dla /d/:token
+- Ścieżka: `{user_id}/{project_id}/{category_lower}/{timestamp}_{filename}`

@@ -77,6 +77,8 @@ const OfferDetail = lazy(() => import("./pages/OfferDetail"));
 const ProjectsList = lazy(() => import("./pages/ProjectsList"));
 const ProjectHub = lazy(() => import("./pages/ProjectHub"));
 const ProjectPublicStatus = lazy(() => import("./pages/ProjectPublicStatus"));
+// === ZONE 2e: DOSSIER PR-16 ===
+const DossierPublicPage = lazy(() => import("./pages/DossierPublicPage"));
 
 // === ZONE 3: OWNER CONSOLE (lazy - admin only, separate chunk) ===
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
@@ -186,6 +188,9 @@ const App = () => (
 
                   {/* PR-13: Public project status page (no login, no prices) */}
                   <Route path="/p/:token" element={<ProjectPublicStatus />} />
+
+                  {/* PR-16: Public dossier share page (token-scoped, no login, no prices) */}
+                  <Route path="/d/:token" element={<DossierPublicPage />} />
 
                   {/* Environment diagnostic */}
                   <Route path="/env-check" element={<EnvCheck />} />
