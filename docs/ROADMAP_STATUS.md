@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-02 (PR-18 DONE)
+**Ostatnia aktualizacja:** 2026-03-02 (PR-19 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -44,7 +44,7 @@
 | **PR-16** | Teczka dokumentów | ✅ DONE | `claude/document-folder-export-share-THSXi` | 2026-03-02 | Teczka (CONTRACT/PROTOCOL/RECEIPT/PHOTO/GUARANTEE/OTHER), upload + signed URLs, eksport PDF (Option B: jsPDF summary), bezpieczne linki (UUID token + 30d expiry + allowed_categories), publiczna strona /d/:token, RLS, i18n PL/EN/UK |
 | **PR-17** | Wzory dokumentów | ✅ DONE | `claude/document-templates-library-l0viJ` | 2026-03-02 | 25 szablonów (5 umów + 9 protokołów + 6 załączników + 5 przeglądów), document_instances (RLS), templatePdfGenerator (jsPDF), auto-fill (Company/Client/Offer/Project), save-to-dossier, referencje prawne w PDF, docs/COMPLIANCE/INSPECTIONS_PL.md + ADR-0010, i18n PL/EN/UK (300+ kluczy), TemplatesLibrary + TemplateEditor, route /app/document-templates |
 | **PR-18** | Gwarancje + Przeglądy + Przypomnienia | ✅ DONE | `claude/enterprise-compliance-features-48LQF` | 2026-03-02 | project_warranties + project_inspections + project_reminders (migration + RLS + views), WarrantySection (PDF karta A4 + dossier GUARANTEE + email), InspectionSection (lista PLANNED/OVERDUE/DONE, 6 typów z INSPECTIONS_PL.md, protokół → dossier PROTOCOL), RemindersPanel (in-app T-30/T-7), NotificationPermissionPrompt (denied→EmptyState+OpenSettings), useWarranty+useInspection+useReminders hooks, i18n PL/EN/UK (inspection.* + reminders.* 60+ kluczy), testy jednostkowe, ADR-0010 zaktualizowane |
-| **PR-19** | PWA Offline minimum | ⬜ TODO | — | — | Wymaga merge PR-07 |
+| **PR-19** | PWA Offline minimum | ✅ DONE | `claude/pwa-service-worker-cache-IuqSQ` | 2026-03-02 | SW v4 (stale-while-revalidate dla /rest/v1/offers + /rest/v1/v2_projects), OfflineBanner (maly baner, nie blokuje app), useOnlineStatus hook, i18n PL/EN/UK (offline.*), docs/OFFLINE_MINIMUM.md, FF_NEW_SHELL ON/OFF |
 | **PR-20** | Stripe Billing | ⬜ TODO | — | — | Wymaga merge PR-06 i PR-07 |
 
 ---
@@ -1222,3 +1222,61 @@ Wzorzec analogiczny do PR-11/PR-16 (jsPDF + jspdf-autotable, dynamiczny import):
 - Protokoły inspekcji zapisywane jako dossier category `PROTOCOL` (zgodnie z PR-16 model)
 - Warranty PDF zapisywane jako dossier category `GUARANTEE`
 - Natywne push notifications (Capacitor) poza scopem PR-18 — dokumentacja w `usePushNotifications.ts`
+
+---
+
+## PR-19: PWA Offline Minimum — szczegoly implementacji
+
+**Branch:** `claude/pwa-service-worker-cache-IuqSQ`
+**Data:** 2026-03-02
+**Status:** ✅ DONE
+
+### Pliki zmienione / dodane
+
+| Plik | Zmiana |
+|------|--------|
+| `public/sw.js` | SW v4: stale-while-revalidate dla `/rest/v1/offers` + `/rest/v1/v2_projects` (GET); cache-first dla statycznych zasobow; network-first z shell-fallback dla nawigacji |
+| `src/hooks/useOnlineStatus.ts` | Nowy hook — zwraca `boolean` (true=online) oparty na `navigator.onLine` + zdarzenia |
+| `src/components/pwa/OfflineBanner.tsx` | Nowy komponent — maly baner u gory ekranu (amber), nie blokuje aplikacji |
+| `src/App.tsx` | Zastapiono `<OfflineFallback>` (pelnoekranowy bloker) przez `<OfflineBanner>` (nieblokujacy baner) |
+| `src/i18n/locales/pl.json` | Dodano klucze `offline.banner`, `offline.actionBlocked`, `offline.readOnlyNote` |
+| `src/i18n/locales/en.json` | Jw. (EN) |
+| `src/i18n/locales/uk.json` | Jw. (UK) |
+| `docs/OFFLINE_MINIMUM.md` | Nowy dokument: co dziala offline, co nie, jak cachowanie dziala, kroki weryfikacji |
+| `docs/ROADMAP_STATUS.md` | PR-19 -> DONE |
+
+### Strategia cachowania (SW v4)
+
+```
+majster-ai-shell-v4   — app shell (/, index.html, manifest.json, ikony)
+majster-ai-static-v4  — JS/CSS/obrazy/fonty (cache-first)
+majster-ai-api-v4     — Supabase GET dla offers + v2_projects (stale-while-revalidate)
+```
+
+### Zachowanie offline
+
+- **Lista ofert** (`/app/offers`): dane z cache API → widoczne bez sieci po pierwszym odwiedzeniu online
+- **Szczegol projektu** (`/app/projects/:id`): dane z cache API → widoczne bez sieci
+- **Baner offline**: zolty pasek u gory z ikoną WifiOff i tekstem z i18n (`offline.banner`)
+- **Mutacje** (wysylanie, edycja): koncza sie bledem Supabase — aplikacja pokazuje naturalny blad
+- **FF_NEW_SHELL ON/OFF**: baner dziala w obu trybach (renderowany w App.tsx powyzej routerow)
+
+### Kroki weryfikacji offline
+
+1. `npm test` — zielone
+2. `npm run build` — bez bledow
+3. Reczny test offline:
+   a. Zaladuj `/app/offers` online — poczekaj na dane
+   b. Zaladuj `/app/projects/:id` online — poczekaj na dane
+   c. DevTools → Network → Offline (lub tryb samolotowy)
+   d. Przeladuj strone
+   e. Oczekiwane: baner "Tryb offline" widoczny u gory, dane z cache widoczne
+4. FF_NEW_SHELL OFF: `/app/offers` i `/app/projects/:id` dostepne przez stary shell
+5. FF_NEW_SHELL ON: to samo przez nowy shell z BottomNav
+
+### Uwagi
+
+- Background Sync i offline writes poza scopem PR-19 (patrz ROADMAP PR-19 DoD)
+- TanStack Query gcTime=30min utrzymuje dane w pamieci RAM miedzy nawigacjami (bez przeladowania)
+- SW cache przezywa przeladowanie strony — jedyne zrodlo danych po `F5` gdy offline
+- Pelnoekranowy `OfflineFallback` zachowany w `src/components/pwa/OfflineFallback.tsx` (nieuzywany w App.tsx) dla kompatybilnosci z ewentualnymi testami

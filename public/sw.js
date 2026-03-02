@@ -1,241 +1,186 @@
-const CACHE_NAME = 'majster-ai-v3';
-const STATIC_CACHE = 'majster-ai-static-v3';
-const DATA_CACHE = 'majster-ai-data-v1';
+/**
+ * Majster.AI — Service Worker v4
+ * PR-19: PWA Offline Minimum
+ *
+ * Strategie:
+ *  - Static assets:             cache-first  (js/css/img/fonts)
+ *  - Nawigacja (HTML):          network-first z fallbackiem do /index.html
+ *  - Supabase GET offers:       stale-while-revalidate  ← NOWE
+ *  - Supabase GET v2_projects:  stale-while-revalidate  ← NOWE
+ *  - Pozostale Supabase:        pass-through (mutacje ida siecią lub failuja)
+ */
 
-const urlsToCache = [
+const SW_VERSION   = 'v4';
+const STATIC_CACHE = 'majster-ai-static-' + SW_VERSION;
+const SHELL_CACHE  = 'majster-ai-shell-'  + SW_VERSION;
+const API_CACHE    = 'majster-ai-api-'    + SW_VERSION;
+
+/** Adresy URL cachowane przy instalacji (app shell) */
+var SHELL_URLS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/icon-192.png',
-  '/icon-512.png'
+  '/icon-512.png',
 ];
 
-const CACHE_ROUTES = [
-  '/dashboard',
-  '/clients',
-  '/projects',
-  '/profile',
-  '/templates'
+/**
+ * Wzorce URL Supabase REST, ktore cachujemy (stale-while-revalidate).
+ * Pasuje do:
+ *   https://<proj>.supabase.co/rest/v1/offers?select=...
+ *   https://<proj>.supabase.co/rest/v1/v2_projects?select=...
+ */
+var SUPABASE_CACHEABLE_PATTERNS = [
+  /\/rest\/v1\/offers(\?|$)/,
+  /\/rest\/v1\/v2_projects(\?|$)/,
 ];
 
-// Install event
-self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker...');
+// ── install ──────────────────────────────────────────────────────────────────
+
+self.addEventListener('install', function(event) {
   event.waitUntil(
-    caches.open(STATIC_CACHE)
-      .then((cache) => {
-        console.log('[SW] Caching static assets');
-        return cache.addAll(urlsToCache);
+    caches.open(SHELL_CACHE)
+      .then(function(cache) { return cache.addAll(SHELL_URLS); })
+      .then(function() { return self.skipWaiting(); })
+  );
+});
+
+// ── activate ─────────────────────────────────────────────────────────────────
+
+self.addEventListener('activate', function(event) {
+  var validCaches = [STATIC_CACHE, SHELL_CACHE, API_CACHE];
+  event.waitUntil(
+    caches.keys()
+      .then(function(names) {
+        return Promise.all(
+          names
+            .filter(function(n) { return validCaches.indexOf(n) === -1; })
+            .map(function(n) { return caches.delete(n); })
+        );
       })
-      .then(() => self.skipWaiting())
+      .then(function() { return self.clients.claim(); })
   );
 });
 
-// Activate event
-self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker...');
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((cacheName) => 
-            !cacheName.startsWith('majster-ai-v3') && 
-            !cacheName.startsWith('majster-ai-static-v3') &&
-            !cacheName.startsWith('majster-ai-data')
-          )
-          .map((cacheName) => {
-            console.log('[SW] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
+// ── fetch ────────────────────────────────────────────────────────────────────
 
-// Fetch event - stale-while-revalidate strategy
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
+self.addEventListener('fetch', function(event) {
+  var request = event.request;
 
-  // Skip non-GET requests
+  // Tylko GET
   if (request.method !== 'GET') return;
 
-  // Skip Supabase API calls - let them fail naturally when offline
-  if (url.hostname.includes('supabase')) {
-    return;
-  }
+  var url = new URL(request.url);
 
-  // Skip chrome-extension and other non-http protocols
+  // Pomijamy nieobslugiwane protokoly
   if (!url.protocol.startsWith('http')) return;
 
-  // For navigation requests, use network-first with offline fallback
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (response && response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone);
-            });
-          }
-          return response;
-        })
-        .catch(() => {
-          console.log('[SW] Network failed, trying cache for:', request.url);
-          return caches.match(request).then((cachedResponse) => {
-            if (cachedResponse) return cachedResponse;
-            return caches.match('/').then((indexResponse) => {
-              if (indexResponse) return indexResponse;
-              return createOfflineResponse();
-            });
-          });
-        })
-    );
+  // ── 1. Supabase API ──────────────────────────────────────────────────────
+  if (url.hostname.includes('supabase.co') || url.hostname.includes('supabase.in')) {
+    var isCacheable = SUPABASE_CACHEABLE_PATTERNS.some(function(re) {
+      return re.test(url.pathname + url.search);
+    });
+
+    if (isCacheable) {
+      // Stale-while-revalidate: serwuj z cache natychmiast, aktualizuj w tle
+      event.respondWith(staleWhileRevalidate(request, API_CACHE));
+    }
+    // Pozostale Supabase (mutacje, auth, storage) — pass-through
     return;
   }
 
-  // For static assets, use cache-first strategy
+  // ── 2. Statyczne zasoby ──────────────────────────────────────────────────
   if (isStaticAsset(url.pathname)) {
-    event.respondWith(
-      caches.match(request).then((cachedResponse) => {
-        if (cachedResponse) return cachedResponse;
-        return fetch(request).then((response) => {
-          if (response && response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(STATIC_CACHE).then((cache) => {
-              cache.put(request, responseClone);
-            });
-          }
-          return response;
-        });
-      })
-    );
+    event.respondWith(cacheFirst(request, STATIC_CACHE));
     return;
   }
 
-  // For other requests, use stale-while-revalidate
-  event.respondWith(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.match(request).then((cachedResponse) => {
-        const fetchPromise = fetch(request)
-          .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              cache.put(request, networkResponse.clone());
-            }
-            return networkResponse;
-          })
-          .catch(() => cachedResponse);
-
-        return cachedResponse || fetchPromise;
-      });
-    })
-  );
+  // ── 3. Nawigacja (HTML) ──────────────────────────────────────────────────
+  if (request.mode === 'navigate') {
+    event.respondWith(networkFirstWithShellFallback(request));
+    return;
+  }
 });
 
-// Helper function to check if a path is a static asset
+// ── Strategie ────────────────────────────────────────────────────────────────
+
+/**
+ * Stale-While-Revalidate:
+ *   1. Zwroc z cache jesli dostepny (natychmiastowa odpowiedz offline).
+ *   2. Rownolegle zaktualizuj cache z sieci (w tle).
+ */
+function staleWhileRevalidate(request, cacheName) {
+  return caches.open(cacheName).then(function(cache) {
+    return cache.match(request).then(function(cached) {
+      var networkFetch = fetch(request).then(function(response) {
+        if (response && response.ok) {
+          cache.put(request, response.clone());
+        }
+        return response;
+      }).catch(function() {
+        return null;
+      });
+
+      // Jesli jest w cache — zwroc natychmiast; siec aktualizuje w tle
+      return cached || networkFetch;
+    });
+  });
+}
+
+/**
+ * Cache-First:
+ *   1. Zwroc z cache.
+ *   2. Jesli brak — pobierz z sieci i zapisz w cache.
+ */
+function cacheFirst(request, cacheName) {
+  return caches.open(cacheName).then(function(cache) {
+    return cache.match(request).then(function(cached) {
+      if (cached) return cached;
+      return fetch(request).then(function(response) {
+        if (response && response.ok) {
+          cache.put(request, response.clone());
+        }
+        return response;
+      });
+    });
+  });
+}
+
+/**
+ * Network-First z fallbackiem do app shell:
+ *   1. Probuj siec.
+ *   2. Jesli offline — serwuj /index.html (SPA obsluzy trase przez React Router).
+ */
+function networkFirstWithShellFallback(request) {
+  return fetch(request).then(function(response) {
+    if (response && response.ok) {
+      caches.open(SHELL_CACHE).then(function(cache) {
+        cache.put(request, response.clone());
+      });
+    }
+    return response;
+  }).catch(function() {
+    return caches.open(SHELL_CACHE).then(function(cache) {
+      return cache.match(request).then(function(cached) {
+        if (cached) return cached;
+        // Ostatni fallback — strona glowna SPA
+        return cache.match('/index.html').then(function(idx) {
+          return idx || cache.match('/');
+        });
+      });
+    });
+  });
+}
+
+// ── Pomocnicze ───────────────────────────────────────────────────────────────
+
 function isStaticAsset(pathname) {
-  return /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/i.test(pathname);
+  return /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|webp|avif)$/i.test(pathname);
 }
 
-// Create offline response
-function createOfflineResponse() {
-  return new Response(
-    `<!DOCTYPE html>
-    <html lang="pl">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Majster.AI - Offline</title>
-      <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-          font-family: 'Inter', system-ui, -apple-system, sans-serif;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 100vh;
-          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-          color: #1e293b;
-          text-align: center;
-          padding: 20px;
-        }
-        .container {
-          max-width: 400px;
-          background: white;
-          padding: 40px;
-          border-radius: 16px;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-        .icon {
-          width: 80px;
-          height: 80px;
-          background: #f1f5f9;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 24px;
-          font-size: 40px;
-        }
-        h1 { font-size: 1.5rem; margin-bottom: 12px; font-weight: 600; }
-        p { color: #64748b; line-height: 1.6; margin-bottom: 24px; }
-        button {
-          background: #2563eb;
-          color: white;
-          border: none;
-          padding: 12px 24px;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background 0.2s;
-        }
-        button:hover { background: #1d4ed8; }
-        .status { 
-          font-size: 12px; 
-          color: #94a3b8; 
-          margin-top: 16px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-        }
-        .dot {
-          width: 8px;
-          height: 8px;
-          background: #f59e0b;
-          border-radius: 50%;
-          animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="icon">📶</div>
-        <h1>Jesteś offline</h1>
-        <p>Część funkcji Majster.AI jest niedostępna bez połączenia z internetem. Sprawdź połączenie i spróbuj ponownie.</p>
-        <button onclick="window.location.reload()">Odśwież stronę</button>
-        <div class="status">
-          <span class="dot"></span>
-          Oczekiwanie na połączenie...
-        </div>
-      </div>
-      <script>
-        window.addEventListener('online', () => window.location.reload());
-      </script>
-    </body>
-    </html>`,
-    { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-  );
-}
+// ── Komunikaty z aplikacji ───────────────────────────────────────────────────
 
-// Listen for messages from the main thread
-self.addEventListener('message', (event) => {
+self.addEventListener('message', function(event) {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
