@@ -8,7 +8,7 @@
  * Works with FF_NEW_SHELL ON/OFF.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type ComponentType } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FileText,
@@ -35,7 +35,7 @@ import { cn } from '@/lib/utils';
 
 // ── Category metadata ─────────────────────────────────────────────────────────
 
-const CATEGORY_ICON: Record<TemplateCategory, React.ComponentType<{ className?: string }>> = {
+const CATEGORY_ICON: Record<TemplateCategory, ComponentType<{ className?: string }>> = {
   CONTRACTS:  FileText,
   PROTOCOLS:  ClipboardList,
   ANNEXES:    Paperclip,

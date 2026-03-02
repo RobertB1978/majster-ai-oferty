@@ -411,7 +411,7 @@ export function TemplateEditor({
       URL.revokeObjectURL(url);
 
       toast.success(t('docTemplates.editor.pdfDownloaded'));
-    } catch (err) {
+    } catch (_err) {
       toast.error(t('docTemplates.editor.pdfError'));
     } finally {
       setIsGeneratingPdf(false);
@@ -481,7 +481,7 @@ export function TemplateEditor({
 
       toast.success(t('docTemplates.editor.savedToDossier'));
       onSaved?.(iid);
-    } catch (err) {
+    } catch (_err) {
       toast.error(t('docTemplates.editor.saveError'));
     } finally {
       setIsSavingDossier(false);
