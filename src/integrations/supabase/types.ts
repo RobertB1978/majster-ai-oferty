@@ -709,36 +709,117 @@ export type Database = {
         }
         Relationships: []
       }
+      project_acceptance: {
+        Row: {
+          accepted_at: string | null
+          client_name: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          project_id: string
+          signature_path: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          client_name?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          project_id: string
+          signature_path?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          client_name?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          project_id?: string
+          signature_path?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      project_checklists: {
+        Row: {
+          created_at: string
+          id: string
+          items_json: Json
+          project_id: string
+          template_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          items_json?: Json
+          project_id: string
+          template_key?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          items_json?: Json
+          project_id?: string
+          template_key?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       project_photos: {
         Row: {
           analysis_result: Json | null
           analysis_status: string
           created_at: string
           file_name: string
+          height: number | null
           id: string
+          mime_type: string | null
+          phase: string | null
           photo_url: string
           project_id: string
+          size_bytes: number | null
           user_id: string
+          width: number | null
         }
         Insert: {
           analysis_result?: Json | null
           analysis_status?: string
           created_at?: string
           file_name: string
+          height?: number | null
           id?: string
+          mime_type?: string | null
+          phase?: string | null
           photo_url: string
           project_id: string
+          size_bytes?: number | null
           user_id: string
+          width?: number | null
         }
         Update: {
           analysis_result?: Json | null
           analysis_status?: string
           created_at?: string
           file_name?: string
+          height?: number | null
           id?: string
+          mime_type?: string | null
+          phase?: string | null
           photo_url?: string
           project_id?: string
+          size_bytes?: number | null
           user_id?: string
+          width?: number | null
         }
         Relationships: [
           {
