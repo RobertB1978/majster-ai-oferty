@@ -111,11 +111,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build application
+      - name: Build application (FF_NEW_SHELL=false, default)
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://placeholder.supabase.co' }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'placeholder' }}
+
+      # ADR-0005 / PR-07: every PR from PR-07 onward must build with FF_NEW_SHELL=true AND false.
+      # This step verifies the NewShell code-path compiles without errors.
+      - name: Build application (FF_NEW_SHELL=true — ADR-0005 dual-check)
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'placeholder' }}
+          VITE_FF_NEW_SHELL: 'true'
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

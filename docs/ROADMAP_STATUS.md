@@ -1330,3 +1330,56 @@ majster-ai-api-v4     — Supabase GET dla offers + v2_projects (stale-while-rev
 - TanStack Query gcTime=30min utrzymuje dane w pamieci RAM miedzy nawigacjami (bez przeladowania)
 - SW cache przezywa przeladowanie strony — jedyne zrodlo danych po `F5` gdy offline
 - Pelnoekranowy `OfflineFallback` zachowany w `src/components/pwa/OfflineFallback.tsx` (nieuzywany w App.tsx) dla kompatybilnosci z ewentualnymi testami
+
+---
+
+## AUDIT VERIFICATION — 2026-03-02 (session: setup-review-framework-9RNvU)
+
+> Przeprowadzony przez: Chief Architect + QA Lead (Claude)
+> Metodologia: code-only audit (bez dostępu do runtime Supabase/Vercel)
+
+### Wyniki audytu PR-by-PR
+
+| PR | Wynik audytu | Dowody | Gap |
+|----|-------------|--------|-----|
+| PR-00 | ✅ PASS | ADR-0000..ADR-0010 + ROADMAP_ENTERPRISE.md ✅ | — |
+| PR-01 | ✅ PASS | i18n gate script ✅, sentry.ts ✅, version.ts ✅ | VITE_SENTRY_DSN = OWNER_ACTION |
+| PR-02 | ⚠️ PARTIAL | vercel.json headers ✅, RLS na nowych tabelach ✅ | user_roles RLS niezweryfikowane z Dashboard (P2) |
+| PR-03 | ✅ PASS | error-state + empty-state + skeleton-screens + loading-screen ✅ | — |
+| PR-04 | ✅ PASS | SocialLoginButtons + AuthContext OAuth ✅ | OAuth provider config = OWNER_ACTION |
+| PR-05 | ✅ PASS | Migracja PR-05 + DeleteAccountSection + delete-user-account EF ✅ | — |
+| PR-06 | ✅ PASS | entitlements.ts + quota DB fn + paywall + testy ✅ | — |
+| PR-07 | ✅ PASS (FIX) | FF_NEW_SHELL + NewShell components + onboarding ✅ | CI dual-check brakował → NAPRAWIONY w tej sesji |
+| PR-08 | ✅ PASS | Clients + ItemTemplates CRUD ✅ | — |
+| PR-09 | ✅ PASS | offers tabela + RLS + Offers.tsx ✅ | — |
+| PR-10 | ✅ PASS | OfferWizard 3-step + offer_items ✅ | — |
+| PR-11 | ✅ PASS | PDF + SendOfferModal + DB trigger ✅ | RESEND_API_KEY = OWNER_ACTION |
+| PR-12 | ✅ PASS | acceptance_links + /a/:token + BulkAdd ✅ | — |
+| PR-13 | ✅ PASS | v2_projects + QR token + SECURITY DEFINER (bez cen) ✅ | — |
+| PR-14 | ✅ PASS | budget_net + project_costs + RLS ✅ | — |
+| PR-15 | ✅ PASS | project_photos.phase + checklists + acceptance + kompresja ✅ | — |
+| PR-16 | ✅ PASS | dossier_items + share_tokens + /d/:token ✅ | — |
+| PR-17 | ✅ PASS | documentTemplates.ts (5 kategorii) + document_instances ✅ | — |
+| PR-18 | ✅ PASS | warranties + inspections + reminders + testy ✅ | — |
+| PR-19 | ✅ PASS | sw.js v4 + OfflineBanner + manifest ✅ | Ręczny SW (nie vite-plugin-pwa) — per ADR-0008 dopuszczalne |
+| PR-20 | ✅ PASS | create-checkout-session + stripe-webhook + PR-20 migration ✅ | Stripe keys = OWNER_ACTION |
+
+**Wynik: 19/21 PASS · 1/21 PARTIAL (PR-02 user_roles P2) · 0/21 FAIL**
+
+### Zastosowany fix
+
+- **fix/ci-ff-new-shell-dual-check** (plik: `.github/workflows/ci.yml`)
+  - Dodano krok `Build application (FF_NEW_SHELL=true — ADR-0005 dual-check)` w job `build`
+  - Weryfikuje że build z `VITE_FF_NEW_SHELL=true` przechodzi bez błędów
+  - Potwierdzono: `npm run type-check` PASS po zmianie
+
+### OWNER_ACTION items (wymagają konfiguracji przez właściciela — nie są bugami kodu)
+
+| Priorytet | Item | Lokalizacja |
+|-----------|------|-------------|
+| P1 | `VITE_SENTRY_DSN` | Vercel → Environment Variables |
+| P1 | Google + Apple OAuth providers | Supabase Dashboard → Auth → Providers |
+| P1 | `RESEND_API_KEY`, `FRONTEND_URL` | Supabase Dashboard → Edge Functions → Secrets |
+| P1 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRO_PRICE_ID`, `STRIPE_STARTER_PRICE_ID` | Supabase Dashboard → Edge Functions → Secrets |
+| P2 | Weryfikacja RLS na tabeli `user_roles` | Supabase Dashboard → Table Editor → user_roles |
+
