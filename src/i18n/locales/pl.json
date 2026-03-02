@@ -3717,5 +3717,10 @@
     "warrantyExpiresIn7": "Gwarancja wygasa za 7 dni ({{date}})",
     "inspectionDueIn30": "Przegląd za 30 dni ({{date}})",
     "inspectionDueIn7": "Przegląd za 7 dni ({{date}})"
+  },
+  "offline": {
+    "banner": "Tryb offline — widoczne dane z ostatniego pobrania",
+    "actionBlocked": "Ta akcja wymaga polaczenia z internetem",
+    "readOnlyNote": "Przegladasz dane zapisane lokalnie. Wróc do sieci, aby wprowadzac zmiany."
   }
 }

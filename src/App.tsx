@@ -17,7 +17,7 @@ import { NewShellLayout } from "@/components/layout/NewShellLayout";
 import { FF_NEW_SHELL } from "@/config/featureFlags";
 import { PageLoader } from "@/components/layout/PageLoader";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
-import { OfflineFallback } from "@/components/pwa/OfflineFallback";
+import { OfflineBanner } from "@/components/pwa/OfflineBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsent } from "@/components/legal/CookieConsent";
 
@@ -160,7 +160,8 @@ const App = () => (
               <ThemeInitializer />
               <ScrollRestoration />
               <Sonner />
-              <OfflineFallback />
+              {/* PR-19: maly baner zamiast pelnoekranowego blokera — uzytkownik widzi dane z cache */}
+              <OfflineBanner />
               <InstallPrompt />
               <CookieConsent />
               <Suspense fallback={<PageLoader />}>

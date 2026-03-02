@@ -3717,5 +3717,10 @@
     "warrantyExpiresIn7": "Warranty expires in 7 days ({{date}})",
     "inspectionDueIn30": "Inspection due in 30 days ({{date}})",
     "inspectionDueIn7": "Inspection due in 7 days ({{date}})"
+  },
+  "offline": {
+    "banner": "Offline mode — showing last cached data",
+    "actionBlocked": "This action requires an internet connection",
+    "readOnlyNote": "You are viewing locally cached data. Go online to make changes."
   }
 }
