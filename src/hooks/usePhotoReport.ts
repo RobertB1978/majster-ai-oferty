@@ -196,7 +196,7 @@ export function useDeletePhotoReport() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ photoId, projectId, storagePath }: {
+    mutationFn: async ({ photoId, projectId: _projectId, storagePath }: {
       photoId: string;
       projectId: string;
       storagePath: string;
