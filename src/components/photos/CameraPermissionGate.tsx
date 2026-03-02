@@ -8,10 +8,10 @@
 
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CameraOff, Settings } from 'lucide-react';
+import { CameraOff } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
 
-type PermissionStatus = 'idle' | 'granted' | 'denied' | 'unsupported';
+type PermissionStatus = 'idle' | 'granted' | 'denied';
 
 interface CameraPermissionGateProps {
   /** Called when file input is triggered (wraps the actual input trigger) */
@@ -39,8 +39,8 @@ export function CameraPermissionGate({ onRequestFile, children }: CameraPermissi
     }
 
     try {
-      // @ts-expect-error — 'camera' is a valid name in many browsers
-      const result = await navigator.permissions.query({ name: 'camera' });
+      // TypeScript 5.9+ accepts 'camera' as a valid PermissionName
+      const result = await navigator.permissions.query({ name: 'camera' as PermissionName });
 
       if (result.state === 'denied') {
         setStatus('denied');
@@ -52,7 +52,7 @@ export function CameraPermissionGate({ onRequestFile, children }: CameraPermissi
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
           // Stop tracks immediately — we only needed permission, not video
-          stream.getTracks().forEach((t) => t.stop());
+          stream.getTracks().forEach((track) => track.stop());
           setStatus('granted');
         } catch {
           setStatus('denied');
@@ -75,8 +75,6 @@ export function CameraPermissionGate({ onRequestFile, children }: CameraPermissi
     // On browsers, we can only redirect to about:preferences or show guidance.
     // On iOS/Android via Capacitor, the native settings app can be opened.
     try {
-      // Capacitor App plugin (optional native bridge)
-      // If not available, show user guidance via alert.
       if (window.__CAPACITOR__) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).Capacitor?.Plugins?.App?.openUrl?.({ url: 'app-settings:' });
