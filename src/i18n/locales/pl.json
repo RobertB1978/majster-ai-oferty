@@ -3006,7 +3006,7 @@
       "loadErrorDesc": "Projekt mógł zostać usunięty lub nie masz do niego dostępu.",
       "costsPlaceholder": "Zarządzanie kosztami dostępne w kolejnej wersji (PR-14).",
       "documentsPlaceholder": "Teczka dokumentów dostępna w kolejnej wersji (PR-16).",
-      "photosPlaceholder": "Fotoprotokół dostępny w kolejnej wersji (PR-15).",
+      "photosPlaceholder": "Fotoprotokół załadowany (PR-15).",
       "qrTitle": "Link statusu dla klienta",
       "qrHint": "Wygeneruj link QR, który klient może otworzyć bez logowania — zobaczy etapy i postęp (bez cen).",
       "qrCreate": "Wygeneruj link",
@@ -3017,7 +3017,9 @@
       "qrLinkError": "Błąd generowania linku.",
       "qrRefresh": "Odnów link",
       "qrExpired": "Wygasły",
-      "qrExpiresIn": "Ważny {{days}} dni"
+      "qrExpiresIn": "Ważny {{days}} dni",
+      "sectionPhotoReport": "Fotoprotokół",
+      "sectionChecklist": "Lista kontrolna odbioru"
     },
     "public": {
       "label": "Status projektu",
@@ -3069,5 +3071,102 @@
     "costDeleted": "Koszt usunięty.",
     "deleteError": "Błąd usuwania kosztu.",
     "deleteCost": "Usuń koszt"
+  },
+  "photoReport": {
+    "title": "Fotoprotokół",
+    "addPhoto": "Dodaj zdjęcie",
+    "addPhotoAriaLabel": "Dodaj zdjęcie do fazy {{phase}}",
+    "noPhotos": "Brak zdjęć w tej fazie",
+    "emptyTitle": "Brak zdjęć",
+    "emptyDesc": "Dodaj zdjęcia z faz: Przed / W trakcie / Po / Problem",
+    "uploading": "Przesyłanie...",
+    "uploadSuccess": "Zdjęcie przesłane pomyślnie",
+    "uploadFailed": "Błąd przesyłania zdjęcia",
+    "retry": "Ponów",
+    "deletePhoto": "Usuń zdjęcie",
+    "deleteSuccess": "Zdjęcie usunięte",
+    "deleteError": "Błąd usuwania zdjęcia",
+    "loadError": "Błąd ładowania zdjęć",
+    "loadErrorDesc": "Nie udało się załadować fotoprotokołu projektu.",
+    "phase": {
+      "BEFORE": "Przed",
+      "DURING": "W trakcie",
+      "AFTER": "Po",
+      "ISSUE": "Problem / Uwaga"
+    },
+    "permissionDenied": {
+      "title": "Brak dostępu do kamery",
+      "description": "Aplikacja nie ma uprawnień do kamery. Zezwól na dostęp w ustawieniach systemowych, aby dodawać zdjęcia do fotoprotokołu i dokumentacji odbioru.",
+      "openSettings": "Otwórz ustawienia systemowe"
+    }
+  },
+  "checklist": {
+    "title": "Lista kontrolna odbioru",
+    "selectTemplate": "Wybierz szablon",
+    "items": "Pozycje do sprawdzenia",
+    "progress": "{{done}} z {{total}} ukończono",
+    "allDone": "Wszystko gotowe!",
+    "save": "Zapisz listę",
+    "saved": "Lista zapisana",
+    "saveError": "Błąd zapisu listy",
+    "toggleItem": "Przełącz: {{label}}",
+    "template": {
+      "general_basic": "Ogólny",
+      "plumbing_basic": "Hydraulika",
+      "electrical_basic": "Elektryka",
+      "painting_basic": "Malowanie"
+    },
+    "templates": {
+      "general_basic": {
+        "site_clean": "Plac budowy jest posprzątany",
+        "materials_removed": "Materiały budowlane usunięte",
+        "surfaces_inspected": "Powierzchnie sprawdzone",
+        "client_walkthrough": "Obchód z klientem wykonany",
+        "defects_noted": "Usterki zanotowane (jeśli są)",
+        "photos_taken": "Zdjęcia końcowe wykonane"
+      },
+      "plumbing_basic": {
+        "no_leaks": "Brak wycieków wody",
+        "water_pressure": "Ciśnienie wody prawidłowe",
+        "drains_flow": "Odpływy działają prawidłowo",
+        "seals_checked": "Uszczelnienia sprawdzone",
+        "hot_cold_labels": "Oznaczenia ciepłej/zimnej wody",
+        "shutoffs_accessible": "Zawory odcinające dostępne",
+        "site_clean": "Miejsce pracy posprzątane"
+      },
+      "electrical_basic": {
+        "breakers_labeled": "Bezpieczniki opisane",
+        "outlets_tested": "Gniazdka sprawdzone",
+        "gfci_ok": "Wyłączniki różnicowoprądowe działają",
+        "lights_work": "Oświetlenie działa",
+        "no_exposed_wires": "Brak odsłoniętych przewodów",
+        "panels_closed": "Rozdzielnie zamknięte",
+        "site_clean": "Miejsce pracy posprzątane"
+      },
+      "painting_basic": {
+        "coverage_even": "Powłoka równomierna",
+        "no_drips": "Brak zacieków farby",
+        "trim_clean": "Listwy i wykończenia czyste",
+        "color_match": "Kolor zgodny z zamówieniem",
+        "tape_removed": "Taśmy malarskie usunięte",
+        "furniture_restored": "Meble przesunięte z powrotem",
+        "site_clean": "Miejsce pracy posprzątane"
+      }
+    }
+  },
+  "signature": {
+    "title": "Podpis odbioru",
+    "instruction": "Narysuj podpis klienta palcem lub myszką:",
+    "placeholder": "Podpisz tutaj",
+    "clear": "Wyczyść",
+    "save": "Zapisz podpis",
+    "saved": "Zapisano",
+    "savedSuccess": "Podpis zapisany pomyślnie",
+    "saveError": "Błąd zapisu podpisu",
+    "currentSignature": "Aktualny podpis:",
+    "savedAlt": "Zapisany podpis klienta",
+    "canvasAriaLabel": "Obszar do złożenia podpisu",
+    "alreadySigned": "(podpisano)",
+    "completeChecklistFirst": "Pozostało {{remaining}} pozycji do sprawdzenia"
   }
 }

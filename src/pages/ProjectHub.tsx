@@ -1,9 +1,9 @@
 /**
- * ProjectHub — PR-13
+ * ProjectHub — PR-13 + PR-15
  *
  * Project detail "hub" screen with accordion sections.
- * Sections: Status/Stages (core) | Costs placeholder | Documents placeholder | Photos placeholder.
- * Allows: update progress, edit stages, generate/copy QR status link.
+ * Sections: Stages | Costs | Documents | Photo Report | Acceptance Checklist
+ * PR-15: Photo Report (BEFORE/DURING/AFTER/ISSUE) + Checklist + Signature.
  * Works with FF_NEW_SHELL ON/OFF.
  */
 
@@ -26,6 +26,8 @@ import {
   type ProjectStage,
 } from '@/hooks/useProjectsV2';
 import { BurnBarSection } from '@/components/costs/BurnBarSection';
+import { PhotoReportPanel } from '@/components/photos/PhotoReportPanel';
+import { AcceptanceChecklistPanel } from '@/components/photos/AcceptanceChecklistPanel';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -36,7 +38,7 @@ import { cn } from '@/lib/utils';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type SectionId = 'stages' | 'costs' | 'documents' | 'photos';
+type SectionId = 'stages' | 'costs' | 'documents' | 'photoReport' | 'checklist';
 
 interface AccordionSection {
   id: SectionId;
@@ -44,10 +46,11 @@ interface AccordionSection {
 }
 
 const SECTIONS: AccordionSection[] = [
-  { id: 'stages',    titleKey: 'projectsV2.hub.sectionStages' },
-  { id: 'costs',     titleKey: 'projectsV2.hub.sectionCosts' },
-  { id: 'documents', titleKey: 'projectsV2.hub.sectionDocuments' },
-  { id: 'photos',    titleKey: 'projectsV2.hub.sectionPhotos' },
+  { id: 'stages',      titleKey: 'projectsV2.hub.sectionStages' },
+  { id: 'costs',       titleKey: 'projectsV2.hub.sectionCosts' },
+  { id: 'documents',   titleKey: 'projectsV2.hub.sectionDocuments' },
+  { id: 'photoReport', titleKey: 'projectsV2.hub.sectionPhotoReport' },
+  { id: 'checklist',   titleKey: 'projectsV2.hub.sectionChecklist' },
 ];
 
 const STATUS_BADGE: Record<string, string> = {
@@ -391,10 +394,11 @@ export default function ProjectHub() {
                       {t('projectsV2.hub.documentsPlaceholder')}
                     </p>
                   )}
-                  {section.id === 'photos' && (
-                    <p className="text-sm text-muted-foreground py-4 text-center">
-                      {t('projectsV2.hub.photosPlaceholder')}
-                    </p>
+                  {section.id === 'photoReport' && (
+                    <PhotoReportPanel projectId={project.id} />
+                  )}
+                  {section.id === 'checklist' && (
+                    <AcceptanceChecklistPanel projectId={project.id} />
                   )}
                 </div>
               )}

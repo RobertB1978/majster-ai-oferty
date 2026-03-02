@@ -57,7 +57,7 @@ while IFS= read -r file; do
   fi
 
   COUNT=$(
-    rg --count-matches "[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]" "$FILE_PATH" 2>/dev/null \
+    { rg --count-matches "[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]" "$FILE_PATH" 2>/dev/null || true; } \
     | awk -F: '{sum += $2} END {print sum + 0}'
   )
 
