@@ -36,7 +36,7 @@ export function FreeTierPaywallModal({ open, onOpenChange }: FreeTierPaywallModa
 
   const handleUpgrade = () => {
     onOpenChange(false);
-    navigate('/app/billing');
+    navigate('/app/plan');
   };
 
   return (

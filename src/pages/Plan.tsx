@@ -1,14 +1,32 @@
-import { useState } from 'react';
+/**
+ * Plan.tsx — PR-20
+ *
+ * Subscription & Plan page (/app/plan).
+ * - Shows all pricing tiers (from config.plans.tiers)
+ * - Shows the user's current plan (from user_subscriptions via useUserSubscription)
+ * - Upgrade CTA: calls create-checkout-session EF → Stripe Checkout (VITE_STRIPE_ENABLED=true)
+ *   or falls back to PlanRequestModal (email request) when Stripe not configured
+ * - Manage Billing: calls customer-portal EF → Stripe Billing Portal
+ * - Handles ?success=true in URL to refresh subscription after checkout
+ *
+ * Security: No Stripe secrets in browser. All Stripe sessions created server-side.
+ */
+
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, CreditCard, Zap, Users, HardDrive, FolderKanban, Star } from 'lucide-react';
+import { CheckCircle2, CreditCard, Zap, Users, HardDrive, FolderKanban, Star, ExternalLink, CheckCircle } from 'lucide-react';
 import { useConfig } from '@/contexts/ConfigContext';
 import { PlanRequestModal } from '@/components/billing/PlanRequestModal';
-import { supabase } from '@/integrations/supabase/client';
+import { useUserSubscription } from '@/hooks/useSubscription';
+import { useCreateCheckoutSession, useCustomerPortal, STRIPE_PRICE_IDS } from '@/hooks/useStripe';
 import { formatDualCurrency } from '@/config/currency';
+import { toast } from 'sonner';
 
 const STRIPE_ENABLED = import.meta.env.VITE_STRIPE_ENABLED === 'true';
 const CONTACT_EMAIL = 'kontakt.majsterai@gmail.com';
@@ -65,32 +83,69 @@ export default function Plan() {
   const { config } = useConfig();
   const tiers = config.plans.tiers;
   const { t, i18n } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
+
+  const { data: subscription, isLoading: isSubLoading } = useUserSubscription();
+  const { mutate: createCheckout, isPending: isCheckoutLoading } = useCreateCheckoutSession();
+  const { mutate: openPortal, isPending: isPortalLoading } = useCustomerPortal();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<{ slug: string; name: string } | null>(null);
 
-  async function handlePlanCta(tierSlug: string, tierName: string) {
+  const currentPlan = subscription?.plan_id ?? 'free';
+  const isPaid = currentPlan !== 'free';
+
+  // Handle ?success=true after Stripe Checkout redirect
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      toast.success(t('billing.checkoutSuccess', 'Płatność zakończona! Odświeżamy plan...'));
+      const timer = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['user-subscription'] });
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    if (searchParams.get('canceled') === 'true') {
+      toast.info(t('billing.checkoutCanceled', 'Płatność anulowana'));
+    }
+  }, [searchParams, queryClient, t]);
+
+  function handlePlanCta(tierSlug: string, tierName: string) {
+    if (tierSlug === currentPlan) return;
+
     if (STRIPE_ENABLED) {
-      // Stripe checkout path — wire up when Stripe account is ready
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-      const res = await fetch(`${supabaseUrl}/functions/v1/create-checkout-session`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ planSlug: tierSlug }),
-      });
-      if (res.ok) {
-        const { url } = await res.json();
-        if (url) window.location.href = url;
+      const priceIdMap: Record<string, string> = {
+        pro: STRIPE_PRICE_IDS.pro.monthly,
+        starter: STRIPE_PRICE_IDS.starter.monthly,
+        business: STRIPE_PRICE_IDS.business.monthly,
+        enterprise: STRIPE_PRICE_IDS.enterprise.monthly,
+      };
+      const priceId = priceIdMap[tierSlug];
+      if (!priceId) {
+        toast.error(t('billing.planNotConfigured', 'Plan nie jest jeszcze skonfigurowany'));
+        return;
       }
+      createCheckout({
+        priceId,
+        successUrl: `${window.location.origin}/app/plan?success=true`,
+        cancelUrl: `${window.location.origin}/app/plan?canceled=true`,
+      }, {
+        onError: () => {
+          toast.error(t('billing.checkoutError', 'Błąd inicjowania płatności. Spróbuj ponownie.'));
+        },
+      });
     } else {
       setSelectedPlan({ slug: tierSlug, name: tierName });
       setModalOpen(true);
     }
+  }
+
+  function handleManageBilling() {
+    openPortal(undefined, {
+      onError: () => {
+        toast.error(t('billing.subscription.portalError', 'Nie można otworzyć portalu płatności'));
+      },
+    });
   }
 
   return (
@@ -115,31 +170,71 @@ export default function Plan() {
         </div>
 
         {/* Current plan notice */}
-        <Card className="border-primary/30 bg-primary/5">
+        <Card className={isPaid ? 'border-green-500/30 bg-green-500/5' : 'border-primary/30 bg-primary/5'}>
           <CardContent className="flex items-center gap-4 py-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <Zap className="h-5 w-5 text-primary" />
+            <div className={`flex h-10 w-10 items-center justify-center rounded-full ${isPaid ? 'bg-green-500/10' : 'bg-primary/10'}`}>
+              {isPaid
+                ? <CheckCircle className="h-5 w-5 text-green-600" />
+                : <Zap className="h-5 w-5 text-primary" />}
             </div>
             <div className="flex-1">
-              <p className="font-semibold text-sm">{t('billing.currentlyOnFreePlan', 'You are currently on the Free plan')}</p>
-              <p className="text-xs text-muted-foreground">
-                {t('billing.upgradeToUnlock', 'Upgrade to unlock AI, team management, and more.')}
-              </p>
+              {isSubLoading ? (
+                <p className="text-sm text-muted-foreground">{t('common.loading', 'Ładowanie...')}</p>
+              ) : isPaid ? (
+                <>
+                  <p className="font-semibold text-sm">
+                    {t('billing.currentlyOnPlan', 'Aktualny plan: {{plan}}', { plan: currentPlan.toUpperCase() })}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {subscription?.current_period_end
+                      ? t('billing.renewsOn', 'Odnawia się {{date}}', {
+                          date: new Date(subscription.current_period_end).toLocaleDateString('pl-PL'),
+                        })
+                      : t('billing.activePlan', 'Plan aktywny')}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-semibold text-sm">{t('billing.currentlyOnFreePlan', 'You are currently on the Free plan')}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t('billing.upgradeToUnlock', 'Upgrade to unlock AI, team management, and more.')}
+                  </p>
+                </>
+              )}
             </div>
-            <Badge variant="secondary">{t('billing.plans.free.name', 'Free')}</Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant={isPaid ? 'default' : 'secondary'} className="capitalize">
+                {currentPlan}
+              </Badge>
+              {isPaid && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleManageBilling}
+                  disabled={isPortalLoading}
+                >
+                  <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                  {isPortalLoading
+                    ? t('common.loading', 'Ładowanie...')
+                    : t('billing.subscription.manageBilling', 'Portal płatności')}
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
 
         {/* Plans grid */}
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {tiers.map((tier) => (
+          {tiers.map((tier) => {
+            const isCurrentPlan = tier.id === currentPlan;
+            return (
             <Card
               key={tier.id}
               className={`relative flex flex-col transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${
                 tier.highlighted
                   ? 'border-primary shadow-md ring-2 ring-primary/20'
                   : 'border hover:border-primary/30'
-              }`}
+              } ${isCurrentPlan ? 'opacity-75' : ''}`}
             >
               {tier.highlighted && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -208,23 +303,31 @@ export default function Plan() {
 
                 {/* CTA */}
                 <div className="mt-auto pt-4">
-                  {tier.pricePLN === 0 ? (
+                  {isCurrentPlan ? (
                     <Button variant="outline" className="w-full" disabled>
                       {t('billing.currentPlan', 'Current Plan')}
+                    </Button>
+                  ) : tier.pricePLN === 0 ? (
+                    <Button variant="outline" className="w-full" disabled>
+                      {t('billing.freePlan', 'Plan darmowy')}
                     </Button>
                   ) : (
                     <Button
                       className="w-full"
                       variant={tier.highlighted ? 'default' : 'outline'}
                       onClick={() => handlePlanCta(tier.id, tier.name)}
+                      disabled={isCheckoutLoading}
                     >
-                      {t('billing.selectPlan', 'Select plan')} {tier.name}
+                      {isCheckoutLoading
+                        ? t('common.loading', 'Ładowanie...')
+                        : `${t('billing.selectPlan', 'Select plan')} ${tier.name}`}
                     </Button>
                   )}
                 </div>
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
         </div>
 
         {/* FAQ / info */}

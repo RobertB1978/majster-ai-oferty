@@ -630,7 +630,8 @@
     },
     "contactEmailTab": "Email пропозиції",
     "companyProfileTab": "Компанія",
-    "accountTab": "Акаунт"
+    "accountTab": "Акаунт",
+    "subscriptionTab": "Підписка"
   },
   "billing": {
     "title": "Платежі та підписки",
@@ -768,7 +769,28 @@
     "noPaymentsDesc": "Платежі з'являться тут після придбання плану",
     "planBadge": {
       "ariaLabel": "План: {{plan}}. Натисніть, щоб переглянути плани"
-    }
+    },
+    "subscription": {
+      "title": "Підписка",
+      "description": "Ваш поточний план і статус оплати",
+      "plan": "План",
+      "status": "Статус",
+      "periodEnd": "Дійсний до",
+      "manageBilling": "Портал оплати",
+      "upgradeCta": "Перейти на Pro",
+      "portalError": "Неможливо відкрити портал оплати",
+      "statusActive": "Активний",
+      "statusCanceled": "Скасований",
+      "statusTrialing": "Пробний",
+      "statusExpired": "Прострочений"
+    },
+    "checkoutSuccess": "Оплату завершено! Оновлюємо план...",
+    "checkoutCanceled": "Оплату скасовано",
+    "checkoutError": "Помилка ініціювання оплати. Спробуйте ще раз.",
+    "currentlyOnPlan": "Поточний план: {{plan}}",
+    "renewsOn": "Поновлюється {{date}}",
+    "activePlan": "План активний",
+    "planNotConfigured": "Цей план ще не налаштовано"
   },
   "profile": {
     "title": "Профіль компанії",

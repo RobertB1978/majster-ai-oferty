@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-02 (PR-19 DONE)
+**Ostatnia aktualizacja:** 2026-03-02 (PR-20 DONE)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -45,7 +45,57 @@
 | **PR-17** | Wzory dokumentów | ✅ DONE | `claude/document-templates-library-l0viJ` | 2026-03-02 | 25 szablonów (5 umów + 9 protokołów + 6 załączników + 5 przeglądów), document_instances (RLS), templatePdfGenerator (jsPDF), auto-fill (Company/Client/Offer/Project), save-to-dossier, referencje prawne w PDF, docs/COMPLIANCE/INSPECTIONS_PL.md + ADR-0010, i18n PL/EN/UK (300+ kluczy), TemplatesLibrary + TemplateEditor, route /app/document-templates |
 | **PR-18** | Gwarancje + Przeglądy + Przypomnienia | ✅ DONE | `claude/enterprise-compliance-features-48LQF` | 2026-03-02 | project_warranties + project_inspections + project_reminders (migration + RLS + views), WarrantySection (PDF karta A4 + dossier GUARANTEE + email), InspectionSection (lista PLANNED/OVERDUE/DONE, 6 typów z INSPECTIONS_PL.md, protokół → dossier PROTOCOL), RemindersPanel (in-app T-30/T-7), NotificationPermissionPrompt (denied→EmptyState+OpenSettings), useWarranty+useInspection+useReminders hooks, i18n PL/EN/UK (inspection.* + reminders.* 60+ kluczy), testy jednostkowe, ADR-0010 zaktualizowane |
 | **PR-19** | PWA Offline minimum | ✅ DONE | `claude/pwa-service-worker-cache-IuqSQ` | 2026-03-02 | SW v4 (stale-while-revalidate dla /rest/v1/offers + /rest/v1/v2_projects), OfflineBanner (maly baner, nie blokuje app), useOnlineStatus hook, i18n PL/EN/UK (offline.*), docs/OFFLINE_MINIMUM.md, FF_NEW_SHELL ON/OFF |
-| **PR-20** | Stripe Billing | ⬜ TODO | — | — | Wymaga merge PR-06 i PR-07 |
+| **PR-20** | Stripe Billing | ✅ DONE | `claude/stripe-billing-checkout-3OFjB` | 2026-03-02 | Stripe Checkout (create-checkout-session EF), customer-portal EF (Billing Portal), stripe-webhook (idempotentny, weryfikacja podpisu), migracja PR-20 (fix RLS user_subscriptions, trigger enforce_monthly_offer_send_limit na offers, fix subscription_events nullable), SubscriptionSection (Settings→Subskrypcja: plan+status+portal link), Plan.tsx (real subscription data + checkout wired + portal + ?success=true refresh), useCustomerPortal hook, FreeTierPaywallModal fix (/app/plan), /app/billing route alias, i18n PL/EN/UK (billing.subscription.*), docs/BILLING_RUNBOOK.md |
+
+---
+
+## PR-20 — Stripe Billing: co zostało wdrożone
+
+### Architektura płatności
+
+- **Przepływ Checkout:** Użytkownik → kliknięcie "Wybierz plan" → EF `create-checkout-session` (service role, Stripe SDK) → redirect do Stripe Checkout → po płatności webhook `checkout.session.completed` → `sync_subscription_from_stripe()` → plan=PRO w DB → `?success=true` URL → frontend odświeża subskrypcję po 2s
+- **Przepływ Portalu:** Użytkownik Pro → kliknięcie "Portal płatności" → EF `customer-portal` (pobiera `stripe_customer_id`) → redirect do Stripe Billing Portal → zarządzanie subskrypcją / anulowanie → webhook `customer.subscription.deleted` → plan wraca do FREE
+- **Żaden klucz Stripe nie jest w przeglądarce.** Wszystkie wywołania Stripe API są w Edge Functions z `STRIPE_SECRET_KEY` jako sekret Supabase
+
+### Bezpieczeństwo serwer-side
+
+- **RLS fix:** Usunięte polityki INSERT/UPDATE dla `authenticated` na `user_subscriptions` — użytkownicy nie mogą sami ustawiać planu Pro bez opłaty
+- **Trigger DB:** `trg_enforce_monthly_offer_send_limit` (BEFORE UPDATE na `offers`) — blokuje 4. ofertę dla Free plan na poziomie DB, nawet jeśli klient obejdzie UI
+- **Weryfikacja podpisu webhooka:** `stripe.webhooks.constructEventAsync()` — falszywe żądania odrzucone (HTTP 400)
+- **Idempotencja:** Tabela `stripe_events` (PK na `event_id`) — duplikaty webhooków bezpiecznie pomijane
+- **Brak PII w logach:** Logowane tylko `user.id` (UUID) i `event.type`, nie email ani dane karty
+
+### Pliki zmienione
+
+| Plik | Zmiana |
+|------|--------|
+| `supabase/migrations/20260302300000_pr20_billing.sql` | Fix RLS + trigger ofert + nullable subscription_id |
+| `supabase/functions/customer-portal/index.ts` | **Nowa** EF — Stripe Billing Portal |
+| `src/hooks/useStripe.ts` | Dodano `useCustomerPortal` hook |
+| `src/components/billing/SubscriptionSection.tsx` | **Nowy** komponent — Settings→Subskrypcja |
+| `src/pages/Settings.tsx` | Dodano tab "Subskrypcja" |
+| `src/pages/Plan.tsx` | Przebudowano — real data, checkout wired, portal, ?success |
+| `src/components/billing/FreeTierPaywallModal.tsx` | Fix: navigate('/app/plan') zamiast '/app/billing' |
+| `src/App.tsx` | Dodano route `/app/billing` → Plan |
+| `src/i18n/locales/{pl,en,uk}.json` | Dodano billing.subscription.* i billing.checkout* |
+| `docs/BILLING_RUNBOOK.md` | **Nowy** — przewodnik konfiguracji i testowania Stripe |
+| `docs/ROADMAP_STATUS.md` | PR-20 → ✅ DONE |
+
+### Kroki weryfikacji (Stripe test mode)
+
+1. Ustaw `VITE_STRIPE_ENABLED=true` + testowe Price ID w env
+2. Zaloguj się → `/app/plan` → "Wybierz plan Pro"
+3. Karta testowa: `4242 4242 4242 4242` → płatność → redirect z `?success=true`
+4. DB: `SELECT plan_id, status FROM user_subscriptions WHERE user_id = '...'` → `pro, active`
+5. Kliknij "Portal płatności" → Stripe Portal (test) → Anuluj → webhook → plan = `free`
+6. Oferty (Free): wyślij 3 → 4. blokada UI (FreeTierPaywallModal) → 4. bezpośrednia próba update → DB ERROR `PLAN_LIMIT_REACHED`
+7. Nieprawidłowy webhook → curl z fałszywym `stripe-signature` → odpowiedź 400
+
+### Retencja danych finansowych
+
+- `subscription_events` — audyt transakcji, retencja **5 lat** (wymogi rachunkowości PL)
+- `stripe_events` — idempotencja, retencja min. 90 dni, zalecane pruning po 1 roku
+- Backup Supabase automatyczny — retencja **30 dni**
 
 ---
 

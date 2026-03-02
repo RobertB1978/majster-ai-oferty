@@ -251,6 +251,8 @@ const App = () => (
                     <Route path="analytics" element={<Analytics />} />
                     <Route path="templates" element={<ItemTemplates />} />
                     <Route path="plan" element={<Plan />} />
+                    {/* PR-20: /app/billing alias for plan page (paywall redirect target) */}
+                    <Route path="billing" element={<Plan />} />
                     <Route path="profile" element={<CompanyProfile />} />
                     <Route path="settings" element={<Settings />} />
                     {/* PR-17: Document Templates Library */}
