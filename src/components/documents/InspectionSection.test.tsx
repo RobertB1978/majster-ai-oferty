@@ -62,7 +62,6 @@ function wrapper({ children }: { children: React.ReactNode }) {
 describe('calcNextDueDate', () => {
   it('adds 1 year for ANNUAL_BUILDING', () => {
     const result = calcNextDueDate('ANNUAL_BUILDING');
-    const now = new Date();
     const expected = new Date();
     expected.setFullYear(expected.getFullYear() + 1);
     const diffDays = Math.abs(
