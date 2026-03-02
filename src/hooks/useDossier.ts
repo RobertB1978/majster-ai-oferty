@@ -148,7 +148,6 @@ export function useUploadDossierItem() {
     }): Promise<DossierItem> => {
       if (!user) throw new Error('Not authenticated');
 
-      const ext = file.name.split('.').pop() ?? 'bin';
       const filePath = `${user.id}/${projectId}/${category.toLowerCase()}/${Date.now()}_${file.name}`;
 
       // Upload to storage

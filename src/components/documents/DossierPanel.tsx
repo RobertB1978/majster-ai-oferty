@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import {
   FileText, FolderOpen, Receipt, Camera, Shield, MoreHorizontal,
   Upload, Trash2, Download, Share2, Loader2, ExternalLink, Plus,
-  X, Check,
+  Check,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -264,7 +264,7 @@ export function DossierPanel({ projectId, projectTitle }: DossierPanelProps) {
     try {
       await uploadItem.mutateAsync({ projectId, category, file });
       toast.success(t('dossier.uploadSuccess'));
-    } catch (err) {
+    } catch (_err) {
       toast.error(t('dossier.uploadError'));
     } finally {
       setUploadingCategory(null);
