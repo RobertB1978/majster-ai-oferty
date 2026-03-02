@@ -12,6 +12,10 @@ interface CheckoutSessionResponse {
   url: string;
 }
 
+interface CustomerPortalResponse {
+  url: string;
+}
+
 /**
  * Hook for creating Stripe Checkout sessions
  *
@@ -63,6 +67,48 @@ export function useCreateCheckoutSession() {
     },
     onError: (error) => {
       console.error('Checkout session error:', error);
+    },
+  });
+}
+
+/**
+ * Hook for opening the Stripe Customer Billing Portal.
+ * Used on the Plan/Subscription page for paid users to manage their subscription.
+ * Server creates the portal session (no secrets in browser).
+ */
+export function useCustomerPortal() {
+  return useMutation({
+    mutationFn: async (): Promise<CustomerPortalResponse> => {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        throw new Error('Not authenticated');
+      }
+
+      const { data, error } = await supabase.functions.invoke('customer-portal', {
+        body: {},
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) {
+        console.error('Failed to open billing portal:', error);
+        throw new Error(error.message || 'Failed to open billing portal');
+      }
+
+      if (!data?.url) {
+        throw new Error('No portal URL returned');
+      }
+
+      return data as CustomerPortalResponse;
+    },
+    onSuccess: (data) => {
+      // Redirect to Stripe Customer Portal
+      window.location.href = data.url;
+    },
+    onError: (error) => {
+      console.error('Customer portal error:', error);
     },
   });
 }

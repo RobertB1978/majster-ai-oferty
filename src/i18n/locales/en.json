@@ -630,7 +630,8 @@
     },
     "contactEmailTab": "Offer Email",
     "companyProfileTab": "Company",
-    "accountTab": "Account"
+    "accountTab": "Account",
+    "subscriptionTab": "Subscription"
   },
   "billing": {
     "title": "Billing & Subscriptions",
@@ -768,7 +769,28 @@
     "noPaymentsDesc": "Payments will appear here after purchasing a plan",
     "planBadge": {
       "ariaLabel": "Plan: {{plan}}. Click to view plans"
-    }
+    },
+    "subscription": {
+      "title": "Subscription",
+      "description": "Your current plan and billing status",
+      "plan": "Plan",
+      "status": "Status",
+      "periodEnd": "Valid until",
+      "manageBilling": "Billing portal",
+      "upgradeCta": "Upgrade to Pro",
+      "portalError": "Cannot open billing portal",
+      "statusActive": "Active",
+      "statusCanceled": "Canceled",
+      "statusTrialing": "Trial",
+      "statusExpired": "Expired"
+    },
+    "checkoutSuccess": "Payment complete! Refreshing your plan...",
+    "checkoutCanceled": "Payment canceled",
+    "checkoutError": "Error initiating payment. Please try again.",
+    "currentlyOnPlan": "Current plan: {{plan}}",
+    "renewsOn": "Renews on {{date}}",
+    "activePlan": "Plan active",
+    "planNotConfigured": "This plan is not yet configured"
   },
   "profile": {
     "title": "Company Profile",

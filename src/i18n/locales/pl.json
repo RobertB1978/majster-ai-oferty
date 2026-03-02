@@ -630,7 +630,8 @@
     "emailNotifications": "Powiadomienia email",
     "contactEmailTab": "Email oferty",
     "companyProfileTab": "Firma",
-    "accountTab": "Konto"
+    "accountTab": "Konto",
+    "subscriptionTab": "Subskrypcja"
   },
   "billing": {
     "title": "Płatności i subskrypcje",
@@ -768,7 +769,28 @@
     "noPaymentsDesc": "Płatności pojawią się tutaj po zakupie planu",
     "planBadge": {
       "ariaLabel": "Plan: {{plan}}. Kliknij, by zobaczyć plany"
-    }
+    },
+    "subscription": {
+      "title": "Subskrypcja",
+      "description": "Twój aktualny plan i status płatności",
+      "plan": "Plan",
+      "status": "Status",
+      "periodEnd": "Ważny do",
+      "manageBilling": "Portal płatności",
+      "upgradeCta": "Ulepsz do Pro",
+      "portalError": "Nie można otworzyć portalu płatności",
+      "statusActive": "Aktywny",
+      "statusCanceled": "Anulowany",
+      "statusTrialing": "Testowy",
+      "statusExpired": "Wygasły"
+    },
+    "checkoutSuccess": "Płatność zakończona! Odświeżamy plan...",
+    "checkoutCanceled": "Płatność anulowana",
+    "checkoutError": "Błąd inicjowania płatności. Spróbuj ponownie.",
+    "currentlyOnPlan": "Aktualny plan: {{plan}}",
+    "renewsOn": "Odnawia się {{date}}",
+    "activePlan": "Plan aktywny",
+    "planNotConfigured": "Plan nie jest jeszcze skonfigurowany"
   },
   "profile": {
     "title": "Profil firmy",
