@@ -4,7 +4,7 @@
 
 Przed rozpoczęciem upewnij się, że masz:
 - ✅ Konto Supabase (https://supabase.com)
-- ✅ Dostęp do projektu: `xwvxqhhnozfrjcjmcltv`
+- ✅ Dostęp do projektu: `xwxvqhhnozfrjcjmcltv`
 - ✅ Zainstalowane Supabase CLI lub dostęp do Supabase Dashboard
 
 ---
@@ -15,7 +15,7 @@ Przed rozpoczęciem upewnij się, że masz:
 
 1. Przejdź do: https://supabase.com/dashboard
 2. Zaloguj się na swoje konto
-3. Wybierz projekt: **majster-ai-prod** (`xwvxqhhnozfrjcjmcltv`)
+3. Wybierz projekt: **majster-ai-prod** (`xwxvqhhnozfrjcjmcltv`)
 
 ### Krok 2: Otwórz SQL Editor
 
@@ -165,7 +165,7 @@ Postępuj zgodnie z instrukcjami - otworzy się przeglądarka do autoryzacji.
 
 ```bash
 cd /home/user/majster-ai-oferty
-supabase link --project-ref xwvxqhhnozfrjcjmcltv
+supabase link --project-ref xwxvqhhnozfrjcjmcltv
 ```
 
 ### Krok 4: Wdróż migracje
@@ -231,7 +231,7 @@ jobs:
 ```
 
 **Wymagane sekrety w GitHub:**
-- `SUPABASE_PROJECT_REF`: `xwvxqhhnozfrjcjmcltv`
+- `SUPABASE_PROJECT_REF`: `xwxvqhhnozfrjcjmcltv`
 - `SUPABASE_ACCESS_TOKEN`: Token dostępu (wygeneruj w: https://supabase.com/dashboard/account/tokens)
 
 ---
@@ -298,7 +298,7 @@ cat .env
 
 Powinien zawierać:
 ```env
-VITE_SUPABASE_URL=https://xwvxqhhnozfrjcjmcltv.supabase.co
+VITE_SUPABASE_URL=https://xwxvqhhnozfrjcjmcltv.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJ... (twój klucz anon)
 ```
 

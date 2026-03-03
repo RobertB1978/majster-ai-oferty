@@ -59,7 +59,7 @@ Stworzyłem **diagnostic page** która pokazuje dokładnie co jest nie tak:
 
 #### Krok 3: Dodaj VITE_SUPABASE_URL
 6. **Name:** `VITE_SUPABASE_URL`
-7. **Value:** `https://xwvxqhhnozfrjcjmcltv.supabase.co`
+7. **Value:** `https://xwxvqhhnozfrjcjmcltv.supabase.co`
 8. **Environment:** Zaznacz **Production**, **Preview**, **Development**
 9. Kliknij **Save**
 
@@ -137,8 +137,8 @@ Tests: ✅ 281/281 PASSING
 3. Z lewego menu: **Settings** → **API**
 4. Skopiuj **URL** (format: `https://[project-id].supabase.co`)
 
-**Twój Project ID:** `xwvxqhhnozfrjcjmcltv`
-**Twój URL:** `https://xwvxqhhnozfrjcjmcltv.supabase.co`
+**Twój Project ID:** `xwxvqhhnozfrjcjmcltv`
+**Twój URL:** `https://xwxvqhhnozfrjcjmcltv.supabase.co`
 
 ### VITE_SUPABASE_ANON_KEY
 
@@ -188,7 +188,7 @@ Console error: "Cannot read properties of undefined"
 ### After Fix with /env-check (✅ Working)
 ```
 /env-check shows:
-✅ VITE_SUPABASE_URL - https://xwvxqhhnozfrjcjmcltv.supabase.co
+✅ VITE_SUPABASE_URL - https://xwxvqhhnozfrjcjmcltv.supabase.co
 ✅ VITE_SUPABASE_ANON_KEY - eyJhbGci... (300 chars)
 ✅ MODE - production
 

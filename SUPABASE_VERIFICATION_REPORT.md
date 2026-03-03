@@ -1,7 +1,7 @@
 # 🔍 Supabase Verification Report
 
 **Generated:** 2025-12-26
-**Project ID:** `xwvxqhhnozfrjcjmcltv`
+**Project ID:** `xwxvqhhnozfrjcjmcltv`
 **Status:** ⚠️ REQUIRES MANUAL VERIFICATION
 
 ---
@@ -11,7 +11,7 @@
 ### Step 1: Check Database Tables (5 min)
 ```bash
 # Open Supabase Dashboard
-# https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv/editor
+# https://supabase.com/dashboard/project/xwxvqhhnozfrjcjmcltv/editor
 
 # Verify all 21 tables exist (see list below)
 # Check Table Editor → should see all tables listed
@@ -20,11 +20,11 @@
 ### Step 2: Verify Migrations Applied (2 min)
 ```bash
 # Check if migrations are applied
-npx supabase db remote list --project-ref xwvxqhhnozfrjcjmcltv
+npx supabase db remote list --project-ref xwxvqhhnozfrjcjmcltv
 
 # If migrations NOT applied, run:
 npx supabase login
-npx supabase link --project-ref xwvxqhhnozfrjcjmcltv
+npx supabase link --project-ref xwxvqhhnozfrjcjmcltv
 npx supabase db push
 ```
 
@@ -152,7 +152,7 @@ npx supabase functions deploy
 cp .env.example .env
 
 # Edit .env and fill in:
-# VITE_SUPABASE_URL=https://xwvxqhhnozfrjcjmcltv.supabase.co
+# VITE_SUPABASE_URL=https://xwxvqhhnozfrjcjmcltv.supabase.co
 # VITE_SUPABASE_ANON_KEY=eyJ... (from Supabase Dashboard → Settings → API)
 ```
 
@@ -161,7 +161,7 @@ cp .env.example .env
 **Location:** Vercel Dashboard → Settings → Environment Variables
 
 **Required:**
-- `VITE_SUPABASE_URL` = `https://xwvxqhhnozfrjcjmcltv.supabase.co`
+- `VITE_SUPABASE_URL` = `https://xwxvqhhnozfrjcjmcltv.supabase.co`
 - `VITE_SUPABASE_ANON_KEY` = (anon public key from Supabase)
 
 **Optional (Sentry error monitoring):**
@@ -262,12 +262,12 @@ npx supabase login
 
 ### 2. Link to production project
 ```bash
-npx supabase link --project-ref xwvxqhhnozfrjcjmcltv
+npx supabase link --project-ref xwxvqhhnozfrjcjmcltv
 ```
 
 ### 3. Check migration status
 ```bash
-npx supabase db remote list --project-ref xwvxqhhnozfrjcjmcltv
+npx supabase db remote list --project-ref xwxvqhhnozfrjcjmcltv
 ```
 
 ### 4. Apply migrations (if not applied)
@@ -309,21 +309,21 @@ ORDER BY tablename;
 ### ✅ Step 1: Database Tables
 **Expected:** 25 tables in public schema
 **How to check:**
-1. Open https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv/editor
+1. Open https://supabase.com/dashboard/project/xwxvqhhnozfrjcjmcltv/editor
 2. Count tables in left sidebar
 3. ✅ PASS if 25 tables visible
 
 ### ✅ Step 2: RLS Policies
 **Expected:** All 25 tables have RLS enabled
 **How to check:**
-1. Open https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv/auth/policies
+1. Open https://supabase.com/dashboard/project/xwxvqhhnozfrjcjmcltv/auth/policies
 2. Verify each table has "RLS enabled"
 3. ✅ PASS if all tables show 🔒 (locked) icon
 
 ### ✅ Step 3: Edge Functions
 **Expected:** 10 functions deployed
 **How to check:**
-1. Open https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv/functions
+1. Open https://supabase.com/dashboard/project/xwxvqhhnozfrjcjmcltv/functions
 2. Count deployed functions
 3. ✅ PASS if 10 functions listed
 
@@ -337,7 +337,7 @@ ORDER BY tablename;
 ### ✅ Step 5: Authentication Settings
 **Expected:** Site URL and Redirect URLs configured
 **How to check:**
-1. Open https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv/auth/url-configuration
+1. Open https://supabase.com/dashboard/project/xwxvqhhnozfrjcjmcltv/auth/url-configuration
 2. Verify Site URL is set
 3. Verify Redirect URLs include localhost and production URLs
 4. ✅ PASS if URLs are configured (see DEPLOYMENT_READINESS_SUMMARY.md for correct URLs)
@@ -420,7 +420,7 @@ Application is ready when:
 ## 📞 Getting Help
 
 **Official Documentation:**
-- Supabase Dashboard: https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv
+- Supabase Dashboard: https://supabase.com/dashboard/project/xwxvqhhnozfrjcjmcltv
 - Supabase Docs: https://supabase.com/docs
 - Migration Guide: docs/DEPLOYMENT_READINESS_SUMMARY.md
 

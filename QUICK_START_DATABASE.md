@@ -4,7 +4,7 @@
 
 ### Krok 1: Otwórz Supabase Dashboard
 
-1. Przejdź do: https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv
+1. Przejdź do: https://supabase.com/dashboard/project/xwxvqhhnozfrjcjmcltv
 2. Zaloguj się (jeśli jeszcze nie jesteś zalogowany)
 
 ### Krok 2: Uruchom Skrypt Weryfikacyjny
@@ -133,9 +133,9 @@ cp .env.example .env
 
 ### 2. Pobierz Dane Dostępowe Supabase
 
-1. Przejdź do: https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv/settings/api
+1. Przejdź do: https://supabase.com/dashboard/project/xwxvqhhnozfrjcjmcltv/settings/api
 2. Skopiuj:
-   - **Project URL**: `https://xwvxqhhnozfrjcjmcltv.supabase.co`
+   - **Project URL**: `https://xwxvqhhnozfrjcjmcltv.supabase.co`
    - **anon/public key**: Długi klucz zaczynający się od `eyJ...`
 
 ### 3. Zaktualizuj plik .env
@@ -143,7 +143,7 @@ cp .env.example .env
 Edytuj `.env` i wklej wartości:
 
 ```env
-VITE_SUPABASE_URL=https://xwvxqhhnozfrjcjmcltv.supabase.co
+VITE_SUPABASE_URL=https://xwxvqhhnozfrjcjmcltv.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGci... [twój klucz anon - skopiuj z dashboardu]
 ```
 
@@ -325,4 +325,4 @@ Jeśli wszystkie punkty z checklisty są zaznaczone, Twoja baza danych Supabase 
 
 **Data utworzenia:** 2025-12-27
 **Projekt:** Majster.AI - majster-ai-prod
-**Supabase Project ID:** xwvxqhhnozfrjcjmcltv
+**Supabase Project ID:** xwxvqhhnozfrjcjmcltv

@@ -238,7 +238,7 @@ export function AdminCronManager() {
   '0 9 * * *',
   $$
   SELECT net.http_post(
-    url := 'https://xwvxqhhnozfrjcjmcltv.supabase.co/functions/v1/send-expiring-offer-reminders',
+    url := 'https://xwxvqhhnozfrjcjmcltv.supabase.co/functions/v1/send-expiring-offer-reminders',
     headers := '{"Authorization": "Bearer <ANON_KEY>"}'::jsonb,
     body := '{}'::jsonb
   );

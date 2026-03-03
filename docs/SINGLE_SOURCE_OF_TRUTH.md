@@ -7,8 +7,8 @@
 ## 📋 Production Project Details
 
 **Project Name:** `majster-ai-prod`
-**Project Ref:** `xwvxqhhnozfrjcjmcltv`
-**Project URL:** `https://xwvxqhhnozfrjcjmcltv.supabase.co`
+**Project Ref:** `xwxvqhhnozfrjcjmcltv`
+**Project URL:** `https://xwxvqhhnozfrjcjmcltv.supabase.co`
 
 **Date Updated:** 2024-12-23
 **Updated By:** Claude Code (fix-supabase-config)
@@ -20,7 +20,7 @@
 ### 1. **Primary Source of Truth: `supabase/config.toml`**
 
 ```toml
-project_id = "xwvxqhhnozfrjcjmcltv"
+project_id = "xwxvqhhnozfrjcjmcltv"
 ```
 
 **Location:** `/supabase/config.toml` (line 1)
@@ -30,7 +30,7 @@ project_id = "xwvxqhhnozfrjcjmcltv"
 
 **Location:** GitHub Repository → Settings → Secrets and variables → Actions
 **Name:** `SUPABASE_PROJECT_REF`
-**Value:** `xwvxqhhnozfrjcjmcltv` (must match config.toml!)
+**Value:** `xwxvqhhnozfrjcjmcltv` (must match config.toml!)
 
 **Purpose:** Used by GitHub Actions deploy workflow for validation and remote operations.
 
@@ -48,7 +48,7 @@ The GitHub Actions workflow (`.github/workflows/supabase-deploy.yml`) includes a
 ### What Happened Before?
 
 **OLD (Wrong):** Repository contained references to `zpawgcecwqvypodzvlzy` (development project)
-**NEW (Correct):** All references updated to `xwvxqhhnozfrjcjmcltv` (production project)
+**NEW (Correct):** All references updated to `xwxvqhhnozfrjcjmcltv` (production project)
 
 ### Files Updated (2024-12-23):
 - ✅ `supabase/config.toml` - project_id
@@ -78,7 +78,7 @@ The GitHub Actions workflow (`.github/workflows/supabase-deploy.yml`) includes a
 2. **Update config.toml**
    ```bash
    # Edit supabase/config.toml
-   # Change: project_id = "xwvxqhhnozfrjcjmcltv"
+   # Change: project_id = "xwxvqhhnozfrjcjmcltv"
    # To:     project_id = "your-new-project-ref"
    ```
 
@@ -92,7 +92,7 @@ The GitHub Actions workflow (`.github/workflows/supabase-deploy.yml`) includes a
 4. **Search and Replace Hardcoded URLs** (if any)
    ```bash
    # Search for old project ref:
-   grep -r "xwvxqhhnozfrjcjmcltv" . --include="*.ts" --include="*.tsx" --include="*.md"
+   grep -r "xwxvqhhnozfrjcjmcltv" . --include="*.ts" --include="*.tsx" --include="*.md"
 
    # Replace with new ref in found files
    ```
@@ -149,14 +149,14 @@ gh secret list | grep SUPABASE_PROJECT_REF
 1. Go to https://supabase.com/dashboard
 2. Select your project (majster-ai-prod)
 3. Settings → General → Reference ID
-4. Copy the value (e.g., `xwvxqhhnozfrjcjmcltv`)
+4. Copy the value (e.g., `xwxvqhhnozfrjcjmcltv`)
 
 **Method 2: Project URL**
 ```
 URL format: https://[PROJECT-REF].supabase.co
-Example:    https://xwvxqhhnozfrjcjmcltv.supabase.co
+Example:    https://xwxvqhhnozfrjcjmcltv.supabase.co
 
-Project ref is the subdomain: xwvxqhhnozfrjcjmcltv
+Project ref is the subdomain: xwxvqhhnozfrjcjmcltv
 ```
 
 **Method 3: Check config.toml**
@@ -187,7 +187,7 @@ grep -r "zpawgcecwqvypodzvlzy" . --include="*.ts" --include="*.tsx" --include="*
 grep -r "zpawgcecwqvypodzvlzy" . --include="*.ts" --include="*.tsx" --include="*.md" --include="*.toml"
 
 # Link to production project locally
-supabase link --project-ref xwvxqhhnozfrjcjmcltv
+supabase link --project-ref xwxvqhhnozfrjcjmcltv
 
 # Test deployment (dry run)
 supabase db push --dry-run
