@@ -138,7 +138,7 @@ npm run test:coverage
 ### Supabase
 ```bash
 npx supabase login
-npx supabase link --project-ref xwvxqhhnozfrjcjmcltv
+npx supabase link --project-ref xwxvqhhnozfrjcjmcltv
 npx supabase db remote list
 ```
 

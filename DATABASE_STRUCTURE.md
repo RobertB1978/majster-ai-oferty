@@ -2,8 +2,8 @@
 
 ## 📊 Podsumowanie
 
-**Projekt Supabase ID:** `xwvxqhhnozfrjcjmcltv`
-**URL Projektu:** `https://xwvxqhhnozfrjcjmcltv.supabase.co`
+**Projekt Supabase ID:** `xwxvqhhnozfrjcjmcltv`
+**URL Projektu:** `https://xwxvqhhnozfrjcjmcltv.supabase.co`
 **Liczba Tabel:** 33 tabele
 **Liczba Migracji:** 20 plików migracyjnych
 
@@ -597,7 +597,7 @@ Przechowuje dane biometryczne do logowania (Face ID, Touch ID).
 
 ### Jak zweryfikować strukturę w Supabase Dashboard:
 
-1. **Przejdź do:** https://supabase.com/dashboard/project/xwvxqhhnozfrjcjmcltv
+1. **Przejdź do:** https://supabase.com/dashboard/project/xwxvqhhnozfrjcjmcltv
 2. **Kliknij:** "SQL Editor" w menu bocznym
 3. **Wklej i uruchom:** Zawartość pliku `/tmp/database_verification.sql`
 4. **Sprawdź wyniki:**

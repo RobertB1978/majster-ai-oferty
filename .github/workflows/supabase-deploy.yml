@@ -23,6 +23,7 @@ jobs:
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
     steps:
       # ========================================
@@ -233,9 +234,75 @@ jobs:
           echo "✅ Edge Functions deployed"
 
       # ========================================
-      # 9. DEPLOYMENT SUMMARY
+      # 9. REST CONTRACT GATE
+      # Fail the workflow if required REST endpoints still return PGRST205.
+      # Secrets are masked by GitHub Actions; only HTTP status codes and
+      # error codes are printed — no secret values appear in logs.
       # ========================================
-      - name: 📋 Deployment summary
+      - name: 🔒 REST Contract Gate (offers / user_subscriptions / offer_approvals)
+        run: |
+          PROJECT_REF=$(grep 'project_id' supabase/config.toml | cut -d '"' -f 2)
+          REST_BASE="https://${PROJECT_REF}.supabase.co/rest/v1"
+
+          echo "🔍 Running REST Contract Gate against: ${REST_BASE}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "⚠️ WARNING: SUPABASE_ANON_KEY secret not set."
+            echo "   Skipping REST Contract Gate (add secret to enable)."
+            exit 0
+          fi
+
+          REQUIRED_TABLES=("offers" "user_subscriptions" "offer_approvals")
+          GATE_FAILED=false
+
+          for table in "${REQUIRED_TABLES[@]}"; do
+            HTTP_STATUS=$(curl -s -o /tmp/gate_body \
+              -w "%{http_code}" \
+              -H "apikey: ${SUPABASE_ANON_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+              "${REST_BASE}/${table}?limit=0" 2>/dev/null)
+
+            # Extract only the PostgREST error code — never print the full body
+            ERROR_CODE=$(python3 -c "
+import sys, json
+try:
+  d = json.load(open('/tmp/gate_body'))
+  print(d.get('code',''))
+except:
+  print('')
+" 2>/dev/null)
+
+            if [ "$ERROR_CODE" = "PGRST205" ]; then
+              echo "  ❌ GATE FAIL: ${table} → HTTP ${HTTP_STATUS} | code=${ERROR_CODE}"
+              GATE_FAILED=true
+            elif [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "206" ]; then
+              echo "  ✅ OK: ${table} → HTTP ${HTTP_STATUS}"
+            elif [ "$HTTP_STATUS" = "401" ] || [ "$HTTP_STATUS" = "403" ]; then
+              # Table exists but RLS blocks anonymous access — that's correct and expected
+              echo "  ✅ OK (RLS): ${table} → HTTP ${HTTP_STATUS}"
+            else
+              echo "  ❌ GATE FAIL: ${table} → HTTP ${HTTP_STATUS} | code=${ERROR_CODE:-unknown}"
+              GATE_FAILED=true
+            fi
+          done
+
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          if [ "$GATE_FAILED" = "true" ]; then
+            echo ""
+            echo "❌ REST Contract Gate FAILED — one or more required tables are missing."
+            echo "   This usually means migrations in step 6 did not apply correctly."
+            echo "   Check step 6 (Push database migrations) logs for errors."
+            exit 1
+          fi
+
+          echo "✅ REST Contract Gate PASSED — all required endpoints reachable."
+
+      # ========================================
+      # 10. DEPLOYMENT SUMMARY
+      # ========================================
+      - name: 📋 Deployment summary (step 10)
         if: always()
         run: |
           echo ""

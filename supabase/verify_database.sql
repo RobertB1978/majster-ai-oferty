@@ -2,7 +2,7 @@
 -- MAJSTER.AI - DATABASE VERIFICATION SCRIPT
 -- ============================================
 -- Run this script in Supabase SQL Editor to verify complete database structure
--- Project: xwvxqhhnozfrjcjmcltv (majster-ai-prod)
+-- Project: xwxvqhhnozfrjcjmcltv (majster-ai-prod)
 --
 -- Expected Results:
 -- - 33 tables in public schema

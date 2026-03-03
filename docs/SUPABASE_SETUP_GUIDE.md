@@ -168,7 +168,7 @@ cd /ścieżka/do/majster-ai-oferty
 supabase link --project-ref <TWOJE_PROJECT_ID>
 ```
 
-Gdzie `<TWOJE_PROJECT_ID>` to ID z Kroku 1.2 (np. `xwvxqhhnozfrjcjmcltv`)
+Gdzie `<TWOJE_PROJECT_ID>` to ID z Kroku 1.2 (np. `xwxvqhhnozfrjcjmcltv`)
 
 ### Krok 4.4: Deploy wszystkich funkcji
 

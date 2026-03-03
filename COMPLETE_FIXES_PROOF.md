@@ -302,7 +302,7 @@ Ready to merge
 
 ```bash
 1. VITE_SUPABASE_URL
-   Value: https://xwvxqhhnozfrjcjmcltv.supabase.co
+   Value: https://xwxvqhhnozfrjcjmcltv.supabase.co
    Envs: ✅ Production ✅ Preview ✅ Development
 
 2. VITE_SUPABASE_ANON_KEY
