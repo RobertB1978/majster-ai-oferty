@@ -1,48 +1,51 @@
 # DEPLOYMENT_TRUTH.md
 
 ## Cel
-Ten dokument zamyka pytanie: „czy PR-y realnie wdrażają zmiany do Supabase/Vercel?”.
-Werdykt opiera się wyłącznie o dowody repo-side (GitHub), bez zgadywania dashboard-side.
+Ten dokument daje binarny dowód, czy po merge do `main` pipeline ma działające sekrety i wykonuje **realny deploy** do właściwego projektu Supabase.
 
-## Wynik końcowy (repo-side)
+## Single Source of Truth (Supabase project)
+- Repo source of truth: `supabase/config.toml` (`project_id`).
+- CI source of truth: secret `SUPABASE_PROJECT_REF`.
+- Workflow wymusza zgodność `project_id == SUPABASE_PROJECT_REF`; mismatch kończy się `SUPABASE_DEPLOY: FAIL`.
 
-| Obszar | Status | Dlaczego |
+## Status matrix (repo-side)
+
+| Etap Supabase | Status (repo-side) | Dowód w workflow `deployment-truth.yml` |
 |---|---|---|
-| Vercel | **UNKNOWN** | `vercel.json` istnieje, ale w repo brak twardego kroku `vercel deploy`; nie da się potwierdzić ustawień Git Integration wyłącznie z kodu. |
-| Supabase | **PASS (pipeline gotowy)** | Jest automatyczny gate `deployment-truth.yml` na `pull_request` i `push` do `main`, waliduje wymagane sekrety (nazwy), uruchamia deploy migracji i funkcji na `push main`, oraz kończy się PASS/FAIL wg kodu wyjścia komend Supabase CLI. |
+| Precheck (inventory + kontrakty) | **PASS (pipeline gotowy)** | Kroki `Repo inventory` i `Verify pipeline contracts`. |
+| Secrets gate | **PASS (pipeline gotowy)** | `Validate required Supabase secrets/vars` sprawdza wyłącznie nazwy i fail-fast. |
+| Login + link | **PASS (pipeline gotowy)** | Krok `Login and link project` + log `supabase link succeeded`. |
+| Migrations deploy | **PASS (pipeline gotowy)** | `supabase db push` na `push main` gdy są zmiany w `supabase/**`. |
+| Functions deploy | **PASS (pipeline gotowy)** | Pętla `supabase functions deploy <fn>` na `push main` gdy są zmiany w `supabase/**`. |
+| Final deployment truth | **PASS (pipeline gotowy)** | Jawny marker `SUPABASE_DEPLOY: PASS` albo `SUPABASE_DEPLOY: FAIL (<powód>)`. |
 
-## Fakty techniczne
+> Uwaga: bez logów z GitHub Actions nie da się potwierdzić runtime-side, że **konkretny run** przeszedł. Repo pokazuje gotowość i mechanizm dowodowy.
 
-### Stack
-- Aplikacja to **Vite** (obecne `vite.config.ts`, skrypty `vite` w `package.json`).
-- Brak `next.config.*` (czyli brak Next.js).
+## Wymagane secrets (tylko nazwy)
+Ustawiane przez ownera: **GitHub → Repository → Settings → Secrets and variables → Actions → New repository secret**.
 
-### Workflows
-Repo zawiera workflowy w `.github/workflows/`, w tym nowy:
-- `deployment-truth.yml` (Deployment Truth Gate)
-- `supabase-deploy.yml` (istniejący deploy Supabase)
-- workflowy CI/test/security/e2e
+- `SUPABASE_ACCESS_TOKEN`
+- `SUPABASE_DB_PASSWORD`
+- `SUPABASE_PROJECT_REF`
+- `SUPABASE_ANON_KEY`
 
-### Supabase
-- Obecne katalogi: `supabase/migrations/`, `supabase/functions/`.
-- Gate wymaga nazw sekretów:
-  - `SUPABASE_ACCESS_TOKEN`
-  - `SUPABASE_DB_PASSWORD`
-  - `SUPABASE_PROJECT_REF`
-  - `SUPABASE_ANON_KEY`
+Workflow nigdy nie wypisuje wartości sekretów; loguje tylko obecność/brak i PASS/FAIL.
 
-## Co robi Deployment Truth Gate
-1. Start na `pull_request` i `push` do `main`.
-2. Odpala diagnostykę repo (`scripts/verify/repo_inventory.sh`, `supabase_pipeline_check.sh`, `vercel_pipeline_check.sh`).
-3. Fail-fast, jeśli brakuje wymaganych sekretów/zmiennych (w logu tylko **nazwy**, bez wartości).
-4. Loguje do Supabase CLI i linkuje projekt.
-5. Na `push main`: wykonuje `supabase db push` i deploy Edge Functions.
-6. Weryfikuje wynik przez `supabase migration list` + `supabase functions list` i status komend (exit code truth).
+## Co dokładnie musi być w logach (Binary DoD)
+Aby uznać deployment proof za DONE po merge do `main`, w logach runu `Deployment Truth Gate` muszą wystąpić:
+1. `Using SUPABASE_PROJECT_REF from secrets: PRESENT`
+2. `supabase link succeeded`
+3. Dla zmian w `supabase/**`: `SUPABASE_DEPLOY: PASS`
+4. W przypadku błędu: `SUPABASE_DEPLOY: FAIL (<jednoznaczny powód>)`
 
-## Owner actions minimalne (tylko jeśli brak)
-1. Dodać 4 sekrety repo w GitHub Actions: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`, `SUPABASE_ANON_KEY`.
-2. Upewnić się, że merge do `main` jest jedyną ścieżką wdrożenia produkcyjnego.
-3. Monitorować wynik workflow `Deployment Truth Gate` po każdym merge.
-
-## Czego repo nadal nie potwierdza
-- Vercel dashboard-side: mapowanie repo→project, branch produkcyjny, status ostatniego deploymentu, konfiguracja ENV w panelu.
+## Najczęstsze awarie i znaczenie
+1. `SUPABASE_DEPLOY: FAIL (brak wymaganych secrets/vars)`
+   - Co znaczy: co najmniej jeden wymagany secret nie jest dostępny w kontekście workflow.
+2. `SUPABASE_DEPLOY: FAIL (project ref mismatch: config.toml vs secret)`
+   - Co znaczy: CI celuje w inny projekt niż repo source of truth.
+3. `SUPABASE_DEPLOY: FAIL (supabase login failed)`
+   - Co znaczy: token jest nieważny, wygasł lub ma niewystarczające uprawnienia.
+4. `SUPABASE_DEPLOY: FAIL (supabase link failed)`
+   - Co znaczy: błędny `SUPABASE_PROJECT_REF` i/lub hasło DB albo problem z dostępem do projektu.
+5. `SUPABASE_DEPLOY: FAIL (supabase db push failed)` / `...functions deploy failed...`
+   - Co znaczy: błąd migracji SQL albo błąd publikacji konkretnej Edge Function.

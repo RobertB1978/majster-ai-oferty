@@ -2,8 +2,21 @@ name: Deployment Truth Gate
 
 on:
   pull_request:
+    paths:
+      - '.github/workflows/deployment-truth.yml'
+      - 'scripts/verify/**'
+      - 'docs/DEPLOYMENT_TRUTH.md'
+      - 'supabase/**'
   push:
     branches: [main]
+    paths:
+      - '.github/workflows/deployment-truth.yml'
+      - 'scripts/verify/**'
+      - 'docs/DEPLOYMENT_TRUTH.md'
+      - 'supabase/**'
+
+permissions:
+  contents: read
 
 concurrency:
   group: deployment-truth-${{ github.ref }}
@@ -23,6 +36,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Repo inventory
         run: bash scripts/verify/repo_inventory.sh
@@ -44,12 +59,59 @@ jobs:
           done
 
           if [ "${#missing[@]}" -gt 0 ]; then
-            echo "FAIL: Brak wymaganych secrets/vars:"
-            printf ' - %s\n' "${missing[@]}"
+            echo "SUPABASE_DEPLOY: FAIL (brak wymaganych secrets/vars)"
+            printf 'MISSING_SECRET: %s\n' "${missing[@]}"
             exit 1
           fi
 
+          echo "Using SUPABASE_PROJECT_REF from secrets: PRESENT"
           echo "PASS: Wszystkie wymagane secrets/vars są dostępne"
+
+      - name: Validate project ref source of truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f "supabase/config.toml" ]; then
+            echo "SUPABASE_DEPLOY: FAIL (brak supabase/config.toml)"
+            exit 1
+          fi
+
+          CONFIG_PROJECT_REF=$(awk -F '"' '/^project_id\s*=/{print $2}' supabase/config.toml)
+          if [ -z "$CONFIG_PROJECT_REF" ]; then
+            echo "SUPABASE_DEPLOY: FAIL (brak project_id w supabase/config.toml)"
+            exit 1
+          fi
+
+          if [[ ! "$SUPABASE_PROJECT_REF" =~ ^[a-z0-9]{20}$ ]]; then
+            echo "SUPABASE_DEPLOY: FAIL (SUPABASE_PROJECT_REF ma nieprawidłowy format)"
+            exit 1
+          fi
+
+          if [ "$CONFIG_PROJECT_REF" != "$SUPABASE_PROJECT_REF" ]; then
+            echo "SUPABASE_DEPLOY: FAIL (project ref mismatch: config.toml vs secret)"
+            exit 1
+          fi
+
+          echo "PASS: project ref w config.toml zgodny z secret"
+
+      - name: Detect Supabase changes in this run
+        id: supabase_changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "push" ]; then
+            CHANGED_FILES=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" || true)
+          else
+            CHANGED_FILES=$(git diff --name-only "origin/${{ github.base_ref }}...${{ github.sha }}" || true)
+          fi
+
+          if echo "$CHANGED_FILES" | rg -q '^supabase/'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "PASS: wykryto zmiany w supabase/**"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "INFO: brak zmian w supabase/** — deploy zostanie pominięty"
+          fi
 
       - name: Install Supabase CLI
         uses: supabase/setup-cli@v1
@@ -61,18 +123,28 @@ jobs:
         run: |
           set -euo pipefail
           supabase --version
-          supabase login --token "$SUPABASE_ACCESS_TOKEN"
-          supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          if ! supabase login --token "$SUPABASE_ACCESS_TOKEN"; then
+            echo "SUPABASE_DEPLOY: FAIL (supabase login failed)"
+            exit 1
+          fi
+          if ! supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"; then
+            echo "SUPABASE_DEPLOY: FAIL (supabase link failed)"
+            exit 1
+          fi
+          echo "supabase link succeeded"
 
       - name: Deploy migrations
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.supabase_changes.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          supabase db push --password "$SUPABASE_DB_PASSWORD" --yes
+          if ! supabase db push --password "$SUPABASE_DB_PASSWORD" --yes; then
+            echo "SUPABASE_DEPLOY: FAIL (supabase db push failed)"
+            exit 1
+          fi
 
       - name: Deploy edge functions
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.supabase_changes.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -83,15 +155,29 @@ jobs:
             fi
             if [ -f "supabase/functions/$fn/index.ts" ]; then
               echo "Deploying function: $fn"
-              supabase functions deploy "$fn"
+              if ! supabase functions deploy "$fn"; then
+                echo "SUPABASE_DEPLOY: FAIL (supabase functions deploy failed: $fn)"
+                exit 1
+              fi
             fi
           done
 
       - name: Post-deploy verification (exit code truth)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.supabase_changes.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          supabase migration list
-          supabase functions list
-          echo "PASS: Supabase deploy commands zakończone kodem 0"
+          if ! supabase migration list; then
+            echo "SUPABASE_DEPLOY: FAIL (supabase migration list failed)"
+            exit 1
+          fi
+          if ! supabase functions list; then
+            echo "SUPABASE_DEPLOY: FAIL (supabase functions list failed)"
+            exit 1
+          fi
+          echo "SUPABASE_DEPLOY: PASS"
+
+      - name: Deployment marker when no Supabase changes
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.supabase_changes.outputs.changed != 'true'
+        shell: bash
+        run: echo "SUPABASE_DEPLOY: PASS (brak zmian w supabase/**)"
