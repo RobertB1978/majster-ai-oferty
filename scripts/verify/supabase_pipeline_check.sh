@@ -15,6 +15,26 @@ REQUIRED_MARKERS=(
   "supabase functions deploy"
 )
 
+has_fixed() {
+  local needle="$1"
+  local file="$2"
+  if command -v rg >/dev/null 2>&1; then
+    rg -qF "$needle" "$file"
+  else
+    grep -qF -- "$needle" "$file"
+  fi
+}
+
+has_regex() {
+  local pattern="$1"
+  local file="$2"
+  if command -v rg >/dev/null 2>&1; then
+    rg -q "$pattern" "$file"
+  else
+    grep -qE -- "$pattern" "$file"
+  fi
+}
+
 echo "=== SUPABASE PIPELINE CHECK ==="
 if [ ! -f "$WF" ]; then
   echo "[FAIL] Brak $WF"
@@ -24,7 +44,7 @@ fi
 echo "[PASS] Workflow istnieje: $WF"
 
 for marker in "${REQUIRED_MARKERS[@]}"; do
-  if rg -qF "$marker" "$WF"; then
+  if has_fixed "$marker" "$WF"; then
     echo "[PASS] marker: $marker"
   else
     echo "[FAIL] marker: $marker"
@@ -34,7 +54,7 @@ done
 
 echo "Oczekiwane sekrety/zmienne (nazwy):"
 for s in "${REQUIRED_SECRETS[@]}"; do
-  if rg -q "$s" "$WF"; then
+  if has_regex "$s" "$WF"; then
     echo "  - $s"
   else
     echo "[FAIL] Brak odwołania do $s w $WF"

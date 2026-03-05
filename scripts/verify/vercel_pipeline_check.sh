@@ -13,11 +13,20 @@ else
   exit 1
 fi
 
-if rg -n "vercel deploy|vercel-action|VERCEL_TOKEN|vercel --prod" .github/workflows/*.yml >/tmp/vercel_hits.txt 2>/dev/null; then
-  echo "[PASS] Znaleziono ślady repo-side deploy na Vercel:"
-  sed 's/^/  /' /tmp/vercel_hits.txt
+if command -v rg >/dev/null 2>&1; then
+  if rg -n "vercel deploy|vercel-action|VERCEL_TOKEN|vercel --prod" .github/workflows/*.yml >/tmp/vercel_hits.txt 2>/dev/null; then
+    echo "[PASS] Znaleziono ślady repo-side deploy na Vercel:"
+    sed 's/^/  /' /tmp/vercel_hits.txt
+  else
+    echo "[UNKNOWN] Brak jawnych kroków vercel deploy w .github/workflows/*.yml"
+  fi
 else
-  echo "[UNKNOWN] Brak jawnych kroków vercel deploy w .github/workflows/*.yml"
+  if grep -nE "vercel deploy|vercel-action|VERCEL_TOKEN|vercel --prod" .github/workflows/*.yml >/tmp/vercel_hits.txt 2>/dev/null; then
+    echo "[PASS] Znaleziono ślady repo-side deploy na Vercel:"
+    sed 's/^/  /' /tmp/vercel_hits.txt
+  else
+    echo "[UNKNOWN] Brak jawnych kroków vercel deploy w .github/workflows/*.yml"
+  fi
 fi
 
 echo "Co wiemy: repo zawiera konfigurację vercel.json."
