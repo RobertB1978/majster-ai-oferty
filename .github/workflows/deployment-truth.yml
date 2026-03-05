@@ -1,0 +1,97 @@
+name: Deployment Truth Gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deployment-truth-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  truth-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Repo inventory
+        run: bash scripts/verify/repo_inventory.sh
+
+      - name: Verify pipeline contracts
+        run: |
+          bash scripts/verify/supabase_pipeline_check.sh
+          bash scripts/verify/vercel_pipeline_check.sh
+
+      - name: Validate required Supabase secrets/vars (names only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_REF SUPABASE_ANON_KEY; do
+            if [ -z "${!name:-}" ]; then
+              missing+=("$name")
+            fi
+          done
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "FAIL: Brak wymaganych secrets/vars:"
+            printf ' - %s\n' "${missing[@]}"
+            exit 1
+          fi
+
+          echo "PASS: Wszystkie wymagane secrets/vars są dostępne"
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Login and link project
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase --version
+          supabase login --token "$SUPABASE_ACCESS_TOKEN"
+          supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+
+      - name: Deploy migrations
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase db push --password "$SUPABASE_DB_PASSWORD" --yes
+
+      - name: Deploy edge functions
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t function_dirs < <(find supabase/functions -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+          for fn in "${function_dirs[@]}"; do
+            if [ "$fn" = "_shared" ]; then
+              continue
+            fi
+            if [ -f "supabase/functions/$fn/index.ts" ]; then
+              echo "Deploying function: $fn"
+              supabase functions deploy "$fn"
+            fi
+          done
+
+      - name: Post-deploy verification (exit code truth)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase migration list
+          supabase functions list
+          echo "PASS: Supabase deploy commands zakończone kodem 0"
