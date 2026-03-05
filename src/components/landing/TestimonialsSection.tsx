@@ -54,25 +54,25 @@ export function TestimonialsSection() {
               className="bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6 flex flex-col gap-4"
             >
               {/* Stars */}
-              <div className="flex gap-1" aria-label={`Ocena: ${testimonial.rating} na 5`}>
+              <div className="flex gap-1" role="img" aria-label={`Ocena: ${testimonial.rating} na 5`}>
                 {Array.from({ length: testimonial.rating }).map((_, i) => (
                   <Star
                     key={i}
-                    className="w-4 h-4 fill-amber-500 text-amber-500"
+                    className="w-4 h-4 fill-amber-600 text-amber-600"
                     aria-hidden="true"
                   />
                 ))}
               </div>
 
               {/* Quote */}
-              <blockquote className="text-gray-600 dark:text-[#A3A3A3] text-sm leading-relaxed italic flex-1">
+              <blockquote className="text-gray-700 dark:text-[#A3A3A3] text-sm leading-relaxed italic flex-1">
                 &ldquo;{testimonial.text}&rdquo;
               </blockquote>
 
               {/* Author */}
               <div className="border-t border-gray-200 dark:border-[#2A2A2A] pt-4">
                 <div className="font-semibold text-gray-900 dark:text-white text-sm">{testimonial.name}</div>
-                <div className="text-xs text-gray-400 dark:text-[#525252]">{testimonial.role}</div>
+                <div className="text-xs text-gray-600 dark:text-[#525252]">{testimonial.role}</div>
               </div>
             </div>
           ))}
