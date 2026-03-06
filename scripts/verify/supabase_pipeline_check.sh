@@ -17,6 +17,7 @@ REQUIRED_MARKERS=(
   "SUPABASE_DEPLOY: PASS"
   "SUPABASE_DEPLOY: FAIL"
 )
+DEPLOY_PATTERN='^\s*supabase\s+db\s+push\b|^\s*supabase\s+functions\s+deploy\b'
 
 has_fixed() {
   local needle="$1"
@@ -35,6 +36,26 @@ has_regex() {
     rg -q "$pattern" "$file"
   else
     grep -qE -- "$pattern" "$file"
+  fi
+}
+
+list_deploy_workflow_files() {
+  local pattern="$1"
+  local file
+  for file in .github/workflows/*.yml; do
+    [ -f "$file" ] || continue
+    if has_regex "$pattern" "$file"; then
+      printf '%s\n' "$file"
+    fi
+  done
+}
+
+print_deploy_matches() {
+  local pattern="$1"
+  if command -v rg >/dev/null 2>&1; then
+    rg -n "$pattern" .github/workflows/*.yml || true
+  else
+    grep -nE -- "$pattern" .github/workflows/*.yml || true
   fi
 }
 
@@ -66,7 +87,7 @@ for s in "${REQUIRED_SECRETS[@]}"; do
   fi
 done
 
-if has_regex '^\s*supabase\s+db\s+push\b|^\s*supabase\s+functions\s+deploy\b' "$SECONDARY_WF"; then
+if has_regex "$DEPLOY_PATTERN" "$SECONDARY_WF"; then
   echo "[FAIL] $SECONDARY_WF nie może zawierać komend production deploy"
   exit 1
 fi
@@ -78,10 +99,10 @@ if has_regex '^\s*push:\s*$' "$SECONDARY_WF"; then
 fi
 echo "[PASS] $SECONDARY_WF nie jest triggerowany przez push"
 
-deploy_workflow_count="$(rg -l '^\s*supabase\s+db\s+push\b|^\s*supabase\s+functions\s+deploy\b' .github/workflows/*.yml | wc -l | tr -d ' ')"
+deploy_workflow_count="$(list_deploy_workflow_files "$DEPLOY_PATTERN" | wc -l | tr -d ' ')"
 if [ "$deploy_workflow_count" != "1" ]; then
   echo "[FAIL] Oczekiwano dokładnie 1 workflow z komendami deploy Supabase, znaleziono: $deploy_workflow_count"
-  rg -n '^\s*supabase\s+db\s+push\b|^\s*supabase\s+functions\s+deploy\b' .github/workflows/*.yml || true
+  print_deploy_matches "$DEPLOY_PATTERN"
   exit 1
 fi
 echo "[PASS] Dokładnie 1 workflow zawiera komendy deploy Supabase"
