@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { visualizer } from "rollup-plugin-visualizer";
+import type { Connect } from "vite";
 
 type RuntimeVersionPayload = {
   appVersion: string;
@@ -41,7 +42,14 @@ function maskProjectRef(hostname: string | null): string | null {
 function runtimeVersionPlugin(payload: RuntimeVersionPayload): PluginOption {
   return {
     name: "runtime-version-json",
-    apply: "build",
+    configureServer(server) {
+      const handler: Connect.NextHandleFunction = (_req, res) => {
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.end(`${JSON.stringify(payload, null, 2)}\n`);
+      };
+
+      server.middlewares.use("/version.json", handler);
+    },
     generateBundle() {
       this.emitFile({
         type: "asset",
