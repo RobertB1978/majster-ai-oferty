@@ -64,6 +64,12 @@
       ]
     }
   ],
+  "routes": [
+    {
+      "src": "/sw\\.js",
+      "status": 410
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
