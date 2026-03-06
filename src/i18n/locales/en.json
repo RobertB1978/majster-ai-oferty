@@ -2803,7 +2803,10 @@
     "duplicateComingSoon": "Offer duplication — coming soon",
     "noTitle": "Untitled offer",
     "valueNet": "Net: {{value}} {{currency}}",
-    "loadingAriaLabel": "Loading offers..."
+    "loadingAriaLabel": "Loading offers...",
+    "clientRef": "Client",
+    "sentAt": "Sent",
+    "createdAt": "Created"
   },
   "offerWizard": {
     "titleNew": "New Offer",

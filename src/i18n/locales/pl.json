@@ -2803,7 +2803,10 @@
     "duplicateComingSoon": "Duplikowanie ofert — wkrótce dostępne",
     "noTitle": "Oferta bez tytułu",
     "valueNet": "Netto: {{value}} {{currency}}",
-    "loadingAriaLabel": "Ładowanie ofert..."
+    "loadingAriaLabel": "Ładowanie ofert...",
+    "clientRef": "Klient",
+    "sentAt": "Wysłano",
+    "createdAt": "Utworzono"
   },
   "offerWizard": {
     "titleNew": "Nowa oferta",
