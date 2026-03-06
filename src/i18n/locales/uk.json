@@ -2803,7 +2803,10 @@
     "duplicateComingSoon": "Дублювання пропозицій — незабаром",
     "noTitle": "Пропозиція без назви",
     "valueNet": "Нетто: {{value}} {{currency}}",
-    "loadingAriaLabel": "Завантаження пропозицій..."
+    "loadingAriaLabel": "Завантаження пропозицій...",
+    "clientRef": "Клієнт",
+    "sentAt": "Надіслано",
+    "createdAt": "Створено"
   },
   "offerWizard": {
     "titleNew": "Нова пропозиція",

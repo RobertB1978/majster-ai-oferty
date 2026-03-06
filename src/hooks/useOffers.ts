@@ -28,6 +28,7 @@ export interface Offer {
   last_activity_at: string;
   created_at: string;
   updated_at: string;
+  client_reference: string | null;
 }
 
 export interface OffersQueryParams {
@@ -56,6 +57,7 @@ export function useOffers(params: OffersQueryParams = {}) {
     queryKey: offersKeys.list(params),
     queryFn: async (): Promise<Offer[]> => {
       let query = supabase
+        .schema('public')
         .from('offers')
         .select('id, user_id, client_id, status, title, total_net, total_gross, currency, sent_at, accepted_at, rejected_at, last_activity_at, created_at, updated_at');
 
@@ -74,7 +76,25 @@ export function useOffers(params: OffersQueryParams = {}) {
       const { data, error } = await query;
       if (error) throw error;
 
-      return (data as Offer[]) ?? [];
+      const offers = (data as Offer[]) ?? [];
+      const clientIds = Array.from(new Set(offers.map((offer) => offer.client_id).filter(Boolean))) as string[];
+
+      let clientMap = new Map<string, string>();
+      if (clientIds.length > 0) {
+        const { data: clients, error: clientsError } = await supabase
+          .schema('public')
+          .from('clients')
+          .select('id, name')
+          .in('id', clientIds);
+
+        if (clientsError) throw clientsError;
+        clientMap = new Map((clients ?? []).map((client) => [client.id, client.name]));
+      }
+
+      return offers.map((offer) => ({
+        ...offer,
+        client_reference: offer.client_id ? (clientMap.get(offer.client_id) ?? offer.client_id) : null,
+      }));
     },
     enabled: !!user,
     staleTime: 30_000,

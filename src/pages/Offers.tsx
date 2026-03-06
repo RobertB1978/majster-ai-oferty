@@ -63,6 +63,11 @@ function formatRelativeDays(dateStr: string): string {
   return `${diff} d`;
 }
 
+function formatShortDate(dateStr: string | null): string | null {
+  if (!dateStr) return null;
+  return new Intl.DateTimeFormat('pl-PL').format(new Date(dateStr));
+}
+
 function formatAmount(value: number | null, currency: string): string | null {
   if (value === null) return null;
   return (
@@ -95,6 +100,7 @@ function OfferRow({ offer, onOpen, onDuplicate, onCreateProject, isCreatingProje
   const updatedAgo = formatRelativeDays(offer.last_activity_at);
   const status = offer.status as OfferStatus;
   const isAccepted = status === 'ACCEPTED';
+  const visibleDate = formatShortDate(offer.sent_at ?? offer.created_at);
 
   return (
     <div
@@ -125,6 +131,8 @@ function OfferRow({ offer, onOpen, onDuplicate, onCreateProject, isCreatingProje
         </div>
         <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
           {amount && <span>{amount}</span>}
+          {offer.client_reference && <span>{t('offersList.clientRef')}: {offer.client_reference}</span>}
+          {visibleDate && <span>{offer.sent_at ? t('offersList.sentAt') : t('offersList.createdAt')}: {visibleDate}</span>}
           <span>{t('offersList.updatedAgo', { time: updatedAgo })}</span>
         </div>
         {/* PR-13: ACCEPTED CTA — create project */}
