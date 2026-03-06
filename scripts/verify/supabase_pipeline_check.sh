@@ -4,7 +4,8 @@ set -euo pipefail
 ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$ROOT_DIR"
 
-WF=".github/workflows/deployment-truth.yml"
+CANONICAL_WF=".github/workflows/deployment-truth.yml"
+SECONDARY_WF=".github/workflows/supabase-deploy.yml"
 REQUIRED_SECRETS=(SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_REF SUPABASE_ANON_KEY)
 REQUIRED_MARKERS=(
   "on:"
@@ -13,7 +14,10 @@ REQUIRED_MARKERS=(
   "branches: [main]"
   "supabase db push"
   "supabase functions deploy"
+  "SUPABASE_DEPLOY: PASS"
+  "SUPABASE_DEPLOY: FAIL"
 )
+DEPLOY_PATTERN='^\s*supabase\s+db\s+push\b|^\s*supabase\s+functions\s+deploy\b'
 
 has_fixed() {
   local needle="$1"
@@ -35,31 +39,72 @@ has_regex() {
   fi
 }
 
-echo "=== SUPABASE PIPELINE CHECK ==="
-if [ ! -f "$WF" ]; then
-  echo "[FAIL] Brak $WF"
-  exit 1
-fi
+list_deploy_workflow_files() {
+  local pattern="$1"
+  local file
+  for file in .github/workflows/*.yml; do
+    [ -f "$file" ] || continue
+    if has_regex "$pattern" "$file"; then
+      printf '%s\n' "$file"
+    fi
+  done
+}
 
-echo "[PASS] Workflow istnieje: $WF"
+print_deploy_matches() {
+  local pattern="$1"
+  if command -v rg >/dev/null 2>&1; then
+    rg -n "$pattern" .github/workflows/*.yml || true
+  else
+    grep -nE -- "$pattern" .github/workflows/*.yml || true
+  fi
+}
+
+echo "=== SUPABASE PIPELINE CHECK ==="
+for wf in "$CANONICAL_WF" "$SECONDARY_WF"; do
+  if [ ! -f "$wf" ]; then
+    echo "[FAIL] Brak $wf"
+    exit 1
+  fi
+  echo "[PASS] Workflow istnieje: $wf"
+done
 
 for marker in "${REQUIRED_MARKERS[@]}"; do
-  if has_fixed "$marker" "$WF"; then
-    echo "[PASS] marker: $marker"
+  if has_fixed "$marker" "$CANONICAL_WF"; then
+    echo "[PASS] marker w canonical: $marker"
   else
-    echo "[FAIL] marker: $marker"
+    echo "[FAIL] Brak markera w canonical: $marker"
     exit 1
   fi
 done
 
-echo "Oczekiwane sekrety/zmienne (nazwy):"
+echo "Oczekiwane sekrety/zmienne (nazwy) w canonical:"
 for s in "${REQUIRED_SECRETS[@]}"; do
-  if has_regex "$s" "$WF"; then
+  if has_regex "$s" "$CANONICAL_WF"; then
     echo "  - $s"
   else
-    echo "[FAIL] Brak odwołania do $s w $WF"
+    echo "[FAIL] Brak odwołania do $s w $CANONICAL_WF"
     exit 1
   fi
 done
 
-echo "[PASS] Supabase pipeline ma wymagane kroki i nazwy sekretów"
+if has_regex "$DEPLOY_PATTERN" "$SECONDARY_WF"; then
+  echo "[FAIL] $SECONDARY_WF nie może zawierać komend production deploy"
+  exit 1
+fi
+echo "[PASS] $SECONDARY_WF nie zawiera komend production deploy"
+
+if has_regex '^\s*push:\s*$' "$SECONDARY_WF"; then
+  echo "[FAIL] $SECONDARY_WF nie może być triggerowany przez push"
+  exit 1
+fi
+echo "[PASS] $SECONDARY_WF nie jest triggerowany przez push"
+
+deploy_workflow_count="$(list_deploy_workflow_files "$DEPLOY_PATTERN" | wc -l | tr -d ' ')"
+if [ "$deploy_workflow_count" != "1" ]; then
+  echo "[FAIL] Oczekiwano dokładnie 1 workflow z komendami deploy Supabase, znaleziono: $deploy_workflow_count"
+  print_deploy_matches "$DEPLOY_PATTERN"
+  exit 1
+fi
+echo "[PASS] Dokładnie 1 workflow zawiera komendy deploy Supabase"
+
+echo "[PASS] Supabase pipeline ma pojedynczą ścieżkę deploy i marker PASS/FAIL"
