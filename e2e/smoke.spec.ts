@@ -203,4 +203,28 @@ test.describe('Smoke Tests', () => {
 
     console.log('✅ App serves static assets correctly');
   });
+
+  test('runtime version endpoint exposes safe deployment metadata', async ({ page }) => {
+    console.log('🧪 Test: Runtime deployment metadata');
+
+    const response = await page.request.get('/version.json');
+    expect(response.ok()).toBeTruthy();
+
+    const payload = await response.json();
+
+    expect(payload).toMatchObject({
+      appVersion: expect.any(String),
+      commitSha: expect.any(String),
+      buildTimestamp: expect.any(String),
+      supabaseHost: expect.anything(),
+      supabaseProjectRefMasked: expect.anything(),
+      environment: expect.anything(),
+    });
+
+    expect(payload.commitSha.length).toBeLessThanOrEqual(7);
+    expect(JSON.stringify(payload)).not.toContain('VITE_SUPABASE_ANON_KEY');
+    expect(JSON.stringify(payload)).not.toMatch(/eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/);
+
+    console.log('✅ Runtime metadata is present and safe');
+  });
 });
