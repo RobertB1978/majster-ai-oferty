@@ -95,3 +95,13 @@ jobs:
           supabase migration list
           supabase functions list
           echo "PASS: Supabase deploy commands zakończone kodem 0"
+
+      - name: Supabase deploy marker (PASS)
+        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && success() }}
+        shell: bash
+        run: echo "SUPABASE_DEPLOY: PASS"
+
+      - name: Supabase deploy marker (FAIL)
+        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && failure() }}
+        shell: bash
+        run: echo "SUPABASE_DEPLOY: FAIL"
