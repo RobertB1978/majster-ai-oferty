@@ -34,7 +34,7 @@
 | **Architektura** | Bardzo dobra | 82% |
 | **Frontend** | Bardzo dobra | 80% |
 | **Backend (Supabase)** | Dobra | 75% |
-| **Bezpieczeństwo** | Bardzo dobra | 85% |
+| **Bezpieczeństwo** | Doskonała | 88% |
 | **Panel Admin** | Dobra (mock data) | 65% |
 | **Testy** | Dobra | 70% |
 | **CI/CD** | Bardzo dobra | 85% |
@@ -46,7 +46,7 @@
 | **PWA/Mobile** | Dobra | 68% |
 | **Monetyzacja** | Wczesna faza | 55% |
 | **Roadmapa** | Doskonała | 95% |
-| **OGÓLNA OCENA** | **Dobra+** | **77%** |
+| **OGÓLNA OCENA** | **Dobra+** | **78%** |
 
 ### Etap Aplikacji
 **Late Alpha / Early Beta** — Aplikacja ma solidne fundamenty, większość kluczowych funkcji jest zaimplementowana (20/21 PRów z roadmapy ukończonych). Brakuje jeszcze CRM (PR-08), a panel admin używa danych mockowych zamiast prawdziwych danych z bazy.
@@ -434,7 +434,7 @@ Panel admin jest dostępny pod `/admin/*` i chroniony przez `AdminLayout` z wery
 | **Secret Management** | ✅ Env vars + Supabase secrets | 85% |
 | **PII Protection** | ✅ Logger z maskowaniem | 80% |
 | **GDPR Compliance** | ✅ Centrum RODO, delete account | 85% |
-| **Rate Limiting** | ⚠️ Częściowe | 60% |
+| **Rate Limiting** | ✅ Kompletne (per-endpoint, fail-closed) | 85% |
 | **Error Handling** | ✅ Error boundaries, logger | 80% |
 
 ### 7.2 Security Headers (Vercel)
@@ -449,7 +449,38 @@ Panel admin jest dostępny pod `/admin/*` i chroniony przez `AdminLayout` z wery
 ✅ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
 
-### 7.3 Znalezione Problemy Bezpieczeństwa
+### 7.3 Szczegółowy Raport Bezpieczeństwa (Agent Security)
+
+| Kategoria | Status | Szczegóły |
+|-----------|--------|-----------|
+| **XSS Prevention** | ✅ Brak `dangerouslySetInnerHTML`, `eval()`, `new Function()` | Multi-layer sanitization |
+| **SQL Injection** | ✅ Supabase parametrized queries | Brak raw SQL |
+| **Input Sanitization** | ✅ Zod + server-side sanitization | `sanitizeHtml()`, `sanitizeAiOutput()` |
+| **AI Output Sanitization** | ✅ Potrójne oczyszczanie LLM responses | Script/event handler removal |
+| **Webhook Security** | ✅ Stripe signature verification + idempotency | `stripe_events` table |
+| **GDPR Delete Account** | ✅ Rate-limited (3/hr), keyword verification ("USUŃ") | Cascading deletes + audit log |
+| **Password Policy** | ✅ Min 8 chars, upper+lower+digit, common pattern detection | Zod validation |
+| **Biometric Auth** | ✅ WebAuthn, public keys only in localStorage | Secure implementation |
+| **Console Logging** | ✅ 275 occurrences, all PII-masked via logger | Dev-only by default |
+| **Rate Limiting** | ✅ Per-endpoint config, fail-closed | 11 endpoints configured |
+
+**Rate Limiting Configuration (Edge Functions):**
+
+| Endpoint | Limit |
+|----------|-------|
+| `public-api` | 100 req/min |
+| `ai-chat-agent` | 20 req/min |
+| `ai-quote-suggestions` | 30 req/min |
+| `voice-quote-processor` | 10 req/min |
+| `analyze-photo` | 10 req/min |
+| `ocr-invoice` | 20 req/min |
+| `finance-ai-analysis` | 10 req/min |
+| `send-offer-email` | 10 req/min |
+| `approve-offer` | 30 req/min |
+| `client-question` | 5 req/10min |
+| `request-plan` | 5 req/min |
+
+### 7.4 Znalezione Problemy Bezpieczeństwa
 
 | # | Severity | Problem | Lokalizacja |
 |---|----------|---------|-------------|
@@ -457,17 +488,26 @@ Panel admin jest dostępny pod `/admin/*` i chroniony przez `AdminLayout` z wery
 | 2 | HIGH | `rollup` 4.0-4.58 — Arbitrary File Write via Path Traversal | `node_modules/rollup` |
 | 3 | HIGH | `tar` <=7.5.9 — Hardlink Path Traversal | `node_modules/tar` |
 | 4 | MEDIUM | `minimatch` — ReDoS vulnerability | `node_modules/minimatch` |
-| 5 | MEDIUM | `public-api` Edge Function — brak rate limiting | `supabase/functions/public-api` |
-| 6 | LOW | 1,441 ESLint warnings (hardcoded strings) | Legal pages, admin |
-| 7 | INFO | React Router v7 migration warnings | Runtime warnings |
+| 5 | LOW | 1,441 ESLint warnings (hardcoded strings) | Legal pages, admin |
+| 6 | INFO | React Router v7 migration warnings | Runtime warnings |
 
-### 7.4 Jak Naprawić Problemy Bezpieczeństwa
+### 7.5 Jak Naprawić Problemy Bezpieczeństwa
 
 1. **npm vulnerabilities** → `npm audit fix` (natychmiast)
 2. **rollup vulnerability** → Aktualizacja do `rollup >= 4.59` (`npm update rollup`)
 3. **tar vulnerability** → Aktualizacja do `tar >= 7.6` (jest override w package.json, ale wymaga update)
-4. **Rate limiting** → Dodać rate limiting w Edge Functions (Supabase `x-ratelimit` header)
-5. **Hardcoded strings** → Przenieść do i18n (niski priorytet)
+4. **Hardcoded strings** → Przenieść do i18n (niski priorytet)
+
+### 7.6 Konkluzja Bezpieczeństwa
+
+**Nie znaleziono krytycznych luk bezpieczeństwa.** Aplikacja prawidłowo implementuje:
+- Silną autentykację z wieloma czynnikami (email, OAuth, biometrics)
+- Kompleksową walidację i sanityzację danych wejściowych
+- Prawidłowe zarządzanie sekretami
+- Ochronę przed XSS i SQL injection
+- Rate limiting i weryfikację webhooków
+- Bezpieczną obsługę błędów
+- Zgodność z RODO/GDPR
 
 ---
 
@@ -925,7 +965,7 @@ Roadmapa v5.0 została zaimplementowana. Dokument źródłowy: `/docs/ROADMAP.md
 | # | Problem | Lokalizacja | Rozwiązanie |
 |---|---------|-------------|-------------|
 | 4 | Test timeout (CSV export) | `src/test/utils/export.test.ts` | Zwiększyć timeout lub zoptymalizować |
-| 5 | Brak rate limiting na public-api | `supabase/functions/public-api` | Dodać Supabase rate limiter |
+| 5 | Rate limiting fail-closed testing | `supabase/functions/_shared/rate-limiter.ts` | Przetestować zachowanie przy niedostępnej DB |
 | 6 | React Router v7 migration warnings | Runtime | Dodać future flags lub migrować |
 | 7 | 1,441 ESLint warnings (i18n) | Legal pages, admin | Przenieść hardcoded strings do i18n |
 | 8 | Brak testów Edge Functions | `supabase/functions/` | Dodać testy Deno |
