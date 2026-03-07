@@ -36,7 +36,7 @@
 | **Backend (Supabase)** | Bardzo dobra | 82% |
 | **Bezpieczeństwo** | Doskonała | 88% |
 | **Panel Admin** | Dobra (mock data) | 65% |
-| **Testy** | Dobra | 70% |
+| **Testy** | Dobra | 75% |
 | **CI/CD** | Bardzo dobra | 85% |
 | **Dokumentacja** | Doskonała | 90% |
 | **i18n** | Bardzo dobra | 85% |
@@ -46,7 +46,7 @@
 | **PWA/Mobile** | Dobra | 68% |
 | **Monetyzacja** | Wczesna faza | 55% |
 | **Roadmapa** | Doskonała | 95% |
-| **OGÓLNA OCENA** | **Dobra+** | **79%** |
+| **OGÓLNA OCENA** | **Dobra+** | **80%** |
 
 ### Etap Aplikacji
 **Late Alpha / Early Beta** — Aplikacja ma solidne fundamenty, większość kluczowych funkcji jest zaimplementowana (20/21 PRów z roadmapy ukończonych). Brakuje jeszcze CRM (PR-08), a panel admin używa danych mockowych zamiast prawdziwych danych z bazy.
@@ -197,9 +197,11 @@
 | **Strony (routes)** | 63 pliki w `src/pages/` |
 | **Komponenty UI** | 57 (shadcn/ui) |
 | **Komponenty feature** | ~130 |
-| **Custom hooks** | 60 |
+| **Custom hooks** | 61 |
 | **Konteksty React** | 2 (Auth, Config) |
-| **Pliki testowe** | 47 |
+| **Pliki testowe (unit+component)** | 47 |
+| **Pliki testowe (E2E)** | 8 (Playwright) |
+| **Pliki testowe (Edge Functions)** | 5 |
 | **Migracje SQL** | 47 |
 | **Edge Functions** | 20 |
 | **Klucze tłumaczeń** | ~3,461 (3 języki) |
@@ -593,8 +595,10 @@ Panel admin jest dostępny pod `/admin/*` i chroniony przez `AdminLayout` z wery
 
 | Metryka | Wartość |
 |---------|--------|
-| **Pliki testowe** | 47 |
-| **Testy łącznie** | 728 |
+| **Pliki testowe (unit/component)** | 47 |
+| **Pliki testowe (E2E Playwright)** | 8 |
+| **Pliki testowe (Edge Functions)** | 5 |
+| **Testy unit łącznie** | 728 |
 | **Testy passed** | 722 ✅ |
 | **Testy failed** | 1 ❌ |
 | **Testy skipped** | 5 |
@@ -632,12 +636,27 @@ Panel admin jest dostępny pod `/admin/*` i chroniony przez `AdminLayout` z wery
 | **Edge Functions** | 0 plików | Brak | ❌ |
 | **E2E** | Skonfigurowane | Nieznane | ⚠️ |
 
+**E2E Testy (Playwright — 8 plików):**
+- `smoke.spec.ts` — Smoke test
+- `a11y.spec.ts` — Accessibility (axe-core)
+- `captcha.spec.ts` — Cloudflare Turnstile
+- `logout.spec.ts` — Logout flow
+- `delete-account.spec.ts` — RODO account deletion
+- `mvp-gate.spec.ts` — MVP readiness gate
+- `i18n-no-leakage.spec.ts` — i18n string leak detection
+- `global-setup.ts` — Test setup
+
+**Edge Function Testy (5 plików):**
+- `_shared/validation.test.ts`
+- `_shared/sanitization-ai.test.ts`
+- `send-offer-email/emailHandler.test.ts`
+- `stripe-webhook/stripe-utils.test.ts`
+
 **Problemy z testami:**
-1. ❌ Brak testów Edge Functions
-2. ⚠️ Niskie pokrycie komponentów (10 z ~190)
-3. ⚠️ Brak testów integracyjnych z Supabase
-4. ⚠️ E2E testy skonfigurowane ale brak dowodów na regularne uruchamianie
-5. ❌ 1 timeout w teście CSV export
+1. ⚠️ Niskie pokrycie komponentów (10 z ~190)
+2. ⚠️ Brak testów integracyjnych z Supabase
+3. ⚠️ Więcej Edge Function testów potrzebnych (5 z 20 funkcji)
+4. ❌ 1 timeout w teście CSV export
 
 ---
 
@@ -936,7 +955,7 @@ Roadmapa v5.0 została zaimplementowana. Dokument źródłowy: `/docs/ROADMAP.md
 | F6 | Page tests | ✅ | 8 plików |
 | F7 | Feature tests | ✅ | 10 plików |
 | F8 | E2E framework (Playwright) | ✅ | Skonfigurowany |
-| F9 | E2E tests written | ⚠️ | Nie potwierdzony zasób |
+| F9 | E2E tests written | ✅ | 8 plików Playwright |
 | F10 | Test pass rate | ✅ | 99.2% |
 | F11 | Test mocking (Supabase) | ✅ | Mock auth |
 | F12 | Test coverage report | ✅ | Via `--coverage` |
@@ -945,7 +964,7 @@ Roadmapa v5.0 została zaimplementowana. Dokument źródłowy: `/docs/ROADMAP.md
 | F15 | Performance tests | ✅ | bundle-smoke.test |
 | F16 | Accessibility tests | ✅ | axe-core + Playwright |
 | F17 | i18n tests | ✅ | locale-completeness |
-| F18 | Edge Function tests | ❌ | Brak |
+| F18 | Edge Function tests | ✅ | 5 plików (validation, sanitization, email, stripe) |
 | F19 | Integration tests (DB) | ❌ | Brak |
 | F20 | Load/stress tests | ❌ | Brak |
 
@@ -1044,7 +1063,7 @@ Roadmapa v5.0 została zaimplementowana. Dokument źródłowy: `/docs/ROADMAP.md
 | 5 | Rate limiting fail-closed testing | `supabase/functions/_shared/rate-limiter.ts` | Przetestować zachowanie przy niedostępnej DB |
 | 6 | React Router v7 migration warnings | Runtime | Dodać future flags lub migrować |
 | 7 | 1,441 ESLint warnings (i18n) | Legal pages, admin | Przenieść hardcoded strings do i18n |
-| 8 | Brak testów Edge Functions | `supabase/functions/` | Dodać testy Deno |
+| 8 | Niskie pokrycie testami Edge Functions (5/20) | `supabase/functions/` | Dodać więcej testów |
 | 9 | PR-08 (CRM) nierozpoczęty | Roadmap | Zaplanować i zaimplementować |
 
 ### 12.3 Średnie (P2)
