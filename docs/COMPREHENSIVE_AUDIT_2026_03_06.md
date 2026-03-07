@@ -33,7 +33,7 @@
 |-----------|-------|---------|
 | **Architektura** | Bardzo dobra | 82% |
 | **Frontend** | Bardzo dobra | 80% |
-| **Backend (Supabase)** | Dobra | 75% |
+| **Backend (Supabase)** | Bardzo dobra | 82% |
 | **Bezpieczeństwo** | Doskonała | 88% |
 | **Panel Admin** | Dobra (mock data) | 65% |
 | **Testy** | Dobra | 70% |
@@ -46,7 +46,7 @@
 | **PWA/Mobile** | Dobra | 68% |
 | **Monetyzacja** | Wczesna faza | 55% |
 | **Roadmapa** | Doskonała | 95% |
-| **OGÓLNA OCENA** | **Dobra+** | **78%** |
+| **OGÓLNA OCENA** | **Dobra+** | **79%** |
 
 ### Etap Aplikacji
 **Late Alpha / Early Beta** — Aplikacja ma solidne fundamenty, większość kluczowych funkcji jest zaimplementowana (20/21 PRów z roadmapy ukończonych). Brakuje jeszcze CRM (PR-08), a panel admin używa danych mockowych zamiast prawdziwych danych z bazy.
@@ -340,19 +340,95 @@ Kluczowe migracje:
 - Company profile additions — profil firmy
 - RLS policies na każdej tabeli
 
-### 5.2 Row Level Security (RLS)
+### 5.2 Pełna Lista Tabel Bazy Danych (50+)
 
-Wszystkie tabele z danymi użytkowników mają aktywne RLS:
-- ✅ `profiles` — user can only read/write own profile
-- ✅ `clients` — organization-scoped isolation
-- ✅ `projects` — organization-scoped
-- ✅ `offers` / `offer_items` — organization-scoped
-- ✅ `offer_approvals` — token-based public access + owner access
-- ✅ `financial_records` — user-scoped
-- ✅ `project_costs` — project-owner scoped
-- ✅ `document_instances` — organization-scoped
-- ✅ `inspections` / `warranties` — project-owner scoped
-- ✅ `stripe_events` — idempotency protection
+**Tabele Biznesowe Główne:**
+- `profiles` — Profile użytkowników (firma, NIP, adres, logo, email templates)
+- `clients` — Klienci (name, phone, email, address) + trigram index
+- `projects` — Projekty v1 (legacy)
+- `v2_projects` — Projekty v2 (PR-13: stages_json, budget, progress_percent)
+- `offers` — Oferty (PR-09: status lifecycle, totals, currency PLN)
+- `offer_items` — Pozycje ofert (PR-10: labor/material/service/travel/lump_sum)
+- `offer_approvals` — Zatwierdzenia (dual-token: public_token + accept_token)
+- `offer_sends` — Historia wysyłek email
+- `acceptance_links` — Linki akceptacyjne (PR-12: token + 30-day expiry)
+- `offer_public_actions` — Audyt akcji klienta (ACCEPT/REJECT)
+- `quotes` / `quote_versions` — Wyceny + historia wersji
+
+**Tabele Projektowe:**
+- `project_photos` — Zdjęcia (phase: BEFORE/DURING/AFTER/ISSUE, AI analysis)
+- `project_checklists` — Listy kontrolne (general, plumbing, electrical, painting)
+- `project_costs` — Koszty (PR-14: MATERIAL/LABOR/TRAVEL/OTHER)
+- `project_acceptance` — Akceptacja klienta + podpis
+- `project_public_status_tokens` — QR status sharing (PR-13)
+- `project_warranties` — Gwarancje (PR-18: 1-120 miesięcy, reminders)
+- `project_inspections` — Inspekcje (PR-18: 6 typów, auto-status computed)
+- `project_reminders` — Przypomnienia (PR-18: IN_APP/NOTIFICATION)
+- `project_dossier_items` — Pliki teczki (PR-16: 6 kategorii)
+- `project_dossier_share_tokens` — Udostępnianie teczki (allowed_categories)
+- `document_instances` — Instancje dokumentów (PR-17: 25+ szablonów)
+
+**Tabele Finansowe:**
+- `user_subscriptions` — Plany subskrypcji (Stripe, service_role only writes)
+- `subscription_events` — Zdarzenia Stripe (audit log)
+- `user_addons` — Dodatki (extra_projects, extra_clients, extra_pdf)
+- `plan_limits` — Limity planów (server-side enforcement)
+- `plan_requests` — Żądania upgrade (gdy Stripe wyłączony)
+- `purchase_costs` — Koszty zakupów (OCR faktur)
+- `financial_reports` — Raporty finansowe (cache)
+- `stripe_events` — Idempotency Stripe (PK: event_id)
+
+**Tabele Zespołowe:**
+- `team_members` — Członkowie zespołu
+- `team_locations` — GPS tracking
+- `organizations` — Organizacje (multi-tenant)
+- `organization_members` — Członkostwo (owner/admin/manager/member)
+
+**Tabele Systemowe:**
+- `user_roles` — Role app-wide (admin/moderator/user)
+- `admin_system_settings` — Ustawienia admin (23 settings)
+- `admin_theme_config` — Motyw admin (HSL, font, radius)
+- `admin_audit_log` — Log audytu admin
+- `api_keys` — Klucze API (hex(gen_random_bytes(32)))
+- `api_rate_limits` — Cache rate limiting
+- `biometric_credentials` — WebAuthn credentials
+- `user_consents` — Zgody RODO (6 typów)
+- `notifications` — Powiadomienia in-app
+- `onboarding_progress` — Postęp onboardingu
+- `calendar_events` — Kalendarz (deadline/meeting/task)
+- `push_tokens` — Tokeny push (web/ios/android)
+- `work_tasks` — Zadania zespołowe
+- `ai_chat_history` — Historia czatu AI
+- `company_documents` — Dokumenty firmy
+- `item_templates` — Szablony pozycji wycen
+- `pdf_data` — Konfiguracja PDF (legacy)
+- `subcontractors` — Podwykonawcy (marketplace)
+- `subcontractor_services` / `subcontractor_reviews` — Usługi i recenzje
+
+**Statystyki bazy:**
+- **Tabele:** 50+
+- **RLS-enabled:** 48+ (wszystkie z danymi użytkowników)
+- **SECURITY DEFINER Functions:** 13+
+- **Triggers:** 15+
+- **Views:** 3 (warranties_with_end, inspections_with_status, project_notes)
+- **Indexes:** 50+
+- **Storage Buckets:** 4 (logos, project-photos, company-documents, dossier)
+
+### 5.3 Row Level Security (RLS) — Typy Polityk
+
+| Typ polityki | Tabele | Opis |
+|-------------|--------|------|
+| **Single-User Isolation** | ~30 tabel | `USING (auth.uid() = user_id)` |
+| **Organization-Based** | 5 tabel | `USING (is_org_member(auth.uid(), org_id))` |
+| **Public Token Access** | 2-3 tabele | Token + SECURITY DEFINER validation |
+| **Service-Role Only** | 3 tabele | stripe_events, subscription_events, api_rate_limits |
+| **Public Read + Auth Write** | 2 tabele | subcontractor_services, reviews |
+
+**Plan Limit Enforcement (Triggers):**
+- `enforce_project_limit()` — BEFORE INSERT on projects
+- `enforce_offer_limit()` — BEFORE INSERT on offer_approvals
+- `enforce_client_limit()` — BEFORE INSERT on clients
+- `enforce_monthly_offer_send_limit()` — BEFORE UPDATE on offers
 
 ### 5.3 Edge Functions — Ocena
 
