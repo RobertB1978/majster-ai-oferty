@@ -10,6 +10,24 @@
       ]
     },
     {
+      "source": "/sw-register.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
@@ -64,10 +82,11 @@
       ]
     }
   ],
-  "routes": [
+  "redirects": [
     {
-      "src": "/sw\\.js",
-      "status": 410
+      "source": "/sw.js",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "rewrites": [
