@@ -30,4 +30,4 @@ function resolveFlag(envValue: string | undefined, lsKey: string, defaultValue: 
   return defaultValue;
 }
 
-export const FF_NEW_SHELL: boolean = resolveFlag(ENV_FLAG, 'FF_NEW_SHELL', false);
+export const FF_NEW_SHELL: boolean = resolveFlag(ENV_FLAG, 'FF_NEW_SHELL', true);
