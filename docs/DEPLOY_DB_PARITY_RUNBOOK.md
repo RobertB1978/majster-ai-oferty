@@ -1,7 +1,7 @@
 # DB Deploy Parity Runbook
 
 **Purpose:** Validate that all required tables exist in the production Supabase database
-after running the `Supabase Deploy Autopilot` workflow, and understand how to diagnose
+after the standard release path (`pull request` → merge/push to `main`) triggers production deploy, and understand how to diagnose
 PGRST205 ("Could not find the table") errors.
 
 ---
@@ -133,13 +133,13 @@ done
 
 ---
 
-## 5. How to re-run the deploy workflow
+## 5. Release path and how to recover from a failed deploy
 
-1. Go to: **GitHub → Actions → Supabase Deploy Autopilot → Run workflow**
-2. Select branch: `main` (or `claude/fix-supabase-project-ref-JmuZm` for this PR)
-3. Environment: `production`
-4. Click **Run workflow**
-5. Watch steps 6 (Push database migrations) and 9 (REST Contract Gate)
+1. **Normal path (no manual run):** open PR → pass checks → merge/push to `main`.
+2. Merge/push to `main` automatically triggers `.github/workflows/deployment-truth.yml`.
+3. In GitHub Actions, open the latest **Deployment Truth Gate** run and review deploy steps/logs.
+4. If a deploy run failed due to transient infra error, use **Re-run failed jobs** on that run (do not use a separate manual deploy workflow).
+5. Watch the deploy marker in logs: `SUPABASE_DEPLOY: PASS` or `SUPABASE_DEPLOY: FAIL`.
 
 ---
 
@@ -158,6 +158,7 @@ done
 | Secret name | Description | Where to get it |
 |-------------|-------------|-----------------|
 | `SUPABASE_ACCESS_TOKEN` | Supabase personal access token | supabase.com → Account → Access Tokens |
+| `SUPABASE_DB_PASSWORD` | Supabase database password for the linked project | Supabase → Project Settings → Database |
 | `SUPABASE_PROJECT_REF` | Must equal `xwxvqhhnozfrjcjmcltv` | Supabase → Project Settings → General |
 | `SUPABASE_ANON_KEY` | Project's `anon` public key | Supabase → Project Settings → API |
 

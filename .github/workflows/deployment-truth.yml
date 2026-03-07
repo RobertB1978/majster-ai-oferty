@@ -10,15 +10,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  truth-gate:
+  verify-truth-contracts:
+    name: Verify deployment contracts (no production deploy)
     runs-on: ubuntu-latest
     timeout-minutes: 20
-
-    env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
-      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
     steps:
       - name: Checkout
@@ -31,6 +26,23 @@ jobs:
         run: |
           bash scripts/verify/supabase_pipeline_check.sh
           bash scripts/verify/vercel_pipeline_check.sh
+
+  deploy-production:
+    name: Deploy Supabase to production (push main only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: verify-truth-contracts
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Validate required Supabase secrets/vars (names only)
         shell: bash
@@ -65,14 +77,12 @@ jobs:
           supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
 
       - name: Deploy migrations
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
           supabase db push --password "$SUPABASE_DB_PASSWORD" --yes
 
       - name: Deploy edge functions
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
@@ -88,7 +98,6 @@ jobs:
           done
 
       - name: Post-deploy verification (exit code truth)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
@@ -97,11 +106,11 @@ jobs:
           echo "PASS: Supabase deploy commands zakończone kodem 0"
 
       - name: Supabase deploy marker (PASS)
-        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && success() }}
+        if: ${{ success() }}
         shell: bash
-        run: echo "SUPABASE_DEPLOY: PASS"
+        run: 'echo "SUPABASE_DEPLOY: PASS"'
 
       - name: Supabase deploy marker (FAIL)
-        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && failure() }}
+        if: ${{ failure() }}
         shell: bash
-        run: echo "SUPABASE_DEPLOY: FAIL"
+        run: 'echo "SUPABASE_DEPLOY: FAIL"'
