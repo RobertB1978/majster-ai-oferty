@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -194,7 +194,7 @@ export default function Offers() {
   const search = useDebounce(searchRaw, 300);
   const createProject = useCreateProjectV2();
 
-  const { data: offers = [], isLoading, isError, refetch } = useOffers({
+  const { data: offers = [], isLoading, isError, error, refetch } = useOffers({
     status: statusFilter,
     search,
     sort,
@@ -224,6 +224,26 @@ export default function Offers() {
       setCreatingProjectId(null);
     }
   };
+
+
+  const errorDescription = useMemo(() => {
+    if (!error) return t('offersList.errorDesc');
+
+    const errorObj = error as {
+      message?: string;
+      details?: string;
+      hint?: string;
+      code?: string;
+    };
+
+    const reason = [errorObj.message, errorObj.details, errorObj.hint, errorObj.code]
+      .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+      .join(' | ');
+
+    return reason
+      ? t('offersList.errorDescWithReason', { reason })
+      : t('offersList.errorDesc');
+  }, [error, t]);
 
   const isFiltering = statusFilter !== 'ALL' || searchRaw.trim() !== '';
 
@@ -281,7 +301,7 @@ export default function Offers() {
       {!isLoading && isError && (
         <ErrorState
           title={t('offersList.errorTitle')}
-          description={t('offersList.errorDesc')}
+          description={errorDescription}
           retryLabel={t('offersList.errorRetry')}
           onRetry={() => refetch()}
         />

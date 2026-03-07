@@ -87,8 +87,9 @@ export function useOffers(params: OffersQueryParams = {}) {
           .select('id, name')
           .in('id', clientIds);
 
-        if (clientsError) throw clientsError;
-        clientMap = new Map((clients ?? []).map((client) => [client.id, client.name]));
+        if (!clientsError) {
+          clientMap = new Map((clients ?? []).map((client) => [client.id, client.name]));
+        }
       }
 
       return offers.map((offer) => ({
