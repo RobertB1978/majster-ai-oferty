@@ -2797,6 +2797,7 @@
     "emptyFilterDesc": "Brak ofert pasujących do wybranych filtrów.",
     "errorTitle": "Błąd ładowania ofert",
     "errorDesc": "Nie udało się wczytać listy ofert. Sprawdź połączenie i spróbuj ponownie.",
+    "errorDescWithReason": "Nie udało się wczytać listy ofert: {{reason}}",
     "errorRetry": "Spróbuj ponownie",
     "actionOpen": "Otwórz",
     "actionDuplicate": "Duplikuj",

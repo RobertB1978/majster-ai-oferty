@@ -2797,6 +2797,7 @@
     "emptyFilterDesc": "No offers match the selected filters.",
     "errorTitle": "Failed to load offers",
     "errorDesc": "Could not load the offers list. Check your connection and try again.",
+    "errorDescWithReason": "Could not load the offers list: {{reason}}",
     "errorRetry": "Try again",
     "actionOpen": "Open",
     "actionDuplicate": "Duplicate",
