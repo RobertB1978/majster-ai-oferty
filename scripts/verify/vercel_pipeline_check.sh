@@ -29,5 +29,6 @@ else
   fi
 fi
 
-echo "Co wiemy: repo zawiera konfigurację vercel.json."
-echo "Czego nie wiemy z repo: mapowanie projektu Vercel, ustawienia Git Integration, status auto-deploy po stronie panelu Vercel."
+echo "Co wiemy: repo zawiera konfigurację vercel.json + jawny krok vercel deploy w deployment-truth.yml."
+echo "Wymagane GitHub Secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID"
+echo "Jak ustawić: https://github.com/RobertB1978/majster-ai-oferty/settings/secrets/actions"
