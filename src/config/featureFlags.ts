@@ -13,6 +13,22 @@
  * REGUŁA (ROADMAP G6): od PR-07 każdy kolejny PR musi działać przy FF_NEW_SHELL=ON i OFF.
  */
 
+// One-time migration (2026-03 global rollout):
+// Users who previously set FF_NEW_SHELL=false in localStorage would be permanently
+// stuck on the legacy shell even after the rollout. Clear that stale value once so
+// the new default (true) takes effect. The migration marker prevents re-running.
+const ROLLOUT_MIGRATION_KEY = 'FF_NEW_SHELL_rollout_v1';
+try {
+  if (!localStorage.getItem(ROLLOUT_MIGRATION_KEY)) {
+    if (localStorage.getItem('FF_NEW_SHELL') === 'false') {
+      localStorage.removeItem('FF_NEW_SHELL');
+    }
+    localStorage.setItem(ROLLOUT_MIGRATION_KEY, '1');
+  }
+} catch {
+  // SSR / privacy mode — ignorujemy
+}
+
 const ENV_FLAG = import.meta.env.VITE_FF_NEW_SHELL;
 
 function resolveFlag(envValue: string | undefined, lsKey: string, defaultValue: boolean): boolean {
