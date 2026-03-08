@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useClientsPaginated, useAddClient, useUpdateClient, useDeleteClient, Client } from '@/hooks/useClients';
@@ -21,6 +21,63 @@ interface ClientFormData {
   email: string;
   address: string;
 }
+
+// Memoized client card to prevent re-renders when parent state changes (search, page)
+interface ClientCardProps {
+  client: Client;
+  onEdit: (client: Client) => void;
+  onDelete: (id: string, name: string) => void;
+}
+
+const ClientCard = memo(function ClientCard({ client, onEdit, onDelete }: ClientCardProps) {
+  return (
+    <Card className="group hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-start justify-between text-lg">
+          <span className="line-clamp-2">{client.name}</span>
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => onEdit(client)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-destructive hover:text-destructive"
+              onClick={() => onDelete(client.id, client.name)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {client.phone && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Phone className="h-4 w-4" />
+            <span>{client.phone}</span>
+          </div>
+        )}
+        {client.email && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Mail className="h-4 w-4" />
+            <span className="truncate">{client.email}</span>
+          </div>
+        )}
+        {client.address && (
+          <div className="flex items-start gap-2 text-sm text-muted-foreground">
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+            <span className="line-clamp-2">{client.address}</span>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+});
 
 const PAGE_SIZE = 20;
 
@@ -270,52 +327,13 @@ export default function Clients() {
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {clients.map((client, index) => (
-              <Card key={client.id} className="group hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300" style={{ animationDelay: `${index * 50}ms` }}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-start justify-between text-lg">
-                    <span className="line-clamp-2">{client.name}</span>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => handleOpenDialog(client)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
-                        onClick={() => handleDelete(client.id, client.name)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {client.phone && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Phone className="h-4 w-4" />
-                      <span>{client.phone}</span>
-                    </div>
-                  )}
-                  {client.email && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-4 w-4" />
-                      <span className="truncate">{client.email}</span>
-                    </div>
-                  )}
-                  {client.address && (
-                    <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-                      <span className="line-clamp-2">{client.address}</span>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            {clients.map((client) => (
+              <ClientCard
+                key={client.id}
+                client={client}
+                onEdit={handleOpenDialog}
+                onDelete={handleDelete}
+              />
             ))}
           </div>
 

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -93,7 +93,7 @@ interface OfferRowProps {
   isCreatingProject?: boolean;
 }
 
-function OfferRow({ offer, onOpen, onDuplicate, onCreateProject, isCreatingProject }: OfferRowProps) {
+const OfferRow = memo(function OfferRow({ offer, onOpen, onDuplicate, onCreateProject, isCreatingProject }: OfferRowProps) {
   const { t } = useTranslation();
   const noResp = offer.status === 'SENT' ? noResponseDays(offer.sent_at) : null;
   const amount = formatAmount(offer.total_net, offer.currency);
@@ -178,7 +178,7 @@ function OfferRow({ offer, onOpen, onDuplicate, onCreateProject, isCreatingProje
       </DropdownMenu>
     </div>
   );
-}
+});
 
 // ── Offers page ───────────────────────────────────────────────────────────────
 

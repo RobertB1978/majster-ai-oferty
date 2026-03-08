@@ -21,11 +21,11 @@ import { OfflineBanner } from "@/components/pwa/OfflineBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsent } from "@/components/legal/CookieConsent";
 
-// === ZONE 1: PUBLIC (loaded immediately - auth flow) ===
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
+// === ZONE 1: PUBLIC (auth flow — lazy-loaded, not needed for authenticated users) ===
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
 import EnvCheck from "./pages/EnvCheck";
