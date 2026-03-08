@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useProjectsPaginated, useProjects } from '@/hooks/useProjects';
@@ -22,6 +22,43 @@ const statusColors: Record<string, string> = {
 };
 
 const PAGE_SIZE = 20;
+
+// Memoized project row to prevent re-renders on search/filter changes
+interface ProjectRowProps {
+  project: { id: string; project_name: string; status: string; clients?: { name: string } | null };
+  statusColors: Record<string, string>;
+  statusLabels: Record<string, string>;
+  onOpen: (id: string) => void;
+  openLabel: string;
+  clientLabel: string;
+  noneLabel: string;
+}
+
+const ProjectRow = memo(function ProjectRow({ project, statusColors, statusLabels, onOpen, openLabel, clientLabel, noneLabel }: ProjectRowProps) {
+  return (
+    <Card className="group hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300">
+      <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1 flex-1">
+          <p className="font-semibold text-foreground group-hover:text-primary transition-colors">{project.project_name}</p>
+          <p className="text-sm text-muted-foreground">
+            {clientLabel}: {project.clients?.name || noneLabel}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Badge className={statusColors[project.status] || statusColors['Nowy']}>
+            {statusLabels[project.status] ?? project.status}
+          </Badge>
+          <Button
+            variant="outline"
+            onClick={() => onOpen(project.id)}
+          >
+            {openLabel}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+});
 
 export default function Projects() {
   const { t } = useTranslation();
@@ -171,28 +208,17 @@ export default function Projects() {
       ) : (
         <>
           <div className="space-y-3">
-            {projects.map((project, index) => (
-              <Card key={project.id} className="group hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300" style={{ animationDelay: `${index * 30}ms` }}>
-                <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="space-y-1 flex-1">
-                    <p className="font-semibold text-foreground group-hover:text-primary transition-colors">{project.project_name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {t('projects.client')}: {project.clients?.name || t('common.none')}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge className={statusColors[project.status] || statusColors['Nowy']}>
-                      {statusLabels[project.status] ?? project.status}
-                    </Badge>
-                    <Button
-                      variant="outline"
-                      onClick={() => navigate(`/app/jobs/${project.id}`)}
-                    >
-                      {t('projects.open')}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+            {projects.map((project) => (
+              <ProjectRow
+                key={project.id}
+                project={project}
+                statusColors={statusColors}
+                statusLabels={statusLabels}
+                onOpen={(id) => navigate(`/app/jobs/${id}`)}
+                openLabel={t('projects.open')}
+                clientLabel={t('projects.client')}
+                noneLabel={t('common.none')}
+              />
             ))}
           </div>
 

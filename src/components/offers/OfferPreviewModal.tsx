@@ -147,7 +147,6 @@ function useOfferPreviewData(offerId: string) {
       };
     },
     enabled: !!offerId && !!user,
-    staleTime: 0,
   });
 }
 

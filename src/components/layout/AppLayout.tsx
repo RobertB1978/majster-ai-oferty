@@ -29,18 +29,6 @@ export function AppLayout() {
    */
   const [tradeOnboardingDone, setTradeOnboardingDone] = useState(isTradeOnboardingDone);
 
-  // Initialize theme from localStorage or system preference
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, []);
-
   // Show content when auth is resolved; reset on logout or re-loading
   useEffect(() => {
     setShowContent(!isLoading && !!user);
@@ -55,7 +43,7 @@ export function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Skip to main content link for keyboard navigation */}
       <a
         href="#main-content"
@@ -65,7 +53,7 @@ export function AppLayout() {
       </a>
       <TopBar />
       <Navigation />
-      <main id="main-content" className={`flex-1 container py-6 px-4 md:px-6 pb-20 lg:pb-6 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <main id="main-content" className={`flex-1 container py-6 px-4 md:px-6 pb-20 lg:pb-6 transition-all duration-200 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         <PageTransition>
           <Outlet />
         </PageTransition>
