@@ -572,7 +572,12 @@ export default function OfferApproval() {
 
               {/* PDF download */}
               <div className="pt-2">
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => window.print()}
+                >
                   <Download className="h-4 w-4" />
                   {t('offerApproval.actions.downloadPdf')}
                 </Button>

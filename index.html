@@ -30,6 +30,16 @@
 
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
+
+    <style>
+      @media print {
+        header, footer, nav, .no-print { display: none !important; }
+        body { background: white !important; color: black !important; }
+        a { color: inherit !important; text-decoration: none !important; }
+        button { display: none !important; }
+        .print-show { display: block !important; }
+      }
+    </style>
   </head>
 
   <body>
