@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +36,8 @@ interface SendOfferModalProps {
   pdfUrl?: string;
 }
 
+type OfferApprovalToken = { public_token: string; accept_token: string };
+
 const EXPIRY_DAYS = [7, 14, 30, 60, 90] as const;
 
 function daysFromNow(days: number): string {
@@ -58,6 +61,7 @@ export function SendOfferModal({
   const { data: quote } = useQuote(projectId);
   const createOfferSend = useCreateOfferSend();
   const updateOfferSend = useUpdateOfferSend();
+  const queryClient = useQueryClient();
 
   // PR-06: Free-plan monthly quota
   const offerQuota = useFreeTierOfferQuota();
@@ -71,7 +75,6 @@ export function SendOfferModal({
   const [isSending, setIsSending] = useState(false);
   const [expiryDays, setExpiryDays] = useState<string>('30');
   const [customDate, setCustomDate] = useState('');
-  const [offerApproval, setOfferApproval] = useState<{ public_token: string; accept_token: string } | null>(null);
 
   // Fallback-delivery state
   const [isGeneratingToken, setIsGeneratingToken] = useState(false);
@@ -79,20 +82,24 @@ export function SendOfferModal({
   const [emailSendFailed, setEmailSendFailed] = useState(false);
   const [emailSendFailedReason, setEmailSendFailedReason] = useState<'not_configured' | 'other' | null>(null);
 
-  // Fetch offer_approval tokens for this project
-  useEffect(() => {
-    if (!open || !projectId) return;
-    supabase
-      .from('offer_approvals')
-      .select('public_token, accept_token')
-      .eq('project_id', projectId)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) setOfferApproval(data as { public_token: string; accept_token: string });
-      });
-  }, [open, projectId]);
+  // Cache offer_approval tokens via React Query — fetches only when modal is open,
+  // re-uses cached result on subsequent opens within staleTime (5 min).
+  const offerApprovalQueryKey = ['send-modal-offer-approval', projectId] as const;
+  const { data: offerApproval } = useQuery<OfferApprovalToken | null>({
+    queryKey: offerApprovalQueryKey,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('offer_approvals')
+        .select('public_token, accept_token')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return (data as OfferApprovalToken | null) ?? null;
+    },
+    enabled: open && !!projectId,
+    staleTime: 5 * 60 * 1000,
+  });
 
   // Reset transient state when modal opens/closes
   useEffect(() => {
@@ -161,7 +168,7 @@ export function SendOfferModal({
 
   // Ensure an offer_approval record (and therefore a public_token) exists.
   // Creates one on-demand if missing — no DB migrations required.
-  const ensureToken = async (): Promise<{ public_token: string; accept_token: string } | null> => {
+  const ensureToken = async (): Promise<OfferApprovalToken | null> => {
     if (offerApproval) return offerApproval;
     if (!user || !projectId) return null;
 
@@ -179,8 +186,9 @@ export function SendOfferModal({
         .single();
 
       if (error) throw error;
-      const approval = data as unknown as { public_token: string; accept_token: string };
-      setOfferApproval(approval);
+      const approval = data as unknown as OfferApprovalToken;
+      // Update React Query cache so subsequent opens reuse this token without re-fetching
+      queryClient.setQueryData(offerApprovalQueryKey, approval);
       return approval;
     } catch (err) {
       console.error('Failed to generate offer token:', err);

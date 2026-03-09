@@ -53,7 +53,7 @@ export function AppLayout() {
       </a>
       <TopBar />
       <Navigation />
-      <main id="main-content" className={`flex-1 container py-6 px-4 md:px-6 pb-20 lg:pb-6 transition-all duration-200 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <main id="main-content" className={`flex-1 container py-6 px-4 md:px-6 pb-20 lg:pb-6 transition-opacity duration-150 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
         <PageTransition>
           <Outlet />
         </PageTransition>
