@@ -90,6 +90,10 @@ Aplikacja Majster.AI ma solidne fundamenty wydajnościowe: lazy loading na wszys
 | F29 | TopBar | `src/components/layout/TopBar.tsx:6` | Zapytanie do Supabase na starcie (powiadomienia) | NotificationCenter importowany eagerly w TopBar — uruchamia useNotifications hook na mount AppLayout | P1 | Zweryfikowane | STARTUP |
 | F30 | Sentry | `src/main.tsx:5` + `src/lib/sentry.ts` | ~30KB w main bundle bez potrzeby | Sentry importowany statycznie (initSentry deferred, ale moduł parsowany na starcie) | P2 | Zweryfikowane | BUNDLE |
 | F31 | Fonty | `index.html` | Potencjalny FOUT (Flash of Unstyled Text) | Font "Plus Jakarta Sans" nie ma `<link rel="preload">` — ładowany dopiero przez CSS | P2 | Zweryfikowane | ASSET |
+| F32 | Modal | `src/components/offers/SendOfferModal.tsx` | Dane pobierane przy KAŻDYM otwarciu modala | useEffect z direct supabase call (nie przez React Query) — brak cache między otwieraniami | P1 | Zweryfikowane | MODAL |
+| F33 | Modal | `src/components/offers/OfferPreviewModal.tsx` | Ciężki podgląd A4 + generacja PDF blokuje UI | jsPDF generuje PDF synchronicznie na main thread; staleTime: 60s na danych | P1 | Zweryfikowane | MODAL |
+| F34 | EdgeFn | `supabase/functions/analyze-photo/` | Brak walidacji rozmiaru obrazu przed AI | Duże zdjęcia mogą spowodować timeout edge function | P2 | Zweryfikowane | ARCHITECTURE |
+| F35 | EdgeFn | `supabase/functions/send-expiring-offer-reminders/` | Brak paginacji w cron job | Może załadować cały result set do pamięci | P2 | Zweryfikowane | ARCHITECTURE |
 
 ---
 
@@ -443,6 +447,12 @@ Dashboard mount = minimum 8 zapytań do Supabase:
 | Offer wizard data fetch | Wpływ na user flow | useOfferWizard.ts | staleTime: 60s, plus WizardStepItems z inline useQuery | Zweryfikowane |
 | PDF generation blocking | Potencjalne zamrożenie UI | jspdf w pdf-vendor chunk | Generacja PDF prawdopodobnie blokuje main thread | Hipoteza |
 | date-fns usage | Tree-shaking vs full import | useExpirationMonitor.ts | Named imports (differenceInDays, etc.) — tree-shaking OK | Zweryfikowane |
+| SendOfferModal direct supabase | Dane nie cache'owane między otwieraniami | SendOfferModal.tsx | useEffect z bezpośrednim supabase call — omija React Query cache | Zweryfikowane |
+| OfferPreviewModal weight | Ciężki modal z podglądem A4 | OfferPreviewModal.tsx | Wielokrotne zapytania (offer + items + client + profile) + jsPDF na main thread | Zweryfikowane |
+| Edge Functions — AI timeouts | Brak jawnych timeoutów w AI functions | analyze-photo, ocr-invoice, voice-quote-processor | Polegają na domyślnym timeout (mogą się zawiesić) | Zweryfikowane |
+| Edge Functions — batch safety | Brak paginacji w cron jobs | send-expiring-offer-reminders, cleanup-expired-data | Brak LIMIT w batch operations | Zweryfikowane |
+| Dialog/Sheet animations | Spójność animacji UI | dialog.tsx, sheet.tsx, drawer.tsx | Wszystkie 200ms duration — spójne i rozsądne | Zweryfikowane |
+| Sonner toast performance | Wpływ na rendering | sonner.tsx | Lekki, zoptymalizowany — brak problemu | Zweryfikowane |
 
 ---
 
