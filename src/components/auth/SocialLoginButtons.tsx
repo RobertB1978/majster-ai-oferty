@@ -59,7 +59,7 @@ export function SocialLoginButtons({ disabled = false }: SocialLoginButtonsProps
     <div className="space-y-3">
       <div className="relative">
         <Separator className="bg-border/50" />
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-muted-foreground">
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-slate-500 dark:text-slate-400">
           {t('auth.social.orContinueWith')}
         </span>
       </div>
@@ -67,7 +67,7 @@ export function SocialLoginButtons({ disabled = false }: SocialLoginButtonsProps
       <Button
         type="button"
         variant="outline"
-        className="w-full gap-2"
+        className="w-full gap-2 border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-100"
         size="lg"
         onClick={handleGoogle}
         disabled={disabled || isLoading}
@@ -84,7 +84,7 @@ export function SocialLoginButtons({ disabled = false }: SocialLoginButtonsProps
       <Button
         type="button"
         variant="outline"
-        className="w-full gap-2"
+        className="w-full gap-2 border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-100"
         size="lg"
         onClick={handleApple}
         disabled={disabled || isLoading}

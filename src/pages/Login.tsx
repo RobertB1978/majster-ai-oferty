@@ -154,13 +154,13 @@ export default function Login() {
           </div>
         </header>
         <div className="flex flex-1 items-center justify-center p-4">
-        <Card className="w-full max-w-md animate-fade-in relative shadow-md border">
+        <Card className="w-full max-w-md animate-fade-in relative shadow-md border bg-white dark:bg-slate-900">
         <CardHeader className="text-center pb-2">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-sm">
             <Wrench className="h-8 w-8 text-primary-foreground" />
           </div>
-          <CardTitle className="text-2xl font-bold gradient-text">{'Majster.AI'}</CardTitle>
-          <CardDescription className="text-muted-foreground">
+          <CardTitle className="text-2xl font-bold text-slate-900 dark:text-slate-100">{'Majster.AI'}</CardTitle>
+          <CardDescription className="text-slate-600 dark:text-slate-300">
             {t('auth.loginSubtitle')}
           </CardDescription>
         </CardHeader>
@@ -169,36 +169,36 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">{t('auth.email')}</Label>
+              <Label htmlFor="email" className="text-slate-700 dark:text-slate-200">{t('auth.email')}</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
                 <Input
                   id="email"
                   type="email"
                   placeholder={t('auth.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`pl-10 ${errors.email ? 'border-destructive' : ''}`}
+                  className={`pl-10 text-slate-900 placeholder:text-slate-500 border-slate-300 bg-white dark:text-slate-100 dark:placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-900 ${errors.email ? 'border-destructive' : ''}`}
                 />
               </div>
               {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">{t('auth.password')}</Label>
-                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                <Label htmlFor="password" className="text-slate-700 dark:text-slate-200">{t('auth.password')}</Label>
+                <Link to="/forgot-password" className="text-sm text-slate-700 dark:text-slate-200 hover:underline">
                   {t('auth.forgotPassword')}
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
                 <Input
                   id="password"
                   type="password"
                   placeholder={t('auth.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`pl-10 ${errors.password ? 'border-destructive' : ''}`}
+                  className={`pl-10 text-slate-900 placeholder:text-slate-500 border-slate-300 bg-white dark:text-slate-100 dark:placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-900 ${errors.password ? 'border-destructive' : ''}`}
                 />
               </div>
               {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
@@ -209,7 +209,7 @@ export default function Login() {
                 onError={() => setCaptchaToken(null)}
               />
             )}
-            <Button type="submit" className="w-full" size="lg" disabled={isLoading || (showCaptcha && !captchaToken)}>
+            <Button type="submit" className="w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200" size="lg" disabled={isLoading || (showCaptcha && !captchaToken)}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -245,9 +245,9 @@ export default function Login() {
             </>
           )}
 
-          <p className="mt-6 text-center text-sm text-muted-foreground">
+          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-300">
             {t('auth.noAccount')}{' '}
-            <Link to="/register" className="font-medium text-primary hover:underline">
+            <Link to="/register" className="font-medium text-slate-800 dark:text-slate-100 hover:underline">
               {t('auth.register')}
             </Link>
           </p>
