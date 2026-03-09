@@ -87,6 +87,9 @@ Aplikacja Majster.AI ma solidne fundamenty wydajnościowe: lazy loading na wszys
 | F26 | Kalendarz | `src/pages/Calendar.tsx` | 4 widoki kalendarza eagerly rendered | Month/Week/Day/Agenda w Tabs — brak lazy loading widoków | P1 | Zweryfikowane | ROUTE |
 | F27 | Settings | `src/pages/Settings.tsx` | 9 tabów z ciężkimi komponentami eagerly mounted | Wszystkie 9 tabów (Profile, Docs, Calendar, Notifications, Biometric, Email, Subscription, Account) renderowane na mount | P1 | Zweryfikowane | MODAL |
 | F28 | ProjectDetail | `src/pages/ProjectDetail.tsx` | 6 ciężkich tabów (Photos, Costs, PDF Preview, Approval) eagerly mounted | Tab content z heavy components ładuje się na mount strony | P1 | Zweryfikowane | ROUTE |
+| F29 | TopBar | `src/components/layout/TopBar.tsx:6` | Zapytanie do Supabase na starcie (powiadomienia) | NotificationCenter importowany eagerly w TopBar — uruchamia useNotifications hook na mount AppLayout | P1 | Zweryfikowane | STARTUP |
+| F30 | Sentry | `src/main.tsx:5` + `src/lib/sentry.ts` | ~30KB w main bundle bez potrzeby | Sentry importowany statycznie (initSentry deferred, ale moduł parsowany na starcie) | P2 | Zweryfikowane | BUNDLE |
+| F31 | Fonty | `index.html` | Potencjalny FOUT (Flash of Unstyled Text) | Font "Plus Jakarta Sans" nie ma `<link rel="preload">` — ładowany dopiero przez CSS | P2 | Zweryfikowane | ASSET |
 
 ---
 
@@ -163,6 +166,14 @@ Dashboard mount = minimum 8 zapytań do Supabase:
 6. `expiring-offers`
 7. `subscription-expiration`
 8. Ewentualne dodatkowe z TrialBanner
+
+### 4.5 Eager NotificationCenter w TopBar
+
+`TopBar.tsx:6` importuje `NotificationCenter` eagerly. Ten komponent uruchamia `useNotifications()` hook, który wykonuje zapytanie do Supabase (`notifications` table, select('*')`) na mount AppLayout. Oznacza to, że **każde wejście do app shell powoduje dodatkowe zapytanie o powiadomienia** — nawet jeśli użytkownik nie otwierał panelu powiadomień.
+
+### 4.6 Sentry statyczny import
+
+`main.tsx:5` importuje `initSentry` z `@/lib/sentry`. Choć `initSentry()` jest wywołane w `setTimeout(0)`, sam moduł Sentry (~30KB) jest parsowany podczas startu aplikacji. Można go zamienić na dynamic import z guardem env var.
 
 ### 4.5 Pozytywne wzorce (zweryfikowane)
 
@@ -372,9 +383,11 @@ Dashboard mount = minimum 8 zapytań do Supabase:
 - Skrócenie `transition-all duration-200` → `duration-100` w AppLayout
 - Dodanie jawnego staleTime do useSubscription (15min), useNotifications (30s), useCalendarEvents (2min)
 - Calendar.tsx: zamiana `useProjects()` (deprecated) na lekkie zapytanie do dropdown
+- TopBar: lazy-load NotificationCenter (eliminacja eager DB query na starcie)
+- Dodanie `<link rel="preload">` dla fontu Plus Jakarta Sans w index.html
 
 **Dlaczego teraz:** Zerowe ryzyko, natychmiastowy efekt.
-**Oczekiwany zysk:** ~100ms szybsze przejścia, mniej refetchów.
+**Oczekiwany zysk:** ~100ms szybsze przejścia, mniej refetchów, 1 mniej query na start.
 **Ryzyko:** Minimalne.
 **Pomiar przed/po:** DevTools route transition timing, Network request count na Dashboard.
 
