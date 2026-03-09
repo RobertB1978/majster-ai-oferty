@@ -196,7 +196,7 @@ export function useDocumentInstances(projectId?: string | null) {
     queryFn: async (): Promise<DocumentInstance[]> => {
       let q = supabase
         .from('document_instances')
-        .select('*')
+        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at')
         .eq('user_id', user!.id)
         .order('created_at', { ascending: false });
 
@@ -220,7 +220,7 @@ export function useDocumentInstance(id: string | undefined) {
     queryFn: async (): Promise<DocumentInstance | null> => {
       const { data, error } = await supabase
         .from('document_instances')
-        .select('*')
+        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at')
         .eq('id', id!)
         .maybeSingle();
 

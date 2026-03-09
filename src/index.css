@@ -353,6 +353,26 @@
   /* no-op */
 }
 
+/* Respect user motion preference — disables all custom animations for users with
+   prefers-reduced-motion: reduce (WCAG 2.1 SC 2.3.3). Also prevents mid-animation
+   opacity values from failing automated WCAG AA contrast checks in CI. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .animate-fade-in-down,
+  .animate-slide-in-right,
+  .animate-slide-in-left,
+  .animate-scale-in,
+  .animate-spin-slow,
+  .animate-accordion-down,
+  .animate-accordion-up,
+  .skeleton-shimmer {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Touch target helper — ensures interactive elements meet WCAG 2.5.5 (44×44 px min) */
 .touch-target {
   min-height: 44px;

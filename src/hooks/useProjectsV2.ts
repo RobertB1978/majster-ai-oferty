@@ -102,7 +102,7 @@ export function useProjectsV2List(status: ProjectStatus | 'ALL' = 'ALL', search 
     queryFn: async (): Promise<ProjectV2[]> => {
       let query = supabase
         .from('v2_projects')
-        .select('*')
+        .select('id, user_id, client_id, source_offer_id, title, status, start_date, end_date, progress_percent, stages_json, total_from_offer, budget_net, budget_source, budget_updated_at, created_at, updated_at')
         .order('created_at', { ascending: false });
 
       if (status !== 'ALL') {
@@ -132,7 +132,7 @@ export function useProjectV2(id: string | undefined) {
       if (!id) return null;
       const { data, error } = await supabase
         .from('v2_projects')
-        .select('*')
+        .select('id, user_id, client_id, source_offer_id, title, status, start_date, end_date, progress_percent, stages_json, total_from_offer, budget_net, budget_source, budget_updated_at, created_at, updated_at')
         .eq('id', id)
         .single();
       if (error) throw error;
@@ -224,7 +224,7 @@ export function useProjectPublicToken(projectId: string | undefined) {
       if (!projectId) return null;
       const { data, error } = await supabase
         .from('project_public_status_tokens')
-        .select('*')
+        .select('id, user_id, project_id, token, expires_at, created_at')
         .eq('project_id', projectId)
         .maybeSingle();
       if (error) throw error;

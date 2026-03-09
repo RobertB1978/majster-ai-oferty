@@ -23,7 +23,7 @@ export function useFinancialReports() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('financial_reports')
-        .select('*')
+        .select('id, user_id, report_month, total_revenue, total_costs, gross_margin, project_count, report_data, created_at')
         .eq('user_id', user!.id)
         .order('report_month', { ascending: false });
 

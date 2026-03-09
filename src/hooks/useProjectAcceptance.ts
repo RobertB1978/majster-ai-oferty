@@ -62,7 +62,7 @@ export function useProjectAcceptance(projectId: string | undefined) {
 
       const { data, error } = await supabase
         .from('project_acceptance')
-        .select('*')
+        .select('id, user_id, project_id, accepted_at, signature_path, client_name, notes, updated_at, created_at')
         .eq('project_id', projectId)
         .maybeSingle();
 
