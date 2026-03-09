@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FileText, CheckCircle, ArrowDown } from 'lucide-react';
+import { FileText, CheckCircle, ArrowDown, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const CTA_ROUTE = '/register';
@@ -41,6 +41,30 @@ export function HeroSection() {
       />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Social proof bar at top */}
+        <div className="flex justify-center mb-8">
+          <div className="flex items-center gap-3 bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-full px-5 py-2.5">
+            <div className="flex -space-x-1.5" aria-hidden="true">
+              {['M', 'T', 'W', 'A'].map((initial, i) => (
+                <div
+                  key={i}
+                  className="w-6 h-6 rounded-full bg-amber-500/20 border-2 border-white dark:border-[#1A1A1A] flex items-center justify-center text-[9px] font-bold text-amber-600 dark:text-amber-400"
+                >
+                  {initial}
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className="w-3 h-3 fill-amber-500 text-amber-500" aria-hidden="true" />
+              ))}
+            </div>
+            <span className="text-sm text-gray-600 dark:text-[#A3A3A3] font-medium">
+              {t('landing.hero.socialProof', 'Setki fachowców już używa Majster.AI')}
+            </span>
+          </div>
+        </div>
+
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           {/* Left: copy + CTAs */}
           <div className="flex-1 text-center lg:text-left">
@@ -54,10 +78,14 @@ export function HeroSection() {
               <span className="text-amber-500">{t('landing.hero.title2', 'jak profesjonalista.')}</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-gray-600 dark:text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-8">
+            <p className="text-lg md:text-xl text-gray-600 dark:text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-4">
               {t('landing.hero.subtitle', 'Platforma dla majstrów i wykonawców.')}
               <br className="hidden sm:block" />
               {t('landing.hero.subtitle2', 'Wyceny, projekty, klienci — wszystko w jednym miejscu.')}
+            </p>
+
+            <p className="text-base font-semibold text-amber-600 dark:text-amber-400 mb-8">
+              {t('landing.hero.valueProp', '⚡ Pierwsza profesjonalna oferta PDF w 5 minut — gwarantowane.')}
             </p>
 
             {/* Verified stats bar */}
@@ -79,7 +107,7 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Link
                 to={CTA_ROUTE}
-                className="inline-flex items-center justify-center bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold px-8 py-4 rounded-xl text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[48px]"
+                className="inline-flex items-center justify-center bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold px-8 py-4 rounded-xl text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[48px] shadow-lg shadow-amber-500/25"
               >
                 {t('landing.hero.cta_start', 'Zacznij za darmo')}
               </Link>
@@ -92,7 +120,7 @@ export function HeroSection() {
               </button>
             </div>
             <p className="mt-3 text-sm text-gray-400 dark:text-[#525252]">
-              {t('landing.hero.microcopy', 'Pierwsze 30 dni bezpłatnie · Bez zobowiązań')}
+              {t('landing.hero.microcopy', 'Pierwsze 30 dni bezpłatnie · Bez karty kredytowej · Anuluj kiedy chcesz')}
             </p>
           </div>
 

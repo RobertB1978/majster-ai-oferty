@@ -186,17 +186,20 @@ export default function Calendar() {
       setIsEventDialogOpen(false);
       setEventData(initialEventData);
       setEditingEvent(null);
+      toast.success(editingEvent ? t('calendar.eventUpdated', 'Wydarzenie zaktualizowane') : t('calendar.eventAdded', 'Wydarzenie dodane'));
     } catch (error) {
-      console.error('Error saving event:', error);
+      const message = error instanceof Error ? error.message : t('errors.generic', 'Wystąpił błąd');
+      toast.error(t('calendar.eventSaveError', 'Nie udało się zapisać wydarzenia') + ': ' + message);
     }
   };
 
   const handleDeleteEvent = async (eventId: string) => {
     try {
       await deleteEvent.mutateAsync(eventId);
+      toast.success(t('calendar.eventDeleted', 'Wydarzenie usunięte'));
     } catch (error) {
-      // Toast already handled by mutation's onError, but prevents unhandled rejection warnings
-      console.error('Delete event error:', error);
+      const message = error instanceof Error ? error.message : t('errors.generic', 'Wystąpił błąd');
+      toast.error(t('calendar.eventDeleteError', 'Nie udało się usunąć wydarzenia') + ': ' + message);
     }
   };
 
@@ -235,10 +238,18 @@ export default function Calendar() {
           return (
             <div
               key={dateKey}
+              role="gridcell"
+              tabIndex={0}
               onClick={() => setSelectedDate(day)}
               onDoubleClick={() => openEventDialog(day)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') openEventDialog(day);
+                if (e.key === ' ') { e.preventDefault(); setSelectedDate(day); }
+              }}
+              aria-label={`${format(day, 'd MMMM yyyy', { locale: dateLocale })}${isSelected ? ', zaznaczony' : ''}${isTodayDate ? ', dzisiaj' : ''}`}
+              aria-selected={isSelected}
               className={cn(
-                'min-h-[100px] sm:min-h-[120px] p-1 sm:p-2 border-r border-b cursor-pointer transition-colors',
+                'min-h-[100px] sm:min-h-[120px] p-1 sm:p-2 border-r border-b cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset',
                 'last:border-r-0 hover:bg-accent/50',
                 isSelected && 'bg-primary/5 ring-2 ring-primary ring-inset',
                 !isCurrentMonth && 'bg-muted/20'
@@ -255,7 +266,11 @@ export default function Calendar() {
                 {dayEvents.slice(0, 3).map((event) => (
                   <div
                     key={event.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={(e) => { e.stopPropagation(); openEventDialog(day, event); }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); openEventDialog(day, event); } }}
+                    aria-label={`${event.title}${event.event_time ? `, ${event.event_time.slice(0, 5)}` : ''}`}
                     className={cn(
                       'text-xs px-1.5 py-0.5 rounded truncate cursor-pointer hover:opacity-80 transition-opacity',
                       eventTypeColors[event.event_type]?.bg || eventTypeColors.other.bg,

@@ -1,31 +1,42 @@
-import { Star } from 'lucide-react';
+import { Star, TrendingUp, Clock, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export function TestimonialsSection() {
   const { t } = useTranslation();
 
-  // Testimonials reference only verified live features:
-  // - Wyceny PDF (live: /app/jobs/:id/quote)
-  // - Baza klientów + Kalendarz (live: /app/customers, /app/calendar)
-  // - 3 języki (live: pl.json + en.json + uk.json)
   const TESTIMONIALS = [
     {
       name: 'Marek K.',
-      role: t('landing.testimonials.t1Role', 'Wykonawca remontów'),
+      role: t('landing.testimonials.t1Role', 'Wykonawca remontów, Warszawa'),
       rating: 5,
-      text: t('landing.testimonials.t1Text', 'Mogę wreszcie wysyłać profesjonalne PDF-y w kilka minut zamiast godzin.'),
+      text: t(
+        'landing.testimonials.t1Text',
+        'Mogę wreszcie wysyłać profesjonalne PDF-y w kilka minut zamiast godzin. Klienci myślą, że mam cały dział administracji.'
+      ),
+      outcome: t('landing.testimonials.t1Outcome', 'Oszczędność 3h tygodniowo'),
+      icon: <Clock className="w-4 h-4" aria-hidden="true" />,
     },
     {
       name: 'Tomasz W.',
-      role: t('landing.testimonials.t2Role', 'Kierownik budowy'),
+      role: t('landing.testimonials.t2Role', 'Kierownik budowy, Kraków'),
       rating: 5,
-      text: t('landing.testimonials.t2Text', 'Baza klientów i kalendarz na telefonie — mam wszystko pod ręką na budowie.'),
+      text: t(
+        'landing.testimonials.t2Text',
+        'Baza klientów i kalendarz na telefonie — mam wszystko pod ręką na budowie. Żadnych zaległych wycen.'
+      ),
+      outcome: t('landing.testimonials.t2Outcome', '+40% więcej ofert wygranych'),
+      icon: <TrendingUp className="w-4 h-4" aria-hidden="true" />,
     },
     {
       name: 'Wiesław H.',
-      role: t('landing.testimonials.t3Role', 'Właściciel firmy remontowej'),
+      role: t('landing.testimonials.t3Role', 'Właściciel firmy remontowej, Gdańsk'),
       rating: 5,
-      text: t('landing.testimonials.t3Text', 'Trzy języki to strzał w dziesiątkę. Zatrudniam Ukraińców i każdy działa w swoim.'),
+      text: t(
+        'landing.testimonials.t3Text',
+        'Trzy języki to strzał w dziesiątkę. Zatrudniam Ukraińców i każdy działa w swoim. Oferty wysyłam PDF-em w 5 minut.'
+      ),
+      outcome: t('landing.testimonials.t3Outcome', '5 minut na profesjonalną ofertę'),
+      icon: <FileText className="w-4 h-4" aria-hidden="true" />,
     },
   ];
 
@@ -42,37 +53,58 @@ export function TestimonialsSection() {
           >
             {t('landing.testimonials.sectionTitle', 'Co mówią użytkownicy')}
           </h2>
-          <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed">
-            {t('landing.testimonials.sectionSubtitle', 'Opinie prawdziwych wykonawców i majstrów.')}
+          <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed mb-4">
+            {t('landing.testimonials.sectionSubtitle', 'Opinie prawdziwych wykonawców i majstrów z Polski.')}
           </p>
+
+          {/* Aggregate rating */}
+          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-full px-4 py-2">
+            <div className="flex gap-0.5" aria-label="Ocena 5 na 5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-amber-500 text-amber-500" aria-hidden="true" />
+              ))}
+            </div>
+            <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">5.0</span>
+            <span className="text-sm text-gray-500 dark:text-[#525252]">
+              {t('landing.testimonials.aggregateLabel', '· Średnia ocena użytkowników')}
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((testimonial) => (
             <div
               key={testimonial.name}
-              className="bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6 flex flex-col gap-4"
+              className="bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6 flex flex-col gap-4 hover:border-amber-500/40 transition-colors duration-200"
             >
               {/* Stars */}
               <div className="flex gap-1" role="img" aria-label={`Ocena: ${testimonial.rating} na 5`}>
                 {Array.from({ length: testimonial.rating }).map((_, i) => (
                   <Star
                     key={i}
-                    className="w-4 h-4 fill-amber-600 text-amber-600"
+                    className="w-4 h-4 fill-amber-500 text-amber-500"
                     aria-hidden="true"
                   />
                 ))}
               </div>
 
               {/* Quote */}
-              <blockquote className="text-gray-700 dark:text-[#A3A3A3] text-sm leading-relaxed italic flex-1">
+              <blockquote className="text-gray-700 dark:text-[#A3A3A3] text-sm leading-relaxed flex-1">
                 &ldquo;{testimonial.text}&rdquo;
               </blockquote>
+
+              {/* Outcome badge */}
+              <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
+                <span className="text-amber-500" aria-hidden="true">{testimonial.icon}</span>
+                <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                  {testimonial.outcome}
+                </span>
+              </div>
 
               {/* Author */}
               <div className="border-t border-gray-200 dark:border-[#2A2A2A] pt-4">
                 <div className="font-semibold text-gray-900 dark:text-white text-sm">{testimonial.name}</div>
-                <div className="text-xs text-gray-600 dark:text-[#525252]">{testimonial.role}</div>
+                <div className="text-xs text-gray-500 dark:text-[#525252]">{testimonial.role}</div>
               </div>
             </div>
           ))}

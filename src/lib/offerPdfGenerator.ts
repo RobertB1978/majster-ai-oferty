@@ -12,9 +12,15 @@
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+
+/** jsPDF extended with jspdf-autotable dynamic property */
+interface JsPDFWithAutoTable extends jsPDF {
+  lastAutoTable: { finalY: number };
+}
 import type { PdfTemplateId } from './offerDataBuilder';
 import { OfferPdfPayload } from './offerDataBuilder';
 import { formatCurrency } from './formatters';
+import { logger } from './logger';
 import { supabase } from '@/integrations/supabase/client';
 
 // ---------------------------------------------------------------------------
@@ -301,7 +307,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     });
 
     // Update yPosition after table
-    yPosition = (doc as unknown).lastAutoTable.finalY + 10;
+    yPosition = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 10;
 
     // ========================================
     // SUMMARY SECTION
@@ -513,7 +519,7 @@ export async function uploadOfferPdf(params: {
     });
 
   if (uploadError) {
-    console.error('PDF upload error:', uploadError);
+    logger.error('PDF upload error:', uploadError);
     throw new Error(`Nie udało się zapisać PDF: ${uploadError.message}`);
   }
 

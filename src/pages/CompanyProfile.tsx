@@ -106,8 +106,7 @@ export default function CompanyProfile() {
 
     try {
       await updateProfile.mutateAsync(formData);
-    } catch (err) {
-      console.error('Profile update failed:', err);
+    } catch {
       toast.error(t('companyProfile.saveFailed'));
     }
   };
