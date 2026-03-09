@@ -42,6 +42,20 @@
 - [ ] `docs/ROADMAP_STATUS.md` zaktualizowany po merge
 - [ ] ADR dodany jeśli podjęto istotną decyzję architektoniczną
 
+### Wydajność (wypełnij jeśli PR jest performance-sensitive)
+
+> PR jest performance-sensitive jeśli zmienia: vite.config.ts, importy w ścieżce startowej, React Query config, animacje, lazy loading, lub hooki z zapytaniami do Supabase.
+
+- [ ] _(N/A — ten PR nie dotyka kodu wpływającego na wydajność)_
+- [ ] `npm run check:perf` uruchomiony — brak nowych findings (lub findings wyjaśnione poniżej)
+- [ ] Rozmiar main bundle gzip przed/po: **przed: ___ kB / po: ___ kB**
+- [ ] Brak nowych `select('*')` (lub udokumentowany wyjątek w `PERFORMANCE_GUARDRAILS.md §4`)
+- [ ] Brak nowych `staleTime: 0` (lub udokumentowany wyjątek w `PERFORMANCE_GUARDRAILS.md §5`)
+- [ ] Smoke test krytycznych przepływów wykonany na Vercel preview (link: ___)
+- [ ] Ciężkie biblioteki dodane jako lazy chunk (nie statyczny import w ścieżce startowej)
+
+Pełne zasady: [`docs/PERFORMANCE_GUARDRAILS.md`](../docs/PERFORMANCE_GUARDRAILS.md)
+
 ---
 
 ## Opis zmian
