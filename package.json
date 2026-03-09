@@ -39,6 +39,7 @@
     "check:i18n-gate": "bash scripts/i18n/gate-pr-changes.sh HEAD~1",
     "check:no-hardcoded-polish": "node scripts/check-no-hardcoded-polish.mjs",
     "check:no-hardcoded-polish:fail": "node scripts/check-no-hardcoded-polish.mjs --fail",
+    "check:perf-guardrails": "bash scripts/check-perf-guardrails.sh",
     "prepare": "node -e \"try { require('husky').install() } catch (e) {}\""
   },
   "dependencies": {

@@ -38,6 +38,16 @@
 - [ ] Działa przy `FF_NEW_SHELL=false`
 - [ ] _(N/A — ten PR jest przed PR-07)_
 
+### Performance (wypełnij jeśli PR dotyka startup path, zapytań DB, animacji lub cache)
+- [ ] Ten PR nie dotyka ścieżki startowej (App.tsx, main.tsx, AppLayout) — lub dotyka i opisałem wpływ poniżej
+- [ ] Ten PR nie dodaje biblioteki > 100 kB — lub dodaje i uzasadniłem
+- [ ] Nowe zapytania DB używają jawnych kolumn (nie `select('*')`) — lub są to mutacje (insert/update)
+- [ ] Animacje i przejścia ≤ 200ms, brak `mode="wait"` w routingu
+- [ ] Nowe `staleTime: 0` są opatrzone komentarzem wyjaśniającym powód
+- [ ] _(N/A — ten PR nie wpływa na wydajność)_
+- [ ] `npm run check:perf-guardrails` uruchomiony — output wklejony w sekcji Dowody
+- [ ] Weryfikacja na Vercel preview (wymagana gdy PR dotyka App.tsx / AppLayout / AnalyticsCharts)
+
 ### Dokumentacja
 - [ ] `docs/ROADMAP_STATUS.md` zaktualizowany po merge
 - [ ] ADR dodany jeśli podjęto istotną decyzję architektoniczną
