@@ -23,7 +23,7 @@ export function useUserSubscription() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_subscriptions')
-        .select('*')
+        .select('id, user_id, plan_id, status, stripe_customer_id, stripe_subscription_id, current_period_start, current_period_end, created_at, updated_at')
         .eq('user_id', user!.id)
         .maybeSingle();
 

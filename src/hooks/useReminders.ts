@@ -46,7 +46,7 @@ export function useReminders() {
 
       const { data, error } = await supabase
         .from('project_reminders')
-        .select('*')
+        .select('id, user_id, entity_type, entity_id, remind_at, channel, status, label, created_at')
         .eq('status', 'PENDING')
         .gte('remind_at', windowStart.toISOString())
         .lte('remind_at', windowEnd.toISOString())

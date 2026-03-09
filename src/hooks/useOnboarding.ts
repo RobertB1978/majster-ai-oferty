@@ -30,7 +30,7 @@ export function useOnboardingProgress() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('onboarding_progress')
-        .select('*')
+        .select('id, user_id, current_step, completed_steps, is_completed, skipped_at, completed_at, created_at, updated_at')
         .eq('user_id', user!.id)
         .maybeSingle();
 

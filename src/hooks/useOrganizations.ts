@@ -35,7 +35,7 @@ export function useOrganizations() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('organizations')
-        .select('*')
+        .select('id, name, slug, logo_url, owner_user_id, settings, plan_id, created_at, updated_at')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -53,7 +53,7 @@ export function useOrganizationMembers(organizationId: string | null) {
       
       const { data, error } = await supabase
         .from('organization_members')
-        .select('*')
+        .select('id, organization_id, user_id, role, invited_by, invited_at, accepted_at, created_at')
         .eq('organization_id', organizationId)
         .order('created_at', { ascending: true });
 

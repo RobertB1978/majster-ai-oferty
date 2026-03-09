@@ -34,7 +34,7 @@ export function useTeamMembers() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('team_members')
-        .select('*')
+        .select('id, user_id, owner_user_id, name, phone, email, role, is_active, created_at')
         .eq('owner_user_id', user!.id)
         .order('created_at', { ascending: false });
 
