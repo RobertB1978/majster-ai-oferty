@@ -49,7 +49,7 @@ export function CalendarAgendaView({ eventsByDate, openEventDialog, dateLocale }
                     <p className="text-sm text-muted-foreground">{format(date, 'd MMMM yyyy', { locale: dateLocale })}</p>
                   </div>
                 </div>
-                <div className="space-y-2 pl-15">
+                <div className="space-y-2 ml-4">
                   {dayEvents.map(event => (
                     <div
                       key={event.id}

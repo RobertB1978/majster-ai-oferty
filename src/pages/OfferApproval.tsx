@@ -341,7 +341,6 @@ export default function OfferApproval() {
               setComment={setComment}
               rejectedReason={rejectedReason}
               setRejectedReason={setRejectedReason}
-              signature={signature}
               setSignature={setSignature}
               contactEmail={offer.company?.contact_email}
               isSubmitting={isSubmitting}

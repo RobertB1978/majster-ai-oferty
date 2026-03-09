@@ -16,7 +16,6 @@ interface OfferApprovalFormProps {
   setComment: (v: string) => void;
   rejectedReason: string;
   setRejectedReason: (v: string) => void;
-  signature: string;
   setSignature: (v: string) => void;
   contactEmail: string | null | undefined;
   isSubmitting: boolean;
@@ -33,7 +32,6 @@ export function OfferApprovalForm({
   setComment,
   rejectedReason,
   setRejectedReason,
-  signature,
   setSignature,
   contactEmail,
   isSubmitting,
