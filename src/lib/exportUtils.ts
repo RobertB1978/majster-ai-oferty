@@ -1,11 +1,6 @@
 import { QuotePosition } from '@/hooks/useQuotes';
 import { toast } from 'sonner';
 
-// Dynamic import keeps exceljs in a separate chunk (not in initial bundle).
-// Pre-warming at module load time ensures the chunk is ready when the user triggers export,
-// and prevents test-environment timeouts caused by on-demand loading latency.
-const _excelJSLoad = import('exceljs');
-
 interface ExportQuoteData {
   projectName: string;
   positions: QuotePosition[];
@@ -18,8 +13,9 @@ interface ExportQuoteData {
 export async function exportQuoteToExcel(data: ExportQuoteData) {
   const { projectName, positions, summaryMaterials, summaryLabor, marginPercent, total } = data;
 
-  // Await the pre-warmed dynamic import (separate chunk, not in initial bundle)
-  const mod = await _excelJSLoad;
+  // Truly lazy import — the 937 kB ExcelJS chunk is loaded only when the user
+  // actually triggers an Excel export, not on initial page load.
+  const mod = await import('exceljs');
   const ExcelJS = mod.default ?? mod;
 
   // Create workbook and worksheet

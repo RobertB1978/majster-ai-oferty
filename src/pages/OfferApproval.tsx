@@ -3,82 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { SignatureCanvas } from '@/components/offers/SignatureCanvas';
-import {
-  CheckCircle,
-  XCircle,
-  FileText,
-  Loader2,
-  Building,
-  Calendar,
-  DollarSign,
-  AlertTriangle,
-  Download,
-  Phone,
-  Mail,
-  Clock,
-  Ban,
-} from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Loader2, XCircle, Clock, Ban, AlertTriangle, Phone, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { formatCurrency } from '@/lib/formatters';
 import { toast } from 'sonner';
-
-interface QuotePosition {
-  name: string;
-  qty: number;
-  unit: string;
-  price: number;
-}
-
-type OfferStatus =
-  | 'pending'
-  | 'approved'
-  | 'rejected'
-  | 'draft'
-  | 'sent'
-  | 'viewed'
-  | 'accepted'
-  | 'expired'
-  | 'withdrawn';
-
-interface OfferData {
-  id: string;
-  status: OfferStatus;
-  client_name: string | null;
-  client_email: string | null;
-  created_at: string;
-  accepted_at?: string | null;
-  approved_at?: string | null;
-  valid_until?: string | null;
-  withdrawn_at?: string | null;
-  accepted_via?: string | null;
-  project: {
-    project_name: string;
-    status: string;
-  } | null;
-  quote: {
-    total: number;
-    positions: QuotePosition[];
-  } | null;
-  company?: {
-    company_name: string | null;
-    owner_name: string | null;
-    phone: string | null;
-    contact_email?: string | null;
-  } | null;
-}
-
-/** Returns true when the current time is within 600 seconds of the accepted_at timestamp */
-function canCancel(acceptedAt: string | null | undefined): boolean {
-  if (!acceptedAt) return false;
-  const diffMs = Date.now() - new Date(acceptedAt).getTime();
-  return diffMs < 600_000;
-}
+import { OfferStatusBanner } from '@/components/offers/OfferStatusBanner';
+import { OfferDetailsCard } from '@/components/offers/OfferDetailsCard';
+import { OfferApprovalForm } from '@/components/offers/OfferApprovalForm';
+import type { OfferData, OfferStatus } from '@/components/offers/offerApprovalTypes';
 
 export default function OfferApproval() {
   const { t } = useTranslation();
@@ -139,7 +71,6 @@ export default function OfferApproval() {
     }
   }, [offerQuery.isError, t]);
 
-
   // Handle 1-click accept via ?t= query param
   useEffect(() => {
     if (acceptToken && token && !offerQuery.isLoading && offer && offer.status === 'pending') {
@@ -165,37 +96,29 @@ export default function OfferApproval() {
     return () => clearInterval(interval);
   }, [submitted, offer]);
 
+  const callApproveEndpoint = async (body: Record<string, unknown>) => {
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/approve-offer`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }
+    );
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || t('common.error'));
+    return result;
+  };
+
   const handleOneClickAccept = async () => {
     if (!token || !acceptToken) return;
-
-    // Idempotency — already accepted
     if (offer?.status === 'accepted' || offer?.status === 'approved') {
       setSubmitted(true);
       return;
     }
-
     setIsSubmitting(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/approve-offer`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            token,
-            acceptToken,
-            action: 'approve',
-            accepted_via: 'email_1click',
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || t('offerApproval.errors.approvalFailed'));
-      }
-
+      await callApproveEndpoint({ token, acceptToken, action: 'approve', accepted_via: 'email_1click' });
       toast.success(t('offerApproval.success.approved'));
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'accepted', accepted_via: 'email_1click', accepted_at: new Date().toISOString() } : null);
@@ -215,38 +138,13 @@ export default function OfferApproval() {
       toast.error(t('offerApproval.errors.signatureRequired'));
       return;
     }
-
-    // Idempotency
     if (offer?.status === 'accepted' || offer?.status === 'approved') {
       setSubmitted(true);
       return;
     }
-
     setIsSubmitting(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/approve-offer`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            token,
-            action: 'approve',
-            clientName,
-            clientEmail,
-            comment,
-            signatureData: signature,
-            accepted_via: 'web_button',
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || t('offerApproval.errors.approvalFailed'));
-      }
-
+      await callApproveEndpoint({ token, action: 'approve', clientName, clientEmail, comment, signatureData: signature, accepted_via: 'web_button' });
       toast.success(t('offerApproval.success.approved'));
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'accepted', accepted_via: 'web_button', accepted_at: new Date().toISOString() } : null);
@@ -258,36 +156,13 @@ export default function OfferApproval() {
   };
 
   const handleReject = async () => {
-    // Idempotency
     if (offer?.status === 'rejected') {
       setSubmitted(true);
       return;
     }
-
     setIsSubmitting(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/approve-offer`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            token,
-            action: 'reject',
-            clientName,
-            clientEmail,
-            comment,
-            rejected_reason: rejectedReason,
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || t('offerApproval.errors.rejectionFailed'));
-      }
-
+      await callApproveEndpoint({ token, action: 'reject', clientName, clientEmail, comment, rejected_reason: rejectedReason });
       toast.success(t('offerApproval.success.rejected'));
       setSubmitted(true);
       setOffer((prev) => prev ? { ...prev, status: 'rejected' } : null);
@@ -302,21 +177,7 @@ export default function OfferApproval() {
     if (!token) return;
     setIsSubmitting(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/approve-offer`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, action: 'cancel_accept' }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || t('offerApproval.errors.cancelFailed'));
-      }
-
+      await callApproveEndpoint({ token, action: 'cancel_accept' });
       toast.success(t('offerApproval.success.canceledWithNotification'));
       setSubmitted(false);
       setOffer((prev) => prev ? { ...prev, status: 'pending', accepted_at: null } : null);
@@ -336,7 +197,7 @@ export default function OfferApproval() {
     );
   }
 
-  // ─── Error / Not Found ──────────────────────────────
+  // ─── Error / Not Found ─────────────────────────────
   if (error || !offer) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -355,11 +216,9 @@ export default function OfferApproval() {
 
   const status = offer.status;
 
-  // ─── EXPIRED ───────────────────────────────────────
+  // ─── EXPIRED ──────────────────────────────────────
   if (status === 'expired') {
-    const expiredDate = offer.valid_until
-      ? new Date(offer.valid_until).toLocaleDateString()
-      : null;
+    const expiredDate = offer.valid_until ? new Date(offer.valid_until).toLocaleDateString() : null;
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="max-w-md w-full">
@@ -373,10 +232,7 @@ export default function OfferApproval() {
               {' '}{t('offerApproval.expired.contactContractor')}
             </p>
             {offer.company?.phone && (
-              <a
-                href={`tel:${offer.company.phone}`}
-                className="mt-6 inline-flex items-center gap-2 text-primary hover:underline font-medium"
-              >
+              <a href={`tel:${offer.company.phone}`} className="mt-6 inline-flex items-center gap-2 text-primary hover:underline font-medium">
                 <Phone className="h-4 w-4" />
                 {offer.company.phone}
               </a>
@@ -387,7 +243,7 @@ export default function OfferApproval() {
     );
   }
 
-  // ─── WITHDRAWN ─────────────────────────────────────
+  // ─── WITHDRAWN ────────────────────────────────────
   if (status === 'withdrawn') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -395,14 +251,9 @@ export default function OfferApproval() {
           <CardContent className="flex flex-col items-center py-12 text-center">
             <Ban className="h-16 w-16 text-muted-foreground mb-4" />
             <h1 className="text-xl font-bold mb-2">{t('offerApproval.withdrawn.title')}</h1>
-            <p className="text-muted-foreground">
-              {t('offerApproval.withdrawn.description')}
-            </p>
+            <p className="text-muted-foreground">{t('offerApproval.withdrawn.description')}</p>
             {offer.company?.phone && (
-              <a
-                href={`tel:${offer.company.phone}`}
-                className="mt-6 inline-flex items-center gap-2 text-primary hover:underline font-medium"
-              >
+              <a href={`tel:${offer.company.phone}`} className="mt-6 inline-flex items-center gap-2 text-primary hover:underline font-medium">
                 <Phone className="h-4 w-4" />
                 {offer.company.phone}
               </a>
@@ -413,7 +264,7 @@ export default function OfferApproval() {
     );
   }
 
-  // ─── 1-click accept in progress ────────────────────
+  // ─── 1-click accept in progress ───────────────────
   if (isSubmitting && acceptToken) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
@@ -439,162 +290,30 @@ export default function OfferApproval() {
           {/* Header */}
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-2">{t('offerApproval.title')}</h1>
-            <p className="text-muted-foreground">
-              {t('offerApproval.subtitle')}
-            </p>
+            <p className="text-muted-foreground">{t('offerApproval.subtitle')}</p>
           </div>
 
           {/* Status banner */}
           {submitted && (
-            <Card
-              className={
-                isAccepted
-                  ? 'border-green-500 bg-green-50 dark:bg-green-950/20'
-                  : 'border-red-500 bg-red-50 dark:bg-red-950/20'
-              }
-            >
-              <CardContent className="py-6">
-                <div className="flex items-center gap-3">
-                  {isAccepted ? (
-                    <CheckCircle className="h-8 w-8 text-green-600 shrink-0" />
-                  ) : (
-                    <XCircle className="h-8 w-8 text-red-600 shrink-0" />
-                  )}
-                  <div>
-                    <p className={`font-semibold ${isAccepted ? 'text-green-700' : 'text-red-700'}`}>
-                      {isAccepted
-                        ? t('offerApproval.status.approved')
-                        : t('offerApproval.status.rejected')}
-                    </p>
-                    {acceptedAt && isAccepted && (
-                      <p className="text-sm text-green-600">
-                        {new Date(acceptedAt).toLocaleString()}
-                        {offer.accepted_via === 'email_1click' && ' (1-klik email)'}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* 10-minute cancel window */}
-                {isAccepted && canCancel(acceptedAt) && (
-                  <div className="mt-4 pt-4 border-t border-green-200 dark:border-green-800">
-                    <p className="text-sm text-green-700 dark:text-green-400 mb-2">
-                      {t('offerApproval.cancelWindow.timeLeft', { seconds: cancelCountdown })}
-                    </p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleCancel}
-                      disabled={isSubmitting}
-                      className="border-green-400 text-green-700 hover:bg-green-100 dark:text-green-400"
-                    >
-                      {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                      {t('offerApproval.cancelWindow.buttonLabel')}
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <OfferStatusBanner
+              isAccepted={isAccepted}
+              acceptedAt={acceptedAt}
+              acceptedVia={offer.accepted_via}
+              cancelCountdown={cancelCountdown}
+              isSubmitting={isSubmitting}
+              onCancel={handleCancel}
+            />
           )}
 
           {/* Offer details */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                {t('offerApproval.details.title')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="flex items-center gap-3">
-                  <Building className="h-5 w-5 text-muted-foreground shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t('offerApproval.details.project')}</p>
-                    <p className="font-medium">{offer.project?.project_name ?? t('offerApproval.details.noName')}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t('offerApproval.details.date')}</p>
-                    <p className="font-medium">{new Date(offer.created_at).toLocaleDateString()}</p>
-                  </div>
-                </div>
-                {offer.valid_until && (
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-muted-foreground shrink-0" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">{t('offerApproval.details.validUntil')}</p>
-                      <p className="font-medium">{new Date(offer.valid_until).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                )}
-                <div className="flex items-center gap-3 md:col-span-2">
-                  <DollarSign className="h-5 w-5 text-muted-foreground shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t('offerApproval.details.value')}</p>
-                    <p className="text-2xl font-bold text-primary">
-                      {offer.quote ? formatCurrency(offer.quote.total) : t('offerApproval.details.noQuote')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quote line items */}
-              {offer.quote && Array.isArray(offer.quote.positions) && offer.quote.positions.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="font-medium mb-3">{t('offerApproval.positions.title')}</h3>
-                  <div className="border rounded-lg overflow-hidden">
-                    <table className="w-full text-sm">
-                      <thead className="bg-muted">
-                        <tr>
-                          <th className="text-left p-3">{t('offerApproval.positions.item')}</th>
-                          <th className="text-right p-3">{t('offerApproval.positions.quantity')}</th>
-                          <th className="text-right p-3">{t('offerApproval.positions.price')}</th>
-                          <th className="text-right p-3">{t('offerApproval.positions.value')}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {offer.quote.positions.map((pos: QuotePosition, idx: number) => (
-                          <tr key={idx} className="border-t">
-                            <td className="p-3">{pos.name}</td>
-                            <td className="text-right p-3">{pos.qty} {pos.unit}</td>
-                            <td className="text-right p-3">{formatCurrency(pos.price)}</td>
-                            <td className="text-right p-3 font-medium">{formatCurrency(pos.qty * pos.price)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {/* PDF download */}
-              <div className="pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  onClick={() => window.print()}
-                >
-                  <Download className="h-4 w-4" />
-                  {t('offerApproval.actions.downloadPdf')}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <OfferDetailsCard offer={offer} />
 
           {/* Contractor contact (post-acceptance) */}
           {isAccepted && offer.company && (
             <Card className="border-green-200 dark:border-green-800">
-              <CardHeader>
-                <CardTitle className="text-lg">{t('offerApproval.contractor.title')}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {offer.company.company_name && (
-                  <p className="font-medium">{offer.company.company_name}</p>
-                )}
+              <CardContent className="space-y-2 pt-6">
+                <p className="font-semibold">{t('offerApproval.contractor.title')}</p>
+                {offer.company.company_name && <p className="font-medium">{offer.company.company_name}</p>}
                 {offer.company.phone && (
                   <a href={`tel:${offer.company.phone}`} className="flex items-center gap-2 text-primary hover:underline text-sm">
                     <Phone className="h-4 w-4" />
@@ -613,108 +332,22 @@ export default function OfferApproval() {
 
           {/* Approval form — only when pending/sent/viewed */}
           {!submitted && ['pending', 'sent', 'viewed'].includes(status) && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('offerApproval.form.title')}</CardTitle>
-                <CardDescription>
-                  {t('offerApproval.form.description')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <Label>{t('offerApproval.form.name')} *</Label>
-                    <Input
-                      value={clientName}
-                      onChange={(e) => setClientName(e.target.value)}
-                      placeholder="Jan Kowalski"
-                      aria-required="true"
-                    />
-                  </div>
-                  <div>
-                    <Label>{t('auth.email', 'Email')}</Label>
-                    <Input
-                      type="email"
-                      value={clientEmail}
-                      onChange={(e) => setClientEmail(e.target.value)}
-                      placeholder="jan@example.com"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label>{t('offerApproval.form.comment')}</Label>
-                  <Textarea
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder={t('offerApproval.form.commentPlaceholder')}
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <Label>{t('offerApproval.form.signature')} *</Label>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {t('offerApproval.form.signatureHint')}
-                  </p>
-                  <SignatureCanvas onSignatureChange={setSignature} />
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button
-                    onClick={handleApprove}
-                    className="flex-1 min-h-[48px]"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ) : (
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                    )}
-                    {t('offerApproval.form.approve')}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={handleReject}
-                    disabled={isSubmitting}
-                    className="min-h-[48px]"
-                  >
-                    <XCircle className="h-4 w-4 mr-2" />
-                    {t('offerApproval.form.reject')}
-                  </Button>
-                </div>
-
-                {/* Reject reason */}
-                <div className="border-t pt-4">
-                  <details>
-                    <summary className="text-sm text-muted-foreground cursor-pointer hover:text-foreground">
-                      {t('offerApproval.form.rejectReasonToggle')}
-                    </summary>
-                    <div className="mt-3">
-                      <Textarea
-                        value={rejectedReason}
-                        onChange={(e) => setRejectedReason(e.target.value)}
-                        placeholder={t('offerApproval.form.rejectReasonPlaceholder')}
-                        rows={2}
-                      />
-                    </div>
-                  </details>
-                </div>
-
-                {/* Question link */}
-                {offer.company?.contact_email && (
-                  <div className="text-center text-sm text-muted-foreground">
-                    {t('offerApproval.form.questionPrefix')}{' '}
-                    <a
-                      href={`mailto:${offer.company.contact_email}?subject=Pytanie dot. oferty`}
-                      className="text-primary hover:underline"
-                    >
-                      {t('offerApproval.form.contactLink')}
-                    </a>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <OfferApprovalForm
+              clientName={clientName}
+              setClientName={setClientName}
+              clientEmail={clientEmail}
+              setClientEmail={setClientEmail}
+              comment={comment}
+              setComment={setComment}
+              rejectedReason={rejectedReason}
+              setRejectedReason={setRejectedReason}
+              signature={signature}
+              setSignature={setSignature}
+              contactEmail={offer.company?.contact_email}
+              isSubmitting={isSubmitting}
+              onApprove={handleApprove}
+              onReject={handleReject}
+            />
           )}
 
           {/* Idempotency: already processed — read-only view */}
