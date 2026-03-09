@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,7 +37,6 @@ export default function OfferPublicPage() {
   const { token } = useParams<{ token: string }>();
 
   const [offer, setOffer] = useState<PublicOfferData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Accept form
@@ -51,26 +51,33 @@ export default function OfferPublicPage() {
   const [isSendingQuestion, setIsSendingQuestion] = useState(false);
   const [questionSent, setQuestionSent] = useState(false);
 
-  const loadOffer = useCallback(async () => {
-    if (!token) return;
-    try {
-      const data = await fetchPublicOffer(token);
-      setOffer(data);
-      if (data.client_name) setClientName(data.client_name);
-      if (['accepted', 'approved'].includes(data.status)) setAccepted(true);
-      // Record "opened" event — fire-and-forget, never blocks the page.
-      // Only fires if this is the first view (viewed_at is null) and the offer is active.
-      void recordOfferViewed(token);
-    } catch {
-      setError(t('offerPublicPage.notFoundError'));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [token]);
+  const offerQuery = useQuery({
+    queryKey: ['publicOffer', token],
+    enabled: Boolean(token),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 15,
+    retry: 1,
+    queryFn: async () => {
+      if (!token) throw new Error('missing_token');
+      return fetchPublicOffer(token);
+    },
+  });
 
   useEffect(() => {
-    loadOffer();
-  }, [loadOffer]);
+    if (!offerQuery.data || !token) return;
+
+    setOffer(offerQuery.data);
+    setError(null);
+    if (offerQuery.data.client_name) setClientName(offerQuery.data.client_name);
+    if (['accepted', 'approved'].includes(offerQuery.data.status)) setAccepted(true);
+    void recordOfferViewed(token);
+  }, [offerQuery.data, token]);
+
+  useEffect(() => {
+    if (offerQuery.isError) {
+      setError(t('offerPublicPage.notFoundError'));
+    }
+  }, [offerQuery.isError, t]);
 
   const handleAccept = async () => {
     if (!token) return;
@@ -123,7 +130,7 @@ export default function OfferPublicPage() {
   };
 
   // ─── Loading ──────────────────────────────────────────────────
-  if (isLoading) {
+  if (offerQuery.isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

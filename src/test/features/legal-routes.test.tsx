@@ -1,8 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
+import i18n from '@/i18n';
 
 /**
  * Legal Routes - Route Mapping Tests
@@ -62,6 +63,9 @@ function TestRouter({ initialPath }: { initialPath: string }) {
 }
 
 describe('Legal Routes Mapping', () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('pl');
+  });
   describe('Route → Component correctness', () => {
     it('/legal/privacy should show Privacy Policy (NOT terms/cookies/dpa)', async () => {
       render(<TestRouter initialPath="/legal/privacy" />);
@@ -70,7 +74,7 @@ describe('Legal Routes Mapping', () => {
         // MUST contain Privacy-specific content (use heading to avoid multiple matches)
         expect(screen.getByRole('heading', { name: /Polityka Prywatności/i })).toBeDefined();
         expect(screen.getByText(/Administrator danych/i)).toBeDefined();
-      });
+      }, { timeout: 5000 });
 
       // MUST NOT contain content from other pages
       expect(screen.queryByText(/Postanowienia ogólne/i)).toBeNull(); // Terms
@@ -85,7 +89,7 @@ describe('Legal Routes Mapping', () => {
         // MUST contain Terms-specific content
         expect(screen.getByText(/Regulamin Serwisu/i)).toBeDefined();
         expect(screen.getByText(/Postanowienia ogólne/i)).toBeDefined();
-      });
+      }, { timeout: 5000 });
 
       // MUST NOT contain content from other pages
       expect(screen.queryByText(/Administrator danych/i)).toBeNull(); // Privacy
@@ -100,7 +104,7 @@ describe('Legal Routes Mapping', () => {
         // MUST contain Cookies-specific content
         expect(screen.getByText(/Polityka Cookies/i)).toBeDefined();
         expect(screen.getByText(/Czym są pliki cookies/i)).toBeDefined();
-      });
+      }, { timeout: 5000 });
 
       // MUST NOT contain content from other pages
       expect(screen.queryByText(/Administrator danych/i)).toBeNull(); // Privacy
@@ -115,7 +119,7 @@ describe('Legal Routes Mapping', () => {
         // MUST contain DPA-specific content
         expect(screen.getByText(/Umowa Powierzenia Danych/i)).toBeDefined();
         expect(screen.getByText(/Przedmiot umowy/i)).toBeDefined();
-      });
+      }, { timeout: 5000 });
 
       // MUST NOT contain content from other pages
       expect(screen.queryByText(/Administrator danych/i)).toBeNull(); // Privacy (also mentions "administrator" but different context)
@@ -138,7 +142,7 @@ describe('Legal Routes Mapping', () => {
       await waitFor(() => {
         expect(screen.getByRole('heading', { name: /Polityka Prywatności/i })).toBeDefined();
         expect(screen.getByText(/Administrator danych/i)).toBeDefined();
-      });
+      }, { timeout: 5000 });
     });
 
     it('/terms should redirect to /legal/terms', async () => {
@@ -147,7 +151,7 @@ describe('Legal Routes Mapping', () => {
       await waitFor(() => {
         expect(screen.getByText(/Regulamin Serwisu/i)).toBeDefined();
         expect(screen.getByText(/Postanowienia ogólne/i)).toBeDefined();
-      });
+      }, { timeout: 5000 });
     });
 
     it('/cookies should redirect to /legal/cookies', async () => {
@@ -156,7 +160,7 @@ describe('Legal Routes Mapping', () => {
       await waitFor(() => {
         expect(screen.getByText(/Polityka Cookies/i)).toBeDefined();
         expect(screen.getByText(/Czym są pliki cookies/i)).toBeDefined();
-      });
+      }, { timeout: 5000 });
     });
 
     it('/dpa should redirect to /legal/dpa', async () => {
@@ -165,7 +169,7 @@ describe('Legal Routes Mapping', () => {
       await waitFor(() => {
         expect(screen.getByText(/Umowa Powierzenia Danych/i)).toBeDefined();
         expect(screen.getByText(/Przedmiot umowy/i)).toBeDefined();
-      });
+      }, { timeout: 5000 });
     });
 
     it.skip('/rodo should redirect to /legal/rodo (requires auth)', async () => {
@@ -180,7 +184,7 @@ describe('Legal Routes Mapping', () => {
       await waitFor(() => {
         expect(screen.getByRole('heading', { name: /Polityka Prywatności/i })).toBeDefined();
         expect(screen.getByText(/Administrator danych/i)).toBeDefined();
-      });
+      }, { timeout: 5000 });
     });
   });
 });

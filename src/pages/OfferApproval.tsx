@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
@@ -86,7 +87,6 @@ export default function OfferApproval() {
   const acceptToken = searchParams.get('t');
 
   const [offer, setOffer] = useState<OfferData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
@@ -97,10 +97,14 @@ export default function OfferApproval() {
   const [error, setError] = useState<string | null>(null);
   const [cancelCountdown, setCancelCountdown] = useState(0);
 
-  const fetchOffer = useCallback(async () => {
-    if (!token) return;
-
-    try {
+  const offerQuery = useQuery({
+    queryKey: ['offerApprovalPublic', token],
+    enabled: Boolean(token),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 15,
+    retry: 1,
+    queryFn: async () => {
+      if (!token) throw new Error('missing_token');
       const { data, error: fetchError } = await supabase
         .from('offer_approvals')
         .select(`
@@ -112,33 +116,37 @@ export default function OfferApproval() {
         .single();
 
       if (fetchError) throw fetchError;
+      return data as OfferData;
+    },
+  });
 
-      setOffer(data as OfferData);
-      if (data.client_name) setClientName(data.client_name);
-      if (data.client_email) setClientEmail(data.client_email);
+  useEffect(() => {
+    if (!offerQuery.data) return;
+    setOffer(offerQuery.data);
+    setError(null);
+    if (offerQuery.data.client_name) setClientName(offerQuery.data.client_name);
+    if (offerQuery.data.client_email) setClientEmail(offerQuery.data.client_email);
 
-      const finalStatuses: OfferStatus[] = ['approved', 'accepted', 'rejected', 'expired', 'withdrawn'];
-      if (finalStatuses.includes(data.status as OfferStatus)) {
-        setSubmitted(true);
-      }
-    } catch {
-      setError(t('offerApproval.notFound.description'));
-    } finally {
-      setIsLoading(false);
+    const finalStatuses: OfferStatus[] = ['approved', 'accepted', 'rejected', 'expired', 'withdrawn'];
+    if (finalStatuses.includes(offerQuery.data.status as OfferStatus)) {
+      setSubmitted(true);
     }
-  }, [token, t]);
+  }, [offerQuery.data]);
+
+  useEffect(() => {
+    if (offerQuery.isError) {
+      setError(t('offerApproval.notFound.description'));
+    }
+  }, [offerQuery.isError, t]);
+
 
   // Handle 1-click accept via ?t= query param
   useEffect(() => {
-    if (acceptToken && token && !isLoading && offer && offer.status === 'pending') {
-      handleOneClickAccept();
+    if (acceptToken && token && !offerQuery.isLoading && offer && offer.status === 'pending') {
+      void handleOneClickAccept();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [acceptToken, token, isLoading, offer]);
-
-  useEffect(() => {
-    fetchOffer();
-  }, [fetchOffer]);
+  }, [acceptToken, token, offerQuery.isLoading, offer]);
 
   // Countdown timer for cancel window
   useEffect(() => {
@@ -320,7 +328,7 @@ export default function OfferApproval() {
   };
 
   // ─── Loading ───────────────────────────────────────
-  if (isLoading) {
+  if (offerQuery.isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

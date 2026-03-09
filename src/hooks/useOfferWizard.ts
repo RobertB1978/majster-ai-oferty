@@ -116,7 +116,7 @@ export function useLoadOfferDraft(offerId: string | null) {
       };
     },
     enabled: !!user && !!offerId,
-    staleTime: 0,
+    staleTime: 1000 * 60,
   });
 }
 
