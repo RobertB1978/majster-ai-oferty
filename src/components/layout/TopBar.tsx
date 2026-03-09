@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { LogOut, HelpCircle, Globe, ChevronDown, Moon, Sun, Shield, Wifi, WifiOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import { PlanBadge } from '@/components/billing/PlanBadge';
 import { Logo } from '@/components/branding/Logo';
 import { useAdminRole } from '@/hooks/useAdminRole';
@@ -14,9 +13,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+
+const NotificationCenter = lazy(() =>
+  import('@/components/notifications/NotificationCenter').then((module) => ({
+    default: module.NotificationCenter,
+  }))
+);
 
 const languages = [
   { code: 'pl', name: 'Polski', flag: '🇵🇱' },
@@ -111,7 +116,9 @@ export function TopBar() {
             <div className="hidden sm:block">
               <PlanBadge />
             </div>
-            <NotificationCenter />
+            <Suspense fallback={<div className="h-10 w-10" aria-hidden="true" />}>
+              <NotificationCenter />
+            </Suspense>
 
             {/* Theme Toggle */}
             <Button

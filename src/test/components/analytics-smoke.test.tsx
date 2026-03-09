@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import { MemoryRouter } from 'react-router-dom';
@@ -113,11 +113,13 @@ describe('Analytics page — smoke test (P0 regression guard)', () => {
     expect(screen.getByText('20%')).toBeDefined(); // conversionRate
   });
 
-  it('renders chart sections with CardHeader and CardTitle', () => {
+  it('renders chart sections with CardHeader and CardTitle', async () => {
     const { container } = renderAnalytics();
     // CardHeader renders as div with class containing "flex flex-col space-y-1.5 p-6"
-    const cardHeaders = container.querySelectorAll('[class*="flex flex-col space-y-1.5"]');
-    // Analytics page has 4 CardHeaders (2 project charts + 2 calendar charts)
-    expect(cardHeaders.length).toBe(4);
+    await waitFor(() => {
+      const cardHeaders = container.querySelectorAll('[class*="flex flex-col space-y-1.5"]');
+      // Analytics page has 4 CardHeaders (2 project charts + 2 calendar charts)
+      expect(cardHeaders.length).toBe(4);
+    });
   });
 });
