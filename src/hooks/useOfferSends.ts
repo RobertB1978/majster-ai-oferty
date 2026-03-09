@@ -23,7 +23,7 @@ export function useOfferSends(projectId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('offer_sends')
-        .select('*')
+        .select('id, project_id, user_id, client_email, subject, message, status, error_message, sent_at')
         .eq('project_id', projectId)
         .order('sent_at', { ascending: false });
 

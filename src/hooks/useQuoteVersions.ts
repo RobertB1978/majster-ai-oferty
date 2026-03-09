@@ -31,7 +31,7 @@ export function useQuoteVersions(projectId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('quote_versions')
-        .select('*')
+        .select('id, project_id, user_id, version_name, quote_snapshot, is_active, created_at')
         .eq('project_id', projectId)
         .order('created_at', { ascending: false });
 
@@ -53,7 +53,7 @@ export function useActiveQuoteVersion(projectId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('quote_versions')
-        .select('*')
+        .select('id, project_id, user_id, version_name, quote_snapshot, is_active, created_at')
         .eq('project_id', projectId)
         .eq('is_active', true)
         .maybeSingle();

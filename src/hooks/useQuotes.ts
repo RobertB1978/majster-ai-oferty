@@ -35,7 +35,7 @@ export function useQuote(projectId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('quotes')
-        .select('*')
+        .select('id, project_id, user_id, positions, summary_materials, summary_labor, margin_percent, total, created_at')
         .eq('project_id', projectId)
         .maybeSingle();
 

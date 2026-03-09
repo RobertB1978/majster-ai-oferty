@@ -25,7 +25,7 @@ export function useCalendarEvents(startDate?: string, endDate?: string) {
     queryFn: async () => {
       let query = supabase
         .from('calendar_events')
-        .select('*')
+        .select('id, user_id, project_id, title, description, event_date, event_time, event_type, status, created_at')
         .eq('user_id', user!.id)
         .order('event_date', { ascending: true });
 

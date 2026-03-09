@@ -19,7 +19,7 @@ export function useAiChatHistory(sessionId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('ai_chat_history')
-        .select('*')
+        .select('id, user_id, session_id, role, content, created_at')
         .eq('user_id', user!.id)
         .order('created_at', { ascending: true });
 
