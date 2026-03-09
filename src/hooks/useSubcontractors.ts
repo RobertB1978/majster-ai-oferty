@@ -49,7 +49,7 @@ export function useMySubcontractors() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('subcontractors')
-        .select('*')
+        .select('id, user_id, company_name, contact_name, phone, email, description, location_city, location_lat, location_lng, hourly_rate, is_public, avatar_url, portfolio_images, rating, review_count, created_at')
         .eq('user_id', user!.id)
         .order('created_at', { ascending: false });
 
@@ -66,7 +66,7 @@ export function usePublicSubcontractors(filters?: { city?: string; minRating?: n
     queryFn: async () => {
       let query = supabase
         .from('subcontractors')
-        .select('*')
+        .select('id, user_id, company_name, contact_name, phone, email, description, location_city, location_lat, location_lng, hourly_rate, is_public, avatar_url, portfolio_images, rating, review_count, created_at')
         .eq('is_public', true)
         .order('rating', { ascending: false });
 
@@ -90,7 +90,7 @@ export function useSubcontractor(id: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('subcontractors')
-        .select('*')
+        .select('id, user_id, company_name, contact_name, phone, email, description, location_city, location_lat, location_lng, hourly_rate, is_public, avatar_url, portfolio_images, rating, review_count, created_at')
         .eq('id', id)
         .single();
 
@@ -157,7 +157,7 @@ export function useSubcontractorServices(subcontractorId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('subcontractor_services')
-        .select('*')
+        .select('id, subcontractor_id, service_name, price_per_unit, unit, created_at')
         .eq('subcontractor_id', subcontractorId);
 
       if (error) throw error;
@@ -173,7 +173,7 @@ export function useSubcontractorReviews(subcontractorId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('subcontractor_reviews')
-        .select('*')
+        .select('id, subcontractor_id, reviewer_user_id, rating, comment, created_at')
         .eq('subcontractor_id', subcontractorId)
         .order('created_at', { ascending: false });
 

@@ -110,7 +110,7 @@ export function useDossierItems(projectId: string | undefined) {
     queryFn: async (): Promise<DossierItem[]> => {
       const { data, error } = await supabase
         .from('project_dossier_items')
-        .select('*')
+        .select('id, user_id, project_id, category, file_path, file_name, mime_type, size_bytes, source, created_at')
         .eq('project_id', projectId!)
         .order('category')
         .order('created_at', { ascending: false });
@@ -229,7 +229,7 @@ export function useDossierShareTokens(projectId: string | undefined) {
     queryFn: async (): Promise<DossierShareToken[]> => {
       const { data, error } = await supabase
         .from('project_dossier_share_tokens')
-        .select('*')
+        .select('id, user_id, project_id, token, expires_at, allowed_categories, label, created_at')
         .eq('project_id', projectId!)
         .order('created_at', { ascending: false });
 
