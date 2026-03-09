@@ -36,7 +36,7 @@ Aplikacja Majster.AI ma solidne fundamenty wydajnościowe: lazy loading na wszys
 | Projekty V2 (ProjectsList) | Szybkie | Szybkie (30s cache) | select('*') na v2_projects | P1 | Zweryfikowane | useProjectsV2List uses select('*') |
 | ProjectHub/Detail | Średnie | Średnie | select('*'), wielokrotne hooki | P1 | Zweryfikowane | useProjectV2 + useProjectChecklist + useProjectCosts + useDossier |
 | Klienci | Szybkie | Szybkie (default 5min) | Brak staleTime jawnie | P2 | Zweryfikowane | useClientsPaginated z pagination, ale bez jawnego staleTime |
-| Kalendarz | Średnie | Średnie | select('*'), brak staleTime | P1 | Zweryfikowane | useCalendarEvents: select('*'), brak staleTime |
+| Kalendarz | Wolne | Średnie | select('*'), brak staleTime, deprecated useProjects, 687 LOC | P0 | Zweryfikowane | useCalendarEvents: select('*'), PLUS useProjects() (deprecated!) pobiera WSZYSTKIE projekty; 4 widoki kalendarza (Month/Week/Day/Agenda) renderowane eagerly |
 | Finanse | Wolne | Średnie | 3 zapytania sekwencyjne w useFinancialSummary | P0 | Zweryfikowane | Pobiera quotes + costs + projects osobno, przetwarza client-side |
 | Quick Estimate | Szybkie | Szybkie | — | P2 | Zweryfikowane | Lekki komponent |
 | Szybka Wycena Workspace | Średnie | Średnie | useItemTemplates + inne hooki | P2 | Zweryfikowane | |
@@ -44,7 +44,7 @@ Aplikacja Majster.AI ma solidne fundamenty wydajnościowe: lazy loading na wszys
 | Ustawienia (Settings) | Szybkie | Szybkie | — | P2 | Zweryfikowane | Lekki komponent |
 | Profil firmy | Średnie | Średnie | useProfile: select('*') | P2 | Zweryfikowane | |
 | Szablony dokumentów | Szybkie | Szybkie | useDocumentInstances: select('*') wielokrotnie | P1 | Zweryfikowane | 4× select('*') |
-| Analytics | Wolne | Średnie (15min cache) | Duże agregacje client-side | P1 | Zweryfikowane | useAnalyticsStats: staleTime 15min OK, ale prawdopodobnie ciężkie obliczenia |
+| Analytics | Wolne | Średnie (15min cache) | **BEZPOŚREDNI import Recharts** (omija chart-lazy.tsx!), 4 wykresy na mount | P0 | Zweryfikowane | Analytics.tsx:6-8 importuje BarChart/PieChart/AreaChart bezpośrednio z recharts |
 | Admin (wszystkie strony) | Szybkie | Szybkie | select('*'), Realtime subscriptions | P2 | Zweryfikowane | Izolowane lazy chunki, ale select('*') |
 | Dossier (publiczny) | Średnie | Średnie | select('*') wielokrotnie | P2 | Zweryfikowane | useDossier: 4× select('*') |
 | Mapa zespołu | Wolne | Wolne | Leaflet ładowany na żądanie | P2 | Zweryfikowane | leaflet-vendor chunk, ale import synchroniczny w komponencie |
@@ -82,6 +82,11 @@ Aplikacja Majster.AI ma solidne fundamenty wydajnościowe: lazy loading na wszys
 | F21 | WorkTasks | `src/hooks/useWorkTasks.ts` | select('*, team_members(*)') bez limitu jawnego | Join z team_members, limit 200 ale bez staleTime | P1 | Zweryfikowane | QUERY |
 | F22 | Subcontractors | `src/hooks/useSubcontractors.ts` | 5× select('*') w hookach | Wielokrotne niepotrzebne full-selects | P1 | Zweryfikowane | QUERY |
 | F23 | AcceptPage | `src/pages/OfferPublicAccept.tsx:135` | Zawsze refetch na publicznej stronie akceptacji | staleTime: 0 = zawsze refetch | P2 | Zweryfikowane | CACHE |
+| F24 | Analytics | `src/pages/Analytics.tsx:6-8` | Ciężki chunk Recharts ładowany bezpośrednio | Bezpośredni import z `recharts` omijający `chart-lazy.tsx`; 4 wykresy mount na raz | P0 | Zweryfikowane | BUNDLE |
+| F25 | Kalendarz | `src/pages/Calendar.tsx:9` | Wolne otwarcie kalendarza; wszystkie projekty ładowane | `useProjects()` (deprecated!) pobiera WSZYSTKIE projekty do dropdownu dialogu | P1 | Zweryfikowane | QUERY |
+| F26 | Kalendarz | `src/pages/Calendar.tsx` | 4 widoki kalendarza eagerly rendered | Month/Week/Day/Agenda w Tabs — brak lazy loading widoków | P1 | Zweryfikowane | ROUTE |
+| F27 | Settings | `src/pages/Settings.tsx` | 9 tabów z ciężkimi komponentami eagerly mounted | Wszystkie 9 tabów (Profile, Docs, Calendar, Notifications, Biometric, Email, Subscription, Account) renderowane na mount | P1 | Zweryfikowane | MODAL |
+| F28 | ProjectDetail | `src/pages/ProjectDetail.tsx` | 6 ciężkich tabów (Photos, Costs, PDF Preview, Approval) eagerly mounted | Tab content z heavy components ładuje się na mount strony | P1 | Zweryfikowane | ROUTE |
 
 ---
 
@@ -247,7 +252,13 @@ Dashboard mount = minimum 8 zapytań do Supabase:
 - Ryzyko: Niskie — zmiana jest mechaniczna i bezpieczna.
 - PR: **PR1**
 
-**P0-2: Optymalizacja useFinancialSummary (3 sekwencyjne zapytania → 1 lub widok SQL)**
+**P0-2: Analytics.tsx — bezpośredni import Recharts omijający chart-lazy.tsx**
+- Dlaczego: Analytics.tsx importuje BarChart/PieChart/AreaChart bezpośrednio z `recharts`, omijając istniejący lazy wrapper `chart-lazy.tsx`. To włącza ~410KB Recharts do strony Analytics chunk zamiast lazy-load.
+- Zysk: Recharts ładowany dopiero gdy użytkownik wchodzi na stronę z wykresem.
+- Ryzyko: Niskie — wystarczy użyć istniejącego chart-lazy.tsx lub lazy(() => import).
+- PR: **PR1**
+
+**P0-3: Optymalizacja useFinancialSummary (3 sekwencyjne zapytania → 1 lub widok SQL)**
 - Dlaczego: Strona Finanse jest prawdopodobnie najwolniejsza w aplikacji.
 - Zysk: 3× szybsze ładowanie strony Finanse.
 - Ryzyko: Średnie — wymaga zmiany logiki zapytania lub nowej migracji.
@@ -352,13 +363,15 @@ Dashboard mount = minimum 8 zapytań do Supabase:
 
 ## SEKCJA 11 — CODEX EXECUTION BRIEF
 
-### PR1 — Quick Wins: Cache, Animacja, Polityka kolumn (łatwe)
+### PR1 — Quick Wins: Cache, Animacja, Bundle fix (łatwe)
 **Zakres:**
+- **FIX P0:** Analytics.tsx — zmiana bezpośredniego importu Recharts na lazy import przez chart-lazy.tsx
 - Zmiana `AnimatePresence mode="wait"` → usunięcie mode lub `mode="popLayout"` w `PageTransitionAnimated.tsx`
 - Dodanie jawnego staleTime/gcTime do ~15 hooków bez niego
 - Zmiana staleTime: 10_000 → 60_000 w `OfferDetail.tsx`
 - Skrócenie `transition-all duration-200` → `duration-100` w AppLayout
 - Dodanie jawnego staleTime do useSubscription (15min), useNotifications (30s), useCalendarEvents (2min)
+- Calendar.tsx: zamiana `useProjects()` (deprecated) na lekkie zapytanie do dropdown
 
 **Dlaczego teraz:** Zerowe ryzyko, natychmiastowy efekt.
 **Oczekiwany zysk:** ~100ms szybsze przejścia, mniej refetchów.
@@ -376,11 +389,12 @@ Dashboard mount = minimum 8 zapytań do Supabase:
 **Ryzyko:** Niskie-średnie — wymaga sprawdzenia które kolumny są potrzebne w każdym przypadku.
 **Pomiar przed/po:** Network response sizes, Supabase query timing.
 
-### PR3 — Rendering: Wirtualizacja + Memoizacja
+### PR3 — Rendering: Wirtualizacja + Memoizacja + Lazy Tabs
 **Zakres:**
 - Dodanie react-virtual (lub @tanstack/virtual) do list ofert, projektów, szablonów (wymaga zatwierdzenia zależności)
 - Dodanie React.memo do komponentów renderowanych w .map() (OfferCard, ProjectCard, ClientRow, itp.)
 - Dodanie useMemo do filteredItems/sortedItems w komponentach list
+- Lazy-load ciężkich tabów: Settings (9 tabów), ProjectDetail (6 tabów), Calendar (4 widoki), Admin (8 tabów)
 
 **Dlaczego teraz:** Zapobiega regresji wydajności przy skalowaniu danych.
 **Oczekiwany zysk:** Stały czas renderingu list, mniej rerender cascade.
