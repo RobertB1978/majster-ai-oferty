@@ -8,6 +8,10 @@ import AxeBuilder from '@axe-core/playwright';
 
 test.describe('Accessibility', () => {
   test('login page should not have critical a11y violations', async ({ page }) => {
+    // Disable CSS animations so axe sees the final rendered state, not a mid-animation frame.
+    // Elements using animate-fade-in (opacity: 0→1) produce a blended foreground color
+    // during the animation that fails WCAG AA contrast checks against the page background.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/login');
 
     const accessibilityScanResults = await new AxeBuilder({ page })
@@ -19,6 +23,7 @@ test.describe('Accessibility', () => {
   });
 
   test('home page should not have critical a11y violations', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
 
     const accessibilityScanResults = await new AxeBuilder({ page })
