@@ -27,13 +27,15 @@ describe('Performance Regression Guards', () => {
       }
     });
 
-    it('Auth pages are NOT lazy-loaded (critical path)', async () => {
+    it('Auth pages are lazy-loaded to keep startup path light', async () => {
       const fs = await import('fs');
       const appContent = fs.readFileSync('src/App.tsx', 'utf-8');
 
-      // Auth pages should be eager-loaded for fast login experience
-      expect(appContent).toContain('import Login from');
-      expect(appContent).toContain('import Register from');
+      // Auth pages should stay lazy-loaded to avoid eager auth chunk in initial bundle
+      expect(appContent).toContain('const Login = lazy(');
+      expect(appContent).toContain('const Register = lazy(');
+      expect(appContent).toContain('const ForgotPassword = lazy(');
+      expect(appContent).toContain('const ResetPassword = lazy(');
     });
   });
 

@@ -43,7 +43,7 @@ export function NewShellLayout() {
     <div className="min-h-screen flex flex-col bg-background transition-colors duration-300">
       <main
         id="main-content"
-        className={`flex-1 pb-20 transition-all duration-500 ${
+        className={`flex-1 pb-20 transition-all duration-200 ${
           showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
         }`}
       >

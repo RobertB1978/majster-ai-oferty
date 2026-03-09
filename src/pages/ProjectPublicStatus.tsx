@@ -10,7 +10,7 @@
  *   - Cross-tenant access impossible (token → single project FK)
  */
 
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Circle, Clock, FolderKanban, Loader2 } from 'lucide-react';
@@ -36,60 +36,39 @@ interface PublicProjectData {
   created_at: string;
 }
 
-type LoadState =
-  | { state: 'loading' }
-  | { state: 'error'; code: 'not_found' | 'expired' | 'server_error' }
-  | { state: 'ok'; project: PublicProjectData; expiresAt: string };
-
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ProjectPublicStatus() {
   const { token } = useParams<{ token: string }>();
   const { t } = useTranslation();
-  const [load, setLoad] = useState<LoadState>({ state: 'loading' });
 
-  useEffect(() => {
-    if (!token) {
-      setLoad({ state: 'error', code: 'not_found' });
-      return;
-    }
+  const publicProjectQuery = useQuery({
+    queryKey: ['projectPublicStatus', token],
+    enabled: Boolean(token),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 15,
+    retry: 1,
+    queryFn: async () => {
+      if (!token) throw new Error('missing_token');
+      const { data, error } = await supabase.rpc('resolve_project_public_token', {
+        p_token: token,
+      });
 
-    (async () => {
-      try {
-        const { data, error } = await supabase.rpc('resolve_project_public_token', {
-          p_token: token,
-        });
+      if (error) throw new Error('server_error');
 
-        if (error) {
-          setLoad({ state: 'error', code: 'server_error' });
-          return;
-        }
+      const result = data as Record<string, unknown>;
+      if (result.error === 'expired') throw new Error('expired');
+      if (result.error) throw new Error('not_found');
 
-        const result = data as Record<string, unknown>;
-
-        if (result.error === 'expired') {
-          setLoad({ state: 'error', code: 'expired' });
-          return;
-        }
-
-        if (result.error) {
-          setLoad({ state: 'error', code: 'not_found' });
-          return;
-        }
-
-        setLoad({
-          state: 'ok',
-          project: result.project as PublicProjectData,
-          expiresAt: result.expires_at as string,
-        });
-      } catch {
-        setLoad({ state: 'error', code: 'server_error' });
-      }
-    })();
-  }, [token]);
+      return {
+        project: result.project as PublicProjectData,
+        expiresAt: result.expires_at as string,
+      };
+    },
+  });
 
   // ── Loading ──────────────────────────────────────────────────────────────────
-  if (load.state === 'loading') {
+  if (publicProjectQuery.isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -98,9 +77,10 @@ export default function ProjectPublicStatus() {
   }
 
   // ── Error ────────────────────────────────────────────────────────────────────
-  if (load.state === 'error') {
+  if (publicProjectQuery.isError) {
+    const code = publicProjectQuery.error instanceof Error ? publicProjectQuery.error.message : 'server_error';
     const msgKey =
-      load.code === 'expired'
+      code === 'expired'
         ? 'projectsV2.public.errorExpired'
         : 'projectsV2.public.errorNotFound';
 
@@ -116,7 +96,10 @@ export default function ProjectPublicStatus() {
   }
 
   // ── Success ──────────────────────────────────────────────────────────────────
-  const { project } = load;
+  const project = publicProjectQuery.data?.project;
+  if (!project) {
+    return null;
+  }
   const stages = (project.stages_json ?? []).sort((a, b) => a.sort_order - b.sort_order);
   const doneCount = stages.filter(s => s.is_done).length;
 

@@ -22,15 +22,15 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsent } from "@/components/legal/CookieConsent";
 
 // === ZONE 1: PUBLIC (loaded immediately - auth flow) ===
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
 import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
 import EnvCheck from "./pages/EnvCheck";
 
 // === ZONE 1: PUBLIC (lazy) ===
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Landing = lazy(() => import("./pages/Landing"));
 const OfferApproval = lazy(() => import("./pages/OfferApproval"));
 const OfferPublicPage = lazy(() => import("./pages/OfferPublicPage"));
