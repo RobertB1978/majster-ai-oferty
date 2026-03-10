@@ -314,21 +314,21 @@ describe('Responsive Overlays', () => {
       await waitFor(() => {
         const overlay = screen.queryByTestId('pwa-overlay');
         if (overlay) {
-          // Check that overlay is positioned above bottom nav (bottom-[88px] on mobile)
+          // Uses above-mobile-nav CSS class which respects safe-area-inset-bottom
           const classes = overlay.className;
-          expect(classes).toContain('bottom-[88px]');
+          expect(classes).toContain('above-mobile-nav');
         }
       });
     });
 
-    it('chat widget is positioned to avoid bottom navigation', () => {
+    it('chat widget is positioned above mobile nav with safe-area clearance', () => {
       render(<AiChatAgent />, { wrapper: TestWrapper });
 
       const chatButton = screen.getByTestId('chat-overlay');
       const classes = chatButton.className;
 
-      // Should be positioned at bottom-[88px] on mobile to avoid nav (64px + 24px margin)
-      expect(classes).toContain('bottom-[88px]');
+      // Uses above-mobile-nav class: calc(4rem + safe-area-inset-bottom + 1.5rem)
+      expect(classes).toContain('above-mobile-nav');
     });
   });
 });

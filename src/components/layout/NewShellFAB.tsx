@@ -71,8 +71,8 @@ export function NewShellFAB() {
       {/* Bottom Sheet z akcjami */}
       {isOpen && (
         <div
-          className="fixed bottom-16 left-0 right-0 bg-card border-t border-border rounded-t-2xl shadow-xl animate-slide-up"
-          style={{ zIndex: 60 }}
+          className="fixed left-0 right-0 bg-card border-t border-border rounded-t-2xl shadow-xl animate-slide-up"
+          style={{ zIndex: 60, bottom: 'calc(var(--nav-height, 4rem) + env(safe-area-inset-bottom, 0px))' }}
           role="dialog"
           aria-modal="true"
           aria-label={t('newShell.fab.sheetTitle', 'Szybkie akcje')}
@@ -116,7 +116,7 @@ export function NewShellFAB() {
             </div>
           </div>
           {/* Bezpieczna strefa dolna */}
-          <div className="h-safe-area-bottom" />
+          <div style={{ height: 'env(safe-area-inset-bottom, 0px)' }} aria-hidden="true" />
         </div>
       )}
 
@@ -124,7 +124,7 @@ export function NewShellFAB() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'fixed bottom-4 left-1/2 -translate-x-1/2',
+          'fixed left-1/2 -translate-x-1/2',
           'h-14 w-14 rounded-full',
           'bg-primary text-primary-foreground',
           'shadow-lg shadow-primary/30',
@@ -133,7 +133,7 @@ export function NewShellFAB() {
           isOpen ? 'rotate-45 scale-95' : 'rotate-0 scale-100',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
         )}
-        style={{ zIndex: 61 }}
+        style={{ zIndex: 61, bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}
         aria-label={isOpen ? t('common.close', 'Zamknij') : t('newShell.fab.open', 'Utwórz')}
         aria-expanded={isOpen}
       >
