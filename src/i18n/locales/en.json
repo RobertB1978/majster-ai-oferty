@@ -251,7 +251,12 @@
     "allProjects": "All Projects",
     "clients": "Clients",
     "accepted": "Accepted",
-    "newLast7Days": "New (7 days)"
+    "newLast7Days": "New (7 days)",
+    "activityFeed": "Latest Activity",
+    "newProjectSub": "Create quote",
+    "addClientSub": "Client database",
+    "templatesSub": "Offer templates",
+    "calendarSub": "Your schedule"
   },
   "projects": {
     "title": "Projects",

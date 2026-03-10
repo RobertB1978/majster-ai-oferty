@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowRight, FolderOpen, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { STATUS_CONFIG } from '@/data/statusConfig';
 
 interface Project {
   id: string;
@@ -23,28 +24,6 @@ interface RecentProjectsProps {
   isLoading: boolean;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; dot: string; badge: string }> = {
-  'Nowy': {
-    label: 'Nowy',
-    dot: 'bg-muted-foreground',
-    badge: 'bg-muted/60 text-muted-foreground border-muted',
-  },
-  'Wycena w toku': {
-    label: 'Wycena w toku',
-    dot: 'bg-warning',
-    badge: 'bg-warning/12 text-warning border-warning/25',
-  },
-  'Oferta wysłana': {
-    label: 'Oferta wysłana',
-    dot: 'bg-primary',
-    badge: 'bg-primary/12 text-primary border-primary/25',
-  },
-  'Zaakceptowany': {
-    label: 'Zaakceptowany',
-    dot: 'bg-success',
-    badge: 'bg-success/12 text-success border-success/25',
-  },
-};
 
 const dateLocales: Record<string, Locale> = { pl, en: enUS, uk };
 
@@ -120,14 +99,14 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
                 <FolderOpen className="h-7 w-7 text-muted-foreground/60" />
               </div>
               <p className="text-sm text-muted-foreground mb-2">
-                {t('dashboard.noProjects', 'Brak projektów')}
+                {t('dashboard.noProjects')}
               </p>
               <Button
                 variant="link"
                 onClick={() => navigate('/app/jobs/new')}
                 className="text-sm p-0 h-auto text-primary"
               >
-                {t('dashboard.createFirstProject', 'Stwórz pierwszy projekt')}
+                {t('dashboard.createFirstProject')}
               </Button>
             </div>
           ) : (

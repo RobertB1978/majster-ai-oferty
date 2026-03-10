@@ -251,7 +251,12 @@
     "allProjects": "Усі проєкти",
     "clients": "Клієнти",
     "accepted": "Прийняті",
-    "newLast7Days": "Нові (7 днів)"
+    "newLast7Days": "Нові (7 днів)",
+    "activityFeed": "Остання активність",
+    "newProjectSub": "Створити кошторис",
+    "addClientSub": "База клієнтів",
+    "templatesSub": "Шаблони пропозицій",
+    "calendarSub": "Ваш розклад"
   },
   "projects": {
     "title": "Проєкти",

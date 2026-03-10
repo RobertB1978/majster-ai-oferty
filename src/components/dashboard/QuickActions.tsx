@@ -39,7 +39,7 @@ export function QuickActions() {
   const actions: Action[] = [
     {
       label: t('dashboard.newProject', 'Nowy projekt'),
-      sublabel: 'Stwórz wycenę',
+      sublabel: t('dashboard.newProjectSub'),
       icon: Plus,
       onClick: () => navigate('/app/jobs/new'),
       primary: true,
@@ -47,21 +47,21 @@ export function QuickActions() {
     },
     {
       label: t('dashboard.addClient', 'Dodaj klienta'),
-      sublabel: 'Baza klientów',
+      sublabel: t('dashboard.addClientSub'),
       icon: Users,
       onClick: () => navigate('/app/customers'),
       color: 'slate',
     },
     {
       label: t('nav.templates', 'Szablony'),
-      sublabel: 'Wzory ofert',
+      sublabel: t('dashboard.templatesSub'),
       icon: FileText,
       onClick: () => navigate('/app/templates'),
       color: 'teal',
     },
     {
       label: t('nav.calendar', 'Kalendarz'),
-      sublabel: 'Twój terminarz',
+      sublabel: t('dashboard.calendarSub'),
       icon: Calendar,
       onClick: () => navigate('/app/calendar'),
       color: 'violet',
@@ -71,7 +71,7 @@ export function QuickActions() {
   return (
     <div>
       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">
-        Szybkie akcje
+        {t('dashboard.quickActions')}
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {actions.map((action, index) => {

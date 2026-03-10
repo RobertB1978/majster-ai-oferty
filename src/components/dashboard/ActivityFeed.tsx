@@ -1,110 +1,12 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  CheckCircle2,
-  FileText,
-  UserPlus,
-  Clock,
-  TrendingUp,
-  type LucideIcon,
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS, uk } from 'date-fns/locale';
-import { useTranslation as useI18n } from 'react-i18next';
-
-type ActivityType = 'offer_accepted' | 'offer_sent' | 'client_added' | 'quote_created' | 'revenue';
-
-interface Activity {
-  id: string;
-  type: ActivityType;
-  title: string;
-  subtitle?: string;
-  timestamp: Date;
-  amount?: number;
-}
-
-const ACTIVITY_CONFIG: Record<
-  ActivityType,
-  { icon: LucideIcon; bg: string; iconColor: string; label: string }
-> = {
-  offer_accepted: {
-    icon: CheckCircle2,
-    bg: 'bg-success/10',
-    iconColor: 'text-success',
-    label: 'Oferta zaakceptowana',
-  },
-  offer_sent: {
-    icon: FileText,
-    bg: 'bg-primary/10',
-    iconColor: 'text-primary',
-    label: 'Oferta wysłana',
-  },
-  client_added: {
-    icon: UserPlus,
-    bg: 'bg-info/10',
-    iconColor: 'text-info',
-    label: 'Nowy klient',
-  },
-  quote_created: {
-    icon: Clock,
-    bg: 'bg-warning/10',
-    iconColor: 'text-warning',
-    label: 'Wycena w toku',
-  },
-  revenue: {
-    icon: TrendingUp,
-    bg: 'bg-success/10',
-    iconColor: 'text-success',
-    label: 'Przychód',
-  },
-};
-
-/** Placeholder activities — in production fetch from Supabase realtime */
-function useDemoActivities(): Activity[] {
-  const now = new Date();
-  return [
-    {
-      id: '1',
-      type: 'offer_accepted',
-      title: 'Remont łazienki — ul. Marszałkowska',
-      subtitle: 'Kowalski Jan',
-      timestamp: new Date(now.getTime() - 12 * 60 * 1000),
-      amount: 8500,
-    },
-    {
-      id: '2',
-      type: 'offer_sent',
-      title: 'Instalacja elektryczna — biurowiec',
-      subtitle: 'Firma Budex Sp. z o.o.',
-      timestamp: new Date(now.getTime() - 45 * 60 * 1000),
-    },
-    {
-      id: '3',
-      type: 'client_added',
-      title: 'Nowak Maria',
-      subtitle: 'Remont kuchni',
-      timestamp: new Date(now.getTime() - 2 * 60 * 60 * 1000),
-    },
-    {
-      id: '4',
-      type: 'quote_created',
-      title: 'Malowanie mieszkania 60m²',
-      subtitle: 'Wiśniewski Piotr',
-      timestamp: new Date(now.getTime() - 4 * 60 * 60 * 1000),
-      amount: 3200,
-    },
-    {
-      id: '5',
-      type: 'offer_accepted',
-      title: 'Układanie płytek — łazienka',
-      subtitle: 'Zając Tomasz',
-      timestamp: new Date(now.getTime() - 8 * 60 * 60 * 1000),
-      amount: 4700,
-    },
-  ];
-}
+import { ACTIVITY_CONFIG } from '@/data/activityConfig';
+import { getDemoActivities } from '@/data/demoActivities';
+import type { Activity } from '@/data/demoActivities';
 
 const dateLocaleMap: Record<string, Locale> = { pl, en: enUS, uk };
 
@@ -114,7 +16,7 @@ interface ActivityItemProps {
 }
 
 function ActivityItem({ activity, index }: ActivityItemProps) {
-  const { i18n } = useI18n();
+  const { i18n } = useTranslation();
   const locale = dateLocaleMap[i18n.language] ?? pl;
   const config = ACTIVITY_CONFIG[activity.type];
   const Icon = config.icon;
@@ -150,7 +52,7 @@ function ActivityItem({ activity, index }: ActivityItemProps) {
           <div className="shrink-0 text-right">
             {activity.amount !== undefined && (
               <p className="text-sm font-semibold text-success">
-                +{activity.amount.toLocaleString('pl-PL')} zł
+                {`+${activity.amount.toLocaleString('pl-PL')} z\u0142`}
               </p>
             )}
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -165,16 +67,16 @@ function ActivityItem({ activity, index }: ActivityItemProps) {
 
 export function ActivityFeed() {
   const { t } = useTranslation();
-  const activities = useDemoActivities();
+  const activities = getDemoActivities();
 
   return (
     <Card className="overflow-hidden">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base font-semibold">
-            {t('dashboard.activityFeed', 'Ostatnia aktywność')}
+            {t('dashboard.activityFeed')}
           </CardTitle>
-          <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" title="Na żywo" />
+          <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
         </div>
       </CardHeader>
       <CardContent className="pt-0">

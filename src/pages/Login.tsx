@@ -14,122 +14,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AuthDiagnostics } from '@/components/auth/AuthDiagnostics';
 import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWidget';
 import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
+import { BuilderHeroIllustration } from '@/components/auth/BuilderHeroIllustration';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const CAPTCHA_FAIL_THRESHOLD = 3;
-
-// SVG text labels — kept as JS constants so they are NOT JSX text literals
-// and are not flagged by i18next/no-literal-string (aria-hidden SVG content).
-const SVG_STAT_1_LABEL = 'Oferty PDF';
-const SVG_STAT_1_SUB = '247 wygenerowanych';
-const SVG_STAT_2_LABEL = 'Przychód';
-const SVG_STAT_2_SUB = '+32% ten miesiąc';
-const SVG_STAT_3_LABEL = 'Ocena klientów';
-const SVG_STAT_3_SUB = '4.9 / 5.0';
-
-/** Inline SVG — Construction hero illustration (aria-hidden, decorative) */
-function BuilderHeroIllustration() {
-  return (
-    <svg
-      viewBox="0 0 480 420"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="w-full max-w-sm mx-auto drop-shadow-2xl"
-      aria-hidden="true"
-      focusable="false"
-    >
-      {/* Ground */}
-      <ellipse cx="240" cy="390" rx="180" ry="18" fill="rgba(255,255,255,0.08)" />
-
-      {/* Building frame */}
-      <rect x="60" y="160" width="360" height="220" rx="4" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-
-      {/* Blueprint grid lines */}
-      {[0,1,2,3,4,5].map(i => (
-        <line key={`h${i}`} x1="60" y1={180 + i * 33} x2="420" y2={180 + i * 33} stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="4 4" />
-      ))}
-      {[0,1,2,3,4,5,6,7].map(i => (
-        <line key={`v${i}`} x1={80 + i * 48} y1="160" x2={80 + i * 48} y2="380" stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="4 4" />
-      ))}
-
-      {/* Roof */}
-      <polygon points="40,165 240,60 440,165" fill="rgba(245,158,11,0.85)" />
-      <polygon points="40,165 240,60 440,165" fill="none" stroke="rgba(245,158,11,1)" strokeWidth="2" />
-
-      {/* Door */}
-      <rect x="190" y="285" width="60" height="95" rx="30" fill="rgba(245,158,11,0.3)" stroke="rgba(245,158,11,0.8)" strokeWidth="2" />
-      <circle cx="220" cy="335" r="5" fill="rgba(245,158,11,0.9)" />
-
-      {/* Windows */}
-      <rect x="90" y="200" width="80" height="60" rx="4" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
-      <line x1="130" y1="200" x2="130" y2="260" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-      <line x1="90" y1="230" x2="170" y2="230" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-
-      <rect x="310" y="200" width="80" height="60" rx="4" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
-      <line x1="350" y1="200" x2="350" y2="260" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-      <line x1="310" y1="230" x2="390" y2="230" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-
-      {/* Worker */}
-      <g transform="translate(195, 85)">
-        <circle cx="50" cy="30" r="22" fill="#FBBF24" />
-        <ellipse cx="50" cy="12" rx="26" ry="8" fill="#F59E0B" />
-        <rect x="24" y="10" width="52" height="8" rx="3" fill="#D97706" />
-        <circle cx="42" cy="30" r="3" fill="#92400E" />
-        <circle cx="58" cy="30" r="3" fill="#92400E" />
-        <path d="M 42 40 Q 50 47 58 40" stroke="#92400E" strokeWidth="2" fill="none" strokeLinecap="round" />
-        <rect x="25" y="55" width="50" height="65" rx="8" fill="#1E3A5F" />
-        <polygon points="50,55 25,70 35,120 65,120 75,70" fill="rgba(245,158,11,0.35)" />
-        <rect x="44" y="55" width="12" height="65" fill="rgba(245,158,11,0.35)" />
-        <rect x="5" y="58" width="20" height="45" rx="8" fill="#1E3A5F" />
-        <rect x="75" y="58" width="20" height="45" rx="8" fill="#1E3A5F" />
-        <rect x="75" y="62" width="30" height="22" rx="3" fill="#0F172A" />
-        <rect x="77" y="64" width="26" height="18" rx="2" fill="#3B82F6" />
-        <line x1="80" y1="68" x2="100" y2="68" stroke="white" strokeWidth="1.5" />
-        <line x1="80" y1="72" x2="96" y2="72" stroke="white" strokeWidth="1.5" />
-        <line x1="80" y1="76" x2="98" y2="76" stroke="white" strokeWidth="1.5" />
-        <rect x="30" y="118" width="20" height="45" rx="6" fill="#374151" />
-        <rect x="55" y="118" width="20" height="45" rx="6" fill="#374151" />
-        <rect x="26" y="158" width="26" height="12" rx="4" fill="#1F2937" />
-        <rect x="51" y="158" width="26" height="12" rx="4" fill="#1F2937" />
-      </g>
-
-      {/* Floating stat cards — text content via JS constants, not JSX literals */}
-      <motion.g
-        style={{ originX: '80px', originY: '90px' }}
-        animate={{ y: [0, -6, 0] }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <rect x="20" y="90" width="130" height="52" rx="10" fill="rgba(255,255,255,0.95)" />
-        <circle cx="42" cy="116" r="14" fill="rgba(245,158,11,0.15)" />
-        <text x="42" y="120" textAnchor="middle" fontSize="14" fill="#D97706">{'\u2713'}</text>
-        <text x="62" y="110" fontSize="10" fill="#374151" fontWeight="600">{SVG_STAT_1_LABEL}</text>
-        <text x="62" y="124" fontSize="9" fill="#6B7280">{SVG_STAT_1_SUB}</text>
-      </motion.g>
-
-      <motion.g
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-      >
-        <rect x="330" y="95" width="130" height="52" rx="10" fill="rgba(255,255,255,0.95)" />
-        <circle cx="352" cy="121" r="14" fill="rgba(34,197,94,0.15)" />
-        <text x="352" y="125" textAnchor="middle" fontSize="12" fill="#16A34A">{'\u2191'}</text>
-        <text x="372" y="115" fontSize="10" fill="#374151" fontWeight="600">{SVG_STAT_2_LABEL}</text>
-        <text x="372" y="129" fontSize="9" fill="#16A34A">{SVG_STAT_2_SUB}</text>
-      </motion.g>
-
-      <motion.g
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-      >
-        <rect x="330" y="280" width="130" height="52" rx="10" fill="rgba(255,255,255,0.95)" />
-        <circle cx="352" cy="306" r="14" fill="rgba(59,130,246,0.15)" />
-        <text x="352" y="310" textAnchor="middle" fontSize="12" fill="#2563EB">{'\u2605'}</text>
-        <text x="372" y="300" fontSize="10" fill="#374151" fontWeight="600">{SVG_STAT_3_LABEL}</text>
-        <text x="372" y="314" fontSize="9" fill="#2563EB">{SVG_STAT_3_SUB}</text>
-      </motion.g>
-    </svg>
-  );
-}
 
 export default function Login() {
   const { t } = useTranslation();
@@ -235,7 +123,7 @@ export default function Login() {
     }
   };
 
-  // Social proof pills — values in JS array, rendered via {pill.text}, not JSX literals
+  // Social proof pills — values via t(), rendered as {pill.text} expression containers
   const heroPills = [
     { icon: <CheckCircle2 className="h-3.5 w-3.5" />, text: t('auth.hero.usersCount') },
     { icon: <Star className="h-3.5 w-3.5" />, text: t('auth.hero.rating') },
@@ -246,7 +134,7 @@ export default function Login() {
     <>
       <div className="min-h-screen flex flex-col lg:flex-row bg-background overflow-hidden">
 
-        {/* ═══ LEFT PANEL — Brand hero (hidden on mobile) ═══ */}
+        {/* LEFT PANEL — Brand hero (hidden on mobile) */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -341,7 +229,7 @@ export default function Login() {
           </div>
         </motion.div>
 
-        {/* ═══ RIGHT PANEL — Login form ═══ */}
+        {/* RIGHT PANEL — Login form */}
         <motion.main
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -360,9 +248,9 @@ export default function Login() {
           </div>
 
           <div className="w-full max-w-sm">
-            {/* Page heading — visible to screen readers & E2E tests always.
-                Uses auth.loginTitle = "Zaloguj się do Majster.AI" which contains
-                "Majster.AI" so getByRole('heading', { name: /majster\.ai/i }) finds it. */}
+            {/* Page heading — visible to screen readers and E2E tests.
+                auth.loginTitle contains "Majster.AI" so Playwright
+                getByRole('heading', name:/majster\.ai/i) finds this element. */}
             <div className="mb-8">
               <h1 className="text-2xl font-bold text-foreground mb-1">
                 {t('auth.loginTitle')}

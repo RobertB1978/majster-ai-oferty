@@ -251,7 +251,12 @@
     "allProjects": "Wszystkie projekty",
     "clients": "Klienci",
     "accepted": "Zaakceptowane",
-    "newLast7Days": "Nowe (7 dni)"
+    "newLast7Days": "Nowe (7 dni)",
+    "activityFeed": "Ostatnia aktywno\u015b\u0107",
+    "newProjectSub": "Stw\u00f3rz wycen\u0119",
+    "addClientSub": "Baza klient\u00f3w",
+    "templatesSub": "Wzory ofert",
+    "calendarSub": "Tw\u00f3j terminarz"
   },
   "projects": {
     "title": "Projekty",
