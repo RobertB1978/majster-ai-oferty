@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Mail, Lock, Loader2, Fingerprint, ArrowRight, CheckCircle2, Star } from 'lucide-react';
+import { Mail, Lock, Loader2, Fingerprint, ArrowRight, CheckCircle2, Star, Wrench } from 'lucide-react';
 import { toast } from 'sonner';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,12 +15,15 @@ import { AuthDiagnostics } from '@/components/auth/AuthDiagnostics';
 import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWidget';
 import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
 import { BuilderHeroIllustration } from '@/components/auth/BuilderHeroIllustration';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
 const CAPTCHA_FAIL_THRESHOLD = 3;
 
 export default function Login() {
   const { t } = useTranslation();
+  // Respect prefers-reduced-motion: when true, skip opacity/transform initial states
+  // so axe-core sees fully-opaque elements and passes WCAG AA contrast checks.
+  const shouldReduceMotion = useReducedMotion();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -136,7 +139,7 @@ export default function Login() {
 
         {/* LEFT PANEL — Brand hero (hidden on mobile) */}
         <motion.div
-          initial={{ opacity: 0, x: -40 }}
+          initial={{ opacity: shouldReduceMotion ? 1 : 0, x: shouldReduceMotion ? 0 : -40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative flex-col items-center justify-center overflow-hidden"
@@ -171,9 +174,7 @@ export default function Login() {
                 className="flex h-12 w-12 items-center justify-center rounded-2xl shadow-xl"
                 style={{ background: 'hsl(30 90% 32%)' }}
               >
-                <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6 text-white" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                </svg>
+                <Wrench className="h-6 w-6 text-white" aria-hidden="true" />
               </div>
               <span className="text-2xl font-bold text-white tracking-tight" aria-hidden="true">{'Majster.AI'}</span>
             </motion.div>
@@ -231,7 +232,7 @@ export default function Login() {
 
         {/* RIGHT PANEL — Login form */}
         <motion.main
-          initial={{ opacity: 0, x: 40 }}
+          initial={{ opacity: shouldReduceMotion ? 1 : 0, x: shouldReduceMotion ? 0 : 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-1 flex-col items-center justify-center min-h-screen lg:min-h-0 px-6 py-12 bg-background"
@@ -240,9 +241,7 @@ export default function Login() {
           {/* Mobile logo — visible only on small screens */}
           <div className="flex lg:hidden items-center gap-2 mb-8" aria-hidden="true">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-md">
-              <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 text-white" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-              </svg>
+              <Wrench className="h-5 w-5 text-white" aria-hidden="true" />
             </div>
             <span className="text-xl font-bold text-foreground">{'Majster.AI'}</span>
           </div>

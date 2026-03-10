@@ -123,6 +123,11 @@ export default tseslint.config(
             "width", "height", "variant", "size", "htmlFor", "to",
             "href", "target", "rel", "name", "data-testid",
             "aria-hidden", "aria-describedby", "fill", "stroke", "role",
+            // Common technical attributes not needing translation:
+            "autoComplete", "placeholder", "src", "alt",
+            "strokeLinecap", "strokeLinejoin", "strokeWidth",
+            "viewBox", "d", "rx", "ry", "cx", "cy", "r",
+            "aria-label", "aria-controls", "aria-expanded",
           ],
         },
         callees: {
