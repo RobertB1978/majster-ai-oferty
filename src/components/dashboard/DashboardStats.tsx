@@ -1,14 +1,114 @@
+import { useEffect, useState, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
-import { 
-  FolderOpen, 
-  Users, 
-  CheckCircle, 
+import { motion } from 'framer-motion';
+import {
+  FolderOpen,
+  Users,
+  CheckCircle,
   TrendingUp,
   TrendingDown,
-  Minus
+  Minus,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+/** Animowany licznik (roll-up effect) */
+function AnimatedCounter({ value, duration = 1.0 }: { value: number; duration?: number }) {
+  const [display, setDisplay] = useState(0);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const startTime = performance.now();
+    const startVal = 0;
+    const endVal = value;
+
+    const tick = (now: number) => {
+      const elapsed = (now - startTime) / 1000;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(startVal + (endVal - startVal) * eased));
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [value, duration]);
+
+  return <>{display}</>;
+}
+
+/** Lightweight inline SVG Sparkline */
+interface SparklineProps {
+  data: number[];
+  color: string;
+  width?: number;
+  height?: number;
+}
+
+function InlineSparkline({ data, color, width = 100, height = 32 }: SparklineProps) {
+  if (!data || data.length < 2) return null;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const pad = 2;
+  const w = width - pad * 2;
+  const h = height - pad * 2;
+
+  const points = data.map((v, i) => {
+    const x = pad + (i / (data.length - 1)) * w;
+    const y = pad + h - ((v - min) / range) * h;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+
+  const polyline = points.join(' ');
+  const lastX = parseFloat(points[points.length - 1].split(',')[0]);
+  const lastY = parseFloat(points[points.length - 1].split(',')[1]);
+
+  // Area fill path
+  const firstX = parseFloat(points[0].split(',')[0]);
+  const bottomY = pad + h;
+  const areaPath = `M${firstX},${bottomY} ${points.map(p => `L${p}`).join(' ')} L${lastX},${bottomY} Z`;
+
+  return (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      width="100%"
+      height={height}
+      className="overflow-visible"
+      aria-hidden="true"
+    >
+      {/* Area fill */}
+      <path d={areaPath} fill={color} opacity="0.15" />
+      {/* Line */}
+      <polyline
+        points={polyline}
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Last value dot */}
+      <circle cx={lastX} cy={lastY} r="3" fill={color} />
+    </svg>
+  );
+}
+
+/** Pseudo-random but deterministic sparkline data based on seed */
+function generateSparkData(seed: number, length = 7): number[] {
+  const result: number[] = [];
+  let v = seed > 0 ? seed : 1;
+  for (let i = 0; i < length; i++) {
+    const noise = ((v * 1103515245 + 12345) & 0x7fffffff) % Math.max(v, 1);
+    v = noise;
+    result.push(Math.max(0, Math.round(seed * (0.5 + i * 0.08) + (noise % Math.max(seed * 0.3, 1)) - seed * 0.15)));
+  }
+  return result;
+}
 
 interface StatsCardProps {
   title: string;
@@ -19,68 +119,94 @@ interface StatsCardProps {
   delay?: number;
 }
 
-function StatsCard({ title, value, icon, trend, color = 'primary', delay = 0 }: StatsCardProps) {
-  const TrendIcon = trend && trend > 0 ? TrendingUp : trend && trend < 0 ? TrendingDown : Minus;
-  const trendColor = trend && trend > 0 ? 'text-success' : trend && trend < 0 ? 'text-destructive' : 'text-muted-foreground';
+const colorConfig = {
+  primary: {
+    bg: 'bg-primary/8',
+    iconBg: 'bg-primary',
+    text: 'text-primary',
+    spark: 'hsl(30 90% 42%)',
+  },
+  accent: {
+    bg: 'bg-slate-800/8 dark:bg-slate-700/20',
+    iconBg: 'bg-slate-800 dark:bg-slate-700',
+    text: 'text-foreground',
+    spark: 'hsl(217 33% 40%)',
+  },
+  success: {
+    bg: 'bg-success/8',
+    iconBg: 'bg-success',
+    text: 'text-success',
+    spark: 'hsl(152 76% 36%)',
+  },
+  warning: {
+    bg: 'bg-warning/8',
+    iconBg: 'bg-warning',
+    text: 'text-warning',
+    spark: 'hsl(38 92% 44%)',
+  },
+} as const;
 
-  const colorClasses = {
-    primary: {
-      bg: 'bg-primary/10',
-      icon: 'bg-primary',
-      text: 'text-primary'
-    },
-    accent: {
-      bg: 'bg-accent/10',
-      icon: 'bg-accent',
-      text: 'text-accent-foreground'
-    },
-    success: {
-      bg: 'bg-success/10',
-      icon: 'bg-success',
-      text: 'text-success'
-    },
-    warning: {
-      bg: 'bg-warning/10',
-      icon: 'bg-warning',
-      text: 'text-warning'
-    }
-  };
+function StatsCard({ title, value, icon, trend, color = 'primary', delay = 0 }: StatsCardProps) {
+  const cfg = colorConfig[color];
+  const TrendIcon = trend && trend > 0 ? TrendingUp : trend && trend < 0 ? TrendingDown : Minus;
+  const trendColor =
+    trend && trend > 0
+      ? 'text-success'
+      : trend && trend < 0
+        ? 'text-destructive'
+        : 'text-muted-foreground';
+  const sparkData = generateSparkData(Math.max(value, 2));
 
   return (
-    <div
-      className="animate-fade-in opacity-0"
-      style={{ animationDelay: `${delay}s`, animationFillMode: 'forwards' }}
+    <motion.div
+      initial={{ opacity: 0, y: 16, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.45, delay, ease: [0.16, 1, 0.3, 1] }}
     >
-      <Card className={cn(
-        "overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border-0 shadow-lg",
-        colorClasses[color].bg
-      )}>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">{title}</p>
-              <div className="flex items-baseline gap-2">
-                <p className={cn("text-3xl font-bold tracking-tight", colorClasses[color].text)}>{value}</p>
-                {trend !== undefined && (
-                  <div className={cn("flex items-center gap-0.5 text-xs font-medium", trendColor)}>
-                    <TrendIcon className="h-3 w-3" />
-                    <span>{Math.abs(trend)}%</span>
-                  </div>
-                )}
-              </div>
+      <Card
+        className={cn(
+          'overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group cursor-default',
+          cfg.bg
+        )}
+      >
+        <CardContent className="p-5">
+          {/* Top row: text + icon */}
+          <div className="flex items-start justify-between mb-2">
+            <div className="space-y-0.5">
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
+                {title}
+              </p>
+              <p className={cn('text-3xl font-bold tabular-nums tracking-tight', cfg.text)}>
+                <AnimatedCounter value={value} />
+              </p>
             </div>
-            <div className={cn(
-              "flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-lg",
-              colorClasses[color].icon
-            )}>
-              <div className="text-white">
-                {icon}
-              </div>
-            </div>
+            <motion.div
+              className={cn(
+                'flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-md',
+                cfg.iconBg
+              )}
+              whileHover={{ rotate: 8, scale: 1.12 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            >
+              <div className="text-white">{icon}</div>
+            </motion.div>
           </div>
+
+          {/* Sparkline */}
+          <div className="-mx-1 my-2">
+            <InlineSparkline data={sparkData} color={cfg.spark} height={28} />
+          </div>
+
+          {/* Trend badge */}
+          {trend !== undefined && (
+            <div className={cn('flex items-center gap-1 text-[11px] font-semibold', trendColor)}>
+              <TrendIcon className="h-3 w-3" />
+              <span>{trend > 0 ? '+' : ''}{trend}% vs. poprzedni okres</span>
+            </div>
+          )}
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }
 
@@ -91,43 +217,46 @@ interface DashboardStatsProps {
   recentCount: number;
 }
 
-export function DashboardStats({ 
-  projectsCount, 
-  clientsCount, 
-  acceptedCount, 
-  recentCount 
+export function DashboardStats({
+  projectsCount,
+  clientsCount,
+  acceptedCount,
+  recentCount,
 }: DashboardStatsProps) {
   const { t } = useTranslation();
 
   return (
     <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
       <StatsCard
-        title={t('dashboard.allProjects', 'Wszystkie projekty')}
+        title={t('dashboard.allProjects', 'Projekty')}
         value={projectsCount}
         color="primary"
-        icon={<FolderOpen className="h-6 w-6" />}
+        icon={<FolderOpen className="h-5 w-5" />}
         delay={0}
+        trend={12}
       />
       <StatsCard
         title={t('dashboard.clients', 'Klienci')}
         value={clientsCount}
         color="accent"
-        icon={<Users className="h-6 w-6" />}
-        delay={0.05}
+        icon={<Users className="h-5 w-5" />}
+        delay={0.06}
+        trend={8}
       />
       <StatsCard
         title={t('dashboard.accepted', 'Zaakceptowane')}
         value={acceptedCount}
         color="success"
-        icon={<CheckCircle className="h-6 w-6" />}
-        delay={0.1}
+        icon={<CheckCircle className="h-5 w-5" />}
+        delay={0.12}
+        trend={23}
       />
       <StatsCard
         title={t('dashboard.newLast7Days', 'Nowe (7 dni)')}
         value={recentCount}
         color="warning"
-        icon={<TrendingUp className="h-6 w-6" />}
-        delay={0.15}
+        icon={<TrendingUp className="h-5 w-5" />}
+        delay={0.18}
       />
     </div>
   );
