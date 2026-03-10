@@ -62,7 +62,7 @@ export default function ProjectsList() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-2xl font-bold">{t('projectsV2.pageTitle')}</h1>
-        <Button size="sm" onClick={() => navigate('/app/offers?filter=ACCEPTED')}>
+        <Button size="sm" onClick={() => navigate('/app/projects/new')}>
           <Plus className="h-4 w-4 mr-1.5" />
           {t('projectsV2.newProject')}
         </Button>
@@ -118,7 +118,7 @@ export default function ProjectsList() {
           title={isFiltering ? t('projectsV2.emptyFilterTitle') : t('projectsV2.emptyTitle')}
           description={isFiltering ? t('projectsV2.emptyFilterDesc') : t('projectsV2.emptyDesc')}
           ctaLabel={isFiltering ? undefined : t('projectsV2.emptyCta')}
-          onCta={isFiltering ? undefined : () => navigate('/app/offers?filter=ACCEPTED')}
+          onCta={isFiltering ? undefined : () => navigate('/app/projects/new')}
         />
       )}
 
