@@ -128,7 +128,7 @@ export default function Billing() {
                       </span>
                     </div>
                     {plan.pricePLN > 0 && (
-                      <span className="text-sm text-muted-foreground">/mies. netto</span>
+                      <span className="text-sm text-muted-foreground">{t('billing.perMonthNet')}</span>
                     )}
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -145,9 +145,9 @@ export default function Billing() {
                       variant={plan.highlighted ? 'default' : 'outline'}
                       onClick={() => handleSelectPlan(plan.id)}
                     >
-                      {plan.id === 'free' ? 'Aktualny plan' : (
+                      {plan.id === 'free' ? t('billing.currentPlan') : (
                         <>
-                          Wybierz
+                          {t('billing.selectPlan')}
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </>
                       )}
@@ -162,7 +162,7 @@ export default function Billing() {
             <Card>
               <CardHeader>
                 <CardTitle>{t('billing.paymentHistory')}</CardTitle>
-                <CardDescription>Twoje ostatnie transakcje</CardDescription>
+                <CardDescription>{t('billing.paymentHistoryDescription')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col items-center justify-center py-12 text-center">

@@ -133,7 +133,8 @@
       "registrationFailed": "Помилка реєстрації. Спробуйте ще раз.",
       "passwordMustBeDifferent": "Новий пароль має відрізнятися від попереднього",
       "passwordTooWeak": "Пароль занадто слабкий",
-      "changePasswordFailed": "Не вдалося змінити пароль. Спробуйте ще раз."
+      "changePasswordFailed": "Не вдалося змінити пароль. Спробуйте ще раз.",
+      "noSession": "Немає сесії користувача"
     },
     "success": {
       "loggedIn": "Вхід виконано успішно",
@@ -393,6 +394,11 @@
     "syncGoogle": "Синхронізувати з Google",
     "syncOutlook": "Синхронізувати з Outlook",
     "exportIcs": "Експортувати ICS",
+    "eventUpdated": "Подію оновлено",
+    "eventAdded": "Подію додано",
+    "eventSaveError": "Не вдалося зберегти подію",
+    "eventDeleted": "Подію видалено",
+    "eventDeleteError": "Не вдалося видалити подію",
     "months": {
       "january": "Січень",
       "february": "Лютий",
@@ -803,7 +809,13 @@
     "currentlyOnPlan": "Поточний план: {{plan}}",
     "renewsOn": "Поновлюється {{date}}",
     "activePlan": "План активний",
-    "planNotConfigured": "Цей план ще не налаштовано"
+    "planNotConfigured": "Цей план ще не налаштовано",
+    "alreadyFree": "Безкоштовний план вже активний",
+    "addStripeKey": "Додайте ключ API Stripe в налаштуваннях для активації платежів",
+    "freePlan": "Безкоштовний план",
+    "projects": "проєктів",
+    "history": "Історія",
+    "perMonthNet": "/міс. без ПДВ"
   },
   "profile": {
     "title": "Профіль компанії",
@@ -2361,7 +2373,8 @@
     "questionPlaceholder": "Введіть ваше запитання щодо пропозиції...",
     "questionAriaLabel": "Запитання до виконавця",
     "sendQuestion": "Надіслати запитання",
-    "anotherQuestion": "Задати ще одне запитання"
+    "anotherQuestion": "Задати ще одне запитання",
+    "justAccepted": "Пропозицію прийнято!"
   },
   "pdfGenerator": {
     "defaultOfferText": "Шановні пані та панове,\n\nЗ радістю представляємо пропозицію на виконання робіт.",
@@ -2827,6 +2840,9 @@
     "errorRetry": "Спробувати знову",
     "actionOpen": "Відкрити",
     "actionDuplicate": "Дублювати",
+    "actionArchive": "Архівувати",
+    "archiveSuccess": "Пропозицію заархівовано",
+    "archiveError": "Не вдалося заархівувати пропозицію",
     "duplicateComingSoon": "Дублювання пропозицій — незабаром",
     "noTitle": "Пропозиція без назви",
     "valueNet": "Нетто: {{value}} {{currency}}",
@@ -3038,6 +3054,7 @@
     "createSuccess": "Проєкт успішно створено!",
     "createError": "Помилка створення проєкту. Спробуйте ще раз.",
     "creating": "Створення...",
+    "selectClientPlaceholder": "Оберіть клієнта (необов'язково)",
     "hub": {
       "back": "Проєкти",
       "callClient": "Зателефонувати клієнту",

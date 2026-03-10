@@ -114,7 +114,8 @@
       "registrationFailed": "Błąd rejestracji. Spróbuj ponownie.",
       "passwordMustBeDifferent": "Nowe hasło musi być inne niż poprzednie",
       "passwordTooWeak": "Hasło jest zbyt słabe",
-      "changePasswordFailed": "Nie udało się zmienić hasła. Spróbuj ponownie."
+      "changePasswordFailed": "Nie udało się zmienić hasła. Spróbuj ponownie.",
+      "noSession": "Brak sesji użytkownika"
     },
     "success": {
       "loggedIn": "Zalogowano pomyślnie",
@@ -406,7 +407,12 @@
     },
     "syncGoogle": "Synchronizuj z Google",
     "syncOutlook": "Synchronizuj z Outlook",
-    "exportIcs": "Eksport ICS"
+    "exportIcs": "Eksport ICS",
+    "eventUpdated": "Wydarzenie zaktualizowane",
+    "eventAdded": "Wydarzenie dodane",
+    "eventSaveError": "Nie udało się zapisać wydarzenia",
+    "eventDeleted": "Wydarzenie usunięte",
+    "eventDeleteError": "Nie udało się usunąć wydarzenia"
   },
   "finance": {
     "title": "Finanse",
@@ -803,7 +809,13 @@
     "currentlyOnPlan": "Aktualny plan: {{plan}}",
     "renewsOn": "Odnawia się {{date}}",
     "activePlan": "Plan aktywny",
-    "planNotConfigured": "Plan nie jest jeszcze skonfigurowany"
+    "planNotConfigured": "Plan nie jest jeszcze skonfigurowany",
+    "alreadyFree": "Plan darmowy jest już aktywny",
+    "addStripeKey": "Dodaj klucz API Stripe w ustawieniach, aby aktywować płatności",
+    "freePlan": "Plan darmowy",
+    "projects": "projektów",
+    "history": "Historia",
+    "perMonthNet": "/mies. netto"
   },
   "profile": {
     "title": "Profil firmy",
@@ -2361,7 +2373,8 @@
     "questionPlaceholder": "Wpisz swoje pytanie dotyczące oferty...",
     "questionAriaLabel": "Treść pytania do wykonawcy",
     "sendQuestion": "Wyślij pytanie",
-    "anotherQuestion": "Zadaj kolejne pytanie"
+    "anotherQuestion": "Zadaj kolejne pytanie",
+    "justAccepted": "Oferta zaakceptowana!"
   },
   "pdfGenerator": {
     "defaultOfferText": "Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na realizację prac.",
@@ -2827,6 +2840,9 @@
     "errorRetry": "Spróbuj ponownie",
     "actionOpen": "Otwórz",
     "actionDuplicate": "Duplikuj",
+    "actionArchive": "Archiwizuj",
+    "archiveSuccess": "Oferta zarchiwizowana",
+    "archiveError": "Nie udało się zarchiwizować oferty",
     "duplicateComingSoon": "Duplikowanie ofert — wkrótce dostępne",
     "noTitle": "Oferta bez tytułu",
     "valueNet": "Netto: {{value}} {{currency}}",
@@ -3038,6 +3054,7 @@
     "createSuccess": "Projekt utworzony pomyślnie!",
     "createError": "Błąd tworzenia projektu. Spróbuj ponownie.",
     "creating": "Tworzenie...",
+    "selectClientPlaceholder": "Wybierz klienta (opcjonalnie)",
     "hub": {
       "back": "Projekty",
       "callClient": "Zadzwoń do klienta",

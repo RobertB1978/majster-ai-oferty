@@ -114,7 +114,8 @@
       "registrationFailed": "Registration error. Please try again.",
       "passwordMustBeDifferent": "New password must be different from the previous one",
       "passwordTooWeak": "Password is too weak",
-      "changePasswordFailed": "Failed to change password. Please try again."
+      "changePasswordFailed": "Failed to change password. Please try again.",
+      "noSession": "No user session"
     },
     "success": {
       "loggedIn": "Logged in successfully",
@@ -393,6 +394,11 @@
     "syncGoogle": "Sync with Google",
     "syncOutlook": "Sync with Outlook",
     "exportIcs": "Export ICS",
+    "eventUpdated": "Event updated",
+    "eventAdded": "Event added",
+    "eventSaveError": "Failed to save event",
+    "eventDeleted": "Event deleted",
+    "eventDeleteError": "Failed to delete event",
     "months": {
       "january": "January",
       "february": "February",
@@ -803,7 +809,13 @@
     "currentlyOnPlan": "Current plan: {{plan}}",
     "renewsOn": "Renews on {{date}}",
     "activePlan": "Plan active",
-    "planNotConfigured": "This plan is not yet configured"
+    "planNotConfigured": "This plan is not yet configured",
+    "alreadyFree": "Free plan is already active",
+    "addStripeKey": "Add Stripe API key in settings to activate payments",
+    "freePlan": "Free plan",
+    "projects": "projects",
+    "history": "History",
+    "perMonthNet": "/mo net"
   },
   "profile": {
     "title": "Company Profile",
@@ -2361,7 +2373,8 @@
     "questionPlaceholder": "Enter your question about this offer...",
     "questionAriaLabel": "Question to the contractor",
     "sendQuestion": "Send question",
-    "anotherQuestion": "Ask another question"
+    "anotherQuestion": "Ask another question",
+    "justAccepted": "Offer accepted!"
   },
   "pdfGenerator": {
     "defaultOfferText": "Dear Sir/Madam,\n\nWe are pleased to present our offer for the requested works.",
@@ -2827,6 +2840,9 @@
     "errorRetry": "Try again",
     "actionOpen": "Open",
     "actionDuplicate": "Duplicate",
+    "actionArchive": "Archive",
+    "archiveSuccess": "Offer archived",
+    "archiveError": "Failed to archive offer",
     "duplicateComingSoon": "Offer duplication — coming soon",
     "noTitle": "Untitled offer",
     "valueNet": "Net: {{value}} {{currency}}",
@@ -3038,6 +3054,7 @@
     "createSuccess": "Project created successfully!",
     "createError": "Error creating project. Please try again.",
     "creating": "Creating...",
+    "selectClientPlaceholder": "Select client (optional)",
     "hub": {
       "back": "Projects",
       "callClient": "Call client",
