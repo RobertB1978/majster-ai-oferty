@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Plus, FileText, Users, DollarSign, CalendarPlus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Logo } from '@/components/branding/Logo';
@@ -16,8 +18,17 @@ const languages = [
   { code: 'uk', name: 'Українська', flag: '🇺🇦' },
 ];
 
+/** Akcje quick-create dostępne na desktopie (podzbiór akcji FAB) */
+const QUICK_CREATE_ACTIONS = [
+  { id: 'new-offer',  labelKey: 'newShell.fab.newOffer',  icon: FileText,    route: '/app/quick-est' },
+  { id: 'add-client', labelKey: 'newShell.fab.addClient', icon: Users,       route: '/app/customers' },
+  { id: 'add-cost',   labelKey: 'newShell.fab.addCost',   icon: DollarSign,  route: '/app/finance' },
+  { id: 'add-date',   labelKey: 'newShell.fab.addDate',   icon: CalendarPlus, route: '/app/calendar' },
+];
+
 export function NewShellTopBar() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme');
@@ -57,6 +68,38 @@ export function NewShellTopBar() {
 
         {/* Przyciski po prawej */}
         <div className="flex items-center gap-0.5">
+          {/* Przycisk "Utwórz" — tylko desktop (lg+); na mobile zastępuje go FAB */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="default"
+                size="sm"
+                className="hidden lg:flex h-8 gap-1.5 px-3"
+                aria-label={t('newShell.fab.open', 'Utwórz')}
+              >
+                <Plus className="h-4 w-4" />
+                <span>{t('newShell.fab.open', 'Utwórz')}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {QUICK_CREATE_ACTIONS.map((action, idx) => {
+                const Icon = action.icon;
+                return (
+                  <div key={action.id}>
+                    {idx > 0 && idx % 2 === 0 && <DropdownMenuSeparator />}
+                    <DropdownMenuItem
+                      onClick={() => navigate(action.route)}
+                      className="flex items-center gap-2"
+                    >
+                      <Icon className="h-4 w-4" />
+                      {t(action.labelKey)}
+                    </DropdownMenuItem>
+                  </div>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {/* Przełącznik trybu jasny/ciemny */}
           <Button
             variant="ghost"
