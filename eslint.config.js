@@ -128,6 +128,7 @@ export default tseslint.config(
             "strokeLinecap", "strokeLinejoin", "strokeWidth",
             "viewBox", "d", "rx", "ry", "cx", "cy", "r",
             "aria-label", "aria-controls", "aria-expanded",
+            "mode", "align", "side", "sideOffset", "asChild",
           ],
         },
         callees: {

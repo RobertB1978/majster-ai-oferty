@@ -15,7 +15,7 @@ import { AuthDiagnostics } from '@/components/auth/AuthDiagnostics';
 import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWidget';
 import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
 import { BuilderHeroIllustration } from '@/components/auth/BuilderHeroIllustration';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion, MotionConfig } from 'framer-motion';
 
 const CAPTCHA_FAIL_THRESHOLD = 3;
 
@@ -134,7 +134,11 @@ export default function Login() {
   ];
 
   return (
-    <>
+    // MotionConfig reducedMotion="user" ensures ALL motion children respect
+    // prefers-reduced-motion:reduce set by Playwright, so axe sees fully-opaque
+    // elements and WCAG AA contrast checks pass.
+    <MotionConfig reducedMotion="user">
+      <>
       <div className="min-h-screen flex flex-col lg:flex-row bg-background overflow-hidden">
 
         {/* LEFT PANEL — Brand hero (hidden on mobile) */}
@@ -364,7 +368,7 @@ export default function Login() {
                     {isLoading ? (
                       <motion.span
                         key="loading"
-                        initial={{ opacity: 0 }}
+                        initial={{ opacity: shouldReduceMotion ? 1 : 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="flex items-center gap-2"
@@ -375,7 +379,7 @@ export default function Login() {
                     ) : (
                       <motion.span
                         key="login"
-                        initial={{ opacity: 0 }}
+                        initial={{ opacity: shouldReduceMotion ? 1 : 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="flex items-center gap-2"
@@ -434,6 +438,7 @@ export default function Login() {
       </div>
 
       <AuthDiagnostics />
-    </>
+      </>
+    </MotionConfig>
   );
 }
