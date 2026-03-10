@@ -178,7 +178,15 @@
     "passwordChangedTitle": "Hasło zmienione",
     "passwordChangedDesc": "Za chwilę zostaniesz przekierowany do aplikacji...",
     "saving": "Zapisywanie...",
-    "changePassword": "Zmień hasło"
+    "changePassword": "Zmień hasło",
+    "orWithEmail": "lub zaloguj emailem",
+    "hero": {
+      "tagline": "Zarządzaj swoim biznesem jak prawdziwy profesjonalista",
+      "subtitle": "Wyceny PDF, projekty, klienci i asystent AI — wszystko w jednym miejscu dla fachowców w Polsce.",
+      "usersCount": "2 400+ fachowców",
+      "rating": "Ocena 4.9/5",
+      "freeStart": "Bezpłatny start"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
