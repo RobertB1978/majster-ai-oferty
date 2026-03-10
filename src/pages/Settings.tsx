@@ -16,6 +16,10 @@ import { BiometricSettings } from '@/components/settings/BiometricSettings';
 import CompanyProfile from '@/pages/CompanyProfile';
 import { SubscriptionSection } from '@/components/billing/SubscriptionSection';
 
+// AUTH-01: Biometric auth does not complete a Supabase session (dead code path).
+// Disabled until fully implemented. Change to true to re-enable.
+const BIOMETRIC_FEATURE_ENABLED = false;
+
 export default function Settings() {
   const { t } = useTranslation();
 
@@ -61,10 +65,12 @@ export default function Settings() {
                 <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                 <span>{t('settings.notifications')}</span>
               </TabsTrigger>
-              <TabsTrigger value="biometric" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
-                <Fingerprint className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
-                <span>{t('settings.biometric')}</span>
-              </TabsTrigger>
+              {BIOMETRIC_FEATURE_ENABLED && (
+                <TabsTrigger value="biometric" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                  <Fingerprint className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                  <span>{t('settings.biometric')}</span>
+                </TabsTrigger>
+              )}
               <TabsTrigger value="email" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                 <span>{t('settings.contactEmailTab')}</span>
@@ -151,9 +157,11 @@ export default function Settings() {
             <PushNotificationSettings />
           </TabsContent>
 
-          <TabsContent value="biometric" className="mt-4">
-            <BiometricSettings />
-          </TabsContent>
+          {BIOMETRIC_FEATURE_ENABLED && (
+            <TabsContent value="biometric" className="mt-4">
+              <BiometricSettings />
+            </TabsContent>
+          )}
 
           <TabsContent value="email" className="mt-4">
             <ContactEmailSettings />

@@ -9,9 +9,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FolderKanban, Plus } from 'lucide-react';
+import { FolderKanban, Plus, Archive } from 'lucide-react';
 
-import { useProjectsV2List, type ProjectStatus } from '@/hooks/useProjectsV2';
+import { useProjectsV2List, useDeleteProjectV2, type ProjectStatus } from '@/hooks/useProjectsV2';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +19,16 @@ import { SearchInput } from '@/components/ui/search-input';
 import { SkeletonList } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 
 // ── Status config ─────────────────────────────────────────────────────────────
@@ -48,12 +58,14 @@ export default function ProjectsList() {
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
   const [searchRaw, setSearchRaw] = useState('');
+  const [archiveConfirmId, setArchiveConfirmId] = useState<string | null>(null);
   const search = useDebounce(searchRaw, 300);
 
   const { data: projects = [], isLoading, isError, refetch } = useProjectsV2List(
     statusFilter === 'ALL' ? 'ALL' : statusFilter,
     search
   );
+  const deleteProject = useDeleteProjectV2();
 
   const isFiltering = statusFilter !== 'ALL' || searchRaw.trim() !== '';
 
@@ -161,11 +173,51 @@ export default function ProjectsList() {
                     </p>
                   )}
                 </div>
+                {project.status !== 'CANCELLED' && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    aria-label={t('projectsV2.archiveProject', 'Archiwizuj projekt')}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setArchiveConfirmId(project.id);
+                    }}
+                  >
+                    <Archive className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             );
           })}
         </div>
       )}
+
+      {/* Archive confirmation dialog (PRJ-03: soft-delete via CANCELLED status) */}
+      <AlertDialog open={!!archiveConfirmId} onOpenChange={() => setArchiveConfirmId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('projectsV2.archiveConfirmTitle', 'Archiwizuj projekt?')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('projectsV2.archiveConfirmDesc', 'Projekt zostanie oznaczony jako anulowany. Możesz go nadal przeglądać.')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel', 'Anuluj')}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (archiveConfirmId) {
+                  deleteProject.mutate(archiveConfirmId);
+                  setArchiveConfirmId(null);
+                }
+              }}
+            >
+              {t('projectsV2.archiveConfirmAction', 'Archiwizuj')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

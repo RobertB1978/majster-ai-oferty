@@ -431,6 +431,16 @@ textarea:focus-visible {
   animation: live-pulse 1.8s ease-in-out infinite;
 }
 
+/* Celebration animation for offer acceptance (RET-01) */
+@keyframes celebration {
+  0%   { transform: scale(1);    opacity: 1; }
+  20%  { transform: scale(1.04); opacity: 1; }
+  40%  { transform: scale(0.97); opacity: 1; }
+  60%  { transform: scale(1.02); opacity: 1; }
+  80%  { transform: scale(0.99); opacity: 1; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
 /* Respect user motion preference — disables all custom animations for users with
    prefers-reduced-motion: reduce (WCAG 2.1 SC 2.3.3). Also prevents mid-animation
    opacity values from failing automated WCAG AA contrast checks in CI. */
