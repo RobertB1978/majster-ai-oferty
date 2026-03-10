@@ -124,7 +124,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
-      sourcemap: mode === "production",
+      // 'hidden' generates .map files for Sentry error tracking but does NOT
+      // append sourceMappingURL comments to JS files, so source code is not
+      // publicly accessible via browser DevTools in production.
+      sourcemap: mode === "production" ? "hidden" : false,
       target: "esnext",
       minify: "esbuild",
       cssMinify: true,
