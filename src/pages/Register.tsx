@@ -12,6 +12,7 @@ import { Wrench, Mail, Lock, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWidget';
+import { Helmet } from 'react-helmet-async';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -103,6 +104,21 @@ export default function Register() {
   };
 
   return (
+    <>
+    <Helmet>
+      <title>Rejestracja — zacznij za darmo | Majster.AI</title>
+      <meta name="description" content="Zarejestruj się w Majster.AI za darmo — bez karty kredytowej. Twórz wyceny PDF, zarządzaj projektami i klientami jako fachowiec." />
+      <link rel="canonical" href="https://majsterai.com/register" />
+      <meta name="robots" content="index, follow" />
+      <meta property="og:title" content="Rejestracja — zacznij za darmo | Majster.AI" />
+      <meta property="og:description" content="Zarejestruj się w Majster.AI za darmo. Platforma dla fachowców budowlanych." />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://majsterai.com/register" />
+      <meta property="og:image" content="https://majsterai.com/icon-512.png" />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:title" content="Rejestracja — zacznij za darmo | Majster.AI" />
+      <meta name="twitter:description" content="Zarejestruj się w Majster.AI za darmo. Platforma dla fachowców budowlanych." />
+    </Helmet>
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
@@ -190,5 +206,6 @@ export default function Register() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

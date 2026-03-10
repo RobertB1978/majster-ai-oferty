@@ -16,6 +16,7 @@ import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWi
 import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
 import { BuilderHeroIllustration } from '@/components/auth/BuilderHeroIllustration';
 import { motion, AnimatePresence, useReducedMotion, MotionConfig } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 
 const CAPTCHA_FAIL_THRESHOLD = 3;
 /** Feature flag: biometric auth is not yet fully integrated with Supabase sessions.
@@ -142,6 +143,20 @@ export default function Login() {
     // elements and WCAG AA contrast checks pass.
     <MotionConfig reducedMotion="user">
       <>
+      <Helmet>
+        <title>Logowanie | Majster.AI</title>
+        <meta name="description" content="Zaloguj się do Majster.AI — platformy dla fachowców. Zarządzaj projektami, twórz wyceny PDF i korzystaj z asystenta AI." />
+        <link rel="canonical" href="https://majsterai.com/login" />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:title" content="Logowanie | Majster.AI" />
+        <meta property="og:description" content="Zaloguj się do Majster.AI — platformy dla fachowców budowlanych." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://majsterai.com/login" />
+        <meta property="og:image" content="https://majsterai.com/icon-512.png" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Logowanie | Majster.AI" />
+        <meta name="twitter:description" content="Zaloguj się do Majster.AI — platformy dla fachowców budowlanych." />
+      </Helmet>
       <div className="min-h-screen flex flex-col lg:flex-row bg-background overflow-hidden">
 
         {/* LEFT PANEL — Brand hero (hidden on mobile) */}

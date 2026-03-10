@@ -12,7 +12,7 @@ import {
   LandingFooter,
 } from '@/components/landing';
 
-const SITE_URL = 'https://majster-ai-oferty.vercel.app';
+const SITE_URL = 'https://majsterai.com';
 
 const structuredData = [
   {
