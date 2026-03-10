@@ -57,7 +57,8 @@ export function NewShellFAB() {
   }
 
   return (
-    <>
+    // lg:hidden — na desktop FAB jest zastąpiony przez przycisk "Utwórz" w topbarze
+    <div className="lg:hidden">
       {/* Overlay — zamyka bottom sheet po kliknięciu poza */}
       {isOpen && (
         <div
@@ -139,6 +140,6 @@ export function NewShellFAB() {
       >
         <Plus className="h-6 w-6" />
       </button>
-    </>
+    </div>
   );
 }

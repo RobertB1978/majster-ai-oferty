@@ -29,7 +29,7 @@ export function NewShellBottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 border-t border-border/60 bg-card/95 backdrop-blur-md safe-area-bottom"
+      className="lg:hidden fixed bottom-0 left-0 right-0 border-t border-border/60 bg-card/95 backdrop-blur-md safe-area-bottom"
       style={{ zIndex: 'var(--z-nav, 50)' }}
       aria-label={t('newShell.nav.ariaLabel', 'Nawigacja')}
     >

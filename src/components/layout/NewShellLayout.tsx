@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { NewShellBottomNav } from './NewShellBottomNav';
 import { NewShellFAB } from './NewShellFAB';
 import { NewShellTopBar } from './NewShellTopBar';
+import { NewShellDesktopSidebar } from './NewShellDesktopSidebar';
 import { PageTransition } from './PageTransition';
 
 const NewShellOnboarding = lazy(
@@ -15,10 +16,14 @@ const NewShellOnboarding = lazy(
 /**
  * NewShellLayout — nowy shell aplikacji za flagą FF_NEW_SHELL=true.
  *
- * Zawiera:
- *  - Dolną nawigację 5-zakładkową (Home / Oferty / FAB / Projekty / Więcej)
+ * Mobile (< lg):
+ *  - Dolna nawigacja 5-zakładkowa (Home / Oferty / FAB / Projekty / Więcej)
  *  - FAB otwierający bottom sheet z akcjami
- *  - Lekki onboarding (3 kroki) przy pierwszym uruchomieniu
+ *
+ * Desktop (lg+):
+ *  - Lewy sidebar z nawigacją (NewShellDesktopSidebar)
+ *  - Przycisk "Utwórz" w topbarze
+ *  - Brak dolnej nawigacji i FAB
  *
  * Stary shell (AppLayout) pozostaje nienaruszony.
  */
@@ -42,24 +47,30 @@ export function NewShellLayout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background transition-colors duration-300">
-      {/* Górny pasek z przełącznikami języka i trybu */}
+      {/* Górny pasek z logo, przełącznikami języka i trybu + przycisk Utwórz (desktop) */}
       <NewShellTopBar />
 
-      <main
-        id="main-content"
-        className={`flex-1 pb-20 transition-all duration-200 ${
-          showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-        }`}
-      >
-        <PageTransition>
-          <Outlet />
-        </PageTransition>
-      </main>
+      {/* Obszar poniżej topbara: sidebar (desktop) + treść */}
+      <div className="flex flex-1">
+        {/* Lewy sidebar — widoczny tylko na desktop (lg+) */}
+        <NewShellDesktopSidebar />
 
-      {/* Dolna nawigacja 5 zakładek */}
+        <main
+          id="main-content"
+          className={`flex-1 pb-20 lg:pb-6 transition-all duration-200 ${
+            showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}
+        >
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
+        </main>
+      </div>
+
+      {/* Dolna nawigacja 5 zakładek — tylko mobile (lg:hidden wbudowane w komponent) */}
       <NewShellBottomNav />
 
-      {/* FAB — Floating Action Button */}
+      {/* FAB — tylko mobile (lg:hidden wbudowane w komponent) */}
       <NewShellFAB />
 
       {/* Lekki onboarding przy pierwszym uruchomieniu */}
