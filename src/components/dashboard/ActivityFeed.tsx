@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +16,7 @@ interface ActivityItemProps {
   index: number;
 }
 
-function ActivityItem({ activity, index }: ActivityItemProps) {
+const ActivityItem = React.memo(function ActivityItem({ activity, index }: ActivityItemProps) {
   const { i18n } = useTranslation();
   const locale = dateLocaleMap[i18n.language] ?? pl;
   const config = ACTIVITY_CONFIG[activity.type];
@@ -63,9 +64,9 @@ function ActivityItem({ activity, index }: ActivityItemProps) {
       </div>
     </motion.div>
   );
-}
+});
 
-export function ActivityFeed() {
+export const ActivityFeed = React.memo(function ActivityFeed() {
   const { t } = useTranslation();
   const { data: activities = [], isLoading } = useRecentActivity(5);
 
@@ -108,4 +109,4 @@ export function ActivityFeed() {
       </CardContent>
     </Card>
   );
-}
+});

@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { differenceInDays } from 'date-fns';
-import { FileText, MoreHorizontal, Copy, ExternalLink, FolderPlus, Sparkles } from 'lucide-react';
+import { FileText, MoreHorizontal, Copy, ExternalLink, FolderPlus, Sparkles, Archive } from 'lucide-react';
 
 import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
 import { IndustryTemplateSheet } from '@/components/offers/IndustryTemplateSheet';
 
-import { useOffers, NO_RESPONSE_DAYS } from '@/hooks/useOffers';
+import { useOffers, useArchiveOffer, NO_RESPONSE_DAYS } from '@/hooks/useOffers';
 import type { Offer, OfferStatus, OfferSort } from '@/hooks/useOffers';
 import { useDebounce } from '@/hooks/useDebounce';
 
@@ -91,10 +91,11 @@ interface OfferRowProps {
   onOpen: (id: string) => void;
   onDuplicate: () => void;
   onCreateProject: (id: string) => void;
+  onArchive: (id: string) => void;
   isCreatingProject?: boolean;
 }
 
-function OfferRow({ offer, onOpen, onDuplicate, onCreateProject, isCreatingProject }: OfferRowProps) {
+function OfferRow({ offer, onOpen, onDuplicate, onCreateProject, onArchive, isCreatingProject }: OfferRowProps) {
   const { t } = useTranslation();
   const noResp = offer.status === 'SENT' ? noResponseDays(offer.sent_at) : null;
   const amount = formatAmount(offer.total_net, offer.currency);
@@ -175,6 +176,12 @@ function OfferRow({ offer, onOpen, onDuplicate, onCreateProject, isCreatingProje
             <Copy className="mr-2 h-4 w-4" />
             {t('offersList.actionDuplicate')}
           </DropdownMenuItem>
+          {offer.status !== 'ARCHIVED' && (
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive(offer.id); }}>
+              <Archive className="mr-2 h-4 w-4" />
+              {t('offersList.actionArchive', 'Archiwizuj')}
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
@@ -195,6 +202,7 @@ export default function Offers() {
 
   const search = useDebounce(searchRaw, 300);
   const createProject = useCreateProjectV2();
+  const archiveOffer = useArchiveOffer();
 
   const { data: offers = [], isLoading, isError, error, refetch } = useOffers({
     status: statusFilter,
@@ -205,6 +213,14 @@ export default function Offers() {
   const handleOpen = (id: string) => navigate(`/app/offers/${id}`);
   const handleDuplicate = () => toast.info(t('offersList.duplicateComingSoon'));
   const handleCreateFirst = () => navigate('/app/offers/new');
+  const handleArchive = async (offerId: string) => {
+    try {
+      await archiveOffer.mutateAsync(offerId);
+      toast.success(t('offersList.archiveSuccess', 'Oferta zarchiwizowana'));
+    } catch {
+      toast.error(t('offersList.archiveError', 'Nie udało się zarchiwizować oferty'));
+    }
+  };
 
   // PR-13: Create project from accepted offer then navigate to project hub
   const handleCreateProject = async (offerId: string) => {
@@ -354,6 +370,7 @@ export default function Offers() {
               onOpen={handleOpen}
               onDuplicate={handleDuplicate}
               onCreateProject={handleCreateProject}
+              onArchive={handleArchive}
               isCreatingProject={creatingProjectId === offer.id}
             />
           ))}

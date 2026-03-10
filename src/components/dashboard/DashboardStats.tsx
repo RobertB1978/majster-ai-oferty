@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -217,7 +217,7 @@ interface DashboardStatsProps {
   recentCount: number;
 }
 
-export function DashboardStats({
+export const DashboardStats = React.memo(function DashboardStats({
   projectsCount,
   clientsCount,
   acceptedCount,
@@ -257,4 +257,4 @@ export function DashboardStats({
       />
     </div>
   );
-}
+});
