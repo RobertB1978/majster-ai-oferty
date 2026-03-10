@@ -30,29 +30,19 @@ vi.mock('@/integrations/supabase/client', () => ({
 
 describe('Admin Access Control', () => {
   describe('hasAdminAccess logic', () => {
-    // This mirrors the logic in pages/Admin.tsx line 42
-    function hasAdminAccess(isAppAdmin: boolean, isModerator: boolean, isOrgAdmin: boolean): boolean {
-      return isAppAdmin || isModerator || isOrgAdmin;
+    // NOTE: pages/Admin.tsx is legacy dead code (not mounted in App.tsx routes).
+    // The live /admin/* routes are protected by AdminGuard which requires isAdmin
+    // (user_roles.role = 'admin'). This helper reflects that stricter check.
+    function hasAdminAccess(isAppAdmin: boolean): boolean {
+      return isAppAdmin;
     }
 
     it('grants access to platform admins', () => {
-      expect(hasAdminAccess(true, false, false)).toBe(true);
+      expect(hasAdminAccess(true)).toBe(true);
     });
 
-    it('grants access to moderators', () => {
-      expect(hasAdminAccess(false, true, false)).toBe(true);
-    });
-
-    it('grants access to organization admins', () => {
-      expect(hasAdminAccess(false, false, true)).toBe(true);
-    });
-
-    it('denies access to regular users', () => {
-      expect(hasAdminAccess(false, false, false)).toBe(false);
-    });
-
-    it('grants access when user has multiple admin roles', () => {
-      expect(hasAdminAccess(true, true, true)).toBe(true);
+    it('denies access to non-admin authenticated users', () => {
+      expect(hasAdminAccess(false)).toBe(false);
     });
   });
 
@@ -95,21 +85,21 @@ describe('Admin Access Control', () => {
   });
 
   describe('TopBar admin visibility', () => {
-    // This mirrors the logic in components/layout/TopBar.tsx
-    function shouldShowAdminIcon(isAdmin: boolean, isModerator: boolean, isOrgAdmin: boolean): boolean {
-      return isAdmin || isModerator || isOrgAdmin;
+    // Mirrors the actual condition in components/layout/TopBar.tsx line 163:
+    //   {isAdmin && <Button ...><Shield /></Button>}
+    // Only platform admins (user_roles.role = 'admin') see the shield icon.
+    // Moderators and org-level admins do NOT see it — they also cannot access
+    // /admin/* routes (AdminGuard requires isAdmin from user_roles table).
+    function shouldShowAdminIcon(isAdmin: boolean): boolean {
+      return isAdmin;
     }
 
     it('shows admin icon for platform admin', () => {
-      expect(shouldShowAdminIcon(true, false, false)).toBe(true);
+      expect(shouldShowAdminIcon(true)).toBe(true);
     });
 
-    it('shows admin icon for org admin', () => {
-      expect(shouldShowAdminIcon(false, false, true)).toBe(true);
-    });
-
-    it('hides admin icon for regular users', () => {
-      expect(shouldShowAdminIcon(false, false, false)).toBe(false);
+    it('hides admin icon for non-admin (moderator, org admin, or regular user)', () => {
+      expect(shouldShowAdminIcon(false)).toBe(false);
     });
   });
 
