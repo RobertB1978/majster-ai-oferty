@@ -77,7 +77,7 @@ export default function ResetPassword() {
     
     // Redirect to dashboard after 2 seconds
     setTimeout(() => {
-      navigate('/dashboard');
+      navigate('/app/dashboard');
     }, 2000);
   };
 

@@ -6,7 +6,7 @@
  * RLS enforced server-side (user_id = auth.uid()).
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -97,5 +97,25 @@ export function useOffers(params: OffersQueryParams = {}) {
     },
     enabled: !!user,
     staleTime: 30_000,
+  });
+}
+
+/**
+ * Soft-delete (archive) an offer by setting status to ARCHIVED.
+ */
+export function useArchiveOffer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (offerId: string) => {
+      const { error } = await supabase
+        .from('offers')
+        .update({ status: 'ARCHIVED', updated_at: new Date().toISOString() })
+        .eq('id', offerId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: offersKeys.all });
+    },
   });
 }

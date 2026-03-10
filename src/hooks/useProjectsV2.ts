@@ -18,7 +18,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-export type ProjectStatus = 'ACTIVE' | 'COMPLETED' | 'ON_HOLD';
+export type ProjectStatus = 'ACTIVE' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED';
 
 export interface ProjectStage {
   name: string;
@@ -209,6 +209,25 @@ export function useUpdateProjectV2() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: projectsV2Keys.all });
       queryClient.invalidateQueries({ queryKey: projectsV2Keys.detail(data.id) });
+    },
+  });
+}
+
+// ── Delete (soft-delete via CANCELLED status) ────────────────────────────────
+
+export function useDeleteProjectV2() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (projectId: string) => {
+      const { error } = await supabase
+        .from('v2_projects')
+        .update({ status: 'CANCELLED' as ProjectStatus })
+        .eq('id', projectId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: projectsV2Keys.all });
     },
   });
 }

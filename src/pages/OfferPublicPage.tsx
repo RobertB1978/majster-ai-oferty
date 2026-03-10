@@ -230,14 +230,16 @@ export default function OfferPublicPage() {
             <p className="text-muted-foreground text-sm">{t('offerPublicPage.offerSubtitle')}</p>
           </div>
 
-          {/* ─── Accepted banner ───────────────────────────────── */}
+          {/* ─── Accepted banner with celebration ───────────────── */}
           {isOfferAccepted && (
-            <Card className="border-green-500 bg-green-50 dark:bg-green-950/20">
+            <Card className={`border-green-500 bg-green-50 dark:bg-green-950/20 ${accepted ? 'animate-[celebration_0.6s_ease-in-out]' : ''}`}>
               <CardContent className="py-6">
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="h-8 w-8 text-green-600 shrink-0" />
+                  <CheckCircle className={`h-8 w-8 text-green-600 shrink-0 ${accepted ? 'animate-bounce' : ''}`} />
                   <div>
-                    <p className="font-semibold text-green-700 dark:text-green-400">{t('offerPublicPage.acceptedBanner')}</p>
+                    <p className="font-semibold text-green-700 dark:text-green-400 text-lg">
+                      {accepted ? t('offerPublicPage.justAccepted', 'Oferta zaakceptowana!') : t('offerPublicPage.acceptedBanner')}
+                    </p>
                     {(offer.accepted_at ?? offer.approved_at) && (
                       <p className="text-sm text-green-600 dark:text-green-500">
                         {new Date(offer.accepted_at ?? offer.approved_at!).toLocaleString()}

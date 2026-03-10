@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { pl, enUS, uk } from 'date-fns/locale';
 import { ACTIVITY_CONFIG } from '@/data/activityConfig';
-import { getDemoActivities } from '@/data/demoActivities';
+import { useRecentActivity } from '@/hooks/useRecentActivity';
 import type { Activity } from '@/data/demoActivities';
 
 const dateLocaleMap: Record<string, Locale> = { pl, en: enUS, uk };
@@ -15,7 +16,7 @@ interface ActivityItemProps {
   index: number;
 }
 
-function ActivityItem({ activity, index }: ActivityItemProps) {
+const ActivityItem = React.memo(function ActivityItem({ activity, index }: ActivityItemProps) {
   const { i18n } = useTranslation();
   const locale = dateLocaleMap[i18n.language] ?? pl;
   const config = ACTIVITY_CONFIG[activity.type];
@@ -63,11 +64,11 @@ function ActivityItem({ activity, index }: ActivityItemProps) {
       </div>
     </motion.div>
   );
-}
+});
 
-export function ActivityFeed() {
+export const ActivityFeed = React.memo(function ActivityFeed() {
   const { t } = useTranslation();
-  const activities = getDemoActivities();
+  const { data: activities = [], isLoading } = useRecentActivity(5);
 
   return (
     <Card className="overflow-hidden">
@@ -76,16 +77,36 @@ export function ActivityFeed() {
           <CardTitle className="text-base font-semibold">
             {t('dashboard.activityFeed')}
           </CardTitle>
-          <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
+          {activities.length > 0 && (
+            <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
+          )}
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="space-y-0">
-          {activities.map((activity, index) => (
-            <ActivityItem key={activity.id} activity={activity} index={index} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-start gap-3 animate-pulse">
+                <div className="h-8 w-8 rounded-full bg-muted" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-3/4 rounded bg-muted" />
+                  <div className="h-3 w-1/2 rounded bg-muted" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : activities.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4 text-center">
+            {t('dashboard.noActivity', 'Brak aktywności. Stwórz pierwszą ofertę!')}
+          </p>
+        ) : (
+          <div className="space-y-0">
+            {activities.map((activity, index) => (
+              <ActivityItem key={activity.id} activity={activity} index={index} />
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
-}
+});

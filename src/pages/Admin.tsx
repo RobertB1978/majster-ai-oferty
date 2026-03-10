@@ -46,7 +46,7 @@ export default function Admin() {
   // Redirect non-admins
   useEffect(() => {
     if (!isLoading && !hasAdminAccess) {
-      navigate('/dashboard');
+      navigate('/app/dashboard');
     }
   }, [hasAdminAccess, isLoading, navigate]);
 
@@ -66,7 +66,7 @@ export default function Admin() {
         <p className="text-muted-foreground mb-4">
           {t('admin.noAccessDesc')}
         </p>
-        <Button onClick={() => navigate('/dashboard')}>
+        <Button onClick={() => navigate('/app/dashboard')}>
           {t('admin.backToDashboard')}
         </Button>
       </div>

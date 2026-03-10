@@ -18,6 +18,9 @@ import { BuilderHeroIllustration } from '@/components/auth/BuilderHeroIllustrati
 import { motion, AnimatePresence, useReducedMotion, MotionConfig } from 'framer-motion';
 
 const CAPTCHA_FAIL_THRESHOLD = 3;
+/** Feature flag: biometric auth is not yet fully integrated with Supabase sessions.
+ *  Set to true once WebAuthn creates proper Supabase auth sessions. */
+const FF_BIOMETRIC_AUTH = false;
 
 export default function Login() {
   const { t } = useTranslation();
@@ -46,7 +49,7 @@ export default function Login() {
     const storedEmail = localStorage.getItem('majster_last_email');
     if (storedEmail) {
       setEmail(storedEmail);
-      if (isSupported) {
+      if (FF_BIOMETRIC_AUTH && isSupported) {
         const enabled = checkIfEnabled(storedEmail);
         setBiometricAvailable(enabled);
       }
@@ -54,7 +57,7 @@ export default function Login() {
   }, [isSupported, checkIfEnabled]);
 
   useEffect(() => {
-    if (email && isSupported) {
+    if (FF_BIOMETRIC_AUTH && email && isSupported) {
       const enabled = checkIfEnabled(email);
       setBiometricAvailable(enabled);
     } else {

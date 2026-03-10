@@ -43,7 +43,7 @@ export default function NewProjectV2() {
     try {
       const project = await createProject.mutateAsync({
         title: trimmed,
-        client_id: clientId || null,
+        client_id: clientId && clientId !== 'none' ? clientId : null,
       });
       toast.success(t('projectsV2.createSuccess'));
       navigate(`/app/projects/${project.id}`);

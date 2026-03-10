@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -217,7 +217,7 @@ interface DashboardStatsProps {
   recentCount: number;
 }
 
-export function DashboardStats({
+export const DashboardStats = React.memo(function DashboardStats({
   projectsCount,
   clientsCount,
   acceptedCount,
@@ -233,7 +233,6 @@ export function DashboardStats({
         color="primary"
         icon={<FolderOpen className="h-5 w-5" />}
         delay={0}
-        trend={12}
       />
       <StatsCard
         title={t('dashboard.clients', 'Klienci')}
@@ -241,7 +240,6 @@ export function DashboardStats({
         color="accent"
         icon={<Users className="h-5 w-5" />}
         delay={0.06}
-        trend={8}
       />
       <StatsCard
         title={t('dashboard.accepted', 'Zaakceptowane')}
@@ -249,7 +247,6 @@ export function DashboardStats({
         color="success"
         icon={<CheckCircle className="h-5 w-5" />}
         delay={0.12}
-        trend={23}
       />
       <StatsCard
         title={t('dashboard.newLast7Days', 'Nowe (7 dni)')}
@@ -260,4 +257,4 @@ export function DashboardStats({
       />
     </div>
   );
-}
+});
