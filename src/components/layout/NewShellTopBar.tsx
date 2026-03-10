@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Moon, Sun, Globe } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,7 +17,7 @@ const languages = [
 ];
 
 export function NewShellTopBar() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme');
@@ -63,7 +63,7 @@ export function NewShellTopBar() {
             size="icon"
             onClick={toggleTheme}
             className="h-9 w-9"
-            aria-label={isDark ? 'Przełącz na jasny tryb' : 'Przełącz na ciemny tryb'}
+            aria-label={isDark ? t('landing.header.switchToLight') : t('landing.header.switchToDark')}
           >
             {isDark ? (
               <Sun className="h-4 w-4" />
@@ -79,7 +79,7 @@ export function NewShellTopBar() {
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9"
-                aria-label="Zmień język"
+                aria-label={t('landing.header.languageSwitch')}
               >
                 <span className="text-base leading-none">{currentLanguage.flag}</span>
               </Button>
