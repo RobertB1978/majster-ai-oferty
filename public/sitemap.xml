@@ -2,81 +2,81 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/</loc>
+    <loc>https://majsterai.com/</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1</priority>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://majster-ai-oferty.vercel.app/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://majster-ai-oferty.vercel.app/?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="uk" href="https://majster-ai-oferty.vercel.app/?lang=uk"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://majster-ai-oferty.vercel.app/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://majsterai.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://majsterai.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://majsterai.com/?lang=uk"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://majsterai.com/"/>
   </url>
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/plany</loc>
+    <loc>https://majsterai.com/plany</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://majster-ai-oferty.vercel.app/plany"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://majster-ai-oferty.vercel.app/plany?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="uk" href="https://majster-ai-oferty.vercel.app/plany?lang=uk"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://majster-ai-oferty.vercel.app/plany"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://majsterai.com/plany"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://majsterai.com/plany?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://majsterai.com/plany?lang=uk"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://majsterai.com/plany"/>
   </url>
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/login</loc>
+    <loc>https://majsterai.com/login</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/register</loc>
+    <loc>https://majsterai.com/register</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/plany/starter</loc>
+    <loc>https://majsterai.com/plany/starter</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/plany/business</loc>
+    <loc>https://majsterai.com/plany/business</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/plany/enterprise</loc>
+    <loc>https://majsterai.com/plany/enterprise</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/legal/privacy</loc>
+    <loc>https://majsterai.com/legal/privacy</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/legal/terms</loc>
+    <loc>https://majsterai.com/legal/terms</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/legal/cookies</loc>
+    <loc>https://majsterai.com/legal/cookies</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/legal/dpa</loc>
+    <loc>https://majsterai.com/legal/dpa</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://majster-ai-oferty.vercel.app/legal/rodo</loc>
+    <loc>https://majsterai.com/legal/rodo</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>

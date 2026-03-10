@@ -17,7 +17,7 @@ const __dirname = dirname(__filename);
 const BASE_URL =
   process.env.VITE_PUBLIC_SITE_URL ||
   process.env.PUBLIC_SITE_URL ||
-  "https://majster-ai-oferty.vercel.app";
+  "https://majsterai.com";
 
 // Get base URL from environment or use fallback
 const getBaseUrl = () => {
@@ -32,7 +32,7 @@ const getBaseUrl = () => {
     return envUrl.replace(/\/$/, ''); // Remove trailing slash
   }
 
-  // Default fallback
+  // Default fallback — production domain
   console.warn('⚠️  No VITE_PUBLIC_SITE_URL found, using default: ' + BASE_URL);
   return BASE_URL;
 };
