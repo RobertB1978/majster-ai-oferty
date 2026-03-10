@@ -75,6 +75,7 @@ const OfferDetail = lazy(() => import("./pages/OfferDetail"));
 
 // === ZONE 2d: PROJECTS V2 PR-13 ===
 const ProjectsList = lazy(() => import("./pages/ProjectsList"));
+const NewProjectV2 = lazy(() => import("./pages/NewProjectV2"));
 const ProjectHub = lazy(() => import("./pages/ProjectHub"));
 const ProjectPublicStatus = lazy(() => import("./pages/ProjectPublicStatus"));
 // === ZONE 2e: DOSSIER PR-16 ===
@@ -231,6 +232,7 @@ const App = () => (
                     <Route path="offers/:id" element={<OfferDetail />} />
                     {/* PR-13: Projects V2 */}
                     <Route path="projects" element={<ProjectsList />} />
+                    <Route path="projects/new" element={<NewProjectV2 />} />
                     <Route path="projects/:id" element={<ProjectHub />} />
                     <Route path="more" element={<MoreScreen />} />
                     <Route path="dashboard" element={<Dashboard />} />
