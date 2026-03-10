@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { htmlEscape } from '../_shared/sanitization.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -117,10 +118,10 @@ Deno.serve(async (req) => {
           .eq('user_id', offer.user_id)
           .single();
 
-        const companyName = profile?.company_name || 'Firma';
-        const projectName = (offer.projects as unknown)?.project_name || 'Projekt';
+        const companyName = htmlEscape(profile?.company_name || 'Firma');
+        const projectName = htmlEscape((offer.projects as unknown)?.project_name || 'Projekt');
         const clientEmail = offer.client_email;
-        const clientName = offer.client_name || 'Szanowny Kliencie';
+        const clientName = htmlEscape(offer.client_name || 'Szanowny Kliencie');
 
         if (!clientEmail) {
           console.log(`Skipping offer ${offer.id} - no client email`);
@@ -231,7 +232,7 @@ Deno.serve(async (req) => {
           body: JSON.stringify({
             from: 'Majster.AI <noreply@resend.dev>',
             to: [clientEmail],
-            subject: `⏰ Przypomnienie: Oferta na "${projectName}" wygasa za 3 dni`,
+            subject: `Przypomnienie: Oferta na "${projectName}" wygasa za 3 dni`,
             html: emailHtml,
           }),
         });
@@ -246,13 +247,13 @@ Deno.serve(async (req) => {
           project_id: offer.project_id,
           user_id: offer.user_id,
           client_email: clientEmail,
-          subject: `⏰ Przypomnienie: Oferta na "${projectName}" wygasa za 3 dni`,
+          subject: `Przypomnienie: Oferta na "${projectName}" wygasa za 3 dni`,
           message: 'Automatyczne przypomnienie o wygasającej ofercie (3 dni)',
           status: 'sent',
         });
 
         sentEmails.push(clientEmail);
-        console.log(`Reminder sent to ${clientEmail} for offer ${offer.id}`);
+        console.log(`Reminder sent for offer ${offer.id}`);
 
       } catch (emailError: unknown) {
         const errorMessage = emailError instanceof Error ? emailError.message : 'Unknown error';
@@ -300,7 +301,7 @@ Deno.serve(async (req) => {
       for (const w of (expiringWarranties ?? [])) {
         try {
           const clientEmail = w.client_email as string;
-          const clientName  = (w.client_name as string | null) ?? 'Kliencie';
+          const clientName  = htmlEscape((w.client_name as string | null) ?? 'Kliencie');
           const endDateStr  = new Date(w.end_date as string).toLocaleDateString('pl-PL', {
             year: 'numeric', month: 'long', day: 'numeric',
           });
@@ -310,7 +311,7 @@ Deno.serve(async (req) => {
             .select('company_name')
             .eq('user_id', w.user_id)
             .maybeSingle();
-          const companyName = (profile?.company_name as string | null) ?? 'Wykonawca';
+          const companyName = htmlEscape((profile?.company_name as string | null) ?? 'Wykonawca');
 
           const subject = daysAhead === 30
             ? `Gwarancja wygasa za 30 dni — ${companyName}`
@@ -369,7 +370,7 @@ Deno.serve(async (req) => {
             .eq('id', w.id);
 
           warrantySent.push(`${clientEmail} (T-${daysAhead})`);
-          console.log(`Warranty reminder T-${daysAhead} sent to ${clientEmail}`);
+          console.log(`Warranty reminder T-${daysAhead} sent for warranty ${w.id}`);
 
         } catch (wEmailErr: unknown) {
           const msg = wEmailErr instanceof Error ? wEmailErr.message : 'Unknown error';

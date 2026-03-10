@@ -233,8 +233,25 @@ serve(async (req) => {
         });
       }
 
-      // ─── WITHDRAW (contractor action) ───────────────────
+      // ─── WITHDRAW (contractor action — requires authenticated session) ───
       if (action === 'withdraw') {
+        const authHeader = req.headers.get('Authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          return new Response(JSON.stringify({ error: 'Unauthorized — contractor session required' }), {
+            status: 401,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        // Verify that the JWT belongs to the offer owner
+        const token = authHeader.replace('Bearer ', '');
+        const { data: { user: caller }, error: authError } = await supabase.auth.getUser(token);
+        if (authError || !caller || caller.id !== approval.user_id) {
+          return new Response(JSON.stringify({ error: 'Forbidden — only the offer owner can withdraw' }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
         await supabase
           .from('offer_approvals')
           .update({ status: 'withdrawn', withdrawn_at: new Date().toISOString() })

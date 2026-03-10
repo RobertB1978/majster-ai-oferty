@@ -60,7 +60,7 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
 
   const handleFinish = () => {
     onClose();
-    navigate('/dashboard');
+    navigate('/app/dashboard');
   };
 
   if (isLoading) return null;

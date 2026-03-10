@@ -26,7 +26,7 @@ export default function Register() {
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate('/app/dashboard');
     }
   }, [user, navigate]);
 
@@ -99,7 +99,7 @@ export default function Register() {
 
     setIsLoading(false);
     toast.success(t('auth.success.accountCreated'));
-    navigate('/dashboard');
+    navigate('/app/dashboard');
   };
 
   return (

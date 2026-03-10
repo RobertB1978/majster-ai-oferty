@@ -80,6 +80,24 @@ export function normalizeEmail(email: string | null | undefined): string {
  * @param maxLength - Maximum allowed length (default 10 000 chars)
  * @returns Plain-text string safe for storage and rendering
  */
+/**
+ * Escapes HTML special characters to prevent XSS in HTML templates.
+ * Use this for any user-supplied data inserted into HTML email templates.
+ * @param str - Raw string to escape
+ * @returns HTML-safe string with special characters replaced by entities
+ */
+export function htmlEscape(str: string | null | undefined): string {
+  if (!str || typeof str !== 'string') {
+    return '';
+  }
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export function sanitizeAiOutput(
   text: string | null | undefined,
   maxLength = 10000
