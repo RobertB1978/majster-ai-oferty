@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wrench, Lock, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { Helmet } from 'react-helmet-async';
 
 export default function ResetPassword() {
   const { t } = useTranslation();
@@ -134,6 +135,12 @@ export default function ResetPassword() {
   }
 
   return (
+    <>
+    <Helmet>
+      <title>Ustaw nowe hasło | Majster.AI</title>
+      <meta name="description" content="Ustaw nowe hasło do swojego konta Majster.AI." />
+      <meta name="robots" content="noindex, nofollow" />
+    </Helmet>
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
@@ -191,5 +198,6 @@ export default function ResetPassword() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

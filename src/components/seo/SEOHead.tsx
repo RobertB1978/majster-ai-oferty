@@ -26,9 +26,12 @@ export function SEOHead({
   alternateLanguages,
 }: SEOHeadProps) {
   const fullTitle = `${title} | Majster.AI`;
-  const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
-  const canonical = canonicalUrl || currentUrl;
+  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://majsterai.com';
+  // Use pathname only (no query params) so canonical never varies by language query param
+  const cleanUrl = typeof window !== 'undefined'
+    ? window.location.origin + window.location.pathname
+    : 'https://majsterai.com';
+  const canonical = canonicalUrl || cleanUrl;
 
   const defaultStructuredData = {
     '@context': 'https://schema.org',

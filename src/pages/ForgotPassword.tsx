@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wrench, Mail, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { Helmet } from 'react-helmet-async';
 
 export default function ForgotPassword() {
   const { t } = useTranslation();
@@ -78,6 +79,12 @@ export default function ForgotPassword() {
   }
 
   return (
+    <>
+    <Helmet>
+      <title>Przypomnij hasło | Majster.AI</title>
+      <meta name="description" content="Zresetuj hasło do konta Majster.AI. Podaj adres e-mail, a wyślemy link do ustawienia nowego hasła." />
+      <meta name="robots" content="noindex, nofollow" />
+    </Helmet>
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
@@ -129,5 +136,6 @@ export default function ForgotPassword() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

@@ -11,7 +11,7 @@ import { formatDualCurrency } from '@/config/currency';
 // Re-export for backwards compatibility (PlanyDetail.tsx imports from here)
 export { PLANS };
 
-const SITE_URL = 'https://majster-ai-oferty.vercel.app';
+const SITE_URL = 'https://majsterai.com';
 
 const pricingStructuredData = {
   '@context': 'https://schema.org',
