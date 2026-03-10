@@ -139,9 +139,10 @@ export function TopBar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-1.5 px-2 sm:px-3 min-h-[40px]">
-                  <Globe className="h-4 w-4" />
+                  {/* Na mobile tylko flaga, na desktop Globe + flaga + chevron */}
+                  <Globe className="hidden sm:block h-4 w-4" />
                   <span className="text-lg">{currentLanguage.flag}</span>
-                  <ChevronDown className="h-3 w-3 opacity-50" />
+                  <ChevronDown className="hidden sm:block h-3 w-3 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
@@ -173,7 +174,8 @@ export function TopBar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10" aria-label={t('help.menu')}>
+                {/* Help ukryty na mobile — dostęp przez Ustawienia */}
+                <Button variant="ghost" size="icon" className="hidden sm:flex h-10 w-10" aria-label={t('help.menu')}>
                   <HelpCircle className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
