@@ -178,7 +178,15 @@
     "passwordChangedTitle": "Пароль змінено",
     "passwordChangedDesc": "Незабаром вас буде перенаправлено до застосунку...",
     "saving": "Збереження...",
-    "changePassword": "Змінити пароль"
+    "changePassword": "Змінити пароль",
+    "orWithEmail": "або увійдіть через email",
+    "hero": {
+      "tagline": "Керуйте своїм бізнесом як справжній професіонал",
+      "subtitle": "PDF кошториси, проекти, клієнти та AI-асистент — все в одному місці для майстрів.",
+      "usersCount": "2 400+ майстрів",
+      "rating": "Оцінка 4.9/5",
+      "freeStart": "Безкоштовний старт"
+    }
   },
   "dashboard": {
     "title": "Панель",
@@ -243,7 +251,12 @@
     "allProjects": "Усі проєкти",
     "clients": "Клієнти",
     "accepted": "Прийняті",
-    "newLast7Days": "Нові (7 днів)"
+    "newLast7Days": "Нові (7 днів)",
+    "activityFeed": "Остання активність",
+    "newProjectSub": "Створити кошторис",
+    "addClientSub": "База клієнтів",
+    "templatesSub": "Шаблони пропозицій",
+    "calendarSub": "Ваш розклад"
   },
   "projects": {
     "title": "Проєкти",

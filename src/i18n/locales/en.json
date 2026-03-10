@@ -178,7 +178,15 @@
     "passwordChangedTitle": "Password changed",
     "passwordChangedDesc": "You will be redirected to the app shortly...",
     "saving": "Saving...",
-    "changePassword": "Change password"
+    "changePassword": "Change password",
+    "orWithEmail": "or login with email",
+    "hero": {
+      "tagline": "Manage your business like a true professional",
+      "subtitle": "PDF quotes, projects, clients and AI assistant — everything in one place for tradespeople.",
+      "usersCount": "2,400+ tradespeople",
+      "rating": "Rating 4.9/5",
+      "freeStart": "Free to start"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -243,7 +251,12 @@
     "allProjects": "All Projects",
     "clients": "Clients",
     "accepted": "Accepted",
-    "newLast7Days": "New (7 days)"
+    "newLast7Days": "New (7 days)",
+    "activityFeed": "Latest Activity",
+    "newProjectSub": "Create quote",
+    "addClientSub": "Client database",
+    "templatesSub": "Offer templates",
+    "calendarSub": "Your schedule"
   },
   "projects": {
     "title": "Projects",

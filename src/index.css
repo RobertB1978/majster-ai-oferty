@@ -353,6 +353,84 @@
   /* no-op */
 }
 
+/* ============================================
+   MOBILE & SAFE AREA UTILITIES
+   ============================================ */
+
+/* Safe area padding for devices with home indicator (iPhone X+) */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Touch-optimised tap highlight removal */
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent text selection on interactive elements during touch swipe */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Smooth momentum scrolling on iOS */
+.scroll-smooth-ios {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* Bottom nav glassmorphism on supported browsers */
+@supports (backdrop-filter: blur(12px)) {
+  nav.fixed.bottom-0 {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Login split-screen: ensure right panel fills full height on mobile */
+@media (max-width: 1023px) {
+  .login-hero {
+    display: none !important;
+  }
+}
+
+/* Input focus ring — consistent across all browsers */
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid hsl(var(--primary) / 0.4);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   ICON ENHANCEMENT UTILITIES
+   ============================================ */
+
+/* Lucide icon stroke-width control via CSS custom property */
+.icon-thin  { --lucide-stroke-width: 1.5; }
+.icon-bold  { --lucide-stroke-width: 2.5; }
+
+/* Enterprise button micro-interaction */
+.btn-press {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.btn-press:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+/* Status indicator pulse for activity feed live dot */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(1.3); }
+}
+.animate-live-pulse {
+  animation: live-pulse 1.8s ease-in-out infinite;
+}
+
 /* Respect user motion preference — disables all custom animations for users with
    prefers-reduced-motion: reduce (WCAG 2.1 SC 2.3.3). Also prevents mid-animation
    opacity values from failing automated WCAG AA contrast checks in CI. */

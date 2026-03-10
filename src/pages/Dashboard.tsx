@@ -20,6 +20,7 @@ import { useExpirationMonitor } from '@/hooks/useExpirationMonitor';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { TrialBanner } from '@/components/billing/TrialBanner';
 import { DashboardSkeleton } from '@/components/ui/skeleton-screens';
+import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -212,8 +213,15 @@ export default function Dashboard() {
       {/* Quick Actions */}
       <QuickActions />
 
-      {/* Recent projects */}
-      <RecentProjects projects={recentProjects} isLoading={isLoading} />
+      {/* Recent projects + Activity feed — 2-column on large screens */}
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+        <div className="xl:col-span-3">
+          <RecentProjects projects={recentProjects} isLoading={isLoading} />
+        </div>
+        <div className="xl:col-span-2">
+          <ActivityFeed />
+        </div>
+      </div>
 
       {/* Bottom Ad for Free users */}
       {showAds && (

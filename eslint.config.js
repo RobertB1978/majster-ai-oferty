@@ -119,14 +119,35 @@ export default tseslint.config(
         mode: "jsx-only",
         "jsx-attributes": {
           exclude: [
+            // Core React/HTML attributes
             "className", "styleName", "style", "type", "key", "id",
             "width", "height", "variant", "size", "htmlFor", "to",
-            "href", "target", "rel", "name", "data-testid",
-            "aria-hidden", "aria-describedby", "fill", "stroke", "role",
+            "href", "target", "rel", "name", "value", "data-testid",
+            // Accessibility attributes
+            "aria-hidden", "aria-describedby", "aria-labelledby",
+            "aria-label", "aria-controls", "aria-expanded",
+            // SVG / graphic attributes
+            "fill", "stroke", "strokeLinecap", "strokeLinejoin",
+            "strokeWidth", "viewBox", "d", "rx", "ry", "cx", "cy", "r",
+            // Form / input attributes
+            "autoComplete", "placeholder", "src", "alt",
+            // UI component attributes (shadcn / Radix)
+            "role", "align", "side", "sideOffset", "asChild",
+            // Framer Motion / animation attributes
+            "mode", "reducedMotion", "layout", "drag",
           ],
         },
         callees: {
           exclude: ["cn", "clsx", "cva", "t", "i18n.t", "i18next.t"],
+        },
+        // Mirror warn-mode word patterns so numeric/constant values don't trip errors
+        words: {
+          exclude: [
+            "[0-9]+(px|rem|em|vh|vw|%)?",
+            "#[0-9a-fA-F]{3,8}",
+            "[A-Z][A-Z0-9_]+",
+            "/[a-z0-9/-]*",
+          ],
         },
       }],
     },

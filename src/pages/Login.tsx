@@ -6,21 +6,24 @@ import { loginSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Wrench, Mail, Lock, Loader2, Fingerprint, Moon, Sun } from 'lucide-react';
+import { Mail, Lock, Loader2, Fingerprint, ArrowRight, CheckCircle2, Star, Wrench } from 'lucide-react';
 import { toast } from 'sonner';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthDiagnostics } from '@/components/auth/AuthDiagnostics';
 import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWidget';
 import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
-import { useTheme } from '@/hooks/useTheme';
+import { BuilderHeroIllustration } from '@/components/auth/BuilderHeroIllustration';
+import { motion, AnimatePresence, useReducedMotion, MotionConfig } from 'framer-motion';
 
 const CAPTCHA_FAIL_THRESHOLD = 3;
 
 export default function Login() {
   const { t } = useTranslation();
+  // Respect prefers-reduced-motion: when true, skip opacity/transform initial states
+  // so axe-core sees fully-opaque elements and passes WCAG AA contrast checks.
+  const shouldReduceMotion = useReducedMotion();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +34,6 @@ export default function Login() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { isSupported, checkIfEnabled, authenticateWithBiometric, isAuthenticating } = useBiometricAuth();
-  const { isDark, toggleTheme } = useTheme();
   const [biometricAvailable, setBiometricAvailable] = useState(false);
 
   useEffect(() => {
@@ -40,7 +42,6 @@ export default function Login() {
     }
   }, [user, navigate]);
 
-  // Check for stored email and biometric availability
   useEffect(() => {
     const storedEmail = localStorage.getItem('majster_last_email');
     if (storedEmail) {
@@ -52,7 +53,6 @@ export default function Login() {
     }
   }, [isSupported, checkIfEnabled]);
 
-  // Update biometric availability when email changes
   useEffect(() => {
     if (email && isSupported) {
       const enabled = checkIfEnabled(email);
@@ -62,8 +62,7 @@ export default function Login() {
     }
   }, [email, isSupported, checkIfEnabled]);
 
-  const showCaptcha =
-    isCaptchaEnabled && failedAttempts >= CAPTCHA_FAIL_THRESHOLD;
+  const showCaptcha = isCaptchaEnabled && failedAttempts >= CAPTCHA_FAIL_THRESHOLD;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +81,7 @@ export default function Login() {
     }
 
     if (showCaptcha && !captchaToken) {
-      toast.error(t('auth.captcha.required', 'Wymagana weryfikacja CAPTCHA'));
+      toast.error(t('auth.captcha.required'));
       return;
     }
 
@@ -92,7 +91,7 @@ export default function Login() {
 
     if (error) {
       setFailedAttempts(prev => prev + 1);
-      setCaptchaToken(null); // require fresh CAPTCHA on next attempt
+      setCaptchaToken(null);
       if (error.includes('Invalid login')) {
         toast.error(t('auth.errors.invalidCredentials'));
       } else if (error.includes('Email not confirmed')) {
@@ -104,17 +103,10 @@ export default function Login() {
       localStorage.setItem('majster_last_email', email);
       toast.success(t('auth.success.loggedIn'));
 
-      // Prefetch Dashboard data while navigating for instant load
       if (data?.user?.id) {
-        queryClient.prefetchQuery({
-          queryKey: ['dashboard-project-stats', data.user.id],
-        });
-        queryClient.prefetchQuery({
-          queryKey: ['dashboard-recent-projects', data.user.id],
-        });
-        queryClient.prefetchQuery({
-          queryKey: ['dashboard-clients-count', data.user.id],
-        });
+        queryClient.prefetchQuery({ queryKey: ['dashboard-project-stats', data.user.id] });
+        queryClient.prefetchQuery({ queryKey: ['dashboard-recent-projects', data.user.id] });
+        queryClient.prefetchQuery({ queryKey: ['dashboard-clients-count', data.user.id] });
       }
 
       navigate('/app/dashboard');
@@ -126,138 +118,327 @@ export default function Login() {
       toast.error(t('auth.biometric.enterEmailFirst'));
       return;
     }
-
     const success = await authenticateWithBiometric(email);
     if (success) {
-      // For biometric login, we need the password stored or use a different auth flow
-      // Since we're using Supabase Auth, we'll just verify the biometric and show the password field
       toast.success(t('auth.biometric.verificationSuccess'));
     } else {
       toast.error(t('auth.biometric.verificationFailed'));
     }
   };
 
+  // Social proof pills — values via t(), rendered as {pill.text} expression containers
+  const heroPills = [
+    { icon: <CheckCircle2 className="h-3.5 w-3.5" />, text: t('auth.hero.usersCount') },
+    { icon: <Star className="h-3.5 w-3.5" />, text: t('auth.hero.rating') },
+    { icon: <CheckCircle2 className="h-3.5 w-3.5" />, text: t('auth.hero.freeStart') },
+  ];
+
   return (
-    <>
-      <div className="min-h-screen bg-background flex flex-col">
-        <header className="w-full border-b border-border bg-card">
-          <div className="container flex h-14 items-center justify-between px-4">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <Wrench className="h-4 w-4 text-primary-foreground" />
-              </div>
-              <span className="font-bold text-sm">{'Majster.AI'}</span>
-            </div>
-            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('common.toggleTheme')}>
-              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
-          </div>
-        </header>
-        <div className="flex flex-1 items-center justify-center p-4">
-        <Card className="w-full max-w-md animate-fade-in relative shadow-md border bg-white dark:bg-slate-900">
-        <CardHeader className="text-center pb-2">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-sm">
-            <Wrench className="h-8 w-8 text-primary-foreground" />
-          </div>
-          <CardTitle className="text-2xl font-bold text-slate-900 dark:text-slate-100">{'Majster.AI'}</CardTitle>
-          <CardDescription className="text-slate-600 dark:text-slate-300">
-            {t('auth.loginSubtitle')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <SocialLoginButtons disabled={isLoading} />
+    // MotionConfig reducedMotion="user" ensures ALL motion children respect
+    // prefers-reduced-motion:reduce set by Playwright, so axe sees fully-opaque
+    // elements and WCAG AA contrast checks pass.
+    <MotionConfig reducedMotion="user">
+      <>
+      <div className="min-h-screen flex flex-col lg:flex-row bg-background overflow-hidden">
 
-          <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-700 dark:text-slate-200">{t('auth.email')}</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder={t('auth.emailPlaceholder')}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`pl-10 text-slate-900 placeholder:text-slate-500 border-slate-300 bg-white dark:text-slate-100 dark:placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-900 ${errors.email ? 'border-destructive' : ''}`}
-                />
+        {/* LEFT PANEL — Brand hero (hidden on mobile) */}
+        <motion.div
+          initial={{ opacity: shouldReduceMotion ? 1 : 0, x: shouldReduceMotion ? 0 : -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative flex-col items-center justify-center overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, hsl(222 47% 11%) 0%, hsl(217 33% 17%) 50%, hsl(30 90% 20%) 100%)',
+          }}
+        >
+          {/* Background dot pattern */}
+          <div
+            className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+              backgroundSize: '32px 32px',
+            }}
+          />
+
+          {/* Amber glow orb */}
+          <div
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full opacity-20 blur-3xl"
+            style={{ background: 'hsl(30 90% 32%)' }}
+          />
+
+          <div className="relative z-10 flex flex-col items-center text-center px-12 max-w-lg">
+            {/* Logo wordmark */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="flex items-center gap-3 mb-8"
+            >
+              <div
+                className="flex h-12 w-12 items-center justify-center rounded-2xl shadow-xl"
+                style={{ background: 'hsl(30 90% 32%)' }}
+              >
+                <Wrench className="h-6 w-6 text-white" aria-hidden="true" />
               </div>
-              {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+              <span className="text-2xl font-bold text-white tracking-tight" aria-hidden="true">{'Majster.AI'}</span>
+            </motion.div>
+
+            {/* Illustration */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="w-full mb-8"
+            >
+              <BuilderHeroIllustration />
+            </motion.div>
+
+            {/* Tagline — translated */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="space-y-3"
+            >
+              <p className="text-2xl font-bold text-white leading-tight">
+                {t('auth.hero.tagline')}
+              </p>
+              {/* opacity 0.85 ensures WCAG AA 4.5:1 on the dark gradient background */}
+              <p className="text-sm leading-relaxed text-white/85">
+                {t('auth.hero.subtitle')}
+              </p>
+            </motion.div>
+
+            {/* Social proof pills */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+              className="mt-8 flex flex-wrap justify-center gap-3"
+            >
+              {heroPills.map((pill) => (
+                <div
+                  key={pill.text}
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium"
+                  style={{
+                    background: 'rgba(255,255,255,0.1)',
+                    color: 'rgba(255,255,255,0.85)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                  }}
+                >
+                  <span style={{ color: 'hsl(38 92% 60%)' }} aria-hidden="true">{pill.icon}</span>
+                  {pill.text}
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* RIGHT PANEL — Login form */}
+        <motion.main
+          initial={{ opacity: shouldReduceMotion ? 1 : 0, x: shouldReduceMotion ? 0 : 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-1 flex-col items-center justify-center min-h-screen lg:min-h-0 px-6 py-12 bg-background"
+          aria-label={t('auth.loginTitle')}
+        >
+          {/* Mobile logo — visible only on small screens */}
+          <div className="flex lg:hidden items-center gap-2 mb-8" aria-hidden="true">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-md">
+              <Wrench className="h-5 w-5 text-white" aria-hidden="true" />
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-slate-700 dark:text-slate-200">{t('auth.password')}</Label>
-                <Link to="/forgot-password" className="text-sm text-slate-700 dark:text-slate-200 hover:underline">
-                  {t('auth.forgotPassword')}
-                </Link>
-              </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder={t('auth.passwordPlaceholder')}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`pl-10 text-slate-900 placeholder:text-slate-500 border-slate-300 bg-white dark:text-slate-100 dark:placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-900 ${errors.password ? 'border-destructive' : ''}`}
-                />
-              </div>
-              {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+            <span className="text-xl font-bold text-foreground">{'Majster.AI'}</span>
+          </div>
+
+          <div className="w-full max-w-sm">
+            {/* Page heading — visible to screen readers and E2E tests.
+                auth.loginTitle contains "Majster.AI" so Playwright
+                getByRole('heading', name:/majster\.ai/i) finds this element. */}
+            <div className="mb-8">
+              <h1 className="text-2xl font-bold text-foreground mb-1">
+                {t('auth.loginTitle')}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {t('auth.loginSubtitle')}
+              </p>
             </div>
-            {showCaptcha && (
-              <TurnstileWidget
-                onVerify={(token) => setCaptchaToken(token)}
-                onError={() => setCaptchaToken(null)}
-              />
-            )}
-            <Button type="submit" className="w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200" size="lg" disabled={isLoading || (showCaptcha && !captchaToken)}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t('auth.loggingIn')}
-                </>
-              ) : (
-                t('auth.login')
+
+            {/* Social login */}
+            <SocialLoginButtons disabled={isLoading} />
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <Separator />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 text-xs text-muted-foreground">
+                {t('auth.orWithEmail')}
+              </span>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              {/* Email field */}
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-sm font-medium">
+                  {t('auth.email')}
+                </Label>
+                <div className="relative group">
+                  <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" aria-hidden="true" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder={t('auth.emailPlaceholder')}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                    className={`pl-10 h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 ${errors.email ? 'border-destructive' : 'focus:border-primary'}`}
+                  />
+                </div>
+                <AnimatePresence>
+                  {errors.email && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      className="text-xs text-destructive"
+                      role="alert"
+                    >
+                      {errors.email}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Password field */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-sm font-medium">
+                    {t('auth.password')}
+                  </Label>
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs text-primary hover:underline font-medium transition-colors"
+                  >
+                    {t('auth.forgotPassword')}
+                  </Link>
+                </div>
+                <div className="relative group">
+                  <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" aria-hidden="true" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder={t('auth.passwordPlaceholder')}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                    className={`pl-10 h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20 ${errors.password ? 'border-destructive' : 'focus:border-primary'}`}
+                  />
+                </div>
+                <AnimatePresence>
+                  {errors.password && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      className="text-xs text-destructive"
+                      role="alert"
+                    >
+                      {errors.password}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* CAPTCHA when threshold reached */}
+              {showCaptcha && (
+                <TurnstileWidget
+                  onVerify={(token) => setCaptchaToken(token)}
+                  onError={() => setCaptchaToken(null)}
+                />
               )}
-            </Button>
-          </form>
 
-          {biometricAvailable && (
-            <>
-              <div className="relative my-5">
-                <Separator className="bg-border/50" />
-                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-muted-foreground">
-                  {t('common.or')}
-                </span>
-              </div>
-              <Button type="button" variant="outline" className="w-full hover:bg-primary/5 transition-colors" onClick={handleBiometricLogin} disabled={isAuthenticating}>
-                {isAuthenticating ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('auth.biometric.verifying')}
-                  </>
-                ) : (
-                  <>
-                    <Fingerprint className="mr-2 h-4 w-4" />
-                    {t('auth.biometric.loginWithFingerprint')}
-                  </>
-                )}
-              </Button>
-            </>
-          )}
+              {/* Submit */}
+              <motion.div whileTap={{ scale: 0.98 }}>
+                <Button
+                  type="submit"
+                  className="w-full h-11 font-semibold text-sm shadow-md transition-all duration-200 hover:shadow-lg"
+                  size="lg"
+                  disabled={isLoading || (showCaptcha && !captchaToken)}
+                >
+                  <AnimatePresence mode="wait">
+                    {isLoading ? (
+                      <motion.span
+                        key="loading"
+                        initial={{ opacity: shouldReduceMotion ? 1 : 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center gap-2"
+                      >
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                        {t('auth.loggingIn')}
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        key="login"
+                        initial={{ opacity: shouldReduceMotion ? 1 : 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center gap-2"
+                      >
+                        {t('auth.login')}
+                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </Button>
+              </motion.div>
+            </form>
 
-          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-300">
-            {t('auth.noAccount')}{' '}
-            <Link to="/register" className="font-medium text-slate-800 dark:text-slate-100 hover:underline">
-              {t('auth.register')}
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
-        </div>
+            {/* Biometric login */}
+            {biometricAvailable && (
+              <>
+                <div className="relative my-5">
+                  <Separator />
+                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 text-xs text-muted-foreground">
+                    {t('common.or')}
+                  </span>
+                </div>
+                <motion.div whileTap={{ scale: 0.98 }}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full h-11 hover:bg-primary/5 transition-colors"
+                    onClick={handleBiometricLogin}
+                    disabled={isAuthenticating}
+                  >
+                    {isAuthenticating ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                        {t('auth.biometric.verifying')}
+                      </>
+                    ) : (
+                      <>
+                        <Fingerprint className="mr-2 h-5 w-5" aria-hidden="true" />
+                        {t('auth.biometric.loginWithFingerprint')}
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
+              </>
+            )}
+
+            {/* Register link */}
+            <p className="mt-8 text-center text-sm text-muted-foreground">
+              {t('auth.noAccount')}{' '}
+              <Link to="/register" className="font-semibold text-primary hover:underline">
+                {t('auth.tryForFree')}
+              </Link>
+            </p>
+          </div>
+        </motion.main>
       </div>
 
-    {/* Dev-only diagnostics panel */}
-    <AuthDiagnostics />
-  </>
+      <AuthDiagnostics />
+      </>
+    </MotionConfig>
   );
 }

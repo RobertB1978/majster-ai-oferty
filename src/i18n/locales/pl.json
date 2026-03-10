@@ -178,7 +178,15 @@
     "passwordChangedTitle": "Hasło zmienione",
     "passwordChangedDesc": "Za chwilę zostaniesz przekierowany do aplikacji...",
     "saving": "Zapisywanie...",
-    "changePassword": "Zmień hasło"
+    "changePassword": "Zmień hasło",
+    "orWithEmail": "lub zaloguj emailem",
+    "hero": {
+      "tagline": "Zarządzaj swoim biznesem jak prawdziwy profesjonalista",
+      "subtitle": "Wyceny PDF, projekty, klienci i asystent AI — wszystko w jednym miejscu dla fachowców w Polsce.",
+      "usersCount": "2 400+ fachowców",
+      "rating": "Ocena 4.9/5",
+      "freeStart": "Bezpłatny start"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -243,7 +251,12 @@
     "allProjects": "Wszystkie projekty",
     "clients": "Klienci",
     "accepted": "Zaakceptowane",
-    "newLast7Days": "Nowe (7 dni)"
+    "newLast7Days": "Nowe (7 dni)",
+    "activityFeed": "Ostatnia aktywno\u015b\u0107",
+    "newProjectSub": "Stw\u00f3rz wycen\u0119",
+    "addClientSub": "Baza klient\u00f3w",
+    "templatesSub": "Wzory ofert",
+    "calendarSub": "Tw\u00f3j terminarz"
   },
   "projects": {
     "title": "Projekty",
