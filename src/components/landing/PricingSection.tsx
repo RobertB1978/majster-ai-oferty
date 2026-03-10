@@ -87,7 +87,7 @@ export function PricingSection() {
                       <span className={isPrep ? 'text-gray-300 dark:text-[#525252]' : 'text-gray-600 dark:text-[#A3A3A3]'}>
                         {t(featureKey)}
                         {isPrep && (
-                          <span className="ml-1.5 text-[10px] font-medium text-gray-400 dark:text-[#525252] border border-gray-200 dark:border-[#2A2A2A] rounded px-1 py-0.5 uppercase tracking-wide align-middle">
+                          <span className="ml-1.5 text-[10px] font-medium text-gray-600 dark:text-[#A3A3A3] border border-gray-200 dark:border-[#2A2A2A] rounded px-1 py-0.5 uppercase tracking-wide align-middle">
                             {t('landing.pricing.prepBadge', 'W przygotowaniu')}
                           </span>
                         )}
@@ -114,7 +114,7 @@ export function PricingSection() {
           ))}
         </div>
 
-        <p className="text-center text-sm text-gray-400 dark:text-[#525252] mt-8">
+        <p className="text-center text-sm text-gray-600 dark:text-[#A3A3A3] mt-8">
           {t('landing.pricing.cancelNote', 'Anuluj w każdej chwili · Wystawiamy faktury VAT')}
         </p>
       </div>
