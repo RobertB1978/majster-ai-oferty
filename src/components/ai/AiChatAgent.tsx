@@ -226,7 +226,7 @@ export function AiChatAgent() {
       <Button
         onClick={() => setIsOpen(true)}
         className={cn(
-          'fixed bottom-[88px] right-6 h-14 w-14 rounded-full shadow-xl lg:bottom-6',
+          'fixed above-mobile-nav right-6 h-14 w-14 rounded-full shadow-xl lg:bottom-6',
           'bg-primary hover:bg-primary/90',
           'transition-all duration-300 hover:scale-110',
           isOpen && 'hidden'
@@ -249,7 +249,7 @@ export function AiChatAgent() {
       {isOpen && (
         <Card
           className={cn(
-            'fixed bottom-[88px] right-6 w-[400px] max-w-[calc(100vw-48px)] shadow-2xl lg:bottom-6',
+            'fixed above-mobile-nav right-6 w-[400px] max-w-[calc(100vw-48px)] shadow-2xl lg:bottom-6',
             'animate-scale-in origin-bottom-right',
             'border-primary/20'
           )}

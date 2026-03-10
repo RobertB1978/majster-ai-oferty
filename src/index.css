@@ -556,15 +556,17 @@ textarea:focus-visible {
   --z-nav: 40;
   --z-overlay: 50;
   --z-modal: 60;
+  /* height of the fixed mobile bottom nav bar */
+  --nav-height: 4rem;
 }
 
-/* Safe area utilities for mobile */
-.safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.safe-area-top {
-  padding-top: env(safe-area-inset-top);
+/* Overlay clearance above mobile bottom nav (safe-area-aware).
+   Use this class on any fixed widget that should sit above the
+   bottom nav on all devices including iPhone X+ with home-indicator. */
+@media (max-width: 1023px) {
+  .above-mobile-nav {
+    bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + 1.5rem);
+  }
 }
 
 /* Bottom offset for content above mobile nav */
