@@ -2775,6 +2775,18 @@
       "finish": "Zaczynamy!"
     }
   },
+  "industryTemplates": {
+    "triggerButton": "Szablony branżowe",
+    "sheetTitle": "Szablony branżowe z AI",
+    "sheetDesc": "Wybierz branżę i utwórz ofertę jednym kliknięciem z gotowymi pozycjami i cenami",
+    "itemCount": "{{count}} pozycji w szablonie",
+    "estimatedTotal": "Szacunkowa wartość: {{value}} zł netto",
+    "confirmHint": "Wszystkie ceny możesz edytować po utworzeniu oferty.",
+    "createOffer": "Utwórz ofertę",
+    "creating": "Tworzenie oferty...",
+    "createError": "Nie udało się utworzyć oferty z szablonu. Spróbuj ponownie.",
+    "emptyStateCta": "Użyj szablonu branżowego"
+  },
   "offersList": {
     "pageTitle": "Oferty",
     "searchPlaceholder": "Szukaj oferty...",
