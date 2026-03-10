@@ -118,6 +118,42 @@ describe('i18n Locale Completeness', () => {
         });
       }
     });
+
+    it('core-flow keys fixed in i18n-fix PR should exist in all locales', () => {
+      const fixedKeys = [
+        // Calendar toast messages
+        'calendar.eventUpdated',
+        'calendar.eventAdded',
+        'calendar.eventSaveError',
+        'calendar.eventDeleted',
+        'calendar.eventDeleteError',
+        // Offer public page
+        'offerPublicPage.justAccepted',
+        // Auth session
+        'auth.errors.noSession',
+        // Billing page
+        'billing.alreadyFree',
+        'billing.addStripeKey',
+        'billing.freePlan',
+        'billing.projects',
+        'billing.history',
+        'billing.perMonthNet',
+        // Projects V2
+        'projectsV2.selectClientPlaceholder',
+        // Offers list archive actions
+        'offersList.actionArchive',
+        'offersList.archiveSuccess',
+        'offersList.archiveError',
+      ];
+      for (const key of fixedKeys) {
+        ['pl', 'en', 'uk'].forEach(lang => {
+          i18n.changeLanguage(lang);
+          const val = i18n.t(key);
+          expect(val, `${lang}:${key} should be translated, not a raw key`).not.toBe(key);
+          expect(val, `${lang}:${key} should not be empty`).toBeTruthy();
+        });
+      }
+    });
   });
 
   describe('Language switching consistency', () => {
