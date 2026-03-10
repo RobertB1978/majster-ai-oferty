@@ -14,6 +14,10 @@ import { toast } from 'sonner';
 import { BiometricSetup } from '@/components/auth/BiometricSetup';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
+// AUTH-01: Biometric auth does not complete a Supabase session (dead code path).
+// Disabled until fully implemented. Change to true to re-enable.
+const BIOMETRIC_FEATURE_ENABLED = false;
+
 // Legacy Polish default values stored in DB before i18n was implemented
 const LEGACY_EMAIL_SUBJECT = 'Oferta od {company_name}';
 const LEGACY_EMAIL_GREETING = 'Szanowny Kliencie,';
@@ -543,8 +547,8 @@ export default function CompanyProfile() {
             </Button>
           </form>
 
-          {/* Security Settings */}
-          {user?.email && <BiometricSetup email={user.email} />}
+          {/* Security Settings — hidden until biometric auth creates a Supabase session (AUTH-01) */}
+          {BIOMETRIC_FEATURE_ENABLED && user?.email && <BiometricSetup email={user.email} />}
         </div>
       </div>
     </div>

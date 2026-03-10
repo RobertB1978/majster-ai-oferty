@@ -28,6 +28,21 @@ describe('generateOfferEmailHtml', () => {
     expect(html).toContain('&lt;script&gt;');
   });
 
+  it('should escape HTML special characters in message (SEC-01)', () => {
+    const html = generateOfferEmailHtml('Project', '<script>alert("xss")</script>');
+
+    expect(html).not.toContain('<script>');
+    expect(html).toContain('&lt;script&gt;');
+  });
+
+  it('should preserve newlines as <br> in message after escaping (SEC-01)', () => {
+    const html = generateOfferEmailHtml('Project', 'Line 1\n<b>bold</b>\nLine 3');
+
+    expect(html).toContain('Line 1<br>');
+    expect(html).not.toContain('<b>bold</b>');
+    expect(html).toContain('&lt;b&gt;bold&lt;/b&gt;');
+  });
+
   it('should convert newlines to <br> tags in message', () => {
     const html = generateOfferEmailHtml('Project', 'Line 1\nLine 2\nLine 3');
 

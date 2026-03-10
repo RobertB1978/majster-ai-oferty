@@ -386,7 +386,6 @@ Deno.serve(async (req) => {
         message: `Sent ${sentEmails.length} offer + ${warrantySent.length} warranty reminders`,
         offersSent: sentEmails.length,
         warrantiesSent: warrantySent.length,
-        emails: [...sentEmails, ...warrantySent],
         errors: [...errors, ...warrantyErrors].length > 0 ? [...errors, ...warrantyErrors] : undefined,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
