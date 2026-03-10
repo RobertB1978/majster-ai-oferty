@@ -16,8 +16,7 @@ interface ConsentState {
 
 const shouldSkipConsent =
   (typeof navigator !== 'undefined' && (navigator.webdriver || /HeadlessChrome|Playwright/i.test(navigator.userAgent))) ||
-  import.meta.env.VITE_DISABLE_COOKIE_CONSENT === 'true' ||
-  import.meta.env.MODE === 'test';
+  import.meta.env.VITE_DISABLE_COOKIE_CONSENT === 'true';
 
 export function CookieConsent() {
   const { t } = useTranslation();
