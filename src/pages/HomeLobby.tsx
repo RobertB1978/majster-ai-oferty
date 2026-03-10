@@ -19,7 +19,7 @@ export default function HomeLobby() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-card border-b border-border px-4 pt-4 pb-3 sticky top-0 z-40">
+      <div className="bg-card border-b border-border px-4 pt-4 pb-3 sticky top-12 z-40">
         <h1 className="text-xl font-bold text-foreground">{t('newShell.home.title', 'Majster.AI')}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
           {t('newShell.home.subtitle', 'Twoje centrum zarządzania')}

@@ -72,7 +72,7 @@ export default function MoreScreen() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-card border-b border-border px-4 pt-4 pb-3 sticky top-0 z-40">
+      <div className="bg-card border-b border-border px-4 pt-4 pb-3 sticky top-12 z-40">
         <h1 className="text-xl font-bold text-foreground">{t('newShell.more.title', 'Więcej')}</h1>
       </div>
 

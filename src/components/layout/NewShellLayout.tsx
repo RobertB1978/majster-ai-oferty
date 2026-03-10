@@ -5,6 +5,7 @@ import { useEffect, useState, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NewShellBottomNav } from './NewShellBottomNav';
 import { NewShellFAB } from './NewShellFAB';
+import { NewShellTopBar } from './NewShellTopBar';
 import { PageTransition } from './PageTransition';
 
 const NewShellOnboarding = lazy(
@@ -41,6 +42,9 @@ export function NewShellLayout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background transition-colors duration-300">
+      {/* Górny pasek z przełącznikami języka i trybu */}
+      <NewShellTopBar />
+
       <main
         id="main-content"
         className={`flex-1 pb-20 transition-all duration-200 ${
