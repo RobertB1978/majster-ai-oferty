@@ -231,20 +231,14 @@ export default function Offers() {
   const errorDescription = useMemo(() => {
     if (!error) return t('offersList.errorDesc');
 
-    const errorObj = error as {
-      message?: string;
-      details?: string;
-      hint?: string;
-      code?: string;
-    };
+    const errorObj = error as { code?: string };
 
-    const reason = [errorObj.message, errorObj.details, errorObj.hint, errorObj.code]
-      .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
-      .join(' | ');
+    // PGRST205 = table not found in schema — pending database migration
+    if (errorObj.code === 'PGRST205') {
+      return t('offersList.errorDescMigration');
+    }
 
-    return reason
-      ? t('offersList.errorDescWithReason', { reason })
-      : t('offersList.errorDesc');
+    return t('offersList.errorDesc');
   }, [error, t]);
 
   const isFiltering = statusFilter !== 'ALL' || searchRaw.trim() !== '';

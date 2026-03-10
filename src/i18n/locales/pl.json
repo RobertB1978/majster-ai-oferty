@@ -252,11 +252,11 @@
     "clients": "Klienci",
     "accepted": "Zaakceptowane",
     "newLast7Days": "Nowe (7 dni)",
-    "activityFeed": "Ostatnia aktywno\u015b\u0107",
-    "newProjectSub": "Stw\u00f3rz wycen\u0119",
-    "addClientSub": "Baza klient\u00f3w",
+    "activityFeed": "Ostatnia aktywność",
+    "newProjectSub": "Stwórz wycenę",
+    "addClientSub": "Baza klientów",
     "templatesSub": "Wzory ofert",
-    "calendarSub": "Tw\u00f3j terminarz"
+    "calendarSub": "Twój terminarz"
   },
   "projects": {
     "title": "Projekty",
@@ -2822,6 +2822,7 @@
     "emptyFilterDesc": "Brak ofert pasujących do wybranych filtrów.",
     "errorTitle": "Błąd ładowania ofert",
     "errorDesc": "Nie udało się wczytać listy ofert. Sprawdź połączenie i spróbuj ponownie.",
+    "errorDescMigration": "Baza danych wymaga aktualizacji. Skontaktuj się z administratorem.",
     "errorDescWithReason": "Nie udało się wczytać listy ofert: {{reason}}",
     "errorRetry": "Spróbuj ponownie",
     "actionOpen": "Otwórz",
