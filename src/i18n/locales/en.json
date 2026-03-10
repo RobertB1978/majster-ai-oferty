@@ -2775,6 +2775,18 @@
       "finish": "Let's go!"
     }
   },
+  "industryTemplates": {
+    "triggerButton": "Industry templates",
+    "sheetTitle": "AI industry templates",
+    "sheetDesc": "Choose your trade and create an offer in one click with ready-made items and prices",
+    "itemCount": "{{count}} items in template",
+    "estimatedTotal": "Estimated value: {{value}} PLN net",
+    "confirmHint": "You can edit all prices after creating the offer.",
+    "createOffer": "Create offer",
+    "creating": "Creating offer...",
+    "createError": "Failed to create offer from template. Please try again.",
+    "emptyStateCta": "Use industry template"
+  },
   "offersList": {
     "pageTitle": "Offers",
     "searchPlaceholder": "Search offers...",

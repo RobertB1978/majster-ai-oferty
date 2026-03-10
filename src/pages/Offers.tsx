@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { differenceInDays } from 'date-fns';
-import { FileText, MoreHorizontal, Copy, ExternalLink, FolderPlus } from 'lucide-react';
+import { FileText, MoreHorizontal, Copy, ExternalLink, FolderPlus, Sparkles } from 'lucide-react';
 
 import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
+import { IndustryTemplateSheet } from '@/components/offers/IndustryTemplateSheet';
 
 import { useOffers, NO_RESPONSE_DAYS } from '@/hooks/useOffers';
 import type { Offer, OfferStatus, OfferSort } from '@/hooks/useOffers';
@@ -190,6 +191,7 @@ export default function Offers() {
   const [searchRaw, setSearchRaw] = useState('');
   const [sort, setSort] = useState<OfferSort>('last_activity_at');
   const [creatingProjectId, setCreatingProjectId] = useState<string | null>(null);
+  const [templateSheetOpen, setTemplateSheetOpen] = useState(false);
 
   const search = useDebounce(searchRaw, 300);
   const createProject = useCreateProjectV2();
@@ -249,8 +251,25 @@ export default function Offers() {
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
-      {/* Page title */}
-      <h1 className="text-2xl font-bold mb-5">{t('offersList.pageTitle')}</h1>
+      {/* Page title + AI templates button */}
+      <div className="flex items-center justify-between mb-5 gap-2">
+        <h1 className="text-2xl font-bold">{t('offersList.pageTitle')}</h1>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 shrink-0 border-primary/40 text-primary hover:bg-primary/5"
+          onClick={() => setTemplateSheetOpen(true)}
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          {t('industryTemplates.triggerButton')}
+        </Button>
+      </div>
+
+      {/* Industry templates sheet */}
+      <IndustryTemplateSheet
+        open={templateSheetOpen}
+        onOpenChange={setTemplateSheetOpen}
+      />
 
       {/* Status filter tabs */}
       <div className="flex gap-1.5 flex-wrap mb-4 overflow-x-auto pb-1">
@@ -308,13 +327,28 @@ export default function Offers() {
       )}
 
       {!isLoading && !isError && offers.length === 0 && (
-        <EmptyState
-          icon={FileText}
-          title={isFiltering ? t('offersList.emptyFilterTitle') : t('offersList.emptyTitle')}
-          description={isFiltering ? t('offersList.emptyFilterDesc') : t('offersList.emptyDesc')}
-          ctaLabel={isFiltering ? undefined : t('offersList.emptyCta')}
-          onCta={isFiltering ? undefined : handleCreateFirst}
-        />
+        <div className="space-y-3">
+          <EmptyState
+            icon={FileText}
+            title={isFiltering ? t('offersList.emptyFilterTitle') : t('offersList.emptyTitle')}
+            description={isFiltering ? t('offersList.emptyFilterDesc') : t('offersList.emptyDesc')}
+            ctaLabel={isFiltering ? undefined : t('offersList.emptyCta')}
+            onCta={isFiltering ? undefined : handleCreateFirst}
+          />
+          {!isFiltering && (
+            <div className="flex justify-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-primary hover:text-primary hover:bg-primary/5"
+                onClick={() => setTemplateSheetOpen(true)}
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                {t('industryTemplates.emptyStateCta')}
+              </Button>
+            </div>
+          )}
+        </div>
       )}
 
       {!isLoading && !isError && offers.length > 0 && (
