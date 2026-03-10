@@ -450,6 +450,7 @@ export type Database = {
           title: string | null
           total_net: number | null
           total_gross: number | null
+          total_vat: number | null
           currency: string
           sent_at: string | null
           accepted_at: string | null
@@ -466,6 +467,7 @@ export type Database = {
           title?: string | null
           total_net?: number | null
           total_gross?: number | null
+          total_vat?: number | null
           currency?: string
           sent_at?: string | null
           accepted_at?: string | null
@@ -482,6 +484,7 @@ export type Database = {
           title?: string | null
           total_net?: number | null
           total_gross?: number | null
+          total_vat?: number | null
           currency?: string
           sent_at?: string | null
           accepted_at?: string | null
@@ -1402,6 +1405,195 @@ export type Database = {
           },
         ]
       }
+      offer_items: {
+        Row: {
+          id: string
+          user_id: string
+          offer_id: string
+          item_type: string
+          name: string
+          unit: string | null
+          qty: number
+          unit_price_net: number
+          vat_rate: number | null
+          line_total_net: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          offer_id: string
+          item_type?: string
+          name: string
+          unit?: string | null
+          qty?: number
+          unit_price_net?: number
+          vat_rate?: number | null
+          line_total_net?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          offer_id?: string
+          item_type?: string
+          name?: string
+          unit?: string | null
+          qty?: number
+          unit_price_net?: number
+          vat_rate?: number | null
+          line_total_net?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_items_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v2_projects: {
+        Row: {
+          id: string
+          user_id: string
+          client_id: string | null
+          source_offer_id: string | null
+          title: string
+          status: string
+          start_date: string | null
+          end_date: string | null
+          progress_percent: number
+          stages_json: Json
+          total_from_offer: number | null
+          budget_net: number | null
+          budget_source: string | null
+          budget_updated_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          client_id?: string | null
+          source_offer_id?: string | null
+          title: string
+          status?: string
+          start_date?: string | null
+          end_date?: string | null
+          progress_percent?: number
+          stages_json?: Json
+          total_from_offer?: number | null
+          budget_net?: number | null
+          budget_source?: string | null
+          budget_updated_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          client_id?: string | null
+          source_offer_id?: string | null
+          title?: string
+          status?: string
+          start_date?: string | null
+          end_date?: string | null
+          progress_percent?: number
+          stages_json?: Json
+          total_from_offer?: number | null
+          budget_net?: number | null
+          budget_source?: string | null
+          budget_updated_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      project_public_status_tokens: {
+        Row: {
+          id: string
+          user_id: string
+          project_id: string
+          token: string
+          expires_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          project_id: string
+          token?: string
+          expires_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          project_id?: string
+          token?: string
+          expires_at?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_public_tokens_project_unique"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "v2_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_costs: {
+        Row: {
+          id: string
+          user_id: string
+          project_id: string
+          cost_type: string
+          amount_net: number
+          note: string | null
+          incurred_at: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          project_id: string
+          cost_type?: string
+          amount_net: number
+          note?: string | null
+          incurred_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          project_id?: string
+          cost_type?: string
+          amount_net?: number
+          note?: string | null
+          incurred_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_costs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v2_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1428,6 +1620,7 @@ export type Database = {
         Returns: boolean
       }
       validate_offer_token: { Args: { _token: string }; Returns: boolean }
+      resolve_project_public_token: { Args: { p_token: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
