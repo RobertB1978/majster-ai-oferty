@@ -1,15 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
-  FolderOpen,
   Building2,
   TrendingUp,
-  Star,
   Users,
   Settings,
-  Trash2,
   CalendarDays,
-  Shield,
   FileText,
   ChevronRight,
   type LucideIcon,
@@ -34,10 +30,8 @@ const MORE_GROUPS: MoreGroup[] = [
   {
     titleKey: 'newShell.more.groupDocs',
     items: [
-      { id: 'documents',          labelKey: 'newShell.more.documents',          icon: FolderOpen,  placeholder: true },
-      { id: 'document-templates', labelKey: 'newShell.more.documentTemplates',  icon: FileText,    route: '/app/document-templates' },
-      { id: 'calendar',           labelKey: 'newShell.more.calendar',           icon: CalendarDays, route: '/app/calendar' },
-      { id: 'guarantees',         labelKey: 'newShell.more.guarantees',         icon: Shield,      placeholder: true },
+      { id: 'document-templates', labelKey: 'newShell.more.documentTemplates', icon: FileText,    route: '/app/document-templates' },
+      { id: 'calendar',           labelKey: 'newShell.more.calendar',          icon: CalendarDays, route: '/app/calendar' },
     ],
   },
   {
@@ -45,15 +39,8 @@ const MORE_GROUPS: MoreGroup[] = [
     items: [
       { id: 'profile',   labelKey: 'newShell.more.profile',   icon: Building2, route: '/app/profile' },
       { id: 'finance',   labelKey: 'newShell.more.finance',   icon: TrendingUp, route: '/app/finance' },
-      { id: 'quality',   labelKey: 'newShell.more.quality',   icon: Star,      placeholder: true },
       { id: 'clients',   labelKey: 'newShell.more.clients',   icon: Users,     route: '/app/customers' },
-    ],
-  },
-  {
-    titleKey: 'newShell.more.groupSettings',
-    items: [
-      { id: 'settings',       labelKey: 'newShell.more.settings',       icon: Settings, route: '/app/settings' },
-      { id: 'deleteAccount',  labelKey: 'newShell.more.deleteAccount',  icon: Trash2,   route: '/app/settings', destructive: true },
+      { id: 'settings',  labelKey: 'newShell.more.settings',  icon: Settings,  route: '/app/settings' },
     ],
   },
 ];
@@ -61,9 +48,8 @@ const MORE_GROUPS: MoreGroup[] = [
 /**
  * MoreScreen — ekran "Więcej" nowego shella.
  *
- * Zawiera pogrupowane linki do wszystkich sekcji aplikacji.
+ * Zawiera pogrupowane linki do sekcji pomocniczych aplikacji.
  * Ustawienia i Profil Firmy zawsze dostępne (PR-05).
- * Pozycje z `placeholder: true` pokazują etykietę "Wkrótce".
  */
 export default function MoreScreen() {
   const { t } = useTranslation();

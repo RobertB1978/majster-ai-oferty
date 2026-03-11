@@ -647,7 +647,7 @@
     "pushNotifications": "Powiadomienia push",
     "enablePush": "Włącz powiadomienia push",
     "emailNotifications": "Powiadomienia email",
-    "contactEmailTab": "Email oferty",
+    "contactEmailTab": "E-mail",
     "companyProfileTab": "Firma",
     "accountTab": "Konto",
     "subscriptionTab": "Subskrypcja"
@@ -2767,7 +2767,7 @@
       "todayTasks": "Zadania",
       "quickStartTitle": "Szybki start",
       "qs": {
-        "newOffer": "Nowa wycena",
+        "newOffer": "Nowa oferta",
         "projects": "Projekty",
         "clients": "Klienci",
         "quickEst": "Szybka wycena"
@@ -2776,18 +2776,13 @@
     "more": {
       "title": "Więcej",
       "groupDocs": "Dokumenty",
-      "groupOrg": "Organizacja",
-      "groupSettings": "Ustawienia",
-      "documents": "Dokumenty",
+      "groupOrg": "Firma",
       "documentTemplates": "Wzory dokumentów",
       "calendar": "Kalendarz",
-      "guarantees": "Gwarancje",
       "profile": "Profil firmy",
       "finance": "Finanse",
-      "quality": "Kontrola jakości",
       "clients": "Klienci",
-      "settings": "Ustawienia",
-      "deleteAccount": "Usuń konto"
+      "settings": "Ustawienia"
     },
     "onboarding": {
       "step1Title": "Witaj w nowym Majster.AI",
@@ -2795,7 +2790,7 @@
       "step2Title": "Przycisk + to Twój asystent",
       "step2Desc": "Naciśnij środkowy przycisk + aby szybko dodać ofertę, klienta, koszt lub notatkę — jednym dotknięciem.",
       "step3Title": "Wszystko w zakładce Więcej",
-      "step3Desc": "Ustawienia, dokumenty, finanse i gwarancje — znajdziesz je w zakładce Więcej na dole ekranu.",
+      "step3Desc": "Wzory dokumentów, kalendarz, klienci, finanse i ustawienia — znajdziesz je w zakładce Więcej.",
       "skip": "Pomiń",
       "next": "Dalej",
       "finish": "Zaczynamy!"

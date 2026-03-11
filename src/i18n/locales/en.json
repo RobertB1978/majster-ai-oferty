@@ -647,7 +647,7 @@
       "light": "Light",
       "system": "System"
     },
-    "contactEmailTab": "Offer Email",
+    "contactEmailTab": "Email",
     "companyProfileTab": "Company",
     "accountTab": "Account",
     "subscriptionTab": "Subscription"
@@ -2767,7 +2767,7 @@
       "todayTasks": "Tasks",
       "quickStartTitle": "Quick start",
       "qs": {
-        "newOffer": "New estimate",
+        "newOffer": "New offer",
         "projects": "Projects",
         "clients": "Clients",
         "quickEst": "Quick estimate"
@@ -2776,18 +2776,13 @@
     "more": {
       "title": "More",
       "groupDocs": "Documents",
-      "groupOrg": "Organisation",
-      "groupSettings": "Settings",
-      "documents": "Documents",
+      "groupOrg": "Company",
       "documentTemplates": "Document Templates",
       "calendar": "Calendar",
-      "guarantees": "Guarantees",
       "profile": "Company Profile",
       "finance": "Finance",
-      "quality": "Quality Control",
       "clients": "Clients",
-      "settings": "Settings",
-      "deleteAccount": "Delete Account"
+      "settings": "Settings"
     },
     "onboarding": {
       "step1Title": "Welcome to the new Majster.AI",
@@ -2795,7 +2790,7 @@
       "step2Title": "The + button is your assistant",
       "step2Desc": "Press the centre + button to quickly add an offer, client, cost or note — with a single tap.",
       "step3Title": "Everything in the More tab",
-      "step3Desc": "Settings, documents, finance and guarantees — find them in the More tab at the bottom of the screen.",
+      "step3Desc": "Document templates, calendar, clients, finance and settings — find them in the More tab.",
       "skip": "Skip",
       "next": "Next",
       "finish": "Let's go!"
