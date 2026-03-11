@@ -15,7 +15,7 @@ describe('Performance Regression Guards', () => {
 
       // All major app pages should be lazy-loaded
       const lazyPages = [
-        'Dashboard', 'Clients', 'Projects', 'NewProject', 'ProjectDetail',
+        'Dashboard', 'Clients', 'ProjectsList', 'NewProjectV2', 'ProjectHub',
         'QuoteEditor', 'CompanyProfile', 'ItemTemplates', 'Settings',
         'PdfGenerator', 'Calendar', 'Finance', 'OfferApproval',
         // Admin zone: individually lazy-loaded for separate chunk splitting
