@@ -33,12 +33,12 @@ vi.mock('@/contexts/AuthContext', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-// Mock useAnalyticsStats to return static data (avoids Supabase calls)
+// Mock useAnalyticsStats — statusCounts uses v2_projects enum keys (ACTIVE | COMPLETED | ON_HOLD | CANCELLED)
 vi.mock('@/hooks/useAnalyticsStats', () => ({
   useAnalyticsStats: () => ({
     data: {
       totalProjects: 10,
-      statusCounts: { 'Nowy': 3, 'Wycena w toku': 2, 'Oferta wysłana': 3, 'Zaakceptowany': 2 },
+      statusCounts: { ACTIVE: 5, COMPLETED: 2, ON_HOLD: 2, CANCELLED: 1 },
       monthlyProjects: [
         { month: 'Sty', projekty: 1 },
         { month: 'Lut', projekty: 2 },
@@ -111,6 +111,12 @@ describe('Analytics page — smoke test (P0 regression guard)', () => {
     expect(screen.getByText('10')).toBeDefined(); // totalProjects
     expect(screen.getByText('4')).toBeDefined(); // totalClients
     expect(screen.getByText('20%')).toBeDefined(); // conversionRate
+  });
+
+  it('renders conversion rate using COMPLETED count from v2 statusCounts', () => {
+    const { container } = renderAnalytics();
+    // statusCounts.COMPLETED (2) / totalProjects (10)
+    expect(container.textContent).toContain('2 / 10');
   });
 
   it('renders chart sections with CardHeader and CardTitle', async () => {

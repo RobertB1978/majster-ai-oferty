@@ -7,11 +7,15 @@ import { pl } from 'date-fns/locale';
 export interface AnalyticsStats {
   // Project stats
   totalProjects: number;
+  /**
+   * Status counts from v2_projects.
+   * Keys: v2 enum values — ACTIVE | COMPLETED | ON_HOLD | CANCELLED
+   */
   statusCounts: {
-    'Nowy': number;
-    'Wycena w toku': number;
-    'Oferta wysłana': number;
-    'Zaakceptowany': number;
+    ACTIVE: number;
+    COMPLETED: number;
+    ON_HOLD: number;
+    CANCELLED: number;
   };
   monthlyProjects: Array<{ month: string; projekty: number }>;
   projectsTrend: number;
@@ -43,7 +47,15 @@ export interface AnalyticsStats {
 
 /**
  * Analytics Statistics Hook
- * Optimized: Server-side aggregations instead of fetching all data and computing in JS
+ *
+ * Data source: v2_projects (aligned with dashboard — PR-13).
+ * Status mapping (v2 enum):
+ *   ACTIVE    — projekty w toku
+ *   COMPLETED — projekty zakończone (conversion rate denominator)
+ *   ON_HOLD   — projekty wstrzymane
+ *   CANCELLED — projekty anulowane
+ *
+ * RLS on v2_projects enforces user isolation — no explicit user_id filter needed.
  * Cache: 15 minutes (analytics don't need to be real-time)
  */
 export function useAnalyticsStats(dateLocale: Locale = pl) {
@@ -58,22 +70,21 @@ export function useAnalyticsStats(dateLocale: Locale = pl) {
       const lastMonth = subMonths(now, 1);
 
       // === PROJECT STATS ===
-      // Get all projects with minimal columns (only status and created_at needed for aggregations)
+      // Source: v2_projects — RLS enforces user isolation
       const { data: projectsData, error: projectsError } = await supabase
-        .from('projects')
-        .select('status, created_at')
-        .eq('user_id', user.id);
+        .from('v2_projects')
+        .select('status, created_at');
 
       if (projectsError) throw projectsError;
 
       const projects = projectsData || [];
 
-      // Status counts (could be done in SQL with FILTER, but simpler in JS for now)
+      // v2 status counts (ACTIVE | COMPLETED | ON_HOLD | CANCELLED)
       const statusCounts = {
-        'Nowy': projects.filter(p => p.status === 'Nowy').length,
-        'Wycena w toku': projects.filter(p => p.status === 'Wycena w toku').length,
-        'Oferta wysłana': projects.filter(p => p.status === 'Oferta wysłana').length,
-        'Zaakceptowany': projects.filter(p => p.status === 'Zaakceptowany').length,
+        ACTIVE:    projects.filter(p => p.status === 'ACTIVE').length,
+        COMPLETED: projects.filter(p => p.status === 'COMPLETED').length,
+        ON_HOLD:   projects.filter(p => p.status === 'ON_HOLD').length,
+        CANCELLED: projects.filter(p => p.status === 'CANCELLED').length,
       };
 
       // Monthly projects (last 6 months)
@@ -114,7 +125,6 @@ export function useAnalyticsStats(dateLocale: Locale = pl) {
         : thisMonthProjects > 0 ? 100 : 0;
 
       // === QUOTE STATS ===
-      // Only fetch total value (aggregation can be done in SQL)
       const { data: quotesData, error: quotesError } = await supabase
         .from('quotes')
         .select('total')
@@ -126,9 +136,10 @@ export function useAnalyticsStats(dateLocale: Locale = pl) {
       const totalValue = quotes.reduce((sum, q) => sum + (q.total || 0), 0);
       const avgValue = quotes.length > 0 ? totalValue / quotes.length : 0;
 
-      const acceptedCount = statusCounts['Zaakceptowany'];
-      const conversionRate = projects.length > 0
-        ? Math.round((acceptedCount / projects.length) * 100)
+      // Conversion rate: COMPLETED projects / all non-cancelled projects
+      const activeProjects = projects.filter(p => p.status !== 'CANCELLED').length;
+      const conversionRate = activeProjects > 0
+        ? Math.round((statusCounts.COMPLETED / activeProjects) * 100)
         : 0;
 
       // === EVENT STATS ===
@@ -142,14 +153,14 @@ export function useAnalyticsStats(dateLocale: Locale = pl) {
       const events = eventsData || [];
 
       const eventsByType = {
-        meeting: events.filter(e => e.event_type === 'meeting').length,
+        meeting:  events.filter(e => e.event_type === 'meeting').length,
         deadline: events.filter(e => e.event_type === 'deadline').length,
         reminder: events.filter(e => e.event_type === 'reminder').length,
-        other: events.filter(e => e.event_type === 'other').length,
+        other:    events.filter(e => e.event_type === 'other').length,
       };
 
       const eventsByStatus = {
-        pending: events.filter(e => e.status === 'pending').length,
+        pending:   events.filter(e => e.status === 'pending').length,
         completed: events.filter(e => e.status === 'completed').length,
       };
 
