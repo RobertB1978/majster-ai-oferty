@@ -2790,6 +2790,8 @@
     },
     "more": {
       "title": "Więcej",
+      "groupTools": "Narzędzia",
+      "groupAccount": "Firma i konto",
       "groupDocs": "Dokumenty",
       "groupOrg": "Firma",
       "documentTemplates": "Wzory dokumentów",

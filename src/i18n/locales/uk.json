@@ -2790,6 +2790,8 @@
     },
     "more": {
       "title": "Більше",
+      "groupTools": "Інструменти",
+      "groupAccount": "Компанія та акаунт",
       "groupDocs": "Документи",
       "groupOrg": "Компанія",
       "documentTemplates": "Шаблони документів",

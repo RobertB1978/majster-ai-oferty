@@ -6,7 +6,7 @@ import {
   Users,
   Settings,
   CalendarDays,
-  FileText,
+  BookOpen,
   ChevronRight,
   type LucideIcon,
 } from 'lucide-react';
@@ -26,21 +26,30 @@ interface MoreGroup {
   items: MoreItem[];
 }
 
+/**
+ * Dwie grupy zamiast czterech rozproszonych elementów:
+ *
+ * "Narzędzia"      — operacyjne moduły (spójne z desktopowym sidebarem)
+ * "Firma i konto"  — konfiguracja: profil + ustawienia
+ *
+ * Grupowanie jest celowe: Finanse i Klienci to narzędzia pracy, nie ustawienia.
+ * Ustawienia i Profil firmy razem wyznaczają granicę "konfiguracja konta".
+ */
 const MORE_GROUPS: MoreGroup[] = [
   {
-    titleKey: 'newShell.more.groupDocs',
+    titleKey: 'newShell.more.groupTools',
     items: [
-      { id: 'document-templates', labelKey: 'newShell.more.documentTemplates', icon: FileText,    route: '/app/document-templates' },
       { id: 'calendar',           labelKey: 'newShell.more.calendar',          icon: CalendarDays, route: '/app/calendar' },
+      { id: 'document-templates', labelKey: 'newShell.more.documentTemplates', icon: BookOpen,     route: '/app/document-templates' },
+      { id: 'finance',            labelKey: 'newShell.more.finance',           icon: TrendingUp,   route: '/app/finance' },
+      { id: 'clients',            labelKey: 'newShell.more.clients',           icon: Users,        route: '/app/customers' },
     ],
   },
   {
-    titleKey: 'newShell.more.groupOrg',
+    titleKey: 'newShell.more.groupAccount',
     items: [
-      { id: 'profile',   labelKey: 'newShell.more.profile',   icon: Building2, route: '/app/profile' },
-      { id: 'finance',   labelKey: 'newShell.more.finance',   icon: TrendingUp, route: '/app/finance' },
-      { id: 'clients',   labelKey: 'newShell.more.clients',   icon: Users,     route: '/app/customers' },
-      { id: 'settings',  labelKey: 'newShell.more.settings',  icon: Settings,  route: '/app/settings' },
+      { id: 'profile',  labelKey: 'newShell.more.profile',  icon: Building2, route: '/app/profile' },
+      { id: 'settings', labelKey: 'newShell.more.settings', icon: Settings,  route: '/app/settings' },
     ],
   },
 ];
@@ -48,7 +57,10 @@ const MORE_GROUPS: MoreGroup[] = [
 /**
  * MoreScreen — ekran "Więcej" nowego shella.
  *
- * Zawiera pogrupowane linki do sekcji pomocniczych aplikacji.
+ * Dwie celowe grupy:
+ *  - Narzędzia: Kalendarz, Wzory dokumentów, Finanse, Klienci
+ *  - Firma i konto: Profil firmy, Ustawienia
+ *
  * Ustawienia i Profil Firmy zawsze dostępne (PR-05).
  */
 export default function MoreScreen() {
