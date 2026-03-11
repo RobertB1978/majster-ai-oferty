@@ -23,7 +23,7 @@ export const FEATURES: Feature[] = [
     title: 'Wyceny PDF',
     desc: 'Profesjonalne oferty PDF. Edytowalne szablony.',
     status: 'live',
-    evidence: 'src/App.tsx:162-163 → /app/jobs/:id/quote → QuoteEditor, /app/quick-est → QuickEstimate',
+    evidence: 'src/App.tsx:162-163 → /app/projects/:id/quote → QuoteEditor, /app/quick-est → QuickEstimate',
   },
   {
     key: 'projects',
@@ -31,7 +31,7 @@ export const FEATURES: Feature[] = [
     title: 'Centrum projektów',
     desc: 'Projekty, statusy, zadania i dokumenty w jednym miejscu.',
     status: 'live',
-    evidence: 'src/App.tsx:160 → /app/jobs → Projects component',
+    evidence: 'src/App.tsx:160 → /app/projects → Projects component',
   },
   {
     key: 'clients',

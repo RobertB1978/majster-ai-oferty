@@ -97,10 +97,16 @@ const AdminPlansPage = lazy(() => import("./pages/admin/AdminPlansPage"));
 const AdminNavigationPage = lazy(() => import("./pages/admin/AdminNavigationPage"));
 const AdminDiagnosticsPage = lazy(() => import("./pages/admin/AdminDiagnosticsPage"));
 
-/** Redirect old /projects/:id paths to /app/jobs/:id, preserving the real param value. */
+/** Redirect old /projects/:id paths to /app/projects/:id, preserving the real param value. */
 function ProjectRedirect({ suffix = '' }: { suffix?: string }) {
   const { id } = useParams();
-  return <Navigate to={`/app/jobs/${id}${suffix}`} replace />;
+  return <Navigate to={`/app/projects/${id}${suffix}`} replace />;
+}
+
+/** Redirect legacy /app/jobs/:id paths to /app/projects/:id, preserving the real param value. */
+function JobsRedirect({ suffix = '' }: { suffix?: string }) {
+  const { id } = useParams();
+  return <Navigate to={`/app/projects/${id}${suffix}`} replace />;
 }
 
 /** Initialize theme + lang from localStorage or system preference for all routes. */
@@ -230,19 +236,22 @@ const App = () => (
                     <Route path="offers" element={<OffersPage />} />
                     <Route path="offers/new" element={<OfferDetail />} />
                     <Route path="offers/:id" element={<OfferDetail />} />
-                    {/* PR-13: Projects V2 */}
+                    {/* Canonical projects routes */}
                     <Route path="projects" element={<ProjectsList />} />
                     <Route path="projects/new" element={<NewProjectV2 />} />
                     <Route path="projects/:id" element={<ProjectHub />} />
+                    <Route path="projects/:id/quote" element={<QuoteEditor />} />
+                    <Route path="projects/:id/pdf" element={<PdfGenerator />} />
                     <Route path="more" element={<MoreScreen />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="customers" element={<Clients />} />
                     <Route path="customers/new" element={<Navigate to="/app/customers?new=1" replace />} />
-                    <Route path="jobs" element={<Projects />} />
-                    <Route path="jobs/new" element={<NewProject />} />
-                    <Route path="jobs/:id" element={<ProjectDetail />} />
-                    <Route path="jobs/:id/quote" element={<QuoteEditor />} />
-                    <Route path="jobs/:id/pdf" element={<PdfGenerator />} />
+                    {/* Legacy /app/jobs → /app/projects redirects */}
+                    <Route path="jobs" element={<Navigate to="/app/projects" replace />} />
+                    <Route path="jobs/new" element={<Navigate to="/app/projects/new" replace />} />
+                    <Route path="jobs/:id" element={<JobsRedirect />} />
+                    <Route path="jobs/:id/quote" element={<JobsRedirect suffix="/quote" />} />
+                    <Route path="jobs/:id/pdf" element={<JobsRedirect suffix="/pdf" />} />
                     <Route path="quick-est" element={<QuickEstimate />} />
                     <Route path="szybka-wycena" element={<QuickEstimateWorkspace />} />
                     <Route path="photos" element={<Photos />} />
@@ -293,8 +302,8 @@ const App = () => (
                   <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
                   <Route path="/clients" element={<Navigate to="/app/customers" replace />} />
                   <Route path="/customers" element={<Navigate to="/app/customers" replace />} />
-                  <Route path="/projects" element={<Navigate to="/app/jobs" replace />} />
-                  <Route path="/projects/new" element={<Navigate to="/app/jobs/new" replace />} />
+                  <Route path="/projects" element={<Navigate to="/app/projects" replace />} />
+                  <Route path="/projects/new" element={<Navigate to="/app/projects/new" replace />} />
                   <Route path="/projects/:id" element={<ProjectRedirect />} />
                   <Route path="/projects/:id/quote" element={<ProjectRedirect suffix="/quote" />} />
                   <Route path="/projects/:id/pdf" element={<ProjectRedirect suffix="/pdf" />} />

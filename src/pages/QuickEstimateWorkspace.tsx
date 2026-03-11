@@ -174,7 +174,7 @@ export default function QuickEstimateWorkspace() {
       if (itemsErr) throw itemsErr;
 
       toast.success(t('szybkaWycena.savedSuccess'));
-      navigate(`/app/jobs/${project.id}`);
+      navigate(`/app/projects/${project.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       toast.error(`${t('common.saveError', 'Save error:')} ${msg}`);

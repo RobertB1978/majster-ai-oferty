@@ -48,7 +48,7 @@ export default function ProjectDetail() {
   if (!id) {
     return (
       <div className="space-y-6 animate-fade-in">
-        <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
+        <Button variant="ghost" onClick={() => navigate('/app/projects')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t('newProject.backToProjects')}
         </Button>
@@ -65,7 +65,7 @@ export default function ProjectDetail() {
   if (isError) {
     return (
       <div className="space-y-6 animate-fade-in">
-        <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
+        <Button variant="ghost" onClick={() => navigate('/app/projects')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t('newProject.backToProjects')}
         </Button>
@@ -89,7 +89,7 @@ export default function ProjectDetail() {
               </details>
             )}
             <div className="flex gap-2 justify-center">
-              <Button variant="outline" onClick={() => navigate('/app/jobs')}>
+              <Button variant="outline" onClick={() => navigate('/app/projects')}>
                 {t('projects.backToList')}
               </Button>
               <Button onClick={() => window.location.reload()}>
@@ -114,7 +114,7 @@ export default function ProjectDetail() {
   if (!project) {
     return (
       <div className="space-y-6 animate-fade-in">
-        <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
+        <Button variant="ghost" onClick={() => navigate('/app/projects')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t('newProject.backToProjects')}
         </Button>
@@ -136,12 +136,12 @@ export default function ProjectDetail() {
 
   const handleAddToQuote = (items: unknown[]) => {
     // Navigate to quote editor with items to add
-    navigate(`/app/jobs/${id}/quote`, { state: { addItems: items } });
+    navigate(`/app/projects/${id}/quote`, { state: { addItems: items } });
   };
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
+      <Button variant="ghost" onClick={() => navigate('/app/projects')}>
         <ArrowLeft className="mr-2 h-4 w-4" />
         {t('newProject.backToProjects')}
       </Button>
@@ -190,11 +190,11 @@ export default function ProjectDetail() {
 
       {/* Actions */}
       <div className="flex flex-wrap gap-3">
-        <Button size="lg" onClick={() => navigate(`/app/jobs/${id}/quote`)}>
+        <Button size="lg" onClick={() => navigate(`/app/projects/${id}/quote`)}>
           <Calculator className="mr-2 h-5 w-5" />
           {t('projects.editQuote')}
         </Button>
-        <Button size="lg" variant="outline" onClick={() => navigate(`/app/jobs/${id}/pdf`)}>
+        <Button size="lg" variant="outline" onClick={() => navigate(`/app/projects/${id}/pdf`)}>
           <FileText className="mr-2 h-5 w-5" />
           {t('projects.generateOfferPdf')}
         </Button>

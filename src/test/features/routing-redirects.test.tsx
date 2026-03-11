@@ -3,13 +3,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 
 /**
- * PR4: Canonical Routing + Redirects Pack
+ * Canonical Routing + Redirects Pack
  *
  * Tests verify that legacy/buggy routes redirect to canonical routes
  * and that the FINAL location.pathname is correct.
  *
  * Critical redirects:
- * - /app/projects → /app/jobs
+ * - /app/jobs → /app/projects (legacy jobs → canonical projects)
  * - /app/clients → /app/customers
  * - /app/dash%20board → /app/dashboard
  * - /app/dash board → /app/dashboard
@@ -26,10 +26,10 @@ function LocationTracker({ label }: { label: string }) {
   );
 }
 
-// Mock ProjectRedirect matching App.tsx implementation
-function ProjectRedirect({ suffix = '' }: { suffix?: string }) {
+// Mock JobsRedirect matching App.tsx implementation
+function JobsRedirect({ suffix = '' }: { suffix?: string }) {
   const { id } = useParams();
-  return <Navigate to={`/app/jobs/${id}${suffix}`} replace />;
+  return <Navigate to={`/app/projects/${id}${suffix}`} replace />;
 }
 
 // Minimal route structure matching App.tsx redirects
@@ -39,14 +39,21 @@ function TestRouter({ initialPath }: { initialPath: string }) {
       <Routes>
         {/* Canonical routes */}
         <Route path="/app/dashboard" element={<LocationTracker label="Dashboard" />} />
-        <Route path="/app/jobs" element={<LocationTracker label="Jobs" />} />
-        <Route path="/app/jobs/:id" element={<LocationTracker label="Job Detail" />} />
+        <Route path="/app/projects" element={<LocationTracker label="Projects" />} />
+        <Route path="/app/projects/:id" element={<LocationTracker label="Project Detail" />} />
+        <Route path="/app/projects/:id/quote" element={<LocationTracker label="Project Quote" />} />
+        <Route path="/app/projects/:id/pdf" element={<LocationTracker label="Project PDF" />} />
         <Route path="/app/customers" element={<LocationTracker label="Customers" />} />
 
-        {/* Redirects - matching App.tsx:175-178 */}
+        {/* Legacy /app/jobs → /app/projects redirects */}
+        <Route path="/app/jobs" element={<Navigate to="/app/projects" replace />} />
+        <Route path="/app/jobs/new" element={<Navigate to="/app/projects/new" replace />} />
+        <Route path="/app/jobs/:id" element={<JobsRedirect />} />
+        <Route path="/app/jobs/:id/quote" element={<JobsRedirect suffix="/quote" />} />
+        <Route path="/app/jobs/:id/pdf" element={<JobsRedirect suffix="/pdf" />} />
+
+        {/* Other redirects */}
         <Route path="/app/clients" element={<Navigate to="/app/customers" replace />} />
-        <Route path="/app/projects" element={<Navigate to="/app/jobs" replace />} />
-        <Route path="/app/projects/:id" element={<ProjectRedirect />} />
         <Route path="/app/dash%20board" element={<Navigate to="/app/dashboard" replace />} />
         <Route path="/app/dash board" element={<Navigate to="/app/dashboard" replace />} />
       </Routes>
@@ -54,23 +61,41 @@ function TestRouter({ initialPath }: { initialPath: string }) {
   );
 }
 
-describe('PR4: Canonical Routing Redirects', () => {
-  describe('/app/projects → /app/jobs', () => {
-    it('should redirect /app/projects to /app/jobs and verify final pathname', async () => {
-      render(<TestRouter initialPath="/app/projects" />);
+describe('Canonical Routing Redirects', () => {
+  describe('/app/jobs → /app/projects (legacy redirect)', () => {
+    it('should redirect /app/jobs to /app/projects and verify final pathname', async () => {
+      render(<TestRouter initialPath="/app/jobs" />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('component-label')).toHaveTextContent('Jobs');
-        expect(screen.getByTestId('final-pathname')).toHaveTextContent('/app/jobs');
+        expect(screen.getByTestId('component-label')).toHaveTextContent('Projects');
+        expect(screen.getByTestId('final-pathname')).toHaveTextContent('/app/projects');
       });
     });
 
-    it('should redirect /app/projects/:id to /app/jobs/:id preserving param', async () => {
-      render(<TestRouter initialPath="/app/projects/abc-123" />);
+    it('should redirect /app/jobs/:id to /app/projects/:id preserving param', async () => {
+      render(<TestRouter initialPath="/app/jobs/abc-123" />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('component-label')).toHaveTextContent('Job Detail');
-        expect(screen.getByTestId('final-pathname')).toHaveTextContent('/app/jobs/abc-123');
+        expect(screen.getByTestId('component-label')).toHaveTextContent('Project Detail');
+        expect(screen.getByTestId('final-pathname')).toHaveTextContent('/app/projects/abc-123');
+      });
+    });
+
+    it('should redirect /app/jobs/:id/quote to /app/projects/:id/quote', async () => {
+      render(<TestRouter initialPath="/app/jobs/abc-123/quote" />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('component-label')).toHaveTextContent('Project Quote');
+        expect(screen.getByTestId('final-pathname')).toHaveTextContent('/app/projects/abc-123/quote');
+      });
+    });
+
+    it('should redirect /app/jobs/:id/pdf to /app/projects/:id/pdf', async () => {
+      render(<TestRouter initialPath="/app/jobs/abc-123/pdf" />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('component-label')).toHaveTextContent('Project PDF');
+        expect(screen.getByTestId('final-pathname')).toHaveTextContent('/app/projects/abc-123/pdf');
       });
     });
   });
@@ -97,8 +122,6 @@ describe('PR4: Canonical Routing Redirects', () => {
     });
 
     it('should redirect /app/dash board to /app/dashboard and verify final pathname', async () => {
-      // Note: MemoryRouter normalizes spaces in path
-      // This test verifies the Route declaration exists
       render(<TestRouter initialPath="/app/dash board" />);
 
       await waitFor(() => {
@@ -109,12 +132,12 @@ describe('PR4: Canonical Routing Redirects', () => {
   });
 
   describe('Canonical routes remain stable (no redirect loops)', () => {
-    it('should render /app/jobs without redirect', async () => {
-      render(<TestRouter initialPath="/app/jobs" />);
+    it('should render /app/projects without redirect', async () => {
+      render(<TestRouter initialPath="/app/projects" />);
 
       await waitFor(() => {
-        expect(screen.getByTestId('component-label')).toHaveTextContent('Jobs');
-        expect(screen.getByTestId('final-pathname')).toHaveTextContent('/app/jobs');
+        expect(screen.getByTestId('component-label')).toHaveTextContent('Projects');
+        expect(screen.getByTestId('final-pathname')).toHaveTextContent('/app/projects');
       });
     });
 

@@ -62,7 +62,7 @@ export default function PdfGenerator() {
   if (!project) {
     return (
       <div className="space-y-6 animate-fade-in">
-        <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
+        <Button variant="ghost" onClick={() => navigate('/app/projects')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t('pdfGenerator.backButton')}
         </Button>
@@ -167,7 +167,7 @@ export default function PdfGenerator() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <Button variant="ghost" onClick={() => navigate(`/app/jobs/${id}`)}>
+      <Button variant="ghost" onClick={() => navigate(`/app/projects/${id}`)}>
         <ArrowLeft className="mr-2 h-4 w-4" />
         {t('pdfGenerator.backToProject')}
       </Button>

@@ -72,7 +72,7 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate('/app/jobs')}
+            onClick={() => navigate('/app/projects')}
             className="text-xs gap-1 hover:text-primary"
           >
             {t('dashboard.viewAll', 'Zobacz wszystkie')}
@@ -103,7 +103,7 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
               </p>
               <Button
                 variant="link"
-                onClick={() => navigate('/app/jobs/new')}
+                onClick={() => navigate('/app/projects/new')}
                 className="text-sm p-0 h-auto text-primary"
               >
                 {t('dashboard.createFirstProject')}
@@ -123,7 +123,7 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.06, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                       className="group flex items-center gap-3 px-1 py-3 cursor-pointer rounded-lg hover:bg-muted/40 transition-colors duration-150 -mx-1"
-                      onClick={() => navigate(`/app/jobs/${project.id}`)}
+                      onClick={() => navigate(`/app/projects/${project.id}`)}
                     >
                       {/* Client avatar */}
                       <ClientAvatar name={clientName} />
