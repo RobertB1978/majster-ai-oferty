@@ -234,7 +234,7 @@ const handler = async (req: Request): Promise<Response> => {
               title: '📤 Oferta wysłana',
               message: `Oferta do projektu "${projectName}" została wysłana na adres email klienta.`,
               type: 'info',
-              action_url: `/app/jobs/${sendRow.project_id}`,
+              action_url: `/app/projects/${sendRow.project_id}`,
             });
           }
         }

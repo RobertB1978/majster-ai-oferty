@@ -14,7 +14,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
-  ArrowLeft, Phone, ChevronDown, ChevronUp, QrCode,
+  ArrowLeft, ChevronDown, ChevronUp, QrCode,
   Copy, Check, Loader2, Plus, Trash2, RefreshCw, FileText,
 } from 'lucide-react';
 
@@ -399,10 +399,7 @@ export default function ProjectHub() {
             )}
           </div>
         </div>
-        {/* Placeholder for client phone — PR-13 scope */}
-        <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 text-muted-foreground" aria-label={t('projectsV2.hub.callClient')} disabled>
-          <Phone className="h-4 w-4" />
-        </Button>
+        {/* Phone action deferred — not implemented */}
       </div>
 
       {/* Kontekst źródłowej oferty — widoczny tylko gdy projekt powstał z oferty */}
