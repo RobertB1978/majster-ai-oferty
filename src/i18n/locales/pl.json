@@ -3142,7 +3142,10 @@
       "errorNotFound": "Nie znaleziono projektu",
       "errorDesc": "Skontaktuj się z wykonawcą, aby uzyskać nowy link.",
       "noPricesNote": "Strona statusu nie zawiera informacji o cenach."
-    }
+    },
+    "offerFirstNote": "Projekty tworzone są z zaakceptowanych ofert",
+    "manualCta": "Utwórz projekt ręcznie",
+    "manualCreationHint": "Zalecana ścieżka: Oferta → Akceptacja → Projekt. Ręczne tworzenie jest przeznaczone dla małych zleceń bezpośrednich lub prac bez formalnej oferty."
   },
   "burnBar": {
     "budget": "Budżet",

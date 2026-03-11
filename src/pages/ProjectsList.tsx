@@ -9,7 +9,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FolderKanban, Plus, Archive } from 'lucide-react';
+import { FolderKanban, Plus, Archive, FileText } from 'lucide-react';
 
 import { useProjectsV2List, useDeleteProjectV2, type ProjectStatus } from '@/hooks/useProjectsV2';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -72,9 +72,19 @@ export default function ProjectsList() {
   return (
     <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-bold">{t('projectsV2.pageTitle')}</h1>
-        <Button size="sm" onClick={() => navigate('/app/projects/new')}>
+      <div className="flex items-start justify-between mb-5 gap-2">
+        <div>
+          <h1 className="text-2xl font-bold">{t('projectsV2.pageTitle')}</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {t('projectsV2.offerFirstNote')}
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate('/app/projects/new')}
+          title={t('projectsV2.manualCreationHint')}
+        >
           <Plus className="h-4 w-4 mr-1.5" />
           {t('projectsV2.newProject')}
         </Button>
@@ -125,13 +135,28 @@ export default function ProjectsList() {
       )}
 
       {!isLoading && !isError && projects.length === 0 && (
-        <EmptyState
-          icon={FolderKanban}
-          title={isFiltering ? t('projectsV2.emptyFilterTitle') : t('projectsV2.emptyTitle')}
-          description={isFiltering ? t('projectsV2.emptyFilterDesc') : t('projectsV2.emptyDesc')}
-          ctaLabel={isFiltering ? undefined : t('projectsV2.emptyCta')}
-          onCta={isFiltering ? undefined : () => navigate('/app/projects/new')}
-        />
+        <div className="space-y-3">
+          <EmptyState
+            icon={FolderKanban}
+            title={isFiltering ? t('projectsV2.emptyFilterTitle') : t('projectsV2.emptyTitle')}
+            description={isFiltering ? t('projectsV2.emptyFilterDesc') : t('projectsV2.emptyDesc')}
+            ctaLabel={isFiltering ? undefined : t('projectsV2.emptyCta')}
+            onCta={isFiltering ? undefined : () => navigate('/app/offers')}
+          />
+          {!isFiltering && (
+            <div className="flex justify-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-muted-foreground hover:text-foreground"
+                onClick={() => navigate('/app/projects/new')}
+              >
+                <FileText className="h-3.5 w-3.5" />
+                {t('projectsV2.manualCta')}
+              </Button>
+            </div>
+          )}
+        </div>
       )}
 
       {!isLoading && !isError && projects.length > 0 && (

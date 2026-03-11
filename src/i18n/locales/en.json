@@ -3142,7 +3142,10 @@
       "errorNotFound": "Project not found",
       "errorDesc": "Contact the contractor to get a new link.",
       "noPricesNote": "This status page does not include price information."
-    }
+    },
+    "offerFirstNote": "Projects are created from accepted offers",
+    "manualCta": "Create project manually",
+    "manualCreationHint": "Recommended flow: Offer → Acceptance → Project. Manual creation is for small direct jobs or work without a formal offer."
   },
   "burnBar": {
     "budget": "Budget",
