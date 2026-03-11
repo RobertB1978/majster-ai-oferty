@@ -10,7 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SearchInput } from '@/components/ui/search-input';
 import { PaginationControls } from '@/components/ui/pagination-controls';
-import { Plus, FolderKanban, Download } from 'lucide-react';
+import { EmptyState } from '@/components/ui/empty-state';
+import { ErrorState } from '@/components/ui/error-state';
+import { Plus, FolderKanban, Download, SearchX } from 'lucide-react';
 import { ProjectsListSkeleton } from '@/components/ui/skeleton-screens';
 import { exportProjectsToCSV } from '@/lib/exportUtils';
 
@@ -37,7 +39,9 @@ export default function Projects() {
   // Paginated query with server-side filtering
   const {
     data: paginatedResult,
-    isLoading
+    isLoading,
+    isError,
+    refetch,
   } = useProjectsPaginated({
     page,
     pageSize: PAGE_SIZE,
@@ -136,38 +140,38 @@ export default function Projects() {
 
       {isLoading ? (
         <ProjectsListSkeleton />
+      ) : isError ? (
+        <ErrorState
+          title={t('projects.listErrorTitle')}
+          description={t('projects.listErrorDesc')}
+          retryLabel={t('projects.listErrorRetry')}
+          onRetry={() => refetch()}
+        />
       ) : showEmptyState ? (
-        <Card className="border-dashed border-2">
-          <CardContent className="py-16 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <FolderKanban className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">{t('projects.noProjects')}</h3>
-            <p className="text-muted-foreground mb-4">{t('projects.createFirst')}</p>
-            <Button onClick={() => navigate('/app/jobs/new')} className="bg-primary">
-              <Plus className="mr-2 h-4 w-4" />
-              {t('projects.newProject')}
-            </Button>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={FolderKanban}
+          title={t('projects.noProjects')}
+          description={t('projects.createFirst')}
+          ctaLabel={t('projects.newProject')}
+          onCta={() => navigate('/app/jobs/new')}
+        />
       ) : showNoResults ? (
-        <Card className="border-dashed">
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-2">{t('common.none')}</p>
-            <div className="mt-2 flex justify-center gap-2">
-              {searchQuery && (
-                <Button variant="outline" size="sm" onClick={() => handleSearchChange('')}>
-                  {t('common.clearSearch')}
-                </Button>
-              )}
-              {statusFilter !== 'all' && (
-                <Button variant="outline" size="sm" onClick={() => handleStatusChange('all')}>
-                  {t('common.all')}
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={SearchX}
+          title={t('projects.noResults')}
+          description={t('projects.noResultsDesc')}
+          ctaLabel={
+            searchQuery && statusFilter !== 'all'
+              ? t('common.clearSearch')
+              : searchQuery
+              ? t('common.clearSearch')
+              : t('common.all')
+          }
+          onCta={() => {
+            handleSearchChange('');
+            handleStatusChange('all');
+          }}
+        />
       ) : (
         <>
           <div className="space-y-3">

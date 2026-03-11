@@ -322,7 +322,12 @@
     "refreshPage": "Odśwież stronę",
     "backToList": "Wróć do listy",
     "generateOfferPdf": "Generuj ofertę PDF",
-    "exportExcelError": "Błąd podczas eksportu do Excel"
+    "exportExcelError": "Błąd podczas eksportu do Excel",
+    "listErrorTitle": "Błąd ładowania projektów",
+    "listErrorDesc": "Nie udało się wczytać listy projektów. Sprawdź połączenie i spróbuj ponownie.",
+    "listErrorRetry": "Spróbuj ponownie",
+    "noResults": "Brak wyników",
+    "noResultsDesc": "Żaden projekt nie pasuje do wybranych filtrów."
   },
   "clients": {
     "title": "Klienci",
@@ -2838,6 +2843,7 @@
     "emptyCta": "Utwórz pierwszą ofertę",
     "emptyFilterTitle": "Brak wyników",
     "emptyFilterDesc": "Brak ofert pasujących do wybranych filtrów.",
+    "emptyFilterCta": "Wyczyść filtry",
     "errorTitle": "Błąd ładowania ofert",
     "errorDesc": "Nie udało się wczytać listy ofert. Sprawdź połączenie i spróbuj ponownie.",
     "errorDescMigration": "Baza danych wymaga aktualizacji. Skontaktuj się z administratorem.",
