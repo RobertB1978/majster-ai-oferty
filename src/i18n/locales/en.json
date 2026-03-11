@@ -2742,7 +2742,17 @@
       "home": "Home",
       "offers": "Offers",
       "projects": "Projects",
+      "customers": "Clients",
+      "calendar": "Calendar",
+      "documents": "Document Templates",
+      "finance": "Finance",
+      "settings": "Settings",
       "more": "More",
+      "sectionMain": "Main",
+      "sectionTools": "Tools",
+      "account": "Account",
+      "profile": "Company Profile",
+      "logout": "Log out",
       "ariaLabel": "Navigation"
     },
     "fab": {

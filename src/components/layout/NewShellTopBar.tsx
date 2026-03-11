@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Moon, Sun, Plus, FileText, Users, DollarSign, CalendarPlus } from 'lucide-react';
+import {
+  Moon, Sun, Plus, FileText, Users, DollarSign, CalendarPlus,
+  User, LogOut, Settings,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Logo } from '@/components/branding/Logo';
+import { useAuth } from '@/contexts/AuthContext';
 
 const languages = [
   { code: 'pl', name: 'Polski', flag: '🇵🇱' },
@@ -29,6 +33,7 @@ const QUICK_CREATE_ACTIONS = [
 export function NewShellTopBar() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme');
@@ -138,6 +143,52 @@ export function NewShellTopBar() {
                   {lang.name}
                 </DropdownMenuItem>
               ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Konto użytkownika — dropdown z profilem, ustawieniami i wylogowaniem */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9"
+                aria-label={t('newShell.nav.account', 'Konto')}
+              >
+                <User className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              {user?.email && (
+                <>
+                  <div className="px-2 py-1.5 text-xs text-muted-foreground truncate">
+                    {user.email}
+                  </div>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              <DropdownMenuItem
+                onClick={() => navigate('/app/profile')}
+                className="flex items-center gap-2"
+              >
+                <User className="h-4 w-4" />
+                {t('newShell.nav.profile', 'Profil firmy')}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigate('/app/settings')}
+                className="flex items-center gap-2"
+              >
+                <Settings className="h-4 w-4" />
+                {t('newShell.nav.settings', 'Ustawienia')}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={logout}
+                className="flex items-center gap-2 text-destructive focus:text-destructive"
+              >
+                <LogOut className="h-4 w-4" />
+                {t('newShell.nav.logout', 'Wyloguj')}
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
