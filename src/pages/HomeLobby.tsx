@@ -60,7 +60,7 @@ export default function HomeLobby() {
             <QuickStartButton
               icon={<FileText className="h-6 w-6" />}
               label={t('newShell.home.qs.newOffer', 'Nowa wycena')}
-              onClick={() => navigate('/app/quick-est')}
+              onClick={() => navigate('/app/offers/new')}
             />
             <QuickStartButton
               icon={<FolderKanban className="h-6 w-6" />}
@@ -75,7 +75,7 @@ export default function HomeLobby() {
             <QuickStartButton
               icon={<Zap className="h-6 w-6" />}
               label={t('newShell.home.qs.quickEst', 'Szybka wycena')}
-              onClick={() => navigate('/app/szybka-wycena')}
+              onClick={() => navigate('/app/offers/new')}
             />
           </div>
         </section>
