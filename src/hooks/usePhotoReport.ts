@@ -1,5 +1,5 @@
 /**
- * usePhotoReport — PR-15
+ * usePhotoReport — PR-15 / PR-21
  *
  * TanStack Query hooks for the project_photos table (phase-aware).
  * Uses private Supabase Storage bucket with signed URLs.
@@ -12,6 +12,10 @@
  *  - Retry on failure (reuses compressed blob, no re-compression)
  *  - Signed URL generation for private bucket access
  *  - Dev logs: original vs compressed size (no PII)
+ *  - Max 10 photos per project (enforced client-side + DB trigger)
+ *
+ * PR-21 fix: uses v2_project_id column (FK → v2_projects) instead of
+ * legacy project_id (FK → projects). The DB trigger also enforces the limit.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -34,11 +38,15 @@ const COMPRESSION_OPTIONS = {
   quality: 0.75,
 } as const;
 
+/** Maximum photos allowed per v2 project (client-side guard, mirrored by DB trigger) */
+export const MAX_PHOTOS_PER_PROJECT = 10;
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface ProjectPhotoV2 {
   id: string;
-  project_id: string;
+  /** FK to v2_projects.id (PR-21). Legacy rows may have null here. */
+  v2_project_id: string | null;
   user_id: string;
   phase: PhotoPhase;
   /** Storage path (not a public URL). Use signedUrl for display. */
@@ -105,8 +113,8 @@ export function usePhotoReport(projectId: string | undefined) {
 
       const { data, error } = await supabase
         .from('project_photos')
-        .select('id, project_id, user_id, phase, photo_url, file_name, mime_type, size_bytes, width, height, created_at')
-        .eq('project_id', projectId)
+        .select('id, v2_project_id, user_id, phase, photo_url, file_name, mime_type, size_bytes, width, height, created_at')
+        .eq('v2_project_id', projectId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -118,6 +126,7 @@ export function usePhotoReport(projectId: string | undefined) {
           const signedUrl = storagePath ? await getSignedPhotoUrl(storagePath) : '';
           return {
             ...row,
+            v2_project_id: row.v2_project_id as string | null,
             phase: (row.phase ?? 'BEFORE') as PhotoPhase,
             signedUrl,
           } as ProjectPhotoV2;
@@ -141,6 +150,22 @@ export function useUploadPhotoReport() {
     mutationFn: async ({ projectId, phase, file }: UploadPhotoInput): Promise<ProjectPhotoV2> => {
       if (!user) throw new Error('Not authenticated');
 
+      // Guard: reject non-image files before any async work
+      if (!file.type.startsWith('image/')) {
+        throw new Error('unsupported_file_type');
+      }
+
+      // Guard: enforce max 10 photos per project (client-side, DB trigger is the server-side safety net)
+      const { count, error: countError } = await supabase
+        .from('project_photos')
+        .select('id', { count: 'exact', head: true })
+        .eq('v2_project_id', projectId);
+
+      if (countError) throw countError;
+      if ((count ?? 0) >= MAX_PHOTOS_PER_PROJECT) {
+        throw new Error('photo_limit_exceeded');
+      }
+
       const originalSize = file.size;
 
       // Compress client-side ONCE — reused on retry via closure
@@ -163,10 +188,11 @@ export function useUploadPhotoReport() {
       if (uploadError) throw uploadError;
 
       // Insert DB record with storage path (NOT a public URL)
+      // Uses v2_project_id (FK → v2_projects). The legacy project_id column is nullable.
       const { data, error } = await supabase
         .from('project_photos')
         .insert({
-          project_id: projectId,
+          v2_project_id: projectId,
           user_id: user.id,
           phase,
           photo_url: storagePath,       // store path only
@@ -174,7 +200,7 @@ export function useUploadPhotoReport() {
           mime_type: compressed.type,
           size_bytes: compressedSize,
         })
-        .select('id, project_id, user_id, phase, photo_url, file_name, mime_type, size_bytes, width, height, created_at')
+        .select('id, v2_project_id, user_id, phase, photo_url, file_name, mime_type, size_bytes, width, height, created_at')
         .single();
 
       if (error) throw error;
@@ -182,7 +208,7 @@ export function useUploadPhotoReport() {
       // Immediately fetch signed URL for optimistic display
       const signedUrl = await getSignedPhotoUrl(storagePath);
 
-      return { ...(data as ProjectPhotoV2), signedUrl, phase: phase };
+      return { ...(data as ProjectPhotoV2), signedUrl, phase, v2_project_id: projectId };
     },
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: photoReportKeys.byProject(projectId) });

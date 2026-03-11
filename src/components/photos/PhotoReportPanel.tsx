@@ -22,6 +22,7 @@ import {
   useUploadPhotoReport,
   useDeletePhotoReport,
   PHOTO_PHASES,
+  MAX_PHOTOS_PER_PROJECT,
   type PhotoPhase,
   type ProjectPhotoV2,
 } from '@/hooks/usePhotoReport';
@@ -261,13 +262,19 @@ export function PhotoReportPanel({ projectId }: PhotoReportPanelProps) {
       URL.revokeObjectURL(localPreview);
       toast.success(t('photoReport.uploadSuccess'));
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('photoReport.uploadFailed');
+      const errMsg = err instanceof Error ? err.message : '';
+      let toastMsg = t('photoReport.uploadFailed');
+      if (errMsg === 'photo_limit_exceeded') {
+        toastMsg = t('photoReport.limitReached', { max: MAX_PHOTOS_PER_PROJECT });
+      } else if (errMsg === 'unsupported_file_type') {
+        toastMsg = t('photoReport.unsupportedFileType');
+      }
       setOptimistic((prev) =>
         prev.map((o) =>
-          o.id === tempId ? { ...o, uploading: false, uploadError: message } : o
+          o.id === tempId ? { ...o, uploading: false, uploadError: toastMsg } : o
         )
       );
-      toast.error(t('photoReport.uploadFailed'));
+      toast.error(toastMsg);
     }
   }, [projectId, uploadPhoto, t]);
 
