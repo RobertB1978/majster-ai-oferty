@@ -154,7 +154,14 @@ export function usePlanGate() {
   const getUpgradeMessage = (feature: PlanFeature): string => {
     const requiredPlans = FEATURE_REQUIREMENTS[feature];
     const minPlan = requiredPlans[0];
-    return `Ta funkcja wymaga planu ${minPlan.toUpperCase()} lub wyższego.`;
+    const PLAN_DISPLAY_NAMES: Record<string, string> = {
+      pro: 'Pro',
+      starter: 'Pro',
+      business: 'Biznes',
+      enterprise: 'Enterprise',
+    };
+    const displayName = PLAN_DISPLAY_NAMES[minPlan] ?? minPlan;
+    return `Ta funkcja wymaga planu ${displayName} lub wyższego.`;
   };
 
   return {
@@ -170,20 +177,36 @@ export function usePlanGate() {
   };
 }
 
-export function PlanGateWrapper({ 
-  feature, 
-  children, 
-  fallback 
-}: { 
-  feature: PlanFeature; 
+export function PlanGateWrapper({
+  feature,
+  children,
+  fallback
+}: {
+  feature: PlanFeature;
   children: React.ReactNode;
+  /**
+   * UI wyświetlane gdy użytkownik nie ma dostępu do feature.
+   *
+   * WAŻNE: Zawsze podawaj fallback — bez niego komponent zwraca null,
+   * co zostawia użytkownika bez wyjaśnienia dlaczego zawartość zniknęła.
+   * Minimalne fallback: <UpgradeModal> lub <p>Wymaga planu Pro</p>.
+   */
   fallback?: React.ReactNode;
 }) {
   const { canUseFeature } = usePlanGate();
-  
+
   if (!canUseFeature(feature)) {
-    return fallback ? fallback : null;
+    if (fallback) return fallback;
+    // Brak fallbacka — w trybie deweloperskim loguj ostrzeżenie,
+    // aby author komponentu wiedział, że musi go dostarczyć.
+    if (import.meta.env.DEV) {
+      console.warn(
+        `[PlanGateWrapper] feature="${feature}" jest zablokowany, ale nie podano fallback. ` +
+        'Użytkownik widzi pustą przestrzeń bez wyjaśnienia. Dodaj prop fallback={<UpgradeModal />}.'
+      );
+    }
+    return null;
   }
-  
+
   return children;
 }
