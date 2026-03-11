@@ -58,7 +58,6 @@ const PdfGenerator = lazy(() => import("./pages/PdfGenerator"));
 const Calendar = lazy(() => import("./pages/Calendar"));
 const Finance = lazy(() => import("./pages/Finance"));
 const Analytics = lazy(() => import("./pages/Analytics"));
-const QuickEstimate = lazy(() => import("./pages/QuickEstimate"));
 const QuickEstimateWorkspace = lazy(() => import("./pages/QuickEstimateWorkspace"));
 const Photos = lazy(() => import("./pages/Photos"));
 const Plan = lazy(() => import("./pages/Plan"));
@@ -251,7 +250,8 @@ const App = () => (
                     <Route path="jobs/:id" element={<JobsRedirect />} />
                     <Route path="jobs/:id/quote" element={<JobsRedirect suffix="/quote" />} />
                     <Route path="jobs/:id/pdf" element={<JobsRedirect suffix="/pdf" />} />
-                    <Route path="quick-est" element={<QuickEstimate />} />
+                    {/* Legacy quick-est redirect → canonical szybka-wycena */}
+                    <Route path="quick-est" element={<Navigate to="/app/szybka-wycena" replace />} />
                     <Route path="szybka-wycena" element={<QuickEstimateWorkspace />} />
                     <Route path="photos" element={<Photos />} />
                     <Route path="calendar" element={<Calendar />} />
