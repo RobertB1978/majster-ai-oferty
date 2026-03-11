@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, FolderKanban, Loader2 } from 'lucide-react';
+import { ArrowLeft, FolderKanban, Loader2, Info } from 'lucide-react';
 
 import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
 import { useClients } from '@/hooks/useClients';
@@ -63,6 +63,12 @@ export default function NewProjectV2() {
           <FolderKanban className="h-5 w-5 text-primary" />
           <h1 className="text-xl font-bold">{t('projectsV2.newProject')}</h1>
         </div>
+      </div>
+
+      {/* Kontekst: ścieżka alternatywna */}
+      <div className="rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/20 px-4 py-3 mb-5 flex gap-2.5 items-start text-sm text-amber-800 dark:text-amber-300">
+        <Info className="h-4 w-4 mt-0.5 shrink-0" />
+        <p>{t('projectsV2.manualCreationHint')}</p>
       </div>
 
       {/* Formularz */}
