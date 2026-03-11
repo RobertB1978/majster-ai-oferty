@@ -10,6 +10,11 @@ const PREP_KEYS = new Set([
   'billing.plans.enterprise.features.apiAccess',
 ]);
 
+// Enterprise plan is excluded from homepage pricing grid:
+// SLA, dedicated manager, API and team training are not yet available.
+// Users interested in Enterprise can contact via email shown below the grid.
+const HOMEPAGE_PLAN_SLUGS = ['darmowy', 'pro', 'biznes'];
+
 const CTA_ROUTE = '/register';
 
 export function PricingSection() {
@@ -30,15 +35,15 @@ export function PricingSection() {
             {t('landing.pricing.sectionTitle', 'Przejrzyste ceny')}
           </h2>
           <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed max-w-xl mx-auto">
-            {t('landing.pricing.sectionSubtitle', 'Zacznij bezpłatnie przez 30 dni. Rozwijaj się kiedy Twój biznes tego potrzebuje.')}
+            {t('landing.pricing.sectionSubtitle', 'Darmowy plan na start — bez karty kredytowej. Upgrade kiedy chcesz.')}
           </p>
           <p className="text-sm text-gray-400 dark:text-[#525252] mt-2">
             {t('landing.pricing.vatNote', 'Ceny netto · Do każdego zakupu doliczamy 23% VAT')}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 max-w-6xl mx-auto">
-          {PLANS.map((plan) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+          {PLANS.filter((p) => HOMEPAGE_PLAN_SLUGS.includes(p.slug)).map((plan) => (
             <div
               key={plan.slug}
               className={`relative bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 flex flex-col gap-5 transition-all duration-300 ${
@@ -116,6 +121,16 @@ export function PricingSection() {
 
         <p className="text-center text-sm text-gray-600 dark:text-[#A3A3A3] mt-8">
           {t('landing.pricing.cancelNote', 'Anuluj w każdej chwili · Wystawiamy faktury VAT')}
+        </p>
+
+        <p className="text-center text-sm text-gray-400 dark:text-[#525252] mt-3">
+          {t('landing.pricing.enterpriseNote', 'Potrzebujesz więcej?')}{' '}
+          <a
+            href="mailto:kontakt@majster.ai"
+            className="underline hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200"
+          >
+            {t('landing.pricing.enterpriseContact', 'Napisz do nas — plan Enterprise wkrótce.')}
+          </a>
         </p>
       </div>
     </section>

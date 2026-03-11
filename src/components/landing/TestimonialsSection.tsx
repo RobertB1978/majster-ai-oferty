@@ -53,22 +53,9 @@ export function TestimonialsSection() {
           >
             {t('landing.testimonials.sectionTitle', 'Co mówią użytkownicy')}
           </h2>
-          <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed mb-4">
-            {t('landing.testimonials.sectionSubtitle', 'Opinie prawdziwych wykonawców i majstrów z Polski.')}
+          <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed">
+            {t('landing.testimonials.sectionSubtitle', 'Co mówią wykonawcy i majstrowie o Majster.AI.')}
           </p>
-
-          {/* Aggregate rating */}
-          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-full px-4 py-2">
-            <div className="flex gap-0.5" aria-label="Ocena 5 na 5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-amber-500 text-amber-500" aria-hidden="true" />
-              ))}
-            </div>
-            <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">5.0</span>
-            <span className="text-sm text-gray-500 dark:text-[#525252]">
-              {t('landing.testimonials.aggregateLabel', '· Średnia ocena użytkowników')}
-            </span>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
