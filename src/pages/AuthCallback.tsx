@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Wrench, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { CANONICAL_HOME } from '@/config/featureFlags';
 import { ErrorState } from '@/components/ui/error-state';
 import { Button } from '@/components/ui/button';
 
@@ -23,7 +24,7 @@ export default function AuthCallback() {
     // We listen for the resulting session change and redirect accordingly.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        navigate('/app/dashboard', { replace: true });
+        navigate(CANONICAL_HOME, { replace: true });
       } else if (event === 'SIGNED_OUT' || (!session && event !== 'INITIAL_SESSION')) {
         setError(t('auth.social.callbackError'));
       }
@@ -36,7 +37,7 @@ export default function AuthCallback() {
         return;
       }
       if (session) {
-        navigate('/app/dashboard', { replace: true });
+        navigate(CANONICAL_HOME, { replace: true });
       }
     });
 

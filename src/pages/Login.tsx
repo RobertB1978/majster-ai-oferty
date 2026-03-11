@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
+import { CANONICAL_HOME } from '@/config/featureFlags';
 import { loginSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,7 +43,7 @@ export default function Login() {
 
   useEffect(() => {
     if (user) {
-      navigate('/app/dashboard');
+      navigate(CANONICAL_HOME);
     }
   }, [user, navigate]);
 
@@ -113,7 +114,7 @@ export default function Login() {
         queryClient.prefetchQuery({ queryKey: ['dashboard-clients-count', data.user.id] });
       }
 
-      navigate('/app/dashboard');
+      navigate(CANONICAL_HOME);
     }
   };
 

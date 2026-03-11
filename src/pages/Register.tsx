@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
+import { CANONICAL_HOME } from '@/config/featureFlags';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,7 +28,7 @@ export default function Register() {
 
   useEffect(() => {
     if (user) {
-      navigate('/app/dashboard');
+      navigate(CANONICAL_HOME);
     }
   }, [user, navigate]);
 
@@ -100,7 +101,7 @@ export default function Register() {
 
     setIsLoading(false);
     toast.success(t('auth.success.accountCreated'));
-    navigate('/app/dashboard');
+    navigate(CANONICAL_HOME);
   };
 
   return (
