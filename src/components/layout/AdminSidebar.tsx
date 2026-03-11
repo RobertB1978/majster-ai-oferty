@@ -25,22 +25,21 @@ interface NavItem {
   to: string;
   labelKey: string;
   icon: React.ElementType;
-  isShell?: boolean;
 }
 
 const navItemDefs: NavItem[] = [
   { to: '/admin/dashboard', labelKey: 'nav.dashboard', icon: LayoutDashboard },
   { to: '/admin/users', labelKey: 'admin.users', icon: Users },
-  { to: '/admin/app-config', labelKey: 'adminNav.config', icon: Sliders, isShell: true },
+  { to: '/admin/app-config', labelKey: 'adminNav.config', icon: Sliders },
   { to: '/admin/theme', labelKey: 'admin.theme', icon: Palette },
-  { to: '/admin/plans', labelKey: 'adminNav.plans', icon: CreditCard, isShell: true },
+  { to: '/admin/plans', labelKey: 'adminNav.plans', icon: CreditCard },
   { to: '/admin/content', labelKey: 'admin.content', icon: FileText },
-  { to: '/admin/navigation', labelKey: 'adminNav.pageTitle', icon: NavigationIcon, isShell: true },
+  { to: '/admin/navigation', labelKey: 'adminNav.pageTitle', icon: NavigationIcon },
   { to: '/admin/audit', labelKey: 'admin.logs', icon: Activity },
   { to: '/admin/database', labelKey: 'admin.database', icon: Database },
   { to: '/admin/system', labelKey: 'admin.system', icon: Settings },
   { to: '/admin/api', labelKey: 'admin.api', icon: Key },
-  { to: '/admin/diagnostics', labelKey: 'adminNav.diagnostics', icon: HeartPulse, isShell: true },
+  { to: '/admin/diagnostics', labelKey: 'adminNav.diagnostics', icon: HeartPulse },
 ];
 
 export function AdminSidebar() {
@@ -97,11 +96,6 @@ export function AdminSidebar() {
                   <item.icon className="h-5 w-5 shrink-0" />
                   {!collapsed && (
                     <span className="truncate">{label}</span>
-                  )}
-                  {!collapsed && item.isShell && (
-                    <span className="ml-auto rounded bg-sidebar-accent px-1.5 py-0.5 text-[10px] text-sidebar-accent-foreground">
-                      {t('nav.comingSoon')}
-                    </span>
                   )}
                 </NavLink>
               </li>
