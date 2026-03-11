@@ -3126,7 +3126,11 @@
       "qrExpired": "Прострочено",
       "qrExpiresIn": "Дійсне {{days}} днів",
       "sectionPhotoReport": "Фотозвіт",
-      "sectionChecklist": "Контрольний список"
+      "sectionChecklist": "Контрольний список",
+      "sourceOfferLabel": "Створений з пропозиції:",
+      "sourceOfferFallbackTitle": "Пропозиція без назви",
+      "sourceOfferAccepted": "прийнята {{date}}",
+      "sourceOfferAriaLabel": "Відкрити пропозицію: {{title}}"
     },
     "public": {
       "label": "Статус проєкту",

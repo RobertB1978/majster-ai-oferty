@@ -40,6 +40,7 @@ export interface OffersQueryParams {
 export const offersKeys = {
   all: ['offers'] as const,
   list: (params: OffersQueryParams) => [...offersKeys.all, 'list', params] as const,
+  detail: (id: string) => [...offersKeys.all, 'detail', id] as const,
 };
 
 /** No-response threshold in days for SENT offers */
@@ -97,6 +98,30 @@ export function useOffers(params: OffersQueryParams = {}) {
     },
     enabled: !!user,
     staleTime: 30_000,
+  });
+}
+
+/**
+ * Fetch minimal offer data for source-offer context in ProjectHub.
+ * Returns null when offerId is empty or the offer no longer exists.
+ */
+export function useSourceOffer(offerId: string | null | undefined) {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: offersKeys.detail(offerId ?? ''),
+    queryFn: async (): Promise<Pick<Offer, 'id' | 'title' | 'total_net' | 'currency' | 'accepted_at'> | null> => {
+      if (!offerId) return null;
+      const { data, error } = await supabase
+        .from('offers')
+        .select('id, title, total_net, currency, accepted_at')
+        .eq('id', offerId)
+        .maybeSingle();
+      if (error) throw error;
+      return data as Pick<Offer, 'id' | 'title' | 'total_net' | 'currency' | 'accepted_at'> | null;
+    },
+    enabled: !!user && !!offerId,
+    staleTime: 60_000,
   });
 }
 

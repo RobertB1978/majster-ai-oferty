@@ -3126,7 +3126,11 @@
       "qrExpired": "Expired",
       "qrExpiresIn": "Valid for {{days}} days",
       "sectionPhotoReport": "Photo Report",
-      "sectionChecklist": "Acceptance Checklist"
+      "sectionChecklist": "Acceptance Checklist",
+      "sourceOfferLabel": "Created from offer:",
+      "sourceOfferFallbackTitle": "Untitled offer",
+      "sourceOfferAccepted": "accepted {{date}}",
+      "sourceOfferAriaLabel": "Open offer: {{title}}"
     },
     "public": {
       "label": "Project status",
