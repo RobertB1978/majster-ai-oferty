@@ -49,9 +49,6 @@ const GDPRCenter = lazy(() => import("./pages/legal/GDPRCenter"));
 // === ZONE 2: CUSTOMER APP (lazy - auth required) ===
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Clients = lazy(() => import("./pages/Clients"));
-const Projects = lazy(() => import("./pages/Projects"));
-const NewProject = lazy(() => import("./pages/NewProject"));
-const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 const QuoteEditor = lazy(() => import("./pages/QuoteEditor"));
 const CompanyProfile = lazy(() => import("./pages/CompanyProfile"));
 const ItemTemplates = lazy(() => import("./pages/ItemTemplates"));
