@@ -2,7 +2,7 @@
   "name": "Majster.AI — Szybkie Wyceny",
   "short_name": "Majster.AI",
   "description": "Twórz wyceny i generuj profesjonalne oferty PDF dla klientów",
-  "start_url": "/dashboard",
+  "start_url": "/app/dashboard",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
