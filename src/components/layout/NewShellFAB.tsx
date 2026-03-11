@@ -4,12 +4,9 @@ import { useTranslation } from 'react-i18next';
 import {
   Plus,
   FileText,
-  Mic,
   Users,
   DollarSign,
-  FolderOpen,
   CalendarPlus,
-  Bell,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -18,27 +15,22 @@ interface FabAction {
   id: string;
   labelKey: string;
   icon: React.ComponentType<{ className?: string }>;
-  route?: string;
-  placeholder?: boolean;
+  route: string;
 }
 
 const FAB_ACTIONS: FabAction[] = [
-  { id: 'new-offer',    labelKey: 'newShell.fab.newOffer',    icon: FileText,    route: '/app/quick-est' },
-  { id: 'voice-note',   labelKey: 'newShell.fab.voiceNote',   icon: Mic,         placeholder: true },
-  { id: 'add-client',   labelKey: 'newShell.fab.addClient',   icon: Users,       route: '/app/customers' },
-  { id: 'add-cost',     labelKey: 'newShell.fab.addCost',     icon: DollarSign,  route: '/app/finance' },
-  { id: 'add-document', labelKey: 'newShell.fab.addDocument', icon: FolderOpen,  placeholder: true },
-  { id: 'add-date',     labelKey: 'newShell.fab.addDate',     icon: CalendarPlus, route: '/app/calendar' },
-  { id: 'reminder',     labelKey: 'newShell.fab.reminder',    icon: Bell,        placeholder: true },
+  { id: 'new-offer',  labelKey: 'newShell.fab.newOffer',  icon: FileText,    route: '/app/quick-est' },
+  { id: 'add-client', labelKey: 'newShell.fab.addClient', icon: Users,       route: '/app/customers' },
+  { id: 'add-cost',   labelKey: 'newShell.fab.addCost',   icon: DollarSign,  route: '/app/finance' },
+  { id: 'add-date',   labelKey: 'newShell.fab.addDate',   icon: CalendarPlus, route: '/app/calendar' },
 ];
 
 /**
  * NewShellFAB — Floating Action Button z bottom sheet akcji.
  *
  * - FAB jest absolutnie pozycjonowany nad dolną nawigacją (slot środkowy)
- * - Kliknięcie otwiera bottom sheet z listą akcji
- * - Akcje z `placeholder: true` wyświetlają toast "Wkrótce"
- * - Akcje z `route` nawigują do odpowiedniej strony
+ * - Kliknięcie otwiera bottom sheet z listą działających akcji
+ * - Każda akcja nawiguje do odpowiedniej strony aplikacji
  */
 export function NewShellFAB() {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,13 +39,7 @@ export function NewShellFAB() {
 
   function handleAction(action: FabAction) {
     setIsOpen(false);
-    if (action.placeholder) {
-      // Brak toasta tutaj — komunikat wyświetlany inline w bottom sheet
-      return;
-    }
-    if (action.route) {
-      navigate(action.route);
-    }
+    navigate(action.route);
   }
 
   return (
@@ -98,19 +84,12 @@ export function NewShellFAB() {
                   onClick={() => handleAction(action)}
                   className={cn(
                     'flex items-center gap-3 p-3 rounded-xl text-left transition-colors',
-                    action.placeholder
-                      ? 'bg-secondary/40 text-muted-foreground cursor-default'
-                      : 'bg-secondary/70 text-foreground hover:bg-secondary active:bg-secondary/90'
+                    'bg-secondary/70 text-foreground hover:bg-secondary active:bg-secondary/90'
                   )}
                 >
                   <action.icon className="h-5 w-5 shrink-0" />
                   <span className="text-sm font-medium leading-tight">
                     {t(action.labelKey)}
-                    {action.placeholder && (
-                      <span className="block text-[10px] text-muted-foreground mt-0.5">
-                        {t('nav.comingSoon', 'Wkrótce')}
-                      </span>
-                    )}
                   </span>
                 </button>
               ))}
