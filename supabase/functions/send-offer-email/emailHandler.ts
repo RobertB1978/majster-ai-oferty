@@ -6,6 +6,69 @@
 import { sanitizeString } from "../_shared/validation.ts";
 import { normalizeTrackingStatus } from "../_shared/tracking-status.ts";
 
+// ============================================================
+// EMAIL DELIVERY CONFIG VALIDATION
+// Pure functions — no Deno.env, fully testable
+// ============================================================
+
+/** Domains that cannot be used as sender address in Resend */
+export const BLOCKED_SENDER_DOMAINS = [
+  'gmail.com', 'yahoo.com', 'yahoo.pl', 'outlook.com',
+  'hotmail.com', 'wp.pl', 'onet.pl', 'o2.pl', 'interia.pl',
+];
+
+export interface EmailConfigValidationResult {
+  valid: boolean;
+  /** Top-level error if config cannot be used at all */
+  error?: string;
+  /** Warnings — config is present but suspicious */
+  warnings?: string[];
+}
+
+/**
+ * Validate email delivery configuration values.
+ * Pure function — accepts values already read from env so it can be tested without Deno.env mocks.
+ */
+export function checkEmailDeliveryConfig(config: {
+  resendApiKey: string | undefined;
+  senderEmail: string | undefined;
+  frontendUrl: string | undefined;
+}): EmailConfigValidationResult {
+  const { resendApiKey, senderEmail, frontendUrl } = config;
+  const warnings: string[] = [];
+
+  if (!resendApiKey) {
+    return { valid: false, error: 'RESEND_API_KEY is not set' };
+  }
+  if (!senderEmail) {
+    return { valid: false, error: 'SENDER_EMAIL is not set — must be an address from a domain verified in Resend' };
+  }
+  if (!frontendUrl) {
+    return { valid: false, error: 'FRONTEND_URL is not set — offer links in emails would be broken' };
+  }
+
+  // Resend sandbox address — only delivers to the account owner's inbox
+  if (senderEmail.endsWith('@resend.dev')) {
+    return { valid: false, error: 'SENDER_EMAIL is a Resend sandbox address (resend.dev) — it cannot deliver emails to real clients. Use a domain you own and verify it in Resend.' };
+  }
+
+  // Consumer email domains that Resend will reject as sender
+  const senderDomain = senderEmail.split('@')[1]?.toLowerCase() ?? '';
+  if (BLOCKED_SENDER_DOMAINS.includes(senderDomain)) {
+    return {
+      valid: false,
+      error: `SENDER_EMAIL uses "${senderDomain}" which is a consumer domain — Resend does not allow sending from addresses on domains you don't own (Gmail, Yahoo, etc.). Verify your own domain in Resend and use that.`,
+    };
+  }
+
+  // Placeholder frontend URL
+  if (frontendUrl.includes('your-app') || frontendUrl === 'https://your-app.vercel.app') {
+    warnings.push('FRONTEND_URL appears to be a placeholder — update it to the real production URL');
+  }
+
+  return { valid: true, warnings: warnings.length > 0 ? warnings : undefined };
+}
+
 /**
  * Payload for sending an offer email
  */

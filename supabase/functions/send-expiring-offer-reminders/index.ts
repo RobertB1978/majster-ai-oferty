@@ -42,15 +42,40 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const frontendUrl = Deno.env.get('FRONTEND_URL') || Deno.env.get('VERCEL_URL') || 'https://your-app.vercel.app';
+    const senderEmail = Deno.env.get('SENDER_EMAIL');
+    const frontendUrl = Deno.env.get('FRONTEND_URL');
 
     if (!resendApiKey) {
-      console.log('RESEND_API_KEY not configured - skipping email sending');
+      console.error('RESEND_API_KEY not configured - skipping email sending');
       return new Response(
         JSON.stringify({
           success: false,
           message: 'RESEND_API_KEY not configured',
           skipped: true
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!senderEmail) {
+      console.error('SENDER_EMAIL not configured - skipping email sending');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: 'SENDER_EMAIL not configured — set a verified sender address (e.g. noreply@yourdomain.com). The domain must be verified in Resend. Gmail/Yahoo/Outlook addresses are not accepted.',
+          skipped: true,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!frontendUrl) {
+      console.error('FRONTEND_URL not configured - skipping email sending (offer links in reminder emails would be broken)');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: 'FRONTEND_URL not configured — set it to your production app URL (e.g. https://majster-ai-oferty.vercel.app)',
+          skipped: true,
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -230,7 +255,7 @@ Deno.serve(async (req) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'Majster.AI <noreply@resend.dev>',
+            from: `Majster.AI <${senderEmail}>`,
             to: [clientEmail],
             subject: `Przypomnienie: Oferta na "${projectName}" wygasa za 3 dni`,
             html: emailHtml,
@@ -355,7 +380,7 @@ Deno.serve(async (req) => {
           const emailResp = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ from: 'Majster.AI <noreply@resend.dev>', to: [clientEmail], subject, html: emailHtml }),
+            body: JSON.stringify({ from: `Majster.AI <${senderEmail}>`, to: [clientEmail], subject, html: emailHtml }),
           });
 
           if (!emailResp.ok) {

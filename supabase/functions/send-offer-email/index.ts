@@ -12,7 +12,7 @@ import {
   combineValidations,
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
-import { handleSendOfferEmail, type EmailDeps, type SendOfferPayload } from "./emailHandler.ts";
+import { handleSendOfferEmail, checkEmailDeliveryConfig, type EmailDeps, type SendOfferPayload } from "./emailHandler.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -48,21 +48,30 @@ const handler = async (req: Request): Promise<Response> => {
     : null;
 
   try {
-    // Check RESEND_API_KEY
+    // Validate all required email delivery configuration up-front.
+    // Uses pure checkEmailDeliveryConfig() so logic is testable without Deno.env mocks.
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    
-    if (!resendApiKey) {
-      console.error("[send-offer-email] RESEND_API_KEY is not configured");
+    const senderEmail = Deno.env.get("SENDER_EMAIL");
+    const frontendUrl = Deno.env.get("FRONTEND_URL");
+
+    const configCheck = checkEmailDeliveryConfig({ resendApiKey, senderEmail, frontendUrl });
+
+    if (!configCheck.valid) {
+      console.error(`[send-offer-email] Email config invalid: ${configCheck.error}`);
       return new Response(
-        JSON.stringify({ 
-          error: "Email service is not configured", 
-          details: "Please add RESEND_API_KEY to your secrets" 
+        JSON.stringify({
+          error: "Email delivery is not properly configured",
+          details: configCheck.error,
         }),
-        { 
-          status: 503, 
-          headers: { "Content-Type": "application/json", ...corsHeaders } 
+        {
+          status: 503,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
         }
       );
+    }
+
+    if (configCheck.warnings?.length) {
+      configCheck.warnings.forEach(w => console.warn(`[send-offer-email] Config warning: ${w}`));
     }
 
     // Parse and validate request body
@@ -115,7 +124,7 @@ const handler = async (req: Request): Promise<Response> => {
 
         try {
           const emailPayload: Record<string, unknown> = {
-            from: "Majster.AI <kontakt.majsterai@gmail.com>", // OWNER ACTION: configure verified sender in Resend/SMTP
+            from: `Majster.AI <${senderEmail}>`,
             to: [emailTo],
             subject: emailSubject,
             html,
@@ -187,7 +196,7 @@ const handler = async (req: Request): Promise<Response> => {
       acceptToken,
       replyTo,
       companyName,
-      frontendUrl: Deno.env.get("FRONTEND_URL") ?? undefined,
+      frontendUrl: frontendUrl ?? undefined,
     };
 
     // Call handler with dependencies

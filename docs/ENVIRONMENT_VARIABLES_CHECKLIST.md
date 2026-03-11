@@ -63,10 +63,18 @@ Lokalizacja: **Supabase Dashboard → Edge Functions → Secrets**
 
 | Sekret | Format | Przykład | Gdzie uzyskać | Funkcja |
 |--------|--------|----------|---------------|---------|
-| `RESEND_API_KEY` | re_... | re_AbC123... | https://resend.com/api-keys | `send-offer-email` |
+| `RESEND_API_KEY` | re_... | re_AbC123... | https://resend.com/api-keys | `send-offer-email`, `send-expiring-offer-reminders` |
+| `SENDER_EMAIL` | adres@twoja-domena.pl | noreply@majster.ai | Twój e-mail na **zweryfikowanej domenie** w Resend | `send-offer-email`, `send-expiring-offer-reminders` |
 
-**Bez tego:**
-- ❌ Nie będzie działała wysyłka ofert emailem
+**⚠️ WAŻNE — SENDER_EMAIL:**
+- Musi być adresem na **domenie, którą zweryfikujesz w Resend** (nie Gmail, Yahoo, wp.pl itp.)
+- Bez weryfikacji domeny w Resend wszystkie e-maile będą odrzucane
+- Adres `noreply@resend.dev` to **adres testowy** — działa TYLKO dla właściciela konta Resend, nie dotrze do Twoich klientów
+- Instrukcja weryfikacji domeny: [docs/EMAIL_DELIVERY_RUNBOOK.md](./EMAIL_DELIVERY_RUNBOOK.md)
+
+**Bez tych sekretów:**
+- ❌ Wysyłka ofert emailem zwróci błąd HTTP 503
+- ❌ Automatyczne przypomnienia o wygasających ofertach nie będą wysyłane
 - ✅ Reszta aplikacji zadziała normalnie
 
 ### ✅ Wymagane dla AI Features (wybierz JEDEN)
@@ -171,7 +179,11 @@ Lokalizacja: **Vercel Dashboard → Settings → Environment Variables**
 - [ ] `FRONTEND_URL` ustawione (URL z Vercel)
 
 **Email:**
-- [ ] `RESEND_API_KEY` ustawione (jeśli chcesz wysyłać oferty emailem)
+- [ ] `RESEND_API_KEY` ustawione
+- [ ] `SENDER_EMAIL` ustawione — adres na **zweryfikowanej domenie** w Resend (nie Gmail/Yahoo/wp.pl!)
+- [ ] Domena w `SENDER_EMAIL` ma status ✅ Verified w panelu Resend
+- [ ] Supabase Auth SMTP skonfigurowany (nie domyślny serwer Supabase — limit 3 emaili/h)
+- [ ] Szczegóły: [EMAIL_DELIVERY_RUNBOOK.md](./EMAIL_DELIVERY_RUNBOOK.md)
 
 **AI (wybierz jeden):**
 - [ ] `OPENAI_API_KEY` ALBO
@@ -247,16 +259,26 @@ console.log(import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 20))
 4. Poczekaj 1-2 minuty na propagację
 5. Przetestuj ponownie
 
-### Problem: Email sending fails
+### Problem: Email sending fails — "Email delivery is not properly configured" (HTTP 503)
 
-**Diagnoza:** Brak klucza Resend lub niepoprawny.
+**Diagnoza:** Brak lub nieprawidłowy klucz Resend, brak SENDER_EMAIL, lub brak FRONTEND_URL.
 
 **Rozwiązanie:**
 1. Supabase → Edge Functions → Secrets
-2. Sprawdź czy `RESEND_API_KEY` istnieje
-3. Sprawdź format: `re_...`
-4. Wygeneruj nowy klucz: https://resend.com/api-keys
-5. Zaktualizuj w Supabase Secrets
+2. Sprawdź czy istnieją WSZYSTKIE trzy sekrety: `RESEND_API_KEY`, `SENDER_EMAIL`, `FRONTEND_URL`
+3. `RESEND_API_KEY` — format: `re_...` → wygeneruj na https://resend.com/api-keys
+4. `SENDER_EMAIL` — musi być adresem na domenie zweryfikowanej w Resend (np. `noreply@majster.ai`)
+   - ❌ NIE używaj Gmaila, Yahoo, wp.pl itp.
+   - ❌ NIE używaj `noreply@resend.dev` (tylko adres testowy)
+   - ✅ Instrukcja weryfikacji domeny: [EMAIL_DELIVERY_RUNBOOK.md](./EMAIL_DELIVERY_RUNBOOK.md)
+5. `FRONTEND_URL` — URL produkcyjnej aplikacji (np. `https://majster-ai-oferty.vercel.app`)
+6. Odczekaj 1–2 minuty i przetestuj ponownie
+
+**Weryfikacja stanu konfiguracji:**
+```bash
+curl https://xwxvqhhnozfrjcjmcltv.supabase.co/functions/v1/healthcheck
+# Sprawdź pole "checks.email" — powinno być "status": "pass"
+```
 
 ### Problem: Variables not updating
 
@@ -300,6 +322,7 @@ console.log(import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 20))
 
 **+ Email:**
 - `RESEND_API_KEY` ✅
+- `SENDER_EMAIL` ✅ (na zweryfikowanej domenie w Resend)
 
 **+ AI:**
 - `OPENAI_API_KEY` lub `ANTHROPIC_API_KEY` lub `GEMINI_API_KEY` ✅
