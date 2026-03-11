@@ -60,7 +60,7 @@ export function HeroSection() {
               ))}
             </div>
             <span className="text-sm text-gray-600 dark:text-[#A3A3A3] font-medium">
-              {t('landing.hero.socialProof', 'Setki fachowców już używa Majster.AI')}
+              {t('landing.hero.socialProof', 'Zacznij bezpłatnie — bez karty kredytowej')}
             </span>
           </div>
         </div>
@@ -85,7 +85,7 @@ export function HeroSection() {
             </p>
 
             <p className="text-base font-semibold text-amber-600 dark:text-amber-400 mb-8">
-              {t('landing.hero.valueProp', '⚡ Pierwsza profesjonalna oferta PDF w 5 minut — gwarantowane.')}
+              {t('landing.hero.valueProp', '⚡ Pierwsza profesjonalna oferta PDF w 5 minut.')}
             </p>
 
             {/* Verified stats bar */}
@@ -120,7 +120,7 @@ export function HeroSection() {
               </button>
             </div>
             <p className="mt-3 text-sm text-gray-400 dark:text-[#525252]">
-              {t('landing.hero.microcopy', 'Pierwsze 30 dni bezpłatnie · Bez karty kredytowej · Anuluj kiedy chcesz')}
+              {t('landing.hero.microcopy', 'Darmowy plan na start · Bez karty kredytowej · Upgrade kiedy chcesz')}
             </p>
           </div>
 

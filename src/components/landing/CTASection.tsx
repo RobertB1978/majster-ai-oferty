@@ -52,7 +52,7 @@ export function CTASection() {
           <div className="flex items-center gap-2 bg-black/10 rounded-full px-4 py-2">
             <Shield className="w-4 h-4 text-black/70" aria-hidden="true" />
             <span className="text-sm font-medium text-black/80">
-              {t('landing.cta.trust1', '30 dni bezpłatnie')}
+              {t('landing.cta.trust1', 'Darmowy plan na start')}
             </span>
           </div>
           <div className="flex items-center gap-2 bg-black/10 rounded-full px-4 py-2">

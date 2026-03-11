@@ -714,7 +714,7 @@
           "unlimitedClients": "Nieograniczeni klienci",
           "aiAssistant": "AI Asystent wycen",
           "voiceQuotes": "Głosowe tworzenie ofert",
-          "calendarIntegration": "Integracja z kalendarzem",
+          "calendarIntegration": "Wbudowany kalendarz projektów",
           "companyDocuments": "Dokumenty firmowe",
           "prioritySupport": "Priorytetowe wsparcie"
         },
@@ -1819,7 +1819,7 @@
       "sectionSubtitle": "Trzy kroki i jesteś gotowy do pracy.",
       "step": "Krok",
       "step1_title": "Załóż konto",
-      "step1_desc": "Rejestracja zajmuje chwilę. Otrzymujesz 30 dni bezpłatnie — po tym okresie wymagany jest plan płatny.",
+      "step1_desc": "Rejestracja zajmuje chwilę. Darmowy plan dostępny od razu — bez karty kredytowej.",
       "step2_title": "Dodaj projekt",
       "step2_desc": "Stwórz projekt, przypisz klienta, dodaj zadania i materiały.",
       "step3_title": "Wyślij wycenę",
@@ -1827,7 +1827,7 @@
     },
     "pricing": {
       "sectionTitle": "Cennik",
-      "sectionSubtitle": "Zacznij bezpłatnie przez 30 dni. Rozwijaj się kiedy Twój biznes tego potrzebuje.",
+      "sectionSubtitle": "Darmowy plan na start — bez karty kredytowej. Upgrade kiedy chcesz.",
       "popular": "Popularny",
       "freeBadge": "Bezpłatny",
       "cta_free": "Zacznij za darmo",
@@ -1842,15 +1842,17 @@
       "ctaTry": "Wypróbuj",
       "cancelNote": "Anuluj w każdej chwili · Wystawiamy faktury VAT",
       "prepBadge": "W przygotowaniu",
-      "planFeaturesLabel": "Funkcje planu"
+      "planFeaturesLabel": "Funkcje planu",
+      "enterpriseNote": "Potrzebujesz więcej?",
+      "enterpriseContact": "Napisz do nas — plan Enterprise wkrótce."
     },
     "faq": {
       "sectionTitle": "Często zadawane pytania",
       "sectionSubtitle": "Masz pytania? Mamy odpowiedzi.",
       "q1": "Czy mogę przetestować aplikację za darmo?",
-      "a1": "Tak! Otrzymujesz 30 dni bezpłatnie, aby w pełni spróbować aplikacji. Po tym okresie możesz wybrać spośród naszych planów płatnych lub anulować dostęp. Bez karty kredytowej na start.",
+      "a1": "Tak! Możesz zacząć z darmowym planem — bez karty kredytowej i bez zobowiązań. Upgrade do planu Pro lub Biznes kiedy chcesz.",
       "q2": "Jak długo trwa wygenerowanie wyceny?",
-      "a2": "Średnio 2-5 minut. Głosowo lub z pomocą AI możesz stworzyć pełną wycenę w mniej niż 3 minuty.",
+      "a2": "Średnio 2–5 minut. Wypełnij pozycje ręcznie lub skorzystaj z szablonów — PDF gotowy jednym kliknięciem.",
       "q3": "Czy moje dane są bezpieczne?",
       "a3": "Tak. Używamy szyfrowania SSL, kopii zapasowych co 6 godzin i pełnej zgodności z RODO. Twoje dane należą tylko do Ciebie.",
       "q4": "Czy aplikacja działa na telefonie?",
@@ -1867,7 +1869,7 @@
       "t3Role": "Właściciel firmy remontowej",
       "t3Text": "Trzy języki to strzał w dziesiątkę. Zatrudniam Ukraińców i każdy działa w swoim.",
       "sectionTitle": "Co mówią użytkownicy",
-      "sectionSubtitle": "Opinie prawdziwych wykonawców i majstrów."
+      "sectionSubtitle": "Co mówią wykonawcy i majstrowie o Majster.AI."
     },
     "hero": {
       "badge": "Cyfrowe narzędzie dla branży budowlanej",
@@ -1881,7 +1883,7 @@
       "title2": "profesjonalnie firmą.",
       "subtitle": "Platforma dla majstrów i wykonawców.",
       "subtitle2": "Wyceny, projekty, klienci — wszystko w jednym miejscu.",
-      "microcopy": "30 dni bezpłatnie · Potem plan płatny",
+      "microcopy": "Darmowy plan na start · Bez karty kredytowej · Upgrade kiedy chcesz",
       "cta_start": "Zacznij za darmo",
       "cta_features": "Zobacz funkcje",
       "mock": {
@@ -1894,7 +1896,9 @@
         "sentToClient": "✓ Wysłano do klienta",
         "activeProjects": "Projekty aktywne"
       },
-      "ariaLabel": "Sekcja główna"
+      "ariaLabel": "Sekcja główna",
+      "socialProof": "Zacznij bezpłatnie — bez karty kredytowej",
+      "valueProp": "⚡ Pierwsza profesjonalna oferta PDF w 5 minut."
     },
     "stats": {
       "quoteTime": "Średni czas wyceny",
@@ -2020,7 +2024,8 @@
       "desc2": "Dołącz do wykonawców, którzy zarządzają firmą cyfrowo.",
       "microcopy": "Bez zobowiązań · Anuluj w każdej chwili",
       "cta_start": "Zacznij za darmo",
-      "cta_login": "Mam już konto"
+      "cta_login": "Mam już konto",
+      "trust1": "Darmowy plan na start"
     },
     "footer": {
       "desc": "Profesjonalne wyceny i zarządzanie projektami dla fachowców. Szybko, łatwo, bezpiecznie.",

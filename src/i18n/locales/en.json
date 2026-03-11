@@ -717,7 +717,7 @@
           "unlimitedClients": "Unlimited clients",
           "aiAssistant": "AI Quote Assistant",
           "voiceQuotes": "Voice quote creation",
-          "calendarIntegration": "Calendar integration",
+          "calendarIntegration": "Built-in project calendar",
           "companyDocuments": "Company documents",
           "prioritySupport": "Priority support"
         },
@@ -1815,7 +1815,7 @@
       "subtitle2": "Estimates, projects, clients — all in one place.",
       "cta_start": "Start for free",
       "cta_features": "See features",
-      "microcopy": "30 days free · Then paid plan",
+      "microcopy": "Free plan to start · No credit card · Upgrade anytime",
       "mock": {
         "quoteTitle": "Quote #042",
         "projectName": "Bathroom renovation",
@@ -1826,7 +1826,9 @@
         "sentToClient": "✓ Sent to client",
         "activeProjects": "Active projects"
       },
-      "ariaLabel": "Main section"
+      "ariaLabel": "Main section",
+      "socialProof": "Start free — no credit card required",
+      "valueProp": "⚡ Your first professional PDF quote in 5 minutes."
     },
     "stats": {
       "quoteTime": "Average quote time",
@@ -1952,7 +1954,7 @@
       "t3Role": "Renovation company owner",
       "t3Text": "Three languages is a perfect match. I employ Ukrainians and everyone works in their own.",
       "sectionTitle": "What users say",
-      "sectionSubtitle": "Reviews from real contractors and craftspeople."
+      "sectionSubtitle": "What contractors and tradespeople say about Majster.AI."
     },
     "cta": {
       "title": "Ready for digital transformation?",
@@ -1963,7 +1965,8 @@
       "desc2": "Join contractors who manage their business digitally.",
       "cta_start": "Start for free",
       "cta_login": "I already have an account",
-      "microcopy": "No obligations · Cancel any time"
+      "microcopy": "No obligations · Cancel any time",
+      "trust1": "Free plan to start"
     },
     "footer": {
       "desc": "Professional quotes and project management for tradespeople. Fast, easy, secure.",
@@ -2017,7 +2020,7 @@
       "sectionSubtitle": "Three steps and you're ready to work.",
       "step": "Step",
       "step1_title": "Create account",
-      "step1_desc": "Registration takes a moment. You get 30 days free — after that a paid plan is required.",
+      "step1_desc": "Registration takes a moment. Free plan available right away — no credit card required.",
       "step2_title": "Add a project",
       "step2_desc": "Create a project, assign a client, add tasks and materials.",
       "step3_title": "Send a quote",
@@ -2025,7 +2028,7 @@
     },
     "pricing": {
       "sectionTitle": "Transparent pricing",
-      "sectionSubtitle": "Start free for 30 days. Scale when your business needs it.",
+      "sectionSubtitle": "Free plan to start — no credit card. Upgrade when you need it.",
       "vatNote": "Net prices · 23% VAT added to every purchase",
       "badge": "Most popular",
       "ctaFree": "Start for free",
@@ -2040,13 +2043,15 @@
       "no_card": "No credit card required",
       "all_plans": "See all plans",
       "prepBadge": "In preparation",
-      "planFeaturesLabel": "Plan features"
+      "planFeaturesLabel": "Plan features",
+      "enterpriseNote": "Need more?",
+      "enterpriseContact": "Contact us — Enterprise plan coming soon."
     },
     "faq": {
       "sectionTitle": "Frequently asked questions",
       "sectionSubtitle": "Can't find an answer? Write to kontakt@majster.ai",
       "q1": "Do I need to sign a contract?",
-      "a1": "No. You get 30 days free to try the app with no credit card required. After that you can choose one of our paid plans or cancel anytime.",
+      "a1": "Yes! You can start with the free plan — no credit card, no commitment. Upgrade to Pro or Business whenever you're ready.",
       "q2": "Is my client data secure?",
       "a2": "Data is protected and access is controlled. You can manage permissions and know who has access to what information.",
       "q3": "Does the app work on mobile?",
