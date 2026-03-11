@@ -13,7 +13,8 @@ import { STATUS_CONFIG } from '@/data/statusConfig';
 
 interface Project {
   id: string;
-  project_name: string;
+  /** v2_projects uses `title` (aligned with DashboardProject interface) */
+  title: string;
   status: string;
   created_at: string;
   clients?: { name: string } | null;
@@ -131,7 +132,7 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
                       {/* Project info */}
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-foreground truncate leading-tight group-hover:text-primary transition-colors">
-                          {project.project_name}
+                          {project.title}
                         </p>
                         <div className="flex items-center gap-1.5 mt-0.5">
                           <span className="text-xs text-muted-foreground truncate">

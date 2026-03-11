@@ -11,6 +11,7 @@ export interface StatusConfig {
 }
 
 export const STATUS_CONFIG: Record<string, StatusConfig> = {
+  // ── Legacy projects statuses (offer-pipeline) ────────────────────────────
   'Nowy': {
     label: 'Nowy',
     dot: 'bg-muted-foreground',
@@ -30,5 +31,27 @@ export const STATUS_CONFIG: Record<string, StatusConfig> = {
     label: 'Zaakceptowany',
     dot: 'bg-success',
     badge: 'bg-success/12 text-success border-success/25',
+  },
+
+  // ── v2_projects statuses (PR-13) ─────────────────────────────────────────
+  'ACTIVE': {
+    label: 'Aktywny',
+    dot: 'bg-primary',
+    badge: 'bg-primary/12 text-primary border-primary/25',
+  },
+  'COMPLETED': {
+    label: 'Zako\u0144czony',
+    dot: 'bg-success',
+    badge: 'bg-success/12 text-success border-success/25',
+  },
+  'ON_HOLD': {
+    label: 'Wstrzymany',
+    dot: 'bg-warning',
+    badge: 'bg-warning/12 text-warning border-warning/25',
+  },
+  'CANCELLED': {
+    label: 'Anulowany',
+    dot: 'bg-destructive',
+    badge: 'bg-destructive/12 text-destructive border-destructive/25',
   },
 };
