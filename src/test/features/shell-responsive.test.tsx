@@ -73,6 +73,43 @@ describe('NewShellFAB — widoczność mobilna', () => {
   });
 });
 
+describe('NewShellFAB — akcje w bottom sheet', () => {
+  it('po otwarciu nie wyświetla żadnej akcji oznaczonej "Wkrótce"', async () => {
+    const { default: userEvent } = await import('@testing-library/user-event');
+    const user = userEvent.setup();
+    render(<NewShellFAB />, { wrapper: Wrapper });
+
+    const fab = screen.getByRole('button', { name: /utwórz/i });
+    await user.click(fab);
+
+    // Żaden przycisk nie powinien zawierać tekstu "Wkrótce"
+    const buttons = screen.getAllByRole('button');
+    const comingSoonBtn = buttons.find(btn => btn.textContent?.includes('Wkrótce'));
+    expect(comingSoonBtn).toBeUndefined();
+  });
+
+  it('po otwarciu wyświetla dokładnie 4 działające akcje', async () => {
+    const { default: userEvent } = await import('@testing-library/user-event');
+    const user = userEvent.setup();
+    render(<NewShellFAB />, { wrapper: Wrapper });
+
+    const fab = screen.getByRole('button', { name: /utwórz/i });
+    await user.click(fab);
+
+    // Dialog bottom sheet jest widoczny
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeDefined();
+
+    // Wewnątrz dialogu: 4 przyciski akcji + 1 przycisk zamknięcia = 5 przycisków łącznie
+    const allButtons = screen.getAllByRole('button');
+    // Odfiltruj FAB trigger (aria-expanded=true) i przycisk zamknięcia (aria-label zawiera "Zamknij")
+    const actionButtons = allButtons.filter(
+      btn => !btn.hasAttribute('aria-expanded') && btn.getAttribute('aria-label') !== 'Zamknij'
+    );
+    expect(actionButtons.length).toBe(4);
+  });
+});
+
 describe('NewShellDesktopSidebar — widoczność desktop', () => {
   it('ma klasę hidden ukrywającą na mobile i lg:flex pokazującą na desktop', () => {
     const { container } = render(<NewShellDesktopSidebar />, { wrapper: Wrapper });
