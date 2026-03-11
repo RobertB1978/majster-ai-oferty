@@ -2742,7 +2742,17 @@
       "home": "Dom",
       "offers": "Oferty",
       "projects": "Projekty",
+      "customers": "Klienci",
+      "calendar": "Kalendarz",
+      "documents": "Wzory dokumentów",
+      "finance": "Finanse",
+      "settings": "Ustawienia",
       "more": "Więcej",
+      "sectionMain": "Główne",
+      "sectionTools": "Narzędzia",
+      "account": "Konto",
+      "profile": "Profil firmy",
+      "logout": "Wyloguj",
       "ariaLabel": "Nawigacja"
     },
     "fab": {

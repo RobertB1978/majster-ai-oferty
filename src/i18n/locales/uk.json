@@ -2742,7 +2742,17 @@
       "home": "Головна",
       "offers": "Пропозиції",
       "projects": "Проєкти",
+      "customers": "Клієнти",
+      "calendar": "Календар",
+      "documents": "Шаблони документів",
+      "finance": "Фінанси",
+      "settings": "Налаштування",
       "more": "Більше",
+      "sectionMain": "Основне",
+      "sectionTools": "Інструменти",
+      "account": "Акаунт",
+      "profile": "Профіль компанії",
+      "logout": "Вийти",
       "ariaLabel": "Навігація"
     },
     "fab": {
