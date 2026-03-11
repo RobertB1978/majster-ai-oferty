@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
+import { CANONICAL_HOME } from '@/config/featureFlags';
 import { resetPasswordSchema } from '@/lib/validations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -78,7 +79,7 @@ export default function ResetPassword() {
     
     // Redirect to dashboard after 2 seconds
     setTimeout(() => {
-      navigate('/app/dashboard');
+      navigate(CANONICAL_HOME);
     }, 2000);
   };
 

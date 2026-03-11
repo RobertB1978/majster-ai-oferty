@@ -47,3 +47,15 @@ function resolveFlag(envValue: string | undefined, lsKey: string, defaultValue: 
 }
 
 export const FF_NEW_SHELL: boolean = resolveFlag(ENV_FLAG, 'FF_NEW_SHELL', true);
+
+/**
+ * CANONICAL_HOME — kanoniczny URL ekranu głównego po zalogowaniu.
+ *
+ * Gdy FF_NEW_SHELL=true  → /app/home  (HomeLobby — nowy shell)
+ * Gdy FF_NEW_SHELL=false → /app/dashboard (stary shell)
+ *
+ * Używaj tego stałej wszędzie tam, gdzie po udanym zalogowaniu /
+ * rejestracji / resecie hasła następuje przekierowanie do aplikacji.
+ * Dzięki temu istnieje JEDEN punkt prawdy dla trasy domowej.
+ */
+export const CANONICAL_HOME: string = FF_NEW_SHELL ? '/app/home' : '/app/dashboard';
