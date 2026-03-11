@@ -3126,7 +3126,11 @@
       "qrExpired": "Wygasły",
       "qrExpiresIn": "Ważny {{days}} dni",
       "sectionPhotoReport": "Fotoprotokół",
-      "sectionChecklist": "Lista kontrolna odbioru"
+      "sectionChecklist": "Lista kontrolna odbioru",
+      "sourceOfferLabel": "Powstał z oferty:",
+      "sourceOfferFallbackTitle": "Oferta bez tytułu",
+      "sourceOfferAccepted": "zaakceptowana {{date}}",
+      "sourceOfferAriaLabel": "Otwórz ofertę: {{title}}"
     },
     "public": {
       "label": "Status projektu",

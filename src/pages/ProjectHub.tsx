@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
   ArrowLeft, Phone, ChevronDown, ChevronUp, QrCode,
-  Copy, Check, Loader2, Plus, Trash2, RefreshCw,
+  Copy, Check, Loader2, Plus, Trash2, RefreshCw, FileText,
 } from 'lucide-react';
 
 import {
@@ -27,6 +27,7 @@ import {
   daysUntilTokenExpiry,
   type ProjectStage,
 } from '@/hooks/useProjectsV2';
+import { useSourceOffer } from '@/hooks/useOffers';
 import { BurnBarSection } from '@/components/costs/BurnBarSection';
 import { PhotoReportPanel } from '@/components/photos/PhotoReportPanel';
 import { AcceptanceChecklistPanel } from '@/components/photos/AcceptanceChecklistPanel';
@@ -214,6 +215,48 @@ function StagesPanel({ stages, progress, projectId }: StagesPanelProps) {
   );
 }
 
+// ── SourceOfferBanner ─────────────────────────────────────────────────────────
+
+interface SourceOfferBannerProps {
+  sourceOfferId: string;
+}
+
+function SourceOfferBanner({ sourceOfferId }: SourceOfferBannerProps) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { data: offer, isLoading } = useSourceOffer(sourceOfferId);
+
+  // Nie renderuj podczas ładowania ani gdy oferta niedostępna (usunięta / brak dostępu)
+  if (isLoading || !offer) return null;
+
+  const acceptedDate = offer.accepted_at
+    ? new Date(offer.accepted_at).toLocaleDateString('pl-PL')
+    : null;
+
+  const title = offer.title?.trim() || t('projectsV2.hub.sourceOfferFallbackTitle');
+
+  return (
+    <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/20 px-3 py-2.5 text-sm mb-4">
+      <FileText className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
+      <span className="text-muted-foreground shrink-0">
+        {t('projectsV2.hub.sourceOfferLabel')}
+      </span>
+      <button
+        className="flex-1 min-w-0 text-left font-medium text-amber-700 dark:text-amber-300 hover:underline truncate"
+        onClick={() => navigate(`/app/offers/${sourceOfferId}`)}
+        aria-label={t('projectsV2.hub.sourceOfferAriaLabel', { title })}
+      >
+        {title}
+      </button>
+      {acceptedDate && (
+        <span className="text-xs text-muted-foreground shrink-0 hidden sm:inline">
+          {t('projectsV2.hub.sourceOfferAccepted', { date: acceptedDate })}
+        </span>
+      )}
+    </div>
+  );
+}
+
 // ── QrTokenPanel ──────────────────────────────────────────────────────────────
 
 function QrTokenPanel({ projectId }: { projectId: string }) {
@@ -361,6 +404,11 @@ export default function ProjectHub() {
           <Phone className="h-4 w-4" />
         </Button>
       </div>
+
+      {/* Kontekst źródłowej oferty — widoczny tylko gdy projekt powstał z oferty */}
+      {project.source_offer_id && (
+        <SourceOfferBanner sourceOfferId={project.source_offer_id} />
+      )}
 
       {/* QR Status Link panel */}
       <div className="mb-4">
