@@ -30,8 +30,6 @@ const { mockSupabase, builderQueue } = vi.hoisted(() => {
   }) {
     const b: Record<string, unknown> = {};
 
-    const self = () => b as ReturnType<typeof makeBuilder>;
-
     const wrap = (fn: ReturnType<typeof vi.fn>) => {
       fn.mockReturnValue(b);
       return fn;
