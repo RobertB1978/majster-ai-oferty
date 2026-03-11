@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -34,30 +34,24 @@ export function useUserSubscription() {
   });
 }
 
+/**
+ * @deprecated USUNIĘTY — bezpośrednia mutacja planu z frontendu jest niebezpieczna
+ * i omija weryfikację płatności Stripe.
+ *
+ * Zamiast tego użyj:
+ *  - Edge Function `create-checkout-session` (nowe subskrypcje)
+ *  - Edge Function `stripe-webhook` (aktualizacja planu po płatności)
+ *
+ * Ten hook NIGDY nie powinien być wywoływany w produkcyjnym kodzie.
+ * Pozostawiony jako stubs, by nie łamać potencjalnych importów.
+ */
 export function useCreateSubscription() {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-
   return useMutation({
-    mutationFn: async (planId: 'free' | 'pro' | 'starter' | 'business' | 'enterprise') => {
-      const { data, error } = await supabase
-        .from('user_subscriptions')
-        .upsert({
-          user_id: user!.id,
-          plan_id: planId,
-          status: 'active',
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'user_id',
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-subscription'] });
+    mutationFn: async (_planId: 'free' | 'pro' | 'starter' | 'business' | 'enterprise') => {
+      throw new Error(
+        '[useCreateSubscription] Ten hook jest wyłączony — zmiana planu musi przejść przez Stripe Checkout. ' +
+        'Użyj /app/plan, aby dokonać zakupu.'
+      );
     },
   });
 }

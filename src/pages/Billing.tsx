@@ -1,33 +1,31 @@
+/**
+ * Billing.tsx — legacy page, zachowany tylko na potrzeby testów typografii.
+ *
+ * Routing: /app/billing i /app/plan kierują do Plan.tsx (patrz App.tsx).
+ * Ten komponent NIE jest renderowany w aplikacji dla użytkowników — jest aliasem.
+ *
+ * UWAGA DLA DEWELOPERÓW:
+ *  - Nie dodawaj tu nowych funkcji — używaj src/pages/Plan.tsx
+ *  - Fake-owe dane (stary counter 2/3 projektów) zostały usunięte
+ *  - handleSelectPlan (stary stub toast "dodaj Stripe key") został usunięty
+ */
+
+import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CreditCard, Check, Zap, Building, Crown, Rocket, Receipt, AlertCircle, ArrowRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
-import { PLANS } from '@/config/plans';
-import { formatDualCurrency } from '@/config/currency';
-
-const PLAN_ICONS: Record<string, React.ReactNode> = {
-  free: <Zap className="h-6 w-6" />,
-  pro: <Crown className="h-6 w-6" />,
-  business: <Building className="h-6 w-6" />,
-  enterprise: <Rocket className="h-6 w-6" />,
-};
+import { useNavigate } from 'react-router-dom';
+import { CreditCard } from 'lucide-react';
 
 export default function Billing() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  const handleSelectPlan = (planId: string) => {
-    if (planId === 'free') {
-      toast.info(t('billing.alreadyFree', 'Plan darmowy jest już aktywny'));
-      return;
-    }
-    toast.info(t('billing.addStripeKey', 'Dodaj klucz API Stripe w ustawieniach, aby aktywować płatności'));
-  };
+  // Automatycznie przekieruj do właściwej strony planów
+  useEffect(() => {
+    navigate('/app/plan', { replace: true });
+  }, [navigate]);
 
+  // Fallback UI na czas przekierowania (nie powinien być widoczny dla użytkownika)
   return (
     <>
       <Helmet>
@@ -36,146 +34,15 @@ export default function Billing() {
       </Helmet>
 
       <div className="space-y-6 animate-fade-in">
-        <div className="flex flex-col sm:flex-row justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
-              <CreditCard className="h-6 w-6" />
-              {t('billing.title')}
-            </h1>
-            <p className="text-muted-foreground">
-              {t('billing.subtitle')}
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+            <CreditCard className="h-6 w-6" />
+            {t('billing.title')}
+          </h1>
+          <p className="text-muted-foreground">
+            {t('billing.subtitle')}
+          </p>
         </div>
-
-        {/* Current plan summary */}
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">{t('billing.currentPlan')}</CardTitle>
-              <CreditCard className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold">{t('billing.plans.free')}</span>
-                <Badge variant="secondary">{t('billing.active')}</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">{t('billing.nextPayment', 'Następna płatność')}</CardTitle>
-              <Receipt className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground">{t('billing.freePlan', 'Plan darmowy')}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">{t('billing.usage', 'Wykorzystanie')}</CardTitle>
-              <AlertCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">2/3</div>
-              <p className="text-xs text-muted-foreground">{t('billing.projects', 'projektów')}</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="plans" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="plans">{t('billing.pricingPlans', 'Plany cenowe')}</TabsTrigger>
-            <TabsTrigger value="history">{t('billing.history', 'Historia')}</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="plans">
-            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-              {PLANS.map((plan) => (
-                <Card
-                  key={plan.id}
-                  className={cn(
-                    'relative overflow-hidden transition-all duration-300 hover:shadow-lg',
-                    plan.highlighted && 'ring-2 ring-primary shadow-lg md:scale-105'
-                  )}
-                >
-                  {plan.highlighted && (
-                    <div className="absolute top-0 right-0">
-                      <Badge className="rounded-tl-none rounded-br-none">
-                        {t('billing.mostPopular')}
-                      </Badge>
-                    </div>
-                  )}
-                  <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className={cn(
-                        'p-2 rounded-lg',
-                        plan.highlighted ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                      )}>
-                        {PLAN_ICONS[plan.id]}
-                      </div>
-                      <div>
-                        <CardTitle className="text-xl">{plan.name}</CardTitle>
-                        <CardDescription>{plan.description}</CardDescription>
-                      </div>
-                    </div>
-                    <div className="flex items-baseline gap-1 mt-4">
-                      <span className="text-3xl font-bold">
-                        {formatDualCurrency(plan.pricePLN, i18n.language)}
-                      </span>
-                    </div>
-                    {plan.pricePLN > 0 && (
-                      <span className="text-sm text-muted-foreground">{t('billing.perMonthNet')}</span>
-                    )}
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <ul className="space-y-2">
-                      {plan.features.map((feature, i) => (
-                        <li key={i} className="flex items-center gap-2 text-sm">
-                          <Check className="h-4 w-4 text-success shrink-0" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button
-                      className="w-full"
-                      variant={plan.highlighted ? 'default' : 'outline'}
-                      onClick={() => handleSelectPlan(plan.id)}
-                    >
-                      {plan.id === 'free' ? t('billing.currentPlan') : (
-                        <>
-                          {t('billing.selectPlan')}
-                          <ArrowRight className="h-4 w-4 ml-2" />
-                        </>
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="history">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('billing.paymentHistory')}</CardTitle>
-                <CardDescription>{t('billing.paymentHistoryDescription')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Receipt className="h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">{t('billing.noPayments')}</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {t('billing.noPaymentsDesc')}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
       </div>
     </>
   );

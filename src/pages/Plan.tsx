@@ -95,6 +95,9 @@ export default function Plan() {
 
   const currentPlan = subscription?.plan_id ?? 'free';
   const isPaid = currentPlan !== 'free';
+  // Portal Stripe jest dostępny tylko gdy istnieje powiązany klient Stripe.
+  // Plan przypisany manualnie przez admina (bez checkout) nie ma stripe_customer_id.
+  const hasStripeCustomer = !!subscription?.stripe_customer_id;
 
   // Banner: STRIPE_ENABLED=true ale brak prawdziwych Price IDs w zmiennych środowiskowych.
   // Widoczny tylko gdy konfiguracja jest niekompletna — informuje właściciela, nie blokuje UI.
@@ -229,7 +232,7 @@ export default function Plan() {
               <Badge variant={isPaid ? 'default' : 'secondary'} className="capitalize">
                 {currentPlan}
               </Badge>
-              {isPaid && (
+              {isPaid && hasStripeCustomer && (
                 <Button
                   variant="outline"
                   size="sm"
