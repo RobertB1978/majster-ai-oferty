@@ -13,7 +13,7 @@ interface NavItem {
 
 /** 4 zakładki + 1 slot środkowy (FAB) — FAB jest osobnym komponentem */
 const NAV_ITEMS: NavItem[] = [
-  { id: 'home',     path: '/app/home',     icon: Home,           labelKey: 'newShell.nav.home' },
+  { id: 'home',     path: '/app/dashboard', icon: Home,           labelKey: 'newShell.nav.home' },
   { id: 'offers',   path: '/app/offers',   icon: FileText,       labelKey: 'newShell.nav.offers' },
   { id: 'projects', path: '/app/projects', icon: FolderKanban,   labelKey: 'newShell.nav.projects' },
   { id: 'more',     path: '/app/more',     icon: MoreHorizontal, labelKey: 'newShell.nav.more' },

@@ -227,7 +227,7 @@ const App = () => (
                       FF_NEW_SHELL=false → AppLayout (stary shell — bez zmian)
                       ============================================ */}
                   <Route path="/app" element={FF_NEW_SHELL ? <NewShellLayout /> : <AppLayout />}>
-                    <Route index element={<Navigate to={FF_NEW_SHELL ? "/app/home" : "/app/dashboard"} replace />} />
+                    <Route index element={<Navigate to="/app/dashboard" replace />} />
                     {/* Trasy nowego shella (dostępne tylko przy FF_NEW_SHELL=true, ale bezpieczne także przy false) */}
                     <Route path="home" element={<HomeLobby />} />
                     <Route path="offers" element={<OffersPage />} />
