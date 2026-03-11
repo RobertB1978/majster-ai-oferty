@@ -241,7 +241,23 @@ async function handleSubscriptionUpdate(
 
   // Get plan from price ID
   const priceId = subscription.items.data[0]?.price.id;
-  const planId = PRICE_TO_PLAN_MAP[priceId] || "free";
+  const mappedPlanId = PRICE_TO_PLAN_MAP[priceId];
+
+  if (!mappedPlanId) {
+    // OPERATOR ACTION REQUIRED: A real Stripe event arrived with a price ID
+    // that is not in PRICE_TO_PLAN_MAP. This means either:
+    // 1. The PRICE_TO_PLAN_MAP in stripe-webhook/index.ts still contains placeholder keys
+    //    and real Stripe Price IDs were never added, OR
+    // 2. A new product/price was created in Stripe Dashboard but not added to the map.
+    // Defaulting to "free" (least privilege). Update PRICE_TO_PLAN_MAP with real Price IDs.
+    console.error(
+      "[stripe-webhook] UNMAPPED_PRICE_ID: Price ID not found in PRICE_TO_PLAN_MAP:",
+      priceId,
+      "— subscription defaults to 'free'. Update PRICE_TO_PLAN_MAP in stripe-webhook/index.ts."
+    );
+  }
+
+  const planId = mappedPlanId || "free";
   // mapSubscriptionStatus is imported from stripe-utils.ts;
   // unknown Stripe statuses resolve to "inactive" (least privilege).
   const status = mapSubscriptionStatus(subscription.status);

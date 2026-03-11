@@ -96,6 +96,26 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // 4a. Validate that priceId looks like a real Stripe Price ID.
+    //     Real Stripe Price IDs: "price_" followed by ≥14 alphanumeric characters.
+    //     Placeholders ("price_pro_monthly", "price_business_yearly") do NOT match
+    //     and are rejected with a clear 400 + operator-friendly error message.
+    if (!/^price_[A-Za-z0-9]{14,}$/.test(priceId)) {
+      console.error(
+        "[create-checkout-session] INVALID_PRICE_ID: priceId does not match Stripe format.",
+        "Received:", priceId,
+        "— Expected format: price_<14+ alphanumeric chars>.",
+        "Action required: set real Stripe Price IDs in Supabase secrets and VITE_ env vars."
+      );
+      return new Response(
+        JSON.stringify({
+          error: "Invalid price ID. The provided priceId does not look like a real Stripe Price ID. Please configure real Stripe Price IDs in your environment variables.",
+          code: "INVALID_PRICE_ID",
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // 5. Get or create Stripe customer
     const { data: subscription } = await supabase
       .from("user_subscriptions")

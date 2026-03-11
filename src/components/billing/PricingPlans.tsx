@@ -6,13 +6,15 @@ import { Check, Zap, Crown, Rocket, Star, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getPlanById } from '@/config/plans';
 import { formatDualCurrency } from '@/config/currency';
+import { STRIPE_PRICE_IDS } from '@/hooks/useStripe';
 
 interface PricingPlan {
   id: string;
   name: string;
   /** Canonical price in PLN — sourced from PLANS config. */
   pricePLN: number;
-  priceId?: string;
+  /** Stripe Price ID — undefined when VITE_STRIPE_PRICE_* env vars are not set. */
+  priceId?: string | undefined;
   description: string;
   features: string[];
   limitations?: string[];
@@ -49,7 +51,7 @@ const getPlans = (t: (key: string) => string): PricingPlan[] => [
     id: 'pro',
     name: 'Pro',
     pricePLN: getPlanById('pro')!.pricePLN,
-    priceId: 'price_pro_monthly',
+    priceId: STRIPE_PRICE_IDS.pro.monthly,
     description: t('billing.plans.pro.description'),
     icon: <Star className="h-6 w-6" />,
     gradient: 'from-primary/10 to-primary/5',
@@ -67,7 +69,7 @@ const getPlans = (t: (key: string) => string): PricingPlan[] => [
     id: 'business',
     name: 'Business',
     pricePLN: getPlanById('business')!.pricePLN,
-    priceId: 'price_business_monthly',
+    priceId: STRIPE_PRICE_IDS.business.monthly,
     description: t('billing.plans.business.description'),
     icon: <Crown className="h-6 w-6" />,
     popular: true,
@@ -87,7 +89,7 @@ const getPlans = (t: (key: string) => string): PricingPlan[] => [
     id: 'enterprise',
     name: 'Enterprise',
     pricePLN: getPlanById('enterprise')!.pricePLN,
-    priceId: 'price_enterprise_monthly',
+    priceId: STRIPE_PRICE_IDS.enterprise.monthly,
     description: t('billing.plans.enterprise.description'),
     icon: <Rocket className="h-6 w-6" />,
     gradient: 'from-primary/10 to-primary/5',
