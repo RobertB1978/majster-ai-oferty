@@ -19,7 +19,7 @@ interface FabAction {
 }
 
 const FAB_ACTIONS: FabAction[] = [
-  { id: 'new-offer',  labelKey: 'newShell.fab.newOffer',  icon: FileText,    route: '/app/quick-est' },
+  { id: 'new-offer',  labelKey: 'newShell.fab.newOffer',  icon: FileText,    route: '/app/offers/new' },
   { id: 'add-client', labelKey: 'newShell.fab.addClient', icon: Users,       route: '/app/customers' },
   { id: 'add-cost',   labelKey: 'newShell.fab.addCost',   icon: DollarSign,  route: '/app/finance' },
   { id: 'add-date',   labelKey: 'newShell.fab.addDate',   icon: CalendarPlus, route: '/app/calendar' },
