@@ -2790,6 +2790,8 @@
     },
     "more": {
       "title": "More",
+      "groupTools": "Tools",
+      "groupAccount": "Company & account",
       "groupDocs": "Documents",
       "groupOrg": "Company",
       "documentTemplates": "Document Templates",
