@@ -3217,7 +3217,9 @@
       "title": "Brak dostępu do kamery",
       "description": "Aplikacja nie ma uprawnień do kamery. Zezwól na dostęp w ustawieniach systemowych, aby dodawać zdjęcia do fotoprotokołu i dokumentacji odbioru.",
       "openSettings": "Otwórz ustawienia systemowe"
-    }
+    },
+    "limitReached": "Osiągnięto limit {{max}} zdjęć w projekcie. Usuń zdjęcie, aby dodać nowe.",
+    "unsupportedFileType": "Nieobsługiwany format pliku. Dodaj zdjęcie (JPEG, PNG, WebP)."
   },
   "checklist": {
     "title": "Lista kontrolna odbioru",

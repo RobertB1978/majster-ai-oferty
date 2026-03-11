@@ -3217,7 +3217,9 @@
       "title": "Camera Access Denied",
       "description": "The app does not have camera access. Allow access in system settings to add photos to the photo report and acceptance documentation.",
       "openSettings": "Open System Settings"
-    }
+    },
+    "limitReached": "Photo limit of {{max}} reached for this project. Delete a photo to add a new one.",
+    "unsupportedFileType": "Unsupported file type. Please add an image (JPEG, PNG, WebP)."
   },
   "checklist": {
     "title": "Acceptance Checklist",
