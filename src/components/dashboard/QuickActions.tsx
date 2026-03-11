@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Plus, Users, FileText, Calendar, type LucideIcon } from 'lucide-react';
+import { FolderOpen, Users, FileText, Calendar, type LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -9,26 +9,29 @@ interface Action {
   sublabel?: string;
   icon: LucideIcon;
   onClick: () => void;
-  primary?: boolean;
-  color: 'primary' | 'slate' | 'teal' | 'violet';
+  color: 'blue' | 'green' | 'teal' | 'violet';
 }
 
 const colorMap = {
-  primary: {
-    card: 'bg-primary hover:bg-primary/90 text-white border-transparent shadow-md',
-    icon: 'bg-white/20',
+  blue: {
+    card: 'bg-blue-50/70 hover:bg-blue-50 dark:bg-blue-900/10 dark:hover:bg-blue-900/20 text-foreground border-blue-100 dark:border-blue-800/30',
+    icon: 'bg-blue-100 dark:bg-blue-800/40',
+    iconColor: 'text-blue-600 dark:text-blue-400',
   },
-  slate: {
-    card: 'bg-card hover:bg-muted/60 text-foreground border-border/60',
-    icon: 'bg-muted',
+  green: {
+    card: 'bg-green-50/70 hover:bg-green-50 dark:bg-green-900/10 dark:hover:bg-green-900/20 text-foreground border-green-100 dark:border-green-800/30',
+    icon: 'bg-green-100 dark:bg-green-800/40',
+    iconColor: 'text-green-600 dark:text-green-400',
   },
   teal: {
-    card: 'bg-card hover:bg-muted/60 text-foreground border-border/60',
-    icon: 'bg-muted',
+    card: 'bg-teal-50/70 hover:bg-teal-50 dark:bg-teal-900/10 dark:hover:bg-teal-900/20 text-foreground border-teal-100 dark:border-teal-800/30',
+    icon: 'bg-teal-100 dark:bg-teal-800/40',
+    iconColor: 'text-teal-600 dark:text-teal-400',
   },
   violet: {
-    card: 'bg-card hover:bg-muted/60 text-foreground border-border/60',
-    icon: 'bg-muted',
+    card: 'bg-violet-50/70 hover:bg-violet-50 dark:bg-violet-900/10 dark:hover:bg-violet-900/20 text-foreground border-violet-100 dark:border-violet-800/30',
+    icon: 'bg-violet-100 dark:bg-violet-800/40',
+    iconColor: 'text-violet-600 dark:text-violet-400',
   },
 } as const;
 
@@ -38,19 +41,18 @@ export function QuickActions() {
 
   const actions: Action[] = [
     {
-      label: t('dashboard.newProject', 'Nowy projekt'),
-      sublabel: t('dashboard.newProjectSub'),
-      icon: Plus,
-      onClick: () => navigate('/app/jobs/new'),
-      primary: true,
-      color: 'primary',
+      label: t('nav.projects', 'Projekty'),
+      sublabel: t('dashboard.projectsSub', 'Twoje zlecenia'),
+      icon: FolderOpen,
+      onClick: () => navigate('/app/jobs'),
+      color: 'blue',
     },
     {
       label: t('dashboard.addClient', 'Dodaj klienta'),
       sublabel: t('dashboard.addClientSub'),
       icon: Users,
       onClick: () => navigate('/app/customers'),
-      color: 'slate',
+      color: 'green',
     },
     {
       label: t('nav.templates', 'Szablony'),
@@ -93,12 +95,12 @@ export function QuickActions() {
               )}
             >
               <div className={cn('flex h-9 w-9 items-center justify-center rounded-xl', cfg.icon)}>
-                <Icon className={cn('h-4.5 w-4.5', action.primary ? 'text-white' : 'text-foreground')} style={{ width: '18px', height: '18px' }} />
+                <Icon className={cn(cfg.iconColor)} style={{ width: '18px', height: '18px' }} />
               </div>
               <div>
                 <p className="text-sm font-semibold leading-tight">{action.label}</p>
                 {action.sublabel && (
-                  <p className={cn('text-[11px] leading-tight mt-0.5', action.primary ? 'text-white/70' : 'text-muted-foreground')}>
+                  <p className="text-[11px] leading-tight mt-0.5 text-muted-foreground">
                     {action.sublabel}
                   </p>
                 )}

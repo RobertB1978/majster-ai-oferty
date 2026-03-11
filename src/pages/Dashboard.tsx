@@ -133,7 +133,7 @@ export default function Dashboard() {
       )}
 
       {/* Header — main CTA */}
-      <div className="relative rounded-2xl bg-primary/5 border border-primary/20 p-6 overflow-hidden">
+      <div className="relative rounded-2xl bg-gradient-to-br from-primary/10 to-primary/4 border border-primary/25 p-6 overflow-hidden shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
@@ -174,16 +174,16 @@ export default function Dashboard() {
 
       {/* === BELOW THE FOLD === */}
 
-      {/* Activity Feed */}
-      <ActivityFeed />
-
-      {/* Main Stats */}
+      {/* Main Stats — summary first, then activity narrative */}
       <DashboardStats
         projectsCount={totalProjects}
         clientsCount={totalClients}
         acceptedCount={acceptedCount}
         recentCount={recentWeekCount}
       />
+
+      {/* Activity Feed — narrative, below summary stats */}
+      <ActivityFeed />
 
       {/* Status breakdown — with optional sidebar ad for Free users */}
       {showAds ? (

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ClipboardList, ArrowRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface TodayTask {
   id: string;
@@ -124,24 +125,38 @@ export const TodayTasks = React.memo(function TodayTasks() {
   if (isLoading || tasks.length === 0) return null;
 
   return (
-    <Card>
+    <Card className="border-l-4 border-l-amber-400 dark:border-l-amber-500 shadow-sm">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
-          <ClipboardList className="h-4 w-4 text-primary" />
-          {t('dashboard.todayTasks', 'Na dzisiaj')}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <ClipboardList className="h-4 w-4 text-amber-500" />
+            {t('dashboard.todayTasks', 'Na dzisiaj')}
+          </CardTitle>
+          <Badge
+            variant="secondary"
+            className={cn(
+              'text-xs font-semibold tabular-nums',
+              'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+            )}
+          >
+            {tasks.length}
+          </Badge>
+        </div>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="space-y-2">
+        <div className="space-y-1">
           {tasks.map((task) => (
-            <div key={task.id} className="flex items-center gap-2 py-1.5">
-              <Badge variant="secondary" className={TYPE_VARIANTS[task.type]}>
+            <div
+              key={task.id}
+              className="flex items-center gap-2 py-1.5 rounded-md px-1 hover:bg-muted/40 transition-colors duration-100"
+            >
+              <Badge variant="secondary" className={cn('shrink-0', TYPE_VARIANTS[task.type])}>
                 {TYPE_LABELS[task.type]}
               </Badge>
               <span className="text-sm text-foreground flex-1 min-w-0 truncate">
                 {task.label}
               </span>
-              <Button size="sm" variant="ghost" className="h-7 px-2 shrink-0" asChild>
+              <Button size="sm" variant="ghost" className="h-7 px-2 shrink-0 text-muted-foreground hover:text-foreground" asChild>
                 <Link to={task.href}>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
