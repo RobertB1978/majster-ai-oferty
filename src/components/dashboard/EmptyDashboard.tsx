@@ -180,7 +180,7 @@ export function EmptyDashboard() {
       <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
         <Button
           size="lg"
-          onClick={() => navigate('/app/jobs/new')}
+          onClick={() => navigate('/app/projects/new')}
           className="mb-12 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 text-base px-8 py-6 rounded-2xl"
         >
           <FolderPlus className="mr-2 h-5 w-5" />

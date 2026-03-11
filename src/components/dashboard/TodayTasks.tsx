@@ -70,7 +70,7 @@ function useTodayTasks() {
             id: `expiring-${approval.id}`,
             type: 'expiring_offer',
             label: `Oferta wygasa za ${daysLeft} dni`,
-            href: `/app/jobs/${approval.project_id}`,
+            href: `/app/projects/${approval.project_id}`,
           });
         }
       }

@@ -69,7 +69,7 @@ export default function Photos() {
             </p>
           </div>
           <Button asChild variant="outline">
-            <Link to="/app/jobs">
+            <Link to="/app/projects">
               <FolderOpen className="h-4 w-4 mr-2" />
               {t('photos.goToProjects', 'Dodaj zdjęcia w projekcie')}
             </Link>
@@ -100,7 +100,7 @@ export default function Photos() {
                 </p>
               </div>
               <Button asChild>
-                <Link to="/app/jobs">
+                <Link to="/app/projects">
                   <FolderOpen className="h-4 w-4 mr-2" />
                   {t('photos.openProjects', 'Otwórz projekty')}
                 </Link>
@@ -153,7 +153,7 @@ export default function Photos() {
                       {new Date(photo.created_at).toLocaleDateString()}
                     </span>
                     <Button asChild variant="ghost" size="icon" className="h-7 w-7">
-                      <Link to={`/app/jobs/${photo.project_id}`}>
+                      <Link to={`/app/projects/${photo.project_id}`}>
                         <ExternalLink className="h-3 w-3" />
                       </Link>
                     </Button>

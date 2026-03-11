@@ -62,7 +62,7 @@ export default function Dashboard() {
 
   // Handle voice quote creation
   const handleVoiceQuoteCreated = (result: unknown) => {
-    navigate('/app/jobs/new', { state: { voiceQuote: result } });
+    navigate('/app/projects/new', { state: { voiceQuote: result } });
   };
 
   // Show skeleton while data is loading
@@ -111,7 +111,7 @@ export default function Dashboard() {
               <AlertTitle>{t('dashboard.expiringOffersTitle')}</AlertTitle>
               <AlertDescription>
                 {t('dashboard.expiringOffersDesc', { count: expiringOffersCount })}
-                <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/app/jobs')}>
+                <Button variant="link" className="p-0 ml-1 h-auto" onClick={() => navigate('/app/projects')}>
                   {t('dashboard.viewDetails')}
                 </Button>
               </AlertDescription>
@@ -154,7 +154,7 @@ export default function Dashboard() {
           </div>
           <Button
             size="lg"
-            onClick={() => navigate('/app/jobs/new')}
+            onClick={() => navigate('/app/projects/new')}
             className="shadow-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200"
           >
             <Plus className="mr-2 h-5 w-5" />

@@ -230,7 +230,7 @@ export default function NewProject() {
       status: t('newProject.statusNew'),
     });
 
-    navigate(`/app/jobs/${project.id}`);
+    navigate(`/app/projects/${project.id}`);
   };
 
   const isVoiceSupported = !!(window as unknown).SpeechRecognition || !!(window as unknown).webkitSpeechRecognition;
@@ -238,7 +238,7 @@ export default function NewProject() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" onClick={() => navigate('/app/jobs')}>
+        <Button variant="ghost" onClick={() => navigate('/app/projects')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t('newProject.backToProjects')}
         </Button>

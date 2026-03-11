@@ -13,7 +13,7 @@ interface BottomNavItem {
 
 const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
   { id: 'dashboard', path: '/app/dashboard', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
-  { id: 'jobs', path: '/app/jobs', icon: Briefcase, labelKey: 'nav.projects' },
+  { id: 'jobs', path: '/app/projects', icon: Briefcase, labelKey: 'nav.projects' },
   { id: 'quickEstimate', path: '/app/szybka-wycena', icon: Zap, labelKey: 'nav.quickEstimate', primary: true },
   { id: 'clients', path: '/app/customers', icon: Users, labelKey: 'nav.clients' },
   { id: 'finance', path: '/app/finance', icon: Wallet, labelKey: 'nav.finance' },

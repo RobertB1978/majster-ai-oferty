@@ -64,7 +64,7 @@ export default function QuoteEditor() {
     );
   }
 
-  if (!id) return <Navigate to="/app/jobs" replace />;
+  if (!id) return <Navigate to="/app/projects" replace />;
 
   const addPosition = () => {
     const newPosition: QuotePosition = {
@@ -258,7 +258,7 @@ export default function QuoteEditor() {
         positions,
         marginPercent,
       });
-      navigate(`/app/jobs/${id}`);
+      navigate(`/app/projects/${id}`);
     } catch {
       // Error handled by hook
     }
@@ -269,7 +269,7 @@ export default function QuoteEditor() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <Button variant="ghost" onClick={() => navigate(`/app/jobs/${id}`)}>
+      <Button variant="ghost" onClick={() => navigate(`/app/projects/${id}`)}>
         <ArrowLeft className="mr-2 h-4 w-4" />
         {t('quotes.backToProject')}
       </Button>

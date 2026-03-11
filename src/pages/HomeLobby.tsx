@@ -65,7 +65,7 @@ export default function HomeLobby() {
             <QuickStartButton
               icon={<FolderKanban className="h-6 w-6" />}
               label={t('newShell.home.qs.projects', 'Projekty')}
-              onClick={() => navigate('/app/jobs')}
+              onClick={() => navigate('/app/projects')}
             />
             <QuickStartButton
               icon={<Users className="h-6 w-6" />}

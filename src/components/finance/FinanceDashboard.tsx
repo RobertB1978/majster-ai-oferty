@@ -65,7 +65,7 @@ export function FinanceDashboard() {
         description={t('finance.noDataDesc')}
         action={{
           label: t('finance.createFirstProject'),
-          onClick: () => navigate('/app/jobs/new'),
+          onClick: () => navigate('/app/projects/new'),
         }}
         className="min-h-[400px]"
       />

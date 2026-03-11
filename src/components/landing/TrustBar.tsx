@@ -2,7 +2,7 @@
 //
 // Every item below is verified to be real:
 //   • "3 języki" — src/i18n/locales/pl.json + en.json + uk.json confirmed in detection
-//   • "PDF" — src/App.tsx /app/jobs/:id/quote → QuoteEditor + /app/jobs/:id/pdf → PdfGenerator
+//   • "PDF" — src/App.tsx /app/projects/:id/quote → QuoteEditor + /app/projects/:id/pdf → PdfGenerator
 //   • "Plan Free" — PricingSection shows 0 zł / mies, no card required
 //   • "Mobile-first" — Capacitor installed + UI itself is the evidence
 

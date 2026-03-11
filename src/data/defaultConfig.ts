@@ -23,7 +23,7 @@ export const DEFAULT_CONFIG: AppConfig = {
     mainItems: [
       { id: 'dashboard', label: 'Pulpit', path: '/app/dashboard', icon: 'LayoutDashboard', visible: true, comingSoon: false, requiredPlan: 'free', order: 0 },
       { id: 'offers', label: 'Oferty', path: '/app/offers', icon: 'FileText', visible: true, comingSoon: false, requiredPlan: 'free', order: 1 },
-      { id: 'jobs', label: 'Projekty', path: '/app/jobs', icon: 'Briefcase', visible: true, comingSoon: false, requiredPlan: 'free', order: 2 },
+      { id: 'jobs', label: 'Projekty', path: '/app/projects', icon: 'Briefcase', visible: true, comingSoon: false, requiredPlan: 'free', order: 2 },
       { id: 'clients', label: 'Klienci', path: '/app/customers', icon: 'Users', visible: true, comingSoon: false, requiredPlan: 'free', order: 3 },
       { id: 'calendar', label: 'Kalendarz', path: '/app/calendar', icon: 'Calendar', visible: true, comingSoon: false, requiredPlan: 'free', order: 4 },
       { id: 'finance', label: 'Finanse', path: '/app/finance', icon: 'Wallet', visible: true, comingSoon: false, requiredPlan: 'free', order: 5 },

@@ -51,7 +51,7 @@ interface TradeOnboardingModalProps {
  *   Step 1: Choose your trade
  *   Step 2: Choose mode (Super simple / Advanced)
  *   → Navigate to /app/szybka-wycena with starter pack preloaded (simple)
- *      or /app/jobs/new (advanced)
+ *      or /app/projects/new (advanced)
  */
 export function TradeOnboardingModal({ open, onDone }: TradeOnboardingModalProps) {
   const { t } = useTranslation();
@@ -74,7 +74,7 @@ export function TradeOnboardingModal({ open, onDone }: TradeOnboardingModalProps
         state: { pack: selectedPack, skipStartChoice: true },
       });
     } else {
-      navigate('/app/jobs/new');
+      navigate('/app/projects/new');
     }
   };
 

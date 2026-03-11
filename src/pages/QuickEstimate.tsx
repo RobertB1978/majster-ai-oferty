@@ -356,7 +356,7 @@ export default function QuickEstimate() {
       );
 
       toast.success(t('quickEstimate.saved', 'Wycena zapisana!'));
-      navigate(`/app/jobs/${project.id}`);
+      navigate(`/app/projects/${project.id}`);
     } catch (err) {
       toast.error(String(err));
     } finally {
@@ -480,7 +480,7 @@ export default function QuickEstimate() {
                   {t('quickEstimate.save', 'Zapisz jako projekt')}
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
-                <Button variant="outline" onClick={() => navigate('/app/jobs/new')}>
+                <Button variant="outline" onClick={() => navigate('/app/projects/new')}>
                   {t('quickEstimate.fullEditor', 'Pełny edytor')}
                 </Button>
               </div>

@@ -93,7 +93,7 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
               </div>
             </div>
             <div className="flex gap-3 justify-center">
-              <Button onClick={() => { onClose(); navigate('/app/jobs/new'); }}>
+              <Button onClick={() => { onClose(); navigate('/app/projects/new'); }}>
                 <FolderOpen className="mr-2 h-4 w-4" />
                 {t('onboarding.newProject')}
               </Button>

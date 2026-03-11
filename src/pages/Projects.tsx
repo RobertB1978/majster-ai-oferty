@@ -105,7 +105,7 @@ export default function Projects() {
               {t('projects.exportBtn')}
             </Button>
           )}
-          <Button size="lg" onClick={() => navigate('/app/jobs/new')} className="shadow-sm bg-primary hover:bg-primary/90 transition-colors">
+          <Button size="lg" onClick={() => navigate('/app/projects/new')} className="shadow-sm bg-primary hover:bg-primary/90 transition-colors">
             <Plus className="mr-2 h-5 w-5" />
             {t('projects.newProject')}
           </Button>
@@ -153,7 +153,7 @@ export default function Projects() {
           title={t('projects.noProjects')}
           description={t('projects.createFirst')}
           ctaLabel={t('projects.newProject')}
-          onCta={() => navigate('/app/jobs/new')}
+          onCta={() => navigate('/app/projects/new')}
         />
       ) : showNoResults ? (
         <EmptyState
@@ -190,7 +190,7 @@ export default function Projects() {
                     </Badge>
                     <Button
                       variant="outline"
-                      onClick={() => navigate(`/app/jobs/${project.id}`)}
+                      onClick={() => navigate(`/app/projects/${project.id}`)}
                     >
                       {t('projects.open')}
                     </Button>

@@ -44,7 +44,7 @@ export function QuickActions() {
       label: t('nav.projects', 'Projekty'),
       sublabel: t('dashboard.projectsSub', 'Twoje zlecenia'),
       icon: FolderOpen,
-      onClick: () => navigate('/app/jobs'),
+      onClick: () => navigate('/app/projects'),
       color: 'blue',
     },
     {
