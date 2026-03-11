@@ -37,7 +37,7 @@ const NAV_SECTIONS: NavSection[] = [
     id: 'main',
     labelKey: 'newShell.nav.sectionMain',
     items: [
-      { id: 'home',      path: '/app/home',      icon: Home,         labelKey: 'newShell.nav.home' },
+      { id: 'home',      path: '/app/dashboard', icon: Home,         labelKey: 'newShell.nav.home' },
       { id: 'offers',    path: '/app/offers',    icon: FileText,     labelKey: 'newShell.nav.offers' },
       { id: 'projects',  path: '/app/projects',  icon: FolderKanban, labelKey: 'newShell.nav.projects' },
       { id: 'customers', path: '/app/customers', icon: Users,        labelKey: 'newShell.nav.customers' },
