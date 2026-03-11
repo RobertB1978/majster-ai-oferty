@@ -93,9 +93,24 @@ describe('CompanyProfile', () => {
       expect(spinner).toBeDefined();
     });
 
-    it('should render company data section', () => {
+    it('should render basics section header', () => {
       render(<CompanyProfile />);
-      expect(screen.getByText(/dane firmy/i)).toBeDefined();
+      expect(screen.getByText(/podstawowe dane/i)).toBeDefined();
+    });
+
+    it('should render address section header', () => {
+      render(<CompanyProfile />);
+      expect(screen.getByText(/^adres$/i)).toBeDefined();
+    });
+
+    it('should render contact section header', () => {
+      render(<CompanyProfile />);
+      expect(screen.getByText(/^kontakt$/i)).toBeDefined();
+    });
+
+    it('should render bank section header', () => {
+      render(<CompanyProfile />);
+      expect(screen.getByText(/dane bankowe/i)).toBeDefined();
     });
 
     it('should render email settings section', () => {
@@ -137,6 +152,10 @@ describe('CompanyProfile', () => {
     it('should pre-populate phone from loaded profile', async () => {
       render(<CompanyProfile />);
 
+      // Otwórz sekcję Kontakt (domyślnie zamknięta)
+      const contactTrigger = screen.getByText(/^kontakt$/i);
+      fireEvent.click(contactTrigger);
+
       await waitFor(() => {
         const input = screen.getByDisplayValue('+48 123 456 789');
         expect(input).toBeDefined();
@@ -145,6 +164,10 @@ describe('CompanyProfile', () => {
 
     it('should pre-populate email_subject_template from loaded profile', async () => {
       render(<CompanyProfile />);
+
+      // Otwórz sekcję Szablony email (domyślnie zamknięta)
+      const emailTrigger = screen.getByText(/ustawienia wiadomości/i);
+      fireEvent.click(emailTrigger);
 
       await waitFor(() => {
         const input = screen.getByDisplayValue('Oferta od {company_name}');
@@ -226,12 +249,20 @@ describe('CompanyProfile', () => {
   // ── COLLAPSIBLE SECTIONS ──────────────────────────────────────────────────
 
   describe('collapsible sections', () => {
-    it('should show company data section content by default (open)', async () => {
+    it('should show basics section content by default (open)', async () => {
       render(<CompanyProfile />);
 
       await waitFor(() => {
         expect(screen.getByDisplayValue('Remonty Kowalski')).toBeDefined();
       });
+    });
+
+    it('should render address, contact, bank and email section headers collapsed', () => {
+      render(<CompanyProfile />);
+      expect(screen.getByText(/^adres$/i)).toBeDefined();
+      expect(screen.getByText(/^kontakt$/i)).toBeDefined();
+      expect(screen.getByText(/dane bankowe/i)).toBeDefined();
+      expect(screen.getByText(/ustawienia wiadomości/i)).toBeDefined();
     });
 
     it('should render the Security (BiometricSetup) section', () => {
@@ -247,6 +278,10 @@ describe('CompanyProfile', () => {
     it('should render email settings with subject template field', async () => {
       render(<CompanyProfile />);
 
+      // Otwórz sekcję Szablony email (domyślnie zamknięta)
+      const emailTrigger = screen.getByText(/ustawienia wiadomości/i);
+      fireEvent.click(emailTrigger);
+
       await waitFor(() => {
         expect(screen.getByDisplayValue('Oferta od {company_name}')).toBeDefined();
       });
@@ -254,6 +289,10 @@ describe('CompanyProfile', () => {
 
     it('should render email signature field', async () => {
       render(<CompanyProfile />);
+
+      // Otwórz sekcję Szablony email (domyślnie zamknięta)
+      const emailTrigger = screen.getByText(/ustawienia wiadomości/i);
+      fireEvent.click(emailTrigger);
 
       await waitFor(() => {
         expect(screen.getByDisplayValue('Z poważaniem, Jan Kowalski')).toBeDefined();

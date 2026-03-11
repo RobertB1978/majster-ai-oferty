@@ -51,9 +51,11 @@ export default function CompanyProfile() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [openSections, setOpenSections] = useState({
-    company: true,
-    email: true,
-    security: false,
+    basics: true,
+    address: false,
+    contact: false,
+    bank: false,
+    email: false,
   });
 
   useEffect(() => {
@@ -228,10 +230,10 @@ export default function CompanyProfile() {
         {/* Form Section */}
         <div className="lg:col-span-2 space-y-6">
           <form onSubmit={handleSubmit}>
-            {/* Company Data Section */}
+            {/* Sekcja 1: Podstawowe dane */}
             <Collapsible
-              open={openSections.company}
-              onOpenChange={(open) => setOpenSections(prev => ({ ...prev, company: open }))}
+              open={openSections.basics}
+              onOpenChange={(open) => setOpenSections(prev => ({ ...prev, basics: open }))}
             >
               <Card>
                 <CollapsibleTrigger asChild>
@@ -240,20 +242,19 @@ export default function CompanyProfile() {
                       <div>
                         <CardTitle className="flex items-center gap-2">
                           <Building2 className="h-5 w-5" />
-                          {t('companyProfile.companyDataSection')}
+                          {t('companyProfile.basicsSection')}
                         </CardTitle>
                         <CardDescription>
-                          {t('companyProfile.companyDataDesc')}
+                          {t('companyProfile.basicsDesc')}
                         </CardDescription>
                       </div>
-                      <ChevronDown className={`h-5 w-5 transition-transform ${openSections.company ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${openSections.basics ? 'rotate-180' : ''}`} />
                     </div>
                   </CardHeader>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <CardContent className="pt-0">
                     <div className="grid gap-4 sm:grid-cols-2">
-                      {/* Company Name */}
                       <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor="company_name" className="flex items-center gap-2">
                           <Building2 className="h-4 w-4" />
@@ -271,7 +272,6 @@ export default function CompanyProfile() {
                         )}
                       </div>
 
-                      {/* Owner Name */}
                       <div className="space-y-2">
                         <Label htmlFor="owner_name" className="flex items-center gap-2">
                           <User className="h-4 w-4" />
@@ -289,7 +289,6 @@ export default function CompanyProfile() {
                         )}
                       </div>
 
-                      {/* NIP */}
                       <div className="space-y-2">
                         <Label htmlFor="nip" className="flex items-center gap-2">
                           <FileText className="h-4 w-4" />
@@ -306,9 +305,39 @@ export default function CompanyProfile() {
                           <p className="text-sm text-destructive">{errors.nip}</p>
                         )}
                       </div>
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
 
-                      {/* Street */}
-                      <div className="space-y-2">
+            {/* Sekcja 2: Adres */}
+            <Collapsible
+              open={openSections.address}
+              onOpenChange={(open) => setOpenSections(prev => ({ ...prev, address: open }))}
+              className="mt-4"
+            >
+              <Card>
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <MapPin className="h-5 w-5" />
+                          {t('companyProfile.addressSection')}
+                        </CardTitle>
+                        <CardDescription>
+                          {t('companyProfile.addressDesc')}
+                        </CardDescription>
+                      </div>
+                      <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${openSections.address ? 'rotate-180' : ''}`} />
+                    </div>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent className="pt-0">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor="street" className="flex items-center gap-2">
                           <MapPin className="h-4 w-4" />
                           {t('companyProfile.streetLabel')}
@@ -325,8 +354,7 @@ export default function CompanyProfile() {
                         )}
                       </div>
 
-                      {/* Address Line 2 */}
-                      <div className="space-y-2">
+                      <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor="address_line2">
                           {t('companyProfile.addressLine2Label')}
                         </Label>
@@ -338,7 +366,6 @@ export default function CompanyProfile() {
                         />
                       </div>
 
-                      {/* City */}
                       <div className="space-y-2">
                         <Label htmlFor="city">{t('companyProfile.cityLabel')}</Label>
                         <Input
@@ -353,7 +380,6 @@ export default function CompanyProfile() {
                         )}
                       </div>
 
-                      {/* Postal Code */}
                       <div className="space-y-2">
                         <Label htmlFor="postal_code">{t('companyProfile.postalCodeLabel')}</Label>
                         <Input
@@ -368,8 +394,7 @@ export default function CompanyProfile() {
                         )}
                       </div>
 
-                      {/* Country */}
-                      <div className="space-y-2">
+                      <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor="country">{t('companyProfile.countryLabel')}</Label>
                         <Input
                           id="country"
@@ -378,8 +403,38 @@ export default function CompanyProfile() {
                           placeholder={t('companyProfile.countryDefault')}
                         />
                       </div>
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
 
-                      {/* Phone */}
+            {/* Sekcja 3: Kontakt */}
+            <Collapsible
+              open={openSections.contact}
+              onOpenChange={(open) => setOpenSections(prev => ({ ...prev, contact: open }))}
+              className="mt-4"
+            >
+              <Card>
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Phone className="h-5 w-5" />
+                          {t('companyProfile.contactSection')}
+                        </CardTitle>
+                        <CardDescription>
+                          {t('companyProfile.contactDesc')}
+                        </CardDescription>
+                      </div>
+                      <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${openSections.contact ? 'rotate-180' : ''}`} />
+                    </div>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent className="pt-0">
+                    <div className="grid gap-4 sm:grid-cols-2">
                       <div className="space-y-2">
                         <Label htmlFor="phone" className="flex items-center gap-2">
                           <Phone className="h-4 w-4" />
@@ -397,7 +452,6 @@ export default function CompanyProfile() {
                         )}
                       </div>
 
-                      {/* Email */}
                       <div className="space-y-2">
                         <Label htmlFor="email_for_offers" className="flex items-center gap-2">
                           <Mail className="h-4 w-4" />
@@ -416,25 +470,6 @@ export default function CompanyProfile() {
                         )}
                       </div>
 
-                      {/* Bank Account */}
-                      <div className="space-y-2 sm:col-span-2">
-                        <Label htmlFor="bank_account" className="flex items-center gap-2">
-                          <CreditCard className="h-4 w-4" />
-                          {t('companyProfile.bankAccountLabel')}
-                        </Label>
-                        <Input
-                          id="bank_account"
-                          value={formData.bank_account}
-                          onChange={(e) => setFormData({ ...formData, bank_account: e.target.value })}
-                          placeholder="00 0000 0000 0000 0000 0000 0000"
-                          className={errors.bank_account ? 'border-destructive' : ''}
-                        />
-                        {errors.bank_account && (
-                          <p className="text-sm text-destructive">{errors.bank_account}</p>
-                        )}
-                      </div>
-
-                      {/* Website */}
                       <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor="website" className="flex items-center gap-2">
                           <Globe className="h-4 w-4" />
@@ -458,11 +493,57 @@ export default function CompanyProfile() {
               </Card>
             </Collapsible>
 
-            {/* Email Settings Section */}
+            {/* Sekcja 4: Dane bankowe */}
+            <Collapsible
+              open={openSections.bank}
+              onOpenChange={(open) => setOpenSections(prev => ({ ...prev, bank: open }))}
+              className="mt-4"
+            >
+              <Card>
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <CreditCard className="h-5 w-5" />
+                          {t('companyProfile.bankSection')}
+                        </CardTitle>
+                        <CardDescription>
+                          {t('companyProfile.bankDesc')}
+                        </CardDescription>
+                      </div>
+                      <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${openSections.bank ? 'rotate-180' : ''}`} />
+                    </div>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent className="pt-0">
+                    <div className="space-y-2">
+                      <Label htmlFor="bank_account" className="flex items-center gap-2">
+                        <CreditCard className="h-4 w-4" />
+                        {t('companyProfile.bankAccountLabel')}
+                      </Label>
+                      <Input
+                        id="bank_account"
+                        value={formData.bank_account}
+                        onChange={(e) => setFormData({ ...formData, bank_account: e.target.value })}
+                        placeholder="00 0000 0000 0000 0000 0000 0000"
+                        className={errors.bank_account ? 'border-destructive' : ''}
+                      />
+                      {errors.bank_account && (
+                        <p className="text-sm text-destructive">{errors.bank_account}</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
+
+            {/* Sekcja 5: Szablony wiadomości e-mail */}
             <Collapsible
               open={openSections.email}
               onOpenChange={(open) => setOpenSections(prev => ({ ...prev, email: open }))}
-              className="mt-6"
+              className="mt-4"
             >
               <Card>
                 <CollapsibleTrigger asChild>
@@ -477,7 +558,7 @@ export default function CompanyProfile() {
                           {t('companyProfile.emailSettingsDesc')}
                         </CardDescription>
                       </div>
-                      <ChevronDown className={`h-5 w-5 transition-transform ${openSections.email ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${openSections.email ? 'rotate-180' : ''}`} />
                     </div>
                   </CardHeader>
                 </CollapsibleTrigger>
