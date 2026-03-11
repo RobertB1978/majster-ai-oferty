@@ -100,8 +100,9 @@ export default function Register() {
     }
 
     setIsLoading(false);
-    toast.success(t('auth.success.accountCreated'));
-    navigate(CANONICAL_HOME);
+    // Supabase wymaga potwierdzenia emaila — kierujemy użytkownika na ekran oczekiwania,
+    // NIE do aplikacji. Konto nie jest w pełni aktywne przed kliknięciem w link.
+    navigate(`/verify-email?email=${encodeURIComponent(email)}`);
   };
 
   return (

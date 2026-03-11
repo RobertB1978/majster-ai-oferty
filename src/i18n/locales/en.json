@@ -103,6 +103,9 @@
     "errors": {
       "invalidCredentials": "Invalid email or password",
       "emailNotConfirmed": "Email not confirmed. Check your inbox.",
+      "emailNotConfirmedTitle": "Email not confirmed",
+      "emailNotConfirmedHint": "Confirm your email by clicking the link sent to:",
+      "resendVerification": "Resend verification link",
       "invalidEmail": "Invalid email",
       "rateLimitExceeded": "Too many attempts. Please try again later.",
       "genericError": "An error occurred. Please try again.",
@@ -187,6 +190,19 @@
       "usersCount": "2,400+ tradespeople",
       "rating": "Rating 4.9/5",
       "freeStart": "Free to start"
+    },
+    "verifyEmail": {
+      "pageTitle": "Email verification",
+      "title": "Check your inbox",
+      "descriptionWithEmail": "We sent a verification link to",
+      "description": "We sent a verification link to your email address. Click the link to activate your account.",
+      "checkSpam": "Don't see the email? Check your SPAM or Promotions folder.",
+      "resendButton": "Resend link",
+      "resending": "Sending...",
+      "resentSuccess": "Verification link sent again",
+      "resentCooldown": "Wait {{seconds}} s",
+      "backToLogin": "Back to login",
+      "noEmailError": "No email address. Please go back to registration."
     }
   },
   "dashboard": {

@@ -13,6 +13,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   loginWithGoogle: () => Promise<{ error: string | null }>;
   loginWithApple: () => Promise<{ error: string | null }>;
+  resendVerificationEmail: (email: string) => Promise<{ error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -149,6 +150,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const resendVerificationEmail = async (email: string): Promise<{ error: string | null }> => {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) {
+        if (error.message.includes('rate limit') || error.message.includes('too many')) {
+          return { error: 'Za dużo prób. Spróbuj ponownie za chwilę.' };
+        }
+        return { error: error.message };
+      }
+      return { error: null };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      return { error: message };
+    }
+  };
+
   const logout = async () => {
     try {
       await supabase.auth.signOut();
@@ -164,7 +187,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isLoading, login, register, logout, loginWithGoogle, loginWithApple }}>
+    <AuthContext.Provider value={{ user, session, isLoading, login, register, logout, loginWithGoogle, loginWithApple, resendVerificationEmail }}>
       {children}
     </AuthContext.Provider>
   );

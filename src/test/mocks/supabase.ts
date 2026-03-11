@@ -11,6 +11,7 @@ export const mockSupabaseClient = {
       data: { subscription: { unsubscribe: vi.fn() } },
     }),
     resetPasswordForEmail: vi.fn(),
+    resend: vi.fn().mockResolvedValue({ data: {}, error: null }),
   },
   from: vi.fn().mockReturnValue({
     select: vi.fn().mockReturnThis(),

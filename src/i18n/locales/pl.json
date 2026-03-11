@@ -103,6 +103,9 @@
     "errors": {
       "invalidCredentials": "Nieprawidłowy email lub hasło",
       "emailNotConfirmed": "Email nie został potwierdzony. Sprawdź skrzynkę.",
+      "emailNotConfirmedTitle": "Email nie potwierdzony",
+      "emailNotConfirmedHint": "Potwierdź adres email klikając w link wysłany na:",
+      "resendVerification": "Wyślij ponownie link weryfikacyjny",
       "invalidEmail": "Nieprawidłowy email",
       "rateLimitExceeded": "Zbyt wiele prób. Spróbuj ponownie za chwilę.",
       "genericError": "Wystąpił błąd. Spróbuj ponownie.",
@@ -187,6 +190,19 @@
       "usersCount": "2 400+ fachowców",
       "rating": "Ocena 4.9/5",
       "freeStart": "Bezpłatny start"
+    },
+    "verifyEmail": {
+      "pageTitle": "Weryfikacja emaila",
+      "title": "Sprawdź skrzynkę pocztową",
+      "descriptionWithEmail": "Wysłaliśmy link weryfikacyjny na adres",
+      "description": "Wysłaliśmy link weryfikacyjny na Twój adres email. Kliknij w link, aby aktywować konto.",
+      "checkSpam": "Nie widzisz maila? Sprawdź folder SPAM lub Oferty.",
+      "resendButton": "Wyślij ponownie",
+      "resending": "Wysyłanie...",
+      "resentSuccess": "Link weryfikacyjny wysłany ponownie",
+      "resentCooldown": "Poczekaj {{seconds}} s",
+      "backToLogin": "Wróć do logowania",
+      "noEmailError": "Brak adresu email. Wróć do rejestracji."
     }
   },
   "dashboard": {

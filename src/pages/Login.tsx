@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Mail, Lock, Loader2, Fingerprint, ArrowRight, CheckCircle2, Star, Wrench } from 'lucide-react';
+import { Mail, Lock, Loader2, Fingerprint, ArrowRight, CheckCircle2, Star, Wrench, MailCheck, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 import { useQueryClient } from '@tanstack/react-query';
@@ -18,6 +18,8 @@ import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
 import { BuilderHeroIllustration } from '@/components/auth/BuilderHeroIllustration';
 import { motion, AnimatePresence, useReducedMotion, MotionConfig } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
+
+const RESEND_COOLDOWN_SECONDS = 60;
 
 const CAPTCHA_FAIL_THRESHOLD = 3;
 /** Feature flag: biometric auth is not yet fully integrated with Supabase sessions.
@@ -35,11 +37,15 @@ export default function Login() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const { login, user } = useAuth();
+  const { login, resendVerificationEmail, user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { isSupported, checkIfEnabled, authenticateWithBiometric, isAuthenticating } = useBiometricAuth();
   const [biometricAvailable, setBiometricAvailable] = useState(false);
+  // Stan dla nieotwierdzonych emaili — wyświetla panel odzyskiwania zamiast ślepego komunikatu
+  const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -66,6 +72,13 @@ export default function Login() {
       setBiometricAvailable(false);
     }
   }, [email, isSupported, checkIfEnabled]);
+
+  // Odliczanie cooldown dla ponownego wysyłania maila weryfikacyjnego
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setTimeout(() => setResendCooldown(prev => prev - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
 
   const showCaptcha = isCaptchaEnabled && failedAttempts >= CAPTCHA_FAIL_THRESHOLD;
 
@@ -97,14 +110,16 @@ export default function Login() {
     if (error) {
       setFailedAttempts(prev => prev + 1);
       setCaptchaToken(null);
-      if (error.includes('Invalid login')) {
+      if (error.includes('Invalid login') || error.includes('Nieprawidłowy email')) {
         toast.error(t('auth.errors.invalidCredentials'));
-      } else if (error.includes('Email not confirmed')) {
-        toast.error(t('auth.errors.emailNotConfirmed'));
+      } else if (error.includes('Email not confirmed') || error.includes('nie został potwierdzony')) {
+        // Zamiast ślepego komunikatu, pokazujemy panel odzyskiwania z przyciskiem resend
+        setUnconfirmedEmail(email);
       } else {
         toast.error(error);
       }
     } else {
+      setUnconfirmedEmail(null);
       localStorage.setItem('majster_last_email', email);
       toast.success(t('auth.success.loggedIn'));
 
@@ -115,6 +130,19 @@ export default function Login() {
       }
 
       navigate(CANONICAL_HOME);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!unconfirmedEmail || resendCooldown > 0) return;
+    setIsResending(true);
+    const { error } = await resendVerificationEmail(unconfirmedEmail);
+    setIsResending(false);
+    if (error) {
+      toast.error(error);
+    } else {
+      toast.success(t('auth.verifyEmail.resentSuccess'));
+      setResendCooldown(RESEND_COOLDOWN_SECONDS);
     }
   };
 
@@ -281,6 +309,59 @@ export default function Login() {
                 {t('auth.loginSubtitle')}
               </p>
             </div>
+
+            {/* Panel odzyskiwania — email nie potwierdzony */}
+            <AnimatePresence>
+              {unconfirmedEmail && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30"
+                  role="alert"
+                  data-testid="unconfirmed-email-banner"
+                >
+                  <div className="flex items-start gap-3">
+                    <MailCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                    <div className="flex-1 space-y-2">
+                      <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                        {t('auth.errors.emailNotConfirmedTitle')}
+                      </p>
+                      <p className="text-xs text-amber-700 dark:text-amber-400">
+                        {t('auth.errors.emailNotConfirmedHint')}{' '}
+                        <span className="font-medium break-all">{unconfirmedEmail}</span>
+                      </p>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="mt-1 border-amber-300 bg-white text-amber-800 hover:bg-amber-50 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                        onClick={handleResendVerification}
+                        disabled={isResending || resendCooldown > 0}
+                        data-testid="resend-from-login-btn"
+                      >
+                        {isResending ? (
+                          <>
+                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                            {t('auth.verifyEmail.resending')}
+                          </>
+                        ) : resendCooldown > 0 ? (
+                          <>
+                            <RefreshCw className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                            {t('auth.verifyEmail.resentCooldown', { seconds: resendCooldown })}
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                            {t('auth.errors.resendVerification')}
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Social login */}
             <SocialLoginButtons disabled={isLoading} />
