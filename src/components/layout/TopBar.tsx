@@ -10,7 +10,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState, useEffect, lazy, Suspense } from 'react';
@@ -182,10 +181,6 @@ export function TopBar() {
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem onClick={() => navigate('/app/profile')}>
                   {t('nav.profile')}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => toast.info(t('help.docsComingSoon'))}>
-                  {t('help.documentation')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

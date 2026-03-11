@@ -8,6 +8,8 @@
  *
  * 2. CalendarSync — brak aktywnych przycisków "Połącz" (martwy punkt),
  *    widoczny uczciwy baner beta oraz badge "Wkrótce" przy każdym dostawcy
+ *
+ * 3. TopBar (stary shell) — brak martwego przycisku "Dokumentacja" w menu Pomocy
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -34,10 +36,29 @@ vi.mock('@/contexts/AuthContext', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+vi.mock('@/hooks/useAdminRole', () => ({
+  useAdminRole: () => ({ isAdmin: false }),
+}));
+
+vi.mock('@/components/billing/PlanBadge', () => ({
+  PlanBadge: () => null,
+}));
+
+vi.mock('@/components/notifications/NotificationCenter', () => ({
+  NotificationCenter: () => null,
+}));
+
 // ─── Importy komponentów ──────────────────────────────────────────────────────
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { CalendarSync } from '@/components/calendar/CalendarSync';
+import { TopBar } from '@/components/layout/TopBar';
+
+function WithQueryClient({ children }: { children: React.ReactNode }) {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
+}
 
 // ─── Wrapper helpers ──────────────────────────────────────────────────────────
 
@@ -107,5 +128,30 @@ describe('CalendarSync — uczciwy stan beta', () => {
     const disconnectBtn = screen.queryByRole('button', { name: /Roz\u0142\u0105cz/i });
     expect(syncBtn).toBeNull();
     expect(disconnectBtn).toBeNull();
+  });
+});
+
+// ─── 3. TopBar — brak martwego przycisku "Dokumentacja" ──────────────────────
+
+describe('TopBar (stary shell) — brak dead-end "Dokumentacja"', () => {
+  function renderTopBar() {
+    return render(
+      <WithQueryClient>
+        <MemoryRouter initialEntries={['/app/dashboard']}>
+          <TopBar />
+        </MemoryRouter>
+      </WithQueryClient>
+    );
+  }
+
+  it('renderuje się bez błędu', () => {
+    expect(() => renderTopBar()).not.toThrow();
+  });
+
+  it('nie zawiera przycisku/pozycji menu "Dokumentacja" (martwy punkt)', () => {
+    renderTopBar();
+    // "Dokumentacja" była martwym punktem — nie powinna już istnieć w DOM
+    const docItem = screen.queryByText(/Dokumentacja/i);
+    expect(docItem).toBeNull();
   });
 });
