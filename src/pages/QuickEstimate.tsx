@@ -19,11 +19,14 @@ import {
   CheckCircle2,
   Loader2,
   Save,
+  Lock,
+  Zap,
 } from 'lucide-react';
 import { VoiceQuoteCreator } from '@/components/voice/VoiceQuoteCreator';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { parseDecimal, isValidDecimal } from '@/lib/numberParsing';
+import { usePlanGate } from '@/hooks/usePlanGate';
 
 /* ─────────────────────────── types ─────────────────────────────────────── */
 
@@ -206,6 +209,38 @@ function ManualTab({ items, setItems }: ManualTabProps) {
   );
 }
 
+/* ─────────────────────────── PremiumGate ──────────────────────────────── */
+
+interface PremiumFeatureGateProps {
+  featureName: string;
+  requiredPlan: string;
+}
+
+function PremiumFeatureGate({ featureName, requiredPlan }: PremiumFeatureGateProps) {
+  const navigate = useNavigate();
+  return (
+    <Card className="border-dashed border-2 border-muted-foreground/30">
+      <CardContent className="flex flex-col items-center justify-center py-10 text-center gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+          <Lock className="h-7 w-7 text-muted-foreground" />
+        </div>
+        <div>
+          <p className="font-semibold text-base">{featureName}</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Ta funkcja wymaga planu{' '}
+            <span className="font-medium text-foreground">{requiredPlan}</span>{' '}
+            lub wyższego.
+          </p>
+        </div>
+        <Button onClick={() => navigate('/app/plan')} className="gap-2">
+          <Zap className="h-4 w-4" />
+          Ulepsz plan
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 /* ─────────────────────────── AI tab ────────────────────────────────────── */
 
 interface AiTabProps {
@@ -297,6 +332,7 @@ function AiTab({ onItemsGenerated }: AiTabProps) {
 export default function QuickEstimate() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { canUseFeature } = usePlanGate();
   const [items, setItems] = useState<LineItem[]>([newItem()]);
   const [projectName, setProjectName] = useState('');
   const [saving, setSaving] = useState(false);
@@ -423,33 +459,41 @@ export default function QuickEstimate() {
           </TabsContent>
 
           <TabsContent value="voice">
-            <div className="space-y-4">
-              <VoiceQuoteCreator onQuoteCreated={handleVoiceCreated} />
-              {hasItems && (
-                <p className="text-sm text-success flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" />
-                  {t(
-                    'quickEstimate.voiceLoaded',
-                    'Pozycje załadowane — przejdź do zakładki Ręcznie, aby edytować.'
-                  )}
-                </p>
-              )}
-            </div>
+            {canUseFeature('voice') ? (
+              <div className="space-y-4">
+                <VoiceQuoteCreator onQuoteCreated={handleVoiceCreated} />
+                {hasItems && (
+                  <p className="text-sm text-success flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    {t(
+                      'quickEstimate.voiceLoaded',
+                      'Pozycje załadowane — przejdź do zakładki Ręcznie, aby edytować.'
+                    )}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <PremiumFeatureGate featureName="Wycena głosowa" requiredPlan="Business" />
+            )}
           </TabsContent>
 
           <TabsContent value="ai">
-            <div className="space-y-4">
-              <AiTab onItemsGenerated={setItems} />
-              {hasItems && (
-                <p className="text-sm text-success flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" />
-                  {t(
-                    'quickEstimate.aiLoaded',
-                    'Pozycje załadowane — sprawdź i edytuj w zakładce Ręcznie.'
-                  )}
-                </p>
-              )}
-            </div>
+            {canUseFeature('ai') ? (
+              <div className="space-y-4">
+                <AiTab onItemsGenerated={setItems} />
+                {hasItems && (
+                  <p className="text-sm text-success flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    {t(
+                      'quickEstimate.aiLoaded',
+                      'Pozycje załadowane — sprawdź i edytuj w zakładce Ręcznie.'
+                    )}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <PremiumFeatureGate featureName="Generowanie wyceny przez AI" requiredPlan="Business" />
+            )}
           </TabsContent>
         </Tabs>
 

@@ -1,15 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { 
-  MessageCircle, 
-  Send, 
-  X, 
-  Bot, 
-  User, 
+import {
+  MessageCircle,
+  Send,
+  X,
+  Bot,
+  User,
   Loader2,
   Mic,
   MicOff,
@@ -19,7 +20,9 @@ import {
   HelpCircle,
   History,
   Trash2,
-  Plus
+  Plus,
+  Lock,
+  Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useVoiceToText } from '@/hooks/useVoiceToText';
@@ -27,6 +30,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAiChatHistory, useAiChatSessions, useSaveAiMessage, useDeleteChatSession } from '@/hooks/useAiChatHistory';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePlanGate } from '@/hooks/usePlanGate';
 
 interface Message {
   id: string;
@@ -43,6 +47,9 @@ const quickActions = [
 
 export function AiChatAgent() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { canUseFeature } = usePlanGate();
+  const canUseAi = canUseFeature('ai');
   const [isDismissedForever, setIsDismissedForever] = useState(() => {
     return localStorage.getItem('hideChatWidget') === '1';
   });
@@ -246,7 +253,55 @@ export function AiChatAgent() {
       </Button>
 
       {/* Chat panel */}
-      {isOpen && (
+      {isOpen && !canUseAi && (
+        <Card
+          className={cn(
+            'fixed above-mobile-nav right-6 w-[340px] max-w-[calc(100vw-48px)] shadow-2xl lg:bottom-6',
+            'animate-scale-in origin-bottom-right',
+            'border-primary/20'
+          )}
+          style={{ zIndex: 'var(--z-overlay)' }}
+        >
+          <CardHeader className="pb-3 bg-primary/10 rounded-t-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
+                  <Bot className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <div>
+                  <CardTitle className="text-base">Asystent AI</CardTitle>
+                  <p className="text-xs text-muted-foreground">Majster.AI</p>
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} aria-label="Zamknij">
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6 flex flex-col items-center text-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+              <Lock className="h-7 w-7 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="font-semibold">Asystent AI — plan Business</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Inteligentny asystent jest dostępny od planu{' '}
+                <span className="font-medium text-foreground">Business</span>.
+                Ulepsz plan, aby tworzyć wyceny, obliczać koszty i uzyskiwać porady branżowe.
+              </p>
+            </div>
+            <Button
+              onClick={() => { setIsOpen(false); navigate('/app/plan'); }}
+              className="gap-2 w-full"
+            >
+              <Zap className="h-4 w-4" />
+              Ulepsz plan
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {isOpen && canUseAi && (
         <Card
           className={cn(
             'fixed above-mobile-nav right-6 w-[400px] max-w-[calc(100vw-48px)] shadow-2xl lg:bottom-6',

@@ -122,7 +122,7 @@ export function usePlanGate() {
         description: 'Przejdź do ustawień, aby zmienić plan.',
         action: {
           label: 'Zmień plan',
-          onClick: () => window.location.href = '/billing',
+          onClick: () => window.location.href = '/app/plan',
         },
       });
     }
@@ -143,7 +143,7 @@ export function usePlanGate() {
         description: `Twój plan "${currentPlan}" pozwala na ${limit === Infinity ? 'nieograniczoną liczbę' : limit} ${limitNames[type]}.`,
         action: {
           label: 'Zmień plan',
-          onClick: () => window.location.href = '/billing',
+          onClick: () => window.location.href = '/app/plan',
         },
       });
       return false;
