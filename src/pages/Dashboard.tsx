@@ -99,16 +99,10 @@ export default function Dashboard() {
     <div className="space-y-6 animate-fade-in relative">
       {/* Background mesh gradient */}
       <div className="fixed inset-0 bg-mesh-gradient pointer-events-none opacity-30" />
-      
-      {/* Trial countdown banner */}
-      <TrialBanner />
 
-      {/* Ad Banner for Free users */}
-      {showAds && (
-        <AdBanner variant="inline" className="mb-2" />
-      )}
+      {/* === ABOVE THE FOLD === */}
 
-      {/* Expiration Alerts */}
+      {/* Expiration Alerts — critical, always visible */}
       {(expiringOffersCount > 0 || isSubscriptionExpiring) && (
         <div className="space-y-3">
           {expiringOffersCount > 0 && (
@@ -138,7 +132,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Header */}
+      {/* Header — main CTA */}
       <div className="relative rounded-2xl bg-primary/5 border border-primary/20 p-6 overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative">
           <div>
@@ -146,8 +140,8 @@ export default function Dashboard() {
               <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
                 {t('dashboard.welcome')}
               </h1>
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className={`text-xs font-semibold ${planBadge.className} shadow-sm`}
               >
                 <Sparkles className="h-3 w-3 mr-1" />
@@ -158,9 +152,9 @@ export default function Dashboard() {
               {t('dashboard.tagline')}
             </p>
           </div>
-          <Button 
-            size="lg" 
-            onClick={() => navigate('/app/jobs/new')} 
+          <Button
+            size="lg"
+            onClick={() => navigate('/app/jobs/new')}
             className="shadow-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200"
           >
             <Plus className="mr-2 h-5 w-5" />
@@ -169,12 +163,19 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quote Creation Hub - Main Feature */}
-      <Card className="border-2 border-primary/20 bg-primary/5 overflow-hidden shadow-sm">
-        <CardContent className="p-6 sm:p-8">
-          <QuoteCreationHub onVoiceQuoteCreated={handleVoiceQuoteCreated} />
-        </CardContent>
-      </Card>
+      {/* Today's tasks — actionable items first */}
+      <TodayTasks />
+
+      {/* Quick Actions */}
+      <QuickActions />
+
+      {/* Recent projects — most relevant content above fold */}
+      <RecentProjects projects={recentProjects} isLoading={isLoading} />
+
+      {/* === BELOW THE FOLD === */}
+
+      {/* Activity Feed */}
+      <ActivityFeed />
 
       {/* Main Stats */}
       <DashboardStats
@@ -184,8 +185,8 @@ export default function Dashboard() {
         recentCount={recentWeekCount}
       />
 
-      {/* Sidebar Ad for Free users */}
-      {showAds && (
+      {/* Status breakdown — with optional sidebar ad for Free users */}
+      {showAds ? (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-3">
             <ProjectStatusBreakdown
@@ -199,10 +200,7 @@ export default function Dashboard() {
             <AdBanner variant="vertical" showClose={false} />
           </div>
         </div>
-      )}
-
-      {/* Status breakdown without ads */}
-      {!showAds && (
+      ) : (
         <ProjectStatusBreakdown
           newCount={newCount}
           inProgressCount={inProgressCount}
@@ -211,31 +209,28 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Quick Actions */}
-      <QuickActions />
+      {/* Quote Creation Hub — creation modes (secondary, discoverable) */}
+      <Card className="border-2 border-primary/20 bg-primary/5 overflow-hidden shadow-sm">
+        <CardContent className="p-6 sm:p-8">
+          <QuoteCreationHub onVoiceQuoteCreated={handleVoiceQuoteCreated} />
+        </CardContent>
+      </Card>
 
-      {/* Today's tasks — actionable items for the user */}
-      <TodayTasks />
+      {/* Trial countdown banner — upsell, below fold */}
+      <TrialBanner />
 
-      {/* Recent projects + Activity feed — 2-column on large screens */}
-      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-        <div className="xl:col-span-3">
-          <RecentProjects projects={recentProjects} isLoading={isLoading} />
-        </div>
-        <div className="xl:col-span-2">
-          <ActivityFeed />
-        </div>
-      </div>
-
-      {/* Bottom Ad for Free users */}
+      {/* Ad Banners for Free users — promotional, at the bottom */}
       {showAds && (
-        <AdBanner variant="horizontal" />
+        <>
+          <AdBanner variant="inline" className="mb-2" />
+          <AdBanner variant="horizontal" />
+        </>
       )}
 
       {/* Onboarding wizard */}
-      <OnboardingWizard 
-        open={showOnboarding} 
-        onClose={() => setShowOnboarding(false)} 
+      <OnboardingWizard
+        open={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
       />
     </div>
   );
