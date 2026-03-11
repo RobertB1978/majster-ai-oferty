@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useProject } from '@/hooks/useProjects';
+import { useProjectV2 } from '@/hooks/useProjectsV2';
+import { useClient } from '@/hooks/useClients';
 import { useQuote } from '@/hooks/useQuotes';
 import { usePdfData, useSavePdfData } from '@/hooks/usePdfData';
 import { useProfile } from '@/hooks/useProfile';
@@ -15,10 +17,57 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, Download, Wrench, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
+// Unified shape consumed by this component (v2 and legacy normalised into one)
+interface PdfProjectData {
+  project_name: string;
+  clients?: {
+    name: string;
+    address?: string | null;
+    phone?: string | null;
+    email?: string | null;
+  } | null;
+}
+
 export default function PdfGenerator() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
-  const { data: project, isLoading: projectLoading } = useProject(id!);
+
+  // ── Project reads: try v2 first, fall back to legacy ──────────────────────
+  const { data: projectV2, isLoading: v2Loading } = useProjectV2(id);
+  // Legacy query: disabled via empty string when v2 project is found
+  const { data: projectLegacy, isLoading: legacyLoading } = useProject(
+    // Pass empty string (not id) once v2 resolves with a result to skip legacy fetch
+    !v2Loading && projectV2 == null ? id! : '',
+  );
+  // Client for v2 projects — hook is auto-disabled when client_id is absent
+  const { data: clientV2 } = useClient(projectV2?.client_id ?? '');
+
+  // Derive loading: spinner while v2 loads OR (v2 miss + legacy loads)
+  const projectLoading = v2Loading || (!v2Loading && projectV2 == null && legacyLoading);
+
+  // Normalised project: v2 path maps title + separate client; legacy path passes through
+  const project: PdfProjectData | null | undefined =
+    v2Loading
+      ? undefined
+      : projectV2 != null
+        ? {
+            project_name: projectV2.title,
+            clients: clientV2
+              ? {
+                  name: clientV2.name,
+                  address: clientV2.address,
+                  phone: clientV2.phone,
+                  email: clientV2.email,
+                }
+              : undefined,
+          }
+        : projectLegacy != null
+          ? {
+              project_name: projectLegacy.project_name,
+              clients: projectLegacy.clients as PdfProjectData['clients'],
+            }
+          : null;
+
   const { data: quote, isLoading: quoteLoading } = useQuote(id!);
   const { data: existingPdfData, isLoading: pdfDataLoading } = usePdfData(id!);
   const { data: profile } = useProfile();
