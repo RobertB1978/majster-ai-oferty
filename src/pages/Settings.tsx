@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings as SettingsIcon, Bell, Globe, Calendar, FileText, Scale, Fingerprint, Mail, Building2, UserX, CreditCard } from 'lucide-react';
+import { Settings as SettingsIcon, Bell, Globe, Calendar, FileText, Scale, Fingerprint, Mail, Building2, UserX, CreditCard, ShieldCheck } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -79,6 +79,10 @@ export default function Settings() {
                 <CreditCard className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                 <span>{t('settings.subscriptionTab', 'Subskrypcja')}</span>
               </TabsTrigger>
+              <TabsTrigger value="privacy" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <span>{t('settings.privacy')}</span>
+              </TabsTrigger>
               <TabsTrigger value="account" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <UserX className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                 <span>{t('settings.accountTab')}</span>
@@ -111,8 +115,10 @@ export default function Settings() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            {/* RODO / Legal Section */}
+          {/* Privacy & Data tab — RODO / Legal Section */}
+          <TabsContent value="privacy" className="mt-4">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
