@@ -33,6 +33,14 @@ interface HealthCheckResult {
       responseTime?: number;
       error?: string;
     };
+    email: {
+      // 'pass' = all required email secrets are present
+      // 'misconfigured' = secrets present but known-invalid values detected
+      // 'not_configured' = required secrets missing (email delivery will fail)
+      status: 'pass' | 'misconfigured' | 'not_configured';
+      missing?: string[];
+      warnings?: string[];
+    };
   };
   uptime?: number;
 }
@@ -78,6 +86,7 @@ serve(async (req) => {
       database: { status: 'pass' },
       storage: { status: 'pass' },
       auth: { status: 'pass' },
+      email: { status: 'pass' },
     },
   };
 
@@ -151,6 +160,43 @@ serve(async (req) => {
       result.checks.auth.error = error instanceof Error ? error.message : 'Unknown error';
       result.checks.auth.responseTime = Date.now() - authStart;
       result.status = 'degraded';
+    }
+
+    // 4. Check email delivery configuration
+    {
+      const resendApiKey = Deno.env.get('RESEND_API_KEY');
+      const senderEmail = Deno.env.get('SENDER_EMAIL');
+      const frontendUrl = Deno.env.get('FRONTEND_URL');
+
+      const missing: string[] = [];
+      const warnings: string[] = [];
+
+      if (!resendApiKey) missing.push('RESEND_API_KEY');
+      if (!senderEmail) missing.push('SENDER_EMAIL');
+      if (!frontendUrl) missing.push('FRONTEND_URL');
+
+      // Detect known-invalid sender patterns that Resend will reject
+      if (senderEmail) {
+        const blockedDomains = ['gmail.com', 'yahoo.com', 'yahoo.pl', 'outlook.com', 'hotmail.com', 'wp.pl', 'onet.pl', 'o2.pl'];
+        const senderDomain = senderEmail.split('@')[1]?.toLowerCase();
+        if (senderDomain && blockedDomains.includes(senderDomain)) {
+          warnings.push(`SENDER_EMAIL uses "${senderDomain}" which cannot be verified in Resend — email sending will fail. Use a domain you own.`);
+        }
+        // Detect Resend sandbox address — only works for account owner's email
+        if (senderEmail.endsWith('@resend.dev')) {
+          warnings.push('SENDER_EMAIL is set to a resend.dev sandbox address — this only delivers to the Resend account owner\'s email, not to real clients.');
+        }
+      }
+
+      if (missing.length > 0) {
+        result.checks.email = { status: 'not_configured', missing, warnings: warnings.length > 0 ? warnings : undefined };
+        result.status = 'degraded';
+      } else if (warnings.length > 0) {
+        result.checks.email = { status: 'misconfigured', warnings };
+        result.status = 'degraded';
+      } else {
+        result.checks.email = { status: 'pass' };
+      }
     }
 
     // Set overall status based on checks

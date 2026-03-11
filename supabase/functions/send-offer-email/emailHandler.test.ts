@@ -7,6 +7,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   handleSendOfferEmail,
   generateOfferEmailHtml,
+  checkEmailDeliveryConfig,
+  BLOCKED_SENDER_DOMAINS,
   type EmailDeps,
   type SendOfferPayload
 } from './emailHandler.ts';
@@ -296,6 +298,76 @@ describe('handleSendOfferEmail', () => {
         pdfUrl: undefined,
         tracking_status: 'sent',
       });
+    });
+  });
+});
+
+// ============================================================
+// checkEmailDeliveryConfig — sender & config validation
+// ============================================================
+
+describe('checkEmailDeliveryConfig', () => {
+  const validConfig = {
+    resendApiKey: 're_test_123',
+    senderEmail: 'noreply@majster.ai',
+    frontendUrl: 'https://majster-ai-oferty.vercel.app',
+  };
+
+  describe('Missing required config', () => {
+    it('should be invalid when RESEND_API_KEY is missing', () => {
+      const result = checkEmailDeliveryConfig({ ...validConfig, resendApiKey: undefined });
+      expect(result.valid).toBe(false);
+      expect(result.error).toContain('RESEND_API_KEY');
+    });
+
+    it('should be invalid when SENDER_EMAIL is missing', () => {
+      const result = checkEmailDeliveryConfig({ ...validConfig, senderEmail: undefined });
+      expect(result.valid).toBe(false);
+      expect(result.error).toContain('SENDER_EMAIL');
+    });
+
+    it('should be invalid when FRONTEND_URL is missing', () => {
+      const result = checkEmailDeliveryConfig({ ...validConfig, frontendUrl: undefined });
+      expect(result.valid).toBe(false);
+      expect(result.error).toContain('FRONTEND_URL');
+    });
+  });
+
+  describe('Blocked sender domains', () => {
+    it.each(BLOCKED_SENDER_DOMAINS)('should reject sender on blocked domain: %s', (domain) => {
+      const result = checkEmailDeliveryConfig({ ...validConfig, senderEmail: `test@${domain}` });
+      expect(result.valid).toBe(false);
+      expect(result.error).toContain(domain);
+    });
+
+    it('should reject Resend sandbox address (resend.dev)', () => {
+      const result = checkEmailDeliveryConfig({ ...validConfig, senderEmail: 'noreply@resend.dev' });
+      expect(result.valid).toBe(false);
+      expect(result.error).toContain('resend.dev');
+      expect(result.error).toContain('sandbox');
+    });
+  });
+
+  describe('Valid config', () => {
+    it('should be valid with all required fields and a custom domain', () => {
+      const result = checkEmailDeliveryConfig(validConfig);
+      expect(result.valid).toBe(true);
+      expect(result.error).toBeUndefined();
+    });
+
+    it('should be valid and return no warnings for real-looking frontend URL', () => {
+      const result = checkEmailDeliveryConfig(validConfig);
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toBeUndefined();
+    });
+  });
+
+  describe('Placeholder warnings', () => {
+    it('should warn when FRONTEND_URL looks like a placeholder', () => {
+      const result = checkEmailDeliveryConfig({ ...validConfig, frontendUrl: 'https://your-app.vercel.app' });
+      expect(result.valid).toBe(true);
+      expect(result.warnings).toBeDefined();
+      expect(result.warnings![0]).toContain('placeholder');
     });
   });
 });
