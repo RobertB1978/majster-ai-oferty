@@ -233,10 +233,10 @@
     "subscriptionExpiresInDays": "Twój plan wygasa za {{days}} dni.",
     "checkSettings": "Sprawdź ustawienia",
     "stats": {
-      "new": "Nowe",
+      "new": "Wstrzymane",
       "inProgress": "W toku",
       "sent": "Wysłane",
-      "accepted": "Zaakceptowane"
+      "accepted": "Zakończone"
     },
     "quoteCreation": {
       "title": "Stwórz nową ofertę",
@@ -267,7 +267,7 @@
     "featureAutomation": "Automatyzacja",
     "allProjects": "Wszystkie projekty",
     "clients": "Klienci",
-    "accepted": "Zaakceptowane",
+    "accepted": "Zakończone",
     "newLast7Days": "Nowe (7 dni)",
     "activityFeed": "Ostatnia aktywność",
     "newProjectSub": "Stwórz wycenę",

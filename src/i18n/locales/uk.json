@@ -246,10 +246,10 @@
     "noClients": "Немає клієнтів",
     "noProjects": "Немає проєктів",
     "stats": {
-      "new": "Нові",
+      "new": "Призупинені",
       "inProgress": "В роботі",
       "sent": "Надіслані",
-      "accepted": "Прийняті"
+      "accepted": "Завершені"
     },
     "yourLatestProjects": "Ваші останні проєкти",
     "unknownClient": "Невідомий клієнт",
@@ -267,7 +267,7 @@
     "featureAutomation": "Автоматизація",
     "allProjects": "Усі проєкти",
     "clients": "Клієнти",
-    "accepted": "Прийняті",
+    "accepted": "Завершені",
     "newLast7Days": "Нові (7 днів)",
     "activityFeed": "Остання активність",
     "newProjectSub": "Створити кошторис",

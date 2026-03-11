@@ -3,11 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
+/**
+ * Represents a single project row as surfaced on the dashboard.
+ *
+ * Source of truth: v2_projects (PR-13).
+ *   - `title`  — v2_projects uses this field (legacy `projects` used `project_name`)
+ *   - `status` — v2 enum: 'ACTIVE' | 'COMPLETED' | 'ON_HOLD'
+ */
 export interface DashboardProject {
   id: string;
-  project_name: string;
+  title: string;
   status: string;
-  priority: string | null;
   created_at: string;
   client_id: string | null;
   clients: {
@@ -17,11 +23,19 @@ export interface DashboardProject {
 }
 
 export interface DashboardStats {
-  // Project counts
+  // Project counts (from v2_projects)
   totalProjects: number;
+  /** ON_HOLD projects */
   newCount: number;
+  /** ACTIVE projects */
   inProgressCount: number;
+  /**
+   * Legacy offer-pipeline concept ('Oferta wysłana').
+   * v2_projects has no equivalent state — always 0.
+   * Retained in the interface so callers need no changes.
+   */
   sentCount: number;
+  /** COMPLETED projects */
   acceptedCount: number;
   recentWeekCount: number;
 
@@ -37,7 +51,16 @@ export interface DashboardStats {
 
 /**
  * Dashboard Statistics Hook
- * Optimized: Server-side aggregations and selective queries
+ *
+ * Data source: v2_projects (aligned with the Projects page — PR-13).
+ * Status mapping:
+ *   ACTIVE    → inProgressCount
+ *   COMPLETED → acceptedCount
+ *   ON_HOLD   → newCount
+ *   (no v2 equivalent for legacy 'Oferta wysłana') → sentCount = 0
+ *
+ * RLS on v2_projects enforces user isolation — no explicit user_id filter needed.
+ *
  * Cache: 5 minutes (dashboard should be relatively fresh)
  */
 export function useDashboardStats() {
@@ -49,11 +72,10 @@ export function useDashboardStats() {
     queryFn: async () => {
       if (!user) throw new Error('User not authenticated');
 
-      // Fetch only status and created_at for aggregations
+      // v2_projects — RLS enforces user isolation
       const { data: projects, error } = await supabase
-        .from('projects')
-        .select('status, created_at')
-        .eq('user_id', user.id);
+        .from('v2_projects')
+        .select('status, created_at');
 
       if (error) throw error;
 
@@ -63,10 +85,14 @@ export function useDashboardStats() {
 
       return {
         totalProjects: allProjects.length,
-        newCount: allProjects.filter(p => p.status === 'Nowy').length,
-        inProgressCount: allProjects.filter(p => p.status === 'Wycena w toku').length,
-        sentCount: allProjects.filter(p => p.status === 'Oferta wysłana').length,
-        acceptedCount: allProjects.filter(p => p.status === 'Zaakceptowany').length,
+        // ON_HOLD  → projects paused / awaiting action
+        newCount: allProjects.filter(p => p.status === 'ON_HOLD').length,
+        // ACTIVE   → projects currently in progress
+        inProgressCount: allProjects.filter(p => p.status === 'ACTIVE').length,
+        // v2_projects has no 'sent' state (legacy offer-pipeline concept)
+        sentCount: 0,
+        // COMPLETED → finished projects
+        acceptedCount: allProjects.filter(p => p.status === 'COMPLETED').length,
         recentWeekCount: allProjects.filter(p => new Date(p.created_at) > oneWeekAgo).length,
       };
     },
@@ -81,10 +107,10 @@ export function useDashboardStats() {
     queryFn: async (): Promise<DashboardProject[]> => {
       if (!user) throw new Error('User not authenticated');
 
+      // v2_projects — RLS enforces user isolation
       const { data, error } = await supabase
-        .from('projects')
-        .select('id, project_name, status, priority, created_at, client_id, clients(id, name)')
-        .eq('user_id', user.id)
+        .from('v2_projects')
+        .select('id, title, status, created_at, client_id, clients(id, name)')
         .order('created_at', { ascending: false })
         .limit(5);
 

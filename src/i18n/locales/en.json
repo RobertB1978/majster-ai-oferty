@@ -246,9 +246,9 @@
     "noClients": "No clients",
     "noProjects": "No projects",
     "stats": {
-      "accepted": "Accepted",
+      "accepted": "Completed",
       "inProgress": "In Progress",
-      "new": "New",
+      "new": "On Hold",
       "sent": "Sent"
     },
     "yourLatestProjects": "Your latest projects",
@@ -267,7 +267,7 @@
     "featureAutomation": "Automation",
     "allProjects": "All Projects",
     "clients": "Clients",
-    "accepted": "Accepted",
+    "accepted": "Completed",
     "newLast7Days": "New (7 days)",
     "activityFeed": "Latest Activity",
     "newProjectSub": "Create quote",
