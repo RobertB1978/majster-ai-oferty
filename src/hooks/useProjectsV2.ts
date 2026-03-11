@@ -134,9 +134,9 @@ export function useProjectV2(id: string | undefined) {
         .from('v2_projects')
         .select('id, user_id, client_id, source_offer_id, title, status, start_date, end_date, progress_percent, stages_json, total_from_offer, budget_net, budget_source, budget_updated_at, created_at, updated_at')
         .eq('id', id)
-        .single();
+        .maybeSingle();
       if (error) throw error;
-      return data as ProjectV2;
+      return data as ProjectV2 | null;
     },
     enabled: !!user && !!id,
     staleTime: 30_000,
