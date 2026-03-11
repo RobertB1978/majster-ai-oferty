@@ -1,12 +1,14 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Camera, Upload, Sparkles, Trash2, Plus, Eye, Loader2 } from 'lucide-react';
+import { Camera, Upload, Sparkles, Trash2, Plus, Eye, Loader2, Lock, Zap } from 'lucide-react';
 import { useProjectPhotos, useUploadProjectPhoto, useAnalyzePhoto, useDeleteProjectPhoto } from '@/hooks/useProjectPhotos';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { usePlanGate } from '@/hooks/usePlanGate';
 
 interface PhotoEstimationPanelProps {
   projectId: string;
@@ -17,6 +19,9 @@ interface PhotoEstimationPanelProps {
 export function PhotoEstimationPanel({ projectId, projectName, onAddToQuote }: PhotoEstimationPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [_selectedPhoto, _setSelectedPhoto] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { canUseFeature } = usePlanGate();
+  const canUsePhotoAI = canUseFeature('photoEstimation');
 
   const { data: photos = [], isLoading } = useProjectPhotos(projectId);
   const uploadPhoto = useUploadProjectPhoto();
@@ -137,14 +142,25 @@ export function PhotoEstimationPanel({ projectId, projectName, onAddToQuote }: P
                 
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
                   {photo.analysis_status === 'pending' && (
-                    <Button
-                      size="sm"
-                      onClick={() => handleAnalyze(photo)}
-                      disabled={analyzePhoto.isPending}
-                    >
-                      <Sparkles className="h-4 w-4 mr-1" />
-                      Analizuj
-                    </Button>
+                    canUsePhotoAI ? (
+                      <Button
+                        size="sm"
+                        onClick={() => handleAnalyze(photo)}
+                        disabled={analyzePhoto.isPending}
+                      >
+                        <Sparkles className="h-4 w-4 mr-1" />
+                        Analizuj
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => navigate('/app/plan')}
+                      >
+                        <Lock className="h-4 w-4 mr-1" />
+                        Business
+                      </Button>
+                    )
                   )}
                   
                   {photo.analysis_status === 'completed' && (

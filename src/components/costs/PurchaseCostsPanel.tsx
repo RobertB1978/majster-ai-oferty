@@ -1,11 +1,14 @@
 import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Receipt, Upload, FileText, Sparkles, Trash2, Download, Loader2 } from 'lucide-react';
+import { Receipt, Upload, FileText, Sparkles, Trash2, Download, Loader2, Lock, Info, Zap } from 'lucide-react';
 import { usePurchaseCosts, useUploadInvoice, useProcessInvoiceOCR, useDeletePurchaseCost } from '@/hooks/usePurchaseCosts';
+import { usePlanGate } from '@/hooks/usePlanGate';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 
@@ -15,7 +18,10 @@ interface PurchaseCostsPanelProps {
 
 export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { canUseFeature } = usePlanGate();
+  const canUseOCR = canUseFeature('ocr');
 
   const { data: costs = [] } = usePurchaseCosts(projectId);
   const uploadInvoice = useUploadInvoice();
@@ -28,8 +34,8 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
 
     const result = await uploadInvoice.mutateAsync({ projectId, file });
 
-    // Auto-start OCR
-    if (result.document_url) {
+    // Auto-start OCR only if user has OCR access
+    if (canUseOCR && result.document_url) {
       await processOCR.mutateAsync({
         costId: result.id,
         projectId,
@@ -120,6 +126,26 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
           onChange={handleFileSelect}
         />
 
+        {!canUseOCR && (
+          <Alert className="mb-4 border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800">
+            <Info className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <AlertDescription className="text-amber-800 dark:text-amber-300 text-sm flex items-center justify-between gap-2 flex-wrap">
+              <span>
+                Automatyczne OCR faktur wymaga planu <strong>Business</strong>. Faktury będą zapisywane, ale dane nie zostaną odczytane automatycznie.
+              </span>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-amber-400 text-amber-700 hover:bg-amber-100 dark:border-amber-600 dark:text-amber-300 shrink-0 gap-1"
+                onClick={() => navigate('/app/plan')}
+              >
+                <Zap className="h-3 w-3" />
+                Ulepsz plan
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {costs.length === 0 ? (
           <div className="text-center py-8 border-2 border-dashed rounded-lg">
             <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
@@ -176,17 +202,28 @@ export function PurchaseCostsPanel({ projectId }: PurchaseCostsPanelProps) {
                     <TableCell>
                       <div className="flex gap-1">
                         {cost.ocr_status === 'pending' && cost.document_url && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => processOCR.mutate({
-                              costId: cost.id,
-                              projectId,
-                              documentUrl: cost.document_url!
-                            })}
-                          >
-                            <Sparkles className="h-4 w-4" />
-                          </Button>
+                          canUseOCR ? (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => processOCR.mutate({
+                                costId: cost.id,
+                                projectId,
+                                documentUrl: cost.document_url!
+                              })}
+                            >
+                              <Sparkles className="h-4 w-4" />
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => navigate('/app/plan')}
+                              title="Wymagany plan Business"
+                            >
+                              <Lock className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                          )
                         )}
                         <Button
                           size="sm"

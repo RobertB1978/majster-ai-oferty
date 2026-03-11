@@ -11,19 +11,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { 
-  ArrowLeft, 
-  Loader2, 
-  Mic, 
-  MicOff, 
-  Bot, 
-  PenTool, 
-  Send, 
+import {
+  ArrowLeft,
+  Loader2,
+  Mic,
+  MicOff,
+  Bot,
+  PenTool,
+  Send,
   Sparkles,
   FileText,
   CheckCircle2,
-  RefreshCw
+  RefreshCw,
+  Lock,
+  Zap
 } from 'lucide-react';
+import { usePlanGate } from '@/hooks/usePlanGate';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -234,6 +237,9 @@ export default function NewProject() {
   };
 
   const isVoiceSupported = !!(window as unknown).SpeechRecognition || !!(window as unknown).webkitSpeechRecognition;
+  const { canUseFeature } = usePlanGate();
+  const canUseVoice = canUseFeature('voice');
+  const canUseAi = canUseFeature('ai');
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -279,7 +285,25 @@ export default function NewProject() {
 
               {/* Voice Tab */}
               <TabsContent value="voice" className="space-y-4">
-                {!isVoiceSupported ? (
+                {!canUseVoice ? (
+                  <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                      <Lock className="h-7 w-7 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-base">Wycena głosowa</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Ta funkcja wymaga planu{' '}
+                        <span className="font-medium text-foreground">Business</span>{' '}
+                        lub wyższego.
+                      </p>
+                    </div>
+                    <Button onClick={() => navigate('/app/plan')} className="gap-2">
+                      <Zap className="h-4 w-4" />
+                      Ulepsz plan
+                    </Button>
+                  </div>
+                ) : !isVoiceSupported ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Mic className="h-12 w-12 mx-auto mb-3 opacity-50" />
                     <p>{t('newProject.voiceNotSupported')}</p>
@@ -367,6 +391,25 @@ export default function NewProject() {
 
               {/* AI Tab */}
               <TabsContent value="ai" className="space-y-4">
+                {!canUseAi ? (
+                  <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                      <Lock className="h-7 w-7 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-base">Asystent AI</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Ta funkcja wymaga planu{' '}
+                        <span className="font-medium text-foreground">Business</span>{' '}
+                        lub wyższego.
+                      </p>
+                    </div>
+                    <Button onClick={() => navigate('/app/plan')} className="gap-2">
+                      <Zap className="h-4 w-4" />
+                      Ulepsz plan
+                    </Button>
+                  </div>
+                ) : (
                 <div className="bg-muted/30 rounded-lg p-4 min-h-[250px] max-h-[350px] overflow-y-auto space-y-3">
                   {aiMessages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
@@ -415,6 +458,7 @@ export default function NewProject() {
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
+                )}
               </TabsContent>
 
               {/* Manual Tab */}
