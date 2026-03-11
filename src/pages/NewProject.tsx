@@ -410,6 +410,7 @@ export default function NewProject() {
                     </Button>
                   </div>
                 ) : (
+                <>
                 <div className="bg-muted/30 rounded-lg p-4 min-h-[250px] max-h-[350px] overflow-y-auto space-y-3">
                   {aiMessages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
@@ -441,7 +442,7 @@ export default function NewProject() {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex gap-2">
                   <Input
                     value={aiInput}
@@ -458,6 +459,7 @@ export default function NewProject() {
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
+                </>
                 )}
               </TabsContent>
 
