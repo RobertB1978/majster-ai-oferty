@@ -20,11 +20,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, CreditCard, Zap, Users, HardDrive, FolderKanban, Star, ExternalLink, CheckCircle } from 'lucide-react';
+import { CheckCircle2, CreditCard, Zap, Users, HardDrive, FolderKanban, Star, ExternalLink, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useConfig } from '@/contexts/ConfigContext';
 import { PlanRequestModal } from '@/components/billing/PlanRequestModal';
 import { useUserSubscription } from '@/hooks/useSubscription';
-import { useCreateCheckoutSession, useCustomerPortal, STRIPE_PRICE_IDS } from '@/hooks/useStripe';
+import { useCreateCheckoutSession, useCustomerPortal, STRIPE_PRICE_IDS, isRealStripePriceId, isStripeConfigured } from '@/hooks/useStripe';
 import { formatDualCurrency } from '@/config/currency';
 import { toast } from 'sonner';
 
@@ -96,6 +96,10 @@ export default function Plan() {
   const currentPlan = subscription?.plan_id ?? 'free';
   const isPaid = currentPlan !== 'free';
 
+  // Banner: STRIPE_ENABLED=true ale brak prawdziwych Price IDs w zmiennych środowiskowych.
+  // Widoczny tylko gdy konfiguracja jest niekompletna — informuje właściciela, nie blokuje UI.
+  const stripeEnabledButMisconfigured = STRIPE_ENABLED && !isStripeConfigured();
+
   // Handle ?success=true after Stripe Checkout redirect
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
@@ -114,15 +118,17 @@ export default function Plan() {
     if (tierSlug === currentPlan) return;
 
     if (STRIPE_ENABLED) {
-      const priceIdMap: Record<string, string> = {
+      const priceIdMap: Record<string, string | undefined> = {
         pro: STRIPE_PRICE_IDS.pro.monthly,
         starter: STRIPE_PRICE_IDS.starter.monthly,
         business: STRIPE_PRICE_IDS.business.monthly,
         enterprise: STRIPE_PRICE_IDS.enterprise.monthly,
       };
       const priceId = priceIdMap[tierSlug];
-      if (!priceId) {
-        toast.error(t('billing.planNotConfigured', 'Plan nie jest jeszcze skonfigurowany'));
+      // Guard: priceId must be set AND must look like a real Stripe Price ID.
+      // Placeholder IDs (e.g. "price_pro_monthly") fail this check — checkout is blocked.
+      if (!priceId || !isRealStripePriceId(priceId)) {
+        toast.error(t('billing.planNotConfigured', 'Plan nie jest jeszcze skonfigurowany. Właściciel musi dodać prawdziwe Stripe Price IDs.'));
         return;
       }
       createCheckout({
@@ -168,6 +174,23 @@ export default function Plan() {
             {t('billing.planChooseSubtitle', 'Choose a plan that fits your business. Start free, scale when ready.')}
           </p>
         </div>
+
+        {/* Stripe misconfiguration banner — widoczny tylko dla VITE_STRIPE_ENABLED=true + brak prawdziwych Price IDs */}
+        {stripeEnabledButMisconfigured && (
+          <Card className="border-amber-500/40 bg-amber-500/5">
+            <CardContent className="flex items-start gap-3 py-4">
+              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-sm text-amber-800 dark:text-amber-400">
+                  {t('billing.stripeNotConfigured', 'Stripe nie jest w pełni skonfigurowany')}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {t('billing.stripeNotConfiguredDesc', 'VITE_STRIPE_ENABLED=true, ale brakuje prawdziwych Stripe Price IDs. Checkout jest zablokowany do czasu ustawienia zmiennych VITE_STRIPE_PRICE_*. Zapoznaj się z docs/BILLING_RUNBOOK.md.')}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Current plan notice */}
         <Card className={isPaid ? 'border-green-500/30 bg-green-500/5' : 'border-primary/30 bg-primary/5'}>

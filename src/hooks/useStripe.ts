@@ -113,32 +113,66 @@ export function useCustomerPortal() {
   });
 }
 
-// Stripe Price IDs - Replace with actual values from Stripe Dashboard
-export const STRIPE_PRICE_IDS = {
+/**
+ * Stripe Price IDs — wartości pochodzą wyłącznie ze zmiennych środowiskowych.
+ *
+ * WAŻNE: Brak fallbacków do stringów-placeholderów (np. 'price_pro_monthly').
+ * Jeżeli zmienna środowiskowa nie jest ustawiona, wartość wynosi undefined.
+ * Dzięki temu sprawdzenie `if (!priceId)` w callsite działa poprawnie
+ * i checkout nie jest inicjowany z fałszywymi ID.
+ */
+export const STRIPE_PRICE_IDS: Record<string, { monthly: string | undefined; yearly: string | undefined }> = {
   pro: {
-    monthly: import.meta.env.VITE_STRIPE_PRICE_PRO_MONTHLY || 'price_pro_monthly',
-    yearly: import.meta.env.VITE_STRIPE_PRICE_PRO_YEARLY || 'price_pro_yearly',
+    monthly: import.meta.env.VITE_STRIPE_PRICE_PRO_MONTHLY || undefined,
+    yearly: import.meta.env.VITE_STRIPE_PRICE_PRO_YEARLY || undefined,
   },
   starter: {
-    monthly: import.meta.env.VITE_STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_monthly',
-    yearly: import.meta.env.VITE_STRIPE_PRICE_STARTER_YEARLY || 'price_starter_yearly',
+    monthly: import.meta.env.VITE_STRIPE_PRICE_STARTER_MONTHLY || undefined,
+    yearly: import.meta.env.VITE_STRIPE_PRICE_STARTER_YEARLY || undefined,
   },
   business: {
-    monthly: import.meta.env.VITE_STRIPE_PRICE_BUSINESS_MONTHLY || 'price_business_monthly',
-    yearly: import.meta.env.VITE_STRIPE_PRICE_BUSINESS_YEARLY || 'price_business_yearly',
+    monthly: import.meta.env.VITE_STRIPE_PRICE_BUSINESS_MONTHLY || undefined,
+    yearly: import.meta.env.VITE_STRIPE_PRICE_BUSINESS_YEARLY || undefined,
   },
   enterprise: {
-    monthly: import.meta.env.VITE_STRIPE_PRICE_ENTERPRISE_MONTHLY || 'price_enterprise_monthly',
-    yearly: import.meta.env.VITE_STRIPE_PRICE_ENTERPRISE_YEARLY || 'price_enterprise_yearly',
+    monthly: import.meta.env.VITE_STRIPE_PRICE_ENTERPRISE_MONTHLY || undefined,
+    yearly: import.meta.env.VITE_STRIPE_PRICE_ENTERPRISE_YEARLY || undefined,
   },
-} as const;
+};
 
 /**
- * Get Stripe Price ID for a plan and billing period
+ * Sprawdza, czy podana wartość wygląda jak prawdziwy Stripe Price ID.
+ *
+ * Prawdziwe ID Stripe: "price_" + min. 14 znaków alfanumerycznych (mixed case).
+ * Przykład: price_1MkWBNLkBkqDaVD26L6D3Dz
+ *
+ * Placeholdery: "price_pro_monthly", "price_business_yearly" — zawierają
+ * myślniki/dolne podkreślenia po prefiksie i nie mają wymaganej długości.
+ */
+export function isRealStripePriceId(priceId: string | undefined): boolean {
+  if (!priceId) return false;
+  return /^price_[A-Za-z0-9]{14,}$/.test(priceId);
+}
+
+/**
+ * Zwraca true tylko wtedy, gdy Stripe jest w pełni gotowy do użycia:
+ * 1. VITE_STRIPE_ENABLED === 'true'
+ * 2. Przynajmniej Price ID Pro (miesięczny) jest ustawiony i wygląda jak prawdziwy
+ *
+ * Używaj tej funkcji do blokowania UI checkout, gdy konfiguracja jest niekompletna.
+ */
+export function isStripeConfigured(): boolean {
+  if (import.meta.env.VITE_STRIPE_ENABLED !== 'true') return false;
+  return isRealStripePriceId(import.meta.env.VITE_STRIPE_PRICE_PRO_MONTHLY);
+}
+
+/**
+ * Get Stripe Price ID for a plan and billing period.
+ * Returns undefined if the env variable is not set or not a real Stripe Price ID.
  */
 export function getStripePriceId(
   plan: 'pro' | 'starter' | 'business' | 'enterprise',
   period: 'monthly' | 'yearly'
-): string {
-  return STRIPE_PRICE_IDS[plan][period];
+): string | undefined {
+  return STRIPE_PRICE_IDS[plan]?.[period];
 }

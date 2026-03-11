@@ -1,7 +1,66 @@
-# Majster.AI — Billing Runbook (PR-20)
+# Majster.AI — Billing Runbook
 
 > **Cel:** Przewodnik operacyjny dla Stripe Billing — konfiguracja, testowanie, rollback.
-> **Aktualizacja:** 2026-03-02 (PR-20)
+> **Aktualizacja:** 2026-03-11 (PR-20 + hardening konfiguracji)
+
+---
+
+## 0. Checklist gotowości produkcyjnej (WYMAGANE PRZED URUCHOMIENIEM)
+
+> **WAŻNE:** Dopóki poniższe kroki nie są zakończone, checkout Stripe jest **zablokowany**.
+> Aplikacja NIE próbuje wywoływać Stripe z placeholder Price IDs — zamiast tego
+> pokazuje komunikat błędu lub banner informacyjny.
+
+### Co to jest "placeholder Price ID"?
+
+Placeholder to fikcyjny identyfikator używany podczas developmentu, np.:
+```
+price_pro_monthly
+price_business_yearly
+price_enterprise_monthly
+```
+
+**Nie są to prawdziwe Stripe Price IDs.** Prawdziwe ID wyglądają tak:
+```
+price_1MkWBNLkBkqDaVD26L6D3Dz    ← live
+price_1ABC123DEFghijKLMN456789    ← test
+```
+Wzorzec: `price_` + min. 14 znaków alfanumerycznych bez dodatkowych podkreślników.
+
+### Lista kroków (właściciel musi wykonać przed uruchomieniem płatności)
+
+```
+[ ] 1. Zaloguj się na dashboard.stripe.com i przełącz na TEST MODE
+[ ] 2. Utwórz produkty i ceny w Stripe Dashboard → Products
+        - Majster Pro Miesięczny   → skopiuj Price ID (np. price_1ABC...)
+        - Majster Biznes Miesięczny → skopiuj Price ID
+        - (opcjonalnie) Enterprise, Starter, wersje roczne
+[ ] 3. Ustaw Price IDs w Vercel → Project Settings → Environment Variables:
+        VITE_STRIPE_ENABLED=true
+        VITE_STRIPE_PRICE_PRO_MONTHLY=price_1ABC...      ← PRAWDZIWY ID
+        VITE_STRIPE_PRICE_BUSINESS_MONTHLY=price_1DEF... ← PRAWDZIWY ID
+        VITE_STRIPE_PRICE_ENTERPRISE_MONTHLY=...         ← opcjonalny
+[ ] 4. Ustaw sekret Stripe w Supabase → Edge Functions → Secrets:
+        STRIPE_SECRET_KEY=sk_test_...   (test) lub sk_live_... (prod)
+[ ] 5. Skonfiguruj webhook w Stripe Dashboard → Developers → Webhooks:
+        URL: https://<PROJECT_REF>.supabase.co/functions/v1/stripe-webhook
+        Zdarzenia: checkout.session.completed, customer.subscription.*,
+                   invoice.payment_succeeded, invoice.payment_failed
+        Po dodaniu: skopiuj Webhook signing secret (whsec_...)
+[ ] 6. Ustaw sekret webhooka w Supabase → Edge Functions → Secrets:
+        STRIPE_WEBHOOK_SECRET=whsec_...
+[ ] 7. Zaktualizuj PRICE_TO_PLAN_MAP w stripe-webhook/index.ts:
+        Zamień klucze placeholder na prawdziwe Price IDs z kroku 2.
+        Przykład:
+          "price_1MkWBNLkBkqDaVD26L6D3Dz": "pro",    ← Twój prawdziwy ID
+          "price_1DEFghijKLMN456789...":    "business",
+[ ] 8. Zrób test checkout (sekcja 4 poniżej)
+[ ] 9. Przełącz Stripe na LIVE MODE i powtórz kroki 2-8 z kluczami live_
+```
+
+> **Uwaga:** Dopóki VITE_STRIPE_PRICE_PRO_MONTHLY nie zawiera prawdziwego Stripe Price ID
+> (zgodnego ze wzorcem `price_[A-Za-z0-9]{14,}`), na stronie `/app/plan` pojawi się
+> żółty banner informacyjny z przypomnieniem o konfiguracji.
 
 ---
 
