@@ -1,11 +1,11 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Zap } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Loader2, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPicker } from '@/components/quickEstimate/ClientPicker';
@@ -19,6 +19,7 @@ import { StickyTotalsCard } from '@/components/quickEstimate/StickyTotalsCard';
 import { itemUnitPrice } from '@/lib/estimateCalc';
 import type { ItemTemplate } from '@/hooks/useItemTemplates';
 import type { StarterPack } from '@/data/starterPacks';
+import { useQuickEstimateDraft } from '@/hooks/useQuickEstimateDraft';
 
 export default function QuickEstimateWorkspace() {
   const { t } = useTranslation();
@@ -62,6 +63,45 @@ export default function QuickEstimateWorkspace() {
 
   // Save state
   const [saving, setSaving] = useState(false);
+
+  // Draft persistence
+  const { loadDraft, scheduleSave, clearDraft, draftOfferId, lastSavedAt, saveStatus } =
+    useQuickEstimateDraft();
+
+  // Flag to prevent scheduling saves before draft is loaded
+  const draftLoadedRef = useRef(false);
+
+  /* ── Load draft on mount ────────────────────────────────────── */
+
+  useEffect(() => {
+    // Only restore from draft if no starter pack / navigation state was provided
+    if (locationPack || skipStartChoice) {
+      draftLoadedRef.current = true;
+      return;
+    }
+
+    (async () => {
+      const draft = await loadDraft();
+      if (draft) {
+        setProjectName(draft.projectName);
+        setClientId(draft.clientId);
+        setVatEnabled(draft.vatEnabled);
+        if (draft.items.length > 0) {
+          setItems(draft.items);
+          setShowStartChoice(false); // skip start choice when resuming existing draft
+        }
+      }
+      draftLoadedRef.current = true;
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* ── Auto-save on state changes ─────────────────────────────── */
+
+  useEffect(() => {
+    if (!draftLoadedRef.current) return; // wait until draft has been loaded
+    scheduleSave({ projectName, clientId, vatEnabled, items });
+  }, [projectName, clientId, vatEnabled, items, scheduleSave]);
 
   /* ── Start choice handlers ─────────────────────────────────── */
 
@@ -173,6 +213,9 @@ export default function QuickEstimateWorkspace() {
 
       if (itemsErr) throw itemsErr;
 
+      // Remove the draft now that we've finalized it
+      await clearDraft();
+
       toast.success(t('szybkaWycena.savedSuccess'));
       navigate(`/app/projects/${project.id}`);
     } catch (err) {
@@ -212,7 +255,7 @@ export default function QuickEstimateWorkspace() {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
+          <div className="flex-1 min-w-0">
             <h1 className="text-xl font-bold flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary shrink-0">
                 <Zap className="h-4 w-4 text-primary-foreground" />
@@ -223,6 +266,32 @@ export default function QuickEstimateWorkspace() {
               {t('szybkaWycena.subtitle')}
             </p>
           </div>
+
+          {/* Draft save status indicator */}
+          {draftOfferId && (
+            <div
+              className="shrink-0 flex items-center gap-1 text-xs text-muted-foreground"
+              data-testid="draft-save-status"
+            >
+              {saveStatus === 'saving' && (
+                <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
+              )}
+              {saveStatus === 'saved' && lastSavedAt && (
+                <>
+                  <CheckCircle2 className="h-3 w-3 text-green-500" aria-hidden />
+                  <span>
+                    {t('szybkaWycena.draftSaved', 'Szkic zapisany')}{' '}
+                    {lastSavedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </>
+              )}
+              {saveStatus === 'error' && (
+                <span className="text-destructive">
+                  {t('szybkaWycena.draftSaveError', 'Błąd zapisu szkicu')}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* ── Two-column layout (1 col mobile, 3/1 desktop) ─────── */}
