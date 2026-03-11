@@ -33,6 +33,20 @@ vi.mock('@/components/ui/loading-screen', () => ({
   LoadingCard: () => <div data-testid="loading-card" />,
 }));
 
+vi.mock('@/hooks/usePlanGate', () => ({
+  usePlanGate: () => ({
+    currentPlan: 'business',
+    isPremium: true,
+    canUseFeature: () => true,
+    checkFeature: () => true,
+    checkLimit: () => true,
+    getUpgradeMessage: () => '',
+    limits: {},
+    features: {},
+    subscription: null,
+  }),
+}));
+
 import { useFinancialSummary, useAIFinancialAnalysis } from '@/hooks/useFinancialReports';
 
 const mockAIAnalysis = {

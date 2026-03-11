@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+// Note: 'purchased' state removed — add-on checkout via Stripe is not yet available
 import {
   Dialog,
   DialogContent,
@@ -9,10 +11,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { FolderOpen, Users, FileText, CheckCircle2, Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { FolderOpen, Users, FileText, Info, ArrowUpRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 
 export type AddOnKey = 'extra_projects_10' | 'extra_clients_20' | 'extra_pdf_50';
 
@@ -68,38 +69,8 @@ function limitToKey(lt?: AddOnModalProps['limitType']): AddOnKey | null {
 
 export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
   const { t } = useTranslation();
-  const { toast } = useToast();
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<AddOnKey | null>(limitToKey(limitType));
-  const [loading, setLoading] = useState(false);
-  const [purchased, setPurchased] = useState<AddOnKey[]>([]);
-
-  const handleBuy = async () => {
-    if (!selected) return;
-    setLoading(true);
-    try {
-      const { error } = await supabase.from('user_addons').upsert(
-        {
-          addon_key: selected,
-          quantity: 1,
-        },
-        { onConflict: 'user_id,addon_key', ignoreDuplicates: false }
-      );
-      if (error) throw error;
-      setPurchased((prev) => [...prev, selected]);
-      toast({
-        title: t('addons.purchaseSuccess', 'Zakupiono dodatek'),
-        description: ADD_ONS.find((a) => a.key === selected)?.labelPl,
-      });
-    } catch (err) {
-      toast({
-        variant: 'destructive',
-        title: t('addons.purchaseError', 'Błąd zakupu'),
-        description: String(err),
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const selectedAddon = ADD_ONS.find((a) => a.key === selected);
 
@@ -120,17 +91,14 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
           {ADD_ONS.map((addon) => {
             const Icon = addon.icon;
             const isSelected = selected === addon.key;
-            const isPurchased = purchased.includes(addon.key);
 
             return (
               <button
                 key={addon.key}
                 type="button"
-                onClick={() => !isPurchased && setSelected(addon.key)}
+                onClick={() => setSelected(addon.key)}
                 className={`w-full flex items-start gap-4 rounded-xl border-2 p-4 text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                  isPurchased
-                    ? 'border-green-500 bg-green-50 dark:bg-green-950/30 opacity-80 cursor-default'
-                    : isSelected
+                  isSelected
                     ? 'border-primary bg-primary/5'
                     : 'border-border hover:border-primary/40'
                 }`}
@@ -140,21 +108,15 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
                     isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                   }`}
                 >
-                  {isPurchased ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  ) : (
-                    <Icon className="h-5 w-5" />
-                  )}
+                  <Icon className="h-5 w-5" />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-sm">{addon.labelPl}</span>
-                    {isPurchased && (
-                      <Badge variant="outline" className="text-green-700 border-green-400 text-xs">
-                        {t('addons.purchased', 'Zakupiono')}
-                      </Badge>
-                    )}
+                    <Badge variant="outline" className="text-xs text-muted-foreground">
+                      {t('addons.comingSoonBadge', 'Wkrótce')}
+                    </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">{addon.descriptionPl}</p>
                 </div>
@@ -170,6 +132,16 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
 
         <Separator />
 
+        <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800">
+          <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <AlertDescription className="text-blue-800 dark:text-blue-300 text-sm">
+            {t(
+              'addons.comingSoon',
+              'Zakup pojedynczych dodatków przez Stripe będzie dostępny wkrótce. Aby teraz zwiększyć limity, przejdź na wyższy plan.'
+            )}
+          </AlertDescription>
+        </Alert>
+
         <div className="flex items-center justify-between pt-1">
           <div>
             {selectedAddon && (
@@ -177,20 +149,23 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
                 {t('addons.selected', 'Wybrany')}: <span className="font-medium text-foreground">{selectedAddon.labelPl}</span>
                 {' — '}
                 <span className="font-bold">{selectedAddon.price} zł</span>
+                <span className="text-xs ml-1 text-muted-foreground">
+                  ({t('addons.priceSoon', 'cena orientacyjna')})
+                </span>
               </p>
             )}
             <p className="text-xs text-muted-foreground mt-0.5">
-              {t('addons.vatNote', 'Cena netto + 23% VAT. Płatność przez Stripe.')}
+              {t('addons.vatNote', 'Cena netto + 23% VAT.')}
             </p>
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose} disabled={loading}>
+            <Button variant="outline" onClick={onClose}>
               {t('common.cancel', 'Anuluj')}
             </Button>
-            <Button onClick={handleBuy} disabled={!selected || loading || (!!selected && purchased.includes(selected))}>
-              {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              {t('addons.buy', 'Kup teraz')}
+            <Button onClick={() => { onClose(); navigate('/app/plan'); }} className="gap-2">
+              <ArrowUpRight className="h-4 w-4" />
+              {t('addons.seePlans', 'Zobacz plany')}
             </Button>
           </div>
         </div>

@@ -9,9 +9,10 @@ import { EmptyState } from '@/components/ui/empty-state';
 import {
   TrendingUp, TrendingDown, DollarSign, Receipt,
   BarChart3, Sparkles, AlertTriangle, Lightbulb,
-  ArrowUpRight, ArrowDownRight, PiggyBank
+  ArrowUpRight, ArrowDownRight, PiggyBank, Lock, Zap
 } from 'lucide-react';
 import { useFinancialSummary, useAIFinancialAnalysis } from '@/hooks/useFinancialReports';
+import { usePlanGate } from '@/hooks/usePlanGate';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { LoadingCard } from '@/components/ui/loading-screen';
 
@@ -35,6 +36,8 @@ export function FinanceDashboard() {
   const aiAnalysis = useAIFinancialAnalysis();
   const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
   const navigate = useNavigate();
+  const { canUseFeature } = usePlanGate();
+  const canUseAiAnalysis = canUseFeature('ai');
 
   const handleRunAnalysis = async () => {
     const result = await aiAnalysis.mutateAsync();
@@ -284,9 +287,17 @@ export function FinanceDashboard() {
               <Sparkles className="h-5 w-5" />
               {t('finance.aiAnalysis')}
             </span>
-            <Button onClick={handleRunAnalysis} disabled={aiAnalysis.isPending}>
-              {aiAnalysis.isPending ? t('finance.analyzing') : t('finance.runAnalysis')}
-            </Button>
+            {canUseAiAnalysis ? (
+              <Button onClick={handleRunAnalysis} disabled={aiAnalysis.isPending}>
+                {aiAnalysis.isPending ? t('finance.analyzing') : t('finance.runAnalysis')}
+              </Button>
+            ) : (
+              <Button variant="outline" onClick={() => navigate('/app/plan')} className="gap-2">
+                <Lock className="h-4 w-4" />
+                <span>Business</span>
+                <Zap className="h-3 w-3 text-primary" />
+              </Button>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>

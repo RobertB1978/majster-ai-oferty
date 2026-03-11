@@ -49,6 +49,21 @@ vi.mock('@/hooks/useAiChatHistory', () => ({
   useDeleteChatSession: () => ({ mutateAsync: vi.fn() }),
 }));
 
+// Mock usePlanGate — default: user has AI access (business plan)
+vi.mock('@/hooks/usePlanGate', () => ({
+  usePlanGate: () => ({
+    currentPlan: 'business',
+    isPremium: true,
+    canUseFeature: () => true,
+    checkFeature: () => true,
+    checkLimit: () => true,
+    getUpgradeMessage: () => '',
+    limits: {},
+    features: {},
+    subscription: null,
+  }),
+}));
+
 describe('Responsive Overlays', () => {
   let localStorageMock: { [key: string]: string };
   const queryClient = new QueryClient({

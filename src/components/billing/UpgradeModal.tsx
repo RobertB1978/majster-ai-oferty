@@ -91,7 +91,7 @@ export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeMod
 
   const handleSelectPlan = (planId: string) => {
     onClose();
-    navigate('/billing', { state: { selectedPlan: planId } });
+    navigate('/app/plan', { state: { selectedPlan: planId } });
   };
 
   const upgradeMessage = feature ? getUpgradeMessage(feature) : '';
