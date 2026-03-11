@@ -366,6 +366,7 @@ export type Database = {
           signature_data: string | null
           status: string
           user_id: string
+          v2_project_id: string | null
         }
         Insert: {
           approved_at?: string | null
@@ -380,6 +381,7 @@ export type Database = {
           signature_data?: string | null
           status?: string
           user_id: string
+          v2_project_id?: string | null
         }
         Update: {
           approved_at?: string | null
@@ -394,6 +396,7 @@ export type Database = {
           signature_data?: string | null
           status?: string
           user_id?: string
+          v2_project_id?: string | null
         }
         Relationships: [
           {
@@ -401,6 +404,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offer_approvals_v2_project_id_fkey"
+            columns: ["v2_project_id"]
+            isOneToOne: false
+            referencedRelation: "v2_projects"
             referencedColumns: ["id"]
           },
         ]
