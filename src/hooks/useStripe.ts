@@ -26,8 +26,8 @@ interface CustomerPortalResponse {
  * const handleUpgrade = () => {
  *   createCheckout({
  *     priceId: 'price_xxx',
- *     successUrl: window.location.origin + '/billing?success=true',
- *     cancelUrl: window.location.origin + '/billing?canceled=true',
+ *     successUrl: window.location.origin + '/app/plan?success=true',
+ *     cancelUrl: window.location.origin + '/app/plan?canceled=true',
  *   });
  * };
  * ```

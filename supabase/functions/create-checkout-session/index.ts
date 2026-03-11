@@ -18,25 +18,9 @@ interface CreateCheckoutRequest {
   cancelUrl?: string;
 }
 
-// Price ID mapping for plans
-const _PRICE_IDS: Record<string, { monthly: string; yearly: string }> = {
-  pro: {
-    monthly: "price_pro_monthly", // Replace with actual Stripe Price IDs
-    yearly: "price_pro_yearly",
-  },
-  starter: {
-    monthly: "price_starter_monthly",
-    yearly: "price_starter_yearly",
-  },
-  business: {
-    monthly: "price_business_monthly",
-    yearly: "price_business_yearly",
-  },
-  enterprise: {
-    monthly: "price_enterprise_monthly",
-    yearly: "price_enterprise_yearly",
-  },
-};
+// NOTE: Price IDs są przekazywane przez klienta (z VITE_STRIPE_PRICE_* env vars).
+// Walidacja formatu price ID odbywa się w kroku 4a poniżej.
+// Placeholder mapowanie usunięte — nie używane i mylące.
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -150,6 +134,8 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // 6. Create Checkout Session
+    // WAŻNE: Stripe nie pozwala na jednoczesne użycie `customer` i `customer_email`.
+    // Gdy customerId istnieje, `customer_email` musi być pominięty.
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: "subscription",
@@ -160,8 +146,8 @@ const handler = async (req: Request): Promise<Response> => {
           quantity: 1,
         },
       ],
-      success_url: successUrl || `${frontendUrl}/billing?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl || `${frontendUrl}/billing?canceled=true`,
+      success_url: successUrl || `${frontendUrl}/app/plan?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: cancelUrl || `${frontendUrl}/app/plan?canceled=true`,
       metadata: {
         supabase_user_id: user.id,
       },
@@ -174,8 +160,8 @@ const handler = async (req: Request): Promise<Response> => {
       allow_promotion_codes: true,
       // Collect billing address
       billing_address_collection: "required",
-      // Set customer email
-      customer_email: user.email,
+      // NIE ustawiamy customer_email gdy customer jest już podany —
+      // Stripe zwraca błąd 400 gdy obie wartości są obecne jednocześnie.
     });
 
     console.log("[create-checkout-session] Created session:", session.id, "for user:", user.id);

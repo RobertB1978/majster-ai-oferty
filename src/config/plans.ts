@@ -73,7 +73,7 @@ export const PLANS: PlanConfig[] = [
     },
     stripePriceId: null,
     faq: [
-      { q: 'Jak długo działa plan darmowy?', a: 'Plan darmowy jest bezpłatny przez pierwsze 30 dni. Po tym czasie możesz wybrać płatny plan lub kontynuować z ograniczonymi funkcjami.' },
+      { q: 'Jak długo działa plan darmowy?', a: 'Plan darmowy jest bezpłatny bez limitu czasu. Możesz korzystać z niego tak długo, jak chcesz.' },
       { q: 'Czy mogę zmienić na płatny plan?', a: 'Tak, w każdej chwili. Dane są zachowane.' },
       { q: 'Czy pokazują się reklamy?', a: 'W planie darmowym mogą pojawiać się banery informacyjne.' },
     ],

@@ -1,11 +1,10 @@
-// import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +12,6 @@ import {
   Sparkles,
   Check,
   Zap,
-  // Building2,
   Users,
   BarChart3,
   Mic,
@@ -22,6 +20,7 @@ import {
   type LucideIcon
 } from 'lucide-react';
 import { usePlanGate, PlanFeature } from '@/hooks/usePlanGate';
+import { PLANS } from '@/config/plans';
 
 interface UpgradeModalProps {
   open: boolean;
@@ -30,52 +29,46 @@ interface UpgradeModalProps {
   featureName?: string;
 }
 
-const PLANS = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: 49,
-    popular: false,
-    features: [
-      '15 projektów',
-      '30 klientów',
-      'Eksport Excel/CSV',
-      'Szablony podstawowe',
-      'Email wsparcie',
-    ],
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: 99,
-    popular: true,
-    features: [
-      'Nielimitowane projekty',
-      'Nielimitowani klienci',
-      'Asystent AI',
-      'Wycena głosowa',
-      'Foto-wycena AI',
-      'OCR faktur',
-      'Sync kalendarza',
-      'Priorytetowe wsparcie',
-    ],
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 199,
-    popular: false,
-    features: [
-      'Wszystko z Business',
-      'API publiczne',
-      'Niestandardowe szablony',
-      'Zarządzanie zespołem',
-      'Zaawansowana analityka',
-      'Dedykowany opiekun',
-      'SLA 99.9%',
-    ],
-  },
-];
+/**
+ * Plany wyświetlane w modalu upgrade — tylko płatne, z PLANS config (single source of truth).
+ * Nie zawiera planu Free. Zachowana kolejność: pro → business → enterprise.
+ */
+const UPGRADE_PLAN_IDS = ['pro', 'business', 'enterprise'] as const;
+
+const PLAN_FEATURES_LABELS: Record<string, string[]> = {
+  pro: [
+    '15 projektów',
+    '30 klientów',
+    'Eksport Excel/CSV',
+    'Wszystkie szablony PDF',
+    'Email wsparcie',
+  ],
+  business: [
+    'Nielimitowane projekty',
+    'Nielimitowani klienci',
+    'Asystent AI',
+    'Wycena głosowa',
+    'Foto-wycena AI',
+    'OCR faktur',
+    'Sync kalendarza',
+    'Priorytetowe wsparcie',
+  ],
+  enterprise: [
+    'Wszystko z Biznes',
+    'API publiczne',
+    'Niestandardowe szablony',
+    'Zarządzanie zespołem',
+    'Zaawansowana analityka',
+    'Dedykowany opiekun',
+    'SLA 99.9%',
+  ],
+};
+
+const PLAN_POPULAR: Record<string, boolean> = {
+  pro: false,
+  business: true,
+  enterprise: false,
+};
 
 const featureIcons: Record<string, LucideIcon> = {
   ai: Bot,
@@ -97,6 +90,10 @@ export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeMod
   const upgradeMessage = feature ? getUpgradeMessage(feature) : '';
   const FeatureIcon = feature ? (featureIcons[feature] || Sparkles) : Sparkles;
 
+  const upgradePlans = UPGRADE_PLAN_IDS
+    .map((id) => PLANS.find((p) => p.id === id))
+    .filter(Boolean) as typeof PLANS;
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl p-0 overflow-hidden">
@@ -115,62 +112,67 @@ export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeMod
             </div>
           </div>
         </DialogHeader>
-        
+
         <div className="p-6 grid gap-4 md:grid-cols-3">
-          {PLANS.map((plan) => (
-            <div
-              key={plan.id}
-              className={`relative rounded-xl border-2 p-4 transition-all ${
-                plan.popular 
-                  ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10' 
-                  : 'border-border hover:border-primary/50'
-              }`}
-            >
-              {plan.popular && (
-                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary">
-                  Najpopularniejszy
-                </Badge>
-              )}
-              
-              <div className="text-center mb-4">
-                <h3 className="font-bold text-lg">{plan.name}</h3>
-                <div className="mt-2">
-                  <span className="text-3xl font-bold">{plan.price}</span>
-                  <span className="text-muted-foreground"> zł/mies.</span>
-                </div>
-              </div>
-              
-              <ul className="space-y-2 mb-4">
-                {plan.features.map((feat) => (
-                  <li key={feat} className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-success shrink-0" />
-                    <span>{feat}</span>
-                  </li>
-                ))}
-              </ul>
-              
-              <Button 
-                className="w-full"
-                variant={plan.popular ? 'default' : 'outline'}
-                onClick={() => handleSelectPlan(plan.id)}
-                disabled={currentPlan === plan.id}
+          {upgradePlans.map((plan) => {
+            const isPopular = PLAN_POPULAR[plan.id] ?? false;
+            const featureLabels = PLAN_FEATURES_LABELS[plan.id] ?? plan.features;
+
+            return (
+              <div
+                key={plan.id}
+                className={`relative rounded-xl border-2 p-4 transition-all ${
+                  isPopular
+                    ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10'
+                    : 'border-border hover:border-primary/50'
+                }`}
               >
-                {currentPlan === plan.id ? (
-                  'Aktualny plan'
-                ) : (
-                  <>
-                    <Zap className="h-4 w-4 mr-2" />
-                    Wybierz
-                  </>
+                {isPopular && (
+                  <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary">
+                    Najpopularniejszy
+                  </Badge>
                 )}
-              </Button>
-            </div>
-          ))}
+
+                <div className="text-center mb-4">
+                  <h3 className="font-bold text-lg">{plan.name}</h3>
+                  <div className="mt-2">
+                    <span className="text-3xl font-bold">{plan.pricePLN}</span>
+                    <span className="text-muted-foreground"> zł/mies.</span>
+                  </div>
+                </div>
+
+                <ul className="space-y-2 mb-4">
+                  {featureLabels.map((feat) => (
+                    <li key={feat} className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-success shrink-0" />
+                      <span>{feat}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  className="w-full"
+                  variant={isPopular ? 'default' : 'outline'}
+                  onClick={() => handleSelectPlan(plan.id)}
+                  disabled={currentPlan === plan.id}
+                >
+                  {currentPlan === plan.id ? (
+                    'Aktualny plan'
+                  ) : (
+                    <>
+                      <Zap className="h-4 w-4 mr-2" />
+                      Wybierz
+                    </>
+                  )}
+                </Button>
+              </div>
+            );
+          })}
         </div>
-        
+
         <div className="p-4 bg-muted/50 text-center">
           <p className="text-sm text-muted-foreground">
-            Wszystkie plany zawierają 14-dniowy okres próbny. Możesz anulować w dowolnym momencie.
+            Możesz anulować subskrypcję w dowolnym momencie. Dostęp aktywny do końca opłaconego okresu.
           </p>
         </div>
       </DialogContent>

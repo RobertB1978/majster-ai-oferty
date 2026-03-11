@@ -69,6 +69,9 @@ export function SubscriptionSection() {
   const plan = subscription?.plan_id ?? 'free';
   const status = subscription?.status ?? 'active';
   const isPaid = plan !== 'free';
+  // Portal Stripe jest dostępny tylko wtedy, gdy istnieje powiązany klient Stripe.
+  // Użytkownicy z manualnie ustawionym planem (bez Stripe) nie mają stripe_customer_id.
+  const hasStripeCustomer = !!subscription?.stripe_customer_id;
   const periodEnd = subscription?.current_period_end
     ? new Date(subscription.current_period_end).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })
     : null;
@@ -140,7 +143,8 @@ export function SubscriptionSection() {
 
         {/* Action buttons */}
         <div className="flex flex-wrap gap-2 pt-2">
-          {isPaid ? (
+          {isPaid && hasStripeCustomer ? (
+            // Płatny plan + klient Stripe — pokaż portal zarządzania
             <Button
               variant="outline"
               onClick={handleManageBilling}
@@ -151,7 +155,13 @@ export function SubscriptionSection() {
                 ? t('common.loading', 'Ładowanie...')
                 : t('billing.subscription.manageBilling', 'Portal płatności')}
             </Button>
+          ) : isPaid && !hasStripeCustomer ? (
+            // Płatny plan bez Stripe (np. manualnie ustawiony przez admina) — brak portalu
+            <p className="text-xs text-muted-foreground">
+              {t('billing.subscription.noPortalAdmin', 'Plan przypisany ręcznie — portal płatności niedostępny.')}
+            </p>
           ) : (
+            // Plan darmowy — CTA do upgrade
             <Button onClick={() => navigate('/app/plan')} className="gap-2">
               <ArrowUpRight className="h-4 w-4" />
               {t('billing.subscription.upgradeCta', 'Ulepsz do Pro')}
