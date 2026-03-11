@@ -322,7 +322,12 @@
     "refreshPage": "Refresh page",
     "backToList": "Back to list",
     "generateOfferPdf": "Generate offer PDF",
-    "exportExcelError": "Error exporting to Excel"
+    "exportExcelError": "Error exporting to Excel",
+    "listErrorTitle": "Error loading projects",
+    "listErrorDesc": "Failed to load the project list. Check your connection and try again.",
+    "listErrorRetry": "Try again",
+    "noResults": "No results",
+    "noResultsDesc": "No projects match the selected filters."
   },
   "clients": {
     "title": "Clients",
@@ -2838,6 +2843,7 @@
     "emptyCta": "Create first offer",
     "emptyFilterTitle": "No results",
     "emptyFilterDesc": "No offers match the selected filters.",
+    "emptyFilterCta": "Clear filters",
     "errorTitle": "Failed to load offers",
     "errorDesc": "Could not load the offers list. Check your connection and try again.",
     "errorDescMigration": "Database update required. Please contact the administrator.",

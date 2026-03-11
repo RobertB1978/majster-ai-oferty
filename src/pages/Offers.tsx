@@ -342,8 +342,8 @@ export default function Offers() {
             icon={FileText}
             title={isFiltering ? t('offersList.emptyFilterTitle') : t('offersList.emptyTitle')}
             description={isFiltering ? t('offersList.emptyFilterDesc') : t('offersList.emptyDesc')}
-            ctaLabel={isFiltering ? undefined : t('offersList.emptyCta')}
-            onCta={isFiltering ? undefined : handleCreateFirst}
+            ctaLabel={isFiltering ? t('offersList.emptyFilterCta') : t('offersList.emptyCta')}
+            onCta={isFiltering ? () => { setStatusFilter('ALL'); setSearchRaw(''); } : handleCreateFirst}
           />
           {!isFiltering && (
             <div className="flex justify-center">
