@@ -1,7 +1,17 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { QuoteCreationHub } from '@/components/dashboard/QuoteCreationHub';
 import { BrowserRouter } from 'react-router-dom';
+
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -112,5 +122,51 @@ describe('QuoteCreationHub - Professional SaaS Cards', () => {
 
     const startButtons = screen.getAllByText('Start');
     expect(startButtons.length).toBe(3);
+  });
+
+  describe('CTA navigation — Offer flow (nie Project)', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      mockNavigate.mockClear();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('klikniecie "Manual" naviguje do /app/offers/new, nie /app/projects/new', () => {
+      render(<QuoteCreationHub />, { wrapper: TestWrapper });
+
+      fireEvent.click(screen.getByText('Manual'));
+
+      expect(mockNavigate).toHaveBeenCalledOnce();
+      const [path] = mockNavigate.mock.calls[0];
+      expect(path).toBe('/app/offers/new');
+      expect(path).not.toContain('projects');
+    });
+
+    it('klikniecie "Voice" naviguje do /app/offers/new po timeoucie', () => {
+      render(<QuoteCreationHub />, { wrapper: TestWrapper });
+
+      fireEvent.click(screen.getByText('Voice'));
+      vi.advanceTimersByTime(800);
+
+      expect(mockNavigate).toHaveBeenCalledOnce();
+      const [path] = mockNavigate.mock.calls[0];
+      expect(path).toBe('/app/offers/new');
+      expect(path).not.toContain('projects');
+    });
+
+    it('klikniecie "AI Assistant" naviguje do /app/offers/new po timeoucie', () => {
+      render(<QuoteCreationHub />, { wrapper: TestWrapper });
+
+      fireEvent.click(screen.getByText('AI Assistant'));
+      vi.advanceTimersByTime(800);
+
+      expect(mockNavigate).toHaveBeenCalledOnce();
+      const [path] = mockNavigate.mock.calls[0];
+      expect(path).toBe('/app/offers/new');
+      expect(path).not.toContain('projects');
+    });
   });
 });
