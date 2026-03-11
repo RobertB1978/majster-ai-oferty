@@ -28,7 +28,6 @@ const structuredData = [
       email: 'kontakt.majsterai@gmail.com',
       availableLanguage: ['Polish', 'English', 'Ukrainian'],
     },
-    sameAs: [],
   },
   {
     '@context': 'https://schema.org',
@@ -42,7 +41,7 @@ const structuredData = [
       '@type': 'AggregateOffer',
       priceCurrency: 'PLN',
       lowPrice: '0',
-      highPrice: '99',
+      highPrice: '199',
       offerCount: '4',
     },
     screenshot: `${SITE_URL}/icon-512.png`,

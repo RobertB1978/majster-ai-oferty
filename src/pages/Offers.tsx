@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { differenceInDays } from 'date-fns';
-import { FileText, MoreHorizontal, Copy, ExternalLink, FolderPlus, Sparkles, Archive } from 'lucide-react';
+import { FileText, MoreHorizontal, ExternalLink, FolderPlus, Sparkles, Archive } from 'lucide-react';
 
 import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
 import { IndustryTemplateSheet } from '@/components/offers/IndustryTemplateSheet';
@@ -89,13 +89,12 @@ function noResponseDays(sentAt: string | null): number | null {
 interface OfferRowProps {
   offer: Offer;
   onOpen: (id: string) => void;
-  onDuplicate: () => void;
   onCreateProject: (id: string) => void;
   onArchive: (id: string) => void;
   isCreatingProject?: boolean;
 }
 
-function OfferRow({ offer, onOpen, onDuplicate, onCreateProject, onArchive, isCreatingProject }: OfferRowProps) {
+function OfferRow({ offer, onOpen, onCreateProject, onArchive, isCreatingProject }: OfferRowProps) {
   const { t } = useTranslation();
   const noResp = offer.status === 'SENT' ? noResponseDays(offer.sent_at) : null;
   const amount = formatAmount(offer.total_net, offer.currency);
@@ -172,10 +171,6 @@ function OfferRow({ offer, onOpen, onDuplicate, onCreateProject, onArchive, isCr
             <ExternalLink className="mr-2 h-4 w-4" />
             {t('offersList.actionOpen')}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDuplicate(); }}>
-            <Copy className="mr-2 h-4 w-4" />
-            {t('offersList.actionDuplicate')}
-          </DropdownMenuItem>
           {offer.status !== 'ARCHIVED' && (
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive(offer.id); }}>
               <Archive className="mr-2 h-4 w-4" />
@@ -211,7 +206,6 @@ export default function Offers() {
   });
 
   const handleOpen = (id: string) => navigate(`/app/offers/${id}`);
-  const handleDuplicate = () => toast.info(t('offersList.duplicateComingSoon'));
   const handleCreateFirst = () => navigate('/app/offers/new');
   const handleArchive = async (offerId: string) => {
     try {
@@ -368,7 +362,6 @@ export default function Offers() {
               key={offer.id}
               offer={offer}
               onOpen={handleOpen}
-              onDuplicate={handleDuplicate}
               onCreateProject={handleCreateProject}
               onArchive={handleArchive}
               isCreatingProject={creatingProjectId === offer.id}

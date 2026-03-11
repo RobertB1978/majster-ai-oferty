@@ -77,10 +77,6 @@ export function FreeTierPaywallModal({ open, onOpenChange }: FreeTierPaywallModa
           </ul>
         </div>
 
-        <p className="text-xs text-muted-foreground">
-          {t('paywall.billingComingSoon')}
-        </p>
-
         <DialogFooter className="flex-col sm:flex-row gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('paywall.close')}

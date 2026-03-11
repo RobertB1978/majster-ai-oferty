@@ -80,8 +80,8 @@ export function SEOHead({
       <meta property="og:site_name" content="Majster.AI" />
       <meta property="og:locale" content="pl_PL" />
       
-      {/* Twitter Card */}
-      <meta name="twitter:card" content="summary_large_image" />
+      {/* Twitter Card — użyj summary_large_image gdy dostępny jest właściwy obraz OG 1200x630 */}
+      <meta name="twitter:card" content="summary" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={`${siteUrl}${ogImage}`} />

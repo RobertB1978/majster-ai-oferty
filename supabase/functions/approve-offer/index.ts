@@ -104,7 +104,7 @@ serve(async (req) => {
           title: '⏰ Oferta wygasła',
           message: 'Termin ważności oferty minął. Klient nie zaakceptował w wyznaczonym czasie.',
           type: 'warning',
-          action_url: `/app/jobs/${approval.project_id}`,
+          action_url: `/app/projects/${approval.project_id}`,
         });
       }
       return new Response(JSON.stringify({
@@ -133,7 +133,7 @@ serve(async (req) => {
             title: '👁 Klient otworzył ofertę',
             message: 'Klient po raz pierwszy otworzył Twoją ofertę.',
             type: 'info',
-            action_url: `/app/jobs/${approval.project_id}`,
+            action_url: `/app/projects/${approval.project_id}`,
           });
         }
       }
@@ -225,7 +225,7 @@ serve(async (req) => {
             title: 'Klient cofnął akceptację oferty',
             message: 'Klient cofnął akceptację oferty w oknie 10-minutowym.',
             type: 'warning',
-            action_url: `/app/jobs/${approval.project_id}`,
+            action_url: `/app/projects/${approval.project_id}`,
           });
 
         return new Response(JSON.stringify({ success: true }), {
@@ -335,7 +335,7 @@ serve(async (req) => {
             ? `Klient zaakceptował ofertę${safeAcceptedVia === 'email_1click' ? ' (1-klik z emaila)' : ''}.${safeComment ? ` Komentarz: ${safeComment.substring(0, 100)}` : ''}`
             : `Klient odrzucił ofertę.${safeRejectedReason ? ` Powód: ${safeRejectedReason.substring(0, 100)}` : ''}`,
           type: action === 'approve' ? 'success' : 'warning',
-          action_url: `/app/jobs/${approval.project_id}`,
+          action_url: `/app/projects/${approval.project_id}`,
         });
 
       console.log(`[approve-offer] Offer ${approval.id} ${action}d (${safeAcceptedVia ?? 'web'})`);

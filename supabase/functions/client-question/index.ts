@@ -138,7 +138,7 @@ serve(async (req) => {
         ? safeQuestion.substring(0, 497) + "..."
         : safeQuestion,
       type: "info",
-      action_url: `/app/jobs/${approval.project_id}`,
+      action_url: `/app/projects/${approval.project_id}`,
     });
 
     if (notifError) {
