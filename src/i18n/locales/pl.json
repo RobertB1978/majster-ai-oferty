@@ -48,7 +48,10 @@
     "clearSearch": "Wyczyść wyszukiwanie",
     "pageOf": "Strona {{current}} z {{total}}",
     "showingItems": "Wyświetlanie {{from}}-{{to}} z {{total}}",
-    "previous": "Poprzednia"
+    "previous": "Poprzednia",
+    "send": "Wyślij",
+    "stopRecording": "Zatrzymaj nagrywanie",
+    "dontShowAgain": "Nie pokazuj więcej"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -228,6 +231,8 @@
     "monthlyStats": "Statystyki miesięczne",
     "expiringOffersTitle": "Wygasające oferty",
     "expiringOffersDesc_one": "Masz {{count}} ofertę wygasającą w ciągu 7 dni.",
+    "expiringOffersDesc_few": "Masz {{count}} oferty wygasające w ciągu 7 dni.",
+    "expiringOffersDesc_many": "Masz {{count}} ofert wygasających w ciągu 7 dni.",
     "expiringOffersDesc_other": "Masz {{count}} ofert wygasających w ciągu 7 dni.",
     "subscriptionExpiringSoonTitle": "Plan wkrótce wygasa",
     "subscriptionExpiresInDays": "Twój plan wygasa za {{days}} dni.",
@@ -273,7 +278,16 @@
     "newProjectSub": "Stwórz wycenę",
     "addClientSub": "Baza klientów",
     "templatesSub": "Wzory ofert",
-    "calendarSub": "Twój terminarz"
+    "calendarSub": "Twój terminarz",
+    "addClient": "Dodaj klienta",
+    "projectsSub": "Twoje zlecenia",
+    "noActivity": "Brak aktywności. Stwórz pierwszą ofertę!",
+    "todayTasks": "Na dzisiaj",
+    "todayTaskType": {
+      "pendingOffer": "Oferta",
+      "expiringOffer": "Wygasa",
+      "inactiveProject": "Projekt"
+    }
   },
   "projects": {
     "title": "Projekty",
@@ -894,7 +908,22 @@
     "thinking": "Myślę...",
     "suggestions": "Sugestie",
     "analyzingPhoto": "Analizuję zdjęcie...",
-    "chatHistory": "Historia czatu"
+    "chatHistory": "Historia czatu",
+    "noHistory": "Brak historii rozmów",
+    "closeAssistant": "Zamknij asystenta AI",
+    "planLockTitle": "Asystent AI — plan Business",
+    "planLockDesc": "Inteligentny asystent jest dostępny od planu Business. Ulepsz plan, aby tworzyć wyceny, obliczać koszty i uzyskiwać porady branżowe.",
+    "planLockUpgrade": "Ulepsz plan",
+    "greeting": "Cześć! Jestem Twoim asystentem Majster.AI. Mogę pomóc Ci:\n\n• Przygotować oferty i wyceny\n• Obliczyć koszty materiałów\n• Odpowiedzieć na pytania o ceny usług\n• Doradzić w kwestiach branżowych\n\nJak mogę Ci dzisiaj pomóc?",
+    "greetingShort": "Cześć! Jestem Twoim asystentem Majster.AI. Jak mogę Ci dzisiaj pomóc?",
+    "errorResponseFallback": "Przepraszam, nie udało się przetworzyć odpowiedzi.",
+    "errorNotConfiguredToast": "Asystent AI nie jest skonfigurowany",
+    "errorConnectionToast": "Błąd połączenia z AI",
+    "errorNotConfiguredContent": "Asystent AI nie jest jeszcze dostępny. Administrator musi skonfigurować klucz API (OpenAI, Anthropic lub Gemini) w ustawieniach serwera. Skontaktuj się z pomocą techniczną.",
+    "errorGeneralContent": "Przepraszam, wystąpił błąd. Spróbuj ponownie za chwilę."
+  },
+  "quickActions": {
+    "newOffer": "Nowa oferta"
   },
   "analytics": {
     "title": "Analityka",

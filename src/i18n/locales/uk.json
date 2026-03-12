@@ -48,7 +48,10 @@
     "clearSearch": "Очистити пошук",
     "pageOf": "Сторінка {{current}} з {{total}}",
     "showingItems": "Відображення {{from}}-{{to}} з {{total}}",
-    "previous": "Попередня"
+    "previous": "Попередня",
+    "send": "Надіслати",
+    "stopRecording": "Зупинити запис",
+    "dontShowAgain": "Більше не показувати"
   },
   "nav": {
     "dashboard": "Панель",
@@ -225,6 +228,8 @@
     "monthlyStats": "Щомісячна статистика",
     "expiringOffersTitle": "Пропозиції, що закінчуються",
     "expiringOffersDesc_one": "У вас є {{count}} пропозиція, що закінчується протягом 7 днів.",
+    "expiringOffersDesc_few": "У вас є {{count}} пропозиції, що закінчуються протягом 7 днів.",
+    "expiringOffersDesc_many": "У вас є {{count}} пропозицій, що закінчуються протягом 7 днів.",
     "expiringOffersDesc_other": "У вас є {{count}} пропозицій, що закінчуються протягом 7 днів.",
     "subscriptionExpiringSoonTitle": "План незабаром закінчується",
     "subscriptionExpiresInDays": "Ваш план закінчується через {{days}} днів.",
@@ -273,7 +278,16 @@
     "newProjectSub": "Створити кошторис",
     "addClientSub": "База клієнтів",
     "templatesSub": "Шаблони пропозицій",
-    "calendarSub": "Ваш розклад"
+    "calendarSub": "Ваш розклад",
+    "addClient": "Додати клієнта",
+    "projectsSub": "Ваші замовлення",
+    "noActivity": "Ще немає активності. Створіть першу пропозицію!",
+    "todayTasks": "Завдання на сьогодні",
+    "todayTaskType": {
+      "pendingOffer": "Пропозиція",
+      "expiringOffer": "Завершується",
+      "inactiveProject": "Проєкт"
+    }
   },
   "projects": {
     "title": "Проєкти",
@@ -894,7 +908,22 @@
       "prepareOffer": "Підготувати пропозицію",
       "calculateCosts": "Розрахувати витрати",
       "pricingAdvice": "Поради щодо цін"
-    }
+    },
+    "noHistory": "Немає історії розмов",
+    "closeAssistant": "Закрити AI помічника",
+    "planLockTitle": "AI Помічник — план Business",
+    "planLockDesc": "Інтелектуальний помічник доступний з плану Business. Оновіть план, щоб створювати кошториси, розраховувати витрати та отримувати галузеві поради.",
+    "planLockUpgrade": "Оновити план",
+    "greeting": "Привіт! Я ваш асистент Majster.AI. Я можу допомогти вам:\n\n• Підготувати пропозиції та кошториси\n• Розрахувати вартість матеріалів\n• Відповісти на питання про ціни послуг\n• Порадити з галузевих питань\n\nЯк я можу вам допомогти сьогодні?",
+    "greetingShort": "Привіт! Я ваш асистент Majster.AI. Як я можу вам допомогти сьогодні?",
+    "errorResponseFallback": "Вибачте, не вдалося обробити відповідь.",
+    "errorNotConfiguredToast": "AI асистент не налаштований",
+    "errorConnectionToast": "Помилка з'єднання з AI",
+    "errorNotConfiguredContent": "AI асистент ще не доступний. Адміністратор повинен налаштувати ключ API (OpenAI, Anthropic або Gemini) в налаштуваннях сервера. Зверніться до технічної підтримки.",
+    "errorGeneralContent": "Вибачте, сталася помилка. Будь ласка, спробуйте ще раз за мить."
+  },
+  "quickActions": {
+    "newOffer": "Нова пропозиція"
   },
   "analytics": {
     "title": "Аналітика",

@@ -41,28 +41,28 @@ export function QuickActions() {
 
   const actions: Action[] = [
     {
-      label: t('nav.projects', 'Projekty'),
-      sublabel: t('dashboard.projectsSub', 'Twoje zlecenia'),
+      label: t('nav.projects'),
+      sublabel: t('dashboard.projectsSub'),
       icon: FolderOpen,
       onClick: () => navigate('/app/projects'),
       color: 'blue',
     },
     {
-      label: t('dashboard.addClient', 'Dodaj klienta'),
+      label: t('dashboard.addClient'),
       sublabel: t('dashboard.addClientSub'),
       icon: Users,
       onClick: () => navigate('/app/customers'),
       color: 'green',
     },
     {
-      label: t('nav.templates', 'Szablony'),
+      label: t('nav.templates'),
       sublabel: t('dashboard.templatesSub'),
       icon: FileText,
       onClick: () => navigate('/app/templates'),
       color: 'teal',
     },
     {
-      label: t('nav.calendar', 'Kalendarz'),
+      label: t('nav.calendar'),
       sublabel: t('dashboard.calendarSub'),
       icon: Calendar,
       onClick: () => navigate('/app/calendar'),

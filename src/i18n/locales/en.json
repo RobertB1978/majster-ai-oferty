@@ -48,7 +48,10 @@
     "clearSearch": "Clear search",
     "pageOf": "Page {{current}} of {{total}}",
     "showingItems": "Showing {{from}}-{{to}} of {{total}}",
-    "previous": "Previous"
+    "previous": "Previous",
+    "send": "Send",
+    "stopRecording": "Stop recording",
+    "dontShowAgain": "Don't show again"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -225,6 +228,8 @@
     "monthlyStats": "Monthly Statistics",
     "expiringOffersTitle": "Expiring offers",
     "expiringOffersDesc_one": "You have {{count}} offer expiring in 7 days.",
+    "expiringOffersDesc_few": "You have {{count}} offers expiring in 7 days.",
+    "expiringOffersDesc_many": "You have {{count}} offers expiring in 7 days.",
     "expiringOffersDesc_other": "You have {{count}} offers expiring in 7 days.",
     "subscriptionExpiringSoonTitle": "Plan expiring soon",
     "subscriptionExpiresInDays": "Your plan expires in {{days}} days.",
@@ -273,7 +278,16 @@
     "newProjectSub": "Create quote",
     "addClientSub": "Client database",
     "templatesSub": "Offer templates",
-    "calendarSub": "Your schedule"
+    "calendarSub": "Your schedule",
+    "addClient": "Add client",
+    "projectsSub": "Your orders",
+    "noActivity": "No activity yet. Create your first offer!",
+    "todayTasks": "Today's Tasks",
+    "todayTaskType": {
+      "pendingOffer": "Offer",
+      "expiringOffer": "Expiring",
+      "inactiveProject": "Project"
+    }
   },
   "projects": {
     "title": "Projects",
@@ -894,7 +908,22 @@
       "calculateCosts": "Calculate costs",
       "prepareOffer": "Prepare offer",
       "pricingAdvice": "Pricing advice"
-    }
+    },
+    "noHistory": "No chat history",
+    "closeAssistant": "Close AI assistant",
+    "planLockTitle": "AI Assistant — Business plan",
+    "planLockDesc": "The intelligent assistant is available from the Business plan. Upgrade to create quotes, calculate costs and get industry advice.",
+    "planLockUpgrade": "Upgrade plan",
+    "greeting": "Hi! I'm your Majster.AI assistant. I can help you:\n\n• Prepare quotes and estimates\n• Calculate material costs\n• Answer questions about service prices\n• Advise on industry matters\n\nHow can I help you today?",
+    "greetingShort": "Hi! I'm your Majster.AI assistant. How can I help you today?",
+    "errorResponseFallback": "Sorry, the response could not be processed.",
+    "errorNotConfiguredToast": "AI assistant is not configured",
+    "errorConnectionToast": "AI connection error",
+    "errorNotConfiguredContent": "The AI assistant is not yet available. The administrator needs to configure an API key (OpenAI, Anthropic or Gemini) in the server settings. Please contact technical support.",
+    "errorGeneralContent": "Sorry, an error occurred. Please try again in a moment."
+  },
+  "quickActions": {
+    "newOffer": "New offer"
   },
   "analytics": {
     "title": "Analytics",
