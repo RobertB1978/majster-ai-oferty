@@ -166,7 +166,7 @@ Trzy audyty razem stanowią solidną bazę wiedzy o stanie Majster.AI, pokrywaj�
 | 15 | Quick Estimate | **DOBRZE** | Wszystkie 3 audyty zidentyfikowały problem z legacy table | Brak: analiza UX flow (ile kroków?), brak analizy template/pack quality |
 | 16 | Projekty / V2 migration | **DOBRZE** | Migration coverage najlepsza w audycie #3 | Brak: analiza co się stanie z danymi w legacy `projects` po full migration |
 | 17 | Dokumenty / PDF | **CZĘŚCIOWO** | PdfGenerator opisany, ale DocumentTemplates nie analizowane | BRAK: analiza jakości generowanych PDF, analiza szablonów, analiza ItemTemplates |
-| 18 | Zdjęcia / kamera / storage | **SŁABO** | Prawie nieobecne we wszystkich 3 audytach | BRAK: analiza photo upload flow, storage limits, image compression, gallery UX |
+| 18 | Zdjęcia / kamera / storage | **DOBRZE** (po weryfikacji) | Wszystkie 3 audyty pominęły, ale pipeline jest KOMPLETNY: kompresja client-side (1600×1600, q0.75), Supabase bucket, signed URLs, 4-fazowy upload, CameraPermissionGate, SignaturePad | Brak: limity storage per plan, zachowanie przy dużej liczbie zdjęć |
 | 19 | AI / voice / OCR | **CZĘŚCIOWO** | Edge functions opisane, gating opisany, ale brak analizy jakości | BRAK: analiza jakości odpowiedzi AI, analiza accuracy OCR, analiza UX voice input |
 | 20 | Kalendarz | **CZĘŚCIOWO** | Legacy dependency opisana, ale brak analizy UX | Brak: analiza 4 widoków, event management UX, timezone handling |
 | 21 | Finance / analytics | **CZĘŚCIOWO** | Data source migration opisana, eksport martwy opisany | BRAK: analiza jakości wykresów, analiza KPI accuracy, analiza filtrów |
@@ -192,7 +192,7 @@ Trzy audyty razem stanowią solidną bazę wiedzy o stanie Majster.AI, pokrywaj�
 
 3. **Plan/pricing truth consistency** — PR #407 naprawił poważne sprzeczności limitów planów między 4 plikami. Żaden z 3 audytów nie sprawdził, czy `plans.ts`, `defaultConfig.ts`, `usePlanGate.ts` i `useSubscription.ts` mówią to samo. To pokazuje lukę w audytowaniu "konfiguracji jako prawdy".
 
-4. **Photo/camera/storage pipeline** — Prawie nieobecny we wszystkich 3 audytach. Edge function `analyze-photo` istnieje. Komponenty `src/components/photos/` istnieją. Ale nikt nie sprawdził: jak zdjęcia są uploadowane, jakie limity storage, jak kompresja działa, czy galeria jest użyteczna.
+4. **Photo/camera/storage pipeline** — Prawie nieobecny we wszystkich 3 audytach, ale po głębszej weryfikacji okazuje się KOMPLETNY: kompresja client-side (1600×1600, quality 0.75), Supabase private bucket `project-photos`, signed URLs (1h expiry), 4-fazowy upload (BEFORE/DURING/AFTER/ISSUE), CameraPermissionGate z Capacitor fallback, AcceptanceChecklistPanel z SignaturePad. Pipeline jest production-ready. **Nieaudytowane: limity storage per plan, zachowanie przy dużej liczbie zdjęć.**
 
 5. **First-time user experience (FTUE)** — Żaden audyt nie prześledzył ścieżki nowego użytkownika: Landing → Register → Verify email → Login → Onboarding → ? → Pierwsza oferta. Ile kroków? Ile minut? Czy jest jasne co robić?
 
@@ -407,10 +407,27 @@ Poniższe twierdzenia z audytów okazały się **nieprawdziwe** po głębszej we
 | "Marketplace widoczny bez moderacji" (Audyt #1, częściowo #3) | Marketplace jest **UKRYTY** — redirect do dashboard od PR #404 | `App.tsx:262` |
 | "Team — skeleton widoczny" (Audyt #1, częściowo #3) | Team jest **UKRYTY** — redirect do dashboard od PR #404 | `App.tsx:260` |
 | "HomeLobby sekcje z zerami" (Audyt #2) | HomeLobby jest **UKRYTY** — redirect do dashboard, komponent wykomentowany | `App.tsx:234-235` |
+| "Team management — skeleton/placeholder" (Audyt #1, #3) | Team jest **PEŁNA IMPLEMENTACJA** (332 linii): geolokacja, statusy, mapa, role, nie skeleton. Ukryty za redirect. | `src/pages/Team.tsx` |
+| "Marketplace — surowy/wczesny" (Audyt #1, #3) | Marketplace jest **PEŁNA IMPLEMENTACJA** (298 linii): karty podwykonawców, reviews, filtrowanie, publiczne profile. Ukryty za redirect. | `src/pages/Marketplace.tsx` |
+| "Photo pipeline — niezbadany" (wszystkie 3) | Photo pipeline jest **KOMPLETNY** i production-ready: kompresja, signed URLs, 4 fazy, CameraPermissionGate. | `src/components/photos/PhotoReportPanel.tsx` |
 
 ---
 
-## DODATEK B: KTÓRE AUDYTY ODPOWIADAJĄ NA KTÓRE PYTANIA
+## DODATEK B: DEAD FEATURES — IMPLEMENTACJE BEZ ENTRY POINT
+
+Poniższe feature'y mają pełną implementację (edge functions + komponenty), ale **NIE SĄ DOSTĘPNE** z poziomu UI:
+
+| Feature | Implementacja | Problem | Wpływ |
+|---------|--------------|---------|-------|
+| **OCR Invoice** | `supabase/functions/ocr-invoice/` — pełna vision analysis, zwraca supplier/items/amounts | Żaden komponent frontend NIE wywołuje tej edge function | Zmarnowana funkcjonalność — mogłaby parsować faktury zakupowe |
+| **Photo Cost Analysis** | `supabase/functions/analyze-photo/` — estymacja kosztów ze zdjęcia | Żaden komponent frontend NIE wywołuje tej edge function | Zmarnowana funkcjonalność — mogłaby dawać szybkie wyceny ze zdjęć |
+| **VoiceQuoteCreator** | `src/components/voice/VoiceQuoteCreator.tsx` — 334 linii, pełny state machine (idle→listening→processing→editing→done) | Komponent istnieje ale NIGDY nie jest importowany/renderowany w głównym UI | Zmarnowana funkcjonalność — gotowy kreator wycen głosowych |
+
+**Uwaga:** Te feature'y NIE są bugami ani problemami bezpieczeństwa. To gotowe implementacje czekające na podłączenie do UI. Mogą być włączone jako premium features w przyszłości.
+
+---
+
+## DODATEK C: KTÓRE AUDYTY ODPOWIADAJĄ NA KTÓRE PYTANIA
 
 | Pytanie | Audyt #1 | Audyt #2 | Audyt #3 | Meta-audyt |
 |---------|:---:|:---:|:---:|:---:|
@@ -433,7 +450,7 @@ Poniższe twierdzenia z audytów okazały się **nieprawdziwe** po głębszej we
 
 ---
 
-## DODATEK B: REPO HYGIENE
+## DODATEK D: REPO HYGIENE
 
 76 plików "clutter" w root repozytorium:
 - 36 plików .md (raporty audytowe, indexy, podsumowania)
