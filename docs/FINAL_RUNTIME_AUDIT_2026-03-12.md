@@ -526,8 +526,12 @@ ALE:
 | **Root Error Boundary** | `ErrorBoundary` w `src/App.tsx:159` | ✅ Aktywny — łapie crashe React |
 | **Panel Error Boundary** | `PanelErrorBoundary` | ✅ Ciche (renderuje null) — nie crashuje strony |
 | **Sentry integration** | `logError()` w obu boundaries | ✅ Raportuje z context (componentStack, boundary name) |
-| **Toast notifications** | `sonner` (toast) | ✅ Używany w mutacjach (Clients, Offers) |
-| **TanStack Query** | Per-query error handling | ⚠️ Niekonsekwentne — niektóre strony mają ErrorState, inne nie |
+| **Toast notifications** | `sonner` (toast) + Radix Toast | ✅ Używany w mutacjach (Clients, Offers) |
+| **TanStack Query** | Per-query error handling | ⚠️ Niekonsekwentne — brak globalnego mutation error handler |
+| **Offline detection** | `useOnlineStatus` hook + OfflineBanner + OfflineFallback | ✅ Wykrywa offline, pokazuje banner |
+| **Logger** | `src/lib/logger.ts` | ✅ PII masking, production-safe |
+| **Sentry monitoring** | `src/lib/sentry.ts` | ✅ Performance, Web Vitals, session replay |
+| **Session management** | `AuthContext` + `onAuthStateChange` | ⚠️ Brak auto-refresh tokenu |
 
 ### ErrorBoundary UI (`src/components/ErrorBoundary.tsx`)
 - Card z AlertTriangle icon, i18n'd messages
@@ -546,9 +550,49 @@ ALE:
 | Finance | ✅ | ✅ | ✅ |
 | Dashboard | ✅ (via ErrorBoundary) | ✅ (EmptyDashboard) | ✅ |
 
-### 404/NotFound
+### 404/NotFound (`src/pages/NotFound.tsx`)
 - Dedykowana strona 404 **ISTNIEJE** — duży "404" z ikoną Search, czytelny komunikat, 2 CTA (Home + Wstecz), `noindex/nofollow`
-- Profesjonalna, przyjazna dla użytkownika
+- Catch-all route `<Route path="*" element={<NotFound />} />` w App.tsx:322
+- Loguje 404 tylko w dev mode
+
+### Offline Handling
+- **OfflineBanner** (`src/components/pwa/OfflineBanner.tsx`): Amber banner z WifiOff icon, `role="status"`, i18n
+- **OfflineFallback** (`src/components/pwa/OfflineFallback.tsx`): Full-screen overlay dla krytycznych scenariuszy
+- **useOnlineStatus** (`src/hooks/useOnlineStatus.ts`): `navigator.onLine` + window events, cleanup
+- **GAP**: Brak service worker caching — banner się pokazuje ale dane nie są dostępne offline
+
+### Session Expiry
+- `AuthContext`: `onAuthStateChange` + `getSession()` na mount
+- Auto-redirect do `/login` gdy `!user`
+- **GAP**: ❌ Brak automatycznego odświeżania tokenu przed wygaśnięciem
+- **GAP**: ❌ Brak "Sesja wygasła" toast notification
+- **GAP**: ❌ Brak middleware przechwytującego 401 z API
+
+### Sentry Configuration (`src/lib/sentry.ts`)
+- Browser Tracing + Session Replay (errors only)
+- Web Vitals: CLS, INP, FCP, LCP, TTFB
+- PII scrubbing: email, password, token, apiKey w breadcrumbs i headers
+- Filtruje: ResizeObserver, extension errors, network transient, AbortError
+- Helpers: `logError()`, `logEvent()`, `setSentryUser()`, `clearSentryUser()`
+
+### Logger (`src/lib/logger.ts`)
+- Auto-redacts: emails, phone, tokens, credit cards, PESEL, IP
+- Partial masking: `f***r` format
+- Max depth: 10 levels (prevents infinite recursion)
+- **Dev**: Wszystkie logi + PII masked
+- **Prod**: Logi wyłączone domyślnie (opt-in via `VITE_ENABLE_LOGGING=true`), errors zawsze
+
+### Loading States
+- `DashboardSkeleton`, `ProjectsListSkeleton`, `ClientsGridSkeleton` — composite skeletons
+- `LoadingScreen` — 3 warianty: minimal, default (orbiting dots), fullscreen (progress bar)
+- `<Suspense fallback={<PageLoader />}>` na wszystkich routes
+- `PageTransition` z Framer Motion
+
+### Kluczowe Luki (V3):
+1. **🔴 Brak globalnego mutation error handler** w TanStack Query — każdy komponent musi ręcznie obsługiwać błędy
+2. **🔴 Brak auto-refresh sesji** — użytkownik wyrzucony do logowania bez ostrzeżenia
+3. **🟡 Brak offline caching** — PWA skonfigurowane ale bez service worker
+4. **🟡 Brak middleware 401/403** — błędy RLS traktowane jak zwykłe query errors
 
 ---
 
