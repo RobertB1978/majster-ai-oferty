@@ -16,7 +16,6 @@ import {
 } from '@/components/quickEstimate/WorkspaceLineItems';
 import type { LineItem } from '@/components/quickEstimate/WorkspaceLineItems';
 import { StickyTotalsCard } from '@/components/quickEstimate/StickyTotalsCard';
-import { itemUnitPrice } from '@/lib/estimateCalc';
 import type { ItemTemplate } from '@/hooks/useItemTemplates';
 import type { StarterPack } from '@/data/starterPacks';
 import { useQuickEstimateDraft } from '@/hooks/useQuickEstimateDraft';
@@ -65,7 +64,7 @@ export default function QuickEstimateWorkspace() {
   const [saving, setSaving] = useState(false);
 
   // Draft persistence
-  const { loadDraft, scheduleSave, clearDraft, draftOfferId, lastSavedAt, saveStatus } =
+  const { loadDraft, scheduleSave, promoteDraft, draftOfferId, lastSavedAt, saveStatus } =
     useQuickEstimateDraft();
 
   // Flag to prevent scheduling saves before draft is loaded
@@ -185,39 +184,42 @@ export default function QuickEstimateWorkspace() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error(t('auth.errors.noSession', 'No user session'));
 
-      // Create project
-      const { data: project, error: projErr } = await supabase
-        .from('projects')
+      // Step 1: Promote draft offer to SENT (or create new SENT offer if no draft yet).
+      // This replaces the old `projects` + `quote_items` write which was invisible
+      // to current product surfaces (Dashboard / ProjectsList / ProjectHub).
+      const { offerId, netTotal } = await promoteDraft({
+        projectName,
+        clientId,
+        vatEnabled,
+        items: validItems,
+      });
+
+      // Step 2: Create a canonical v2_project linked to the finalized offer.
+      // v2_projects is the single source of truth read by Dashboard, ProjectsList,
+      // ProjectHub, Finance — the old `projects` table is not read by any V2 surface.
+      const now = new Date().toISOString();
+      const { data: v2Project, error: projErr } = await supabase
+        .from('v2_projects')
         .insert({
-          project_name: projectName.trim() || t('szybkaWycena.pageTitle'),
-          client_id: clientId,
           user_id: user.id,
-          status: t('szybkaWycena.pageTitle'),
+          title: projectName.trim() || t('szybkaWycena.pageTitle'),
+          client_id: clientId,
+          source_offer_id: offerId,
+          total_from_offer: netTotal,
+          status: 'ACTIVE',
+          progress_percent: 0,
+          stages_json: [],
+          budget_net: netTotal,
+          budget_source: 'OFFER_NET',
+          budget_updated_at: now,
         })
         .select('id')
         .single();
 
       if (projErr) throw projErr;
 
-      // Insert quote items — persist effective net unit price (margin already included)
-      const { error: itemsErr } = await supabase.from('quote_items').insert(
-        validItems.map((item, idx) => ({
-          project_id: project.id,
-          name: item.name,
-          quantity: item.qty,
-          unit: item.unit,
-          price: itemUnitPrice(item),
-          sort_order: idx,
-        }))
-      );
-
-      if (itemsErr) throw itemsErr;
-
-      // Remove the draft now that we've finalized it
-      await clearDraft();
-
       toast.success(t('szybkaWycena.savedSuccess'));
-      navigate(`/app/projects/${project.id}`);
+      navigate(`/app/projects/${v2Project.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       toast.error(`${t('common.saveError', 'Save error:')} ${msg}`);

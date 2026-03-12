@@ -258,6 +258,111 @@ export function useQuickEstimateDraft() {
     setLastSavedAt(null);
   }, []);
 
+  /* ── Promote draft to SENT (finalize) ─────────────────────── */
+
+  /**
+   * Promotes the current DRAFT offer to 'SENT' status, finalizing
+   * offer_items with the provided data.
+   * If no draft exists yet, creates a new SENT offer with items.
+   * Cancels any pending debounced auto-save and resets local draft state
+   * WITHOUT deleting the DB record — the offer is kept as SENT.
+   *
+   * Returns the finalized offer id and net total for the caller
+   * (needed to link and budget a v2_project).
+   */
+  const promoteDraft = useCallback(async (
+    data: QuickEstimateData,
+  ): Promise<{ offerId: string; netTotal: number }> => {
+    // Cancel any pending debounced auto-save so it cannot race with promotion
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { netTotal, vatAmount, grossTotal } = calcTotals(data.items, data.vatEnabled);
+    let offerId = draftOfferIdRef.current;
+
+    if (offerId) {
+      // Promote existing DRAFT offer to SENT with final values
+      const { error: updateErr } = await (supabase
+        .from('offers')
+        .update({
+          status: 'SENT',
+          title: data.projectName.trim() || null,
+          client_id: data.clientId || null,
+          vat_enabled: data.vatEnabled,
+          total_net: netTotal,
+          total_gross: grossTotal,
+          total_vat: vatAmount,
+        } as never)
+        .eq('id', offerId) as unknown as Promise<{ error: unknown }>);
+      if (updateErr) throw updateErr;
+    } else {
+      // No draft yet — create a new SENT offer directly
+      const { data: offer, error: insertErr } = await (supabase
+        .from('offers')
+        .insert({
+          user_id: user.id,
+          status: 'SENT',
+          source: DRAFT_SOURCE,
+          title: data.projectName.trim() || null,
+          client_id: data.clientId || null,
+          vat_enabled: data.vatEnabled,
+          total_net: netTotal,
+          total_gross: grossTotal,
+          total_vat: vatAmount,
+        } as never)
+        .select('id')
+        .single() as unknown as Promise<{ data: { id: string } | null; error: unknown }>);
+
+      if (insertErr || !offer) throw insertErr ?? new Error('Insert returned no data');
+      offerId = offer.id;
+    }
+
+    // Replace offer_items with the final validated set
+    await supabase.from('offer_items').delete().eq('offer_id', offerId);
+
+    const validItems = data.items.filter((i) => i.name.trim());
+    if (validItems.length > 0) {
+      const { error: itemsErr } = await (supabase.from('offer_items').insert(
+        validItems.map((item) => ({
+          user_id: user.id,
+          offer_id: offerId,
+          name: item.name,
+          unit: item.unit,
+          qty: item.qty,
+          item_type: item.itemType,
+          unit_price_net: itemUnitPrice(item),
+          line_total_net: itemLineTotal(item),
+          vat_rate: data.vatEnabled ? 23 : null,
+          metadata: {
+            priceMode: item.priceMode,
+            price: item.price,
+            laborCost: item.laborCost,
+            materialCost: item.materialCost,
+            marginPct: item.marginPct,
+            showMargin: item.showMargin,
+          } satisfies LineItemMetadata,
+        })),
+      ) as unknown as Promise<{ error: unknown }>);
+      if (itemsErr) throw itemsErr;
+    }
+
+    // Reset local draft state — offer is kept as SENT, not deleted
+    draftOfferIdRef.current = null;
+    setDraftOfferId(null);
+    setSaveStatus('idle');
+    setLastSavedAt(null);
+
+    return { offerId: offerId!, netTotal };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /* ── Cleanup debounce on unmount ─────────────────────────── */
 
   useEffect(() => {
@@ -271,6 +376,7 @@ export function useQuickEstimateDraft() {
     scheduleSave,
     saveDraftNow,
     clearDraft,
+    promoteDraft,
     draftOfferId,
     lastSavedAt,
     saveStatus,
