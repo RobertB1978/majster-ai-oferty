@@ -913,7 +913,14 @@
     "closeAssistant": "Zamknij asystenta AI",
     "planLockTitle": "Asystent AI — plan Business",
     "planLockDesc": "Inteligentny asystent jest dostępny od planu Business. Ulepsz plan, aby tworzyć wyceny, obliczać koszty i uzyskiwać porady branżowe.",
-    "planLockUpgrade": "Ulepsz plan"
+    "planLockUpgrade": "Ulepsz plan",
+    "greeting": "Cześć! Jestem Twoim asystentem Majster.AI. Mogę pomóc Ci:\n\n• Przygotować oferty i wyceny\n• Obliczyć koszty materiałów\n• Odpowiedzieć na pytania o ceny usług\n• Doradzić w kwestiach branżowych\n\nJak mogę Ci dzisiaj pomóc?",
+    "greetingShort": "Cześć! Jestem Twoim asystentem Majster.AI. Jak mogę Ci dzisiaj pomóc?",
+    "errorResponseFallback": "Przepraszam, nie udało się przetworzyć odpowiedzi.",
+    "errorNotConfiguredToast": "Asystent AI nie jest skonfigurowany",
+    "errorConnectionToast": "Błąd połączenia z AI",
+    "errorNotConfiguredContent": "Asystent AI nie jest jeszcze dostępny. Administrator musi skonfigurować klucz API (OpenAI, Anthropic lub Gemini) w ustawieniach serwera. Skontaktuj się z pomocą techniczną.",
+    "errorGeneralContent": "Przepraszam, wystąpił błąd. Spróbuj ponownie za chwilę."
   },
   "quickActions": {
     "newOffer": "Nowa oferta"

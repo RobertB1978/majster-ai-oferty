@@ -63,7 +63,7 @@ export function AiChatAgent() {
     {
       id: '1',
       role: 'assistant',
-      content: 'Cześć! Jestem Twoim asystentem Majster.AI. Mogę pomóc Ci:\n\n• Przygotować oferty i wyceny\n• Obliczyć koszty materiałów\n• Odpowiedzieć na pytania o ceny usług\n• Doradzić w kwestiach branżowych\n\nJak mogę Ci dzisiaj pomóc?',
+      content: t('ai.greeting'),
       timestamp: new Date(),
     },
   ]);
@@ -141,7 +141,7 @@ export function AiChatAgent() {
         throw new Error('AI_NOT_CONFIGURED');
       }
 
-      const assistantContent = data?.response || 'Przepraszam, nie udało się przetworzyć odpowiedzi.';
+      const assistantContent = data?.response || t('ai.errorResponseFallback');
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
@@ -162,14 +162,14 @@ export function AiChatAgent() {
         error instanceof Error && error.message === 'AI_NOT_CONFIGURED';
 
       if (isNotConfigured) {
-        toast.error('Asystent AI nie jest skonfigurowany');
+        toast.error(t('ai.errorNotConfiguredToast'));
       } else {
-        toast.error('Błąd połączenia z AI');
+        toast.error(t('ai.errorConnectionToast'));
       }
 
       const errorContent = isNotConfigured
-        ? 'Asystent AI nie jest jeszcze dostępny. Administrator musi skonfigurować klucz API (OpenAI, Anthropic lub Gemini) w ustawieniach serwera. Skontaktuj się z pomocą techniczną.'
-        : 'Przepraszam, wystąpił błąd. Spróbuj ponownie za chwilę.';
+        ? t('ai.errorNotConfiguredContent')
+        : t('ai.errorGeneralContent');
 
       const errorMessage: Message = {
         id: crypto.randomUUID(),
@@ -202,7 +202,7 @@ export function AiChatAgent() {
       {
         id: '1',
         role: 'assistant',
-        content: 'Cześć! Jestem Twoim asystentem Majster.AI. Jak mogę Ci dzisiaj pomóc?',
+        content: t('ai.greetingShort'),
         timestamp: new Date(),
       },
     ]);

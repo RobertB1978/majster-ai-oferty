@@ -913,7 +913,14 @@
     "closeAssistant": "Close AI assistant",
     "planLockTitle": "AI Assistant — Business plan",
     "planLockDesc": "The intelligent assistant is available from the Business plan. Upgrade to create quotes, calculate costs and get industry advice.",
-    "planLockUpgrade": "Upgrade plan"
+    "planLockUpgrade": "Upgrade plan",
+    "greeting": "Hi! I'm your Majster.AI assistant. I can help you:\n\n• Prepare quotes and estimates\n• Calculate material costs\n• Answer questions about service prices\n• Advise on industry matters\n\nHow can I help you today?",
+    "greetingShort": "Hi! I'm your Majster.AI assistant. How can I help you today?",
+    "errorResponseFallback": "Sorry, the response could not be processed.",
+    "errorNotConfiguredToast": "AI assistant is not configured",
+    "errorConnectionToast": "AI connection error",
+    "errorNotConfiguredContent": "The AI assistant is not yet available. The administrator needs to configure an API key (OpenAI, Anthropic or Gemini) in the server settings. Please contact technical support.",
+    "errorGeneralContent": "Sorry, an error occurred. Please try again in a moment."
   },
   "quickActions": {
     "newOffer": "New offer"
