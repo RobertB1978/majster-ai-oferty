@@ -172,6 +172,9 @@ export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerP
         <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
           {selectedSubcategory.trades.map((trade) => {
             const pack = getStarterPack(trade.packId);
+            const estimatedTotal = pack
+              ? Math.round(pack.items.reduce((s, i) => s + i.qty * i.price, 0))
+              : null;
             return (
               <Card
                 key={`${trade.packId}-${trade.name}`}
@@ -179,13 +182,25 @@ export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerP
                 onClick={() => handleSelectTrade(trade)}
               >
                 <CardContent className="p-3 flex items-start justify-between gap-2">
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium text-sm">{trade.name}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">{trade.description}</p>
                     {pack && (
-                      <p className="text-xs text-primary mt-1 font-medium">
-                        {pack.items.length} {t('quickEstimate.tradeCatalog.itemsInPack')}
-                      </p>
+                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                        <span className="text-xs text-primary font-medium">
+                          {pack.items.length} {t('quickEstimate.tradeCatalog.itemsInPack')}
+                        </span>
+                        {estimatedTotal !== null && (
+                          <span className="text-xs text-muted-foreground">
+                            ~{new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 }).format(estimatedTotal)} zł
+                          </span>
+                        )}
+                        {pack.estimatedDuration && (
+                          <span className="text-xs text-muted-foreground">
+                            {pack.estimatedDuration}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0 pt-0.5">

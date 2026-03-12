@@ -2902,16 +2902,30 @@
     }
   },
   "industryTemplates": {
-    "triggerButton": "Industry templates",
-    "sheetTitle": "AI industry templates",
-    "sheetDesc": "Choose your trade and create an offer in one click with ready-made items and prices",
-    "itemCount": "{{count}} items in template",
-    "estimatedTotal": "Estimated value: {{value}} PLN net",
-    "confirmHint": "You can edit all prices after creating the offer.",
+    "triggerButton": "From template",
+    "triggerButtonShort": "Template",
+    "triggerButtonHint": "Create an offer from a ready-made industry template",
+    "sheetTitle": "Industry templates",
+    "sheetDesc": "Choose your trade and create an offer with ready-made items and prices",
+    "itemCount": "{{count}} items",
+    "estimatedTotal": "~{{value}} PLN net",
+    "bestFor": "Best for",
+    "estimatedDuration": "Est. duration",
+    "complexitySimple": "Simple",
+    "complexityStandard": "Standard",
+    "complexityComplex": "Complex",
+    "mediaReadyNote": "Your company details (name, logo, address) will be automatically added to the offer from your company profile.",
+    "confirmHint": "You can edit all prices and items after creating the offer.",
     "createOffer": "Create offer",
     "creating": "Creating offer...",
     "createError": "Failed to create offer from template. Please try again.",
     "emptyStateCta": "Use industry template"
+  },
+  "projectTemplates": {
+    "chooseSuggestion": "Start from a project template (optional)",
+    "templateSelected": "Template",
+    "phasesCount": "phases",
+    "phasesHint": "Phases are visible after project creation — you can modify them freely."
   },
   "offersList": {
     "pageTitle": "Offers",
@@ -2950,7 +2964,9 @@
     "loadingAriaLabel": "Loading offers...",
     "clientRef": "Client",
     "sentAt": "Sent",
-    "createdAt": "Created"
+    "createdAt": "Created",
+    "newOfferButton": "New offer",
+    "newOfferButtonShort": "New"
   },
   "offerWizard": {
     "titleNew": "New Offer",

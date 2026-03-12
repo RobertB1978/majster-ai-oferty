@@ -1,17 +1,22 @@
 /**
- * NewProjectV2 — PR-13 fix
+ * NewProjectV2 — PR-13 fix + Sprint C project templates
  *
  * Formularz tworzenia nowego projektu V2 bezpośrednio w kontekście zakładki Projekty.
  * Zostaje w ścieżce /app/projects/* więc zakładka Projekty pozostaje aktywna.
+ *
+ * Sprint C: Opcjonalny wybór szablonu startowego, który wstępnie wypełnia tytuł
+ * i pokazuje sugerowane etapy projektu. Nie zmienia modelu danych.
  */
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, FolderKanban, Loader2, Info } from 'lucide-react';
+import { ArrowLeft, FolderKanban, Loader2, Info, Layers, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
 
 import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
 import { useClients } from '@/hooks/useClients';
+import { projectTemplates } from '@/data/projectTemplates';
+import type { ProjectTemplate } from '@/data/projectTemplates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export default function NewProjectV2() {
@@ -32,6 +38,18 @@ export default function NewProjectV2() {
 
   const [title, setTitle] = useState('');
   const [clientId, setClientId] = useState<string>('');
+  const [selectedTemplate, setSelectedTemplate] = useState<ProjectTemplate | null>(null);
+  const [showTemplates, setShowTemplates] = useState(false);
+
+  const handleSelectTemplate = (tpl: ProjectTemplate) => {
+    setSelectedTemplate(tpl);
+    setTitle(tpl.titleSuggestion);
+    setShowTemplates(false);
+  };
+
+  const handleClearTemplate = () => {
+    setSelectedTemplate(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +89,88 @@ export default function NewProjectV2() {
         <p>{t('projectsV2.manualCreationHint')}</p>
       </div>
 
-      {/* Formularz */}
+      {/* ── Sekcja szablonów startowych ───────────────────────────────── */}
+      <div className="mb-5">
+        {/* Przycisk rozwijający */}
+        {!selectedTemplate && (
+          <button
+            type="button"
+            onClick={() => setShowTemplates((v) => !v)}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 border-dashed border-primary/30 hover:border-primary/60 hover:bg-primary/5 transition-all text-sm group"
+          >
+            <div className="flex items-center gap-2">
+              <Layers className="h-4 w-4 text-primary" />
+              <span className="font-medium text-primary">
+                {t('projectTemplates.chooseSuggestion')}
+              </span>
+            </div>
+            {showTemplates ? (
+              <ChevronUp className="h-4 w-4 text-primary" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-primary" />
+            )}
+          </button>
+        )}
+
+        {/* Wybrany szablon — podsumowanie */}
+        {selectedTemplate && (
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-2">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                <p className="text-sm font-medium text-primary">
+                  {t('projectTemplates.templateSelected')}: {selectedTemplate.titleSuggestion}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleClearTemplate}
+                className="text-xs text-muted-foreground hover:text-foreground underline shrink-0"
+              >
+                {t('common.cancel')}
+              </button>
+            </div>
+            {/* Fazy szablonu */}
+            <div className="pl-6 space-y-1">
+              {selectedTemplate.phases.map((phase, idx) => (
+                <p key={idx} className="text-xs text-muted-foreground">
+                  {idx + 1}. {phase.name}
+                </p>
+              ))}
+            </div>
+            <p className="pl-6 text-xs text-muted-foreground italic">
+              {t('projectTemplates.phasesHint')}
+            </p>
+          </div>
+        )}
+
+        {/* Lista szablonów */}
+        {showTemplates && !selectedTemplate && (
+          <div className="mt-2 space-y-2">
+            {projectTemplates.map((tpl) => (
+              <button
+                key={tpl.id}
+                type="button"
+                onClick={() => handleSelectTemplate(tpl)}
+                className="w-full text-left rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 p-3 transition-all"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm">{tpl.titleSuggestion}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{tpl.bestFor}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs text-primary">{tpl.phases.length} {t('projectTemplates.phasesCount')}</span>
+                      <span className="text-xs text-muted-foreground">· {tpl.estimatedDuration}</span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ── Formularz ─────────────────────────────────────────────────── */}
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-2">
           <Label htmlFor="projectTitle">{t('newProject.projectNameLabel')}</Label>
@@ -80,8 +179,9 @@ export default function NewProjectV2() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder={t('newProject.projectNamePlaceholder')}
-            autoFocus
+            autoFocus={!showTemplates}
             required
+            className={cn(selectedTemplate && 'border-primary/40')}
           />
         </div>
 

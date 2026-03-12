@@ -2902,16 +2902,30 @@
     }
   },
   "industryTemplates": {
-    "triggerButton": "Szablony branżowe",
-    "sheetTitle": "Szablony branżowe z AI",
-    "sheetDesc": "Wybierz branżę i utwórz ofertę jednym kliknięciem z gotowymi pozycjami i cenami",
-    "itemCount": "{{count}} pozycji w szablonie",
-    "estimatedTotal": "Szacunkowa wartość: {{value}} zł netto",
-    "confirmHint": "Wszystkie ceny możesz edytować po utworzeniu oferty.",
+    "triggerButton": "Z szablonu",
+    "triggerButtonShort": "Szablon",
+    "triggerButtonHint": "Utwórz ofertę z gotowego szablonu branżowego",
+    "sheetTitle": "Szablony branżowe",
+    "sheetDesc": "Wybierz branżę i utwórz ofertę z gotowymi pozycjami i cenami",
+    "itemCount": "{{count}} pozycji",
+    "estimatedTotal": "~{{value}} zł netto",
+    "bestFor": "Najlepszy do",
+    "estimatedDuration": "Czas realizacji",
+    "complexitySimple": "Prosta",
+    "complexityStandard": "Standardowa",
+    "complexityComplex": "Złożona",
+    "mediaReadyNote": "Dane Twojej firmy (nazwa, logo, adres) zostaną automatycznie dodane do oferty z profilu firmy.",
+    "confirmHint": "Wszystkie ceny i pozycje możesz edytować po utworzeniu oferty.",
     "createOffer": "Utwórz ofertę",
     "creating": "Tworzenie oferty...",
     "createError": "Nie udało się utworzyć oferty z szablonu. Spróbuj ponownie.",
     "emptyStateCta": "Użyj szablonu branżowego"
+  },
+  "projectTemplates": {
+    "chooseSuggestion": "Zacznij od gotowego szablonu projektu (opcjonalnie)",
+    "templateSelected": "Szablon",
+    "phasesCount": "etapów",
+    "phasesHint": "Etapy widoczne po utworzeniu projektu — możesz je dowolnie zmodyfikować."
   },
   "offersList": {
     "pageTitle": "Oferty",
@@ -2950,7 +2964,9 @@
     "loadingAriaLabel": "Ładowanie ofert...",
     "clientRef": "Klient",
     "sentAt": "Wysłano",
-    "createdAt": "Utworzono"
+    "createdAt": "Utworzono",
+    "newOfferButton": "Nowa oferta",
+    "newOfferButtonShort": "Nowa"
   },
   "offerWizard": {
     "titleNew": "Nowa oferta",
