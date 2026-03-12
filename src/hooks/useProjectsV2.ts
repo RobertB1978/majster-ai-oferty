@@ -66,6 +66,8 @@ export interface CreateProjectInput {
   // PR-14: optional budget override (default: total_from_offer)
   budget_net?: number | null;
   budget_source?: 'OFFER_NET' | 'MANUAL' | null;
+  // Sprint D2: optional starter stages from project template
+  stages_json?: ProjectStage[];
 }
 
 export interface UpdateProjectInput {
@@ -171,7 +173,7 @@ export function useCreateProjectV2() {
           end_date: input.end_date ?? null,
           status: 'ACTIVE',
           progress_percent: 0,
-          stages_json: [],
+          stages_json: input.stages_json ?? [],
           budget_net: budgetNet,
           budget_source: budgetSource,
           budget_updated_at: budgetNet != null ? new Date().toISOString() : null,

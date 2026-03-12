@@ -29,7 +29,7 @@ export function useCreateOfferFromTemplate() {
           pack.items.reduce((sum, item) => sum + item.qty * item.price, 0) * 100,
         ) / 100;
 
-      // 1. Create DRAFT offer
+      // 1. Create DRAFT offer — persist template origin (Sprint D1)
       const { data: offer, error: offerErr } = await supabase
         .from('offers')
         .insert({
@@ -38,6 +38,7 @@ export function useCreateOfferFromTemplate() {
           status: 'DRAFT',
           total_net: totalNet,
           total_gross: totalNet,
+          source_template_id: pack.id,
         })
         .select('id')
         .single();

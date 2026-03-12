@@ -1,14 +1,15 @@
 /**
- * OfferDetail — PR-10 (extended in PR-12)
+ * OfferDetail — PR-10 (extended in PR-12, Sprint D)
  *
  * - DRAFT offers → shows OfferWizard for editing
  * - SENT / ACCEPTED / REJECTED offers → shows offer header + AcceptanceLinkPanel
  *
  * New in PR-12: AcceptanceLinkPanel for managing public acceptance links.
+ * Sprint D: Show template origin badge when offer was created from an industry starter pack.
  */
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Loader2, FileText } from 'lucide-react';
+import { ArrowLeft, Loader2, FileText, Sparkles } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +18,7 @@ import { OfferWizard } from '@/components/offers/wizard/OfferWizard';
 import { AcceptanceLinkPanel } from '@/components/offers/AcceptanceLinkPanel';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getStarterPack } from '@/data/starterPacks';
 
 // ── Offer meta loader ─────────────────────────────────────────────────────────
 
@@ -26,6 +28,7 @@ interface OfferMeta {
   title: string | null;
   accepted_at: string | null;
   rejected_at: string | null;
+  source_template_id: string | null;
 }
 
 function useOfferMeta(offerId: string | undefined) {
@@ -35,7 +38,7 @@ function useOfferMeta(offerId: string | undefined) {
     queryFn: async (): Promise<OfferMeta> => {
       const { data, error } = await supabase
         .from('offers')
-        .select('id, status, title, accepted_at, rejected_at')
+        .select('id, status, title, accepted_at, rejected_at, source_template_id')
         .eq('id', offerId!)
         .single();
       if (error) throw error;
@@ -101,6 +104,11 @@ export default function OfferDetail() {
     );
   }
 
+  // Sprint D3: resolve template name for continuity badge
+  const templatePack = meta?.source_template_id
+    ? getStarterPack(meta.source_template_id)
+    : undefined;
+
   if (!meta || meta.status === 'DRAFT') {
     return (
       <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
@@ -113,7 +121,15 @@ export default function OfferDetail() {
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t('common.back')}
         </Button>
-        <h1 className="text-2xl font-bold mb-6">{t('offerWizard.titleEdit')}</h1>
+        <div className="flex items-center gap-2 flex-wrap mb-6">
+          <h1 className="text-2xl font-bold">{t('offerWizard.titleEdit')}</h1>
+          {templatePack && (
+            <Badge className="text-xs gap-1 bg-primary/10 text-primary border-primary/20">
+              <Sparkles className="h-3 w-3" />
+              {templatePack.tradeName}
+            </Badge>
+          )}
+        </div>
         <OfferWizard offerId={id} />
       </div>
     );
@@ -139,6 +155,12 @@ export default function OfferDetail() {
         <Badge className={STATUS_BADGE_CLASSES[meta.status] ?? ''}>
           {t(STATUS_I18N_KEYS[meta.status] ?? 'offersList.statusDraft')}
         </Badge>
+        {templatePack && (
+          <Badge className="text-xs gap-1 bg-primary/10 text-primary border-primary/20">
+            <Sparkles className="h-3 w-3" />
+            {templatePack.tradeName}
+          </Badge>
+        )}
       </div>
 
       {/* PR-12: Acceptance link management panel */}
