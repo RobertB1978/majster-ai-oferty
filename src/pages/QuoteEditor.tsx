@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useProject } from '@/hooks/useProjects';
+import { useProjectV2 } from '@/hooks/useProjectsV2';
 import { useQuote, useSaveQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useCreateItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
 import { useAiSuggestions } from '@/hooks/useAiSuggestions';
@@ -18,6 +19,11 @@ import { QuoteSnapshot } from '@/hooks/useQuoteVersions';
 import { VoiceInputButton } from '@/components/voice/VoiceInputButton';
 import { parseDecimal } from '@/lib/numberParsing';
 
+/** Minimal project shape consumed by this component (V2 and legacy normalised). */
+interface QuoteProjectData {
+  project_name: string;
+}
+
 /** Raw text entered by the user for numeric fields of a single item */
 interface PositionInputs {
   qty: string;
@@ -30,7 +36,22 @@ const categories = ['Materiał', 'Robocizna'] as const;
 export default function QuoteEditor() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
-  const { data: project, isLoading: projectLoading } = useProject(id || '');
+
+  // ── Project reads: try V2 first, fall back to legacy ──────────────────────
+  const { data: projectV2, isLoading: v2Loading } = useProjectV2(id);
+  const { data: projectLegacy, isLoading: legacyLoading } = useProject(
+    !v2Loading && projectV2 == null ? id || '' : '',
+  );
+  const projectLoading = v2Loading || (!v2Loading && projectV2 == null && legacyLoading);
+  const project: QuoteProjectData | null | undefined =
+    v2Loading
+      ? undefined
+      : projectV2 != null
+        ? { project_name: projectV2.title }
+        : projectLegacy != null
+          ? { project_name: projectLegacy.project_name }
+          : null;
+
   const { data: existingQuote, isLoading: quoteLoading } = useQuote(id || '');
   const saveQuote = useSaveQuote();
   const createTemplate = useCreateItemTemplate();
