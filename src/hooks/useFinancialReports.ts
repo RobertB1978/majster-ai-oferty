@@ -56,11 +56,11 @@ export function useFinancialSummary() {
         .select('gross_amount, created_at, project_id')
         .eq('user_id', user!.id);
 
-      // Get projects
+      // Get projects from v2_projects — RLS enforces user isolation
+      // v2_projects uses `title` (not legacy `project_name`)
       const { data: projects } = await supabase
-        .from('projects')
-        .select('id, project_name, status, created_at')
-        .eq('user_id', user!.id);
+        .from('v2_projects')
+        .select('id, title, status, created_at');
 
       const totalRevenue = (quotes || []).reduce((sum, q) => sum + Number(q.total), 0);
       const totalCosts = (costs || []).reduce((sum, c) => sum + Number(c.gross_amount), 0);
@@ -69,7 +69,7 @@ export function useFinancialSummary() {
 
       // Monthly breakdown
       const monthlyData: Record<string, { revenue: number; costs: number }> = {};
-      
+
       (quotes || []).forEach(q => {
         const month = q.created_at.substring(0, 7);
         if (!monthlyData[month]) monthlyData[month] = { revenue: 0, costs: 0 };
@@ -112,11 +112,10 @@ export function useAIFinancialAnalysis() {
 
   return useMutation({
     mutationFn: async () => {
-      // Get data for analysis
+      // Get projects from v2_projects — RLS enforces user isolation
       const { data: projects } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('user_id', user!.id);
+        .from('v2_projects')
+        .select('*');
 
       const { data: quotes } = await supabase
         .from('quotes')

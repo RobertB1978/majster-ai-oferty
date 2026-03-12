@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useAnalyticsStats } from '@/hooks/useAnalyticsStats';
+import { STATUS_CONFIG } from '@/data/statusConfig';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   TrendingUp, TrendingDown, Users, FolderOpen,
@@ -25,7 +26,15 @@ export default function Analytics() {
 
   const { data: stats, isLoading } = useAnalyticsStats(dateLocale);
 
-  const pieData = stats ? Object.entries(stats.statusCounts).map(([name, value]) => ({ name, value })) : [];
+  // Build pie chart data from v2 statusCounts — use display labels from STATUS_CONFIG
+  const pieData = stats
+    ? Object.entries(stats.statusCounts)
+        .filter(([, value]) => value > 0)
+        .map(([key, value]) => ({
+          name: STATUS_CONFIG[key]?.label ?? key,
+          value,
+        }))
+    : [];
 
   if (isLoading || !stats) {
     return (
@@ -127,7 +136,7 @@ export default function Analytics() {
                 </div>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">
-                {stats.statusCounts['Zaakceptowany']} / {stats.totalProjects}
+                {stats.statusCounts.COMPLETED} / {stats.totalProjects}
               </p>
             </CardContent>
           </Card>
