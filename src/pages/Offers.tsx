@@ -7,6 +7,7 @@ import { FileText, MoreHorizontal, ExternalLink, FolderPlus, Sparkles, Archive, 
 
 import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
 import { IndustryTemplateSheet } from '@/components/offers/IndustryTemplateSheet';
+import { getStarterPack } from '@/data/starterPacks';
 
 import { useOffers, useArchiveOffer, NO_RESPONSE_DAYS } from '@/hooks/useOffers';
 import type { Offer, OfferStatus, OfferSort } from '@/hooks/useOffers';
@@ -102,6 +103,8 @@ function OfferRow({ offer, onOpen, onCreateProject, onArchive, isCreatingProject
   const status = offer.status as OfferStatus;
   const isAccepted = status === 'ACCEPTED';
   const visibleDate = formatShortDate(offer.sent_at ?? offer.created_at);
+  // Sprint E: resolve template pack for list badge (gracefully undefined for non-template offers)
+  const templatePack = offer.source_template_id ? getStarterPack(offer.source_template_id) : undefined;
 
   return (
     <div
@@ -127,6 +130,13 @@ function OfferRow({ offer, onOpen, onCreateProject, onArchive, isCreatingProject
           {noResp !== null && (
             <Badge className="shrink-0 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[11px] px-2 py-0.5">
               {t('offersList.noResponseBadge', { days: noResp })}
+            </Badge>
+          )}
+          {/* Sprint E: lightweight template-origin badge — renders nothing when no template */}
+          {templatePack && (
+            <Badge className="shrink-0 bg-primary/10 text-primary border border-primary/20 text-[11px] px-2 py-0.5 gap-1">
+              <Sparkles className="h-3 w-3" />
+              {templatePack.tradeName}
             </Badge>
           )}
         </div>

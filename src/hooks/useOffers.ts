@@ -29,6 +29,8 @@ export interface Offer {
   created_at: string;
   updated_at: string;
   client_reference: string | null;
+  /** Sprint D1: industry starter pack origin. Null for manually created offers. */
+  source_template_id: string | null;
 }
 
 export interface OffersQueryParams {
@@ -59,7 +61,7 @@ export function useOffers(params: OffersQueryParams = {}) {
     queryFn: async (): Promise<Offer[]> => {
       let query = supabase
         .from('offers')
-        .select('id, user_id, client_id, status, title, total_net, total_gross, currency, sent_at, accepted_at, rejected_at, last_activity_at, created_at, updated_at');
+        .select('id, user_id, client_id, status, title, total_net, total_gross, currency, sent_at, accepted_at, rejected_at, last_activity_at, created_at, updated_at, source_template_id');
 
       if (status && status !== 'ALL') {
         query = query.eq('status', status);
@@ -110,15 +112,15 @@ export function useSourceOffer(offerId: string | null | undefined) {
 
   return useQuery({
     queryKey: offersKeys.detail(offerId ?? ''),
-    queryFn: async (): Promise<Pick<Offer, 'id' | 'title' | 'total_net' | 'currency' | 'accepted_at'> | null> => {
+    queryFn: async (): Promise<Pick<Offer, 'id' | 'title' | 'total_net' | 'currency' | 'accepted_at' | 'source_template_id'> | null> => {
       if (!offerId) return null;
       const { data, error } = await supabase
         .from('offers')
-        .select('id, title, total_net, currency, accepted_at')
+        .select('id, title, total_net, currency, accepted_at, source_template_id')
         .eq('id', offerId)
         .maybeSingle();
       if (error) throw error;
-      return data as Pick<Offer, 'id' | 'title' | 'total_net' | 'currency' | 'accepted_at'> | null;
+      return data as Pick<Offer, 'id' | 'title' | 'total_net' | 'currency' | 'accepted_at' | 'source_template_id'> | null;
     },
     enabled: !!user && !!offerId,
     staleTime: 60_000,

@@ -9,7 +9,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FolderKanban, Plus, Archive, FileText } from 'lucide-react';
+import { FolderKanban, Plus, Archive, FileText, LayoutList } from 'lucide-react';
 
 import { useProjectsV2List, useDeleteProjectV2, type ProjectStatus } from '@/hooks/useProjectsV2';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -179,6 +179,13 @@ export default function ProjectsList() {
                     <Badge className={cn('shrink-0 text-[11px] font-semibold px-2 py-0.5', STATUS_BADGE_CLASSES[status])}>
                       {t(STATUS_I18N_KEYS[status])}
                     </Badge>
+                    {/* Sprint E: lightweight stages badge — renders nothing for projects without a stage plan */}
+                    {project.stages_json.length > 0 && (
+                      <Badge className="shrink-0 bg-muted text-muted-foreground text-[11px] px-2 py-0.5 gap-1">
+                        <LayoutList className="h-3 w-3" />
+                        {project.stages_json.length} etapów
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                     {/* Progress bar */}
