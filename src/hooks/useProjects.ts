@@ -100,10 +100,16 @@ export function useProjectsPaginated(params: ProjectsQueryParams = {}) {
 }
 
 /**
- * @deprecated Use useProjectsPaginated instead for better performance.
- * Kept for backward compatibility with Calendar and timeline components.
- * Remaining callers: Calendar.tsx, ProjectTimeline.tsx, WorkTasksGantt.tsx
- * — migrate these to useProjectsV2List when calendar supports v2_projects.
+ * @deprecated Use useProjectsPaginated or useProjectsV2List instead.
+ * Kept for backward compatibility with calendar-adjacent components that
+ * reference the legacy `projects` table via FK constraints.
+ *
+ * Remaining callers:
+ *   - Calendar.tsx: event-project dropdown — BLOCKED by calendar_events.project_id FK → projects(id)
+ *   - WorkTasksGantt.tsx: task-project name lookup — BLOCKED by work_tasks.project_id FK → projects(id)
+ *
+ * MIGRATED to useProjectsV2List:
+ *   - ProjectTimeline.tsx ✓ (aligned to canonical V2 source, PR: align-calendar-v2-projects)
  */
 export function useProjects() {
   if (import.meta.env.DEV) {

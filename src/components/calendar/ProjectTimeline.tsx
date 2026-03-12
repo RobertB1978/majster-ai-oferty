@@ -4,7 +4,7 @@ import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachDayOf
 import { pl } from 'date-fns/locale';
 import { enUS } from 'date-fns/locale';
 import { uk } from 'date-fns/locale';
-import { useProjects } from '@/hooks/useProjects';
+import { useProjectsV2List } from '@/hooks/useProjectsV2';
 import { useClients } from '@/hooks/useClients';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,26 +13,20 @@ import { ChevronLeft, ChevronRight, Loader2, FolderOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
-/** Map DB Polish status values → colour classes (keep Polish keys — these are legacy DB values) */
+/** Map V2 status values → colour classes */
 const STATUS_COLOR: Record<string, string> = {
-  'Nowy': 'bg-blue-500',
-  'Wycena w toku': 'bg-amber-500',
-  'Oferta wysłana': 'bg-purple-500',
-  'Zaakceptowany': 'bg-emerald-500',
+  'ACTIVE':    'bg-blue-500',
+  'ON_HOLD':   'bg-amber-500',
+  'CANCELLED': 'bg-gray-500',
+  'COMPLETED': 'bg-emerald-500',
 };
 
-/** Map legacy Polish DB status → i18n key in projects.statuses */
+/** Map V2 status → full i18n key */
 const STATUS_I18N: Record<string, string> = {
-  'Nowy': 'new',
-  'Wycena w toku': 'inProgress',
-  'Oferta wysłana': 'sent',
-  'Zaakceptowany': 'accepted',
-};
-
-const priorityColors: Record<string, string> = {
-  'low': 'border-l-muted-foreground',
-  'normal': 'border-l-primary',
-  'high': 'border-l-destructive',
+  'ACTIVE':    'projectsV2.statusActive',
+  'COMPLETED': 'projectsV2.statusCompleted',
+  'ON_HOLD':   'projectsV2.statusOnHold',
+  'CANCELLED': 'projectsV2.statusCancelled',
 };
 
 const getDateLocale = (lang: string) => {
@@ -53,7 +47,8 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
   const { t, i18n } = useTranslation();
   const dateLocale = getDateLocale(i18n.language);
 
-  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  // V2-aligned: reads from v2_projects (same canonical source as ProjectsList / ProjectHub)
+  const { data: projects = [], isLoading: projectsLoading } = useProjectsV2List();
   const { data: clients = [] } = useClients();
 
   const monthStart = startOfMonth(currentMonth);
@@ -61,10 +56,11 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
   const totalDays = daysInMonth.length;
 
-  // Filter projects that have dates and overlap with current month
+  // Filter projects that have dates and overlap with current month.
+  // Exclude CANCELLED (soft-deleted) projects — they are not visible in ProjectsList either.
   const timelineProjects = useMemo(() => {
     return projects
-      .filter(p => p.start_date || p.end_date)
+      .filter(p => p.status !== 'CANCELLED' && (p.start_date || p.end_date))
       .map(p => {
         const startDate = p.start_date ? parseISO(p.start_date) : null;
         const endDate = p.end_date ? parseISO(p.end_date) : null;
@@ -122,13 +118,12 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
     return markers;
   }, [daysInMonth, dateLocale]);
 
-  /** Get translated label for a project status, mapping Polish legacy DB values to i18n keys */
+  /** Get translated label for a V2 project status */
   const getStatusLabel = (status: string): string => {
     const i18nKey = STATUS_I18N[status];
     if (i18nKey) {
-      return t(`projects.statuses.${i18nKey}`, status);
+      return t(i18nKey, status);
     }
-    // Non-legacy status — display as-is (user data or already localised)
     return status;
   };
 
@@ -202,7 +197,7 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
               >
                 {/* Project label */}
                 <div className="absolute left-0 top-0 w-48 pr-2 h-full flex flex-col justify-center z-10">
-                  <p className="text-sm font-medium truncate">{project!.project_name}</p>
+                  <p className="text-sm font-medium truncate">{project!.title}</p>
                   <p className="text-xs text-muted-foreground truncate">{project!.clientName}</p>
                 </div>
 
@@ -218,9 +213,7 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
                       'absolute top-2 h-10 rounded transition-all cursor-pointer',
                       'hover:brightness-110 hover:shadow-md',
                       'flex items-center px-2 gap-2 overflow-hidden',
-                      'border-l-4',
                       STATUS_COLOR[project!.status] || 'bg-muted',
-                      priorityColors[project!.priority || 'normal'],
                       project!.startsBeforeMonth && 'rounded-l-none',
                       project!.endsAfterMonth && 'rounded-r-none'
                     )}
@@ -230,7 +223,7 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
                     }}
                   >
                     <span className="text-xs text-white font-medium truncate">
-                      {project!.project_name}
+                      {project!.title}
                     </span>
                     <Badge
                       variant="secondary"
