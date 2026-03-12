@@ -186,7 +186,7 @@ export default function Login() {
         <meta name="twitter:title" content="Logowanie | Majster.AI" />
         <meta name="twitter:description" content="Zaloguj się do Majster.AI — platformy dla fachowców budowlanych." />
       </Helmet>
-      <div className="min-h-screen flex flex-col lg:flex-row bg-background overflow-hidden">
+      <div className="min-h-screen flex flex-col lg:flex-row bg-background overflow-x-hidden">
 
         {/* LEFT PANEL — Brand hero (hidden on mobile) */}
         <motion.div

@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mic, Bot, PenTool, Sparkles, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
-// import { supabase } from '@/integrations/supabase/client';
 
 interface QuoteCreationHubProps {
   _onVoiceQuoteCreated?: (result: unknown) => void;
@@ -22,27 +20,17 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
 
   const handleVoiceClick = () => {
     setMode('voice');
-    toast.info(t('dashboard.quoteCreation.voiceStarting'), {
-      description: t('dashboard.quoteCreation.voiceRedirect')
-    });
-    setTimeout(() => {
-      navigate('/app/offers/new', { state: { mode: 'voice' } });
-    }, 800);
+    navigate('/app/offers/new');
   };
 
   const handleAiClick = () => {
     setMode('ai');
-    toast.info(t('dashboard.quoteCreation.aiOpening'), {
-      description: t('dashboard.quoteCreation.voiceRedirect')
-    });
-    setTimeout(() => {
-      navigate('/app/offers/new', { state: { mode: 'ai' } });
-    }, 800);
+    navigate('/app/offers/new');
   };
 
   const handleManualClick = () => {
     setMode('manual');
-    navigate('/app/offers/new', { state: { mode: 'manual' } });
+    navigate('/app/offers/new');
   };
 
   const buttons = [

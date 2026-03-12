@@ -196,9 +196,8 @@ export function EmptyDashboard() {
             key={benefit.title}
             variants={itemVariants}
             custom={index}
-            whileHover={{ y: -4, transition: { duration: 0.2 } }}
           >
-            <Card className={`h-full border shadow-sm hover:shadow-md transition-all duration-200 ${benefit.accent}`}>
+            <Card className={`h-full border shadow-sm ${benefit.accent}`}>
               <CardContent className="p-5 text-center">
                 <div className={`mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl ${benefit.iconBg} shadow-sm`}>
                   <benefit.icon className="h-6 w-6 text-white" />

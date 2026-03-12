@@ -7,6 +7,7 @@ import {
   CalendarDays,
   BookOpen,
   TrendingUp,
+  Camera,
   Settings,
   Building2,
   type LucideIcon,
@@ -51,6 +52,7 @@ const NAV_SECTIONS: NavSection[] = [
       { id: 'calendar',  path: '/app/calendar',           icon: CalendarDays, labelKey: 'newShell.nav.calendar' },
       { id: 'documents', path: '/app/document-templates', icon: BookOpen,     labelKey: 'newShell.nav.documents' },
       { id: 'finance',   path: '/app/finance',            icon: TrendingUp,   labelKey: 'newShell.nav.finance' },
+      { id: 'photos',    path: '/app/photos',             icon: Camera,       labelKey: 'newShell.nav.photos' },
     ],
   },
 ];

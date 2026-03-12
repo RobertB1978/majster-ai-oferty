@@ -247,11 +247,11 @@
       "title": "Stwórz nową ofertę",
       "chooseMethod": "Wybierz sposób tworzenia oferty",
       "voiceTitle": "Głosowo",
-      "voiceDesc": "Powiedz co wycenić",
+      "voiceDesc": "Otwórz kreator oferty",
       "voiceStarting": "Rozpocznij nagrywanie głosowe na stronie tworzenia oferty",
       "voiceRedirect": "Za chwilę zostaniesz przekierowany...",
       "aiTitle": "Asystent AI",
-      "aiDesc": "Napisz lub rozmawiaj",
+      "aiDesc": "Otwórz kreator oferty",
       "aiOpening": "Otwieranie asystenta AI...",
       "manualTitle": "Ręcznie",
       "manualDesc": "Wypełnij formularz"
@@ -2816,7 +2816,8 @@
       "account": "Konto",
       "profile": "Profil firmy",
       "logout": "Wyloguj",
-      "ariaLabel": "Nawigacja"
+      "ariaLabel": "Nawigacja",
+      "photos": "Zdjęcia"
     },
     "fab": {
       "open": "Utwórz",
@@ -2857,7 +2858,8 @@
       "profile": "Profil firmy",
       "finance": "Finanse",
       "clients": "Klienci",
-      "settings": "Ustawienia"
+      "settings": "Ustawienia",
+      "photos": "Zdjęcia"
     },
     "onboarding": {
       "step1Title": "Witaj w nowym Majster.AI",
