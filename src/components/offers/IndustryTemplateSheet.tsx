@@ -10,7 +10,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2, Clock, Target, Info, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -21,13 +21,42 @@ import {
   SheetDescription,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { TradeCatalogPicker } from '@/components/quickEstimate/TradeCatalogPicker';
 import { useCreateOfferFromTemplate } from '@/hooks/useCreateOfferFromTemplate';
-import type { StarterPack } from '@/data/starterPacks';
+import type { StarterPack, TemplateComplexity } from '@/data/starterPacks';
 
 interface IndustryTemplateSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+const COMPLEXITY_CONFIG: Record<
+  TemplateComplexity,
+  { labelKey: string; className: string }
+> = {
+  prosta: {
+    labelKey: 'industryTemplates.complexitySimple',
+    className: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  },
+  standardowa: {
+    labelKey: 'industryTemplates.complexityStandard',
+    className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  },
+  złożona: {
+    labelKey: 'industryTemplates.complexityComplex',
+    className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  },
+};
+
+function ComplexityBadge({ complexity }: { complexity: TemplateComplexity }) {
+  const { t } = useTranslation();
+  const cfg = COMPLEXITY_CONFIG[complexity];
+  return (
+    <Badge className={`text-xs font-medium px-2 py-0.5 ${cfg.className}`}>
+      {t(cfg.labelKey)}
+    </Badge>
+  );
 }
 
 export function IndustryTemplateSheet({ open, onOpenChange }: IndustryTemplateSheetProps) {
@@ -58,6 +87,10 @@ export function IndustryTemplateSheet({ open, onOpenChange }: IndustryTemplateSh
     }
   };
 
+  const estimatedTotal = selectedPack
+    ? Math.round(selectedPack.items.reduce((s, i) => s + i.qty * i.price, 0))
+    : 0;
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="rounded-t-2xl max-h-[90vh] overflow-y-auto">
@@ -77,32 +110,77 @@ export function IndustryTemplateSheet({ open, onOpenChange }: IndustryTemplateSh
           </div>
         </SheetHeader>
 
-        {/* Pack selected — show confirm */}
+        {/* Pack selected — premium confirmation view */}
         {selectedPack ? (
           <div className="space-y-4 pb-6">
+            {/* Main card */}
             <div className="rounded-xl border bg-card p-4 space-y-3">
-              <div>
-                <p className="font-semibold text-sm">{selectedPack.tradeName}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{selectedPack.description}</p>
+              {/* Title + complexity */}
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm leading-tight">{selectedPack.tradeName}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{selectedPack.description}</p>
+                </div>
+                <ComplexityBadge complexity={selectedPack.complexity} />
               </div>
-              <div className="text-xs text-muted-foreground space-y-0.5">
-                <p>
-                  {t('industryTemplates.itemCount', { count: selectedPack.items.length })}
+
+              {/* Best for */}
+              <div className="flex items-start gap-2">
+                <Target className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                <p className="text-xs text-foreground">
+                  <span className="font-medium">{t('industryTemplates.bestFor')}: </span>
+                  {selectedPack.bestFor}
                 </p>
-                <p>
-                  {t('industryTemplates.estimatedTotal', {
-                    value: new Intl.NumberFormat('pl-PL', {
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    }).format(
-                      selectedPack.items.reduce((s, i) => s + i.qty * i.price, 0),
-                    ),
-                  })}
+              </div>
+
+              {/* Duration */}
+              <div className="flex items-center gap-2">
+                <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <p className="text-xs text-muted-foreground">
+                  {t('industryTemplates.estimatedDuration')}: {selectedPack.estimatedDuration}
                 </p>
+              </div>
+
+              {/* Stats row */}
+              <div className="flex gap-4 pt-1 border-t border-border/50">
+                <div>
+                  <p className="text-[11px] text-muted-foreground">
+                    {t('industryTemplates.itemCount', { count: selectedPack.items.length })}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] text-muted-foreground">
+                    {t('industryTemplates.estimatedTotal', {
+                      value: new Intl.NumberFormat('pl-PL', {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }).format(estimatedTotal),
+                    })}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <p className="text-xs text-muted-foreground">
+            {/* Starter notes */}
+            {selectedPack.starterNotes && (
+              <div className="flex items-start gap-2 rounded-lg bg-muted/50 px-3 py-2.5">
+                <Info className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {selectedPack.starterNotes}
+                </p>
+              </div>
+            )}
+
+            {/* Media readiness note (C4) */}
+            <div className="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2.5">
+              <Building2 className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+              <p className="text-xs text-primary/80">
+                {t('industryTemplates.mediaReadyNote')}
+              </p>
+            </div>
+
+            {/* Edit hint */}
+            <p className="text-xs text-muted-foreground text-center">
               {t('industryTemplates.confirmHint')}
             </p>
 

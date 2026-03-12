@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { differenceInDays } from 'date-fns';
-import { FileText, MoreHorizontal, ExternalLink, FolderPlus, Sparkles, Archive } from 'lucide-react';
+import { FileText, MoreHorizontal, ExternalLink, FolderPlus, Sparkles, Archive, Plus } from 'lucide-react';
 
 import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
 import { IndustryTemplateSheet } from '@/components/offers/IndustryTemplateSheet';
@@ -255,18 +255,31 @@ export default function Offers() {
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
-      {/* Page title + AI templates button */}
+      {/* Page title + action buttons */}
       <div className="flex items-center justify-between mb-5 gap-2">
         <h1 className="text-2xl font-bold">{t('offersList.pageTitle')}</h1>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1.5 shrink-0 border-primary/40 text-primary hover:bg-primary/5"
-          onClick={() => setTemplateSheetOpen(true)}
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          {t('industryTemplates.triggerButton')}
-        </Button>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 border-primary/40 text-primary hover:bg-primary/5"
+            onClick={() => setTemplateSheetOpen(true)}
+            title={t('industryTemplates.triggerButtonHint')}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{t('industryTemplates.triggerButton')}</span>
+            <span className="sm:hidden">{t('industryTemplates.triggerButtonShort')}</span>
+          </Button>
+          <Button
+            size="sm"
+            className="gap-1.5"
+            onClick={handleCreateFirst}
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{t('offersList.newOfferButton')}</span>
+            <span className="sm:hidden">{t('offersList.newOfferButtonShort')}</span>
+          </Button>
+        </div>
       </div>
 
       {/* Industry templates sheet */}

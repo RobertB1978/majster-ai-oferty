@@ -2874,16 +2874,30 @@
     }
   },
   "industryTemplates": {
-    "triggerButton": "Галузеві шаблони",
-    "sheetTitle": "Галузеві шаблони з AI",
-    "sheetDesc": "Оберіть спеціальність і створіть пропозицію одним кліком із готовими позиціями та цінами",
-    "itemCount": "{{count}} позицій у шаблоні",
-    "estimatedTotal": "Орієнтовна вартість: {{value}} PLN нетто",
-    "confirmHint": "Усі ціни можна відредагувати після створення пропозиції.",
+    "triggerButton": "З шаблону",
+    "triggerButtonShort": "Шаблон",
+    "triggerButtonHint": "Створити пропозицію з готового галузевого шаблону",
+    "sheetTitle": "Галузеві шаблони",
+    "sheetDesc": "Оберіть спеціальність і створіть пропозицію з готовими позиціями та цінами",
+    "itemCount": "{{count}} позицій",
+    "estimatedTotal": "~{{value}} PLN нетто",
+    "bestFor": "Найкраще підходить для",
+    "estimatedDuration": "Термін виконання",
+    "complexitySimple": "Проста",
+    "complexityStandard": "Стандартна",
+    "complexityComplex": "Складна",
+    "mediaReadyNote": "Дані вашої компанії (назва, логотип, адреса) будуть автоматично додані до пропозиції з профілю компанії.",
+    "confirmHint": "Усі ціни та позиції можна відредагувати після створення пропозиції.",
     "createOffer": "Створити пропозицію",
     "creating": "Створення пропозиції...",
     "createError": "Не вдалося створити пропозицію з шаблону. Спробуйте ще раз.",
     "emptyStateCta": "Використати галузевий шаблон"
+  },
+  "projectTemplates": {
+    "chooseSuggestion": "Почати з шаблону проєкту (необов'язково)",
+    "templateSelected": "Шаблон",
+    "phasesCount": "етапів",
+    "phasesHint": "Етапи відображаються після створення проєкту — їх можна вільно змінити."
   },
   "offersList": {
     "pageTitle": "Пропозиції",
@@ -2922,7 +2936,9 @@
     "loadingAriaLabel": "Завантаження пропозицій...",
     "clientRef": "Клієнт",
     "sentAt": "Надіслано",
-    "createdAt": "Створено"
+    "createdAt": "Створено",
+    "newOfferButton": "Нова пропозиція",
+    "newOfferButtonShort": "Нова"
   },
   "offerWizard": {
     "titleNew": "Нова пропозиція",

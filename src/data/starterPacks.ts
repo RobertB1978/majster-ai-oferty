@@ -7,6 +7,8 @@
  * All names and prices are generic industry-common descriptions.
  */
 
+export type TemplateComplexity = 'prosta' | 'standardowa' | 'złożona';
+
 export interface StarterPackItem {
   name: string;
   unit: string;
@@ -19,6 +21,17 @@ export interface StarterPack {
   id: string;
   tradeName: string;
   description: string;
+  /** Short, outcome-focused "best for" hint for the user. */
+  bestFor: string;
+  /** Subjective complexity level to help user pick the right template. */
+  complexity: TemplateComplexity;
+  /** Rough calendar estimate as a human-readable range. */
+  estimatedDuration: string;
+  /**
+   * Starter notes shown in the confirmation view and saved as offer notes.
+   * Content is generic, non-legal, editable by user after creation.
+   */
+  starterNotes: string;
   items: StarterPackItem[];
 }
 
@@ -28,6 +41,11 @@ export const starterPacks: StarterPack[] = [
     id: 'glazurnik',
     tradeName: 'Glazurnik',
     description: 'Układanie płytek ceramicznych i gresowych',
+    bestFor: 'Remont łazienki, kuchni lub salonu z układaniem płytek',
+    complexity: 'standardowa',
+    estimatedDuration: '3–7 dni roboczych',
+    starterNotes:
+      'Ceny orientacyjne — dokładna wycena po oględzinach. Wybór płytek i kolorów fugi do ustalenia z klientem. Możliwość dopasowania zakresu do budżetu.',
     items: [
       { name: 'Płytki podłogowe gresowe 60×60', unit: 'm²', qty: 10, price: 89, category: 'Materiał' },
       { name: 'Płytki ścienne ceramiczne 30×60', unit: 'm²', qty: 10, price: 65, category: 'Materiał' },
@@ -53,6 +71,11 @@ export const starterPacks: StarterPack[] = [
     id: 'malarz',
     tradeName: 'Malarz',
     description: 'Malowanie ścian i sufitów wewnątrz',
+    bestFor: 'Malowanie mieszkania lub pojedynczych pomieszczeń',
+    complexity: 'prosta',
+    estimatedDuration: '2–5 dni roboczych',
+    starterNotes:
+      'Kolor farby do ustalenia z klientem przed rozpoczęciem prac. Grunt i pierwsza warstwa w cenie. Gładź na życzenie — dopłata wg zakresu.',
     items: [
       { name: 'Farba lateksowa zmywalna biała', unit: 'l', qty: 20, price: 45, category: 'Materiał' },
       { name: 'Farba akrylowa do ścian', unit: 'l', qty: 15, price: 35, category: 'Materiał' },
@@ -78,6 +101,11 @@ export const starterPacks: StarterPack[] = [
     id: 'hydraulik',
     tradeName: 'Hydraulik',
     description: 'Instalacja wod-kan i montaż urządzeń sanitarnych',
+    bestFor: 'Kompleksowy montaż sanitariatów i armatury w łazience',
+    complexity: 'standardowa',
+    estimatedDuration: '2–4 dni roboczych',
+    starterNotes:
+      'Ceny zawierają materiały i robociznę. Dostęp do instalacji wymaga krótkotrwałego odcięcia wody. Dobór armatury możliwy według preferencji klienta.',
     items: [
       { name: 'Umywalka podwieszana ceramiczna', unit: 'szt.', qty: 1, price: 350, category: 'Materiał' },
       { name: 'Bateria umywalkowa jednouchwytowa', unit: 'szt.', qty: 1, price: 350, category: 'Materiał' },
@@ -103,6 +131,11 @@ export const starterPacks: StarterPack[] = [
     id: 'elektryk',
     tradeName: 'Elektryk',
     description: 'Instalacja elektryczna wewnętrzna',
+    bestFor: 'Nowa instalacja elektryczna w mieszkaniu lub po remoncie',
+    complexity: 'złożona',
+    estimatedDuration: '3–7 dni roboczych',
+    starterNotes:
+      'Instalacja zgodna z normą PN-IEC 60364. Na życzenie wykonujemy projekt instalacji i protokół pomiarowy. Ceny obejmują materiały i robociznę.',
     items: [
       { name: 'Przewód YDYp 3×2,5 mm²', unit: 'mb', qty: 50, price: 8, category: 'Materiał' },
       { name: 'Przewód YDYp 3×1,5 mm²', unit: 'mb', qty: 30, price: 5, category: 'Materiał' },
@@ -128,6 +161,11 @@ export const starterPacks: StarterPack[] = [
     id: 'podlogarz',
     tradeName: 'Podłogarz',
     description: 'Układanie podłóg drewnianych, paneli i wykładzin',
+    bestFor: 'Wymiana lub nowe ułożenie paneli, desek lub parkietu',
+    complexity: 'standardowa',
+    estimatedDuration: '2–4 dni roboczych',
+    starterNotes:
+      'Ceny materiałów zależą od wybranego asortymentu — dobieramy produkt do budżetu. Podkład akustyczny i folia paroizolacyjna w cenie robocizny.',
     items: [
       { name: 'Panele laminowane 8 mm AC4', unit: 'm²', qty: 20, price: 55, category: 'Materiał' },
       { name: 'Panele winylowe SPC 5 mm', unit: 'm²', qty: 20, price: 95, category: 'Materiał' },
@@ -153,6 +191,11 @@ export const starterPacks: StarterPack[] = [
     id: 'sucha-zabudowa',
     tradeName: 'Sucha zabudowa',
     description: 'Sufity podwieszane i ścianki działowe GK',
+    bestFor: 'Podział przestrzeni ściankami GK lub sufity podwieszane',
+    complexity: 'standardowa',
+    estimatedDuration: '3–5 dni roboczych',
+    starterNotes:
+      'Projekt rozkładu ścianek możliwy do uzgodnienia. Instalacja elektryczna i sanitarna wewnątrz zabudowy wyceniana oddzielnie.',
     items: [
       { name: 'Płyta GK standard 12,5 mm', unit: 'szt.', qty: 10, price: 38, category: 'Materiał' },
       { name: 'Płyta GK wodoodporna zielona 12,5 mm', unit: 'szt.', qty: 5, price: 55, category: 'Materiał' },
@@ -178,6 +221,11 @@ export const starterPacks: StarterPack[] = [
     id: 'dekarz',
     tradeName: 'Dekarz',
     description: 'Pokrycia dachowe i odwodnienie dachu',
+    bestFor: 'Wymiana pokrycia dachowego lub naprawa odwodnienia',
+    complexity: 'złożona',
+    estimatedDuration: '3–7 dni roboczych',
+    starterNotes:
+      'Zakres i cena zależą od rodzaju pokrycia i dostępu do dachu. Rusztowanie i BHP wliczone w cenę. Konieczna wizja lokalna przed podpisaniem umowy.',
     items: [
       { name: 'Blachodachówka powlekana', unit: 'm²', qty: 50, price: 55, category: 'Materiał' },
       { name: 'Dachówka betonowa', unit: 'm²', qty: 50, price: 65, category: 'Materiał' },
@@ -203,6 +251,11 @@ export const starterPacks: StarterPack[] = [
     id: 'elewacja',
     tradeName: 'Elewacja i ocieplenie',
     description: 'Ocieplenie budynku metodą BSO i tynki elewacyjne',
+    bestFor: 'Ocieplenie budynku i wykonanie tynku elewacyjnego (ETICS/BSO)',
+    complexity: 'złożona',
+    estimatedDuration: '7–14 dni roboczych',
+    starterNotes:
+      'Ceny obejmują materiały ociepleniowe, robociznę i wynajem rusztowania. Dobór koloru tynku i grubości izolacji do uzgodnienia. Wymagana wizja lokalna.',
     items: [
       { name: 'Styropian fasadowy EPS 100 10 cm', unit: 'm²', qty: 50, price: 35, category: 'Materiał' },
       { name: 'Styropian fasadowy EPS 100 15 cm', unit: 'm²', qty: 50, price: 52, category: 'Materiał' },
@@ -228,6 +281,11 @@ export const starterPacks: StarterPack[] = [
     id: 'stolarz',
     tradeName: 'Stolarz / Montażysta',
     description: 'Montaż okien, drzwi i stolarki budowlanej',
+    bestFor: 'Wymiana okien, drzwi i innej stolarki budowlanej',
+    complexity: 'standardowa',
+    estimatedDuration: '1–3 dni roboczych',
+    starterNotes:
+      'Ceny stolarki są orientacyjne — dobieramy produkt do budżetu i preferencji. Dokładny pomiar przed zamówieniem w cenie usługi.',
     items: [
       { name: 'Drzwi wewnętrzne z ościeżnicą 80 cm', unit: 'kpl.', qty: 3, price: 650, category: 'Materiał' },
       { name: 'Drzwi zewnętrzne antywłamaniowe', unit: 'szt.', qty: 1, price: 2200, category: 'Materiał' },
@@ -253,6 +311,11 @@ export const starterPacks: StarterPack[] = [
     id: 'murarz',
     tradeName: 'Murarz',
     description: 'Murowanie ścian, tynkowanie i betonowanie',
+    bestFor: 'Murowanie ścian, tynkowanie lub wylewki betonowe',
+    complexity: 'złożona',
+    estimatedDuration: '5–14 dni roboczych',
+    starterNotes:
+      'Zakres prac uzależniony od wielkości budynku. Możliwość etapowania prac. Dokładna wycena po wizji lokalnej i omówieniu projektu.',
     items: [
       { name: 'Pustak ceramiczny 25 cm', unit: 'szt.', qty: 100, price: 8, category: 'Materiał' },
       { name: 'Bloczek betonu komórkowego 24 cm', unit: 'szt.', qty: 80, price: 7, category: 'Materiał' },
