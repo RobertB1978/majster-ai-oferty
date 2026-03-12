@@ -210,3 +210,40 @@ export function getPlanById(id: string): PlanConfig | undefined {
 export function getPlanBySlug(slug: string): PlanConfig | undefined {
   return PLANS.find((p) => p.slug === slug);
 }
+
+// ---------------------------------------------------------------------------
+// Legacy alias resolution
+// ---------------------------------------------------------------------------
+
+/**
+ * Canonical mapping of legacy plan ids to current canonical ids.
+ *
+ * 'starter' was an early internal identifier used before the user-facing 'pro'
+ * plan was established. Some existing DB rows in user_subscriptions may still
+ * carry plan_id = 'starter'. It is functionally identical to 'pro'.
+ *
+ * This map is the single place where that alias is declared — all runtime
+ * consumers must use normalizePlanId() before limit/feature lookups.
+ */
+export const PLAN_ID_ALIASES: Readonly<Record<string, string>> = {
+  starter: 'pro',
+} as const;
+
+/**
+ * Resolve a plan id to its canonical form.
+ * Converts known legacy aliases (e.g. 'starter' → 'pro').
+ * Any unrecognised id is returned unchanged.
+ */
+export function normalizePlanId(planId: string): string {
+  return PLAN_ID_ALIASES[planId] ?? planId;
+}
+
+/**
+ * Get PlanLimits for a plan id.
+ * Handles legacy aliases via normalizePlanId().
+ * Falls back to free plan limits for any unrecognised id.
+ */
+export function getLimitsForPlan(planId: string): PlanLimits {
+  const canonical = normalizePlanId(planId);
+  return getPlanById(canonical)?.limits ?? PLANS[0].limits;
+}
