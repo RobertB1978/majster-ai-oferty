@@ -5,6 +5,18 @@ import { PLANS } from '@/config/plans';
 // Any change to pricePLN in plans.ts is automatically reflected here.
 const planPrice = (id: string): number => PLANS.find((p) => p.id === id)?.pricePLN ?? 0;
 
+// Derive limits from plans.ts — single source of truth for plan limits.
+// Spreads into tier objects to avoid duplicating values from plans.ts.
+const planLimits = (id: string) => {
+  const plan = PLANS.find((p) => p.id === id);
+  return {
+    maxProjects: plan?.limits.maxProjects ?? 0,
+    maxClients: plan?.limits.maxClients ?? 0,
+    maxTeamMembers: plan?.limits.maxTeamMembers ?? 0,
+    maxStorageMB: plan?.limits.maxStorageMB ?? 0,
+  };
+};
+
 /** Default configuration matching current app state. Used as reset target. */
 export const DEFAULT_CONFIG: AppConfig = {
   version: '1.0.0',
@@ -41,44 +53,33 @@ export const DEFAULT_CONFIG: AppConfig = {
         id: 'free',
         name: 'Darmowy',
         pricePLN: planPrice('free'),
-        maxProjects: 3,
-        maxClients: 5,
-        maxTeamMembers: 0,
-        maxStorageMB: 50,
-        features: ['excelExport'],
+        ...planLimits('free'),
+        // free plan: no paid features
+        features: [],
         highlighted: false,
       },
       {
         id: 'pro',
         name: 'Pro',
         pricePLN: planPrice('pro'),
-        maxProjects: 15,
-        maxClients: 30,
-        maxTeamMembers: 2,
-        maxStorageMB: 500,
-        features: ['excelExport', 'team', 'customTemplates'],
+        ...planLimits('pro'),
+        features: ['excelExport', 'team'],
         highlighted: true,
       },
       {
         id: 'business',
         name: 'Business',
         pricePLN: planPrice('business'),
-        maxProjects: 100,
-        maxClients: 200,
-        maxTeamMembers: 10,
-        maxStorageMB: 2048,
-        features: ['excelExport', 'team', 'customTemplates', 'ai', 'voice', 'documents', 'calendarSync', 'marketplace', 'advancedAnalytics', 'photoEstimation', 'ocr'],
+        ...planLimits('business'),
+        features: ['excelExport', 'team', 'ai', 'voice', 'documents', 'calendarSync', 'marketplace', 'advancedAnalytics', 'photoEstimation', 'ocr', 'prioritySupport'],
         highlighted: false,
       },
       {
         id: 'enterprise',
         name: 'Enterprise',
         pricePLN: planPrice('enterprise'),
-        maxProjects: 9999,
-        maxClients: 9999,
-        maxTeamMembers: 9999,
-        maxStorageMB: 99999,
-        features: ['excelExport', 'team', 'customTemplates', 'ai', 'voice', 'documents', 'calendarSync', 'marketplace', 'advancedAnalytics', 'photoEstimation', 'ocr', 'api', 'prioritySupport', 'unlimitedProjects', 'unlimitedClients'],
+        ...planLimits('enterprise'),
+        features: ['excelExport', 'team', 'ai', 'voice', 'documents', 'calendarSync', 'marketplace', 'advancedAnalytics', 'photoEstimation', 'ocr', 'api', 'prioritySupport', 'customTemplates', 'unlimitedProjects', 'unlimitedClients'],
         highlighted: false,
       },
     ],

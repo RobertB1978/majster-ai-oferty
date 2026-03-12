@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { usePlanFeatures, useUserSubscription } from './useSubscription';
 import { toast } from 'sonner';
+import { getLimitsForPlan, normalizePlanId } from '@/config/plans';
 
 export type PlanFeature = 
   | 'ai'
@@ -23,58 +24,50 @@ interface PlanLimits {
   maxProjects: number;
   maxClients: number;
   maxTeamMembers: number;
+  /** Internal API rate-limit — not shown on the pricing page. */
   maxApiCalls: number;
   maxStorageMB: number;
 }
 
-const PLAN_LIMITS: Record<string, PlanLimits> = {
-  free: {
-    maxProjects: 3,
-    maxClients: 5,
-    maxTeamMembers: 0,
-    maxApiCalls: 0,
-    maxStorageMB: 50,
-  },
-  pro: {
-    maxProjects: 15,
-    maxClients: 30,
-    maxTeamMembers: 2,
-    maxApiCalls: 100,
-    maxStorageMB: 500,
-  },
-  starter: {
-    maxProjects: 15,
-    maxClients: 30,
-    maxTeamMembers: 2,
-    maxApiCalls: 100,
-    maxStorageMB: 500,
-  },
-  business: {
-    maxProjects: 100,
-    maxClients: 200,
-    maxTeamMembers: 10,
-    maxApiCalls: 1000,
-    maxStorageMB: 2048,
-  },
-  enterprise: {
-    maxProjects: Infinity,
-    maxClients: Infinity,
-    maxTeamMembers: Infinity,
-    maxApiCalls: Infinity,
-    maxStorageMB: Infinity,
-  },
+/**
+ * maxApiCalls is an internal rate-limit not present on the public pricing page
+ * (plans.ts). Kept here as an extension alongside the canonical limits.
+ */
+const MAX_API_CALLS: Record<string, number> = {
+  free: 0,
+  pro: 100,
+  business: 1000,
+  enterprise: Infinity,
 };
 
+/**
+ * Plan limits derived from the canonical source of truth (src/config/plans.ts).
+ * Only canonical plan ids are listed here; legacy aliases (e.g. 'starter') are
+ * resolved via normalizePlanId() before this table is consulted.
+ */
+const PLAN_LIMITS: Record<string, PlanLimits> = (['free', 'pro', 'business', 'enterprise'] as const).reduce(
+  (acc, id) => {
+    const canonical = getLimitsForPlan(id);
+    acc[id] = { ...canonical, maxApiCalls: MAX_API_CALLS[id] ?? 0 };
+    return acc;
+  },
+  {} as Record<string, PlanLimits>
+);
+
+/**
+ * Feature requirements use canonical plan ids only.
+ * 'starter' is NOT listed — it is normalised to 'pro' before any lookup here.
+ */
 const FEATURE_REQUIREMENTS: Record<PlanFeature, string[]> = {
   ai: ['business', 'enterprise'],
   voice: ['business', 'enterprise'],
   documents: ['business', 'enterprise'],
-  excelExport: ['pro', 'starter', 'business', 'enterprise'],
+  excelExport: ['pro', 'business', 'enterprise'],
   calendarSync: ['business', 'enterprise'],
   prioritySupport: ['business', 'enterprise'],
   api: ['enterprise'],
   customTemplates: ['enterprise'],
-  team: ['pro', 'starter', 'business', 'enterprise'],
+  team: ['pro', 'business', 'enterprise'],
   marketplace: ['business', 'enterprise'],
   advancedAnalytics: ['business', 'enterprise'],
   photoEstimation: ['business', 'enterprise'],
@@ -104,14 +97,17 @@ const FEATURE_NAMES: Record<PlanFeature, string> = {
 export function usePlanGate() {
   const { data: subscription } = useUserSubscription();
   const { currentPlan, features, isPremium } = usePlanFeatures();
-  
+
+  /** Canonical plan id — resolves legacy aliases (e.g. 'starter' → 'pro'). */
+  const normalizedPlan = useMemo(() => normalizePlanId(currentPlan), [currentPlan]);
+
   const limits = useMemo(() => {
-    return PLAN_LIMITS[currentPlan] || PLAN_LIMITS.free;
-  }, [currentPlan]);
+    return PLAN_LIMITS[normalizedPlan] ?? PLAN_LIMITS.free;
+  }, [normalizedPlan]);
 
   const canUseFeature = (feature: PlanFeature): boolean => {
     const requiredPlans = FEATURE_REQUIREMENTS[feature];
-    return requiredPlans.includes(currentPlan);
+    return requiredPlans.includes(normalizedPlan);
   };
 
   const checkFeature = (feature: PlanFeature): boolean => {
@@ -154,9 +150,9 @@ export function usePlanGate() {
   const getUpgradeMessage = (feature: PlanFeature): string => {
     const requiredPlans = FEATURE_REQUIREMENTS[feature];
     const minPlan = requiredPlans[0];
+    // FEATURE_REQUIREMENTS uses canonical ids only — no 'starter' entry needed.
     const PLAN_DISPLAY_NAMES: Record<string, string> = {
       pro: 'Pro',
-      starter: 'Pro',
       business: 'Biznes',
       enterprise: 'Enterprise',
     };

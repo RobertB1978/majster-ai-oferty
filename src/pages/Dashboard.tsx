@@ -86,7 +86,8 @@ export default function Dashboard() {
   const getPlanBadge = () => {
     const badges: Record<string, { label: string; className: string }> = {
       free: { label: 'Free', className: 'bg-muted text-muted-foreground' },
-      starter: { label: 'Starter', className: 'bg-blue-500/20 text-blue-500' },
+      // 'starter' is a legacy alias for 'pro' — display identically.
+      starter: { label: 'Pro', className: 'bg-green-500/20 text-green-500' },
       pro: { label: 'Pro', className: 'bg-green-500/20 text-green-500' },
       business: { label: 'Business', className: 'bg-purple-500/20 text-purple-500' },
       enterprise: { label: 'Enterprise', className: 'bg-primary/20 text-primary' },

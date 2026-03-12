@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { normalizePlanId } from '@/config/plans';
 
 export interface UserSubscription {
   id: string;
@@ -59,7 +60,14 @@ export function useCreateSubscription() {
 export function usePlanFeatures() {
   const { data: subscription } = useUserSubscription();
   const currentPlan = subscription?.plan_id || 'free';
+  // Resolve legacy aliases (e.g. 'starter' → 'pro') before feature lookup.
+  const effectivePlan = normalizePlanId(currentPlan);
 
+  /**
+   * Feature flags keyed by canonical plan id.
+   * 'starter' is intentionally absent — it is normalised to 'pro' above.
+   * maxProjects / maxClients use the same sentinel as plans.ts (9999 = unlimited).
+   */
   const features: Record<string, unknown> = {
     free: {
       maxProjects: 3,
@@ -89,23 +97,9 @@ export function usePlanFeatures() {
       hasApi: false,
       hasCustomTemplates: false,
     },
-    starter: {
-      maxProjects: 15,
-      maxClients: 30,
-      maxExportRecords: 500,
-      hasAds: false,
-      hasAI: false,
-      hasVoice: false,
-      hasDocuments: false,
-      hasExcelExport: true,
-      hasCalendarSync: false,
-      hasPrioritySupport: false,
-      hasApi: false,
-      hasCustomTemplates: false,
-    },
     business: {
-      maxProjects: Infinity,
-      maxClients: Infinity,
+      maxProjects: 9999,
+      maxClients: 9999,
       maxExportRecords: 2000,
       hasAds: false,
       hasAI: true,
@@ -118,8 +112,8 @@ export function usePlanFeatures() {
       hasCustomTemplates: false,
     },
     enterprise: {
-      maxProjects: Infinity,
-      maxClients: Infinity,
+      maxProjects: 9999,
+      maxClients: 9999,
       maxExportRecords: Infinity,
       hasAds: false,
       hasAI: true,
@@ -133,13 +127,15 @@ export function usePlanFeatures() {
     },
   };
 
+  const planFeatures = features[effectivePlan] ?? features.free;
+
   return {
     currentPlan,
-    features: features[currentPlan],
-    maxExportRecords: features[currentPlan].maxExportRecords,
+    features: planFeatures,
+    maxExportRecords: (planFeatures as { maxExportRecords: number }).maxExportRecords,
     isPremium: currentPlan !== 'free',
-    canUseAI: features[currentPlan].hasAI,
-    canUseVoice: features[currentPlan].hasVoice,
-    showAds: features[currentPlan].hasAds,
+    canUseAI: (planFeatures as { hasAI: boolean }).hasAI,
+    canUseVoice: (planFeatures as { hasVoice: boolean }).hasVoice,
+    showAds: (planFeatures as { hasAds: boolean }).hasAds,
   };
 }

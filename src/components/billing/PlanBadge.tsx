@@ -2,9 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 import { useUserSubscription } from '@/hooks/useSubscription';
+import { normalizePlanId } from '@/config/plans';
 
-const PLAN_FALLBACK_IDS = ['free', 'pro', 'starter', 'business', 'enterprise'] as const;
-type PlanId = typeof PLAN_FALLBACK_IDS[number];
+// Canonical plan ids that have i18n keys under billing.plans.<id>.name.
+// 'starter' is intentionally absent — it is normalised to 'pro' before lookup.
+const CANONICAL_PLAN_IDS = ['free', 'pro', 'business', 'enterprise'] as const;
+type CanonicalPlanId = typeof CANONICAL_PLAN_IDS[number];
 
 export function PlanBadge() {
   const navigate = useNavigate();
@@ -13,10 +16,12 @@ export function PlanBadge() {
 
   if (isLoading) return null;
 
-  const planId = (subscription?.plan_id ?? 'free') as string;
-  const i18nPlanId: PlanId = PLAN_FALLBACK_IDS.includes(planId as PlanId) ? planId as PlanId : 'free';
-  const planLabel = t(`billing.plans.${i18nPlanId}.name`, planId);
-  const isPaid = planId !== 'free';
+  const rawPlanId = (subscription?.plan_id ?? 'free') as string;
+  // Resolve legacy aliases (e.g. 'starter' → 'pro') before i18n lookup.
+  const planId = normalizePlanId(rawPlanId);
+  const i18nPlanId: CanonicalPlanId = CANONICAL_PLAN_IDS.includes(planId as CanonicalPlanId) ? planId as CanonicalPlanId : 'free';
+  const planLabel = t(`billing.plans.${i18nPlanId}.name`, i18nPlanId);
+  const isPaid = rawPlanId !== 'free';
 
   return (
     <button
