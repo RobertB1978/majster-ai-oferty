@@ -14,10 +14,11 @@
 4. `META_AUDIT_FINAL_2026-03-12.md` — 2026-03-12 (commit 0d8e511 / PR #408)
 5. `FINAL_RUNTIME_AUDIT_2026-03-12.md` (V3) — 2026-03-12
 
-**Weryfikacja poleceń:**
-- `npm run lint` — BŁĄD: node_modules nie zainstalowane (`@eslint/js` nie znaleziony)
-- `npx tsc --noEmit` — BŁĄD: node_modules nie zainstalowane
-- `npx vitest run` — BŁĄD: node_modules nie zainstalowane
+**Weryfikacja poleceń (wykonane po instalacji node_modules):**
+- `npm run lint` → ✅ **0 errors, 1281 warnings** — zero twardych błędów; 1259/1281 warnings to `i18next/no-literal-string` (hardcoded strings — patrz sekcja szczegółowa)
+- `npx tsc --noEmit` → ✅ **0 błędów TypeScript** — strict mode, zero naruszeń
+- `npx vitest run` → ✅ **75 plików testowych / 1049 testów passed / 5 skipped / 0 failures**
+- `npm run build` → ✅ **built in 13.63s** — zero błędów build; main bundle gzip: 240KB
 - Weryfikacja kodu: bezpośrednie odczyty plików — pełna, dowody w raporcie
 
 ---
@@ -346,18 +347,86 @@ Roadmapa jest **częściowo realizowana** — core flows są spójne, architektu
 
 ---
 
+## 6B. WYNIKI WERYFIKACJI POLECEŃ (PEŁNA PRAWDA RUNTIME KODU)
+
+### ESLint — 0 errors, 1281 warnings
+
+| Kategoria | Liczba | Ocena |
+|---|---|---|
+| `i18next/no-literal-string` (hardcoded strings) | **1259** | ⚠️ PROBLEM SYSTEMOWY |
+| `react-refresh/only-export-components` | 17 | 🟢 tylko pliki testowe — niekrytyczne |
+| `unused variables` | 1 | 🟢 kosmetyczne |
+| **Twardych błędów (error severity)** | **0** | ✅ CZYSTE |
+
+**Wniosek ESLint:** Produkt ma **1259 hardcoded strings** (głównie polskie) w komponentach. Są to ostrzeżenia, nie błędy — aplikacja buduje się poprawnie. Ale to potwierdzenie że i18n jest niekompletne w kodzie komponentów, mimo że klucze w plikach JSON są parytyczne. Innymi słowy: CI i18n-ci.yml sprawdza parytet JSON (`pl.json` = `en.json` = `uk.json` = 3330 kluczy każdy ✅), ale 1259 stringów w komponentach jest hardcoded i **nigdy nie zostanie przetłumaczonych**, bo nie używają `t('klucz')`.
+
+### TypeScript — 0 błędów
+
+✅ Strict mode aktywny. Żadnych naruszeń typów. Kompilacja czysta.
+
+### Vitest — 1049/1054 passed, 5 skipped
+
+| Metryka | Wartość |
+|---|---|
+| Pliki testowe | 75 |
+| Testów passed | **1049** |
+| Testów skipped | 5 (wszystkie: GDPRCenter — "requires auth") |
+| Failures | **0** |
+| Czas | 36.28s |
+
+5 skipped testów to wyłącznie testy `GDPRCenter` oznaczone `it.skip('... (requires auth)')` — świadomie pominięte ze względu na brak kontekstu auth w środowisku testowym. Niekrytyczne.
+
+### Build — sukces, 13.63s
+
+| Chunk | Gzip |
+|---|---|
+| `index.js` (main) | **240 KB** ⚠️ duży |
+| `charts-vendor` | 113 KB |
+| `pdf-vendor` | 136 KB |
+| `react-vendor` | 54 KB |
+| `supabase-vendor` | 46 KB |
+
+**Uwaga:** `index.js` (240 KB gzip) jest duży — wskazuje że część kodu nie jest lazy-loaded lub chunk splitting nie objął wszystkich zależności. Warto przeanalizować co trafia do main chunk.
+
+### i18n Parity — 100% (JSON)
+
+```
+PL keys: 3330 | EN keys: 3330 | UK keys: 3330
+Missing in EN: 0 | Missing in UK: 0
+```
+
+✅ Pliki JSON są parytyczne. ⚠️ Ale 1259 hardcoded strings w komponentach oznacza że ta liczba jest myląca — parytet kluczy JSON ≠ brak hardcoded strings w kodzie.
+
+### Martwy kod — USUNIĘTY
+
+`NewProject.tsx`, `Projects.tsx`, `ProjectDetail.tsx` — **nie istnieją** w repozytorium. Audyt #2 zgłaszał je jako "dead code powiększający bundle" — zostały usunięte.
+
+### Login overflow — CZĘŚCIOWO NAPRAWIONE
+
+Sprint A zmienił `overflow-hidden` na `overflow-x-hidden` (blokuje tylko poziomy scroll, nie pionowy). Prawy panel formularza nadal ma `min-h-screen lg:min-h-0` — na mobile (`< lg`) przyjmuje `min-h-screen`. Z bannerem email + CAPTCHA + error messages nadal istnieje ryzyko overflow na < 600px. **Wymaga manualnej weryfikacji na urządzeniu.**
+
+### normalizePlanId — ZINTEGROWANE POPRAWNIE
+
+`normalizePlanId()` używany w: `PlanBadge.tsx`, `useSubscription.ts:64`, `usePlanGate.ts:102`. Trzy kluczowe punkty styku z planem użytkownika mają normalizację. ✅
+
+### AdBanner CTA — NADAL BEZ FUNKCJONALNEGO onClick
+
+`AdBanner.tsx` ma buttony z `onClick={handleClose}` — CTA zamyka banner zamiast prowadzić do akcji. To nie jest "dead onClick" — to świadomy design (zamknięcie reklamy). Nie jest to bloker.
+
+---
+
 ## 7. OCENA 0–10 + %
 
 | Obszar | Ocena | % | Uzasadnienie |
 |---|---|---|---|
-| **Architektura** | 8.5/10 | 85% | Kanonizacja v2_projects 95% kompletna; legacy remnants: useProjects.ts (deprecated), NewProject.tsx (dead code); wzorzec V2-first → legacy fallback konsekwentny |
-| **Spójność danych** | 8.0/10 | 82% | Dashboard, Finance, Analytics, ProjectsList, ProjectHub, PdfGenerator, QE, Calendar — wszystkie na v2_projects; GDPRCenter — oba źródła |
-| **UX** | 6.5/10 | 68% | Shell profesjonalny; empty/loading/error na głównych stronach; FTUE: Landing (8/10) → Login (6/10, ryzyko overflow) → Dashboard (5/10 — karty cursor-default bez celu); Voice/AI = identyczny formularz |
-| **Output quality** | 7.5/10 | 75% | PDF oferty kompletny (3 szablony); 25 szablonów prawnych; eksport Finance martwy; szablony bez podglądu |
-| **Zgodność z roadmapą** | 7.0/10 | 70% | Offer-first ✅; v2_projects ✅; Stripe backend ✅ (Price IDs null); szablony premium C/D/E ✅; Marketplace/Team odłożone ✅ |
-| **Prawda wdrożeniowa PR-ów** | 8.5/10 | 87% | Z ~35 PR-ów: >30 zweryfikowanych w kodzie jako działające; 2–3 częściowe; 0 regresji znalezionych |
-| **Gotowość do closed beta** | 7.0/10 | 70% | Blokuje: migracje DB (infra action); Login overflow (runtime verification) |
-| **Gotowość do public beta** | 4.5/10 | 48% | Brakuje: Stripe działający, runtime verification, a11y audit, Finance export, Word export, OG image |
+| **Architektura** | 8.5/10 | 85% | Kanonizacja v2_projects 95% kompletna; `useProjects.ts` deprecated ale istnieje; `NewProject.tsx`/`Projects.tsx`/`ProjectDetail.tsx` — USUNIĘTE (audyt potwierdził); wzorzec V2-first → legacy fallback konsekwentny |
+| **Spójność danych** | 8.5/10 | 85% | Dashboard, Finance, Analytics, ProjectsList, ProjectHub, PdfGenerator, QE, Calendar — wszystkie na v2_projects; GDPRCenter — oba źródła (poprawne); TypeScript 0 błędów potwierdza spójność typów |
+| **UX** | 6.5/10 | 68% | Shell profesjonalny; empty/loading/error na głównych stronach; FTUE: Landing (8/10) → Login (6/10, overflow-x-hidden naprawiony ale min-h-screen na formularzu ⚠️) → Dashboard (5/10 — cursor-default bez nawigacji) |
+| **Output quality** | 7.5/10 | 75% | PDF oferty kompletny (3 szablony); 25 szablonów prawnych; eksport Finance = `disabled`/coming-soon; szablony bez podglądu PDF |
+| **Zgodność z roadmapą** | 7.0/10 | 70% | Offer-first ✅; v2_projects ✅; Stripe backend ✅ (Price IDs null — owner action); szablony C/D/E ✅; Marketplace/Team odłożone ✅ |
+| **Prawda wdrożeniowa PR-ów** | 9.0/10 | 90% | 75 plików testowych / 1049 testów passed / 0 failures potwierdza że PR-y działają; TypeScript 0 błędów; build sukces |
+| **Gotowość do closed beta** | 7.5/10 | 75% | Blokuje: migracje DB na produkcji (infra/owner action); Login overflow na telefonie (runtime verification); 1259 hardcoded strings (niefatalne ale widoczne) |
+| **Gotowość do public beta** | 4.5/10 | 48% | Brakuje: Stripe działający, runtime a11y audit, Finance export, Word export, OG image, index.js 240KB gzip (do optymalizacji) |
 
 ---
 
@@ -495,4 +564,8 @@ Po Akcji 1 (infra) + opcjonalnie 2 (cleanup), closed beta z 5–10 użytkownikam
 *Meta-audyt wykonany: 2026-03-12 przez Claude Sonnet 4.6*
 *HEAD audytu: `fb7d3a3` (Sprint E — PR #419)*
 *Żadne pliki źródłowe nie zostały zmodyfikowane.*
-*ESLint/TypeScript/Vitest: nie uruchomione — node_modules nie zainstalowane w środowisku audytu.*
+*ESLint: 0 errors, 1281 warnings (1259 × i18next/no-literal-string).*
+*TypeScript: 0 błędów (strict mode).*
+*Vitest: 75 plików / 1049 passed / 5 skipped / 0 failures.*
+*Build: sukces 13.63s, main bundle 240KB gzip.*
+*i18n JSON parity: PL=EN=UK=3330 kluczy, missing=0.*
