@@ -49,11 +49,13 @@ Wzorzec: `price_` + min. 14 znaków alfanumerycznych bez dodatkowych podkreślni
         Po dodaniu: skopiuj Webhook signing secret (whsec_...)
 [ ] 6. Ustaw sekret webhooka w Supabase → Edge Functions → Secrets:
         STRIPE_WEBHOOK_SECRET=whsec_...
-[ ] 7. Zaktualizuj PRICE_TO_PLAN_MAP w stripe-webhook/index.ts:
-        Zamień klucze placeholder na prawdziwe Price IDs z kroku 2.
-        Przykład:
-          "price_1MkWBNLkBkqDaVD26L6D3Dz": "pro",    ← Twój prawdziwy ID
-          "price_1DEFghijKLMN456789...":    "business",
+[ ] 7. Ustaw sekret STRIPE_PRICE_PLAN_MAP w Supabase → Edge Functions → Secrets:
+        Wartość to obiekt JSON mapujący prawdziwe Stripe Price IDs na nazwy planów.
+        Przykład (skopiuj i wypełnij swoimi ID z kroku 2):
+          {"price_1MkWBNLkBkqDaVD26L6D3Dz": "pro", "price_1DEFghijKLMN456789": "business"}
+        WAŻNE: Jeśli ten sekret nie jest ustawiony, webhook zwróci HTTP 500
+        i Stripe będzie ponawiał próby — to celowe (fail loudly), dopóki
+        operator nie skonfiguruje mapowania.
 [ ] 8. Zrób test checkout (sekcja 4 poniżej)
 [ ] 9. Przełącz Stripe na LIVE MODE i powtórz kroki 2-8 z kluczami live_
 ```
@@ -87,6 +89,7 @@ Ustaw w: Supabase Dashboard → Project Settings → Edge Functions → Secrets
 |--------|----------|------|
 | `STRIPE_SECRET_KEY` | ✅ | Klucz tajny Stripe (zaczyna się od `sk_live_` lub `sk_test_`) |
 | `STRIPE_WEBHOOK_SECRET` | ✅ | Sekret webhooka z Stripe Dashboard (zaczyna się od `whsec_`) |
+| `STRIPE_PRICE_PLAN_MAP` | ✅ | JSON mapujący Stripe Price IDs → nazwy planów. Przykład: `{"price_1AbcXyz": "pro", "price_1DefUvw": "starter"}`. Brak tego sekretu powoduje HTTP 500 dla każdego zdarzenia subskrypcji (celowe — wymusza konfigurację). |
 | `FRONTEND_URL` | ✅ | URL aplikacji (np. `https://majsterai.vercel.app`) |
 | `SUPABASE_URL` | auto | Injektowany automatycznie przez Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | auto | Injektowany automatycznie przez Supabase |
@@ -257,17 +260,26 @@ DROP FUNCTION IF EXISTS public.enforce_monthly_offer_send_limit();
 
 ## 7. Mapowanie planów Stripe → wewnętrzne
 
-| Stripe Price ID (przykładowy) | Plan wewnętrzny |
-|-------------------------------|-----------------|
-| `price_pro_monthly` | `pro` |
-| `price_pro_yearly` | `pro` |
-| `price_starter_monthly` | `starter` |
-| `price_business_monthly` | `business` |
-| `price_enterprise_monthly` | `enterprise` |
+Mapowanie jest konfigurowane przez sekret Supabase `STRIPE_PRICE_PLAN_MAP` (nie w kodzie).
 
-Mapowanie w: `supabase/functions/stripe-webhook/index.ts` → `PRICE_TO_PLAN_MAP`
+Format sekretu (JSON string):
+```json
+{
+  "price_1AbcXyzMonthly": "pro",
+  "price_1AbcXyzYearly":  "pro",
+  "price_1DefUvwMonthly": "starter",
+  "price_1GhiJklMonthly": "business",
+  "price_1MnoMnoPMonthly": "enterprise"
+}
+```
 
-**Ważne:** Zastąp przykładowe Price ID (`price_pro_monthly`) prawdziwymi ID z Stripe Dashboard.
+Gdzie klucze (`price_1...`) to **prawdziwe Stripe Price IDs** z Stripe Dashboard,
+a wartości (`pro`, `starter`, `business`, `enterprise`) to wewnętrzne nazwy planów.
+
+**Zachowanie przy błędzie:**
+- Brak sekretu → webhook zwraca HTTP 500 (Stripe ponawia, operator jest powiadamiany)
+- Nieprawidłowy JSON → HTTP 500 (jw.)
+- Price ID nieznajdujący się w mapie → log `UNMAPPED_PRICE_ID` + domyślnie plan `free` (ostrożność)
 
 ---
 

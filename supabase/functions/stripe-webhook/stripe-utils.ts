@@ -46,3 +46,61 @@ export function mapSubscriptionStatus(stripeStatus: string): string {
 export function isEntitledStatus(status: string): boolean {
   return status === "active" || status === "trial";
 }
+
+/**
+ * Parse and validate the STRIPE_PRICE_PLAN_MAP environment variable.
+ *
+ * Expected format (JSON string passed as Supabase secret):
+ *   {"price_1AbcXyz123": "pro", "price_1DefUvw456": "starter"}
+ *
+ * Keys   — real Stripe Price IDs (format: price_<14+ alphanumeric chars>)
+ * Values — internal plan name strings ("pro", "starter", "business", "enterprise")
+ *
+ * Throws a descriptive Error if:
+ *   - rawEnv is undefined or empty (env var not configured)
+ *   - rawEnv is not valid JSON
+ *   - rawEnv is not a JSON object (e.g. array, string, number)
+ *   - any value in the map is not a string
+ *
+ * Returns an empty map {} without throwing when the map is configured but has
+ * no entries — this allows operators to set the var before adding price IDs.
+ * Callers should treat an unmapped price ID as a warning, not a fatal error.
+ */
+export function buildPriceToPlanMap(rawEnv: string | undefined): Record<string, string> {
+  if (!rawEnv || rawEnv.trim() === "") {
+    throw new Error(
+      "STRIPE_PRICE_PLAN_MAP is not configured. " +
+      "Add this Supabase secret with a JSON object mapping real Stripe Price IDs to plan names. " +
+      'Example: {"price_1AbcXyz123": "pro", "price_1DefUvw456": "starter", "price_1GhiJkl789": "business"}'
+    );
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawEnv);
+  } catch {
+    throw new Error(
+      "STRIPE_PRICE_PLAN_MAP contains invalid JSON. " +
+      'Expected a JSON object like {"price_1xxx": "pro"}. ' +
+      `Value starts with: ${rawEnv.slice(0, 80)}`
+    );
+  }
+
+  if (typeof parsed !== "object" || Array.isArray(parsed) || parsed === null) {
+    throw new Error(
+      `STRIPE_PRICE_PLAN_MAP must be a JSON object, got ${Array.isArray(parsed) ? "array" : typeof parsed}. ` +
+      'Expected: {"price_1xxx": "pro", "price_1yyy": "starter"}'
+    );
+  }
+
+  for (const [key, value] of Object.entries(parsed as Record<string, unknown>)) {
+    if (typeof value !== "string") {
+      throw new Error(
+        `STRIPE_PRICE_PLAN_MAP: value for key "${key}" must be a string (plan name e.g. "pro"), ` +
+        `got ${typeof value}`
+      );
+    }
+  }
+
+  return parsed as Record<string, string>;
+}
