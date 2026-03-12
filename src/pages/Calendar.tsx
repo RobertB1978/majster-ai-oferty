@@ -13,7 +13,7 @@ import { enUS } from 'date-fns/locale';
 import { uk } from 'date-fns/locale';
 import type { Locale } from 'date-fns';
 import { useCalendarEvents, useAddCalendarEvent, useDeleteCalendarEvent, useUpdateCalendarEvent, CalendarEvent } from '@/hooks/useCalendarEvents';
-import { useProjects } from '@/hooks/useProjects';
+import { useProjectsV2List } from '@/hooks/useProjectsV2';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar as CalendarIcon, Plus, Loader2, GanttChart } from 'lucide-react';
@@ -57,11 +57,14 @@ export default function Calendar() {
   const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
   const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
-  const { data: events = [], isLoading } = useCalendarEvents(
+  const { data: events = [], isLoading, isError } = useCalendarEvents(
     format(calendarStart, 'yyyy-MM-dd'),
     format(calendarEnd, 'yyyy-MM-dd')
   );
-  const { data: projects = [] } = useProjects();
+  // V2-aligned: reads from v2_projects (same canonical source as Dashboard / ProjectsList)
+  const { data: v2Projects = [] } = useProjectsV2List();
+  // Adapt V2 project shape { id, title } → CalendarEventDialog's expected { id, project_name }
+  const projects = v2Projects.map((p) => ({ id: p.id, project_name: p.title }));
   const addEvent = useAddCalendarEvent();
   const updateEvent = useUpdateCalendarEvent();
   const deleteEvent = useDeleteCalendarEvent();
@@ -198,6 +201,20 @@ export default function Calendar() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3 text-center px-4">
+        <CalendarIcon className="h-12 w-12 text-muted-foreground/50" />
+        <p className="text-muted-foreground font-medium">
+          {t('calendar.loadError', 'Nie udało się załadować kalendarza')}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          {t('calendar.loadErrorHint', 'Sprawdź połączenie z internetem i odśwież stronę')}
+        </p>
       </div>
     );
   }

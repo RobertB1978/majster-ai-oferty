@@ -238,11 +238,11 @@
       "title": "Create new offer",
       "chooseMethod": "Choose how to create the offer",
       "voiceTitle": "Voice",
-      "voiceDesc": "Say what to quote",
+      "voiceDesc": "Open the offer form",
       "voiceStarting": "Starting voice recording on offer creation page",
       "voiceRedirect": "You will be redirected shortly...",
       "aiTitle": "AI Assistant",
-      "aiDesc": "Type or chat",
+      "aiDesc": "Open the offer form",
       "aiOpening": "Opening AI assistant...",
       "manualTitle": "Manually",
       "manualDesc": "Fill in the form"
@@ -2816,7 +2816,8 @@
       "account": "Account",
       "profile": "Company Profile",
       "logout": "Log out",
-      "ariaLabel": "Navigation"
+      "ariaLabel": "Navigation",
+      "photos": "Photos"
     },
     "fab": {
       "open": "Create",
@@ -2857,7 +2858,8 @@
       "profile": "Company Profile",
       "finance": "Finance",
       "clients": "Clients",
-      "settings": "Settings"
+      "settings": "Settings",
+      "photos": "Photos"
     },
     "onboarding": {
       "step1Title": "Welcome to the new Majster.AI",

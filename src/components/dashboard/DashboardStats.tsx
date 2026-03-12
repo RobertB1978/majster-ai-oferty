@@ -165,7 +165,7 @@ function StatsCard({ title, value, icon, trend, color = 'primary', delay = 0 }: 
     >
       <Card
         className={cn(
-          'overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group cursor-default',
+          'overflow-hidden border-0 shadow-md transition-all duration-300 cursor-default',
           cfg.bg
         )}
       >

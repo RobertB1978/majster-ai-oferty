@@ -7,6 +7,7 @@ import {
   Settings,
   CalendarDays,
   BookOpen,
+  Camera,
   ChevronRight,
   type LucideIcon,
 } from 'lucide-react';
@@ -42,6 +43,7 @@ const MORE_GROUPS: MoreGroup[] = [
       { id: 'calendar',           labelKey: 'newShell.more.calendar',          icon: CalendarDays, route: '/app/calendar' },
       { id: 'document-templates', labelKey: 'newShell.more.documentTemplates', icon: BookOpen,     route: '/app/document-templates' },
       { id: 'finance',            labelKey: 'newShell.more.finance',           icon: TrendingUp,   route: '/app/finance' },
+      { id: 'photos',             labelKey: 'newShell.more.photos',            icon: Camera,       route: '/app/photos' },
       { id: 'clients',            labelKey: 'newShell.more.clients',           icon: Users,        route: '/app/customers' },
     ],
   },
