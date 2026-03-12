@@ -12,7 +12,6 @@ import { RecentProjects } from '@/components/dashboard/RecentProjects';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 import { QuoteCreationHub } from '@/components/dashboard/QuoteCreationHub';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { usePlanFeatures } from '@/hooks/useSubscription';
@@ -211,23 +210,16 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Quote Creation Hub — creation modes (secondary, discoverable) */}
-      <Card className="border-2 border-primary/20 bg-primary/5 overflow-hidden shadow-sm">
-        <CardContent className="p-6 sm:p-8">
-          <QuoteCreationHub onVoiceQuoteCreated={handleVoiceQuoteCreated} />
-        </CardContent>
-      </Card>
+      {/* Quote Creation Hub — secondary entry point for voice/AI/manual modes */}
+      <div className="border rounded-lg p-4 sm:p-6 bg-muted/30">
+        <QuoteCreationHub onVoiceQuoteCreated={handleVoiceQuoteCreated} />
+      </div>
 
       {/* Trial countdown banner — upsell, below fold */}
       <TrialBanner />
 
-      {/* Ad Banners for Free users — promotional, at the bottom */}
-      {showAds && (
-        <>
-          <AdBanner variant="inline" className="mb-2" />
-          <AdBanner variant="horizontal" />
-        </>
-      )}
+      {/* Ad Banner for Free users — one banner, at the bottom */}
+      {showAds && <AdBanner variant="horizontal" />}
 
       {/* Onboarding wizard */}
       <OnboardingWizard
