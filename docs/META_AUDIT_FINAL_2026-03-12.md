@@ -272,7 +272,7 @@ Lista problemów, które można uznać za **definitywnie zamknięte** (zweryfiko
 | QuoteEditor → legacy `useProject` | `QuoteEditor.tsx:4` | Edycja wyceny może nie znaleźć v2 projektu |
 | GDPRCenter → legacy `projects` | `GDPRCenter.tsx:58` | Export danych GDPR z legacy tabeli |
 | Finance export buttons | `Finance.tsx` | Kliknięcie PDF/Excel nic nie robi |
-| Brak upsell journey dla AI | cała aplikacja | Użytkownik nie wie o premium features |
+| Upsell journey subtelny (toast only) | `usePlanGate.ts` → toast → UpgradeModal | Użytkownik widzi toast z CTA "Zmień plan", ale brak dedykowanego UI w kontekście AI/Voice blokowania |
 | OG image kwadratowy | `index.html` meta tags | Social media sharing wygląda źle |
 | QuickEstimate `status: t(...)` | `QuickEstimateWorkspace.tsx:195` | Tłumaczenie i18n jako status w DB (niestabilne) |
 
@@ -282,8 +282,8 @@ Lista problemów, które można uznać za **definitywnie zamknięte** (zweryfiko
 |---------|--------|--------|
 | Marketplace (redirect do dashboard) | UKRYTY | Zero ryzyka dopóki redirect działa |
 | Team management (redirect do dashboard) | UKRYTY | Zero ryzyka dopóki redirect działa |
-| Customer portal Stripe | NIE PODŁĄCZONY DO UI | Użytkownik nie może zarządzać subskrypcją |
-| AI Chat / Voice / OCR | GATED (free plan) | Brak upsell — zero discovery |
+| Customer portal Stripe | PODŁĄCZONY w Plan.tsx:235-247 | Widoczny dla płatnych użytkowników (poprawka vs audyty #1/#3 które twierdziły że nie podłączony) |
+| AI Chat / Voice / OCR | GATED (free plan) | Upsell istnieje (UpgradeModal via toast), ale subtelny — brak dedykowanego CTA w kontekście blokowania |
 
 ### ZALEŻNE OD WŁAŚCICIELA:
 
@@ -395,7 +395,22 @@ Runtime UI truth, i18n completeness, photo/storage pipeline, PWA offline, perfor
 
 ---
 
-## DODATEK A: KTÓRE AUDYTY ODPOWIADAJĄ NA KTÓRE PYTANIA
+## DODATEK A: KOREKTY BŁĘDÓW Z 3 AUDYTÓW
+
+Poniższe twierdzenia z audytów okazały się **nieprawdziwe** po głębszej weryfikacji kodu:
+
+| Twierdzenie audytów | Prawda | Źródło korekty |
+|---------------------|--------|----------------|
+| "Customer portal niepodłączony do UI" (Audyt #1, #3) | Customer portal **JEST** podłączony w `Plan.tsx:235-247` — przycisk "Portal płatności" widoczny dla płatnych użytkowników z Stripe customer ID | `useCustomerPortal()` w `src/hooks/useStripe.ts:79-114` |
+| "Brak upsell journey — użytkownik nie wie o premium features" (Audyt #1, #3) | `UpgradeModal` (`src/components/billing/UpgradeModal.tsx`) istnieje i jest triggerowany przez `usePlanGate.checkFeature()` via toast z CTA "Zmień plan". Jest subtelny (toast, nie dedykowany panel), ale ISTNIEJE. | `usePlanGate.ts` + `UpgradeModal.tsx` |
+| "`useCreateSubscription` — dead code / security risk" (Audyt #1) | Hook **nie jest niebezpieczny** — jest aktywnie WYŁĄCZONY (throws error: "Ten hook jest wyłączony — zmiana planu musi przejść przez Stripe Checkout") | `useSubscription.ts:49-58` |
+| "Marketplace widoczny bez moderacji" (Audyt #1, częściowo #3) | Marketplace jest **UKRYTY** — redirect do dashboard od PR #404 | `App.tsx:262` |
+| "Team — skeleton widoczny" (Audyt #1, częściowo #3) | Team jest **UKRYTY** — redirect do dashboard od PR #404 | `App.tsx:260` |
+| "HomeLobby sekcje z zerami" (Audyt #2) | HomeLobby jest **UKRYTY** — redirect do dashboard, komponent wykomentowany | `App.tsx:234-235` |
+
+---
+
+## DODATEK B: KTÓRE AUDYTY ODPOWIADAJĄ NA KTÓRE PYTANIA
 
 | Pytanie | Audyt #1 | Audyt #2 | Audyt #3 | Meta-audyt |
 |---------|:---:|:---:|:---:|:---:|
