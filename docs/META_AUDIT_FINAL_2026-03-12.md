@@ -174,9 +174,9 @@ Trzy audyty razem stanowią solidną bazę wiedzy o stanie Majster.AI, pokrywaj�
 | 23 | Ukryte/gated moduły | **CZĘŚCIOWO** | Marketplace i Team opisane, ale nie sprawdzono że są UKRYTE | Brak: pełna lista feature flags, brak analizy co się stanie gdy owner je włączy |
 | 24 | Marketplace / team readiness | **CZĘŚCIOWO** | Opisane jako "surowe" ale faktycznie UKRYTE (redirect do dashboard) | Wszystkie 3 audyty twierdziły że są widoczne — NIEPRAWDA od PR #404 |
 | 25 | SEO / branding / discoverability | **DOBRZE** | Audyt #1 i #3 dobrze pokryły meta, Schema.org, robots.txt | Brak: Lighthouse audit, Page Speed, Core Web Vitals |
-| 26 | Bezpieczeństwo / compliance | **CZĘŚCIOWO** | RLS opisany, security headers (#3), ale brak pełnego security audit | BRAK: penetration testing, OWASP checklist, dependency vulnerability scan |
+| 26 | Bezpieczeństwo / compliance | **DOBRZE** | RLS 55+ tabel, security headers kompletne (CSP, HSTS preload, X-Frame-Options DENY, Permissions-Policy), CI/CD: npm audit + CodeQL na każdym PR, zero service_role w frontend, zero hardcoded secrets, 1 bezpieczny dangerouslySetInnerHTML | BRAK: penetration testing, OWASP full checklist |
 | 27 | Zależności od akcji właściciela | **DOBRZE** | Stripe, OG image, legal review dobrze opisane | Brak: timeline/priority dla akcji właściciela, brak decision matrix |
-| 28 | Realizm pokrycia testami | **CZĘŚCIOWO** | 978 testów, 64 pliki — ale brak analizy co jest testowane | BRAK: coverage report (%), brak listy "co nie ma testów", brak analizy jakości testów |
+| 28 | Realizm pokrycia testami | **SŁABO** | 68 plików testowych / 445 source = 15.3%. Krytyczne braki: oferty (14 plików, 0 testów), billing (10, 0), auth (7, 0), layout (18, 0), UI library (58, 0), calendar (10, 0). Testy skupione na hookach, security, routing, i18n. | BRAK: coverage % per moduł, brak testów integracyjnych E2E, brak testów core business flow (offer creation) |
 | 29 | Higiena repo / dokumentacja | **SŁABO** | Audyt #3 wspomniał "36 .md, 27 .jpg w root" | BRAK: analiza co można usunąć, brak cleanup planu, 76 plików clutter w root |
 | 30 | Prawda o gotowości do bety | **CZĘŚCIOWO** | Wszystkie 3 twierdzą "prawie gotowy" — ale z różnymi blokerami | Brak: jasna definicja "co to jest zamknięta beta", brak kryteriów akceptacji |
 
@@ -188,7 +188,7 @@ Trzy audyty razem stanowią solidną bazę wiedzy o stanie Majster.AI, pokrywaj�
 
 1. **Runtime reality vs repo truth** — Żaden audyt nie widział działającej aplikacji. Wszystkie twierdzenia o "działa" / "nie działa" opierają się na analizie kodu, a nie na obserwacji. To fundamentalne ograniczenie. Możliwe ukryte problemy: CSS rendering, animacje, timing issues, race conditions, hydration errors.
 
-2. **i18n completeness** — PR #406 naprawił krytyczne brakujące klucze (quickActions, todayTasks, plan badges), ale żaden audyt tego nie wykrył PRZED naprawieniem. To sugeruje, że mogą istnieć inne brakujące klucze tłumaczeń, szczególnie w mniej widocznych komponentach.
+2. **i18n completeness** — PR #406 naprawił krytyczne brakujące klucze (quickActions, todayTasks, plan badges). AKTUALIZACJA: istnieje CI/CD gate (`i18n-ci.yml`) wymuszający parytet kluczy PL/EN/UK (87 kluczy w każdym) + test `locale-completeness.test.ts`. Ryzyko brakujących kluczy jest NIŻSZE niż początkowo zakładano, ale CI sprawdza tylko parytet kluczy — nie sprawdza, czy hardcoded Polish strings nie istnieją w komponentach (choć ESLint rule `i18next/no-literal-string` to łapie).
 
 3. **Plan/pricing truth consistency** — PR #407 naprawił poważne sprzeczności limitów planów między 4 plikami. Żaden z 3 audytów nie sprawdził, czy `plans.ts`, `defaultConfig.ts`, `usePlanGate.ts` i `useSubscription.ts` mówią to samo. To pokazuje lukę w audytowaniu "konfiguracji jako prawdy".
 
