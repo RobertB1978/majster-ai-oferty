@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
   ArrowLeft, ChevronDown, ChevronUp, QrCode,
-  Copy, Check, Loader2, Plus, Trash2, RefreshCw, FileText,
+  Copy, Check, Loader2, Plus, Trash2, RefreshCw, FileText, LayoutList,
 } from 'lucide-react';
 
 import {
@@ -28,6 +28,7 @@ import {
   type ProjectStage,
 } from '@/hooks/useProjectsV2';
 import { useSourceOffer } from '@/hooks/useOffers';
+import { getStarterPack } from '@/data/starterPacks';
 import { BurnBarSection } from '@/components/costs/BurnBarSection';
 import { PhotoReportPanel } from '@/components/photos/PhotoReportPanel';
 import { AcceptanceChecklistPanel } from '@/components/photos/AcceptanceChecklistPanel';
@@ -211,6 +212,45 @@ function StagesPanel({ stages, progress, projectId }: StagesPanelProps) {
           <Plus className="h-4 w-4" />
         </Button>
       </div>
+    </div>
+  );
+}
+
+// ── TemplateStagesNote ────────────────────────────────────────────────────────
+
+/**
+ * Sprint E: Shows a lightweight note when project has template-origin stages.
+ * Derives template name from the linked offer's source_template_id when available.
+ * Renders null when stagesCount === 0 (no leakage for manually created empty projects).
+ */
+interface TemplateStagesNoteProps {
+  sourceOfferId: string | null;
+  stagesCount: number;
+}
+
+function TemplateStagesNote({ sourceOfferId, stagesCount }: TemplateStagesNoteProps) {
+  // Hook must be called unconditionally (React hooks rule)
+  const { data: sourceOffer } = useSourceOffer(sourceOfferId);
+
+  // Zero stages → nothing to show
+  if (stagesCount === 0) return null;
+
+  // Try to derive template name via offer → source_template_id → starterPack
+  const templatePack = sourceOffer?.source_template_id
+    ? getStarterPack(sourceOffer.source_template_id)
+    : undefined;
+
+  return (
+    <div
+      className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground mb-3"
+      data-testid="template-stages-note"
+    >
+      <LayoutList className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+      <span>
+        {templatePack
+          ? `${templatePack.tradeName} · ${stagesCount} etapów`
+          : `Plan startowy · ${stagesCount} etapów`}
+      </span>
     </div>
   );
 }
@@ -430,11 +470,18 @@ export default function ProjectHub() {
               {isOpen && (
                 <div className="px-4 pb-4 pt-2 border-t">
                   {section.id === 'stages' && (
-                    <StagesPanel
-                      stages={project.stages_json}
-                      progress={project.progress_percent}
-                      projectId={project.id}
-                    />
+                    <>
+                      {/* Sprint E: template origin note — hidden when no stages */}
+                      <TemplateStagesNote
+                        sourceOfferId={project.source_offer_id}
+                        stagesCount={project.stages_json.length}
+                      />
+                      <StagesPanel
+                        stages={project.stages_json}
+                        progress={project.progress_percent}
+                        projectId={project.id}
+                      />
+                    </>
                   )}
                   {section.id === 'costs' && (
                     <BurnBarSection project={project} />
