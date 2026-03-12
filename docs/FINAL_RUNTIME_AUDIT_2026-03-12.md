@@ -203,9 +203,14 @@ Jednak **rzeczywistość runtime brutalnie rozmija się z prawdą kodu**:
 - **Działa**: 25 szablonów (5 umów, 9 protokołów, 6 aneksów, 5 przeglądów), autofill, edytor z accordion, PDF z nagłówkiem i podpisami, referencje prawne
 - **Nie gra**: ZERO podglądów wizualnych, ZERO miniatur, ZERO wypełnionych przykładów, ZERO podglądu PDF przed generowaniem
 
-### Strony publiczne (V3):
-- **OfferPublicPage**: Responsywna, `noindex/nofollow` (poprawnie), token-based, grid `sm:grid-cols-2`
-- **DossierPublicPage**: Dobrze zbudowana, ale **BRAK Helmet/SEO** (nie krytyczne bo token-scoped)
+### Strony publiczne (V3 — pogłębiona analiza):
+- **Landing**: 8/10 — profesjonalna, conversion-optimized, 10 sekcji, SEO kompletne (3 structured data schemas)
+- **Pricing** (`/plany` + `/plany/:slug`): 8/10 — 4 plany z cenami PLN, VAT disclaimer, BreadcrumbList structured data, responsywny grid
+- **OfferPublicPage** (`/oferta/:token`): 9/10 — profesjonalna, token-based, accept z podpisem, celebration animation, obsługa stanów (expired/withdrawn/accepted)
+- **OfferPublicAccept** (`/a/:token`): 9/10 — nowa wersja (PR-12), secure DB function `resolve_offer_acceptance_link`, accept/reject z komentarzem
+- **Legal pages** (5 stron): 8/10 — PRAWDZIWA treść po polsku (nie placeholdery), GDPR-compliant, export danych + usuwanie konta, lokalizacja PL/EN/UK, banner "wersja polska jest wiążąca"
+- **404**: 8/10 — profesjonalna strona z CTA Home + Wstecz, `noindex/nofollow`
+- **DossierPublicPage**: 7/10 — dobrze zbudowana, ale **BRAK Helmet/SEO** (nie krytyczne bo token-scoped)
 - **Privacy/Terms**: Responsywne, `max-w-4xl`, poprawne
 
 ---
@@ -324,6 +329,10 @@ ALE:
 | Register page | ZAMKNIĘTY | Bezpieczny layout, walidacja, SEO |
 | Bundle i wydajność | ZAMKNIĘTY | 458KB gzip, lazy loading, manual chunks |
 | Klienci (Clients) | ZAMKNIĘTY | CRUD pełny, walidacja, paginacja, search |
+| Pricing pages | ZAMKNIĘTY | `/plany` grid + `/plany/:slug` detail, VAT, structured data |
+| Legal pages (5) | ZAMKNIĘTY | Prawdziwa treść PL, GDPR tools, data export/delete, PL/EN/UK |
+| 404 page | ZAMKNIĘTY | Profesjonalna z CTA, noindex |
+| Public offer pages | ZAMKNIĘTY | 2 implementacje (legacy + PR-12), accept z podpisem, stany |
 
 ---
 
@@ -481,11 +490,15 @@ ALE:
 | Strona | Helmet | Meta Desc | OG Tags | Structured Data | noindex |
 |--------|--------|-----------|---------|-----------------|---------|
 | Landing | ✅ | ✅ | ✅ | ✅ (3 schematy) | ❌ |
+| Pricing `/plany` | ✅ | ✅ | ✅ | ✅ (BreadcrumbList) | ❌ |
+| Pricing Detail | ✅ | ✅ (dynamic) | ✅ | ❌ | ❌ |
 | Login | ✅ | ✅ | ✅ | ❌ | ❌ |
 | Register | ✅ | ✅ | ✅ | ❌ | ❌ |
 | Offer (Public) | ✅ | ✅ | ❌ | ❌ | ✅ |
+| Offer Accept `/a/:token` | ✅ | ✅ | ❌ | ❌ | ✅ |
 | Dossier (Public) | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Privacy/Terms | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Privacy/Terms/Cookies/DPA/GDPR | ✅ | ✅ | ❌ | ❌ | ❌ |
+| 404 | ✅ | ❌ | ❌ | ❌ | ✅ |
 
 ### SEOHead Component (`src/components/seo/SEOHead.tsx`)
 - Kompletny utility: canonical URL, OG, Twitter Card, hreflang, robots, structured data, preconnect, dns-prefetch
@@ -534,8 +547,8 @@ ALE:
 | Dashboard | ✅ (via ErrorBoundary) | ✅ (EmptyDashboard) | ✅ |
 
 ### 404/NotFound
-- Brak dedykowanej strony 404 — React Router catch-all redirect do `/` (Index → Dashboard)
-- Nie krytyczne dla bety ale warto dodać
+- Dedykowana strona 404 **ISTNIEJE** — duży "404" z ikoną Search, czytelny komunikat, 2 CTA (Home + Wstecz), `noindex/nofollow`
+- Profesjonalna, przyjazna dla użytkownika
 
 ---
 
