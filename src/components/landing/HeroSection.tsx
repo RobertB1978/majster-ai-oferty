@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FileText, CheckCircle, ArrowDown, Star } from 'lucide-react';
+import { FileText, CheckCircle, ArrowDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const CTA_ROUTE = '/register';
@@ -41,26 +41,12 @@ export function HeroSection() {
       />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Social proof bar at top */}
+        {/* Free plan badge */}
         <div className="flex justify-center mb-8">
-          <div className="flex items-center gap-3 bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-full px-5 py-2.5">
-            <div className="flex -space-x-1.5" aria-hidden="true">
-              {['M', 'T', 'W', 'A'].map((initial, i) => (
-                <div
-                  key={i}
-                  className="w-6 h-6 rounded-full bg-amber-500/20 border-2 border-white dark:border-[#1A1A1A] flex items-center justify-center text-[9px] font-bold text-amber-600 dark:text-amber-400"
-                >
-                  {initial}
-                </div>
-              ))}
-            </div>
-            <div className="flex items-center gap-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="w-3 h-3 fill-amber-500 text-amber-500" aria-hidden="true" />
-              ))}
-            </div>
+          <div className="flex items-center gap-2 bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-full px-5 py-2.5">
+            <CheckCircle className="w-4 h-4 text-amber-500" aria-hidden="true" />
             <span className="text-sm text-gray-600 dark:text-[#A3A3A3] font-medium">
-              {t('landing.hero.socialProof', 'Zacznij bezpłatnie — bez karty kredytowej')}
+              {t('landing.hero.freeBadge', 'Zacznij bezpłatnie — bez karty kredytowej')}
             </span>
           </div>
         </div>

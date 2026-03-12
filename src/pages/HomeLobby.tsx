@@ -5,12 +5,9 @@ import { FileText, FolderKanban, Users, Zap } from 'lucide-react';
 /**
  * HomeLobby — ekran startowy nowego shella (FF_NEW_SHELL=true).
  *
- * 3 bloki:
- *  1. Continue  — ostatnio otwarta pozycja (placeholder)
- *  2. Today     — liczniki dzisiejszych zadań (placeholder)
- *  3. Quick Start — 4 szybkie przyciski akcji
- *
- * Dane biznesowe (projekty, oferty) będą podłączone w PR-08+.
+ * Sekcje:
+ *  1. Continue    — ostatnio otwarta pozycja (stan pusty gdy brak)
+ *  2. Quick Start — 4 szybkie przyciski akcji
  */
 export default function HomeLobby() {
   const { t } = useTranslation();
@@ -39,19 +36,7 @@ export default function HomeLobby() {
           </div>
         </section>
 
-        {/* Blok 2: Today */}
-        <section aria-labelledby="today-heading">
-          <h2 id="today-heading" className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-            {t('newShell.home.todayTitle', 'Dziś')}
-          </h2>
-          <div className="grid grid-cols-3 gap-3">
-            <TodayCounter label={t('newShell.home.todayOffers', 'Oferty')} value={0} />
-            <TodayCounter label={t('newShell.home.todayProjects', 'Projekty')} value={0} />
-            <TodayCounter label={t('newShell.home.todayTasks', 'Zadania')} value={0} />
-          </div>
-        </section>
-
-        {/* Blok 3: Quick Start */}
+        {/* Blok 2: Quick Start */}
         <section aria-labelledby="quickstart-heading">
           <h2 id="quickstart-heading" className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
             {t('newShell.home.quickStartTitle', 'Szybki start')}
@@ -75,20 +60,11 @@ export default function HomeLobby() {
             <QuickStartButton
               icon={<Zap className="h-6 w-6" />}
               label={t('newShell.home.qs.quickEst', 'Szybka wycena')}
-              onClick={() => navigate('/app/offers/new')}
+              onClick={() => navigate('/app/szybka-wycena')}
             />
           </div>
         </section>
       </div>
-    </div>
-  );
-}
-
-function TodayCounter({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="bg-card border border-border rounded-xl p-3 text-center">
-      <span className="block text-2xl font-bold text-foreground">{value}</span>
-      <span className="block text-xs text-muted-foreground mt-0.5 leading-tight">{label}</span>
     </div>
   );
 }

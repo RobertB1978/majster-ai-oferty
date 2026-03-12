@@ -1,17 +1,18 @@
 /**
  * offer-entry-points.test.tsx
  *
- * Weryfikuje, że wszystkie główne punkty wejścia do tworzenia oferty/wyceny
- * prowadzą do JEDNEGO kanonicznego flow: /app/offers/new
+ * Weryfikuje, że główne punkty wejścia do tworzenia oferty/wyceny
+ * prowadzą do właściwych tras.
  *
  * Testowane entry pointy:
- *  1. FAB (NewShellFAB) — akcja "Nowa Oferta"
+ *  1. FAB (NewShellFAB) — akcja "Nowa Oferta" → /app/offers/new
  *  2. TopBar quick-create (NewShellTopBar) — akcja "Nowa Oferta" (pośrednia weryfikacja przez import)
- *  3. HomeLobby — przycisk "Nowa wycena"
- *  4. HomeLobby — przycisk "Szybka wycena"
+ *  3. HomeLobby — przycisk "Nowa wycena" → /app/offers/new (pełny kreator)
+ *  4. HomeLobby — przycisk "Szybka wycena" → /app/szybka-wycena (Quick Estimate Workspace)
  *
  * Intentionally NOT unified (osobna ścieżka biznesowa):
  *  - EmptyDashboard CTA "Utwórz pierwszy projekt" → /app/projects/new
+ *  - "Szybka wycena" → /app/szybka-wycena (inny, uproszczony flow)
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -87,7 +88,7 @@ describe('Kanoniczny route oferty = /app/offers/new', () => {
       expect(mockNavigate).toHaveBeenCalledWith(CANONICAL_OFFER_ROUTE);
     });
 
-    it('"Szybka wycena" naviguje do /app/offers/new (nie /app/szybka-wycena)', async () => {
+    it('"Szybka wycena" naviguje do /app/szybka-wycena (Quick Estimate Workspace)', async () => {
       const { default: HomeLobby } = await import('@/pages/HomeLobby');
 
       render(<HomeLobby />, { wrapper: Wrapper });
@@ -95,8 +96,8 @@ describe('Kanoniczny route oferty = /app/offers/new', () => {
       const quickEstBtn = screen.getByText('Szybka wycena');
       fireEvent.click(quickEstBtn);
 
-      expect(mockNavigate).toHaveBeenCalledWith(CANONICAL_OFFER_ROUTE);
-      expect(mockNavigate).not.toHaveBeenCalledWith('/app/szybka-wycena');
+      expect(mockNavigate).toHaveBeenCalledWith('/app/szybka-wycena');
+      expect(mockNavigate).not.toHaveBeenCalledWith(CANONICAL_OFFER_ROUTE);
       expect(mockNavigate).not.toHaveBeenCalledWith('/app/quick-est');
     });
 
@@ -105,8 +106,6 @@ describe('Kanoniczny route oferty = /app/offers/new', () => {
 
       render(<HomeLobby />, { wrapper: Wrapper });
 
-      // Używamy getByRole('button') zamiast getByText, bo 'Projekty' pojawia
-      // się też w liczniku TodayCounter (span, nie button)
       const projectsBtn = screen.getByRole('button', { name: 'Projekty' });
       fireEvent.click(projectsBtn);
 
