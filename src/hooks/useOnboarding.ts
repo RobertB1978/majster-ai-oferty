@@ -17,9 +17,9 @@ export interface OnboardingProgress {
 export const ONBOARDING_STEPS = [
   { id: 1, title: 'Profil firmy', description: 'Dodaj logo i dane kontaktowe firmy' },
   { id: 2, title: 'Pierwszy klient', description: 'Dodaj swojego pierwszego klienta' },
-  { id: 3, title: 'Pierwszy projekt', description: 'Utwórz pierwszy projekt' },
-  { id: 4, title: 'Pierwsza wycena', description: 'Stwórz wycenę z pozycjami' },
-  { id: 5, title: 'Eksport PDF', description: 'Wygeneruj ofertę PDF' },
+  { id: 3, title: 'Pierwsza oferta', description: 'Utwórz pierwszą ofertę dla klienta' },
+  { id: 4, title: 'Wyślij ofertę', description: 'Prześlij ofertę klientowi do akceptacji' },
+  { id: 5, title: 'Eksport PDF', description: 'Wygeneruj profesjonalne PDF oferty' },
 ];
 
 export function useOnboardingProgress() {
