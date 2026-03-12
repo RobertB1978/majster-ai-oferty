@@ -51,9 +51,9 @@ export const FF_NEW_SHELL: boolean = resolveFlag(ENV_FLAG, 'FF_NEW_SHELL', true)
 /**
  * CANONICAL_HOME — kanoniczny URL ekranu głównego po zalogowaniu.
  *
- * Tymczasowo ustawiony na /app/dashboard (Dashboard) zamiast /app/home (HomeLobby),
- * ponieważ Dashboard jest bogatszym i bardziej wartościowym ekranem dla użytkownika.
- * HomeLobby pozostaje dostępna pod /app/home, ale nie jest domyślnym lądowiskiem.
+ * Dashboard (/app/dashboard) jest jedynym ekranem domowym.
+ * HomeLobby (/app/home) przekierowuje na dashboard (P9 — placeholder
+ * neutralized until "Kontynuuj" persistence is implemented).
  *
  * Używaj tej stałej wszędzie tam, gdzie po udanym zalogowaniu /
  * rejestracji / resecie hasła następuje przekierowanie do aplikacji.

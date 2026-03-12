@@ -43,7 +43,8 @@ function CanonicalHomeTestRouter({ initialPath }: { initialPath: string }) {
         <Route path="/app">
           <Route index element={<Navigate to="/app/dashboard" replace />} />
           <Route path="dashboard" element={<LocationTracker label="Dashboard" />} />
-          <Route path="home" element={<LocationTracker label="HomeLobby" />} />
+          {/* HomeLobby placeholder — redirect do dashboardu (P9) */}
+          <Route path="home" element={<Navigate to="/app/dashboard" replace />} />
           <Route path="offers" element={<LocationTracker label="Offers" />} />
           <Route path="projects" element={<LocationTracker label="Projects" />} />
           <Route path="more" element={<LocationTracker label="More" />} />
@@ -77,25 +78,12 @@ describe('Canonical Home Route — /app/dashboard jest kanonicznym ekranem domow
     });
   });
 
-  it('/app/home (HomeLobby) nadal istnieje jako osobny ekran', async () => {
+  it('/app/home przekierowuje do /app/dashboard (HomeLobby placeholder — P9)', async () => {
     render(<CanonicalHomeTestRouter initialPath="/app/home" />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('component-label')).toHaveTextContent('HomeLobby');
-      expect(screen.getByTestId('final-pathname')).toHaveTextContent('/app/home');
-    });
-  });
-
-  it('/app/home jest innym ekranem niż /app/dashboard', async () => {
-    const { unmount } = render(<CanonicalHomeTestRouter initialPath="/app/dashboard" />);
-    await waitFor(() => {
+      expect(screen.getByTestId('component-label')).toHaveTextContent('Dashboard');
       expect(screen.getByTestId('final-pathname')).toHaveTextContent('/app/dashboard');
-    });
-    unmount();
-
-    render(<CanonicalHomeTestRouter initialPath="/app/home" />);
-    await waitFor(() => {
-      expect(screen.getByTestId('final-pathname')).toHaveTextContent('/app/home');
     });
   });
 });

@@ -12,6 +12,9 @@ import { PageTransition } from './PageTransition';
 const NewShellOnboarding = lazy(
   () => import('@/components/onboarding/NewShellOnboarding').then(m => ({ default: m.NewShellOnboarding }))
 );
+const OnboardingModal = lazy(
+  () => import('@/components/onboarding/OnboardingModal').then(m => ({ default: m.OnboardingModal }))
+);
 
 /**
  * NewShellLayout — nowy shell aplikacji za flagą FF_NEW_SHELL=true.
@@ -73,7 +76,12 @@ export function NewShellLayout() {
       {/* FAB — tylko mobile (lg:hidden wbudowane w komponent) */}
       <NewShellFAB />
 
-      {/* Lekki onboarding przy pierwszym uruchomieniu */}
+      {/* Konfiguracja profilu firmy — setup przy pierwszym logowaniu */}
+      <Suspense fallback={null}>
+        <OnboardingModal />
+      </Suspense>
+
+      {/* Lekki onboarding UI przy pierwszym uruchomieniu */}
       <Suspense fallback={null}>
         <NewShellOnboarding />
       </Suspense>

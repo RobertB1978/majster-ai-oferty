@@ -63,7 +63,9 @@ const Photos = lazy(() => import("./pages/Photos"));
 const Plan = lazy(() => import("./pages/Plan"));
 
 // === ZONE 2b: NEW SHELL screens (lazy - only when FF_NEW_SHELL=true) ===
-const HomeLobby = lazy(() => import("./pages/HomeLobby"));
+// HomeLobby — lazy import zachowany na potrzeby przyszłej implementacji sekcji "Kontynuuj".
+// Trasa /app/home tymczasowo przekierowuje na /app/dashboard (P9).
+// const HomeLobby = lazy(() => import("./pages/HomeLobby"));
 const MoreScreen = lazy(() => import("./pages/MoreScreen"));
 
 // === ZONE 2c: OFFERS PR-09 ===
@@ -229,8 +231,8 @@ const App = () => (
                       ============================================ */}
                   <Route path="/app" element={FF_NEW_SHELL ? <NewShellLayout /> : <AppLayout />}>
                     <Route index element={<Navigate to="/app/dashboard" replace />} />
-                    {/* Trasy nowego shella (dostępne tylko przy FF_NEW_SHELL=true, ale bezpieczne także przy false) */}
-                    <Route path="home" element={<HomeLobby />} />
+                    {/* HomeLobby placeholder — redirect do dashboardu aż „Kontynuuj" będzie zaimplementowane */}
+                    <Route path="home" element={<Navigate to="/app/dashboard" replace />} />
                     <Route path="offers" element={<OffersPage />} />
                     <Route path="offers/new" element={<OfferDetail />} />
                     <Route path="offers/:id" element={<OfferDetail />} />
