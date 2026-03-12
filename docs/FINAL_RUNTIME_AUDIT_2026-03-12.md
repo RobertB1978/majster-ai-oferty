@@ -177,7 +177,13 @@ Jednak **rzeczywistość runtime brutalnie rozmija się z prawdą kodu**:
 - **Działa**: Pełny CRUD (dodaj/edytuj/usuń), walidacja Zod (`clientSchema`), paginacja server-side (`useClientsPaginated` z page/pageSize/search), search z debounce 300ms, skeleton loading (`ClientsGridSkeleton`), empty state z CTA, auto-open modal via `?new=1` query param
 - **Nawigacja**: Dostępni w sidebar (`/app/customers`), FAB ("Dodaj klienta"), bottom nav (old shell), redirecty `/clients` → `/app/customers`
 - **Layout**: Responsive grid `sm:grid-cols-2 lg:grid-cols-3`, karty z ikonami (Phone/Mail/MapPin), hover animacje
-- **Nie gra**: Brak linku klient → jego oferty/projekty (relacja istnieje w DB via `client_id` ale UI nie pokazuje), `confirm()` natywny zamiast AlertDialog przy usuwaniu, brak ErrorState przy błędzie query
+- **Nie gra**:
+  - Brak linku klient → jego oferty/projekty (relacja istnieje w DB via `client_id` ale UI nie pokazuje)
+  - `confirm()` natywny zamiast AlertDialog przy usuwaniu — **BEZ OSTRZEŻENIA O CASCADE** (usunięcie klienta kasuje powiązane projekty!)
+  - Brak ErrorState przy błędzie query — blank page po skeleton
+  - Brak strony szczegółów klienta (`/app/customers/:id` nie istnieje) — tylko inline modal edit
+  - Toast errors w `useClients.ts` hardcoded po polsku zamiast i18n (`'Błąd przy dodawaniu klienta'` zamiast `t('clients.addError')`)
+  - `WizardStepClient`: `max-h-56` (224px) lista klientów za mała na mobile
 
 ### Kalendarz: 5/10 | 60%
 - **Działa**: 5 widoków (miesiąc/tydzień/dzień/agenda/timeline), CRUD eventów, typy: deadline/meeting/reminder/work/other
