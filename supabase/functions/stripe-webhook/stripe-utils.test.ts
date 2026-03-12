@@ -6,7 +6,7 @@
 // ============================================================================
 
 import { describe, it, expect } from "vitest";
-import { mapSubscriptionStatus, isEntitledStatus } from "./stripe-utils";
+import { mapSubscriptionStatus, isEntitledStatus, buildPriceToPlanMap } from "./stripe-utils";
 
 // ---------------------------------------------------------------------------
 // mapSubscriptionStatus
@@ -173,5 +173,110 @@ describe("Idempotency store contract", () => {
 
     const mappedStatus = mapSubscriptionStatus("some_future_stripe_status");
     expect(isEntitledStatus(mappedStatus)).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// buildPriceToPlanMap
+// ---------------------------------------------------------------------------
+
+describe("buildPriceToPlanMap", () => {
+  // ── Missing / empty env var → must throw ───────────────────────────────
+
+  it("throws when env var is undefined (not configured)", () => {
+    expect(() => buildPriceToPlanMap(undefined)).toThrow("STRIPE_PRICE_PLAN_MAP is not configured");
+  });
+
+  it("throws when env var is an empty string", () => {
+    expect(() => buildPriceToPlanMap("")).toThrow("STRIPE_PRICE_PLAN_MAP is not configured");
+  });
+
+  it("throws when env var is only whitespace", () => {
+    expect(() => buildPriceToPlanMap("   ")).toThrow("STRIPE_PRICE_PLAN_MAP is not configured");
+  });
+
+  // ── Malformed JSON → must throw ─────────────────────────────────────────
+
+  it("throws when value is not valid JSON", () => {
+    expect(() => buildPriceToPlanMap("not json")).toThrow("invalid JSON");
+  });
+
+  it("throws when value is a JSON string (not object)", () => {
+    expect(() => buildPriceToPlanMap('"just a string"')).toThrow("must be a JSON object");
+  });
+
+  it("throws when value is a JSON array", () => {
+    expect(() => buildPriceToPlanMap('["price_1Abc", "pro"]')).toThrow("must be a JSON object");
+  });
+
+  it("throws when value is a JSON number", () => {
+    expect(() => buildPriceToPlanMap("42")).toThrow("must be a JSON object");
+  });
+
+  it("throws when value is JSON null", () => {
+    expect(() => buildPriceToPlanMap("null")).toThrow("must be a JSON object");
+  });
+
+  // ── Non-string values in map → must throw ───────────────────────────────
+
+  it("throws when a plan value is a number instead of string", () => {
+    expect(() => buildPriceToPlanMap('{"price_1Abc": 1}')).toThrow('value for key "price_1Abc" must be a string');
+  });
+
+  it("throws when a plan value is a boolean", () => {
+    expect(() => buildPriceToPlanMap('{"price_1Abc": true}')).toThrow('value for key "price_1Abc" must be a string');
+  });
+
+  it("throws when a plan value is null", () => {
+    expect(() => buildPriceToPlanMap('{"price_1Abc": null}')).toThrow('value for key "price_1Abc" must be a string');
+  });
+
+  // ── Valid maps ───────────────────────────────────────────────────────────
+
+  it("returns the map for a valid single-entry JSON object", () => {
+    const map = buildPriceToPlanMap('{"price_1MkWBNLkBkqDaVD26L6D3Dz": "pro"}');
+    expect(map).toEqual({ "price_1MkWBNLkBkqDaVD26L6D3Dz": "pro" });
+  });
+
+  it("returns the map for a valid multi-entry JSON object", () => {
+    const raw = JSON.stringify({
+      "price_1AbcMonthly": "pro",
+      "price_1AbcYearly": "pro",
+      "price_1DefMonthly": "starter",
+      "price_1GhiMonthly": "business",
+    });
+    const map = buildPriceToPlanMap(raw);
+    expect(map["price_1AbcMonthly"]).toBe("pro");
+    expect(map["price_1AbcYearly"]).toBe("pro");
+    expect(map["price_1DefMonthly"]).toBe("starter");
+    expect(map["price_1GhiMonthly"]).toBe("business");
+  });
+
+  it("returns an empty map for an empty JSON object {} (operator may populate later)", () => {
+    const map = buildPriceToPlanMap("{}");
+    expect(map).toEqual({});
+  });
+
+  // ── Lookup behaviour ─────────────────────────────────────────────────────
+
+  it("resolves a known price ID to its plan name", () => {
+    const map = buildPriceToPlanMap('{"price_1AbcXyz": "pro", "price_1DefUvw": "starter"}');
+    expect(map["price_1AbcXyz"]).toBe("pro");
+    expect(map["price_1DefUvw"]).toBe("starter");
+  });
+
+  it("returns undefined for a price ID not in the map (caller should default to free)", () => {
+    const map = buildPriceToPlanMap('{"price_1AbcXyz": "pro"}');
+    expect(map["price_UNKNOWN"]).toBeUndefined();
+  });
+
+  it("SECURITY: placeholder-style key (price_pro_monthly) is treated as a valid key but will never be sent by Stripe", () => {
+    // This test documents that buildPriceToPlanMap does NOT reject placeholder-looking
+    // keys — that validation is the operator's responsibility. The placeholder keys
+    // simply won't appear in real Stripe events, so the lookup returns undefined → "free".
+    const map = buildPriceToPlanMap('{"price_pro_monthly": "pro"}');
+    // A real Stripe event would carry a real price ID, not "price_pro_monthly".
+    expect(map["price_pro_monthly"]).toBe("pro");       // key exists in map
+    expect(map["price_1RealStripeId"]).toBeUndefined(); // real ID → unmapped → caller defaults to free
   });
 });

@@ -14,25 +14,18 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.10.0?target=deno";
-import { mapSubscriptionStatus } from "./stripe-utils.ts";
+import { mapSubscriptionStatus, buildPriceToPlanMap } from "./stripe-utils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, stripe-signature",
 };
 
-// Map Stripe price IDs to plan IDs
-const PRICE_TO_PLAN_MAP: Record<string, string> = {
-  // Replace with actual Stripe Price IDs
-  "price_pro_monthly": "pro",
-  "price_pro_yearly": "pro",
-  "price_starter_monthly": "starter",
-  "price_starter_yearly": "starter",
-  "price_business_monthly": "business",
-  "price_business_yearly": "business",
-  "price_enterprise_monthly": "enterprise",
-  "price_enterprise_yearly": "enterprise",
-};
+// PRICE_TO_PLAN_MAP is no longer hardcoded here.
+// It is loaded at request-time from the STRIPE_PRICE_PLAN_MAP Supabase secret
+// (a JSON string of the form {"price_1AbcXyz": "pro", "price_1DefUvw": "starter"}).
+// If the secret is absent or malformed, the handler returns HTTP 500 BEFORE
+// claiming the event so Stripe can retry after the operator fixes the config.
 
 // ---------------------------------------------------------------------------
 // Idempotency helpers
@@ -95,6 +88,15 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("STRIPE_WEBHOOK_SECRET is not configured");
     }
 
+    // 1b. Parse plan mapping — MUST happen before claimEvent so that a missing
+    //     or malformed STRIPE_PRICE_PLAN_MAP causes a 500 BEFORE the event is
+    //     claimed, allowing Stripe to retry once the operator fixes the config.
+    //
+    //     buildPriceToPlanMap throws with an actionable message if the secret
+    //     is absent or malformed; the error propagates to the outer catch and
+    //     returns HTTP 500 to Stripe.
+    const priceToPlanMap = buildPriceToPlanMap(Deno.env.get("STRIPE_PRICE_PLAN_MAP"));
+
     // 2. Initialize clients
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const stripe = new Stripe(stripeSecretKey, {
@@ -148,7 +150,7 @@ const handler = async (req: Request): Promise<Response> => {
       case "customer.subscription.created":
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
-        await handleSubscriptionUpdate(supabase, subscription, event);
+        await handleSubscriptionUpdate(supabase, subscription, event, priceToPlanMap);
         break;
       }
 
@@ -160,7 +162,7 @@ const handler = async (req: Request): Promise<Response> => {
 
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        await handleCheckoutSessionCompleted(supabase, stripe, session, event);
+        await handleCheckoutSessionCompleted(supabase, stripe, session, event, priceToPlanMap);
         break;
       }
 
@@ -231,7 +233,8 @@ const handler = async (req: Request): Promise<Response> => {
 async function handleSubscriptionUpdate(
   supabase: SupabaseClient,
   subscription: Stripe.Subscription,
-  event: Stripe.Event
+  event: Stripe.Event,
+  priceToPlanMap: Record<string, string>
 ) {
   const userId = subscription.metadata.supabase_user_id;
   if (!userId) {
@@ -239,25 +242,27 @@ async function handleSubscriptionUpdate(
     return;
   }
 
-  // Get plan from price ID
+  // Resolve plan from the env-driven map (populated from STRIPE_PRICE_PLAN_MAP secret).
   const priceId = subscription.items.data[0]?.price.id;
-  const mappedPlanId = PRICE_TO_PLAN_MAP[priceId];
+  const mappedPlanId = priceId ? priceToPlanMap[priceId] : undefined;
 
   if (!mappedPlanId) {
-    // OPERATOR ACTION REQUIRED: A real Stripe event arrived with a price ID
-    // that is not in PRICE_TO_PLAN_MAP. This means either:
-    // 1. The PRICE_TO_PLAN_MAP in stripe-webhook/index.ts still contains placeholder keys
-    //    and real Stripe Price IDs were never added, OR
-    // 2. A new product/price was created in Stripe Dashboard but not added to the map.
-    // Defaulting to "free" (least privilege). Update PRICE_TO_PLAN_MAP with real Price IDs.
+    // OPERATOR ACTION REQUIRED
+    // Price ID arrived from Stripe but is not present in STRIPE_PRICE_PLAN_MAP.
+    // Two likely causes:
+    //   1. The STRIPE_PRICE_PLAN_MAP secret was set but this price was not added.
+    //   2. A new product/price was created in Stripe Dashboard after the secret was last updated.
+    // Action: add the missing entry to the STRIPE_PRICE_PLAN_MAP Supabase secret, e.g.
+    //   {"price_1AbcXyz": "pro", "<MISSING_PRICE_ID>": "<plan_name>"}
+    // Defaulting to "free" (least privilege) so the user is not silently over-billed.
     console.error(
-      "[stripe-webhook] UNMAPPED_PRICE_ID: Price ID not found in PRICE_TO_PLAN_MAP:",
+      "[stripe-webhook] UNMAPPED_PRICE_ID: priceId not found in STRIPE_PRICE_PLAN_MAP:",
       priceId,
-      "— subscription defaults to 'free'. Update PRICE_TO_PLAN_MAP in stripe-webhook/index.ts."
+      "— subscription defaults to 'free'. Add this price ID to the STRIPE_PRICE_PLAN_MAP Supabase secret."
     );
   }
 
-  const planId = mappedPlanId || "free";
+  const planId = mappedPlanId ?? "free";
   // mapSubscriptionStatus is imported from stripe-utils.ts;
   // unknown Stripe statuses resolve to "inactive" (least privilege).
   const status = mapSubscriptionStatus(subscription.status);
@@ -344,7 +349,8 @@ async function handleCheckoutSessionCompleted(
   supabase: SupabaseClient,
   stripe: Stripe,
   session: Stripe.Checkout.Session,
-  event: Stripe.Event
+  event: Stripe.Event,
+  priceToPlanMap: Record<string, string>
 ) {
   const userId = session.metadata?.supabase_user_id;
   if (!userId) {
@@ -357,7 +363,7 @@ async function handleCheckoutSessionCompleted(
   // Get subscription details
   if (session.subscription) {
     const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
-    await handleSubscriptionUpdate(supabase, subscription, event);
+    await handleSubscriptionUpdate(supabase, subscription, event, priceToPlanMap);
   }
 }
 
