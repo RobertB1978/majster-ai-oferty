@@ -8,6 +8,7 @@ import {
   BookOpen,
   TrendingUp,
   Settings,
+  Building2,
   type LucideIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +56,8 @@ const NAV_SECTIONS: NavSection[] = [
 ];
 
 const BOTTOM_ITEMS: NavItem[] = [
-  { id: 'settings', path: '/app/settings', icon: Settings, labelKey: 'newShell.nav.settings' },
+  { id: 'profile',  path: '/app/profile',  icon: Building2, labelKey: 'newShell.nav.profile' },
+  { id: 'settings', path: '/app/settings', icon: Settings,  labelKey: 'newShell.nav.settings' },
 ];
 
 /**

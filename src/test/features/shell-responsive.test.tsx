@@ -119,10 +119,17 @@ describe('NewShellDesktopSidebar — widoczność desktop', () => {
     expect(aside!.className).toContain('lg:flex');
   });
 
-  it('renderuje 8 linków nawigacyjnych (Home, Offers, Projects, Customers, Calendar, Documents, Finance, Settings)', () => {
+  it('renderuje 9 linków nawigacyjnych (Home, Offers, Projects, Customers, Calendar, Documents, Finance, Company Profile, Settings)', () => {
     render(<NewShellDesktopSidebar />, { wrapper: Wrapper });
     const links = screen.getAllByRole('link');
-    expect(links.length).toBe(8);
+    expect(links.length).toBe(9);
+  });
+
+  it('zawiera bezpośredni link do Profilu firmy bez przechodzenia przez "Więcej"', () => {
+    render(<NewShellDesktopSidebar />, { wrapper: Wrapper });
+    const links = screen.getAllByRole('link') as HTMLAnchorElement[];
+    const profileLink = links.find(l => l.href.includes('/app/profile'));
+    expect(profileLink).not.toBeUndefined();
   });
 
   it('zawiera bezpośredni link do Klientów bez przechodzenia przez "Więcej"', () => {
