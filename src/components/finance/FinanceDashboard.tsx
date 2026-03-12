@@ -123,7 +123,7 @@ export function FinanceDashboard() {
         {kpiCards.map((card, index) => (
           <Card
             key={card.label}
-            className={`relative overflow-hidden border-0 bg-gradient-to-br ${card.bgGradient} backdrop-blur-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-xl`}
+            className={`relative overflow-hidden border border-border/40 bg-gradient-to-br ${card.bgGradient} transition-all duration-200 card-interactive`}
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <CardContent className="p-5 relative">

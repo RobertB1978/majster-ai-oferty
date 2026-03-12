@@ -41,16 +41,22 @@ interface Message {
 }
 
 
+/** Map i18n language to BCP-47 speech recognition locale */
+function getSpeechLocale(lang: string): string {
+  const map: Record<string, string> = { pl: 'pl-PL', en: 'en-US', uk: 'uk-UA' };
+  return map[lang.split('-')[0]] ?? 'pl-PL';
+}
+
 export function AiChatAgent() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { canUseFeature } = usePlanGate();
 
   const quickActions = [
-    { icon: FileText, label: t('ai.quickActions.prepareOffer'), prompt: 'Przygotuj ofertę na remont łazienki 10m2' },
-    { icon: Calculator, label: t('ai.quickActions.calculateCosts'), prompt: 'Oblicz koszty materiałów na malowanie pokoju 20m2' },
-    { icon: HelpCircle, label: t('ai.quickActions.pricingAdvice'), prompt: 'Jakie są aktualne ceny usług hydraulicznych?' },
+    { icon: FileText, label: t('ai.quickActions.prepareOffer'), prompt: t('ai.quickActions.prepareOfferPrompt') },
+    { icon: Calculator, label: t('ai.quickActions.calculateCosts'), prompt: t('ai.quickActions.calculateCostsPrompt') },
+    { icon: HelpCircle, label: t('ai.quickActions.pricingAdvice'), prompt: t('ai.quickActions.pricingAdvicePrompt') },
   ];
   const canUseAi = canUseFeature('ai');
   const [isDismissedForever, setIsDismissedForever] = useState(() => {
@@ -78,7 +84,7 @@ export function AiChatAgent() {
   const deleteChatSession = useDeleteChatSession();
 
   const { transcript, isListening, isSupported, startListening, stopListening, resetTranscript } = useVoiceToText({
-    language: 'pl-PL',
+    language: getSpeechLocale(i18n.language),
   });
 
   // Load chat history when session changes
@@ -238,7 +244,7 @@ export function AiChatAgent() {
         className={cn(
           'fixed above-mobile-nav right-6 h-14 w-14 rounded-full shadow-xl lg:bottom-6',
           'bg-primary hover:bg-primary/90',
-          'transition-all duration-300 hover:scale-110',
+          'transition-all duration-200 hover:bg-primary/90',
           isOpen && 'hidden'
         )}
         style={{ zIndex: 'var(--z-overlay)' }}

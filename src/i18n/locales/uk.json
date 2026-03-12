@@ -51,7 +51,8 @@
     "previous": "Попередня",
     "send": "Надіслати",
     "stopRecording": "Зупинити запис",
-    "dontShowAgain": "Більше не показувати"
+    "dontShowAgain": "Більше не показувати",
+    "startVoiceRecording": "Почати голосовий запис"
   },
   "nav": {
     "dashboard": "Панель",
@@ -502,7 +503,9 @@
     "ocrWaiting": "Очікування",
     "ocrError": "Помилка OCR",
     "date": "Дата",
-    "status": "Статус"
+    "status": "Статус",
+    "exportComingSoon": "Експорт буде доступний незабаром",
+    "comingSoon": "Незабаром"
   },
   "team": {
     "title": "Команда",
@@ -907,7 +910,10 @@
     "quickActions": {
       "prepareOffer": "Підготувати пропозицію",
       "calculateCosts": "Розрахувати витрати",
-      "pricingAdvice": "Поради щодо цін"
+      "pricingAdvice": "Поради щодо цін",
+      "prepareOfferPrompt": "Підготуй пропозицію на ремонт ванної 10м2",
+      "calculateCostsPrompt": "Розрахуй вартість матеріалів для фарбування кімнати 20м2",
+      "pricingAdvicePrompt": "Які поточні ціни на сантехнічні послуги?"
     },
     "noHistory": "Немає історії розмов",
     "closeAssistant": "Закрити AI помічника",
@@ -1672,7 +1678,29 @@
   "voiceQuote": {
     "notSupported": "Ваш браузер не підтримує розпізнавання мови.",
     "processingError": "Помилка обробки. Спробуйте ще раз.",
-    "quoteCreated": "Кошторис створено успішно!"
+    "quoteCreated": "Кошторис створено успішно!",
+    "title": "Голосовий кошторис",
+    "statusIdle": "Скажіть що ви хочете оцінити",
+    "statusListening": "Слухаю...",
+    "statusProcessing": "Аналізую...",
+    "statusEditing": "Перевірте і підтвердьте",
+    "statusDone": "Готово!",
+    "startHint": "Натисніть і скажіть, напр. \"Ремонт ванної 10 кв. метрів, плитка, ванна, умивальник\"",
+    "transcribedLabel": "Розпізнаний текст:",
+    "processingHint": "Аналізую ваш кошторис...",
+    "identifyingMaterials": "Визначаю матеріали",
+    "calculatingPrices": "Розраховую ціни",
+    "creatingOffer": "Створюю пропозицію",
+    "projectLabel": "Проект:",
+    "itemsLabel": "Позиції кошторису:",
+    "notesPlaceholder": "Додаткові примітки...",
+    "correctVoice": "Виправити голосом",
+    "confirm": "Підтвердити",
+    "createdMessage": "Кошторис створено!",
+    "createAnother": "Створити ще один",
+    "categoryMaterial": "Матеріал",
+    "categoryLabor": "Робота",
+    "itemQtyPrice": "{{qty}} {{unit}} × {{price}} zł"
   },
   "templateSelector": {
     "addFromTemplate": "Додати з шаблону",
@@ -3394,7 +3422,8 @@
       "searchPlaceholder": "Пошук шаблонів документів...",
       "searchAriaLabel": "Пошук шаблонів документів",
       "noResults": "Шаблонів за вашим запитом не знайдено",
-      "referencesCount": "{{count}} правові посилання"
+      "referencesCount": "{{count}} правові посилання",
+      "fieldsCount": "{{count}} полів"
     },
     "category": {
       "CONTRACTS": "Договори",

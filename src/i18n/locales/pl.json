@@ -51,7 +51,8 @@
     "previous": "Poprzednia",
     "send": "Wyślij",
     "stopRecording": "Zatrzymaj nagrywanie",
-    "dontShowAgain": "Nie pokazuj więcej"
+    "dontShowAgain": "Nie pokazuj więcej",
+    "startVoiceRecording": "Rozpocznij nagrywanie głosowe"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -502,7 +503,9 @@
     "ocrWaiting": "Oczekuje",
     "ocrError": "Błąd OCR",
     "date": "Data",
-    "status": "Status"
+    "status": "Status",
+    "exportComingSoon": "Eksport będzie dostępny wkrótce",
+    "comingSoon": "Wkrótce"
   },
   "team": {
     "title": "Zespół",
@@ -899,7 +902,10 @@
     "quickActions": {
       "prepareOffer": "Przygotuj ofertę",
       "calculateCosts": "Oblicz koszty",
-      "pricingAdvice": "Porady cenowe"
+      "pricingAdvice": "Porady cenowe",
+      "prepareOfferPrompt": "Przygotuj ofertę na remont łazienki 10m2",
+      "calculateCostsPrompt": "Oblicz koszty materiałów na malowanie pokoju 20m2",
+      "pricingAdvicePrompt": "Jakie są aktualne ceny usług hydraulicznych?"
     },
     "voiceInput": "Wejście głosowe",
     "newConversation": "Nowa rozmowa",
@@ -1672,7 +1678,29 @@
   "voiceQuote": {
     "notSupported": "Twoja przeglądarka nie wspiera rozpoznawania mowy.",
     "processingError": "Błąd przetwarzania. Spróbuj ponownie.",
-    "quoteCreated": "Wycena utworzona pomyślnie!"
+    "quoteCreated": "Wycena utworzona pomyślnie!",
+    "title": "Wycena głosowa",
+    "statusIdle": "Powiedz co chcesz wycenić",
+    "statusListening": "Słucham...",
+    "statusProcessing": "Analizuję...",
+    "statusEditing": "Sprawdź i zatwierdź",
+    "statusDone": "Gotowe!",
+    "startHint": "Naciśnij i powiedz np. \"Remont łazienki 10 metrów kwadratowych, płytki, wanna, umywalka\"",
+    "transcribedLabel": "Rozpoznany tekst:",
+    "processingHint": "Analizuję Twoją wycenę...",
+    "identifyingMaterials": "Identyfikuję materiały",
+    "calculatingPrices": "Obliczam ceny",
+    "creatingOffer": "Tworzę ofertę",
+    "projectLabel": "Projekt:",
+    "itemsLabel": "Pozycje wyceny:",
+    "notesPlaceholder": "Dodatkowe uwagi...",
+    "correctVoice": "Popraw głosowo",
+    "confirm": "Zatwierdź",
+    "createdMessage": "Wycena została utworzona!",
+    "createAnother": "Stwórz kolejną",
+    "categoryMaterial": "Materiał",
+    "categoryLabor": "Robocizna",
+    "itemQtyPrice": "{{qty}} {{unit}} × {{price}} zł"
   },
   "templateSelector": {
     "addFromTemplate": "Dodaj z szablonu",
@@ -3394,7 +3422,8 @@
       "searchPlaceholder": "Szukaj wzoru dokumentu...",
       "searchAriaLabel": "Wyszukaj wzór dokumentu",
       "noResults": "Brak wzorów pasujących do wyszukiwania",
-      "referencesCount": "{{count}} referencje prawne"
+      "referencesCount": "{{count}} referencje prawne",
+      "fieldsCount": "{{count}} pól do wypełnienia"
     },
     "category": {
       "CONTRACTS": "Umowy",

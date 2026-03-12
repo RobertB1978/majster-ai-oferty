@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { FinanceDashboard } from '@/components/finance/FinanceDashboard';
 import { TrendingUp, Download, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export default function Finance() {
   const { t } = useTranslation();
@@ -28,13 +29,29 @@ export default function Finance() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="hover:bg-primary/5">
+            <Button
+              variant="outline"
+              disabled
+              className="opacity-60 cursor-not-allowed"
+              title={t('finance.exportComingSoon')}
+            >
               <FileText className="mr-2 h-4 w-4" />
               {t('finance.exportPdf')}
+              <Badge variant="secondary" className="ml-2 text-xs py-0 px-1.5">
+                {t('finance.comingSoon')}
+              </Badge>
             </Button>
-            <Button variant="outline" className="hover:bg-primary/5">
+            <Button
+              variant="outline"
+              disabled
+              className="opacity-60 cursor-not-allowed"
+              title={t('finance.exportComingSoon')}
+            >
               <Download className="mr-2 h-4 w-4" />
               {t('finance.exportExcel')}
+              <Badge variant="secondary" className="ml-2 text-xs py-0 px-1.5">
+                {t('finance.comingSoon')}
+              </Badge>
             </Button>
           </div>
         </div>
