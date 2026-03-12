@@ -106,11 +106,14 @@ function useTodayTasks() {
   });
 }
 
-const TYPE_LABELS: Record<TodayTask['type'], string> = {
-  pending_offer: 'Oferta',
-  expiring_offer: 'Wygasa',
-  inactive_project: 'Projekt',
-};
+function useTypeLabels() {
+  const { t } = useTranslation();
+  return {
+    pending_offer: t('dashboard.todayTaskType.pendingOffer'),
+    expiring_offer: t('dashboard.todayTaskType.expiringOffer'),
+    inactive_project: t('dashboard.todayTaskType.inactiveProject'),
+  } satisfies Record<TodayTask['type'], string>;
+}
 
 const TYPE_VARIANTS: Record<TodayTask['type'], string> = {
   pending_offer: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
@@ -120,6 +123,7 @@ const TYPE_VARIANTS: Record<TodayTask['type'], string> = {
 
 export const TodayTasks = React.memo(function TodayTasks() {
   const { t } = useTranslation();
+  const typeLabels = useTypeLabels();
   const { data: tasks = [], isLoading } = useTodayTasks();
 
   if (isLoading || tasks.length === 0) return null;
@@ -130,7 +134,7 @@ export const TodayTasks = React.memo(function TodayTasks() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <ClipboardList className="h-4 w-4 text-amber-500" />
-            {t('dashboard.todayTasks', 'Na dzisiaj')}
+            {t('dashboard.todayTasks')}
           </CardTitle>
           <Badge
             variant="secondary"
@@ -151,7 +155,7 @@ export const TodayTasks = React.memo(function TodayTasks() {
               className="flex items-center gap-2 py-1.5 rounded-md px-1 hover:bg-muted/40 transition-colors duration-100"
             >
               <Badge variant="secondary" className={cn('shrink-0', TYPE_VARIANTS[task.type])}>
-                {TYPE_LABELS[task.type]}
+                {typeLabels[task.type]}
               </Badge>
               <span className="text-sm text-foreground flex-1 min-w-0 truncate">
                 {task.label}

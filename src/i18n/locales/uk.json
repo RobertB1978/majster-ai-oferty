@@ -48,7 +48,10 @@
     "clearSearch": "Очистити пошук",
     "pageOf": "Сторінка {{current}} з {{total}}",
     "showingItems": "Відображення {{from}}-{{to}} з {{total}}",
-    "previous": "Попередня"
+    "previous": "Попередня",
+    "send": "Надіслати",
+    "stopRecording": "Зупинити запис",
+    "dontShowAgain": "Більше не показувати"
   },
   "nav": {
     "dashboard": "Панель",
@@ -225,6 +228,8 @@
     "monthlyStats": "Щомісячна статистика",
     "expiringOffersTitle": "Пропозиції, що закінчуються",
     "expiringOffersDesc_one": "У вас є {{count}} пропозиція, що закінчується протягом 7 днів.",
+    "expiringOffersDesc_few": "У вас є {{count}} пропозиції, що закінчуються протягом 7 днів.",
+    "expiringOffersDesc_many": "У вас є {{count}} пропозицій, що закінчуються протягом 7 днів.",
     "expiringOffersDesc_other": "У вас є {{count}} пропозицій, що закінчуються протягом 7 днів.",
     "subscriptionExpiringSoonTitle": "План незабаром закінчується",
     "subscriptionExpiresInDays": "Ваш план закінчується через {{days}} днів.",
@@ -273,7 +278,16 @@
     "newProjectSub": "Створити кошторис",
     "addClientSub": "База клієнтів",
     "templatesSub": "Шаблони пропозицій",
-    "calendarSub": "Ваш розклад"
+    "calendarSub": "Ваш розклад",
+    "addClient": "Додати клієнта",
+    "projectsSub": "Ваші замовлення",
+    "noActivity": "Ще немає активності. Створіть першу пропозицію!",
+    "todayTasks": "Завдання на сьогодні",
+    "todayTaskType": {
+      "pendingOffer": "Пропозиція",
+      "expiringOffer": "Завершується",
+      "inactiveProject": "Проєкт"
+    }
   },
   "projects": {
     "title": "Проєкти",
@@ -894,7 +908,15 @@
       "prepareOffer": "Підготувати пропозицію",
       "calculateCosts": "Розрахувати витрати",
       "pricingAdvice": "Поради щодо цін"
-    }
+    },
+    "noHistory": "Немає історії розмов",
+    "closeAssistant": "Закрити AI помічника",
+    "planLockTitle": "AI Помічник — план Business",
+    "planLockDesc": "Інтелектуальний помічник доступний з плану Business. Оновіть план, щоб створювати кошториси, розраховувати витрати та отримувати галузеві поради.",
+    "planLockUpgrade": "Оновити план"
+  },
+  "quickActions": {
+    "newOffer": "Нова пропозиція"
   },
   "analytics": {
     "title": "Аналітика",

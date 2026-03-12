@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,16 +40,18 @@ interface Message {
   timestamp: Date;
 }
 
-const quickActions = [
-  { icon: FileText, label: 'Przygotuj ofertę', prompt: 'Przygotuj ofertę na remont łazienki 10m2' },
-  { icon: Calculator, label: 'Oblicz koszty', prompt: 'Oblicz koszty materiałów na malowanie pokoju 20m2' },
-  { icon: HelpCircle, label: 'Porady cenowe', prompt: 'Jakie są aktualne ceny usług hydraulicznych?' },
-];
 
 export function AiChatAgent() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { canUseFeature } = usePlanGate();
+
+  const quickActions = [
+    { icon: FileText, label: t('ai.quickActions.prepareOffer'), prompt: 'Przygotuj ofertę na remont łazienki 10m2' },
+    { icon: Calculator, label: t('ai.quickActions.calculateCosts'), prompt: 'Oblicz koszty materiałów na malowanie pokoju 20m2' },
+    { icon: HelpCircle, label: t('ai.quickActions.pricingAdvice'), prompt: 'Jakie są aktualne ceny usług hydraulicznych?' },
+  ];
   const canUseAi = canUseFeature('ai');
   const [isDismissedForever, setIsDismissedForever] = useState(() => {
     return localStorage.getItem('hideChatWidget') === '1';
@@ -240,7 +243,7 @@ export function AiChatAgent() {
         )}
         style={{ zIndex: 'var(--z-overlay)' }}
         size="icon"
-        aria-label="Otwórz asystenta AI"
+        aria-label={t('ai.title')}
         data-testid="chat-overlay"
       >
         <MessageCircle className="h-6 w-6" />
@@ -269,11 +272,11 @@ export function AiChatAgent() {
                   <Bot className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">Asystent AI</CardTitle>
-                  <p className="text-xs text-muted-foreground">Majster.AI</p>
+                  <CardTitle className="text-base">{t('ai.title')}</CardTitle>
+                  <p className="text-xs text-muted-foreground">{t('ai.subtitle')}</p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} aria-label="Zamknij">
+              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} aria-label={t('common.close')}>
                 <X className="h-5 w-5" />
               </Button>
             </div>
@@ -283,11 +286,9 @@ export function AiChatAgent() {
               <Lock className="h-7 w-7 text-muted-foreground" />
             </div>
             <div>
-              <p className="font-semibold">Asystent AI — plan Business</p>
+              <p className="font-semibold">{t('ai.planLockTitle')}</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Inteligentny asystent jest dostępny od planu{' '}
-                <span className="font-medium text-foreground">Business</span>.
-                Ulepsz plan, aby tworzyć wyceny, obliczać koszty i uzyskiwać porady branżowe.
+                {t('ai.planLockDesc')}
               </p>
             </div>
             <Button
@@ -295,7 +296,7 @@ export function AiChatAgent() {
               className="gap-2 w-full"
             >
               <Zap className="h-4 w-4" />
-              Ulepsz plan
+              {t('ai.planLockUpgrade')}
             </Button>
           </CardContent>
         </Card>
@@ -317,8 +318,8 @@ export function AiChatAgent() {
                   <Bot className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">Asystent AI</CardTitle>
-                  <p className="text-xs text-muted-foreground">Majster.AI</p>
+                  <CardTitle className="text-base">{t('ai.title')}</CardTitle>
+                  <p className="text-xs text-muted-foreground">{t('ai.subtitle')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -326,7 +327,7 @@ export function AiChatAgent() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowHistory(!showHistory)}
-                  aria-label={showHistory ? "Ukryj historię rozmów" : "Pokaż historię rozmów"}
+                  aria-label={showHistory ? t('ai.history') : t('ai.chatHistory')}
                 >
                   <History className="h-4 w-4" />
                 </Button>
@@ -334,19 +335,19 @@ export function AiChatAgent() {
                   variant="ghost"
                   size="icon"
                   onClick={startNewSession}
-                  aria-label="Rozpocznij nową rozmowę"
+                  aria-label={t('ai.newConversation')}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} aria-label="Zamknij asystenta AI">
+                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} aria-label={t('ai.closeAssistant')}>
                   <X className="h-5 w-5" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={handleDismissForever}
-                  aria-label="Nie pokazuj więcej"
-                  title="Nie pokazuj więcej"
+                  aria-label={t('common.dontShowAgain')}
+                  title={t('common.dontShowAgain')}
                 >
                   <X className="h-5 w-5 text-destructive" />
                 </Button>
@@ -358,7 +359,7 @@ export function AiChatAgent() {
             {/* History Panel */}
             {showHistory && (
               <div className="border-b p-3 max-h-48 overflow-auto bg-muted/30">
-                <p className="text-xs text-muted-foreground mb-2">Historia rozmów</p>
+                <p className="text-xs text-muted-foreground mb-2">{t('ai.history')}</p>
                 {sessions && sessions.length > 0 ? (
                   <div className="space-y-1">
                     {sessions.slice(0, 10).map((session) => (
@@ -371,12 +372,12 @@ export function AiChatAgent() {
                           session.session_id === sessionId && 'bg-primary/10'
                         )}
                       >
-                        <span className="truncate flex-1">{session.first_message || 'Nowa rozmowa'}</span>
+                        <span className="truncate flex-1">{session.first_message || t('ai.newConversation')}</span>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6 shrink-0"
-                          aria-label="Usuń rozmowę"
+                          aria-label={t('common.delete')}
                           onClick={(e) => handleDeleteSession(session.session_id, e)}
                         >
                           <Trash2 className="h-3 w-3" />
@@ -385,7 +386,7 @@ export function AiChatAgent() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground text-center py-2">Brak historii rozmów</p>
+                  <p className="text-sm text-muted-foreground text-center py-2">{t('ai.noHistory')}</p>
                 )}
               </div>
             )}
@@ -461,7 +462,7 @@ export function AiChatAgent() {
                     size="icon"
                     onClick={handleVoiceToggle}
                     className={cn(isListening && 'animate-pulse')}
-                    aria-label={isListening ? 'Zatrzymaj nagrywanie' : 'Rozpocznij nagrywanie głosowe'}
+                    aria-label={isListening ? t('common.stopRecording') : t('ai.voiceInput')}
                   >
                     {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                   </Button>
@@ -469,7 +470,7 @@ export function AiChatAgent() {
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder={isListening ? 'Słucham...' : 'Napisz wiadomość...'}
+                  placeholder={isListening ? t('ai.listening') : t('ai.placeholder')}
                   disabled={isLoading}
                   className="flex-1"
                 />
@@ -478,7 +479,7 @@ export function AiChatAgent() {
                   size="icon"
                   disabled={isLoading || !input.trim()}
                   className="bg-primary hover:bg-primary/90"
-                  aria-label="Wyślij wiadomość"
+                  aria-label={t('common.send')}
                 >
                   <Send className="h-4 w-4" />
                 </Button>

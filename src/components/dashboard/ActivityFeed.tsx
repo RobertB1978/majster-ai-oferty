@@ -97,7 +97,7 @@ export const ActivityFeed = React.memo(function ActivityFeed() {
           </div>
         ) : activities.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4 text-center">
-            {t('dashboard.noActivity', 'Brak aktywności. Stwórz pierwszą ofertę!')}
+            {t('dashboard.noActivity')}
           </p>
         ) : (
           <div className="space-y-0">
