@@ -77,6 +77,8 @@ function TemplateCard({ template, onSelect }: TemplateCardProps) {
   const Icon = CATEGORY_ICON[template.category];
   const colorCls = CATEGORY_COLOR[template.category];
 
+  const totalFields = template.sections.reduce((acc, s) => acc + s.fields.length, 0);
+
   return (
     <button
       className="w-full text-left border rounded-lg p-4 hover:bg-muted/40 hover:border-primary/30 transition-all duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -94,14 +96,22 @@ function TemplateCard({ template, onSelect }: TemplateCardProps) {
           <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed line-clamp-2">
             {t(template.descriptionKey)}
           </p>
-          {template.references.length > 0 && (
-            <div className="flex items-center gap-1 mt-1.5">
-              <BookOpen className="w-3 h-3 text-muted-foreground" />
+          <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+            <div className="flex items-center gap-1">
+              <FileText className="w-3 h-3 text-muted-foreground" />
               <span className="text-xs text-muted-foreground">
-                {t('docTemplates.library.referencesCount', { count: template.references.length })}
+                {t('docTemplates.library.fieldsCount', { count: totalFields })}
               </span>
             </div>
-          )}
+            {template.references.length > 0 && (
+              <div className="flex items-center gap-1">
+                <BookOpen className="w-3 h-3 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">
+                  {t('docTemplates.library.referencesCount', { count: template.references.length })}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
         <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5 group-hover:translate-x-0.5 transition-transform" />
       </div>

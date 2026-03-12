@@ -51,7 +51,8 @@
     "previous": "Previous",
     "send": "Send",
     "stopRecording": "Stop recording",
-    "dontShowAgain": "Don't show again"
+    "dontShowAgain": "Don't show again",
+    "startVoiceRecording": "Start voice recording"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -502,7 +503,9 @@
     "ocrWaiting": "Waiting",
     "ocrError": "OCR error",
     "date": "Date",
-    "status": "Status"
+    "status": "Status",
+    "exportComingSoon": "Export will be available soon",
+    "comingSoon": "Soon"
   },
   "team": {
     "title": "Team",
@@ -907,7 +910,10 @@
     "quickActions": {
       "calculateCosts": "Calculate costs",
       "prepareOffer": "Prepare offer",
-      "pricingAdvice": "Pricing advice"
+      "pricingAdvice": "Pricing advice",
+      "prepareOfferPrompt": "Prepare a quote for bathroom renovation 10m2",
+      "calculateCostsPrompt": "Calculate material costs for painting a 20m2 room",
+      "pricingAdvicePrompt": "What are the current prices for plumbing services?"
     },
     "noHistory": "No chat history",
     "closeAssistant": "Close AI assistant",
@@ -1672,7 +1678,29 @@
   "voiceQuote": {
     "notSupported": "Your browser does not support speech recognition.",
     "processingError": "Processing error. Try again.",
-    "quoteCreated": "Quote created successfully!"
+    "quoteCreated": "Quote created successfully!",
+    "title": "Voice estimate",
+    "statusIdle": "Say what you want to estimate",
+    "statusListening": "Listening...",
+    "statusProcessing": "Analyzing...",
+    "statusEditing": "Review and confirm",
+    "statusDone": "Done!",
+    "startHint": "Press and say e.g. \"Bathroom renovation 10 sq meters, tiles, bathtub, sink\"",
+    "transcribedLabel": "Recognized text:",
+    "processingHint": "Analyzing your estimate...",
+    "identifyingMaterials": "Identifying materials",
+    "calculatingPrices": "Calculating prices",
+    "creatingOffer": "Creating offer",
+    "projectLabel": "Project:",
+    "itemsLabel": "Estimate items:",
+    "notesPlaceholder": "Additional notes...",
+    "correctVoice": "Correct by voice",
+    "confirm": "Confirm",
+    "createdMessage": "Estimate created!",
+    "createAnother": "Create another",
+    "categoryMaterial": "Material",
+    "categoryLabor": "Labor",
+    "itemQtyPrice": "{{qty}} {{unit}} × {{price}} zł"
   },
   "templateSelector": {
     "addFromTemplate": "Add from template",
@@ -3394,7 +3422,8 @@
       "searchPlaceholder": "Search document templates...",
       "searchAriaLabel": "Search document templates",
       "noResults": "No templates match your search",
-      "referencesCount": "{{count}} legal references"
+      "referencesCount": "{{count}} legal references",
+      "fieldsCount": "{{count}} fields"
     },
     "category": {
       "CONTRACTS": "Contracts",

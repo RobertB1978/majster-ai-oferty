@@ -7,7 +7,7 @@
 @layer base {
   :root {
     /* Industrial "Digital Power Tool" palette */
-    --background: 210 20% 98%;
+    --background: 210 20% 96%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -25,7 +25,7 @@
     --secondary-foreground: 215 25% 27%;
 
     --muted: 220 14% 92%;
-    --muted-foreground: 220 9% 46%;
+    --muted-foreground: 220 9% 43%;
 
     /* Accent - Slate-800 chrome */
     --accent: 217 33% 17%;
@@ -57,14 +57,14 @@
     --gradient-end: 30 90% 32%;
 
     /* Industrial shadows - flat, no glow */
-    --shadow-sm: 0 1px 2px 0 hsl(220 13% 11% / 0.06);
-    --shadow-md: 0 2px 6px -1px hsl(220 13% 11% / 0.08);
-    --shadow-lg: 0 4px 12px -2px hsl(220 13% 11% / 0.1);
-    --shadow-xl: 0 8px 24px -4px hsl(220 13% 11% / 0.12);
+    --shadow-sm: 0 1px 2px 0 hsl(220 13% 11% / 0.08);
+    --shadow-md: 0 2px 6px -1px hsl(220 13% 11% / 0.10);
+    --shadow-lg: 0 4px 12px -2px hsl(220 13% 11% / 0.12);
+    --shadow-xl: 0 8px 24px -4px hsl(220 13% 11% / 0.14);
     --shadow-glow: 0 1px 3px 0 hsl(220 13% 11% / 0.08);
-    --shadow-vibrant: 0 2px 6px -1px hsl(220 13% 11% / 0.08);
-    --shadow-card: 0 1px 3px 0 hsl(220 13% 11% / 0.05);
-    --shadow-card-hover: 0 2px 8px -2px hsl(220 13% 11% / 0.1);
+    --shadow-vibrant: 0 2px 6px -1px hsl(220 13% 11% / 0.10);
+    --shadow-card: 0 1px 4px 0 hsl(220 13% 11% / 0.08);
+    --shadow-card-hover: 0 3px 10px -2px hsl(220 13% 11% / 0.14);
 
     /* Chrome - slate-900 for menus/sidebars */
     --chrome: 222 47% 11%;

@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  Mic, 
-  MicOff, 
-  Sparkles, 
-  Loader2, 
-  Check, 
+import {
+  Mic,
+  MicOff,
+  Sparkles,
+  Loader2,
+  Check,
   Edit3,
   Volume2,
   RefreshCw,
@@ -39,15 +39,27 @@ interface VoiceQuoteCreatorProps {
   onQuoteCreated?: (result: VoiceQuoteResult) => void;
 }
 
+/** Map browser language tag to BCP-47 speech recognition tag */
+function getSpeechLocale(lang: string): string {
+  const map: Record<string, string> = {
+    pl: 'pl-PL',
+    en: 'en-US',
+    uk: 'uk-UA',
+  };
+  return map[lang.split('-')[0]] ?? 'pl-PL';
+}
+
 export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [mode, setMode] = useState<'idle' | 'listening' | 'processing' | 'editing' | 'done'>('idle');
   const [voiceText, setVoiceText] = useState('');
   const [result, setResult] = useState<VoiceQuoteResult | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  const speechLocale = getSpeechLocale(i18n.language);
+
   const { transcript, isListening, isSupported, startListening, stopListening, resetTranscript } = useVoiceToText({
-    language: 'pl-PL',
+    language: speechLocale,
     continuous: true,
   });
 
@@ -126,6 +138,12 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
     startListening();
   };
 
+  const getCategoryLabel = (category: QuoteItem['category']): string => {
+    return category === 'Materiał'
+      ? t('voiceQuote.categoryMaterial')
+      : t('voiceQuote.categoryLabor');
+  };
+
   if (!isSupported) {
     return (
       <Card className="border-dashed border-2 border-muted-foreground/20">
@@ -169,13 +187,13 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
               {mode === 'idle' && <Wand2 className="h-5 w-5" />}
             </div>
             <div>
-              <CardTitle className="text-base">Wycena głosowa</CardTitle>
+              <CardTitle className="text-base">{t('voiceQuote.title')}</CardTitle>
               <p className="text-xs text-muted-foreground">
-                {mode === 'idle' && 'Powiedz co chcesz wycenić'}
-                {mode === 'listening' && 'Słucham...'}
-                {mode === 'processing' && 'Analizuję...'}
-                {mode === 'editing' && 'Sprawdź i zatwierdź'}
-                {mode === 'done' && 'Gotowe!'}
+                {mode === 'idle' && t('voiceQuote.statusIdle')}
+                {mode === 'listening' && t('voiceQuote.statusListening')}
+                {mode === 'processing' && t('voiceQuote.statusProcessing')}
+                {mode === 'editing' && t('voiceQuote.statusEditing')}
+                {mode === 'done' && t('voiceQuote.statusDone')}
               </p>
             </div>
           </div>
@@ -198,7 +216,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
               <Mic className="h-8 w-8" />
             </Button>
             <p className="mt-4 text-sm text-muted-foreground max-w-xs mx-auto">
-              Naciśnij i powiedz np. "Remont łazienki 10 metrów kwadratowych, płytki, wanna, umywalka"
+              {t('voiceQuote.startHint')}
             </p>
           </div>
         )}
@@ -219,10 +237,12 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
               <span className="absolute inset-0 rounded-full border-4 border-primary animate-ping opacity-25" />
               <span className="absolute inset-0 rounded-full border-4 border-primary animate-ping opacity-25 animation-delay-200" style={{ animationDelay: '0.2s' }} />
             </div>
-            
+
             {voiceText && (
               <div className="bg-muted/50 rounded-lg p-4 mt-4 text-left animate-fade-in">
-                <p className="text-sm font-medium text-muted-foreground mb-1">Rozpoznany tekst:</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">
+                  {t('voiceQuote.transcribedLabel')}
+                </p>
                 <p className="text-foreground">{voiceText}</p>
               </div>
             )}
@@ -233,13 +253,17 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
         {mode === 'processing' && (
           <div className="text-center py-8">
             <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-            <p className="mt-4 text-muted-foreground">Analizuję Twoją wycenę...</p>
+            <p className="mt-4 text-muted-foreground">{t('voiceQuote.processingHint')}</p>
             <div className="mt-2 text-xs text-muted-foreground">
-              <span className="inline-block animate-pulse">Identyfikuję materiały</span>
+              <span className="inline-block animate-pulse">{t('voiceQuote.identifyingMaterials')}</span>
               <span className="mx-2">•</span>
-              <span className="inline-block animate-pulse" style={{ animationDelay: '0.2s' }}>Obliczam ceny</span>
+              <span className="inline-block animate-pulse" style={{ animationDelay: '0.2s' }}>
+                {t('voiceQuote.calculatingPrices')}
+              </span>
               <span className="mx-2">•</span>
-              <span className="inline-block animate-pulse" style={{ animationDelay: '0.4s' }}>Tworzę ofertę</span>
+              <span className="inline-block animate-pulse" style={{ animationDelay: '0.4s' }}>
+                {t('voiceQuote.creatingOffer')}
+              </span>
             </div>
           </div>
         )}
@@ -248,24 +272,28 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
         {mode === 'editing' && result && (
           <div className="space-y-4 animate-fade-in">
             <div className="bg-muted/30 rounded-lg p-4">
-              <p className="text-sm font-medium text-muted-foreground mb-1">Projekt:</p>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                {t('voiceQuote.projectLabel')}
+              </p>
               <p className="text-lg font-semibold">{result.projectName}</p>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Pozycje wyceny:</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                {t('voiceQuote.itemsLabel')}
+              </p>
               <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
                 {result.items.map((item, i) => (
                   <div key={i} className="flex items-center justify-between bg-muted/20 rounded-lg p-3">
                     <div className="flex-1">
                       <p className="font-medium">{item.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {item.qty} {item.unit} × {item.price} zł
+                        {t('voiceQuote.itemQtyPrice', { qty: item.qty, unit: item.unit, price: item.price })}
                       </p>
                     </div>
                     <div className="text-right">
                       <Badge variant={item.category === 'Materiał' ? 'secondary' : 'outline'}>
-                        {item.category}
+                        {getCategoryLabel(item.category)}
                       </Badge>
                       <p className="text-sm font-semibold mt-1">{(item.qty * item.price).toFixed(2)} zł</p>
                     </div>
@@ -278,7 +306,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
               <Textarea
                 value={result.summary}
                 onChange={(e) => setResult({ ...result, summary: e.target.value })}
-                placeholder="Dodatkowe uwagi..."
+                placeholder={t('voiceQuote.notesPlaceholder')}
                 className="min-h-[80px]"
               />
             )}
@@ -290,21 +318,21 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
                 className="flex-1"
               >
                 <Mic className="h-4 w-4 mr-2" />
-                Popraw głosowo
+                {t('voiceQuote.correctVoice')}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setIsEditing(!isEditing)}
               >
                 <Edit3 className="h-4 w-4 mr-2" />
-                Edytuj
+                {t('common.edit')}
               </Button>
               <Button
                 onClick={handleEditSubmit}
                 className="flex-1 bg-primary"
               >
                 <Check className="h-4 w-4 mr-2" />
-                Zatwierdź
+                {t('voiceQuote.confirm')}
               </Button>
             </div>
           </div>
@@ -316,14 +344,14 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
             <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-green-500/10 mb-4">
               <Check className="h-8 w-8 text-green-500" />
             </div>
-            <p className="font-medium text-green-600">Wycena została utworzona!</p>
+            <p className="font-medium text-green-600">{t('voiceQuote.createdMessage')}</p>
             <Button
               variant="outline"
               onClick={handleReset}
               className="mt-4"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
-              Stwórz kolejną
+              {t('voiceQuote.createAnother')}
             </Button>
           </div>
         )}
