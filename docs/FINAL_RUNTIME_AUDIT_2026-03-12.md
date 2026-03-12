@@ -625,10 +625,25 @@ ALE:
 - Redirecty: `/clients` → `/app/customers`, `/customers` → `/app/customers` ✅
 
 **Relacje z innymi encjami:**
-- `client_id` w typach Project (`src/types/index.ts:13`)
-- `client_id` w Offer (`src/lib/offerPdfPayloadBuilder.ts`)
-- Walidacja: `projectSchema` wymaga `client_id`
-- **ALE**: UI nie pokazuje ofert/projektów klienta na karcie klienta
+- `client_id` w typach Project (`src/types/index.ts:13`) — FK z `ON DELETE CASCADE`
+- `client_id` w Offer (`src/lib/offerPdfPayloadBuilder.ts`) — nullable FK
+- Walidacja: `projectSchema` wymaga `client_id` (`z.string().min(1)`)
+- **WizardStepClient** (`src/components/offers/wizard/WizardStepClient.tsx`): Wybór klienta LUB inline tworzenie nowego w ofercie
+- **ClientPicker** (`src/components/quickEstimate/ClientPicker.tsx`): Dropdown + inline add w Quick Estimate
+- **ALE**: UI kart klientów nie pokazuje ich ofert/projektów — brak linku klient→oferty
+
+**RLS Security** (migracja `20251205160746`):
+- SELECT: `auth.uid() = user_id` ✅
+- INSERT: `auth.uid() = user_id` ✅
+- UPDATE: `auth.uid() = user_id` ✅
+- DELETE: `auth.uid() = user_id` ✅
+- Indeksy: `idx_clients_user_id`, `idx_projects_client_id`
+
+**Hook** (`src/hooks/useClients.ts` — 218 linii):
+- `useClientsPaginated()` — server-side search (name/email/phone), range pagination
+- `useClient()` — single client by ID
+- `useAddClient()` / `useUpdateClient()` / `useDeleteClient()` — z cache invalidation i toast errors
+- Query key factory pattern
 
 ---
 
