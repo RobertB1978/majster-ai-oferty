@@ -1,11 +1,13 @@
 /**
- * NewProjectV2 — PR-13 fix + Sprint C project templates
+ * NewProjectV2 — PR-13 fix + Sprint C project templates + Sprint D activation
  *
  * Formularz tworzenia nowego projektu V2 bezpośrednio w kontekście zakładki Projekty.
  * Zostaje w ścieżce /app/projects/* więc zakładka Projekty pozostaje aktywna.
  *
  * Sprint C: Opcjonalny wybór szablonu startowego, który wstępnie wypełnia tytuł
- * i pokazuje sugerowane etapy projektu. Nie zmienia modelu danych.
+ * i pokazuje sugerowane etapy projektu.
+ * Sprint D2: Etapy szablonu są teraz zapisywane do stages_json projektu,
+ * dzięki czemu są widoczne i edytowalne w ProjectHub po utworzeniu projektu.
  */
 
 import { useState } from 'react';
@@ -59,9 +61,21 @@ export default function NewProjectV2() {
       return;
     }
     try {
+      // Sprint D2: convert template phases to ProjectStage records so they
+      // are immediately visible and editable in ProjectHub after creation.
+      const starterStages = selectedTemplate
+        ? selectedTemplate.phases.map((phase, idx) => ({
+            name: phase.name,
+            due_date: null,
+            is_done: false,
+            sort_order: idx,
+          }))
+        : undefined;
+
       const project = await createProject.mutateAsync({
         title: trimmed,
         client_id: clientId && clientId !== 'none' ? clientId : null,
+        stages_json: starterStages,
       });
       toast.success(t('projectsV2.createSuccess'));
       navigate(`/app/projects/${project.id}`);
