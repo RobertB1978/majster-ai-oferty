@@ -6,8 +6,9 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 
 // ── Deprecated-guard tests ────────────────────────────────────────────────────
-// useProjects() is deprecated but still used by Calendar, ProjectTimeline,
-// WorkTasksGantt until those components migrate to useProjectsV2List.
+// useProjects() is deprecated but still used by Calendar.tsx and WorkTasksGantt.tsx
+// due to FK constraints (calendar_events.project_id → projects, work_tasks.project_id → projects).
+// ProjectTimeline.tsx was migrated to useProjectsV2List (PR: align-calendar-v2-projects).
 // These tests ensure the export exists (backward-compat) and does NOT get
 // accidentally removed while it still has active callers.
 
