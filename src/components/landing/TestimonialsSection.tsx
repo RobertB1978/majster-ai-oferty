@@ -51,10 +51,10 @@ export function TestimonialsSection() {
             id="testimonials-heading"
             className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4"
           >
-            {t('landing.testimonials.sectionTitle', 'Co mówią użytkownicy')}
+            {t('landing.testimonials.sectionTitle', 'Co zyska Twoja firma')}
           </h2>
           <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed">
-            {t('landing.testimonials.sectionSubtitle', 'Co mówią wykonawcy i majstrowie o Majster.AI.')}
+            {t('landing.testimonials.sectionSubtitle', 'Oczekiwane korzyści dla wykonawców i majstrów korzystających z Majster.AI.')}
           </p>
         </div>
 
