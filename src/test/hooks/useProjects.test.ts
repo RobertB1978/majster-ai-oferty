@@ -5,6 +5,24 @@ vi.mock('@/integrations/supabase/client', () => ({
   supabase: mockSupabaseClient,
 }));
 
+// ── Deprecated-guard tests ────────────────────────────────────────────────────
+// useProjects() is deprecated but still used by Calendar, ProjectTimeline,
+// WorkTasksGantt until those components migrate to useProjectsV2List.
+// These tests ensure the export exists (backward-compat) and does NOT get
+// accidentally removed while it still has active callers.
+
+describe('useProjects — deprecated backward-compat guard', () => {
+  it('export istnieje w module (backward-compat import nie łamie buildu)', async () => {
+    const mod = await import('@/hooks/useProjects');
+    expect(typeof mod.useProjects).toBe('function');
+  });
+
+  it('useProjectsPaginated eksportuje nową paginowaną wersję jako docelowy zamiennik', async () => {
+    const mod = await import('@/hooks/useProjects');
+    expect(typeof mod.useProjectsPaginated).toBe('function');
+  });
+});
+
 describe('Projects Hook', () => {
   beforeEach(() => {
     vi.clearAllMocks();

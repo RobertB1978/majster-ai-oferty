@@ -100,10 +100,18 @@ export function useProjectsPaginated(params: ProjectsQueryParams = {}) {
 }
 
 /**
- * @deprecated Use useProjectsPaginated instead for better performance
- * Kept for backward compatibility with Dashboard and other components
+ * @deprecated Use useProjectsPaginated instead for better performance.
+ * Kept for backward compatibility with Calendar and timeline components.
+ * Remaining callers: Calendar.tsx, ProjectTimeline.tsx, WorkTasksGantt.tsx
+ * — migrate these to useProjectsV2List when calendar supports v2_projects.
  */
 export function useProjects() {
+  if (import.meta.env.DEV) {
+    console.warn(
+      '[useProjects] DEPRECATED — use useProjectsPaginated or useProjectsV2List instead. ' +
+      'This hook queries the legacy `projects` table.'
+    );
+  }
   const { user } = useAuth();
 
   return useQuery({
