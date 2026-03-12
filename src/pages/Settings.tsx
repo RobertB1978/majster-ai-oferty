@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings as SettingsIcon, Bell, Globe, Calendar, FileText, Scale, Fingerprint, Mail, Building2, UserX, CreditCard, ShieldCheck } from 'lucide-react';
+import { Settings as SettingsIcon, Bell, Globe, Calendar, FileText, Scale, Fingerprint, Mail, Building2, UserX, CreditCard, ShieldCheck, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -24,8 +25,26 @@ const BIOMETRIC_FEATURE_ENABLED = false;
 // Hidden until persistence is implemented to avoid pretending readiness.
 const PUSH_NOTIFICATIONS_ENABLED = false;
 
+interface SettingsSection {
+  id: string;
+  icon: React.ElementType;
+  labelKey: string;
+}
+
+const SETTINGS_SECTIONS: SettingsSection[] = [
+  { id: 'company',      icon: Building2,  labelKey: 'settings.companyProfileTab' },
+  { id: 'general',      icon: Globe,       labelKey: 'settings.language' },
+  { id: 'documents',    icon: FileText,    labelKey: 'settings.documents' },
+  { id: 'calendar',     icon: Calendar,    labelKey: 'nav.calendar' },
+  { id: 'email',        icon: Mail,        labelKey: 'settings.contactEmailTab' },
+  { id: 'subscription', icon: CreditCard,  labelKey: 'settings.subscriptionTab' },
+  { id: 'privacy',      icon: ShieldCheck, labelKey: 'settings.privacy' },
+  { id: 'account',      icon: UserX,       labelKey: 'settings.accountTab' },
+];
+
 export default function Settings() {
   const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState('company');
 
   return (
     <>
@@ -45,9 +64,32 @@ export default function Settings() {
           </p>
         </div>
 
-        <Tabs defaultValue="company">
-          {/* Horizontally scrollable on mobile to prevent text overlap */}
-          <div className="overflow-x-auto -mx-1 px-1">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+
+          {/* ── MOBILE nav: vertical list (no horizontal scrolling) ── */}
+          <nav className="sm:hidden space-y-1 mb-4" aria-label={t('settings.title')}>
+            {SETTINGS_SECTIONS.map(({ id, icon: Icon, labelKey }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setActiveTab(id)}
+                data-testid={`settings-mobile-nav-${id}`}
+                className={[
+                  'w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors',
+                  activeTab === id
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-foreground hover:bg-muted',
+                ].join(' ')}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="flex-1 text-left">{t(labelKey)}</span>
+                {activeTab === id && <ChevronRight className="h-4 w-4 text-primary" />}
+              </button>
+            ))}
+          </nav>
+
+          {/* ── DESKTOP nav: original horizontal tabs ── */}
+          <div className="hidden sm:block overflow-x-auto -mx-1 px-1">
             <TabsList className="inline-flex h-auto min-w-full gap-1 p-1">
               <TabsTrigger value="company" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
