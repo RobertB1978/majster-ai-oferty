@@ -152,9 +152,9 @@ export const PLANS: PlanConfig[] = [
     },
     stripePriceId: null,
     faq: [
-      { q: 'Ile osób może pracować?', a: 'Do 5 członków zespołu. Można dokupić więcej.' },
+      { q: 'Ile osób może pracować?', a: 'Do 10 członków zespołu w planie Biznes.' },
       { q: 'Czy AI jest wliczone?', a: 'Tak — asystent AI i wycena ze zdjęcia wliczone w plan.' },
-      { q: 'Jak dodać zespół?', a: 'W panelu → Zespół → Zaproś członka.' },
+      { q: 'Czy zarządzanie zespołem jest już dostępne?', a: 'Moduł Zespół jest w przygotowaniu i będzie dostępny w kolejnej aktualizacji.' },
     ],
   },
   {

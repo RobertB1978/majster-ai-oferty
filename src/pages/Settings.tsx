@@ -20,6 +20,10 @@ import { SubscriptionSection } from '@/components/billing/SubscriptionSection';
 // Disabled until fully implemented. Change to true to re-enable.
 const BIOMETRIC_FEATURE_ENABLED = false;
 
+// P11: Push notification settings are not persisted (no localStorage/DB).
+// Hidden until persistence is implemented to avoid pretending readiness.
+const PUSH_NOTIFICATIONS_ENABLED = false;
+
 export default function Settings() {
   const { t } = useTranslation();
 
@@ -61,10 +65,12 @@ export default function Settings() {
                 <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                 <span>{t('nav.calendar')}</span>
               </TabsTrigger>
-              <TabsTrigger value="notifications" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
-                <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
-                <span>{t('settings.notifications')}</span>
-              </TabsTrigger>
+              {PUSH_NOTIFICATIONS_ENABLED && (
+                <TabsTrigger value="notifications" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                  <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                  <span>{t('settings.notifications')}</span>
+                </TabsTrigger>
+              )}
               {BIOMETRIC_FEATURE_ENABLED && (
                 <TabsTrigger value="biometric" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                   <Fingerprint className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
@@ -159,9 +165,11 @@ export default function Settings() {
             <CalendarSync />
           </TabsContent>
 
-          <TabsContent value="notifications" className="mt-4">
-            <PushNotificationSettings />
-          </TabsContent>
+          {PUSH_NOTIFICATIONS_ENABLED && (
+            <TabsContent value="notifications" className="mt-4">
+              <PushNotificationSettings />
+            </TabsContent>
+          )}
 
           {BIOMETRIC_FEATURE_ENABLED && (
             <TabsContent value="biometric" className="mt-4">
