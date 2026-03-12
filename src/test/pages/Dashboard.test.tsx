@@ -94,7 +94,7 @@ describe('Dashboard — density cleanup', () => {
   });
 
   it('QuoteCreationHub NIE jest opakowany w border-2/bg-primary/5 (obniżony priorytet wizualny)', () => {
-    const { container } = renderDashboard();
+    renderDashboard();
     const hub = screen.getByTestId('quote-creation-hub');
     // Walk up to the immediate wrapper div
     const wrapper = hub.parentElement as HTMLElement;
