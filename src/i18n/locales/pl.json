@@ -4503,6 +4503,8 @@
     "photoAlt": "Zdjęcie projektu"
   },
   "offerDetail": {
+    "notFoundTitle": "Oferta nie znaleziona",
+    "notFoundDesc": "Ta oferta nie istnieje lub nie masz do niej dostępu.",
     "template": {
       "purpose": "Przeznaczenie",
       "duration": "Czas realizacji",

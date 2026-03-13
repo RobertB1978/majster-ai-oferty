@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
-  FolderPlus,
   FileText,
   TrendingUp,
   Clock,
@@ -180,11 +179,11 @@ export function EmptyDashboard() {
       <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
         <Button
           size="lg"
-          onClick={() => navigate('/app/projects/new')}
+          onClick={() => navigate('/app/offers/new')}
           className="mb-12 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 text-base px-8 py-6 rounded-2xl"
         >
-          <FolderPlus className="mr-2 h-5 w-5" />
-          {t('dashboard.createFirstProject')}
+          <FileText className="mr-2 h-5 w-5" />
+          {t('quickActions.newOffer')}
           <ArrowRight className="ml-2 h-5 w-5" />
         </Button>
       </motion.div>

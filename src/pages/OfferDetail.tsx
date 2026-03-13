@@ -17,6 +17,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { OfferWizard } from '@/components/offers/wizard/OfferWizard';
 import { AcceptanceLinkPanel } from '@/components/offers/AcceptanceLinkPanel';
+import { ErrorState } from '@/components/ui/error-state';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -223,7 +224,7 @@ export default function OfferDetail() {
   const [templateSheetOpen, setTemplateSheetOpen] = useState(false);
 
   const isNew = !id;
-  const { data: meta, isLoading: metaLoading } = useOfferMeta(id);
+  const { data: meta, isLoading: metaLoading, isError: metaError } = useOfferMeta(id);
 
   if (isNew) {
     return (
@@ -248,6 +249,28 @@ export default function OfferDetail() {
       <div className="container max-w-2xl mx-auto px-4 py-6 flex items-center gap-2 text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin" />
         <span>{t('common.loading')}</span>
+      </div>
+    );
+  }
+
+  if (metaError) {
+    return (
+      <div className="container max-w-2xl mx-auto px-4 py-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mb-4 -ml-2"
+          onClick={() => navigate('/app/offers')}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          {t('common.back')}
+        </Button>
+        <ErrorState
+          title={t('offerDetail.notFoundTitle')}
+          description={t('offerDetail.notFoundDesc')}
+          retryLabel={t('offersList.pageTitle')}
+          onRetry={() => navigate('/app/offers')}
+        />
       </div>
     );
   }

@@ -4503,6 +4503,8 @@
     "photoAlt": "Project photo"
   },
   "offerDetail": {
+    "notFoundTitle": "Offer not found",
+    "notFoundDesc": "This offer does not exist or you do not have access to it.",
     "template": {
       "purpose": "Purpose",
       "duration": "Estimated duration",
