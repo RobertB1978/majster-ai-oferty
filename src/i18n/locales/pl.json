@@ -55,7 +55,8 @@
     "startVoiceRecording": "Rozpocznij nagrywanie głosowe",
     "errorGeneric": "Wystąpił błąd. Spróbuj ponownie.",
     "offline": "Offline",
-    "online": "Online"
+    "online": "Online",
+    "unknownError": "Nieznany błąd"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -998,12 +999,12 @@
       "message": "Wiadomość (opcjonalnie)",
       "messagePlaceholder": "Dodatkowe informacje lub pytania...",
       "success": "Zgłoszenie zapisane!",
-      "contactInfo": "Skontaktujemy się z Tobą pod adresem: ",
+      "contactInfo": "Skontaktujemy się z Tobą pod adresem:",
       "close": "Zamknij",
       "cancel": "Anuluj",
       "submit": "Wyślij zgłoszenie",
       "sending": "Wysyłanie...",
-      "error": "Błąd: {{message}}. Spróbuj ponownie lub napisz na ",
+      "error": "Błąd: {{message}}. Spróbuj ponownie lub napisz na",
       "unknownError": "Nieznany błąd"
     }
   },
@@ -1346,6 +1347,72 @@
       "roleRemoved": "Rola usunięta",
       "settingsSaveError": "Nie można zapisać ustawień",
       "themeSaveError": "Nie można zapisać motywu"
+    },
+    "cron": {
+      "title": "Zadania CRON",
+      "description": "Automatyczne zadania uruchamiane według harmonogramu",
+      "configTitle": "Konfiguracja CRON",
+      "configDescription": "Aby włączyć automatyczne zadania CRON, skonfiguruj je w ustawieniach bazy danych używając pg_cron i pg_net. Możesz też uruchomić zadania ręcznie poniżej.",
+      "requiresKey": "Wymaga klucza",
+      "requires": "Wymaga: {{key}}",
+      "active": "Aktywne",
+      "disabled": "Wyłączone",
+      "running": "Uruchamianie...",
+      "runNow": "Uruchom teraz",
+      "requiredKey": "Wymagany klucz: {{key}}",
+      "sentMessages": "Wysłano {{count}} wiadomości",
+      "setupGuide": "Instrukcja konfiguracji CRON",
+      "setupStep1": "Włącz rozszerzenia pg_cron i pg_net w bazie danych",
+      "setupStep2": "Dodaj zadanie SQL:",
+      "expiringOffers": {
+        "name": "Przypomnienia o wygasających ofertach",
+        "description": "Wysyła email do klientów z ofertami wygasającymi za 3 dni",
+        "scheduleText": "Codziennie o 9:00"
+      },
+      "subscriptionCheck": {
+        "name": "Kontrola subskrypcji",
+        "description": "Sprawdza wygasające subskrypcje i wysyła powiadomienia",
+        "scheduleText": "Codziennie o 8:00"
+      },
+      "databaseCleanup": {
+        "name": "Czyszczenie bazy danych",
+        "description": "Usuwa wygasłe tokeny i stare logi (30+ dni)",
+        "scheduleText": "Co niedzielę o 3:00"
+      }
+    },
+    "db": {
+      "title": "Zarządzanie bazą danych",
+      "description": "Przegląd i zarządzanie danymi aplikacji",
+      "refresh": "Odśwież",
+      "totalRecords": "Łącznie rekordów",
+      "activeTables": "Tabel aktywnych",
+      "colTable": "Tabela",
+      "colDesc": "Opis",
+      "colRecords": "Rekordów",
+      "colShare": "Udział",
+      "colActions": "Akcje",
+      "export": "Eksportuj",
+      "exportAll": "Eksportuj wszystko (CSV)",
+      "backup": "Backup bazy",
+      "clearOld": "Wyczyść stare dane",
+      "tables": {
+        "profiles": "Profile",
+        "profilesDesc": "Profile użytkowników",
+        "clients": "Klienci",
+        "clientsDesc": "Dane klientów",
+        "projects": "Projekty",
+        "projectsDesc": "Projekty wycen",
+        "quotes": "Wyceny",
+        "quotesDesc": "Kalkulacje kosztów",
+        "templates": "Szablony",
+        "templatesDesc": "Szablony pozycji",
+        "events": "Wydarzenia",
+        "eventsDesc": "Kalendarz",
+        "notifications": "Powiadomienia",
+        "notificationsDesc": "Notyfikacje",
+        "offerSends": "Wysyłki",
+        "offerSendsDesc": "Historia wysyłek"
+      }
     }
   },
   "adminConfig": {
@@ -1915,7 +1982,29 @@
     "completedOf": "Ukończono {{completed}} z {{total}} kroków",
     "startStep": "Rozpocznij",
     "skipForNow": "Pomiń na razie",
-    "returnHint": "Możesz wrócić do tego przewodnika w menu pomocy"
+    "returnHint": "Możesz wrócić do tego przewodnika w menu pomocy",
+    "steps": {
+      "companyProfile": {
+        "title": "Profil firmy",
+        "description": "Dodaj logo i dane kontaktowe firmy"
+      },
+      "firstClient": {
+        "title": "Pierwszy klient",
+        "description": "Dodaj swojego pierwszego klienta"
+      },
+      "firstOffer": {
+        "title": "Pierwsza oferta",
+        "description": "Utwórz pierwszą ofertę dla klienta"
+      },
+      "sendOffer": {
+        "title": "Wyślij ofertę",
+        "description": "Prześlij ofertę klientowi do akceptacji"
+      },
+      "exportPdf": {
+        "title": "Eksport PDF",
+        "description": "Wygeneruj profesjonalne PDF oferty"
+      }
+    }
   },
   "adminSettings": {
     "loadingSettings": "Wczytywanie ustawień...",
@@ -2223,7 +2312,8 @@
       "prepBadge": "W przygotowaniu",
       "planFeaturesLabel": "Funkcje planu",
       "enterpriseNote": "Potrzebujesz więcej?",
-      "enterpriseContact": "Napisz do nas — plan Enterprise wkrótce."
+      "enterpriseContact": "Napisz do nas — plan Enterprise wkrótce.",
+      "per_month_suffix": "zł/mies."
     },
     "faq": {
       "sectionTitle": "Często zadawane pytania",
@@ -4630,5 +4720,163 @@
     "faq2a": "Majster.AI jest przeznaczony dla firm budowlanych, remontowych, elektryków, hydraulików i innych fachowców, którzy chcą profesjonalizować swój biznes.",
     "faq3q": "Czy mogę wygenerować ofertę PDF?",
     "faq3a": "Tak, Majster.AI umożliwia generowanie profesjonalnych ofert w formacie PDF z logo firmy, pozycjami kosztorysowymi i warunkami płatności."
+  },
+  "notifications": {
+    "deleteNotification": "Usuń powiadomienie"
+  },
+  "workTasks": {
+    "unknownProject": "Nieznany projekt",
+    "schedule": "Harmonogram",
+    "noTasksThisMonth": "Brak zadań w tym miesiącu",
+    "taskStatus": "Status zadań",
+    "teamLoad": "Obciążenie zespołu",
+    "noTeamMembers": "Brak członków zespołu",
+    "status": {
+      "planned": "Planowane",
+      "in_progress": "W trakcie",
+      "done": "Zakończone"
+    }
+  },
+  "plugins": {
+    "title": "Integracje i pluginy",
+    "subtitle": "Rozszerz możliwości Majster.AI o zewnętrzne usługi",
+    "activeCount": "Aktywnych integracji",
+    "availableCount": "Dostępnych pluginów",
+    "premiumCount": "Wymagających Premium",
+    "active": "Aktywny",
+    "configure": "Konfiguruj",
+    "categories": {
+      "accounting": "Księgowość",
+      "warehouse": "Hurtownie",
+      "crm": "CRM",
+      "sms": "SMS",
+      "payments": "Płatności",
+      "logistics": "Logistyka"
+    },
+    "marketplace": {
+      "title": "Marketplace integracji",
+      "description": "Wkrótce udostępnimy marketplace z dodatkowymi integracjami tworzonymi przez społeczność. Zostań partnerem i stwórz własną integrację!",
+      "cta": "Zostań partnerem"
+    },
+    "toast": {
+      "enabled": "{{name}} włączony",
+      "disabled": "{{name}} wyłączony"
+    },
+    "infakt": {
+      "name": "Infakt",
+      "description": "Integracja z systemem księgowym Infakt - automatyczne faktury"
+    },
+    "ifirma": {
+      "name": "iFirma",
+      "description": "Eksport danych do księgowości iFirma"
+    },
+    "castorama": {
+      "name": "Castorama B2B",
+      "description": "Integracja z hurtownią Castorama - ceny i dostępność"
+    },
+    "leroy": {
+      "name": "Leroy Merlin",
+      "description": "Pobieraj ceny materiałów z Leroy Merlin"
+    },
+    "smsapi": {
+      "name": "SMSAPI",
+      "description": "Wysyłaj SMS-y do klientów - przypomnienia i powiadomienia"
+    },
+    "przelewy24": {
+      "name": "Przelewy24",
+      "description": "Płatności online dla klientów"
+    },
+    "dpd": {
+      "name": "DPD",
+      "description": "Śledzenie przesyłek i dostaw materiałów"
+    }
+  },
+  "upgrade": {
+    "unlockFeature": "Odblokuj: {{feature}}",
+    "changePlan": "Zmień plan",
+    "choosePlan": "Wybierz plan, który najlepiej odpowiada Twoim potrzebom",
+    "mostPopular": "Najpopularniejszy",
+    "currentPlan": "Aktualny plan",
+    "select": "Wybierz",
+    "cancelAnytime": "Możesz anulować subskrypcję w dowolnym momencie. Dostęp aktywny do końca opłaconego okresu.",
+    "planFeatures": {
+      "pro": [
+        "15 projektów",
+        "30 klientów",
+        "Eksport Excel/CSV",
+        "Wszystkie szablony PDF",
+        "Email wsparcie"
+      ],
+      "business": [
+        "Nielimitowane projekty",
+        "Nielimitowani klienci",
+        "Asystent AI",
+        "Wycena głosowa",
+        "Foto-wycena AI",
+        "OCR faktur",
+        "Sync kalendarza",
+        "Priorytetowe wsparcie"
+      ],
+      "enterprise": [
+        "Wszystko z Biznes",
+        "API publiczne",
+        "Niestandardowe szablony",
+        "Zarządzanie zespołem",
+        "Zaawansowana analityka",
+        "Dedykowany opiekun",
+        "SLA 99.9%"
+      ]
+    }
+  },
+  "planGate": {
+    "features": {
+      "ai": "Asystent AI",
+      "voice": "Wycena głosowa",
+      "documents": "Dokumenty firmowe",
+      "excelExport": "Eksport Excel",
+      "calendarSync": "Synchronizacja kalendarza",
+      "prioritySupport": "Priorytetowe wsparcie",
+      "api": "API publiczne",
+      "customTemplates": "Szablony niestandardowe",
+      "team": "Zarządzanie zespołem",
+      "marketplace": "Marketplace podwykonawców",
+      "advancedAnalytics": "Zaawansowana analityka",
+      "photoEstimation": "Foto-wycena AI",
+      "ocr": "OCR faktur",
+      "unlimitedProjects": "Nieograniczone projekty",
+      "unlimitedClients": "Nieograniczeni klienci"
+    },
+    "featureRequiresUpgrade": "Funkcja \"{{feature}}\" wymaga wyższego planu",
+    "goToSettings": "Przejdź do ustawień, aby zmienić plan.",
+    "changePlan": "Zmień plan",
+    "limitReached": "Osiągnięto limit {{type}}",
+    "limitDescription": "Twój plan \"{{plan}}\" pozwala na {{limit}} {{type}}.",
+    "unlimited": "nieograniczoną liczbę",
+    "limits": {
+      "projects": "projektów",
+      "clients": "klientów",
+      "teamMembers": "członków zespołu",
+      "apiCalls": "wywołań API",
+      "storageMB": "MB przestrzeni"
+    },
+    "upgradeMessage": "Ta funkcja wymaga planu {{plan}} lub wyższego.",
+    "planNames": {
+      "business": "Biznes"
+    }
+  },
+  "expirationMonitor": {
+    "client": "klienta",
+    "offerExpiresToday": "Oferta wygasa dziś!",
+    "offerExpiresTodayMsg": "Oferta dla {{client}} wygasa za {{hours}} godzin. Rozważ przedłużenie lub kontakt z klientem.",
+    "offerExpiresSoon": "Oferta wkrótce wygasa",
+    "offerExpiresSoonMsg": "Oferta dla {{client}} wygasa za {{days}} dni.",
+    "offerExpiryReminder": "Przypomnienie o wygasającej ofercie",
+    "offerExpiryReminderMsg": "Oferta dla {{client}} wygasa za {{days}} dni.",
+    "planExpired": "Plan wygasł",
+    "planExpiredMsg": "Twój plan {{plan}} wygasł. Odnów subskrypcję, aby zachować dostęp do wszystkich funkcji.",
+    "planExpiresSoon": "Plan wkrótce wygasa!",
+    "planExpiresSoonMsg": "Twój plan {{plan}} wygasa za {{days}} dni. Odnów teraz, aby uniknąć przerwy w działaniu.",
+    "planExpiryReminder": "Przypomnienie o odnowieniu planu",
+    "planExpiryReminderMsg": "Twój plan {{plan}} wygasa za {{days}} dni."
   }
 }

@@ -55,7 +55,8 @@
     "startVoiceRecording": "Почати голосовий запис",
     "errorGeneric": "Сталася помилка. Спробуйте ще раз.",
     "offline": "Офлайн",
-    "online": "Онлайн"
+    "online": "Онлайн",
+    "unknownError": "Невідома помилка"
   },
   "nav": {
     "dashboard": "Панель",
@@ -575,8 +576,8 @@
     "members": {
       "teamTitle": "Команда ({{count}})",
       "add": "Додати",
-      "editEmployee": "Редагувати працівника",
-      "addEmployee": "Додати працівника",
+      "editEmployee": "Редагувати співробітника",
+      "addEmployee": "Додати співробітника",
       "fullName": "Ім'я та прізвище *",
       "phone": "Телефон",
       "email": "Email",
@@ -585,8 +586,8 @@
       "foreman": "Бригадир",
       "worker": "Працівник",
       "saveChanges": "Зберегти зміни",
-      "addEmployeeBtn": "Додати працівника",
-      "noEmployees": "Немає працівників",
+      "addEmployeeBtn": "Додати співробітника",
+      "noEmployees": "Немає співробітників",
       "inactive": "Неактивний"
     }
   },
@@ -994,15 +995,15 @@
     "planRequest": {
       "cancel": "Скасувати",
       "close": "Закрити",
-      "contactInfo": "Ми зв'яжемося з вами за адресою: ",
-      "description": "Надішліть запит — ми зв'яжемося з вами найближчим часом.",
-      "error": "Помилка: {{message}}. Спробуйте ще раз або напишіть на ",
+      "contactInfo": "Ми зв'яжемося з вами за адресою:",
+      "description": "Надішліть запит — ми зв'яжемося з вами незабаром.",
+      "error": "Помилка: {{message}}. Спробуйте ще раз або напишіть на",
       "message": "Повідомлення (необов'язково)",
-      "messagePlaceholder": "Додаткова інформація або питання...",
+      "messagePlaceholder": "Додаткова інформація або запитання...",
       "phone": "Телефон (необов'язково)",
       "sending": "Надсилання...",
       "submit": "Надіслати запит",
-      "success": "Запит надіслано!",
+      "success": "Запит збережено!",
       "title": "Замовити план {{plan}}",
       "unknownError": "Невідома помилка"
     }
@@ -1346,6 +1347,72 @@
       "roleRemoved": "Роль видалено",
       "settingsSaveError": "Не вдалося зберегти налаштування",
       "themeSaveError": "Не вдалося зберегти тему"
+    },
+    "cron": {
+      "title": "CRON-завдання",
+      "description": "Автоматичні завдання за розкладом",
+      "configTitle": "Конфігурація CRON",
+      "configDescription": "Для увімкнення автоматичних CRON-завдань налаштуйте їх у параметрах бази даних, використовуючи pg_cron та pg_net. Ви також можете запускати завдання вручну нижче.",
+      "requiresKey": "Потребує ключа",
+      "requires": "Потребує: {{key}}",
+      "active": "Активно",
+      "disabled": "Вимкнено",
+      "running": "Запускається...",
+      "runNow": "Запустити зараз",
+      "requiredKey": "Необхідний ключ: {{key}}",
+      "sentMessages": "Надіслано {{count}} повідомлень",
+      "setupGuide": "Інструкція з налаштування CRON",
+      "setupStep1": "Увімкніть розширення pg_cron і pg_net у базі даних",
+      "setupStep2": "Додайте завдання SQL:",
+      "expiringOffers": {
+        "name": "Нагадування про пропозиції, що закінчуються",
+        "description": "Надсилає email клієнтам із пропозиціями, що закінчуються через 3 дні",
+        "scheduleText": "Щодня о 9:00"
+      },
+      "subscriptionCheck": {
+        "name": "Перевірка підписки",
+        "description": "Перевіряє підписки, що закінчуються, та надсилає сповіщення",
+        "scheduleText": "Щодня о 8:00"
+      },
+      "databaseCleanup": {
+        "name": "Очищення бази даних",
+        "description": "Видаляє прострочені токени та старі журнали (30+ днів)",
+        "scheduleText": "Щонеділі о 3:00"
+      }
+    },
+    "db": {
+      "title": "Управління базою даних",
+      "description": "Огляд і управління даними застосунку",
+      "refresh": "Оновити",
+      "totalRecords": "Всього записів",
+      "activeTables": "Активних таблиць",
+      "colTable": "Таблиця",
+      "colDesc": "Опис",
+      "colRecords": "Записів",
+      "colShare": "Частка",
+      "colActions": "Дії",
+      "export": "Експортувати",
+      "exportAll": "Експортувати все (CSV)",
+      "backup": "Резервна копія",
+      "clearOld": "Очистити старі дані",
+      "tables": {
+        "profiles": "Профілі",
+        "profilesDesc": "Профілі користувачів",
+        "clients": "Клієнти",
+        "clientsDesc": "Дані клієнтів",
+        "projects": "Проєкти",
+        "projectsDesc": "Проєкти кошторисів",
+        "quotes": "Кошториси",
+        "quotesDesc": "Розрахунки вартості",
+        "templates": "Шаблони",
+        "templatesDesc": "Шаблони позицій",
+        "events": "Події",
+        "eventsDesc": "Календар",
+        "notifications": "Сповіщення",
+        "notificationsDesc": "Нотифікації",
+        "offerSends": "Надсилання",
+        "offerSendsDesc": "Історія надсилань"
+      }
     }
   },
   "adminConfig": {
@@ -1915,7 +1982,29 @@
     "completedOf": "Завершено {{completed}} з {{total}} кроків",
     "startStep": "Розпочати",
     "skipForNow": "Пропустити зараз",
-    "returnHint": "Ви можете повернутися до цього посібника з меню допомоги"
+    "returnHint": "Ви можете повернутися до цього посібника з меню допомоги",
+    "steps": {
+      "companyProfile": {
+        "title": "Профіль компанії",
+        "description": "Додайте логотип і контактні дані компанії"
+      },
+      "firstClient": {
+        "title": "Перший клієнт",
+        "description": "Додайте свого першого клієнта"
+      },
+      "firstOffer": {
+        "title": "Перша пропозиція",
+        "description": "Створіть першу пропозицію для клієнта"
+      },
+      "sendOffer": {
+        "title": "Надіслати пропозицію",
+        "description": "Надішліть пропозицію клієнту на затвердження"
+      },
+      "exportPdf": {
+        "title": "Експорт PDF",
+        "description": "Згенеруйте професійний PDF пропозиції"
+      }
+    }
   },
   "adminSettings": {
     "loadingSettings": "Завантаження налаштувань...",
@@ -2430,7 +2519,8 @@
       "prepBadge": "В підготовці",
       "planFeaturesLabel": "Функції плану",
       "enterpriseNote": "Потрібно більше?",
-      "enterpriseContact": "Напишіть нам — план Enterprise незабаром."
+      "enterpriseContact": "Напишіть нам — план Enterprise незабаром.",
+      "per_month_suffix": "зл/міс."
     },
     "faq": {
       "sectionTitle": "Часті запитання",
@@ -4315,9 +4405,9 @@
       "footerGenerated": "згенеровано"
     },
     "email": {
-      "body": "У вкладенні гарантійна картка для проєкту <strong>{{project}}</strong>.",
-      "contact": "У разі запитань, будь ласка, зв'яжіться з нами.",
-      "greeting": "Доброго дня {{name}},",
+      "body": "В додатку надсилаємо гарантійний лист для проєкту <strong>{{project}}</strong>.",
+      "contact": "Якщо є питання, звертайтеся.",
+      "greeting": "Добрий день {{name}},",
       "validUntil": "Гарантія діє до: <strong>{{date}}</strong>."
     }
   },
@@ -4493,10 +4583,10 @@
     "createTitle": "Створити API-ключ",
     "created": "Створено: {{date}}",
     "deletePerm": "Видалення (delete)",
-    "description": "Керуйте API-ключами для інтеграції з зовнішніми системами",
+    "description": "Управляйте API-ключами для інтеграції із зовнішніми системами",
     "disable": "Вимкнути",
     "enable": "Увімкнути",
-    "endpoints": "Ендпоінти",
+    "endpoints": "Кінцеві точки",
     "inactive": "Неактивний",
     "keyName": "Назва ключа",
     "keyNamePlaceholder": "напр. Інтеграція з CRM",
@@ -4541,12 +4631,12 @@
     "marketing": "Маркетинг і новини",
     "marketingDesc": "Інформація про нові функції та акції",
     "newOffers": "Нові пропозиції",
-    "newOffersDesc": "Сповіщення про нові запити на кошториси",
+    "newOffersDesc": "Сповіщення про нові запити на пропозиції",
     "notificationTypes": "Типи сповіщень",
-    "offerApprovals": "Підтвердження пропозицій",
+    "offerApprovals": "Затвердження пропозицій",
     "offerApprovalsDesc": "Коли клієнт приймає або відхиляє пропозицію",
     "projectDeadlines": "Терміни проєктів",
-    "projectDeadlinesDesc": "Нагадування про наближення термінів",
+    "projectDeadlinesDesc": "Нагадування про наближення дедлайнів",
     "receiving": "Ви отримуєте push-сповіщення",
     "sendTest": "Надіслати тестове сповіщення",
     "title": "Push-сповіщення",
@@ -4630,5 +4720,163 @@
     "faq2a": "Majster.AI призначений для будівельних компаній, ремонтних фірм, електриків, сантехніків та інших фахівців, які хочуть професіоналізувати свій бізнес.",
     "faq3q": "Чи можу я створити PDF-пропозицію?",
     "faq3a": "Так, Majster.AI дозволяє генерувати професійні PDF-пропозиції з логотипом компанії, позиціями кошторису та умовами оплати."
+  },
+  "notifications": {
+    "deleteNotification": "Видалити сповіщення"
+  },
+  "workTasks": {
+    "unknownProject": "Невідомий проєкт",
+    "schedule": "Розклад",
+    "noTasksThisMonth": "Немає завдань цього місяця",
+    "taskStatus": "Статус завдань",
+    "teamLoad": "Завантаженість команди",
+    "noTeamMembers": "Немає членів команди",
+    "status": {
+      "planned": "Заплановано",
+      "in_progress": "В процесі",
+      "done": "Завершено"
+    }
+  },
+  "plugins": {
+    "title": "Інтеграції та плагіни",
+    "subtitle": "Розширте можливості Majster.AI зовнішніми сервісами",
+    "activeCount": "Активних інтеграцій",
+    "availableCount": "Доступних плагінів",
+    "premiumCount": "Потребують Premium",
+    "active": "Активний",
+    "configure": "Налаштувати",
+    "categories": {
+      "accounting": "Бухгалтерія",
+      "warehouse": "Оптовики",
+      "crm": "CRM",
+      "sms": "SMS",
+      "payments": "Платежі",
+      "logistics": "Логістика"
+    },
+    "marketplace": {
+      "title": "Маркетплейс інтеграцій",
+      "description": "Незабаром відкриємо маркетплейс з додатковими інтеграціями від спільноти. Станьте партнером і створіть власну інтеграцію!",
+      "cta": "Стати партнером"
+    },
+    "toast": {
+      "enabled": "{{name}} увімкнено",
+      "disabled": "{{name}} вимкнено"
+    },
+    "infakt": {
+      "name": "Infakt",
+      "description": "Інтеграція з бухгалтерською системою Infakt - автоматичні рахунки"
+    },
+    "ifirma": {
+      "name": "iFirma",
+      "description": "Експорт даних до бухгалтерії iFirma"
+    },
+    "castorama": {
+      "name": "Castorama B2B",
+      "description": "Інтеграція з оптовиком Castorama - ціни та наявність"
+    },
+    "leroy": {
+      "name": "Leroy Merlin",
+      "description": "Отримуйте ціни на матеріали з Leroy Merlin"
+    },
+    "smsapi": {
+      "name": "SMSAPI",
+      "description": "Надсилайте SMS клієнтам - нагадування та сповіщення"
+    },
+    "przelewy24": {
+      "name": "Przelewy24",
+      "description": "Онлайн-платежі для клієнтів"
+    },
+    "dpd": {
+      "name": "DPD",
+      "description": "Відстеження посилок і доставки матеріалів"
+    }
+  },
+  "upgrade": {
+    "unlockFeature": "Розблокувати: {{feature}}",
+    "changePlan": "Змінити план",
+    "choosePlan": "Виберіть план, що найкраще підходить вашим потребам",
+    "mostPopular": "Найпопулярніший",
+    "currentPlan": "Поточний план",
+    "select": "Вибрати",
+    "cancelAnytime": "Ви можете скасувати підписку будь-коли. Доступ діє до кінця оплаченого періоду.",
+    "planFeatures": {
+      "pro": [
+        "15 проєктів",
+        "30 клієнтів",
+        "Експорт Excel/CSV",
+        "Всі шаблони PDF",
+        "Підтримка Email"
+      ],
+      "business": [
+        "Необмежена кількість проєктів",
+        "Необмежена кількість клієнтів",
+        "ШІ-помічник",
+        "Голосова оцінка",
+        "Фото-оцінка ШІ",
+        "OCR рахунків",
+        "Синхронізація календаря",
+        "Пріоритетна підтримка"
+      ],
+      "enterprise": [
+        "Все з Бізнес",
+        "Публічний API",
+        "Власні шаблони",
+        "Управління командою",
+        "Розширена аналітика",
+        "Виділений менеджер",
+        "SLA 99.9%"
+      ]
+    }
+  },
+  "planGate": {
+    "features": {
+      "ai": "ШІ-помічник",
+      "voice": "Голосова оцінка",
+      "documents": "Корпоративні документи",
+      "excelExport": "Експорт Excel",
+      "calendarSync": "Синхронізація календаря",
+      "prioritySupport": "Пріоритетна підтримка",
+      "api": "Публічний API",
+      "customTemplates": "Власні шаблони",
+      "team": "Управління командою",
+      "marketplace": "Маркетплейс субпідрядників",
+      "advancedAnalytics": "Розширена аналітика",
+      "photoEstimation": "Фото-оцінка ШІ",
+      "ocr": "OCR рахунків",
+      "unlimitedProjects": "Необмежена кількість проєктів",
+      "unlimitedClients": "Необмежена кількість клієнтів"
+    },
+    "featureRequiresUpgrade": "Функція «{{feature}}» потребує вищого плану",
+    "goToSettings": "Перейдіть до налаштувань, щоб змінити план.",
+    "changePlan": "Змінити план",
+    "limitReached": "Досягнуто ліміту {{type}}",
+    "limitDescription": "Ваш план «{{plan}}» дозволяє {{limit}} {{type}}.",
+    "unlimited": "необмежену кількість",
+    "limits": {
+      "projects": "проєктів",
+      "clients": "клієнтів",
+      "teamMembers": "членів команди",
+      "apiCalls": "викликів API",
+      "storageMB": "МБ простору"
+    },
+    "upgradeMessage": "Ця функція потребує плану {{plan}} або вищого.",
+    "planNames": {
+      "business": "Бізнес"
+    }
+  },
+  "expirationMonitor": {
+    "client": "клієнта",
+    "offerExpiresToday": "Пропозиція закінчується сьогодні!",
+    "offerExpiresTodayMsg": "Пропозиція для {{client}} закінчується через {{hours}} годин. Розгляньте продовження або зв'яжіться з клієнтом.",
+    "offerExpiresSoon": "Пропозиція незабаром закінчиться",
+    "offerExpiresSoonMsg": "Пропозиція для {{client}} закінчується через {{days}} днів.",
+    "offerExpiryReminder": "Нагадування про пропозицію, що закінчується",
+    "offerExpiryReminderMsg": "Пропозиція для {{client}} закінчується через {{days}} днів.",
+    "planExpired": "План закінчився",
+    "planExpiredMsg": "Ваш план {{plan}} закінчився. Поновіть підписку, щоб зберегти доступ до всіх функцій.",
+    "planExpiresSoon": "План незабаром закінчиться!",
+    "planExpiresSoonMsg": "Ваш план {{plan}} закінчується через {{days}} днів. Поновіть зараз, щоб уникнути переривання.",
+    "planExpiryReminder": "Нагадування про поновлення плану",
+    "planExpiryReminderMsg": "Ваш план {{plan}} закінчується через {{days}} днів."
   }
 }

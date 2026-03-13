@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,6 +26,7 @@ interface ExpiringSubscription {
  * Monitors and creates notifications for expiring offers and subscriptions
  */
 export function useExpirationMonitor() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const _queryClient = useQueryClient();
   const createNotification = useCreateNotification();
@@ -100,17 +102,18 @@ export function useExpirationMonitor() {
         let message = '';
         let type: 'info' | 'warning' | 'error' = 'info';
 
+        const clientRef = offer.client_name || offer.client_email || t('expirationMonitor.client');
         if (hoursLeft <= 24) {
-          title = 'Oferta wygasa dziś!';
-          message = `Oferta dla ${offer.client_name || offer.client_email || 'klienta'} wygasa za ${hoursLeft} godzin. Rozważ przedłużenie lub kontakt z klientem.`;
+          title = t('expirationMonitor.offerExpiresToday');
+          message = t('expirationMonitor.offerExpiresTodayMsg', { client: clientRef, hours: hoursLeft });
           type = 'error';
         } else if (daysLeft <= 3) {
-          title = 'Oferta wkrótce wygasa';
-          message = `Oferta dla ${offer.client_name || offer.client_email || 'klienta'} wygasa za ${daysLeft} dni.`;
+          title = t('expirationMonitor.offerExpiresSoon');
+          message = t('expirationMonitor.offerExpiresSoonMsg', { client: clientRef, days: daysLeft });
           type = 'warning';
         } else if (daysLeft <= 7) {
-          title = 'Przypomnienie o wygasającej ofercie';
-          message = `Oferta dla ${offer.client_name || offer.client_email || 'klienta'} wygasa za ${daysLeft} dni.`;
+          title = t('expirationMonitor.offerExpiryReminder');
+          message = t('expirationMonitor.offerExpiryReminderMsg', { client: clientRef, days: daysLeft });
           type = 'info';
         }
 
@@ -132,31 +135,31 @@ export function useExpirationMonitor() {
 
       if (isBefore(expiresAt, new Date())) {
         // Already expired
-        const title = 'Plan wygasł';
+        const title = t('expirationMonitor.planExpired');
         if (!(await wasNotificationSentToday(title))) {
           createNotification.mutate({
             title,
-            message: `Twój plan ${subscription.plan_id} wygasł. Odnów subskrypcję, aby zachować dostęp do wszystkich funkcji.`,
+            message: t('expirationMonitor.planExpiredMsg', { plan: subscription.plan_id }),
             type: 'error',
             action_url: '/billing',
           });
         }
       } else if (daysLeft <= 3) {
-        const title = 'Plan wkrótce wygasa!';
+        const title = t('expirationMonitor.planExpiresSoon');
         if (!(await wasNotificationSentToday(title))) {
           createNotification.mutate({
             title,
-            message: `Twój plan ${subscription.plan_id} wygasa za ${daysLeft} dni. Odnów teraz, aby uniknąć przerwy w działaniu.`,
+            message: t('expirationMonitor.planExpiresSoonMsg', { plan: subscription.plan_id, days: daysLeft }),
             type: 'warning',
             action_url: '/billing',
           });
         }
       } else if (daysLeft <= 7) {
-        const title = 'Przypomnienie o odnowieniu planu';
+        const title = t('expirationMonitor.planExpiryReminder');
         if (!(await wasNotificationSentToday(title))) {
           createNotification.mutate({
             title,
-            message: `Twój plan ${subscription.plan_id} wygasa za ${daysLeft} dni.`,
+            message: t('expirationMonitor.planExpiryReminderMsg', { plan: subscription.plan_id, days: daysLeft }),
             type: 'info',
             action_url: '/billing',
           });

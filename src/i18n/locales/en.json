@@ -55,7 +55,8 @@
     "startVoiceRecording": "Start voice recording",
     "errorGeneric": "An error occurred. Please try again.",
     "offline": "Offline",
-    "online": "Online"
+    "online": "Online",
+    "unknownError": "Unknown error"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -992,18 +993,18 @@
     "stripeNotConfiguredDesc": "VITE_STRIPE_ENABLED=true, but real Stripe Price IDs are missing. Checkout is blocked until VITE_STRIPE_PRICE_* variables are set.",
     "trialDaysRemaining": "{{count}} trial days remaining",
     "planRequest": {
-      "title": "Order plan {{plan}}",
-      "description": "Send a request — we'll get back to you soon.",
+      "title": "Order {{plan}} plan",
+      "description": "Send a request — we'll get back to you shortly.",
       "phone": "Phone (optional)",
       "message": "Message (optional)",
       "messagePlaceholder": "Additional information or questions...",
       "success": "Request submitted!",
-      "contactInfo": "We'll contact you at: ",
+      "contactInfo": "We'll contact you at:",
       "close": "Close",
       "cancel": "Cancel",
       "submit": "Submit request",
       "sending": "Sending...",
-      "error": "Error: {{message}}. Try again or write to ",
+      "error": "Error: {{message}}. Try again or write to",
       "unknownError": "Unknown error"
     }
   },
@@ -1346,6 +1347,72 @@
       "roleRemoved": "Role removed",
       "settingsSaveError": "Unable to save settings",
       "themeSaveError": "Unable to save theme"
+    },
+    "cron": {
+      "title": "CRON Jobs",
+      "description": "Automated tasks run on a schedule",
+      "configTitle": "CRON Configuration",
+      "configDescription": "To enable automatic CRON jobs, configure them in the database settings using pg_cron and pg_net. You can also run jobs manually below.",
+      "requiresKey": "Requires key",
+      "requires": "Requires: {{key}}",
+      "active": "Active",
+      "disabled": "Disabled",
+      "running": "Running...",
+      "runNow": "Run now",
+      "requiredKey": "Required key: {{key}}",
+      "sentMessages": "Sent {{count}} messages",
+      "setupGuide": "CRON configuration guide",
+      "setupStep1": "Enable pg_cron and pg_net extensions in the database",
+      "setupStep2": "Add the SQL job:",
+      "expiringOffers": {
+        "name": "Expiring offer reminders",
+        "description": "Sends email to clients with offers expiring in 3 days",
+        "scheduleText": "Daily at 9:00"
+      },
+      "subscriptionCheck": {
+        "name": "Subscription check",
+        "description": "Checks expiring subscriptions and sends notifications",
+        "scheduleText": "Daily at 8:00"
+      },
+      "databaseCleanup": {
+        "name": "Database cleanup",
+        "description": "Removes expired tokens and old logs (30+ days)",
+        "scheduleText": "Every Sunday at 3:00"
+      }
+    },
+    "db": {
+      "title": "Database management",
+      "description": "Overview and management of application data",
+      "refresh": "Refresh",
+      "totalRecords": "Total records",
+      "activeTables": "Active tables",
+      "colTable": "Table",
+      "colDesc": "Description",
+      "colRecords": "Records",
+      "colShare": "Share",
+      "colActions": "Actions",
+      "export": "Export",
+      "exportAll": "Export all (CSV)",
+      "backup": "Database backup",
+      "clearOld": "Clear old data",
+      "tables": {
+        "profiles": "Profiles",
+        "profilesDesc": "User profiles",
+        "clients": "Clients",
+        "clientsDesc": "Client data",
+        "projects": "Projects",
+        "projectsDesc": "Quote projects",
+        "quotes": "Quotes",
+        "quotesDesc": "Cost calculations",
+        "templates": "Templates",
+        "templatesDesc": "Item templates",
+        "events": "Events",
+        "eventsDesc": "Calendar",
+        "notifications": "Notifications",
+        "notificationsDesc": "Notifications",
+        "offerSends": "Sends",
+        "offerSendsDesc": "Send history"
+      }
     }
   },
   "adminConfig": {
@@ -1915,7 +1982,29 @@
     "completedOf": "Completed {{completed}} of {{total}} steps",
     "startStep": "Start",
     "skipForNow": "Skip for now",
-    "returnHint": "You can return to this guide from the help menu"
+    "returnHint": "You can return to this guide from the help menu",
+    "steps": {
+      "companyProfile": {
+        "title": "Company profile",
+        "description": "Add your logo and company contact details"
+      },
+      "firstClient": {
+        "title": "First client",
+        "description": "Add your first client"
+      },
+      "firstOffer": {
+        "title": "First offer",
+        "description": "Create your first offer for a client"
+      },
+      "sendOffer": {
+        "title": "Send offer",
+        "description": "Send the offer to the client for approval"
+      },
+      "exportPdf": {
+        "title": "Export PDF",
+        "description": "Generate a professional PDF of the offer"
+      }
+    }
   },
   "adminSettings": {
     "loadingSettings": "Loading settings...",
@@ -2430,7 +2519,8 @@
       "prepBadge": "In preparation",
       "planFeaturesLabel": "Plan features",
       "enterpriseNote": "Need more?",
-      "enterpriseContact": "Contact us — Enterprise plan coming soon."
+      "enterpriseContact": "Contact us — Enterprise plan coming soon.",
+      "per_month_suffix": "PLN/mo."
     },
     "faq": {
       "sectionTitle": "Frequently asked questions",
@@ -4316,9 +4406,9 @@
     },
     "email": {
       "greeting": "Hello {{name}},",
-      "body": "Attached is the warranty card for the project <strong>{{project}}</strong>.",
+      "body": "Attached please find the warranty card for project <strong>{{project}}</strong>.",
       "validUntil": "Warranty valid until: <strong>{{date}}</strong>.",
-      "contact": "If you have any questions, please contact us."
+      "contact": "Please contact us if you have any questions."
     }
   },
   "inspection": {
@@ -4481,13 +4571,13 @@
     "newKey": "New key",
     "createTitle": "Create API key",
     "keyName": "Key name",
-    "keyNamePlaceholder": "e.g. CRM Integration",
+    "keyNamePlaceholder": "e.g. CRM integration",
     "permissions": "Permissions",
     "readPerm": "Read",
     "writePerm": "Write",
     "deletePerm": "Delete",
     "createKey": "Create key",
-    "description": "Manage API keys for integration with external systems",
+    "description": "Manage API keys for integrating with external systems",
     "noKeys": "No API keys",
     "noKeysDesc": "Create a key to integrate external systems",
     "created": "Created: {{date}}",
@@ -4630,5 +4720,163 @@
     "faq2a": "Majster.AI is designed for construction companies, renovation firms, electricians, plumbers, and other professionals looking to professionalize their business.",
     "faq3q": "Can I generate a PDF offer?",
     "faq3a": "Yes, Majster.AI allows you to generate professional PDF offers with your company logo, cost items, and payment terms."
+  },
+  "notifications": {
+    "deleteNotification": "Delete notification"
+  },
+  "workTasks": {
+    "unknownProject": "Unknown project",
+    "schedule": "Schedule",
+    "noTasksThisMonth": "No tasks this month",
+    "taskStatus": "Task status",
+    "teamLoad": "Team workload",
+    "noTeamMembers": "No team members",
+    "status": {
+      "planned": "Planned",
+      "in_progress": "In progress",
+      "done": "Done"
+    }
+  },
+  "plugins": {
+    "title": "Integrations & Plugins",
+    "subtitle": "Extend Majster.AI with external services",
+    "activeCount": "Active integrations",
+    "availableCount": "Available plugins",
+    "premiumCount": "Requiring Premium",
+    "active": "Active",
+    "configure": "Configure",
+    "categories": {
+      "accounting": "Accounting",
+      "warehouse": "Wholesale",
+      "crm": "CRM",
+      "sms": "SMS",
+      "payments": "Payments",
+      "logistics": "Logistics"
+    },
+    "marketplace": {
+      "title": "Integration marketplace",
+      "description": "We'll soon launch a marketplace with additional integrations built by the community. Become a partner and build your own integration!",
+      "cta": "Become a partner"
+    },
+    "toast": {
+      "enabled": "{{name}} enabled",
+      "disabled": "{{name}} disabled"
+    },
+    "infakt": {
+      "name": "Infakt",
+      "description": "Integration with Infakt accounting system - automatic invoices"
+    },
+    "ifirma": {
+      "name": "iFirma",
+      "description": "Export data to iFirma accounting"
+    },
+    "castorama": {
+      "name": "Castorama B2B",
+      "description": "Integration with Castorama wholesale - prices and availability"
+    },
+    "leroy": {
+      "name": "Leroy Merlin",
+      "description": "Fetch material prices from Leroy Merlin"
+    },
+    "smsapi": {
+      "name": "SMSAPI",
+      "description": "Send SMS messages to clients - reminders and notifications"
+    },
+    "przelewy24": {
+      "name": "Przelewy24",
+      "description": "Online payments for clients"
+    },
+    "dpd": {
+      "name": "DPD",
+      "description": "Parcel and material delivery tracking"
+    }
+  },
+  "upgrade": {
+    "unlockFeature": "Unlock: {{feature}}",
+    "changePlan": "Change plan",
+    "choosePlan": "Choose the plan that best fits your needs",
+    "mostPopular": "Most popular",
+    "currentPlan": "Current plan",
+    "select": "Select",
+    "cancelAnytime": "You can cancel your subscription at any time. Access remains active until the end of the paid period.",
+    "planFeatures": {
+      "pro": [
+        "15 projects",
+        "30 clients",
+        "Excel/CSV export",
+        "All PDF templates",
+        "Email support"
+      ],
+      "business": [
+        "Unlimited projects",
+        "Unlimited clients",
+        "AI assistant",
+        "Voice estimation",
+        "AI photo estimation",
+        "Invoice OCR",
+        "Calendar sync",
+        "Priority support"
+      ],
+      "enterprise": [
+        "Everything in Business",
+        "Public API",
+        "Custom templates",
+        "Team management",
+        "Advanced analytics",
+        "Dedicated account manager",
+        "SLA 99.9%"
+      ]
+    }
+  },
+  "planGate": {
+    "features": {
+      "ai": "AI Assistant",
+      "voice": "Voice estimation",
+      "documents": "Company documents",
+      "excelExport": "Excel export",
+      "calendarSync": "Calendar sync",
+      "prioritySupport": "Priority support",
+      "api": "Public API",
+      "customTemplates": "Custom templates",
+      "team": "Team management",
+      "marketplace": "Subcontractor marketplace",
+      "advancedAnalytics": "Advanced analytics",
+      "photoEstimation": "AI photo estimation",
+      "ocr": "Invoice OCR",
+      "unlimitedProjects": "Unlimited projects",
+      "unlimitedClients": "Unlimited clients"
+    },
+    "featureRequiresUpgrade": "Feature \"{{feature}}\" requires a higher plan",
+    "goToSettings": "Go to settings to change your plan.",
+    "changePlan": "Change plan",
+    "limitReached": "Limit reached: {{type}}",
+    "limitDescription": "Your plan \"{{plan}}\" allows {{limit}} {{type}}.",
+    "unlimited": "unlimited",
+    "limits": {
+      "projects": "projects",
+      "clients": "clients",
+      "teamMembers": "team members",
+      "apiCalls": "API calls",
+      "storageMB": "MB of storage"
+    },
+    "upgradeMessage": "This feature requires the {{plan}} plan or higher.",
+    "planNames": {
+      "business": "Business"
+    }
+  },
+  "expirationMonitor": {
+    "client": "client",
+    "offerExpiresToday": "Offer expires today!",
+    "offerExpiresTodayMsg": "Offer for {{client}} expires in {{hours}} hours. Consider extending or contacting the client.",
+    "offerExpiresSoon": "Offer expiring soon",
+    "offerExpiresSoonMsg": "Offer for {{client}} expires in {{days}} days.",
+    "offerExpiryReminder": "Expiring offer reminder",
+    "offerExpiryReminderMsg": "Offer for {{client}} expires in {{days}} days.",
+    "planExpired": "Plan expired",
+    "planExpiredMsg": "Your {{plan}} plan has expired. Renew your subscription to keep access to all features.",
+    "planExpiresSoon": "Plan expiring soon!",
+    "planExpiresSoonMsg": "Your {{plan}} plan expires in {{days}} days. Renew now to avoid service interruption.",
+    "planExpiryReminder": "Plan renewal reminder",
+    "planExpiryReminderMsg": "Your {{plan}} plan expires in {{days}} days."
   }
 }

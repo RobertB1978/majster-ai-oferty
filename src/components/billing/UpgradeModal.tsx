@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -30,45 +31,10 @@ interface UpgradeModalProps {
 }
 
 /**
- * Plany wyświetlane w modalu upgrade — tylko płatne, z PLANS config (single source of truth).
- * Nie zawiera planu Free. Zachowana kolejność: pro → business → enterprise.
+ * Plans shown in the upgrade modal — paid only, from PLANS config (single source of truth).
+ * Does not include Free plan. Order: pro → business → enterprise.
  */
 const UPGRADE_PLAN_IDS = ['pro', 'business', 'enterprise'] as const;
-
-const PLAN_FEATURES_LABELS: Record<string, string[]> = {
-  pro: [
-    '15 projektów',
-    '30 klientów',
-    'Eksport Excel/CSV',
-    'Wszystkie szablony PDF',
-    'Email wsparcie',
-  ],
-  business: [
-    'Nielimitowane projekty',
-    'Nielimitowani klienci',
-    'Asystent AI',
-    'Wycena głosowa',
-    'Foto-wycena AI',
-    'OCR faktur',
-    'Sync kalendarza',
-    'Priorytetowe wsparcie',
-  ],
-  enterprise: [
-    'Wszystko z Biznes',
-    'API publiczne',
-    'Niestandardowe szablony',
-    'Zarządzanie zespołem',
-    'Zaawansowana analityka',
-    'Dedykowany opiekun',
-    'SLA 99.9%',
-  ],
-};
-
-const PLAN_POPULAR: Record<string, boolean> = {
-  pro: false,
-  business: true,
-  enterprise: false,
-};
 
 const featureIcons: Record<string, LucideIcon> = {
   ai: Bot,
@@ -78,7 +44,14 @@ const featureIcons: Record<string, LucideIcon> = {
   advancedAnalytics: BarChart3,
 };
 
+const PLAN_POPULAR: Record<string, boolean> = {
+  pro: false,
+  business: true,
+  enterprise: false,
+};
+
 export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeModalProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentPlan, getUpgradeMessage } = usePlanGate();
 
@@ -104,10 +77,10 @@ export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeMod
             </div>
             <div>
               <DialogTitle className="text-xl">
-                {featureName ? `Odblokuj: ${featureName}` : 'Zmień plan'}
+                {featureName ? t('upgrade.unlockFeature', { feature: featureName }) : t('upgrade.changePlan')}
               </DialogTitle>
               <DialogDescription>
-                {upgradeMessage || 'Wybierz plan, który najlepiej odpowiada Twoim potrzebom'}
+                {upgradeMessage || t('upgrade.choosePlan')}
               </DialogDescription>
             </div>
           </div>
@@ -116,7 +89,8 @@ export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeMod
         <div className="p-6 grid gap-4 md:grid-cols-3">
           {upgradePlans.map((plan) => {
             const isPopular = PLAN_POPULAR[plan.id] ?? false;
-            const featureLabels = PLAN_FEATURES_LABELS[plan.id] ?? plan.features;
+            const featureKeys: string[] = t(`upgrade.planFeatures.${plan.id}`, { returnObjects: true }) as string[];
+            const featureLabels = Array.isArray(featureKeys) ? featureKeys : plan.features;
 
             return (
               <div
@@ -129,7 +103,7 @@ export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeMod
               >
                 {isPopular && (
                   <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary">
-                    Najpopularniejszy
+                    {t('upgrade.mostPopular')}
                   </Badge>
                 )}
 
@@ -137,7 +111,7 @@ export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeMod
                   <h3 className="font-bold text-lg">{plan.name}</h3>
                   <div className="mt-2">
                     <span className="text-3xl font-bold">{plan.pricePLN}</span>
-                    <span className="text-muted-foreground"> zł/mies.</span>
+                    <span className="text-muted-foreground"> {t('landing.pricing.per_month_suffix')}</span>
                   </div>
                 </div>
 
@@ -157,11 +131,11 @@ export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeMod
                   disabled={currentPlan === plan.id}
                 >
                   {currentPlan === plan.id ? (
-                    'Aktualny plan'
+                    t('upgrade.currentPlan')
                   ) : (
                     <>
                       <Zap className="h-4 w-4 mr-2" />
-                      Wybierz
+                      {t('upgrade.select')}
                     </>
                   )}
                 </Button>
@@ -172,7 +146,7 @@ export function UpgradeModal({ open, onClose, feature, featureName }: UpgradeMod
 
         <div className="p-4 bg-muted/50 text-center">
           <p className="text-sm text-muted-foreground">
-            Możesz anulować subskrypcję w dowolnym momencie. Dostęp aktywny do końca opłaconego okresu.
+            {t('upgrade.cancelAnytime')}
           </p>
         </div>
       </DialogContent>

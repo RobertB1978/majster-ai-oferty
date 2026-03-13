@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePlanFeatures, useUserSubscription } from './useSubscription';
 import { toast } from 'sonner';
 import { getLimitsForPlan, normalizePlanId } from '@/config/plans';
@@ -76,25 +77,27 @@ const FEATURE_REQUIREMENTS: Record<PlanFeature, string[]> = {
   unlimitedClients: ['enterprise'],
 };
 
-const FEATURE_NAMES: Record<PlanFeature, string> = {
-  ai: 'Asystent AI',
-  voice: 'Wycena głosowa',
-  documents: 'Dokumenty firmowe',
-  excelExport: 'Eksport Excel',
-  calendarSync: 'Synchronizacja kalendarza',
-  prioritySupport: 'Priorytetowe wsparcie',
-  api: 'API publiczne',
-  customTemplates: 'Szablony niestandardowe',
-  team: 'Zarządzanie zespołem',
-  marketplace: 'Marketplace podwykonawców',
-  advancedAnalytics: 'Zaawansowana analityka',
-  photoEstimation: 'Foto-wycena AI',
-  ocr: 'OCR faktur',
-  unlimitedProjects: 'Nieograniczone projekty',
-  unlimitedClients: 'Nieograniczeni klienci',
+// Feature name i18n keys (resolved at call time via t())
+const FEATURE_NAME_KEYS: Record<PlanFeature, string> = {
+  ai: 'planGate.features.ai',
+  voice: 'planGate.features.voice',
+  documents: 'planGate.features.documents',
+  excelExport: 'planGate.features.excelExport',
+  calendarSync: 'planGate.features.calendarSync',
+  prioritySupport: 'planGate.features.prioritySupport',
+  api: 'planGate.features.api',
+  customTemplates: 'planGate.features.customTemplates',
+  team: 'planGate.features.team',
+  marketplace: 'planGate.features.marketplace',
+  advancedAnalytics: 'planGate.features.advancedAnalytics',
+  photoEstimation: 'planGate.features.photoEstimation',
+  ocr: 'planGate.features.ocr',
+  unlimitedProjects: 'planGate.features.unlimitedProjects',
+  unlimitedClients: 'planGate.features.unlimitedClients',
 };
 
 export function usePlanGate() {
+  const { t } = useTranslation();
   const { data: subscription } = useUserSubscription();
   const { currentPlan, features, isPremium } = usePlanFeatures();
 
@@ -113,11 +116,11 @@ export function usePlanGate() {
   const checkFeature = (feature: PlanFeature): boolean => {
     const allowed = canUseFeature(feature);
     if (!allowed) {
-      const featureName = FEATURE_NAMES[feature];
-      toast.error(`Funkcja "${featureName}" wymaga wyższego planu`, {
-        description: 'Przejdź do ustawień, aby zmienić plan.',
+      const featureName = t(FEATURE_NAME_KEYS[feature]);
+      toast.error(t('planGate.featureRequiresUpgrade', { feature: featureName }), {
+        description: t('planGate.goToSettings'),
         action: {
-          label: 'Zmień plan',
+          label: t('planGate.changePlan'),
           onClick: () => window.location.href = '/app/plan',
         },
       });
@@ -128,17 +131,22 @@ export function usePlanGate() {
   const checkLimit = (type: keyof PlanLimits, currentCount: number): boolean => {
     const limit = limits[type];
     if (currentCount >= limit) {
-      const limitNames: Record<keyof PlanLimits, string> = {
-        maxProjects: 'projektów',
-        maxClients: 'klientów',
-        maxTeamMembers: 'członków zespołu',
-        maxApiCalls: 'wywołań API',
-        maxStorageMB: 'MB przestrzeni',
+      const limitNameKeys: Record<keyof PlanLimits, string> = {
+        maxProjects: 'planGate.limits.projects',
+        maxClients: 'planGate.limits.clients',
+        maxTeamMembers: 'planGate.limits.teamMembers',
+        maxApiCalls: 'planGate.limits.apiCalls',
+        maxStorageMB: 'planGate.limits.storageMB',
       };
-      toast.error(`Osiągnięto limit ${limitNames[type]}`, {
-        description: `Twój plan "${currentPlan}" pozwala na ${limit === Infinity ? 'nieograniczoną liczbę' : limit} ${limitNames[type]}.`,
+      const limitName = t(limitNameKeys[type]);
+      toast.error(t('planGate.limitReached', { type: limitName }), {
+        description: t('planGate.limitDescription', {
+          plan: currentPlan,
+          limit: limit === Infinity ? t('planGate.unlimited') : limit,
+          type: limitName,
+        }),
         action: {
-          label: 'Zmień plan',
+          label: t('planGate.changePlan'),
           onClick: () => window.location.href = '/app/plan',
         },
       });
@@ -150,14 +158,13 @@ export function usePlanGate() {
   const getUpgradeMessage = (feature: PlanFeature): string => {
     const requiredPlans = FEATURE_REQUIREMENTS[feature];
     const minPlan = requiredPlans[0];
-    // FEATURE_REQUIREMENTS uses canonical ids only — no 'starter' entry needed.
     const PLAN_DISPLAY_NAMES: Record<string, string> = {
       pro: 'Pro',
-      business: 'Biznes',
+      business: t('planGate.planNames.business'),
       enterprise: 'Enterprise',
     };
     const displayName = PLAN_DISPLAY_NAMES[minPlan] ?? minPlan;
-    return `Ta funkcja wymaga planu ${displayName} lub wyższego.`;
+    return t('planGate.upgradeMessage', { plan: displayName });
   };
 
   return {
