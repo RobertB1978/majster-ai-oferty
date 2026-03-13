@@ -17,6 +17,7 @@ import { computeTotals } from '@/hooks/useOfferWizard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BulkAddItems } from '@/components/offers/BulkAddItems';
+import { SaveToPriceBookButton } from '@/components/offers/SaveToPriceBookButton';
 
 interface Props {
   form: WizardFormData;
@@ -118,11 +119,18 @@ export function WizardStepItems({ form, onChange, errors }: Props) {
               type="button"
               onClick={() => addFromTemplate(tpl)}
               className="w-full flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-accent transition-colors"
+              data-testid="library-template-row"
             >
               <Plus className="h-3.5 w-3.5 shrink-0 text-primary" />
               <span className="flex-1 truncate">{tpl.name}</span>
               <span className="text-xs text-muted-foreground shrink-0">
                 {formatMoney(Number(tpl.default_price))} / {tpl.unit}
+              </span>
+              <span
+                className="text-[10px] rounded-full px-1.5 py-0.5 bg-primary/10 text-primary shrink-0"
+                data-testid="library-source-label"
+              >
+                {t('priceBook.sourcePriceBook')}
               </span>
             </button>
           ))}
@@ -196,9 +204,17 @@ export function WizardStepItems({ form, onChange, errors }: Props) {
                   />
                 </div>
               </div>
-              <p className="text-xs text-right text-muted-foreground">
-                {t('offerWizard.itemsStep.lineTotal')}: <strong>{formatMoney(item.qty * item.unit_price_net)} zł</strong>
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">
+                  {t('offerWizard.itemsStep.lineTotal')}: <strong>{formatMoney(item.qty * item.unit_price_net)} zł</strong>
+                </p>
+                <SaveToPriceBookButton
+                  name={item.name}
+                  unit={item.unit}
+                  price={item.unit_price_net}
+                  category={item.item_type === 'material' ? 'Materiał' : 'Robocizna'}
+                />
+              </div>
             </div>
           ))}
         </div>

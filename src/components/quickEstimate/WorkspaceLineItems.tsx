@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  BookOpen,
   ChevronLeft,
   ChevronRight,
   Columns2,
@@ -22,12 +23,16 @@ import {
   FileSpreadsheet,
   List,
   Plus,
+  Search,
   Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { isValidDecimal, parseDecimal } from '@/lib/numberParsing';
 import { itemLineTotal } from '@/lib/estimateCalc';
 import { BulkAddModal } from './BulkAddModal';
+import { SaveToPriceBookButton } from '@/components/offers/SaveToPriceBookButton';
+import { useItemNameSuggestions } from '@/hooks/useItemNameSuggestions';
+import type { ItemSuggestion } from '@/hooks/useItemNameSuggestions';
 
 const PAGE_SIZE = 50;
 
@@ -155,6 +160,8 @@ export function WorkspaceLineItems({
   const [bulkOpen, setBulkOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [cols, setCols] = useState<ColsVisible>(DEFAULT_COLS);
+  const [pbOpen, setPbOpen] = useState(false);
+  const [pbSearch, setPbSearch] = useState('');
 
   const [rawInputs, setRawInputs] = useState<Record<string, ItemRaw>>(() => {
     const init: Record<string, ItemRaw> = {};
@@ -216,6 +223,27 @@ export function WorkspaceLineItems({
     setCurrentPage(Math.floor(items.length / PAGE_SIZE));
   };
 
+  const addFromSuggestion = (s: ItemSuggestion) => {
+    const itemType: ItemType =
+      s.source === 'price_book' && s.category === 'Materiał' ? 'material' : 'labor';
+    const newItem: LineItem = {
+      id: crypto.randomUUID(),
+      name: s.name,
+      qty: 1,
+      unit: s.unit,
+      priceMode: 'single',
+      price: s.price,
+      laborCost: 0,
+      materialCost: 0,
+      marginPct: 0,
+      showMargin: true,
+      itemType,
+    };
+    const isOnlyBlank = items.length === 1 && !items[0].name.trim() && items[0].price === 0;
+    setItems((prev) => isOnlyBlank ? [newItem] : [...prev, newItem]);
+    setRawInputs((prev) => ({ ...prev, [newItem.id]: initRaw(newItem) }));
+  };
+
   const handleBulkAdd = (newItems: LineItem[]) => {
     const isOnlyBlank =
       items.length === 1 && !items[0].name.trim() && items[0].price === 0;
@@ -262,6 +290,19 @@ export function WorkspaceLineItems({
             </CardTitle>
 
             <div className="flex items-center gap-2 flex-wrap">
+              {/* Price book search toggle */}
+              <Button
+                variant={pbOpen ? 'default' : 'outline'}
+                size="sm"
+                type="button"
+                onClick={() => { setPbOpen((v) => !v); if (!pbOpen) setPbSearch(''); }}
+                className="h-7 text-xs gap-1.5"
+                data-testid="toggle-price-book"
+              >
+                <BookOpen className="h-3 w-3" />
+                {t('priceBook.fromPriceBook')}
+              </Button>
+
               {/* Bulk add */}
               <Button
                 variant="outline"
@@ -337,6 +378,15 @@ export function WorkspaceLineItems({
         </CardHeader>
 
         <CardContent className="pb-4">
+          {/* ── Price book search panel ─── */}
+          {pbOpen && (
+            <PriceBookPanel
+              search={pbSearch}
+              onSearchChange={setPbSearch}
+              onSelect={addFromSuggestion}
+            />
+          )}
+
           {/* ── Desktop column headers ─── */}
           <DesktopColHeaders cols={cols} />
 
@@ -362,6 +412,7 @@ export function WorkspaceLineItems({
                   onUpdateNum={(field, raw) => updateNum(item.id, field, raw)}
                   onCycleType={() => cycleType(item.id, item.itemType)}
                   onRemove={() => remove(item.id)}
+                  showSaveBtn
                 />
               );
             })}
@@ -419,6 +470,125 @@ export function WorkspaceLineItems({
   );
 }
 
+/* ── PriceBookPanel ──────────────────────────────────────────────── */
+
+interface PriceBookPanelProps {
+  search: string;
+  onSearchChange: (v: string) => void;
+  onSelect: (s: ItemSuggestion) => void;
+}
+
+function PriceBookPanel({ search, onSearchChange, onSelect }: PriceBookPanelProps) {
+  const { t } = useTranslation();
+  const { suggestions, priceBookSuggestions, historicalSuggestions, isLoading } =
+    useItemNameSuggestions(search);
+
+  const hasSuggestions = suggestions.length > 0;
+  const showEmpty = search.trim().length >= 2 && !isLoading && !hasSuggestions;
+  const showHint = search.trim().length < 2;
+
+  return (
+    <div
+      className="mb-3 rounded-lg border border-border bg-muted/30 p-2.5 space-y-2"
+      data-testid="price-book-panel"
+    >
+      <div className="relative">
+        <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+        <Input
+          className="pl-7 h-8 text-sm"
+          placeholder={t('priceBook.searchPlaceholder')}
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
+          autoFocus
+          data-testid="price-book-search"
+        />
+      </div>
+
+      {showHint && (
+        <p className="text-xs text-muted-foreground px-1">
+          {t('priceBook.searchPlaceholder')}
+        </p>
+      )}
+
+      {showEmpty && (
+        <p className="text-xs text-muted-foreground text-center py-2">
+          {t('priceBook.noResults')}
+        </p>
+      )}
+
+      {hasSuggestions && (
+        <div className="space-y-0.5 max-h-48 overflow-y-auto">
+          {/* Price book section */}
+          {priceBookSuggestions.length > 0 && (
+            <>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide px-1 pt-1">
+                {t('priceBook.sourcePriceBook')}
+              </p>
+              {priceBookSuggestions.map((s) => (
+                <SuggestionRow key={s.id} suggestion={s} onSelect={onSelect} />
+              ))}
+            </>
+          )}
+
+          {/* Historical section */}
+          {historicalSuggestions.length > 0 && (
+            <>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide px-1 pt-1.5">
+                {t('priceBook.recentlyUsed')}
+              </p>
+              {historicalSuggestions.map((s) => (
+                <SuggestionRow key={s.id} suggestion={s} onSelect={onSelect} />
+              ))}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface SuggestionRowProps {
+  suggestion: ItemSuggestion;
+  onSelect: (s: ItemSuggestion) => void;
+}
+
+function SuggestionRow({ suggestion, onSelect }: SuggestionRowProps) {
+  const { t } = useTranslation();
+  const sourceLabel =
+    suggestion.source === 'price_book'
+      ? t('priceBook.sourcePriceBook')
+      : t('priceBook.sourceRecentlyUsed', {
+          price: suggestion.price.toFixed(0),
+          unit: suggestion.unit,
+        });
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(suggestion)}
+      className="w-full flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-accent transition-colors group"
+      data-testid="suggestion-row"
+    >
+      <Plus className="h-3.5 w-3.5 shrink-0 text-primary opacity-60 group-hover:opacity-100" />
+      <span className="flex-1 truncate">{suggestion.name}</span>
+      <span className="text-xs text-muted-foreground shrink-0">
+        {suggestion.price.toFixed(0)} zł / {suggestion.unit}
+      </span>
+      <span
+        className={cn(
+          'text-[10px] rounded-full px-1.5 py-0.5 shrink-0',
+          suggestion.source === 'price_book'
+            ? 'bg-primary/10 text-primary'
+            : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+        )}
+        data-testid={`suggestion-source-${suggestion.source}`}
+      >
+        {sourceLabel}
+      </span>
+    </button>
+  );
+}
+
 /* ── DesktopColHeaders ───────────────────────────────────────────── */
 
 function DesktopColHeaders({ cols }: { cols: ColsVisible }) {
@@ -463,6 +633,7 @@ interface ItemRowProps {
   ) => void;
   onCycleType: () => void;
   onRemove: () => void;
+  showSaveBtn?: boolean;
 }
 
 function ItemRow({
@@ -474,6 +645,7 @@ function ItemRow({
   onUpdateNum,
   onCycleType,
   onRemove,
+  showSaveBtn = false,
 }: ItemRowProps) {
   const { t } = useTranslation();
 
@@ -660,6 +832,16 @@ function ItemRow({
           </div>
         )}
 
+        {/* Save to price book (desktop) */}
+        {showSaveBtn && (
+          <SaveToPriceBookButton
+            name={item.name}
+            unit={item.unit}
+            price={item.price}
+            category={item.itemType === 'material' ? 'Materiał' : 'Robocizna'}
+          />
+        )}
+
         {/* Delete */}
         <Button
           variant="ghost"
@@ -816,6 +998,18 @@ function ItemRow({
                 {fmt(lineTotal)} zł
               </div>
             )}
+          </div>
+        )}
+
+        {/* Save to price book (mobile) */}
+        {showSaveBtn && item.name.trim() && (
+          <div className="flex justify-end">
+            <SaveToPriceBookButton
+              name={item.name}
+              unit={item.unit}
+              price={item.price}
+              category={item.itemType === 'material' ? 'Materiał' : 'Robocizna'}
+            />
           </div>
         )}
       </div>

@@ -4871,6 +4871,23 @@
       "business": "Biznes"
     }
   },
+  "priceBook": {
+    "searchPlaceholder": "Szukaj w cenniku...",
+    "panelTitle": "Z cennika",
+    "saveToBook": "Zapisz do cennika",
+    "saveToBookDisabled": "Wpisz nazwę pozycji, aby zapisać do cennika",
+    "saveSuccess": "Pozycja zapisana w cenniku",
+    "saveError": "Nie udało się zapisać do cennika",
+    "noResults": "Brak wyników w cenniku",
+    "addItem": "Dodaj do wyceny",
+    "sourcePriceBook": "Z cennika",
+    "sourceRecentlyUsed": "Ost. cena: {{price}} zł/{{unit}}",
+    "fromPriceBook": "Z cennika",
+    "recentlyUsed": "Ostatnio używana cena",
+    "showPanel": "Szukaj w cenniku",
+    "hidePanel": "Ukryj cennik",
+    "priceNote": "Cena z cennika — możesz ją zmienić"
+  },
   "expirationMonitor": {
     "client": "klienta",
     "offerExpiresToday": "Oferta wygasa dziś!",

@@ -4871,6 +4871,23 @@
       "business": "Бізнес"
     }
   },
+  "priceBook": {
+    "searchPlaceholder": "Шукати в прайсі...",
+    "panelTitle": "З прайсу",
+    "saveToBook": "Зберегти до прайсу",
+    "saveToBookDisabled": "Введіть назву позиції, щоб зберегти до прайсу",
+    "saveSuccess": "Позицію збережено в прайсі",
+    "saveError": "Не вдалося зберегти до прайсу",
+    "noResults": "Немає результатів у прайсі",
+    "addItem": "Додати до кошторису",
+    "sourcePriceBook": "З прайсу",
+    "sourceRecentlyUsed": "Ост. ціна: {{price}} zł/{{unit}}",
+    "fromPriceBook": "З прайсу",
+    "recentlyUsed": "Нещодавно використана ціна",
+    "showPanel": "Пошук у прайсі",
+    "hidePanel": "Сховати прайс",
+    "priceNote": "Ціна з прайсу — можна змінити"
+  },
   "expirationMonitor": {
     "client": "клієнта",
     "offerExpiresToday": "Пропозиція закінчується сьогодні!",

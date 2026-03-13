@@ -11,6 +11,19 @@ vi.mock('./BulkAddModal', () => ({
   BulkAddModal: () => null,
 }));
 
+// Mock price book components — requires QueryClient, out of scope for pagination tests
+vi.mock('@/components/offers/SaveToPriceBookButton', () => ({
+  SaveToPriceBookButton: () => null,
+}));
+vi.mock('@/hooks/useItemNameSuggestions', () => ({
+  useItemNameSuggestions: () => ({
+    suggestions: [],
+    priceBookSuggestions: [],
+    historicalSuggestions: [],
+    isLoading: false,
+  }),
+}));
+
 /* ── helpers ───────────────────────────────────────────────── */
 
 function createItems(count: number): LineItem[] {
