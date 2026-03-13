@@ -256,12 +256,11 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
     );
   };
 
-  // ── Copy share link ────────────────────────────────────────────────────────
+  // ── Copy share link ─────────────────────────────────────────────────────────
+  // Only copies when a real public token exists (never copies internal auth routes)
   const handleCopyLink = async () => {
-    // Prefer the tokenized public acceptance link if it exists (doesn't require auth)
-    const url = acceptanceLink?.token
-      ? buildAcceptanceLinkUrl(acceptanceLink.token)
-      : `${window.location.origin}/app/offers/${offerId}`;
+    if (!acceptanceLink?.token) return;
+    const url = buildAcceptanceLinkUrl(acceptanceLink.token);
     await navigator.clipboard.writeText(url);
     setLinkCopied(true);
     toast.success(t('offerPreview.linkCopied'));

@@ -1,28 +1,24 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Zap, Bot, PenTool, Sparkles, ArrowRight } from 'lucide-react';
+import { Zap, PenTool, Sparkles, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 
-type CreationMode = 'idle' | 'quick' | 'ai' | 'manual';
+type CreationMode = 'idle' | 'quick' | 'manual';
 
 export function QuoteCreationHub() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<CreationMode>('idle');
 
-  // Szybka wycena — inny flow niż kreator ofert (workspace z listą pozycji)
+  // Szybka wycena — uproszczony workspace (lista pozycji, bez kreatora)
   const handleQuickClick = () => {
     setMode('quick');
     navigate('/app/szybka-wycena');
   };
 
-  const handleAiClick = () => {
-    setMode('ai');
-    navigate('/app/offers/new');
-  };
-
+  // Pełny kreator oferty — 3-krokowy wizard
   const handleManualClick = () => {
     setMode('manual');
     navigate('/app/offers/new');
@@ -34,22 +30,31 @@ export function QuoteCreationHub() {
       icon: Zap,
       label: t('dashboard.quoteCreation.quickTitle'),
       sublabel: t('dashboard.quoteCreation.quickDesc'),
-      onClick: handleQuickClick
-    },
-    {
-      id: 'ai' as const,
-      icon: Bot,
-      label: t('dashboard.quoteCreation.aiTitle'),
-      sublabel: t('dashboard.quoteCreation.aiDesc'),
-      onClick: handleAiClick
+      onClick: handleQuickClick,
+      colorClasses: {
+        icon: 'text-destructive',
+        iconBg: 'bg-destructive/10',
+        border: 'border-destructive/20',
+        hoverBorder: 'hover:border-destructive/50',
+        activeBorder: 'border-destructive',
+        text: 'text-destructive',
+      },
     },
     {
       id: 'manual' as const,
       icon: PenTool,
       label: t('dashboard.quoteCreation.manualTitle'),
       sublabel: t('dashboard.quoteCreation.manualDesc'),
-      onClick: handleManualClick
-    }
+      onClick: handleManualClick,
+      colorClasses: {
+        icon: 'text-primary',
+        iconBg: 'bg-primary/10',
+        border: 'border-primary/20',
+        hoverBorder: 'hover:border-primary/50',
+        activeBorder: 'border-primary',
+        text: 'text-primary',
+      },
+    },
   ];
 
   return (
@@ -59,80 +64,59 @@ export function QuoteCreationHub() {
         <h3 className="text-lg font-semibold">{t('dashboard.quoteCreation.title')}</h3>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {buttons.map((btn) => {
           const isActive = mode === btn.id;
-          const colorClasses = {
-            quick: {
-              icon: 'text-destructive',
-              iconBg: 'bg-destructive/10',
-              border: 'border-destructive/20',
-              hoverBorder: 'hover:border-destructive/50',
-              activeBorder: 'border-destructive',
-              text: 'text-destructive'
-            },
-            ai: {
-              icon: 'text-primary',
-              iconBg: 'bg-primary/10',
-              border: 'border-primary/20',
-              hoverBorder: 'hover:border-primary/50',
-              activeBorder: 'border-primary',
-              text: 'text-primary'
-            },
-            manual: {
-              icon: 'text-success',
-              iconBg: 'bg-success/10',
-              border: 'border-success/20',
-              hoverBorder: 'hover:border-success/50',
-              activeBorder: 'border-success',
-              text: 'text-success'
-            }
-          }[btn.id];
+          const { colorClasses } = btn;
 
           return (
             <Card
               key={btn.id}
               onClick={btn.onClick}
               className={cn(
-                "relative cursor-pointer transition-all duration-200",
-                "border-2",
+                'relative cursor-pointer transition-all duration-200',
+                'border-2',
                 isActive ? colorClasses.activeBorder : colorClasses.border,
                 !isActive && colorClasses.hoverBorder,
-                "hover:shadow-md",
-                "group"
+                'hover:shadow-md',
+                'group'
               )}
             >
               <CardContent className="p-6">
                 {/* Icon */}
-                <div className={cn(
-                  "flex items-center justify-center w-12 h-12 rounded-xl mb-4",
-                  colorClasses.iconBg,
-                  "transition-transform duration-200",
-                  "group-hover:scale-105"
-                )}>
-                  <btn.icon className={cn("h-6 w-6", colorClasses.icon)} />
+                <div
+                  className={cn(
+                    'flex items-center justify-center w-12 h-12 rounded-xl mb-4',
+                    colorClasses.iconBg,
+                    'transition-transform duration-200',
+                    'group-hover:scale-105'
+                  )}
+                >
+                  <btn.icon className={cn('h-6 w-6', colorClasses.icon)} />
                 </div>
 
                 {/* Title */}
-                <h4 className={cn(
-                  "font-semibold text-base mb-2",
-                  isActive ? colorClasses.text : "text-foreground"
-                )}>
+                <h4
+                  className={cn(
+                    'font-semibold text-base mb-2',
+                    isActive ? colorClasses.text : 'text-foreground'
+                  )}
+                >
                   {btn.label}
                 </h4>
 
                 {/* Description */}
-                <p className="text-sm text-muted-foreground mb-4">
-                  {btn.sublabel}
-                </p>
+                <p className="text-sm text-muted-foreground mb-4">{btn.sublabel}</p>
 
                 {/* Arrow indicator */}
-                <div className={cn(
-                  "flex items-center gap-1 text-xs font-medium",
-                  colorClasses.text,
-                  "transition-transform duration-200",
-                  "group-hover:translate-x-1"
-                )}>
+                <div
+                  className={cn(
+                    'flex items-center gap-1 text-xs font-medium',
+                    colorClasses.text,
+                    'transition-transform duration-200',
+                    'group-hover:translate-x-1'
+                  )}
+                >
                   <span>Start</span>
                   <ArrowRight className="h-3 w-3" />
                 </div>
@@ -140,12 +124,13 @@ export function QuoteCreationHub() {
                 {/* Active indicator */}
                 {isActive && (
                   <div className="absolute top-3 right-3">
-                    <div className={cn(
-                      "w-2 h-2 rounded-full",
-                      btn.id === 'quick' ? 'bg-destructive' :
-                      btn.id === 'ai' ? 'bg-primary' : 'bg-success',
-                      "animate-pulse"
-                    )} />
+                    <div
+                      className={cn(
+                        'w-2 h-2 rounded-full',
+                        btn.id === 'quick' ? 'bg-destructive' : 'bg-primary',
+                        'animate-pulse'
+                      )}
+                    />
                   </div>
                 )}
               </CardContent>

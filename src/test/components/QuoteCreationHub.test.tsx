@@ -1,3 +1,12 @@
+/**
+ * QuoteCreationHub.test.tsx
+ *
+ * Zaktualizowane po fix-pack harden-offer-flow-MLCqR:
+ * - Usunięto zduplikowaną kartę "AI" (prowadziła do tego samego miejsca co "Manual")
+ * - Hub ma teraz 2 karty: "Szybka wycena" i "Ręcznie"
+ * - Grid zmieniony z sm:grid-cols-3 na sm:grid-cols-2
+ */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { QuoteCreationHub } from '@/components/dashboard/QuoteCreationHub';
@@ -21,8 +30,6 @@ vi.mock('react-i18next', () => ({
         'dashboard.quoteCreation.title': 'Create Quote',
         'dashboard.quoteCreation.quickTitle': 'Szybka wycena',
         'dashboard.quoteCreation.quickDesc': 'Wprowadź pozycje i wyślij w kilka minut',
-        'dashboard.quoteCreation.aiTitle': 'AI Assistant',
-        'dashboard.quoteCreation.aiDesc': 'AI-powered quote',
         'dashboard.quoteCreation.manualTitle': 'Manual',
         'dashboard.quoteCreation.manualDesc': 'Create manually',
         'dashboard.quoteCreation.chooseMethod': 'Choose your preferred method',
@@ -41,12 +48,13 @@ describe('QuoteCreationHub — honest affordances', () => {
     mockNavigate.mockClear();
   });
 
-  it('renders three creation mode cards', () => {
+  it('renders exactly two creation mode cards (Quick + Manual), no AI card', () => {
     render(<QuoteCreationHub />, { wrapper: TestWrapper });
 
     expect(screen.getByText('Szybka wycena')).toBeDefined();
-    expect(screen.getByText('AI Assistant')).toBeDefined();
     expect(screen.getByText('Manual')).toBeDefined();
+    // Karta AI usunięta — prowadziła do tego samego miejsca co Manual
+    expect(screen.queryByText('AI Assistant')).toBeNull();
   });
 
   it('does NOT render the old Voice / Mic card', () => {
@@ -59,8 +67,9 @@ describe('QuoteCreationHub — honest affordances', () => {
     render(<QuoteCreationHub />, { wrapper: TestWrapper });
 
     expect(screen.getByText('Wprowadź pozycje i wyślij w kilka minut')).toBeDefined();
-    expect(screen.getByText('AI-powered quote')).toBeDefined();
     expect(screen.getByText('Create manually')).toBeDefined();
+    // Opis AI usunięty
+    expect(screen.queryByText('AI-powered quote')).toBeNull();
   });
 
   it('shows helper text below cards', () => {
@@ -69,13 +78,13 @@ describe('QuoteCreationHub — honest affordances', () => {
     expect(screen.getByText('Choose your preferred method')).toBeDefined();
   });
 
-  it('renders cards in responsive grid layout', () => {
+  it('renders cards in 2-column responsive grid layout', () => {
     const { container } = render(<QuoteCreationHub />, { wrapper: TestWrapper });
 
     const gridContainer = container.querySelector('[class*="grid"]');
     expect(gridContainer).toBeDefined();
     expect(gridContainer?.className).toContain('grid-cols-1');
-    expect(gridContainer?.className).toContain('sm:grid-cols-3');
+    expect(gridContainer?.className).toContain('sm:grid-cols-2');
   });
 
   it('does NOT have circular button classes (professional UI)', () => {
@@ -103,11 +112,12 @@ describe('QuoteCreationHub — honest affordances', () => {
     render(<QuoteCreationHub />, { wrapper: TestWrapper });
 
     const startButtons = screen.getAllByText('Start');
-    expect(startButtons.length).toBe(3);
+    // 2 karty = 2 strzałki
+    expect(startButtons.length).toBe(2);
   });
 
   describe('CTA navigation — routing honesty', () => {
-    it('"Szybka wycena" naviguje do /app/szybka-wycena (inny flow niż kreator ofert)', () => {
+    it('"Szybka wycena" nawiguje do /app/szybka-wycena (inny flow niż kreator ofert)', () => {
       render(<QuoteCreationHub />, { wrapper: TestWrapper });
 
       fireEvent.click(screen.getByText('Szybka wycena'));
@@ -116,16 +126,7 @@ describe('QuoteCreationHub — honest affordances', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/app/szybka-wycena');
     });
 
-    it('"AI Assistant" naviguje do /app/offers/new', () => {
-      render(<QuoteCreationHub />, { wrapper: TestWrapper });
-
-      fireEvent.click(screen.getByText('AI Assistant'));
-
-      expect(mockNavigate).toHaveBeenCalledOnce();
-      expect(mockNavigate).toHaveBeenCalledWith('/app/offers/new');
-    });
-
-    it('"Manual" naviguje do /app/offers/new', () => {
+    it('"Manual" nawiguje do /app/offers/new', () => {
       render(<QuoteCreationHub />, { wrapper: TestWrapper });
 
       fireEvent.click(screen.getByText('Manual'));

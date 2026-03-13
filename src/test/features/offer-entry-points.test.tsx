@@ -9,10 +9,13 @@
  *  2. TopBar quick-create (NewShellTopBar) — akcja "Nowa Oferta" (pośrednia weryfikacja przez import)
  *  3. HomeLobby — przycisk "Nowa wycena" → /app/offers/new (pełny kreator)
  *  4. HomeLobby — przycisk "Szybka wycena" → /app/szybka-wycena (Quick Estimate Workspace)
+ *  5. EmptyDashboard — główny CTA "Nowa oferta" → /app/offers/new (offer-first principle)
  *
- * Intentionally NOT unified (osobna ścieżka biznesowa):
- *  - EmptyDashboard CTA "Utwórz pierwszy projekt" → /app/projects/new
- *  - "Szybka wycena" → /app/szybka-wycena (inny, uproszczony flow)
+ * Różne ścieżki (nie unifikowane):
+ *  - "Szybka wycena" → /app/szybka-wycena (uproszczony workspace)
+ *
+ * Zmiana w harden-offer-flow fix-pack:
+ *  - EmptyDashboard CTA zmienione z /app/projects/new na /app/offers/new
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -134,27 +137,26 @@ describe('Kanoniczny route oferty = /app/offers/new', () => {
     });
   });
 
-  // ---- Negatywne: EmptyDashboard CTA pozostaje na /app/projects/new ----
+  // ---- EmptyDashboard CTA — oferta-first (zmienione w fix-pack harden-offer-flow) ----
 
-  describe('EmptyDashboard — tworzenie projektu jest osobną ścieżką', () => {
-    it('CTA "Utwórz pierwszy projekt" naviguje do /app/projects/new (nie do /app/offers/new)', async () => {
+  describe('EmptyDashboard — główne CTA prowadzi do tworzenia oferty', () => {
+    it('główny CTA naviguje do /app/offers/new (offer-first principle)', async () => {
       const { EmptyDashboard } = await import('@/components/dashboard/EmptyDashboard');
 
       render(<EmptyDashboard />, { wrapper: Wrapper });
 
-      // Tekst przycisku pochodzi z klucza i18n 'dashboard.createFirstProject'.
-      // Mock i18n zwraca klucz bez fallbacku (nie ma drugiego argumentu),
-      // więc szukamy przycisku po fragmencie klucza.
+      // Tekst przycisku pochodzi z klucza i18n 'quickActions.newOffer'.
+      // Mock i18n zwraca klucz bez fallbacku, więc szukamy po fragmencie klucza.
       const buttons = screen.getAllByRole('button');
       const createBtn = buttons.find((btn) =>
-        btn.textContent?.includes('createFirstProject')
+        btn.textContent?.includes('newOffer')
       );
       expect(createBtn).toBeDefined();
 
       fireEvent.click(createBtn!);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/app/projects/new');
-      expect(mockNavigate).not.toHaveBeenCalledWith(CANONICAL_OFFER_ROUTE);
+      expect(mockNavigate).toHaveBeenCalledWith(CANONICAL_OFFER_ROUTE);
+      expect(mockNavigate).not.toHaveBeenCalledWith('/app/projects/new');
     });
   });
 });
