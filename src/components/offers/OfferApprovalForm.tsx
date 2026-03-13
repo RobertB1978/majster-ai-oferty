@@ -58,7 +58,7 @@ export function OfferApprovalForm({
             />
           </div>
           <div>
-            <Label>{t('auth.email', 'Email')}</Label>
+            <Label>{t('auth.email')}</Label>
             <Input
               type="email"
               value={clientEmail}

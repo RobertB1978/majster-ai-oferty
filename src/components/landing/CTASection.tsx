@@ -33,17 +33,17 @@ export function CTASection() {
           id="cta-heading"
           className="text-3xl md:text-5xl font-bold text-black mb-4 leading-tight"
         >
-          {t('landing.cta.heading', 'Zacznij zarabiać więcej')}
+          {t('landing.cta.heading')}
           <br />
           <span className="text-black/70 text-2xl md:text-3xl font-medium">
-            {t('landing.cta.subheading', 'już dziś — bez karty kredytowej')}
+            {t('landing.cta.subheading')}
           </span>
         </h2>
         <p className="text-lg text-black/70 max-w-xl mx-auto mb-8 leading-relaxed">
-          {t('landing.cta.desc', 'Twoi konkurenci już wysyłają profesjonalne PDF-y.')}
+          {t('landing.cta.desc')}
           <br className="hidden sm:block" />
           <strong className="text-black/90">
-            {t('landing.cta.desc2', 'Dołącz do setek wykonawców, którzy zarządzają firmą cyfrowo.')}
+            {t('landing.cta.desc2')}
           </strong>
         </p>
 
@@ -52,13 +52,13 @@ export function CTASection() {
           <div className="flex items-center gap-2 bg-black/10 rounded-full px-4 py-2">
             <Shield className="w-4 h-4 text-black/70" aria-hidden="true" />
             <span className="text-sm font-medium text-black/80">
-              {t('landing.cta.trust1', 'Darmowy plan na start')}
+              {t('landing.cta.trust1')}
             </span>
           </div>
           <div className="flex items-center gap-2 bg-black/10 rounded-full px-4 py-2">
             <Zap className="w-4 h-4 text-black/70" aria-hidden="true" />
             <span className="text-sm font-medium text-black/80">
-              {t('landing.cta.trust2', 'Gotowy w 2 minuty')}
+              {t('landing.cta.trust2')}
             </span>
           </div>
         </div>
@@ -68,19 +68,19 @@ export function CTASection() {
             to={CTA_ROUTE}
             className="inline-flex items-center justify-center bg-black hover:bg-[#1A1A1A] text-white font-semibold px-10 py-4 rounded-xl text-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-amber-500 min-h-[56px] gap-2 shadow-lg shadow-black/20"
           >
-            {t('landing.cta.cta_start', 'Zacznij za darmo')}
+            {t('landing.cta.cta_start')}
             <ArrowRight className="w-5 h-5" aria-hidden="true" />
           </Link>
           <Link
             to="/login"
             className="inline-flex items-center justify-center border-2 border-black/30 hover:border-black/60 text-black font-semibold px-8 py-4 rounded-xl text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-amber-500 min-h-[56px]"
           >
-            {t('landing.cta.cta_login', 'Mam już konto')}
+            {t('landing.cta.cta_login')}
           </Link>
         </div>
 
         <p className="mt-4 text-sm text-black/50">
-          {t('landing.cta.microcopy', 'Bez zobowiązań · Anuluj w każdej chwili · Pełne wsparcie w języku polskim')}
+          {t('landing.cta.microcopy')}
         </p>
       </div>
     </section>

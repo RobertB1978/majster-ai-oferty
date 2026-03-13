@@ -166,21 +166,21 @@ export default function Calendar() {
       setEventData(initialEventData);
       setEditingEvent(null);
       toast.success(editingEvent
-        ? t('calendar.eventUpdated', 'Wydarzenie zaktualizowane')
-        : t('calendar.eventAdded', 'Wydarzenie dodane'));
+        ? t('calendar.eventUpdated')
+        : t('calendar.eventAdded'));
     } catch (error) {
-      const message = error instanceof Error ? error.message : t('errors.generic', 'Wystąpił błąd');
-      toast.error(t('calendar.eventSaveError', 'Nie udało się zapisać wydarzenia') + ': ' + message);
+      const message = error instanceof Error ? error.message : t('errors.generic');
+      toast.error(t('calendar.eventSaveError') + ': ' + message);
     }
   };
 
   const handleDeleteEvent = async (eventId: string) => {
     try {
       await deleteEvent.mutateAsync(eventId);
-      toast.success(t('calendar.eventDeleted', 'Wydarzenie usunięte'));
+      toast.success(t('calendar.eventDeleted'));
     } catch (error) {
-      const message = error instanceof Error ? error.message : t('errors.generic', 'Wystąpił błąd');
-      toast.error(t('calendar.eventDeleteError', 'Nie udało się usunąć wydarzenia') + ': ' + message);
+      const message = error instanceof Error ? error.message : t('errors.generic');
+      toast.error(t('calendar.eventDeleteError') + ': ' + message);
     }
   };
 
@@ -210,10 +210,10 @@ export default function Calendar() {
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-3 text-center px-4">
         <CalendarIcon className="h-12 w-12 text-muted-foreground/50" />
         <p className="text-muted-foreground font-medium">
-          {t('calendar.loadError', 'Nie udało się załadować kalendarza')}
+          {t('calendar.loadError')}
         </p>
         <p className="text-sm text-muted-foreground">
-          {t('calendar.loadErrorHint', 'Sprawdź połączenie z internetem i odśwież stronę')}
+          {t('calendar.loadErrorHint')}
         </p>
       </div>
     );

@@ -80,10 +80,10 @@ export function NewShellTopBar() {
                 variant="default"
                 size="sm"
                 className="hidden lg:flex h-8 gap-1.5 px-3"
-                aria-label={t('newShell.fab.open', 'Utwórz')}
+                aria-label={t('newShell.fab.open')}
               >
                 <Plus className="h-4 w-4" />
-                <span>{t('newShell.fab.open', 'Utwórz')}</span>
+                <span>{t('newShell.fab.open')}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
@@ -153,7 +153,7 @@ export function NewShellTopBar() {
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9"
-                aria-label={t('newShell.nav.account', 'Konto')}
+                aria-label={t('newShell.nav.account')}
               >
                 <User className="h-4 w-4" />
               </Button>
@@ -172,14 +172,14 @@ export function NewShellTopBar() {
                 className="flex items-center gap-2"
               >
                 <User className="h-4 w-4" />
-                {t('newShell.nav.profile', 'Profil firmy')}
+                {t('newShell.nav.profile')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => navigate('/app/settings')}
                 className="flex items-center gap-2"
               >
                 <Settings className="h-4 w-4" />
-                {t('newShell.nav.settings', 'Ustawienia')}
+                {t('newShell.nav.settings')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -187,7 +187,7 @@ export function NewShellTopBar() {
                 className="flex items-center gap-2 text-destructive focus:text-destructive"
               >
                 <LogOut className="h-4 w-4" />
-                {t('newShell.nav.logout', 'Wyloguj')}
+                {t('newShell.nav.logout')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

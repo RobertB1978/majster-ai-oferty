@@ -52,7 +52,10 @@
     "send": "Send",
     "stopRecording": "Stop recording",
     "dontShowAgain": "Don't show again",
-    "startVoiceRecording": "Start voice recording"
+    "startVoiceRecording": "Start voice recording",
+    "errorGeneric": "An error occurred. Please try again.",
+    "offline": "Offline",
+    "online": "Online"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -72,7 +75,8 @@
     "menu": "Menu",
     "comingSoon": "Soon",
     "quickEstimate": "Quick Estimate",
-    "offers": "Offers"
+    "offers": "Offers",
+    "skipToContent": "Skip to main content"
   },
   "auth": {
     "login": "Login",
@@ -145,7 +149,9 @@
       "securityTitle": "Security",
       "securityDesc": "Configure additional security options",
       "fingerprintLabel": "Fingerprint login",
-      "fingerprintDesc": "Fast and secure biometric login"
+      "fingerprintDesc": "Fast and secure biometric login",
+      "error": "Biometric authentication failed",
+      "loginLabel": "Log in with fingerprint"
     },
     "passwordStrength": "Password strength:",
     "passwordRequirements": {
@@ -246,7 +252,9 @@
       "aiDesc": "Open the offer form",
       "aiOpening": "Opening AI assistant...",
       "manualTitle": "Manually",
-      "manualDesc": "Fill in the form"
+      "manualDesc": "Fill in the form",
+      "quickDesc": "Enter items and send in a few minutes",
+      "quickTitle": "Quick estimate"
     },
     "createFirst": "Create your first",
     "noClients": "No clients",
@@ -288,7 +296,8 @@
       "pendingOffer": "Offer",
       "expiringOffer": "Expiring",
       "inactiveProject": "Project"
-    }
+    },
+    "expiringOffersDesc": "{{count}} offers expiring soon"
   },
   "projects": {
     "title": "Projects",
@@ -448,7 +457,10 @@
       "october": "October",
       "november": "November",
       "december": "December"
-    }
+    },
+    "loadError": "Failed to load calendar",
+    "loadErrorHint": "Check your internet connection and refresh the page",
+    "selectedDate": "Selected date"
   },
   "finance": {
     "title": "Finance",
@@ -648,7 +660,8 @@
     "loadToEditor": "Load into editor",
     "deleteVersion": "Delete version?",
     "irreversible": "This operation is irreversible.",
-    "noVersionsHint": "No saved versions. Click \"Save version\" to preserve the current state."
+    "noVersionsHint": "No saved versions. Click \"Save version\" to preserve the current state.",
+    "category": "Category"
   },
   "settings": {
     "title": "Settings",
@@ -688,7 +701,19 @@
     "contactEmailTab": "Email",
     "companyProfileTab": "Company",
     "accountTab": "Account",
-    "subscriptionTab": "Subscription"
+    "subscriptionTab": "Subscription",
+    "contactEmail": {
+      "add": "Add reply-to email",
+      "change": "Change email",
+      "changeWarning": "Changing the email address requires re-verification.",
+      "desc": "This address will be set as Reply-To in offer emails so clients can reply to you.",
+      "inputLabel": "New email address",
+      "sendVerification": "Send verification email",
+      "title": "Reply-to email",
+      "unverified": "Unverified",
+      "verified": "Verified",
+      "verifyPrompt": "Verify your email address so clients can reply to your offers."
+    }
   },
   "billing": {
     "title": "Billing & Subscriptions",
@@ -839,7 +864,8 @@
       "statusActive": "Active",
       "statusCanceled": "Canceled",
       "statusTrialing": "Trial",
-      "statusExpired": "Expired"
+      "statusExpired": "Expired",
+      "noPortalAdmin": "Plan assigned manually — payment portal unavailable."
     },
     "checkoutSuccess": "Payment complete! Refreshing your plan...",
     "checkoutCanceled": "Payment canceled",
@@ -853,7 +879,11 @@
     "freePlan": "Free plan",
     "projects": "projects",
     "history": "History",
-    "perMonthNet": "/mo net"
+    "perMonthNet": "/mo net",
+    "paidSubscription": "Active subscription",
+    "stripeNotConfigured": "Stripe is not fully configured",
+    "stripeNotConfiguredDesc": "VITE_STRIPE_ENABLED=true, but real Stripe Price IDs are missing. Checkout is blocked until VITE_STRIPE_PRICE_* variables are set.",
+    "trialDaysRemaining": "{{count}} trial days remaining"
   },
   "profile": {
     "title": "Company Profile",
@@ -1045,7 +1075,9 @@
     "noAccessDescription": "You don't have permission to view this page",
     "systemStatus": "System Status",
     "userManagement": "User Management",
-    "backToDashboard": "Back to Dashboard"
+    "backToDashboard": "Back to Dashboard",
+    "accessDenied": "No access to admin panel",
+    "panelAccess": "Admin panel"
   },
   "adminConfig": {
     "pageTitle": "Configuration",
@@ -1230,7 +1262,11 @@
     "returnHome": "Return to home page",
     "generic": "An error occurred",
     "maxLength": "Maximum {{count}} characters",
-    "minLength": "Minimum {{count}} characters"
+    "minLength": "Minimum {{count}} characters",
+    "checkConnection": "Check your internet connection",
+    "goBack": "Go back",
+    "loadFailed": "Failed to load data",
+    "pageNotFoundDesc": "The page you are looking for does not exist or has been moved. Check the URL or return to the home page."
   },
   "cookies": {
     "title": "Cookie settings",
@@ -1397,7 +1433,12 @@
       "member": "Member"
     },
     "noOrganizations": "No organizations",
-    "createFirst": "Create your first organization"
+    "createFirst": "Create your first organization",
+    "membersCount": "members",
+    "noMembers": "No members",
+    "selectOrg": "Select an organisation to manage members",
+    "slugHint": "Will be used in the URL. Only lowercase letters, digits and hyphens.",
+    "yourOrganizations": "Your organisations"
   },
   "marketplace": {
     "title": "Marketplace",
@@ -1409,7 +1450,9 @@
     "rating": "Rating",
     "hourlyRate": "Hourly rate",
     "contact": "Contact",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "details": "Details",
+    "invite": "Invite"
   },
   "emailTemplates": {
     "generalConstruction": {
@@ -1885,7 +1928,8 @@
       },
       "ariaLabel": "Main section",
       "socialProof": "Start free — no credit card required",
-      "valueProp": "⚡ Your first professional PDF quote in 5 minutes."
+      "valueProp": "⚡ Your first professional PDF quote in 5 minutes.",
+      "freeBadge": "Start for free — no credit card required"
     },
     "stats": {
       "quoteTime": "Average quote time",
@@ -2011,7 +2055,10 @@
       "t3Role": "Renovation company owner",
       "t3Text": "Three languages is a perfect match. I employ Ukrainians and everyone works in their own.",
       "sectionTitle": "What users say",
-      "sectionSubtitle": "What contractors and tradespeople say about Majster.AI."
+      "sectionSubtitle": "What contractors and tradespeople say about Majster.AI.",
+      "t1Outcome": "Save 3 hours per week",
+      "t2Outcome": "+40% more offers won",
+      "t3Outcome": "5 minutes for a professional offer"
     },
     "cta": {
       "title": "Ready for digital transformation?",
@@ -2023,7 +2070,9 @@
       "cta_start": "Start for free",
       "cta_login": "I already have an account",
       "microcopy": "No obligations · Cancel any time",
-      "trust1": "Free plan to start"
+      "trust1": "Free plan to start",
+      "subheading": "today — no credit card required",
+      "trust2": "Ready in 2 minutes"
     },
     "footer": {
       "desc": "Professional quotes and project management for tradespeople. Fast, easy, secure.",
@@ -2127,7 +2176,11 @@
     "purchased": "Purchased",
     "selected": "Selected",
     "vatNote": "Net price + 23% VAT. Payment via Stripe.",
-    "buy": "Buy now"
+    "buy": "Buy now",
+    "comingSoon": "Purchasing individual add-ons via Stripe will be available soon. To increase limits now, upgrade to a higher plan.",
+    "comingSoonBadge": "Coming soon",
+    "priceSoon": "estimated price",
+    "seePlans": "See plans"
   },
   "quickEstimate": {
     "title": "Quick Estimate",
@@ -2271,7 +2324,39 @@
     "bulkLoadCsvAriaLabel": "Load CSV file",
     "bulkConfirmCount_one": "Add {{count}} item",
     "bulkConfirmCount_few": "Add {{count}} items",
-    "bulkConfirmCount_other": "Add {{count}} items"
+    "bulkConfirmCount_other": "Add {{count}} items",
+    "bulkConfirmCount": "Add {{count}} items",
+    "colItemHeader": "Item",
+    "colLabour": "Labour",
+    "colMargin": "Margin %",
+    "colMarginHeader": "Margin %",
+    "colMaterials": "Materials",
+    "colNetPrice": "Net price",
+    "colRowTotal": "Row total",
+    "colSplit": "L+M (labour / materials)",
+    "colTotal": "Total",
+    "colType": "Item type",
+    "colTypeHeader": "Type",
+    "columns": "Columns",
+    "columnsToggleAriaLabel": "Toggle column visibility",
+    "draftSaveError": "Draft save error",
+    "draftSaved": "Draft saved",
+    "hideMarginAriaLabel": "Hide margin from client",
+    "invalidAmount": "Invalid amount",
+    "invalidPrice": "Invalid price",
+    "invalidQty": "Invalid quantity",
+    "labourAbbr": "Lab.",
+    "labourPerUnit": "Labour / unit",
+    "marginHiddenClickTitle": "Margin hidden from client (included in price) — click to show",
+    "marginHiddenTitle": "Margin hidden from client (included in price)",
+    "marginVisibleClickTitle": "Margin visible to client — click to hide",
+    "marginVisibleTitle": "Margin % (visible to client)",
+    "materialAbbr": "Mat.",
+    "materialsPerUnit": "Materials / unit",
+    "removeItemAriaLabel": "Remove item",
+    "showMarginAriaLabel": "Show margin to client",
+    "typeBadgeTitle": "Type: {{type}} (click to change)",
+    "visibleColumns": "Visible columns"
   },
   "tradeOnboarding": {
     "step1Title": "What is your trade?",
@@ -2593,6 +2678,11 @@
     "signature": {
       "hint": "Sign above",
       "clear": "Clear"
+    },
+    "empty": {
+      "cta": "Create offer",
+      "desc": "Create your first offer to get started",
+      "title": "No offers"
     }
   },
   "legal": {
@@ -3231,7 +3321,11 @@
     },
     "offerFirstNote": "Projects are created from accepted offers",
     "manualCta": "Create project manually",
-    "manualCreationHint": "Recommended flow: Offer → Acceptance → Project. Manual creation is for small direct jobs or work without a formal offer."
+    "manualCreationHint": "Recommended flow: Offer → Acceptance → Project. Manual creation is for small direct jobs or work without a formal offer.",
+    "archiveConfirmAction": "Archive",
+    "archiveConfirmDesc": "The project will be marked as cancelled. You can still view it.",
+    "archiveConfirmTitle": "Archive project?",
+    "archiveProject": "Archive project"
   },
   "burnBar": {
     "budget": "Budget",
@@ -3415,7 +3509,8 @@
       "linkRevoked": "Link revoked",
       "revokeError": "Error revoking link",
       "expiresIn": "Expires in {{days}} days",
-      "expired": "Expired"
+      "expired": "Expired",
+      "linkGenerated": "Sharing link generated"
     },
     "public": {
       "loading": "Loading dossier...",
@@ -3941,5 +4036,13 @@
     "banner": "Offline mode — showing last cached data",
     "actionBlocked": "This action requires an internet connection",
     "readOnlyNote": "You are viewing locally cached data. Go online to make changes."
+  },
+  "app": {
+    "loading": "Starting application"
+  },
+  "calendarSync": {
+    "betaNotice": "Synchronisation with external calendars (Google, Outlook, Apple) is in preparation. It will be available in the next version.",
+    "description": "Connect external calendars to synchronise events",
+    "title": "Calendar synchronisation"
   }
 }

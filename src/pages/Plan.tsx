@@ -74,8 +74,8 @@ function formatStorage(mb: number): string {
   return `${mb} MB`;
 }
 
-function formatLimit(value: number, t: (key: string, fallback: string) => string): string {
-  if (value >= 9999) return t('billing.unlimited', 'Unlimited');
+function formatLimit(value: number, t: (key: string) => string): string {
+  if (value >= 9999) return t('billing.unlimited');
   return String(value);
 }
 
@@ -106,14 +106,14 @@ export default function Plan() {
   // Handle ?success=true after Stripe Checkout redirect
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
-      toast.success(t('billing.checkoutSuccess', 'Płatność zakończona! Odświeżamy plan...'));
+      toast.success(t('billing.checkoutSuccess'));
       const timer = setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ['user-subscription'] });
       }, 2000);
       return () => clearTimeout(timer);
     }
     if (searchParams.get('canceled') === 'true') {
-      toast.info(t('billing.checkoutCanceled', 'Płatność anulowana'));
+      toast.info(t('billing.checkoutCanceled'));
     }
   }, [searchParams, queryClient, t]);
 
@@ -131,7 +131,7 @@ export default function Plan() {
       // Guard: priceId must be set AND must look like a real Stripe Price ID.
       // Placeholder IDs (e.g. "price_pro_monthly") fail this check — checkout is blocked.
       if (!priceId || !isRealStripePriceId(priceId)) {
-        toast.error(t('billing.planNotConfigured', 'Plan nie jest jeszcze skonfigurowany. Właściciel musi dodać prawdziwe Stripe Price IDs.'));
+        toast.error(t('billing.planNotConfigured'));
         return;
       }
       createCheckout({
@@ -140,7 +140,7 @@ export default function Plan() {
         cancelUrl: `${window.location.origin}/app/plan?canceled=true`,
       }, {
         onError: () => {
-          toast.error(t('billing.checkoutError', 'Błąd inicjowania płatności. Spróbuj ponownie.'));
+          toast.error(t('billing.checkoutError'));
         },
       });
     } else {
@@ -152,7 +152,7 @@ export default function Plan() {
   function handleManageBilling() {
     openPortal(undefined, {
       onError: () => {
-        toast.error(t('billing.subscription.portalError', 'Nie można otworzyć portalu płatności'));
+        toast.error(t('billing.subscription.portalError'));
       },
     });
   }
@@ -160,8 +160,8 @@ export default function Plan() {
   return (
     <>
       <Helmet>
-        <title>{t('billing.subscriptionAndPlan', 'Subscription & Plan')} | Majster.AI</title>
-        <meta name="description" content={t('billing.subtitle', 'Manage your subscription plan')} />
+        <title>{t('billing.subscriptionAndPlan')} | Majster.AI</title>
+        <meta name="description" content={t('billing.subtitle')} />
       </Helmet>
 
       <div className="space-y-8 animate-fade-in">
@@ -171,10 +171,10 @@ export default function Plan() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
               <CreditCard className="h-5 w-5 text-primary-foreground" />
             </div>
-            {t('billing.subscriptionAndPlan', 'Subscription & Plan')}
+            {t('billing.subscriptionAndPlan')}
           </h1>
           <p className="text-muted-foreground mt-1">
-            {t('billing.planChooseSubtitle', 'Choose a plan that fits your business. Start free, scale when ready.')}
+            {t('billing.planChooseSubtitle')}
           </p>
         </div>
 
@@ -185,10 +185,10 @@ export default function Plan() {
               <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-sm text-amber-800 dark:text-amber-400">
-                  {t('billing.stripeNotConfigured', 'Stripe nie jest w pełni skonfigurowany')}
+                  {t('billing.stripeNotConfigured')}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {t('billing.stripeNotConfiguredDesc', 'VITE_STRIPE_ENABLED=true, ale brakuje prawdziwych Stripe Price IDs. Checkout jest zablokowany do czasu ustawienia zmiennych VITE_STRIPE_PRICE_*. Zapoznaj się z docs/BILLING_RUNBOOK.md.')}
+                  {t('billing.stripeNotConfiguredDesc')}
                 </p>
               </div>
             </CardContent>
@@ -205,25 +205,25 @@ export default function Plan() {
             </div>
             <div className="flex-1">
               {isSubLoading ? (
-                <p className="text-sm text-muted-foreground">{t('common.loading', 'Ładowanie...')}</p>
+                <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
               ) : isPaid ? (
                 <>
                   <p className="font-semibold text-sm">
-                    {t('billing.currentlyOnPlan', 'Aktualny plan: {{plan}}', { plan: currentPlan.toUpperCase() })}
+                    {t('billing.currentlyOnPlan', { plan: currentPlan.toUpperCase() })}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {subscription?.current_period_end
-                      ? t('billing.renewsOn', 'Odnawia się {{date}}', {
+                      ? t('billing.renewsOn', {
                           date: new Date(subscription.current_period_end).toLocaleDateString('pl-PL'),
                         })
-                      : t('billing.activePlan', 'Plan aktywny')}
+                      : t('billing.activePlan')}
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="font-semibold text-sm">{t('billing.currentlyOnFreePlan', 'You are currently on the Free plan')}</p>
+                  <p className="font-semibold text-sm">{t('billing.currentlyOnFreePlan')}</p>
                   <p className="text-xs text-muted-foreground">
-                    {t('billing.upgradeToUnlock', 'Upgrade to unlock AI, team management, and more.')}
+                    {t('billing.upgradeToUnlock')}
                   </p>
                 </>
               )}
@@ -241,8 +241,8 @@ export default function Plan() {
                 >
                   <ExternalLink className="h-3.5 w-3.5 mr-1" />
                   {isPortalLoading
-                    ? t('common.loading', 'Ładowanie...')
-                    : t('billing.subscription.manageBilling', 'Portal płatności')}
+                    ? t('common.loading')
+                    : t('billing.subscription.manageBilling')}
                 </Button>
               )}
             </div>
@@ -266,7 +266,7 @@ export default function Plan() {
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                   <Badge className="flex items-center gap-1 shadow-sm">
                     <Star className="h-3 w-3 fill-current" />
-                    {t('billing.mostPopular', 'Most Popular')}
+                    {t('billing.mostPopular')}
                   </Badge>
                 </div>
               )}
@@ -278,7 +278,7 @@ export default function Plan() {
                     {formatDualCurrency(tier.pricePLN, i18n.language)}
                   </span>
                   {tier.pricePLN > 0 && (
-                    <span className="text-sm text-muted-foreground"> {t('billing.perMonth', '/month')}</span>
+                    <span className="text-sm text-muted-foreground"> {t('billing.perMonth')}</span>
                   )}
                 </CardDescription>
               </CardHeader>
@@ -290,26 +290,26 @@ export default function Plan() {
                     <FolderKanban className="h-4 w-4 text-muted-foreground shrink-0" />
                     <span>
                       <span className="font-medium">{formatLimit(tier.maxProjects, t)}</span>
-                      {tier.maxProjects < 9999 ? ' ' + t('billing.limitProjects', 'projects') : ''}
+                      {tier.maxProjects < 9999 ? ' ' + t('billing.limitProjects') : ''}
                     </span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-muted-foreground shrink-0" />
                     <span>
                       <span className="font-medium">{formatLimit(tier.maxClients, t)}</span>
-                      {tier.maxClients < 9999 ? ' ' + t('billing.limitClients', 'clients') : ''}
+                      {tier.maxClients < 9999 ? ' ' + t('billing.limitClients') : ''}
                     </span>
                   </li>
                   <li className="flex items-center gap-2">
                     <HardDrive className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <span className="font-medium">{formatStorage(tier.maxStorageMB)} {t('billing.storage', 'storage')}</span>
+                    <span className="font-medium">{formatStorage(tier.maxStorageMB)} {t('billing.storage')}</span>
                   </li>
                   {tier.maxTeamMembers > 0 && (
                     <li className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-muted-foreground shrink-0" />
                       <span>
                         <span className="font-medium">{formatLimit(tier.maxTeamMembers, t)}</span>
-                        {tier.maxTeamMembers < 9999 ? ' ' + t('billing.limitTeam', 'team members') : ''}
+                        {tier.maxTeamMembers < 9999 ? ' ' + t('billing.limitTeam') : ''}
                       </span>
                     </li>
                   )}
@@ -321,7 +321,7 @@ export default function Plan() {
                     {tier.features.map((feat) => (
                       <li key={feat} className="flex items-center gap-2">
                         <CheckCircle2 className="h-3.5 w-3.5 text-success shrink-0" />
-                        <span>{t(PLAN_FEATURE_I18N_KEYS[feat] ?? feat, PLAN_FEATURE_FALLBACKS[feat] ?? feat)}</span>
+                        <span>{t(PLAN_FEATURE_I18N_KEYS[feat] ?? feat)}</span>
                       </li>
                     ))}
                   </ul>
@@ -331,11 +331,11 @@ export default function Plan() {
                 <div className="mt-auto pt-4">
                   {isCurrentPlan ? (
                     <Button variant="outline" className="w-full" disabled>
-                      {t('billing.currentPlan', 'Current Plan')}
+                      {t('billing.currentPlan')}
                     </Button>
                   ) : tier.pricePLN === 0 ? (
                     <Button variant="outline" className="w-full" disabled>
-                      {t('billing.freePlan', 'Plan darmowy')}
+                      {t('billing.freePlan')}
                     </Button>
                   ) : (
                     <Button
@@ -345,8 +345,8 @@ export default function Plan() {
                       disabled={isCheckoutLoading}
                     >
                       {isCheckoutLoading
-                        ? t('common.loading', 'Ładowanie...')
-                        : `${t('billing.selectPlan', 'Select plan')} ${tier.name}`}
+                        ? t('common.loading')
+                        : `${t('billing.selectPlan')} ${tier.name}`}
                     </Button>
                   )}
                 </div>
@@ -359,22 +359,22 @@ export default function Plan() {
         {/* FAQ / info */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{t('billing.faqTitle', 'Payment Questions')}</CardTitle>
+            <CardTitle className="text-base">{t('billing.faqTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
             <p>
-              <span className="font-medium text-foreground">{t('billing.faqQ1', 'How to change plan?')}</span>{' '}
-              {t('billing.faqA1', 'Contact us by email')} {' '}
+              <span className="font-medium text-foreground">{t('billing.faqQ1')}</span>{' '}
+              {t('billing.faqA1')} {' '}
               <span className="font-medium text-foreground">{CONTACT_EMAIL}</span>{' '}
-              {t('billing.faqA1b', 'or submit a request by clicking the button next to your chosen plan.')}
+              {t('billing.faqA1b')}
             </p>
             <p>
-              <span className="font-medium text-foreground">{t('billing.faqQ2', 'Can I cancel?')}</span>{' '}
-              {t('billing.faqA2', 'Yes — paid plans can be cancelled at any time. Access remains active until the end of the billing period.')}
+              <span className="font-medium text-foreground">{t('billing.faqQ2')}</span>{' '}
+              {t('billing.faqA2')}
             </p>
             <p>
-              <span className="font-medium text-foreground">{t('billing.faqQ3', 'VAT invoices?')}</span>{' '}
-              {t('billing.faqA3', 'Yes, we issue VAT invoices. Provide your company tax ID (NIP) when purchasing a plan.')}
+              <span className="font-medium text-foreground">{t('billing.faqQ3')}</span>{' '}
+              {t('billing.faqA3')}
             </p>
           </CardContent>
         </Card>

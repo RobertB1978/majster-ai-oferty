@@ -66,28 +66,28 @@ export function FAQSection() {
   const FAQ_ITEMS: FAQItemData[] = [
     {
       id: 'faq-1',
-      question: t('landing.faq.q1', 'Czy muszę podpisywać umowę?'),
-      answer: t('landing.faq.a1', 'Nie. Zaczynasz bezpłatnie przez 30 dni, bez zobowiązań i bez karty kredytowej. Możesz anulować w dowolnym momencie.'),
+      question: t('landing.faq.q1'),
+      answer: t('landing.faq.a1'),
     },
     {
       id: 'faq-2',
-      question: t('landing.faq.q2', 'Czy dane moich klientów są bezpieczne?'),
-      answer: t('landing.faq.a2', 'Dane są chronione, a dostęp jest kontrolowany. Możesz zarządzać uprawnieniami i wiedzieć, kto ma dostęp do jakich informacji.'),
+      question: t('landing.faq.q2'),
+      answer: t('landing.faq.a2'),
     },
     {
       id: 'faq-3',
-      question: t('landing.faq.q3', 'Czy aplikacja działa na telefonie?'),
-      answer: t('landing.faq.a3', 'Tak, aplikacja jest w pełni zoptymalizowana na urządzenia mobilne. Możesz korzystać z niej na dowolnym smartfonie z przeglądarką internetową.'),
+      question: t('landing.faq.q3'),
+      answer: t('landing.faq.a3'),
     },
     {
       id: 'faq-4',
-      question: t('landing.faq.q4', 'Jak długo jest darmowy dostęp?'),
-      answer: t('landing.faq.a4', 'Plan darmowy jest bezpłatny przez 30 dni. Po tym czasie możesz wybrać płatny plan dopasowany do Twoich potrzeb.'),
+      question: t('landing.faq.q4'),
+      answer: t('landing.faq.a4'),
     },
     {
       id: 'faq-5',
-      question: t('landing.faq.q5', 'Jakie języki obsługuje aplikacja?'),
-      answer: t('landing.faq.a5', 'Aplikacja obsługuje trzy języki: Polski, English i Українська. Możesz zmienić język w ustawieniach w dowolnym momencie.'),
+      question: t('landing.faq.q5'),
+      answer: t('landing.faq.a5'),
     },
   ];
 
@@ -105,10 +105,10 @@ export function FAQSection() {
             id="faq-heading"
             className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4"
           >
-            {t('landing.faq.sectionTitle', 'Często zadawane pytania')}
+            {t('landing.faq.sectionTitle')}
           </h2>
           <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed">
-            {t('landing.faq.sectionSubtitle', 'Nie znalazłeś odpowiedzi? Napisz na kontakt@majster.ai')}
+            {t('landing.faq.sectionSubtitle')}
           </p>
         </div>
 

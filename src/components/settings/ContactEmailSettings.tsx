@@ -121,13 +121,10 @@ export function ContactEmailSettings() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Mail className="h-5 w-5" />
-          {t('settings.contactEmail.title', 'Email do odpowiedzi')}
+          {t('settings.contactEmail.title')}
         </CardTitle>
         <CardDescription>
-          {t(
-            'settings.contactEmail.desc',
-            'Ten adres będzie ustawiony jako Reply-To w emailach z ofertami, aby klienci mogli do Ciebie odpisać.'
-          )}
+          {t('settings.contactEmail.desc')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -137,12 +134,12 @@ export function ContactEmailSettings() {
             {isVerified ? (
               <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800 gap-1">
                 <CheckCircle2 className="h-3.5 w-3.5" />
-                {t('settings.contactEmail.verified', 'Zweryfikowany')}
+                {t('settings.contactEmail.verified')}
               </Badge>
             ) : (
               <Badge variant="outline" className="text-amber-700 border-amber-300 dark:text-amber-400 dark:border-amber-700 gap-1 bg-amber-50 dark:bg-amber-900/20">
                 <AlertCircle className="h-3.5 w-3.5" />
-                {t('settings.contactEmail.unverified', 'Niezweryfikowany')}
+                {t('settings.contactEmail.unverified')}
               </Badge>
             )}
             <span className="text-sm text-muted-foreground">{profile.contact_email}</span>
@@ -154,7 +151,7 @@ export function ContactEmailSettings() {
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="contact-email">
-                {t('settings.contactEmail.inputLabel', 'Nowy adres email')}
+                {t('settings.contactEmail.inputLabel')}
               </Label>
               <Input
                 id="contact-email"
@@ -172,10 +169,7 @@ export function ContactEmailSettings() {
                 <p id="email-error" className="text-sm text-destructive">{emailError}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                {t(
-                  'settings.contactEmail.changeWarning',
-                  'Zmiana adresu email wymaga ponownej weryfikacji.'
-                )}
+                {t('settings.contactEmail.changeWarning')}
               </p>
             </div>
             <div className="flex gap-2">
@@ -187,10 +181,10 @@ export function ContactEmailSettings() {
                 {saveEmailMutation.isPending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {t('common.save', 'Zapisz')}
+                {t('common.save')}
               </Button>
               <Button variant="outline" size="sm" onClick={handleCancelEdit}>
-                {t('common.cancel', 'Anuluj')}
+                {t('common.cancel')}
               </Button>
             </div>
           </div>
@@ -198,8 +192,8 @@ export function ContactEmailSettings() {
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" onClick={handleStartEdit}>
               {hasEmail
-                ? t('settings.contactEmail.change', 'Zmień email')
-                : t('settings.contactEmail.add', 'Dodaj email do odpowiedzi')}
+                ? t('settings.contactEmail.change')
+                : t('settings.contactEmail.add')}
             </Button>
             {hasEmail && !isVerified && (
               <Button
@@ -213,7 +207,7 @@ export function ContactEmailSettings() {
                 ) : (
                   <Send className="mr-2 h-4 w-4" />
                 )}
-                {t('settings.contactEmail.sendVerification', 'Wyślij email weryfikacyjny')}
+                {t('settings.contactEmail.sendVerification')}
               </Button>
             )}
           </div>
@@ -225,10 +219,7 @@ export function ContactEmailSettings() {
             <div className="flex items-start gap-2">
               <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
               <p>
-                {t(
-                  'settings.contactEmail.verifyPrompt',
-                  'Zweryfikuj adres email, aby klienci mogli do Ciebie odpisywać na oferty. Bez weryfikacji pole Reply-To nie będzie ustawiane w emailach.'
-                )}
+                {t('settings.contactEmail.verifyPrompt')}
               </p>
             </div>
           </div>

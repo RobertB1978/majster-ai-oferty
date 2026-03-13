@@ -23,7 +23,7 @@ export function CalendarDayView({ selectedDate, eventsByDate, openEventDialog, d
         <h3 className="text-lg font-semibold">{format(selectedDate, 'EEEE, d MMMM yyyy', { locale: dateLocale })}</h3>
         <p className="text-sm text-muted-foreground">
           {dayEvents.length === 0
-            ? t('calendar.noEventsForDay', 'No events — click any slot to add one')
+            ? t('calendar.noEventsForDay')
             : `${dayEvents.length} ${t('analytics.allEvents').toLowerCase()}`}
         </p>
       </div>

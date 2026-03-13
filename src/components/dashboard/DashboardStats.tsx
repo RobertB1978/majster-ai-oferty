@@ -228,28 +228,28 @@ export const DashboardStats = React.memo(function DashboardStats({
   return (
     <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
       <StatsCard
-        title={t('dashboard.allProjects', 'Projekty')}
+        title={t('dashboard.allProjects')}
         value={projectsCount}
         color="primary"
         icon={<FolderOpen className="h-5 w-5" />}
         delay={0}
       />
       <StatsCard
-        title={t('dashboard.clients', 'Klienci')}
+        title={t('dashboard.clients')}
         value={clientsCount}
         color="accent"
         icon={<Users className="h-5 w-5" />}
         delay={0.06}
       />
       <StatsCard
-        title={t('dashboard.accepted', 'Zaakceptowane')}
+        title={t('dashboard.accepted')}
         value={acceptedCount}
         color="success"
         icon={<CheckCircle className="h-5 w-5" />}
         delay={0.12}
       />
       <StatsCard
-        title={t('dashboard.newLast7Days', 'Nowe (7 dni)')}
+        title={t('dashboard.newLast7Days')}
         value={recentCount}
         color="warning"
         icon={<TrendingUp className="h-5 w-5" />}

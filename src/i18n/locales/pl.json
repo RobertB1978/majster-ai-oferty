@@ -52,7 +52,10 @@
     "send": "Wyślij",
     "stopRecording": "Zatrzymaj nagrywanie",
     "dontShowAgain": "Nie pokazuj więcej",
-    "startVoiceRecording": "Rozpocznij nagrywanie głosowe"
+    "startVoiceRecording": "Rozpocznij nagrywanie głosowe",
+    "errorGeneric": "Wystąpił błąd. Spróbuj ponownie.",
+    "offline": "Offline",
+    "online": "Online"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -72,7 +75,8 @@
     "menu": "Menu",
     "comingSoon": "Wkrótce",
     "quickEstimate": "Szybka Wycena",
-    "offers": "Oferty"
+    "offers": "Oferty",
+    "skipToContent": "Przejdź do treści głównej"
   },
   "auth": {
     "login": "Zaloguj się",
@@ -145,7 +149,9 @@
       "securityTitle": "Bezpieczeństwo",
       "securityDesc": "Skonfiguruj dodatkowe opcje bezpieczeństwa",
       "fingerprintLabel": "Logowanie odciskiem palca",
-      "fingerprintDesc": "Szybkie i bezpieczne logowanie biometryczne"
+      "fingerprintDesc": "Szybkie i bezpieczne logowanie biometryczne",
+      "error": "Uwierzytelnianie biometryczne nie powiodło się",
+      "loginLabel": "Zaloguj odciskiem palca"
     },
     "passwordStrength": "Siła hasła:",
     "passwordRequirements": {
@@ -255,7 +261,9 @@
       "aiDesc": "Otwórz kreator oferty",
       "aiOpening": "Otwieranie asystenta AI...",
       "manualTitle": "Ręcznie",
-      "manualDesc": "Wypełnij formularz"
+      "manualDesc": "Wypełnij formularz",
+      "quickDesc": "Wprowadź pozycje i wyślij w kilka minut",
+      "quickTitle": "Szybka wycena"
     },
     "yourLatestProjects": "Twoje najnowsze projekty",
     "unknownClient": "Nieznany klient",
@@ -288,7 +296,8 @@
       "pendingOffer": "Oferta",
       "expiringOffer": "Wygasa",
       "inactiveProject": "Projekt"
-    }
+    },
+    "expiringOffersDesc": "{{count}} ofert wygasa wkrótce"
   },
   "projects": {
     "title": "Projekty",
@@ -448,7 +457,10 @@
     "eventAdded": "Wydarzenie dodane",
     "eventSaveError": "Nie udało się zapisać wydarzenia",
     "eventDeleted": "Wydarzenie usunięte",
-    "eventDeleteError": "Nie udało się usunąć wydarzenia"
+    "eventDeleteError": "Nie udało się usunąć wydarzenia",
+    "loadError": "Nie udało się załadować kalendarza",
+    "loadErrorHint": "Sprawdź połączenie z internetem i odśwież stronę",
+    "selectedDate": "Wybrana data"
   },
   "finance": {
     "title": "Finanse",
@@ -648,7 +660,8 @@
     "loadToEditor": "Załaduj do edytora",
     "deleteVersion": "Usunąć wersję?",
     "irreversible": "Ta operacja jest nieodwracalna.",
-    "noVersionsHint": "Brak zapisanych wersji. Kliknij \"Zapisz wersję\" aby zachować aktualny stan wyceny."
+    "noVersionsHint": "Brak zapisanych wersji. Kliknij \"Zapisz wersję\" aby zachować aktualny stan wyceny.",
+    "category": "Kategoria"
   },
   "settings": {
     "title": "Ustawienia",
@@ -688,7 +701,19 @@
     "contactEmailTab": "E-mail",
     "companyProfileTab": "Firma",
     "accountTab": "Konto",
-    "subscriptionTab": "Subskrypcja"
+    "subscriptionTab": "Subskrypcja",
+    "contactEmail": {
+      "add": "Dodaj email do odpowiedzi",
+      "change": "Zmień email",
+      "changeWarning": "Zmiana adresu email wymaga ponownej weryfikacji.",
+      "desc": "Ten adres będzie ustawiony jako Reply-To w emailach z ofertami, aby klienci mogli do Ciebie odpisać.",
+      "inputLabel": "Nowy adres email",
+      "sendVerification": "Wyślij email weryfikacyjny",
+      "title": "Email do odpowiedzi",
+      "unverified": "Niezweryfikowany",
+      "verified": "Zweryfikowany",
+      "verifyPrompt": "Zweryfikuj adres email, aby klienci mogli do Ciebie odpisywać na oferty."
+    }
   },
   "billing": {
     "title": "Płatności i subskrypcje",
@@ -839,7 +864,8 @@
       "statusActive": "Aktywny",
       "statusCanceled": "Anulowany",
       "statusTrialing": "Testowy",
-      "statusExpired": "Wygasły"
+      "statusExpired": "Wygasły",
+      "noPortalAdmin": "Plan przypisany ręcznie — portal płatności niedostępny."
     },
     "checkoutSuccess": "Płatność zakończona! Odświeżamy plan...",
     "checkoutCanceled": "Płatność anulowana",
@@ -853,7 +879,11 @@
     "freePlan": "Plan darmowy",
     "projects": "projektów",
     "history": "Historia",
-    "perMonthNet": "/mies. netto"
+    "perMonthNet": "/mies. netto",
+    "paidSubscription": "Subskrypcja aktywna",
+    "stripeNotConfigured": "Stripe nie jest w pełni skonfigurowany",
+    "stripeNotConfiguredDesc": "VITE_STRIPE_ENABLED=true, ale brakuje prawdziwych Stripe Price IDs. Checkout jest zablokowany do czasu ustawienia zmiennych VITE_STRIPE_PRICE_*.",
+    "trialDaysRemaining": "Pozostało {{count}} dni okresu próbnego"
   },
   "profile": {
     "title": "Profil firmy",
@@ -1045,7 +1075,9 @@
     "unsavedChanges": "Niezapisane zmiany",
     "systemActive": "System aktywny",
     "noAccessDesc": "Nie masz uprawnień do wyświetlenia tej strony",
-    "backToDashboard": "Wróć do panelu"
+    "backToDashboard": "Wróć do panelu",
+    "accessDenied": "Brak dostępu do panelu administracyjnego",
+    "panelAccess": "Panel administracyjny"
   },
   "adminConfig": {
     "pageTitle": "Konfiguracja",
@@ -1160,7 +1192,12 @@
       "member": "Członek"
     },
     "noOrganizations": "Brak organizacji",
-    "createFirst": "Utwórz swoją pierwszą organizację"
+    "createFirst": "Utwórz swoją pierwszą organizację",
+    "membersCount": "członków",
+    "noMembers": "Brak członków",
+    "selectOrg": "Wybierz organizację, aby zarządzać członkami",
+    "slugHint": "Zostanie użyty w adresie URL. Tylko małe litery, cyfry i myślniki.",
+    "yourOrganizations": "Twoje organizacje"
   },
   "marketplace": {
     "title": "Marketplace",
@@ -1172,7 +1209,9 @@
     "rating": "Ocena",
     "hourlyRate": "Stawka godzinowa",
     "contact": "Kontakt",
-    "reviews": "Opinie"
+    "reviews": "Opinie",
+    "details": "Szczegóły",
+    "invite": "Zaproś"
   },
   "errors": {
     "required": "To pole jest wymagane",
@@ -1211,7 +1250,11 @@
     "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj odświeżyć stronę lub wrócić do poprzedniej strony.",
     "errorDetails": "Szczegóły błędu",
     "pageNotFound": "Strona nie została znaleziona",
-    "returnHome": "Wróć na stronę główną"
+    "returnHome": "Wróć na stronę główną",
+    "checkConnection": "Sprawdź połączenie z internetem",
+    "goBack": "Wróć",
+    "loadFailed": "Nie udało się załadować danych",
+    "pageNotFoundDesc": "Strona, której szukasz, nie istnieje lub została przeniesiona. Sprawdź adres URL lub wróć do strony głównej."
   },
   "cookies": {
     "title": "Ustawienia plików cookies",
@@ -1926,7 +1969,10 @@
       "t3Role": "Właściciel firmy remontowej",
       "t3Text": "Trzy języki to strzał w dziesiątkę. Zatrudniam Ukraińców i każdy działa w swoim.",
       "sectionTitle": "Co mówią użytkownicy",
-      "sectionSubtitle": "Co mówią wykonawcy i majstrowie o Majster.AI."
+      "sectionSubtitle": "Co mówią wykonawcy i majstrowie o Majster.AI.",
+      "t1Outcome": "Oszczędność 3h tygodniowo",
+      "t2Outcome": "+40% więcej ofert wygranych",
+      "t3Outcome": "5 minut na profesjonalną ofertę"
     },
     "hero": {
       "badge": "Cyfrowe narzędzie dla branży budowlanej",
@@ -1955,7 +2001,8 @@
       },
       "ariaLabel": "Sekcja główna",
       "socialProof": "Zacznij bezpłatnie — bez karty kredytowej",
-      "valueProp": "⚡ Pierwsza profesjonalna oferta PDF w 5 minut."
+      "valueProp": "⚡ Pierwsza profesjonalna oferta PDF w 5 minut.",
+      "freeBadge": "Zacznij bezpłatnie — bez karty kredytowej"
     },
     "stats": {
       "quoteTime": "Średni czas wyceny",
@@ -2082,7 +2129,9 @@
       "microcopy": "Bez zobowiązań · Anuluj w każdej chwili",
       "cta_start": "Zacznij za darmo",
       "cta_login": "Mam już konto",
-      "trust1": "Darmowy plan na start"
+      "trust1": "Darmowy plan na start",
+      "subheading": "już dziś — bez karty kredytowej",
+      "trust2": "Gotowy w 2 minuty"
     },
     "footer": {
       "desc": "Profesjonalne wyceny i zarządzanie projektami dla fachowców. Szybko, łatwo, bezpiecznie.",
@@ -2127,7 +2176,11 @@
     "purchased": "Zakupiono",
     "selected": "Wybrany",
     "vatNote": "Cena netto + 23% VAT. Płatność przez Stripe.",
-    "buy": "Kup teraz"
+    "buy": "Kup teraz",
+    "comingSoon": "Zakup pojedynczych dodatków przez Stripe będzie dostępny wkrótce. Aby teraz zwiększyć limity, przejdź na wyższy plan.",
+    "comingSoonBadge": "Wkrótce",
+    "priceSoon": "cena orientacyjna",
+    "seePlans": "Zobacz plany"
   },
   "quickEstimate": {
     "title": "Szybka Wycena",
@@ -2271,7 +2324,39 @@
     "bulkLoadCsvAriaLabel": "Wczytaj plik CSV",
     "bulkConfirmCount_one": "Dodaj {{count}} pozycję",
     "bulkConfirmCount_few": "Dodaj {{count}} pozycje",
-    "bulkConfirmCount_other": "Dodaj {{count}} pozycji"
+    "bulkConfirmCount_other": "Dodaj {{count}} pozycji",
+    "bulkConfirmCount": "Dodaj {{count}} pozycji",
+    "colItemHeader": "Pozycja",
+    "colLabour": "Robocizna",
+    "colMargin": "Marża %",
+    "colMarginHeader": "Marża %",
+    "colMaterials": "Materiały",
+    "colNetPrice": "Cena netto",
+    "colRowTotal": "Suma wiersza",
+    "colSplit": "R+M (robocizna / materiały)",
+    "colTotal": "Suma",
+    "colType": "Typ pozycji",
+    "colTypeHeader": "Typ",
+    "columns": "Kolumny",
+    "columnsToggleAriaLabel": "Przełącz widoczność kolumn",
+    "draftSaveError": "Błąd zapisu szkicu",
+    "draftSaved": "Szkic zapisany",
+    "hideMarginAriaLabel": "Ukryj marżę przed klientem",
+    "invalidAmount": "Nieprawidłowa kwota",
+    "invalidPrice": "Nieprawidłowa cena",
+    "invalidQty": "Nieprawidłowa ilość",
+    "labourAbbr": "Rob.",
+    "labourPerUnit": "Robocizna / szt.",
+    "marginHiddenClickTitle": "Marża ukryta przed klientem (wliczona w cenę) — kliknij, aby pokazać",
+    "marginHiddenTitle": "Marża ukryta przed klientem (wliczona w cenę)",
+    "marginVisibleClickTitle": "Marża widoczna dla klienta — kliknij, aby ukryć",
+    "marginVisibleTitle": "Marża % (widoczna dla klienta)",
+    "materialAbbr": "Mat.",
+    "materialsPerUnit": "Materiały / szt.",
+    "removeItemAriaLabel": "Usuń pozycję",
+    "showMarginAriaLabel": "Pokaż marżę klientowi",
+    "typeBadgeTitle": "Typ: {{type}} (kliknij, aby zmienić)",
+    "visibleColumns": "Widoczne kolumny"
   },
   "tradeOnboarding": {
     "step1Title": "Czym się zajmujesz?",
@@ -2593,6 +2678,11 @@
     "signature": {
       "hint": "Podpisz powyżej",
       "clear": "Wyczyść"
+    },
+    "empty": {
+      "cta": "Utwórz ofertę",
+      "desc": "Utwórz pierwszą ofertę, aby rozpocząć",
+      "title": "Brak ofert"
     }
   },
   "legal": {
@@ -3231,7 +3321,11 @@
     },
     "offerFirstNote": "Projekty tworzone są z zaakceptowanych ofert",
     "manualCta": "Utwórz projekt ręcznie",
-    "manualCreationHint": "Zalecana ścieżka: Oferta → Akceptacja → Projekt. Ręczne tworzenie jest przeznaczone dla małych zleceń bezpośrednich lub prac bez formalnej oferty."
+    "manualCreationHint": "Zalecana ścieżka: Oferta → Akceptacja → Projekt. Ręczne tworzenie jest przeznaczone dla małych zleceń bezpośrednich lub prac bez formalnej oferty.",
+    "archiveConfirmAction": "Archiwizuj",
+    "archiveConfirmDesc": "Projekt zostanie oznaczony jako anulowany. Możesz go nadal przeglądać.",
+    "archiveConfirmTitle": "Archiwizuj projekt?",
+    "archiveProject": "Archiwizuj projekt"
   },
   "burnBar": {
     "budget": "Budżet",
@@ -3415,7 +3509,8 @@
       "linkRevoked": "Link odwolany",
       "revokeError": "Blad odwolywania linku",
       "expiresIn": "Wazny jeszcze {{days}} dni",
-      "expired": "Wygasl"
+      "expired": "Wygasl",
+      "linkGenerated": "Link udostępniania wygenerowany"
     },
     "public": {
       "loading": "Ladowanie teczki...",
@@ -3941,5 +4036,13 @@
     "banner": "Tryb offline — widoczne dane z ostatniego pobrania",
     "actionBlocked": "Ta akcja wymaga polaczenia z internetem",
     "readOnlyNote": "Przegladasz dane zapisane lokalnie. Wróc do sieci, aby wprowadzac zmiany."
+  },
+  "app": {
+    "loading": "Uruchamianie aplikacji"
+  },
+  "calendarSync": {
+    "betaNotice": "Synchronizacja z zewnętrznymi kalendarzami (Google, Outlook, Apple) jest w przygotowaniu. Zostanie udostępniona w kolejnej wersji.",
+    "description": "Połącz zewnętrzne kalendarze, aby synchronizować wydarzenia",
+    "title": "Synchronizacja kalendarzy"
   }
 }

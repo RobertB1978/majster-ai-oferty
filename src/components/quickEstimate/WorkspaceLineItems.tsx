@@ -282,38 +282,38 @@ export function WorkspaceLineItems({
                     variant="outline"
                     size="sm"
                     className="h-7 text-xs gap-1.5"
-                    aria-label={t('szybkaWycena.columnsToggleAriaLabel', 'Toggle column visibility')}
+                    aria-label={t('szybkaWycena.columnsToggleAriaLabel')}
                   >
                     <Columns2 className="h-3 w-3" />
-                    {t('szybkaWycena.columns', 'Columns')}
+                    {t('szybkaWycena.columns')}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel className="text-xs">{t('szybkaWycena.visibleColumns', 'Visible columns')}</DropdownMenuLabel>
+                  <DropdownMenuLabel className="text-xs">{t('szybkaWycena.visibleColumns')}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuCheckboxItem
                     checked={cols.type}
                     onCheckedChange={() => toggleCol('type')}
                   >
-                    {t('szybkaWycena.colType', 'Item type')}
+                    {t('szybkaWycena.colType')}
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={cols.split}
                     onCheckedChange={() => toggleCol('split')}
                   >
-                    {t('szybkaWycena.colSplit', 'L+M (labour / materials)')}
+                    {t('szybkaWycena.colSplit')}
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={cols.margin}
                     onCheckedChange={() => toggleCol('margin')}
                   >
-                    {t('szybkaWycena.colMargin', 'Margin %')}
+                    {t('szybkaWycena.colMargin')}
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={cols.rowTotal}
                     onCheckedChange={() => toggleCol('rowTotal')}
                   >
-                    {t('szybkaWycena.colRowTotal', 'Row total')}
+                    {t('szybkaWycena.colRowTotal')}
                   </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -374,7 +374,7 @@ export function WorkspaceLineItems({
               data-testid="pagination-controls"
             >
               <span className="text-muted-foreground text-xs">
-                {t('szybkaWycena.paginationRange', 'Items {{start}}–{{end}} of {{total}}', { start: pageStart, end: pageEnd, total: items.length })}
+                {t('szybkaWycena.paginationRange', { start: pageStart, end: pageEnd, total: items.length })}
               </span>
               <div className="flex items-center gap-1">
                 <Button
@@ -383,7 +383,7 @@ export function WorkspaceLineItems({
                   disabled={page === 0}
                   onClick={() => setCurrentPage(page - 1)}
                   className="h-7 px-2 text-xs"
-                  aria-label={t('common.previousPage', 'Previous page')}
+                  aria-label={t('common.previousPage')}
                 >
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </Button>
@@ -396,7 +396,7 @@ export function WorkspaceLineItems({
                   disabled={page >= totalPages - 1}
                   onClick={() => setCurrentPage(page + 1)}
                   className="h-7 px-2 text-xs"
-                  aria-label={t('common.nextPage', 'Next page')}
+                  aria-label={t('common.nextPage')}
                 >
                   <ChevronRight className="h-3.5 w-3.5" />
                 </Button>
@@ -425,25 +425,25 @@ function DesktopColHeaders({ cols }: { cols: ColsVisible }) {
   const { t } = useTranslation();
   return (
     <div className="hidden sm:flex items-center gap-2 px-1 mb-2 text-xs font-medium text-muted-foreground">
-      {cols.type && <div className="w-24 shrink-0">{t('szybkaWycena.colTypeHeader', 'Type')}</div>}
-      <div className="flex-1 min-w-0">{t('szybkaWycena.colItemHeader', 'Item')}</div>
-      <div className="w-16 shrink-0 text-right">{t('quickEstimate.qty', 'Qty')}</div>
-      <div className="w-16 shrink-0">{t('quickEstimate.unit', 'Unit')}</div>
+      {cols.type && <div className="w-24 shrink-0">{t('szybkaWycena.colTypeHeader')}</div>}
+      <div className="flex-1 min-w-0">{t('szybkaWycena.colItemHeader')}</div>
+      <div className="w-16 shrink-0 text-right">{t('quickEstimate.qty')}</div>
+      <div className="w-16 shrink-0">{t('quickEstimate.unit')}</div>
       {cols.split ? (
         <>
-          <div className="w-24 shrink-0 text-right">{t('szybkaWycena.colLabour', 'Labour')}</div>
-          <div className="w-24 shrink-0 text-right">{t('szybkaWycena.colMaterials', 'Materials')}</div>
+          <div className="w-24 shrink-0 text-right">{t('szybkaWycena.colLabour')}</div>
+          <div className="w-24 shrink-0 text-right">{t('szybkaWycena.colMaterials')}</div>
         </>
       ) : (
-        <div className="w-24 shrink-0 text-right">{t('szybkaWycena.colNetPrice', 'Net price')}</div>
+        <div className="w-24 shrink-0 text-right">{t('szybkaWycena.colNetPrice')}</div>
       )}
       {cols.margin && (
         <>
-          <div className="w-20 shrink-0 text-right">{t('szybkaWycena.colMarginHeader', 'Margin %')}</div>
+          <div className="w-20 shrink-0 text-right">{t('szybkaWycena.colMarginHeader')}</div>
           <div className="w-7 shrink-0" />
         </>
       )}
-      {cols.rowTotal && <div className="w-24 shrink-0 text-right">{t('szybkaWycena.colTotal', 'Total')}</div>}
+      {cols.rowTotal && <div className="w-24 shrink-0 text-right">{t('szybkaWycena.colTotal')}</div>}
       <div className="w-9 shrink-0" />
     </div>
   );
@@ -478,11 +478,11 @@ function ItemRow({
   const { t } = useTranslation();
 
   const TYPE_LABELS: Record<string, string> = {
-    labor: t('quickEstimate.types.labor', 'Labour'),
-    material: t('quickEstimate.types.material', 'Material'),
-    service: t('quickEstimate.types.service', 'Service'),
-    travel: t('quickEstimate.types.travel', 'Travel'),
-    lump_sum: t('quickEstimate.types.fixed', 'Fixed'),
+    labor: t('quickEstimate.types.labor'),
+    material: t('quickEstimate.types.material'),
+    service: t('quickEstimate.types.service'),
+    travel: t('quickEstimate.types.travel'),
+    lump_sum: t('quickEstimate.types.fixed'),
   };
 
   const qtyInvalid = raw.qty !== '' && !isValidDecimal(raw.qty);
@@ -506,7 +506,7 @@ function ItemRow({
               'w-24 shrink-0 rounded px-1.5 py-1 text-xs font-medium text-left truncate',
               TYPE_COLORS[item.itemType],
             )}
-            title={t('szybkaWycena.typeBadgeTitle', 'Type: {{type}} (click to change)', { type: TYPE_LABELS[item.itemType] })}
+            title={t('szybkaWycena.typeBadgeTitle', { type: TYPE_LABELS[item.itemType] })}
           >
             {TYPE_LABELS[item.itemType]}
           </button>
@@ -514,7 +514,7 @@ function ItemRow({
 
         {/* Name */}
         <Input
-          placeholder={t('szybkaWycena.itemPlaceholder', 'e.g. Tiling wall')}
+          placeholder={t('szybkaWycena.itemPlaceholder')}
           value={item.name}
           onChange={(e) => onUpdate('name', e.target.value)}
           className="flex-1 min-w-0 h-9 text-sm"
@@ -528,7 +528,7 @@ function ItemRow({
           onChange={(e) => onUpdateNum('qty', e.target.value)}
           className={cn('w-16 shrink-0 h-9 text-sm text-right', qtyInvalid && 'border-destructive')}
           aria-invalid={qtyInvalid}
-          title={qtyInvalid ? t('szybkaWycena.invalidQty', 'Invalid quantity') : undefined}
+          title={qtyInvalid ? t('szybkaWycena.invalidQty') : undefined}
         />
 
         {/* Unit */}
@@ -554,7 +554,7 @@ function ItemRow({
                   laborInvalid && 'border-destructive',
                 )}
                 aria-invalid={laborInvalid}
-                title={laborInvalid ? t('szybkaWycena.invalidAmount', 'Invalid amount') : t('szybkaWycena.labourPerUnit', 'Labour / unit')}
+                title={laborInvalid ? t('szybkaWycena.invalidAmount') : t('szybkaWycena.labourPerUnit')}
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
                 zł
@@ -572,7 +572,7 @@ function ItemRow({
                   materialInvalid && 'border-destructive',
                 )}
                 aria-invalid={materialInvalid}
-                title={materialInvalid ? t('szybkaWycena.invalidAmount', 'Invalid amount') : t('szybkaWycena.materialsPerUnit', 'Materials / unit')}
+                title={materialInvalid ? t('szybkaWycena.invalidAmount') : t('szybkaWycena.materialsPerUnit')}
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
                 zł
@@ -592,7 +592,7 @@ function ItemRow({
                 priceInvalid && 'border-destructive',
               )}
               aria-invalid={priceInvalid}
-              title={priceInvalid ? t('szybkaWycena.invalidPrice', 'Invalid price') : undefined}
+              title={priceInvalid ? t('szybkaWycena.invalidPrice') : undefined}
             />
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
               zł
@@ -617,8 +617,8 @@ function ItemRow({
                 aria-invalid={marginInvalid}
                 title={
                   marginHidden
-                    ? t('szybkaWycena.marginHiddenTitle', 'Margin hidden from client (included in price)')
-                    : t('szybkaWycena.marginVisibleTitle', 'Margin % (visible to client)')
+                    ? t('szybkaWycena.marginHiddenTitle')
+                    : t('szybkaWycena.marginVisibleTitle')
                 }
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
@@ -639,10 +639,10 @@ function ItemRow({
               onClick={() => onUpdate('showMargin', !item.showMargin)}
               title={
                 item.showMargin
-                  ? t('szybkaWycena.marginVisibleClickTitle', 'Margin visible to client — click to hide')
-                  : t('szybkaWycena.marginHiddenClickTitle', 'Margin hidden from client (included in price) — click to show')
+                  ? t('szybkaWycena.marginVisibleClickTitle')
+                  : t('szybkaWycena.marginHiddenClickTitle')
               }
-              aria-label={item.showMargin ? t('szybkaWycena.hideMarginAriaLabel', 'Hide margin from client') : t('szybkaWycena.showMarginAriaLabel', 'Show margin to client')}
+              aria-label={item.showMargin ? t('szybkaWycena.hideMarginAriaLabel') : t('szybkaWycena.showMarginAriaLabel')}
             >
               {item.showMargin ? (
                 <Eye className="h-3.5 w-3.5" />
@@ -666,7 +666,7 @@ function ItemRow({
           size="icon"
           className="w-9 h-9 shrink-0 text-muted-foreground hover:text-destructive"
           onClick={onRemove}
-          aria-label={t('szybkaWycena.removeItemAriaLabel', 'Remove item')}
+          aria-label={t('szybkaWycena.removeItemAriaLabel')}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
@@ -689,7 +689,7 @@ function ItemRow({
             </button>
           )}
           <Input
-            placeholder={t('szybkaWycena.itemPlaceholder', 'e.g. Tiling wall')}
+            placeholder={t('szybkaWycena.itemPlaceholder')}
             value={item.name}
             onChange={(e) => onUpdate('name', e.target.value)}
             className="flex-1 h-9 text-sm"
@@ -699,7 +699,7 @@ function ItemRow({
             size="icon"
             className="h-9 w-9 shrink-0 text-muted-foreground hover:text-destructive"
             onClick={onRemove}
-            aria-label={t('szybkaWycena.removeItemAriaLabel', 'Remove item')}
+            aria-label={t('szybkaWycena.removeItemAriaLabel')}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -714,10 +714,10 @@ function ItemRow({
             onChange={(e) => onUpdateNum('qty', e.target.value)}
             className={cn('h-8 text-sm text-right', qtyInvalid && 'border-destructive')}
             aria-invalid={qtyInvalid}
-            placeholder={t('quickEstimate.qty', 'Qty')}
+            placeholder={t('quickEstimate.qty')}
           />
           <Input
-            placeholder={t('quickEstimate.unit', 'Unit')}
+            placeholder={t('quickEstimate.unit')}
             value={item.unit}
             onChange={(e) => onUpdate('unit', e.target.value)}
             className="h-8 text-sm"
@@ -731,7 +731,7 @@ function ItemRow({
                   value={raw.laborCost}
                   onChange={(e) => onUpdateNum('laborCost', e.target.value)}
                   className={cn('h-8 text-sm text-right pr-5', laborInvalid && 'border-destructive')}
-                  placeholder={t('szybkaWycena.labourAbbr', 'Lab.')}
+                  placeholder={t('szybkaWycena.labourAbbr')}
                 />
                 <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
                   zł
@@ -744,7 +744,7 @@ function ItemRow({
                   value={raw.materialCost}
                   onChange={(e) => onUpdateNum('materialCost', e.target.value)}
                   className={cn('h-8 text-sm text-right pr-5', materialInvalid && 'border-destructive')}
-                  placeholder={t('szybkaWycena.materialAbbr', 'Mat.')}
+                  placeholder={t('szybkaWycena.materialAbbr')}
                 />
                 <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
                   zł
@@ -759,7 +759,7 @@ function ItemRow({
                 value={raw.price}
                 onChange={(e) => onUpdateNum('price', e.target.value)}
                 className={cn('h-8 text-sm text-right pr-6', priceInvalid && 'border-destructive')}
-                placeholder={t('quickEstimate.price', 'Price')}
+                placeholder={t('quickEstimate.price')}
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
                 zł
@@ -784,7 +784,7 @@ function ItemRow({
                       marginInvalid && 'border-destructive',
                       marginHidden && 'text-amber-600 dark:text-amber-400',
                     )}
-                    placeholder={t('szybkaWycena.colMargin', 'Margin %')}
+                    placeholder={t('szybkaWycena.colMargin')}
                   />
                   <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
                     %
@@ -801,7 +801,7 @@ function ItemRow({
                       : 'text-amber-600 dark:text-amber-400',
                   )}
                   onClick={() => onUpdate('showMargin', !item.showMargin)}
-                  aria-label={item.showMargin ? t('szybkaWycena.hideMarginAriaLabel', 'Hide margin from client') : t('szybkaWycena.showMarginAriaLabel', 'Show margin to client')}
+                  aria-label={item.showMargin ? t('szybkaWycena.hideMarginAriaLabel') : t('szybkaWycena.showMarginAriaLabel')}
                 >
                   {item.showMargin ? (
                     <Eye className="h-3.5 w-3.5" />

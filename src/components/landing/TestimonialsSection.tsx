@@ -7,35 +7,26 @@ export function TestimonialsSection() {
   const TESTIMONIALS = [
     {
       name: 'Marek K.',
-      role: t('landing.testimonials.t1Role', 'Wykonawca remontów, Warszawa'),
+      role: t('landing.testimonials.t1Role'),
       rating: 5,
-      text: t(
-        'landing.testimonials.t1Text',
-        'Mogę wreszcie wysyłać profesjonalne PDF-y w kilka minut zamiast godzin. Klienci myślą, że mam cały dział administracji.'
-      ),
-      outcome: t('landing.testimonials.t1Outcome', 'Oszczędność 3h tygodniowo'),
+      text: t('landing.testimonials.t1Text'),
+      outcome: t('landing.testimonials.t1Outcome'),
       icon: <Clock className="w-4 h-4" aria-hidden="true" />,
     },
     {
       name: 'Tomasz W.',
-      role: t('landing.testimonials.t2Role', 'Kierownik budowy, Kraków'),
+      role: t('landing.testimonials.t2Role'),
       rating: 5,
-      text: t(
-        'landing.testimonials.t2Text',
-        'Baza klientów i kalendarz na telefonie — mam wszystko pod ręką na budowie. Żadnych zaległych wycen.'
-      ),
-      outcome: t('landing.testimonials.t2Outcome', '+40% więcej ofert wygranych'),
+      text: t('landing.testimonials.t2Text'),
+      outcome: t('landing.testimonials.t2Outcome'),
       icon: <TrendingUp className="w-4 h-4" aria-hidden="true" />,
     },
     {
       name: 'Wiesław H.',
-      role: t('landing.testimonials.t3Role', 'Właściciel firmy remontowej, Gdańsk'),
+      role: t('landing.testimonials.t3Role'),
       rating: 5,
-      text: t(
-        'landing.testimonials.t3Text',
-        'Trzy języki to strzał w dziesiątkę. Zatrudniam Ukraińców i każdy działa w swoim. Oferty wysyłam PDF-em w 5 minut.'
-      ),
-      outcome: t('landing.testimonials.t3Outcome', '5 minut na profesjonalną ofertę'),
+      text: t('landing.testimonials.t3Text'),
+      outcome: t('landing.testimonials.t3Outcome'),
       icon: <FileText className="w-4 h-4" aria-hidden="true" />,
     },
   ];
@@ -51,10 +42,10 @@ export function TestimonialsSection() {
             id="testimonials-heading"
             className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4"
           >
-            {t('landing.testimonials.sectionTitle', 'Co zyska Twoja firma')}
+            {t('landing.testimonials.sectionTitle')}
           </h2>
           <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed">
-            {t('landing.testimonials.sectionSubtitle', 'Oczekiwane korzyści dla wykonawców i majstrów korzystających z Majster.AI.')}
+            {t('landing.testimonials.sectionSubtitle')}
           </p>
         </div>
 

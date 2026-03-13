@@ -33,11 +33,11 @@ export default function Plany() {
   return (
     <>
       <Helmet>
-        <title>{t('billing.pricingTitle', 'Pricing & Plans')} | Majster.AI</title>
-        <meta name="description" content={t('billing.pricingDescription', 'Choose a Majster.AI plan that fits your business. Start for free.')} />
+        <title>{t('billing.pricingTitle')} | Majster.AI</title>
+        <meta name="description" content={t('billing.pricingDescription')} />
         <link rel="canonical" href={`${SITE_URL}/plany`} />
-        <meta property="og:title" content={`${t('billing.pricingTitle', 'Pricing & Plans')} | Majster.AI`} />
-        <meta property="og:description" content={t('billing.pricingDescription', 'Choose a Majster.AI plan that fits your business. Start for free.')} />
+        <meta property="og:title" content={`${t('billing.pricingTitle')} | Majster.AI`} />
+        <meta property="og:description" content={t('billing.pricingDescription')} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${SITE_URL}/plany`} />
         <meta property="og:image" content={`${SITE_URL}/icon-512.png`} />
@@ -62,10 +62,10 @@ export default function Plany() {
             </Link>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/login">{t('auth.login', 'Sign in')}</Link>
+                <Link to="/login">{t('auth.login')}</Link>
               </Button>
               <Button size="sm" asChild>
-                <Link to="/register">{t('auth.tryForFree', 'Try for free')}</Link>
+                <Link to="/register">{t('auth.tryForFree')}</Link>
               </Button>
             </div>
           </div>
@@ -73,12 +73,12 @@ export default function Plany() {
 
         <div className="container py-16 max-w-5xl">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">{t('billing.pricingTitle', 'Pricing & Plans')}</h1>
+            <h1 className="text-4xl font-bold mb-4">{t('billing.pricingTitle')}</h1>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              {t('billing.pricingSubtitle', 'Start for free. Scale when your business needs it.')}
+              {t('billing.pricingSubtitle')}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              {t('billing.vatNote', 'Prices are net, 23% VAT applies')}
+              {t('billing.vatNote')}
             </p>
           </div>
 
@@ -94,19 +94,19 @@ export default function Plany() {
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <Badge className="gap-1 shadow-sm">
                       <Star className="h-3 w-3 fill-current" />
-                      {t('billing.mostPopular', 'Most Popular')}
+                      {t('billing.mostPopular')}
                     </Badge>
                   </div>
                 )}
                 <CardHeader>
-                  <CardTitle>{t(plan.displayNameKey, plan.name)}</CardTitle>
+                  <CardTitle>{t(plan.displayNameKey)}</CardTitle>
                   <CardDescription>
                     <span className="text-3xl font-bold text-foreground">
                       {formatDualCurrency(plan.pricePLN, i18n.language)}
                     </span>
-                    {plan.pricePLN > 0 && <span className="text-sm"> {t('billing.perMonth', '/month')}</span>}
+                    {plan.pricePLN > 0 && <span className="text-sm"> {t('billing.perMonth')}</span>}
                   </CardDescription>
-                  <p className="text-xs text-muted-foreground">{t(plan.descriptionKey, plan.description)}</p>
+                  <p className="text-xs text-muted-foreground">{t(plan.descriptionKey)}</p>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col gap-4">
                   <ul className="space-y-2 text-sm flex-1">
@@ -124,16 +124,16 @@ export default function Plany() {
                       asChild
                     >
                       <Link to={`/plany/${plan.slug}`}>
-                        {t('common.details', 'Details')} <ArrowRight className="ml-1 h-4 w-4" />
+                        {t('common.details')} <ArrowRight className="ml-1 h-4 w-4" />
                       </Link>
                     </Button>
                     {plan.pricePLN === 0 ? (
                       <Button className="w-full" asChild>
-                        <Link to="/register">{t('billing.startFree', 'Start for free')}</Link>
+                        <Link to="/register">{t('billing.startFree')}</Link>
                       </Button>
                     ) : (
                       <Button className="w-full" variant={plan.highlighted ? 'default' : 'secondary'} asChild>
-                        <Link to="/register">{t('billing.try30days', 'Try 30 days')}</Link>
+                        <Link to="/register">{t('billing.try30days')}</Link>
                       </Button>
                     )}
                   </div>
@@ -144,7 +144,7 @@ export default function Plany() {
 
           {/* VAT note */}
           <p className="text-center text-sm text-muted-foreground mt-8">
-            {t('billing.vatFootnote', 'All prices in Polish Zloty (PLN), net. 23% VAT applies. We issue VAT invoices.')}
+            {t('billing.vatFootnote')}
           </p>
         </div>
       </div>

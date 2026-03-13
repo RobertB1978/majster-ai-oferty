@@ -12,9 +12,9 @@ function scrollToFeatures(e: React.MouseEvent<HTMLButtonElement>) {
 export function HeroSection() {
   const { t } = useTranslation();
   const STATS = [
-    { label: t('landing.trust.pdfLabel', 'Wyceny PDF'), value: '✓', verified: true },
-    { label: t('landing.trust.mobileLabel', 'Mobile-first'), value: '✓', verified: true },
-    { label: t('landing.trust.langLabel', 'Języki'), value: 'PL / EN / UK', verified: true },
+    { label: t('landing.trust.pdfLabel'), value: '✓', verified: true },
+    { label: t('landing.trust.mobileLabel'), value: '✓', verified: true },
+    { label: t('landing.trust.langLabel'), value: 'PL / EN / UK', verified: true },
   ];
   const verifiedStats = STATS.filter((s) => s.verified);
 
@@ -46,7 +46,7 @@ export function HeroSection() {
           <div className="flex items-center gap-2 bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-full px-5 py-2.5">
             <CheckCircle className="w-4 h-4 text-amber-500" aria-hidden="true" />
             <span className="text-sm text-gray-600 dark:text-[#A3A3A3] font-medium">
-              {t('landing.hero.freeBadge', 'Zacznij bezpłatnie — bez karty kredytowej')}
+              {t('landing.hero.freeBadge')}
             </span>
           </div>
         </div>
@@ -56,22 +56,22 @@ export function HeroSection() {
           <div className="flex-1 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-sm font-medium text-amber-500 dark:text-amber-400 mb-6">
               <CheckCircle className="w-4 h-4" aria-hidden="true" />
-              {t('landing.hero.badge', 'Platforma dla wykonawców i majstrów')}
+              {t('landing.hero.badge')}
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight mb-6">
-              {t('landing.hero.title1', 'Zarządzaj firmą')}{' '}
-              <span className="text-amber-500">{t('landing.hero.title2', 'jak profesjonalista.')}</span>
+              {t('landing.hero.title1')}{' '}
+              <span className="text-amber-500">{t('landing.hero.title2')}</span>
             </h1>
 
             <p className="text-lg md:text-xl text-gray-600 dark:text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-4">
-              {t('landing.hero.subtitle', 'Platforma dla majstrów i wykonawców.')}
+              {t('landing.hero.subtitle')}
               <br className="hidden sm:block" />
-              {t('landing.hero.subtitle2', 'Wyceny, projekty, klienci — wszystko w jednym miejscu.')}
+              {t('landing.hero.subtitle2')}
             </p>
 
             <p className="text-base font-semibold text-amber-600 dark:text-amber-400 mb-8">
-              {t('landing.hero.valueProp', '⚡ Pierwsza profesjonalna oferta PDF w 5 minut.')}
+              {t('landing.hero.valueProp')}
             </p>
 
             {/* Verified stats bar */}
@@ -95,18 +95,18 @@ export function HeroSection() {
                 to={CTA_ROUTE}
                 className="inline-flex items-center justify-center bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold px-8 py-4 rounded-xl text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[48px] shadow-lg shadow-amber-500/25"
               >
-                {t('landing.hero.cta_start', 'Zacznij za darmo')}
+                {t('landing.hero.cta_start')}
               </Link>
               <button
                 onClick={scrollToFeatures}
                 className="inline-flex items-center justify-center border border-gray-300 dark:border-[#2A2A2A] hover:border-amber-500/60 text-gray-900 dark:text-white font-semibold px-8 py-4 rounded-xl text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[48px] gap-2"
               >
-                {t('landing.hero.cta_features', 'Zobacz funkcje')}
+                {t('landing.hero.cta_features')}
                 <ArrowDown className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
             <p className="mt-3 text-sm text-gray-400 dark:text-[#525252]">
-              {t('landing.hero.microcopy', 'Darmowy plan na start · Bez karty kredytowej · Upgrade kiedy chcesz')}
+              {t('landing.hero.microcopy')}
             </p>
           </div>
 

@@ -113,9 +113,9 @@ export function BiometricSettings() {
               <Fingerprint className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle>{t('settings.biometric', 'Logowanie biometryczne')}</CardTitle>
+              <CardTitle>{t('settings.biometric')}</CardTitle>
               <CardDescription>
-                {t('settings.biometricDescription', 'Używaj odcisku palca lub Face ID do logowania')}
+                {t('settings.biometricDescription')}
               </CardDescription>
             </div>
           </div>

@@ -83,7 +83,7 @@ export function TopBar() {
       navigate('/login');
     } catch (error) {
       console.error('Logout failed:', error);
-      toast.error(t('errors.logoutFailed', 'Nie udało się wylogować. Spróbuj ponownie.'));
+      toast.error(t('errors.logoutFailed'));
     }
   };
 
@@ -165,7 +165,7 @@ export function TopBar() {
                 size="icon"
                 onClick={() => navigate('/admin/dashboard')}
                 className="h-10 w-10 text-primary hover:text-primary hover:bg-primary/10"
-                aria-label={t('admin.panelAccess', 'Panel administracyjny')}
+                aria-label={t('admin.panelAccess')}
               >
                 <Shield className="h-5 w-5" />
               </Button>
@@ -200,7 +200,7 @@ export function TopBar() {
               size="icon"
               onClick={handleLogout}
               className="sm:hidden h-10 w-10 text-muted-foreground"
-              aria-label={t('auth.logout', 'Wyloguj')}
+              aria-label={t('auth.logout')}
               data-testid="logout-button-mobile"
             >
               <LogOut className="h-5 w-5" />

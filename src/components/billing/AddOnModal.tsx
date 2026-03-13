@@ -78,12 +78,9 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{t('addons.title', 'Dokup więcej zasobów')}</DialogTitle>
+          <DialogTitle>{t('addons.title')}</DialogTitle>
           <DialogDescription>
-            {t(
-              'addons.subtitle',
-              'Osiągnięto limit Twojego planu. Wybierz dodatek, aby go rozszerzyć.'
-            )}
+            {t('addons.subtitle')}
           </DialogDescription>
         </DialogHeader>
 
@@ -115,7 +112,7 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-sm">{addon.labelPl}</span>
                     <Badge variant="outline" className="text-xs text-muted-foreground">
-                      {t('addons.comingSoonBadge', 'Wkrótce')}
+                      {t('addons.comingSoonBadge')}
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">{addon.descriptionPl}</p>
@@ -135,10 +132,7 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
         <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800">
           <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           <AlertDescription className="text-blue-800 dark:text-blue-300 text-sm">
-            {t(
-              'addons.comingSoon',
-              'Zakup pojedynczych dodatków przez Stripe będzie dostępny wkrótce. Aby teraz zwiększyć limity, przejdź na wyższy plan.'
-            )}
+            {t('addons.comingSoon')}
           </AlertDescription>
         </Alert>
 
@@ -146,26 +140,26 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
           <div>
             {selectedAddon && (
               <p className="text-sm text-muted-foreground">
-                {t('addons.selected', 'Wybrany')}: <span className="font-medium text-foreground">{selectedAddon.labelPl}</span>
+                {t('addons.selected')}: <span className="font-medium text-foreground">{selectedAddon.labelPl}</span>
                 {' — '}
                 <span className="font-bold">{selectedAddon.price} zł</span>
                 <span className="text-xs ml-1 text-muted-foreground">
-                  ({t('addons.priceSoon', 'cena orientacyjna')})
+                  ({t('addons.priceSoon')})
                 </span>
               </p>
             )}
             <p className="text-xs text-muted-foreground mt-0.5">
-              {t('addons.vatNote', 'Cena netto + 23% VAT.')}
+              {t('addons.vatNote')}
             </p>
           </div>
 
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose}>
-              {t('common.cancel', 'Anuluj')}
+              {t('common.cancel')}
             </Button>
             <Button onClick={() => { onClose(); navigate('/app/plan'); }} className="gap-2">
               <ArrowUpRight className="h-4 w-4" />
-              {t('addons.seePlans', 'Zobacz plany')}
+              {t('addons.seePlans')}
             </Button>
           </div>
         </div>

@@ -182,7 +182,7 @@ export default function QuickEstimateWorkspace() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error(t('auth.errors.noSession', 'No user session'));
+      if (!user) throw new Error(t('auth.errors.noSession'));
 
       // Step 1: Promote draft offer to SENT (or create new SENT offer if no draft yet).
       // This replaces the old `projects` + `quote_items` write which was invisible
@@ -222,7 +222,7 @@ export default function QuickEstimateWorkspace() {
       navigate(`/app/projects/${v2Project.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      toast.error(`${t('common.saveError', 'Save error:')} ${msg}`);
+      toast.error(`${t('common.saveError')} ${msg}`);
     } finally {
       setSaving(false);
     }
@@ -282,14 +282,14 @@ export default function QuickEstimateWorkspace() {
                 <>
                   <CheckCircle2 className="h-3 w-3 text-green-500" aria-hidden />
                   <span>
-                    {t('szybkaWycena.draftSaved', 'Szkic zapisany')}{' '}
+                    {t('szybkaWycena.draftSaved')}{' '}
                     {lastSavedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </>
               )}
               {saveStatus === 'error' && (
                 <span className="text-destructive">
-                  {t('szybkaWycena.draftSaveError', 'Błąd zapisu szkicu')}
+                  {t('szybkaWycena.draftSaveError')}
                 </span>
               )}
             </div>

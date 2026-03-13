@@ -41,7 +41,7 @@ export function NewShellLayout() {
   }, [isLoading, user]);
 
   if (isLoading) {
-    return <LoadingScreen message={t('app.loading', 'Uruchamianie aplikacji')} variant="fullscreen" />;
+    return <LoadingScreen message={t('app.loading')} variant="fullscreen" />;
   }
 
   if (!user) {

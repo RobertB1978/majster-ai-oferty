@@ -202,7 +202,7 @@ export default function NewProjectV2() {
         <div className="space-y-2">
           <Label htmlFor="client">
             {t('newProject.clientLabel')}{' '}
-            <span className="text-muted-foreground text-xs">({t('common.optional', 'opcjonalnie')})</span>
+            <span className="text-muted-foreground text-xs">({t('common.optional')})</span>
           </Label>
           <Select value={clientId} onValueChange={setClientId}>
             <SelectTrigger id="client">
@@ -210,12 +210,12 @@ export default function NewProjectV2() {
                 placeholder={
                   clientsLoading
                     ? t('common.loading')
-                    : t('projectsV2.selectClientPlaceholder', 'Wybierz klienta (opcjonalnie)')
+                    : t('projectsV2.selectClientPlaceholder')
                 }
               />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">{t('common.none', 'Brak')}</SelectItem>
+              <SelectItem value="none">{t('common.none')}</SelectItem>
               {clients.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.name}

@@ -238,7 +238,7 @@ export default function OfferPublicPage() {
                   <CheckCircle className={`h-8 w-8 text-green-600 shrink-0 ${accepted ? 'animate-bounce' : ''}`} />
                   <div>
                     <p className="font-semibold text-green-700 dark:text-green-400 text-lg">
-                      {accepted ? t('offerPublicPage.justAccepted', 'Oferta zaakceptowana!') : t('offerPublicPage.acceptedBanner')}
+                      {accepted ? t('offerPublicPage.justAccepted') : t('offerPublicPage.acceptedBanner')}
                     </p>
                     {(offer.accepted_at ?? offer.approved_at) && (
                       <p className="text-sm text-green-600 dark:text-green-500">

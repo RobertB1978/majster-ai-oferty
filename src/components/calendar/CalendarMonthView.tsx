@@ -110,7 +110,7 @@ export function CalendarMonthView({
       </div>
       {events.length === 0 && !isLoading && (
         <div className="p-6 text-center border-t">
-          <p className="text-sm text-muted-foreground">{t('calendar.noEventsHint', 'No events yet. Double-click a day to add your first event.')}</p>
+          <p className="text-sm text-muted-foreground">{t('calendar.noEventsHint')}</p>
         </div>
       )}
     </div>

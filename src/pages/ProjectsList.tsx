@@ -210,7 +210,7 @@ export default function ProjectsList() {
                     variant="ghost"
                     size="icon"
                     className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                    aria-label={t('projectsV2.archiveProject', 'Archiwizuj projekt')}
+                    aria-label={t('projectsV2.archiveProject')}
                     onClick={(e) => {
                       e.stopPropagation();
                       setArchiveConfirmId(project.id);
@@ -229,13 +229,13 @@ export default function ProjectsList() {
       <AlertDialog open={!!archiveConfirmId} onOpenChange={() => setArchiveConfirmId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('projectsV2.archiveConfirmTitle', 'Archiwizuj projekt?')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('projectsV2.archiveConfirmTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('projectsV2.archiveConfirmDesc', 'Projekt zostanie oznaczony jako anulowany. Możesz go nadal przeglądać.')}
+              {t('projectsV2.archiveConfirmDesc')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel', 'Anuluj')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => {
@@ -245,7 +245,7 @@ export default function ProjectsList() {
                 }
               }}
             >
-              {t('projectsV2.archiveConfirmAction', 'Archiwizuj')}
+              {t('projectsV2.archiveConfirmAction')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
