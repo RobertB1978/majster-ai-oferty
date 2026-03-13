@@ -223,6 +223,20 @@ export function WorkspaceLineItems({
     setCurrentPage(Math.floor(items.length / PAGE_SIZE));
   };
 
+  const fillFromSuggestion = (id: string, s: ItemSuggestion) => {
+    const itemType: ItemType =
+      s.source === 'price_book' && s.category === 'Materiał' ? 'material' : 'labor';
+    setItems((prev) =>
+      prev.map((i) =>
+        i.id === id ? { ...i, name: s.name, unit: s.unit, price: s.price, itemType } : i,
+      ),
+    );
+    setRawInputs((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], price: String(s.price) },
+    }));
+  };
+
   const addFromSuggestion = (s: ItemSuggestion) => {
     const itemType: ItemType =
       s.source === 'price_book' && s.category === 'Materiał' ? 'material' : 'labor';
@@ -412,6 +426,7 @@ export function WorkspaceLineItems({
                   onUpdateNum={(field, raw) => updateNum(item.id, field, raw)}
                   onCycleType={() => cycleType(item.id, item.itemType)}
                   onRemove={() => remove(item.id)}
+                  onFillFromSuggestion={(s) => fillFromSuggestion(item.id, s)}
                   showSaveBtn
                 />
               );
@@ -589,6 +604,112 @@ function SuggestionRow({ suggestion, onSelect }: SuggestionRowProps) {
   );
 }
 
+/* ── NameFieldWithAutocomplete ───────────────────────────────────── */
+
+interface NameFieldProps {
+  value: string;
+  placeholder: string;
+  containerClassName?: string;
+  onChange: (v: string) => void;
+  onSelect?: (s: ItemSuggestion) => void;
+}
+
+function NameFieldWithAutocomplete({
+  value,
+  placeholder,
+  containerClassName,
+  onChange,
+  onSelect,
+}: NameFieldProps) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const { priceBookSuggestions, historicalSuggestions, isLoading } =
+    useItemNameSuggestions(value);
+
+  const hasSuggestions = priceBookSuggestions.length > 0 || historicalSuggestions.length > 0;
+  const showDropdown = open && value.trim().length >= 2 && (isLoading || hasSuggestions);
+
+  return (
+    <div className={cn('relative', containerClassName)}>
+      <Input
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => { onChange(e.target.value); setOpen(true); }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        className="h-9 text-sm w-full"
+        data-testid="name-field"
+      />
+      {showDropdown && (
+        <div
+          className="absolute z-50 top-full left-0 right-0 mt-0.5 rounded-md border border-border bg-background shadow-lg max-h-48 overflow-y-auto"
+          data-testid="name-suggestions-dropdown"
+        >
+          {isLoading && (
+            <p className="text-xs text-muted-foreground px-2 py-1.5">…</p>
+          )}
+          {priceBookSuggestions.length > 0 && (
+            <>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide px-2 pt-1.5 pb-0.5">
+                {t('priceBook.sourcePriceBook')}
+              </p>
+              {priceBookSuggestions.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    onSelect?.(s);
+                    setOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-accent transition-colors"
+                  data-testid="name-suggestion-row"
+                >
+                  <span className="flex-1 truncate">{s.name}</span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {s.price.toFixed(0)} zł / {s.unit}
+                  </span>
+                  <span className="text-[10px] rounded-full px-1.5 py-0.5 bg-primary/10 text-primary shrink-0">
+                    {t('priceBook.sourcePriceBook')}
+                  </span>
+                </button>
+              ))}
+            </>
+          )}
+          {historicalSuggestions.length > 0 && (
+            <>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide px-2 pt-1.5 pb-0.5">
+                {t('priceBook.recentlyUsed')}
+              </p>
+              {historicalSuggestions.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    onSelect?.(s);
+                    setOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-accent transition-colors"
+                  data-testid="name-suggestion-row"
+                >
+                  <span className="flex-1 truncate">{s.name}</span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {s.price.toFixed(0)} zł / {s.unit}
+                  </span>
+                  <span className="text-[10px] rounded-full px-1.5 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 shrink-0">
+                    {t('priceBook.sourceRecentlyUsed', { price: s.price.toFixed(0), unit: s.unit })}
+                  </span>
+                </button>
+              ))}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ── DesktopColHeaders ───────────────────────────────────────────── */
 
 function DesktopColHeaders({ cols }: { cols: ColsVisible }) {
@@ -633,6 +754,7 @@ interface ItemRowProps {
   ) => void;
   onCycleType: () => void;
   onRemove: () => void;
+  onFillFromSuggestion?: (s: ItemSuggestion) => void;
   showSaveBtn?: boolean;
 }
 
@@ -645,6 +767,7 @@ function ItemRow({
   onUpdateNum,
   onCycleType,
   onRemove,
+  onFillFromSuggestion,
   showSaveBtn = false,
 }: ItemRowProps) {
   const { t } = useTranslation();
@@ -685,11 +808,12 @@ function ItemRow({
         )}
 
         {/* Name */}
-        <Input
-          placeholder={t('szybkaWycena.itemPlaceholder')}
+        <NameFieldWithAutocomplete
           value={item.name}
-          onChange={(e) => onUpdate('name', e.target.value)}
-          className="flex-1 min-w-0 h-9 text-sm"
+          placeholder={t('szybkaWycena.itemPlaceholder')}
+          containerClassName="flex-1 min-w-0"
+          onChange={(v) => onUpdate('name', v)}
+          onSelect={onFillFromSuggestion}
         />
 
         {/* Qty */}
@@ -870,11 +994,12 @@ function ItemRow({
               {TYPE_LABELS[item.itemType].slice(0, 3)}
             </button>
           )}
-          <Input
-            placeholder={t('szybkaWycena.itemPlaceholder')}
+          <NameFieldWithAutocomplete
             value={item.name}
-            onChange={(e) => onUpdate('name', e.target.value)}
-            className="flex-1 h-9 text-sm"
+            placeholder={t('szybkaWycena.itemPlaceholder')}
+            containerClassName="flex-1"
+            onChange={(v) => onUpdate('name', v)}
+            onSelect={onFillFromSuggestion}
           />
           <Button
             variant="ghost"
