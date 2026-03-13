@@ -53,14 +53,14 @@ const renderSettings = () =>
   );
 
 describe('Settings — mobile navigation', () => {
-  it('renderuje mobilne pozycje nawigacyjne dla wszystkich sekcji', () => {
+  it('renderuje mobilne pozycje nawigacyjne dla aktywnych sekcji (bez kalendarza w beta)', () => {
     renderSettings();
 
+    // BETA-CAL-01: calendar tab is hidden (CALENDAR_SYNC_SETTINGS_VISIBLE = false)
     const sections = [
       'settings-mobile-nav-company',
       'settings-mobile-nav-general',
       'settings-mobile-nav-documents',
-      'settings-mobile-nav-calendar',
       'settings-mobile-nav-email',
       'settings-mobile-nav-subscription',
       'settings-mobile-nav-privacy',
@@ -72,24 +72,19 @@ describe('Settings — mobile navigation', () => {
     }
   });
 
+  it('nie renderuje zakładki kalendarza w ustawieniach (BETA-CAL-01: zero działających dostawców)', () => {
+    renderSettings();
+    // BETA-CAL-01: CalendarSync tab hidden — all OAuth providers are "coming soon"
+    // Showing a dead-end tab erodes beta user trust
+    expect(screen.queryByTestId('settings-mobile-nav-calendar')).toBeNull();
+  });
+
   it('domyślnie aktywna sekcja to "company"', () => {
     renderSettings();
 
     const companyBtn = screen.getByTestId('settings-mobile-nav-company');
     // Active button gets bg-primary/10 class via conditional join
     expect(companyBtn.className).toContain('bg-primary/10');
-  });
-
-  it('kliknięcie w "calendar" przełącza aktywną sekcję', () => {
-    renderSettings();
-
-    const calendarBtn = screen.getByTestId('settings-mobile-nav-calendar');
-    fireEvent.click(calendarBtn);
-
-    expect(calendarBtn.className).toContain('bg-primary/10');
-    // previously active company button should no longer have active class
-    const companyBtn = screen.getByTestId('settings-mobile-nav-company');
-    expect(companyBtn.className).not.toContain('bg-primary/10');
   });
 
   it('kliknięcie w "subscription" wyświetla sekcję subskrypcji', () => {

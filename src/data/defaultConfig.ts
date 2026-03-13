@@ -63,7 +63,7 @@ export const DEFAULT_CONFIG: AppConfig = {
         name: 'Pro',
         pricePLN: planPrice('pro'),
         ...planLimits('pro'),
-        features: ['excelExport', 'team'],
+        features: ['team'],
         highlighted: true,
       },
       {
@@ -71,7 +71,7 @@ export const DEFAULT_CONFIG: AppConfig = {
         name: 'Business',
         pricePLN: planPrice('business'),
         ...planLimits('business'),
-        features: ['excelExport', 'team', 'ai', 'voice', 'documents', 'calendarSync', 'marketplace', 'advancedAnalytics', 'photoEstimation', 'ocr', 'prioritySupport'],
+        features: ['team', 'ai', 'voice', 'documents', 'calendarSync', 'marketplace', 'advancedAnalytics', 'photoEstimation', 'ocr', 'prioritySupport'],
         highlighted: false,
       },
       {
@@ -79,7 +79,7 @@ export const DEFAULT_CONFIG: AppConfig = {
         name: 'Enterprise',
         pricePLN: planPrice('enterprise'),
         ...planLimits('enterprise'),
-        features: ['excelExport', 'team', 'ai', 'voice', 'documents', 'calendarSync', 'marketplace', 'advancedAnalytics', 'photoEstimation', 'ocr', 'api', 'prioritySupport', 'customTemplates', 'unlimitedProjects', 'unlimitedClients'],
+        features: ['team', 'ai', 'voice', 'documents', 'calendarSync', 'marketplace', 'advancedAnalytics', 'photoEstimation', 'ocr', 'api', 'prioritySupport', 'customTemplates', 'unlimitedProjects', 'unlimitedClients'],
         highlighted: false,
       },
     ],
