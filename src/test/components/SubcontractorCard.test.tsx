@@ -37,31 +37,31 @@ describe('SubcontractorCard', () => {
 
   it('does NOT render action buttons when callbacks are absent', () => {
     render(<SubcontractorCard subcontractor={mockSub} />);
-    expect(screen.queryByText('Szczegóły')).toBeNull();
-    expect(screen.queryByText('Zaproś')).toBeNull();
+    expect(screen.queryByText('marketplace.details')).toBeNull();
+    expect(screen.queryByText('marketplace.invite')).toBeNull();
   });
 
   it('renders "Szczegóły" button via i18n fallback when onViewDetails provided', () => {
     render(<SubcontractorCard subcontractor={mockSub} onViewDetails={vi.fn()} />);
-    expect(screen.getByText('Szczegóły')).toBeDefined();
+    expect(screen.getByText('marketplace.details')).toBeDefined();
   });
 
   it('renders "Zaproś" button via i18n fallback when onInvite provided', () => {
     render(<SubcontractorCard subcontractor={mockSub} onInvite={vi.fn()} />);
-    expect(screen.getByText('Zaproś')).toBeDefined();
+    expect(screen.getByText('marketplace.invite')).toBeDefined();
   });
 
   it('calls onViewDetails when Szczegóły button is clicked', () => {
     const handler = vi.fn();
     render(<SubcontractorCard subcontractor={mockSub} onViewDetails={handler} />);
-    fireEvent.click(screen.getByText('Szczegóły'));
+    fireEvent.click(screen.getByText('marketplace.details'));
     expect(handler).toHaveBeenCalledOnce();
   });
 
   it('calls onInvite when Zaproś button is clicked', () => {
     const handler = vi.fn();
     render(<SubcontractorCard subcontractor={mockSub} onInvite={handler} />);
-    fireEvent.click(screen.getByText('Zaproś'));
+    fireEvent.click(screen.getByText('marketplace.invite'));
     expect(handler).toHaveBeenCalledOnce();
   });
 
@@ -73,7 +73,7 @@ describe('SubcontractorCard', () => {
         onInvite={vi.fn()}
       />
     );
-    expect(screen.getByText('Szczegóły')).toBeDefined();
-    expect(screen.getByText('Zaproś')).toBeDefined();
+    expect(screen.getByText('marketplace.details')).toBeDefined();
+    expect(screen.getByText('marketplace.invite')).toBeDefined();
   });
 });

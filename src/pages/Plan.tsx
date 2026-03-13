@@ -50,24 +50,6 @@ const PLAN_FEATURE_I18N_KEYS: Record<string, string> = {
   unlimitedClients: 'billing.planFeature.unlimitedClients',
 };
 
-/** Fallback English labels for plan features (used when i18n key missing) */
-const PLAN_FEATURE_FALLBACKS: Record<string, string> = {
-  excelExport: 'Excel Export',
-  team: 'Team Management',
-  customTemplates: 'Custom Templates',
-  ai: 'AI Assistant',
-  voice: 'Voice Dictation',
-  documents: 'Company Documents',
-  calendarSync: 'Calendar Sync',
-  marketplace: 'Marketplace',
-  advancedAnalytics: 'Advanced Analytics',
-  photoEstimation: 'Photo Estimation',
-  ocr: 'Invoice OCR',
-  api: 'API Access',
-  prioritySupport: 'Priority Support',
-  unlimitedProjects: 'Unlimited Projects',
-  unlimitedClients: 'Unlimited Clients',
-};
 
 function formatStorage(mb: number): string {
   if (mb >= 1024) return `${mb / 1024} GB`;

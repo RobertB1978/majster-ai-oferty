@@ -166,7 +166,7 @@ export function useExpirationMonitor() {
         }
       }
     }
-  }, [user, expiringOffers, subscription, createNotification, wasNotificationSentToday]);
+  }, [user, expiringOffers, subscription, createNotification, wasNotificationSentToday, t]);
 
   // Run check on mount and when data changes
   useEffect(() => {

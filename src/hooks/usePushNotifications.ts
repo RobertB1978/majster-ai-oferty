@@ -75,7 +75,8 @@ export function usePushNotifications() {
     return () => {
       PushNotifications.removeAllListeners();
     };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [t]);
 
   const requestPermission = async () => {
     if (!Capacitor.isNativePlatform()) {

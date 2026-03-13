@@ -93,7 +93,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
         endsAfterMonth: end > monthEnd,
       };
     });
-  }, [tasks, projects, teamMembers, monthStart, monthEnd, totalDays]);
+  }, [tasks, projects, teamMembers, monthStart, monthEnd, totalDays, t]);
 
   // Week markers
   const weekMarkers = useMemo(() => {
