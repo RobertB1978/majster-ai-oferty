@@ -23,9 +23,10 @@ interface PricingRecommendation {
   reason: string;
 }
 
+// Kształt odpowiedzi z edge function finance-ai-analysis (supabase/functions/finance-ai-analysis/index.ts)
 interface AIAnalysisResult {
-  summary?: string;
-  actionableInsights?: string[];
+  keyInsights?: string[];
+  actionItems?: string[];
   pricingRecommendations?: PricingRecommendation[];
   riskFactors?: string[];
 }
