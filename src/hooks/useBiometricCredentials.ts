@@ -146,7 +146,7 @@ export function useRegisterBiometric() {
     },
     onError: (error) => {
       logger.error('Biometric registration error:', error);
-      toast.error(error instanceof Error ? error.message : 'Błąd rejestracji biometrii');
+      toast.error(error instanceof Error ? error.message : t('biometric.toast.registrationError'));
     },
   });
 }
@@ -218,7 +218,7 @@ export function useAuthenticateBiometric() {
     },
     onError: (error) => {
       logger.error('Biometric auth error:', error);
-      toast.error(error instanceof Error ? error.message : 'Błąd autentykacji biometrycznej');
+      toast.error(error instanceof Error ? error.message : t('biometric.toast.authError'));
     },
   });
 }

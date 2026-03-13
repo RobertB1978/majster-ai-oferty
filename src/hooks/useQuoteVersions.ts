@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -71,6 +72,7 @@ export function useActiveQuoteVersion(projectId: string) {
 }
 
 export function useCreateQuoteVersion() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -111,15 +113,16 @@ export function useCreateQuoteVersion() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['quote_versions', variables.projectId] });
-      toast.success('Wersja wyceny zapisana');
+      toast.success(t('quoteVersions.toast.saved'));
     },
     onError: () => {
-      toast.error('Błąd przy zapisywaniu wersji');
+      toast.error(t('quoteVersions.toast.saveError'));
     },
   });
 }
 
 export function useSetActiveVersion() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -140,15 +143,16 @@ export function useSetActiveVersion() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['quote_versions', variables.projectId] });
-      toast.success('Wersja ustawiona jako aktywna');
+      toast.success(t('quoteVersions.toast.activated'));
     },
     onError: () => {
-      toast.error('Błąd przy zmianie aktywnej wersji');
+      toast.error(t('quoteVersions.toast.activateError'));
     },
   });
 }
 
 export function useDeleteQuoteVersion() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -162,10 +166,10 @@ export function useDeleteQuoteVersion() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['quote_versions', variables.projectId] });
-      toast.success('Wersja usunięta');
+      toast.success(t('quoteVersions.toast.deleted'));
     },
     onError: () => {
-      toast.error('Błąd przy usuwaniu wersji');
+      toast.error(t('quoteVersions.toast.deleteError'));
     },
   });
 }

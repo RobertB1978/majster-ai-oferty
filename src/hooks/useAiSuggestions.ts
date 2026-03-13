@@ -51,7 +51,7 @@ export function useAiSuggestions() {
       } else if (errorMessage.includes('402')) {
         toast.error(t('ai.toast.noCredits'));
       } else {
-        toast.error('Błąd AI: ' + errorMessage);
+        toast.error(t('ai.toast.error', { message: errorMessage }));
       }
     },
   });

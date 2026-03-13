@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -56,6 +57,7 @@ export function useProfile() {
 }
 
 export function useUpdateProfile() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -98,16 +100,17 @@ export function useUpdateProfile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      toast.success('Profil firmy został zapisany');
+      toast.success(t('profile.toast.saved'));
     },
     onError: (error) => {
       console.error('Error updating profile:', error);
-      toast.error('Nie udało się zapisać profilu');
+      toast.error(t('profile.toast.saveError'));
     },
   });
 }
 
 export function useUploadLogo() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -148,7 +151,7 @@ export function useUploadLogo() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      toast.success('Logo zostało przesłane');
+      toast.success(t('profile.toast.logoUploaded'));
     },
     onError: (error) => {
       console.error('Error uploading logo:', error);

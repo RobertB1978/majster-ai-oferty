@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -102,6 +103,7 @@ export function useSubcontractor(id: string) {
 }
 
 export function useAddSubcontractor() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -121,15 +123,16 @@ export function useAddSubcontractor() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subcontractors'] });
-      toast.success('Podwykonawca dodany');
+      toast.success(t('subcontractors.toast.added'));
     },
     onError: () => {
-      toast.error('Błąd podczas dodawania podwykonawcy');
+      toast.error(t('subcontractors.toast.addError'));
     },
   });
 }
 
 export function useUpdateSubcontractor() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -146,7 +149,7 @@ export function useUpdateSubcontractor() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subcontractors'] });
-      toast.success('Podwykonawca zaktualizowany');
+      toast.success(t('subcontractors.toast.updated'));
     },
   });
 }
@@ -185,6 +188,7 @@ export function useSubcontractorReviews(subcontractorId: string) {
 }
 
 export function useAddSubcontractorReview() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -226,7 +230,7 @@ export function useAddSubcontractorReview() {
     onSuccess: (_, { subcontractorId }) => {
       queryClient.invalidateQueries({ queryKey: ['subcontractor_reviews', subcontractorId] });
       queryClient.invalidateQueries({ queryKey: ['subcontractors'] });
-      toast.success('Opinia dodana');
+      toast.success(t('subcontractors.toast.reviewAdded'));
     },
   });
 }

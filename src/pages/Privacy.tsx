@@ -35,10 +35,10 @@ export default function Privacy() {
               <Shield className="h-12 w-12 text-primary" />
             </div>
             <h1 className="text-4xl font-bold text-primary">
-              Polityka Prywatności
+              {t('legal.privacy.page.heading')}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Ostatnia aktualizacja: {new Date().toLocaleDateString('pl-PL')}
+              {t('legal.privacy.page.lastUpdated')} {new Date().toLocaleDateString(i18n.language === 'uk' ? 'uk-UA' : i18n.language === 'en' ? 'en-GB' : 'pl-PL')}
             </p>
           </div>
 
@@ -47,13 +47,12 @@ export default function Privacy() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Database className="h-5 w-5 text-primary" />
-                  1. Administrator danych
+                  {t('legal.privacy.page.section1Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
                 <p>
-                  Administratorem Twoich danych osobowych jest Majster.AI. 
-                  Dokładamy wszelkich starań, aby Twoje dane były bezpieczne i przetwarzane zgodnie z RODO.
+                  {t('legal.privacy.page.section1Text')}
                 </p>
               </CardContent>
             </Card>
@@ -62,16 +61,16 @@ export default function Privacy() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Eye className="h-5 w-5 text-primary" />
-                  2. Jakie dane zbieramy
+                  {t('legal.privacy.page.section2Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
                 <ul>
-                  <li><strong>Dane konta:</strong> imię, nazwisko, adres e-mail, numer telefonu</li>
-                  <li><strong>Dane firmy:</strong> nazwa firmy, NIP, adres, dane kontaktowe</li>
-                  <li><strong>Dane projektów:</strong> informacje o klientach, wycenach, ofertach</li>
-                  <li><strong>Dane techniczne:</strong> adres IP, typ przeglądarki, urządzenie</li>
-                  <li><strong>Dane analityczne:</strong> sposób korzystania z aplikacji (za zgodą)</li>
+                  <li><strong>{t('legal.privacy.page.dataAccountLabel')}:</strong> {t('legal.privacy.page.dataAccountDesc')}</li>
+                  <li><strong>{t('legal.privacy.page.dataCompanyLabel')}:</strong> {t('legal.privacy.page.dataCompanyDesc')}</li>
+                  <li><strong>{t('legal.privacy.page.dataProjectLabel')}:</strong> {t('legal.privacy.page.dataProjectDesc')}</li>
+                  <li><strong>{t('legal.privacy.page.dataTechLabel')}:</strong> {t('legal.privacy.page.dataTechDesc')}</li>
+                  <li><strong>{t('legal.privacy.page.dataAnalyticsLabel')}:</strong> {t('legal.privacy.page.dataAnalyticsDesc')}</li>
                 </ul>
               </CardContent>
             </Card>
@@ -80,16 +79,16 @@ export default function Privacy() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lock className="h-5 w-5 text-primary" />
-                  3. Cel przetwarzania danych
+                  {t('legal.privacy.page.section3Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
                 <ul>
-                  <li>Świadczenie usług aplikacji Majster.AI</li>
-                  <li>Generowanie ofert i wycen dla Twoich klientów</li>
-                  <li>Komunikacja związana z usługą</li>
-                  <li>Ulepszanie jakości usług</li>
-                  <li>Wypełnianie obowiązków prawnych</li>
+                  <li>{t('legal.privacy.page.purpose1')}</li>
+                  <li>{t('legal.privacy.page.purpose2')}</li>
+                  <li>{t('legal.privacy.page.purpose3')}</li>
+                  <li>{t('legal.privacy.page.purpose4')}</li>
+                  <li>{t('legal.privacy.page.purpose5')}</li>
                 </ul>
               </CardContent>
             </Card>
@@ -98,18 +97,18 @@ export default function Privacy() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UserCheck className="h-5 w-5 text-primary" />
-                  4. Twoje prawa (RODO)
+                  {t('legal.privacy.page.section4Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
-                <p>Zgodnie z RODO przysługują Ci następujące prawa:</p>
+                <p>{t('legal.privacy.page.rightsIntro')}</p>
                 <ul>
-                  <li><strong>Prawo dostępu</strong> - możesz uzyskać informacje o przetwarzanych danych</li>
-                  <li><strong>Prawo do sprostowania</strong> - możesz poprawić nieprawidłowe dane</li>
-                  <li><strong>Prawo do usunięcia</strong> - możesz żądać usunięcia danych ("prawo do bycia zapomnianym")</li>
-                  <li><strong>Prawo do przenoszenia</strong> - możesz pobrać swoje dane w formacie maszynowym</li>
-                  <li><strong>Prawo do sprzeciwu</strong> - możesz sprzeciwić się przetwarzaniu danych</li>
-                  <li><strong>Prawo do cofnięcia zgody</strong> - w każdej chwili możesz wycofać zgodę</li>
+                  <li><strong>{t('legal.privacy.page.rightAccessLabel')}</strong> - {t('legal.privacy.page.rightAccessDesc')}</li>
+                  <li><strong>{t('legal.privacy.page.rightRectifyLabel')}</strong> - {t('legal.privacy.page.rightRectifyDesc')}</li>
+                  <li><strong>{t('legal.privacy.page.rightEraseLabel')}</strong> - {t('legal.privacy.page.rightEraseDesc')}</li>
+                  <li><strong>{t('legal.privacy.page.rightPortLabel')}</strong> - {t('legal.privacy.page.rightPortDesc')}</li>
+                  <li><strong>{t('legal.privacy.page.rightObjectLabel')}</strong> - {t('legal.privacy.page.rightObjectDesc')}</li>
+                  <li><strong>{t('legal.privacy.page.rightWithdrawLabel')}</strong> - {t('legal.privacy.page.rightWithdrawDesc')}</li>
                 </ul>
               </CardContent>
             </Card>
@@ -118,17 +117,17 @@ export default function Privacy() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-5 w-5 text-primary" />
-                  5. Bezpieczeństwo danych
+                  {t('legal.privacy.page.section5Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
-                <p>Stosujemy następujące środki bezpieczeństwa:</p>
+                <p>{t('legal.privacy.page.securityIntro')}</p>
                 <ul>
-                  <li>Szyfrowanie danych SSL/TLS</li>
-                  <li>Bezpieczne przechowywanie haseł (hashowanie)</li>
-                  <li>Regularne kopie zapasowe</li>
-                  <li>Kontrola dostępu (Row Level Security)</li>
-                  <li>Monitorowanie i audyt bezpieczeństwa</li>
+                  <li>{t('legal.privacy.page.security1')}</li>
+                  <li>{t('legal.privacy.page.security2')}</li>
+                  <li>{t('legal.privacy.page.security3')}</li>
+                  <li>{t('legal.privacy.page.security4')}</li>
+                  <li>{t('legal.privacy.page.security5')}</li>
                 </ul>
               </CardContent>
             </Card>
@@ -137,19 +136,19 @@ export default function Privacy() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Mail className="h-5 w-5 text-primary" />
-                  6. Kontakt
+                  {t('legal.privacy.page.section6Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
                 <p>
-                  W sprawach związanych z ochroną danych osobowych możesz skontaktować się z nami:
+                  {t('legal.privacy.page.contactIntro')}
                 </p>
                 <ul>
-                  <li>E-mail: kontakt.majsterai@gmail.com</li>
-                  <li>Formularz kontaktowy w aplikacji</li>
+                  <li>{t('legal.privacy.page.contactEmail')}</li>
+                  <li>{t('legal.privacy.page.contactForm')}</li>
                 </ul>
                 <p>
-                  Masz również prawo złożyć skargę do Prezesa Urzędu Ochrony Danych Osobowych (PUODO).
+                  {t('legal.privacy.page.contactComplaint')}
                 </p>
               </CardContent>
             </Card>

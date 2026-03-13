@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -43,6 +44,7 @@ export function useWorkTasks(projectId?: string) {
 }
 
 export function useAddWorkTask() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -62,15 +64,16 @@ export function useAddWorkTask() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work_tasks'] });
-      toast.success('Zadanie dodane');
+      toast.success(t('tasks.toast.added'));
     },
     onError: () => {
-      toast.error('Błąd podczas dodawania zadania');
+      toast.error(t('tasks.toast.addError'));
     },
   });
 }
 
 export function useUpdateWorkTask() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -87,12 +90,13 @@ export function useUpdateWorkTask() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work_tasks'] });
-      toast.success('Zadanie zaktualizowane');
+      toast.success(t('tasks.toast.updated'));
     },
   });
 }
 
 export function useDeleteWorkTask() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -106,7 +110,7 @@ export function useDeleteWorkTask() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work_tasks'] });
-      toast.success('Zadanie usunięte');
+      toast.success(t('tasks.toast.deleted'));
     },
   });
 }

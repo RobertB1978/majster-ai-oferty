@@ -34,10 +34,10 @@ export default function Terms() {
               <FileText className="h-12 w-12 text-primary" />
             </div>
             <h1 className="text-4xl font-bold text-primary">
-              Regulamin Usługi
+              {t('legal.terms.page.heading')}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Ostatnia aktualizacja: {new Date().toLocaleDateString('pl-PL')}
+              {t('legal.terms.page.lastUpdated')} {new Date().toLocaleDateString(i18n.language === 'uk' ? 'uk-UA' : i18n.language === 'en' ? 'en-GB' : 'pl-PL')}
             </p>
           </div>
 
@@ -46,16 +46,15 @@ export default function Terms() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5 text-primary" />
-                  1. Postanowienia ogólne
+                  {t('legal.terms.page.section1Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
                 <p>
-                  Niniejszy regulamin określa zasady korzystania z aplikacji Majster.AI - 
-                  narzędzia do zarządzania projektami budowlanymi i tworzenia wycen.
+                  {t('legal.terms.page.section1Text1')}
                 </p>
                 <p>
-                  Korzystając z aplikacji, akceptujesz postanowienia niniejszego regulaminu.
+                  {t('legal.terms.page.section1Text2')}
                 </p>
               </CardContent>
             </Card>
@@ -64,18 +63,18 @@ export default function Terms() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
-                  2. Zakres usług
+                  {t('legal.terms.page.section2Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
-                <p>Majster.AI oferuje następujące funkcjonalności:</p>
+                <p>{t('legal.terms.page.section2Intro')}</p>
                 <ul>
-                  <li>Tworzenie i zarządzanie projektami budowlanymi</li>
-                  <li>Generowanie wycen i ofert</li>
-                  <li>Zarządzanie klientami i podwykonawcami</li>
-                  <li>Analityka finansowa projektów</li>
-                  <li>Asystent AI do tworzenia ofert</li>
-                  <li>Eksport dokumentów do PDF</li>
+                  <li>{t('legal.terms.page.service1')}</li>
+                  <li>{t('legal.terms.page.service2')}</li>
+                  <li>{t('legal.terms.page.service3')}</li>
+                  <li>{t('legal.terms.page.service4')}</li>
+                  <li>{t('legal.terms.page.service5')}</li>
+                  <li>{t('legal.terms.page.service6')}</li>
                 </ul>
               </CardContent>
             </Card>
@@ -84,20 +83,19 @@ export default function Terms() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="h-5 w-5 text-primary" />
-                  3. Plany i płatności
+                  {t('legal.terms.page.section3Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
-                <p>Dostępne plany subskrypcji:</p>
+                <p>{t('legal.terms.page.section3Intro')}</p>
                 <ul>
-                  <li><strong>Free</strong> - bezpłatny przez pierwsze 30 dni, następnie z ograniczonymi funkcjami</li>
-                  <li><strong>Pro</strong> - 49 PLN/mies. - podstawowe funkcje bez reklam</li>
-                  <li><strong>Business</strong> - 99 PLN/mies. - pełne funkcje + AI</li>
-                  <li><strong>Enterprise</strong> - 199 PLN/mies. - wszystkie funkcje + priorytetowe wsparcie</li>
+                  <li><strong>Free</strong> - {t('legal.terms.page.planFree')}</li>
+                  <li><strong>Pro</strong> - {t('legal.terms.page.planPro')}</li>
+                  <li><strong>Business</strong> - {t('legal.terms.page.planBusiness')}</li>
+                  <li><strong>Enterprise</strong> - {t('legal.terms.page.planEnterprise')}</li>
                 </ul>
                 <p>
-                  Płatności są przetwarzane przez bezpieczny system Stripe.
-                  Subskrypcję można anulować w dowolnym momencie.
+                  {t('legal.terms.page.section3Text')}
                 </p>
               </CardContent>
             </Card>
@@ -106,17 +104,17 @@ export default function Terms() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-primary" />
-                  4. Ograniczenia i zakazy
+                  {t('legal.terms.page.section4Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
-                <p>Zabrania się:</p>
+                <p>{t('legal.terms.page.section4Intro')}</p>
                 <ul>
-                  <li>Udostępniania konta osobom trzecim</li>
-                  <li>Próby obejścia zabezpieczeń systemu</li>
-                  <li>Wykorzystywania aplikacji do celów niezgodnych z prawem</li>
-                  <li>Wprowadzania fałszywych danych</li>
-                  <li>Automatycznego pobierania danych (scraping)</li>
+                  <li>{t('legal.terms.page.prohibition1')}</li>
+                  <li>{t('legal.terms.page.prohibition2')}</li>
+                  <li>{t('legal.terms.page.prohibition3')}</li>
+                  <li>{t('legal.terms.page.prohibition4')}</li>
+                  <li>{t('legal.terms.page.prohibition5')}</li>
                 </ul>
               </CardContent>
             </Card>
@@ -125,19 +123,18 @@ export default function Terms() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Scale className="h-5 w-5 text-primary" />
-                  5. Odpowiedzialność
+                  {t('legal.terms.page.section5Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
                 <p>
-                  Majster.AI dokłada wszelkich starań, aby usługa działała poprawnie.
-                  Nie ponosimy odpowiedzialności za:
+                  {t('legal.terms.page.section5Intro')}
                 </p>
                 <ul>
-                  <li>Przerwy techniczne i awarie</li>
-                  <li>Błędy w wycenach wynikające z nieprawidłowych danych</li>
-                  <li>Szkody wynikające z niewłaściwego użycia aplikacji</li>
-                  <li>Utratę danych z przyczyn niezależnych od nas</li>
+                  <li>{t('legal.terms.page.liability1')}</li>
+                  <li>{t('legal.terms.page.liability2')}</li>
+                  <li>{t('legal.terms.page.liability3')}</li>
+                  <li>{t('legal.terms.page.liability4')}</li>
                 </ul>
               </CardContent>
             </Card>
@@ -146,19 +143,18 @@ export default function Terms() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5 text-primary" />
-                  6. Postanowienia końcowe
+                  {t('legal.terms.page.section6Title')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="prose prose-sm dark:prose-invert max-w-none">
                 <p>
-                  Zastrzegamy sobie prawo do zmiany regulaminu. O istotnych zmianach 
-                  poinformujemy użytkowników drogą mailową z 14-dniowym wyprzedzeniem.
+                  {t('legal.terms.page.section6Text1')}
                 </p>
                 <p>
-                  W sprawach nieuregulowanych zastosowanie mają przepisy prawa polskiego.
+                  {t('legal.terms.page.section6Text2')}
                 </p>
                 <p>
-                  Kontakt: kontakt.majsterai@gmail.com
+                  {t('legal.terms.page.section6Contact')}
                 </p>
               </CardContent>
             </Card>

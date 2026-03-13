@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -74,6 +75,7 @@ export function useAllPurchaseCosts() {
 }
 
 export function useUploadInvoice() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -114,7 +116,7 @@ export function useUploadInvoice() {
     },
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: ['purchase_costs', projectId] });
-      toast.success('Faktura przesłana');
+      toast.success(t('costs.toast.invoiceUploaded'));
     },
     onError: (error) => {
       const message = error instanceof Error ? error.message : 'Błąd podczas przesyłania faktury';
@@ -124,6 +126,7 @@ export function useUploadInvoice() {
 }
 
 export function useProcessInvoiceOCR() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -162,19 +165,20 @@ export function useProcessInvoiceOCR() {
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['purchase_costs', result.projectId] });
-      toast.success('OCR zakończony');
+      toast.success(t('costs.toast.ocrComplete'));
     },
     onError: async (_, { costId }) => {
       await supabase
         .from('purchase_costs')
         .update({ ocr_status: 'failed' })
         .eq('id', costId);
-      toast.error('Błąd OCR');
+      toast.error(t('costs.toast.ocrError'));
     },
   });
 }
 
 export function useDeletePurchaseCost() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -189,7 +193,7 @@ export function useDeletePurchaseCost() {
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['purchase_costs', result.projectId] });
-      toast.success('Koszt usunięty');
+      toast.success(t('costs.toast.deleted'));
     },
   });
 }

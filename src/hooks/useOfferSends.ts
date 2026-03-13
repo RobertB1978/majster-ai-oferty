@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -38,6 +39,7 @@ export function useOfferSends(projectId: string) {
 }
 
 export function useCreateOfferSend() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -59,7 +61,7 @@ export function useCreateOfferSend() {
       queryClient.invalidateQueries({ queryKey: ['offer_sends', variables.project_id] });
     },
     onError: () => {
-      toast.error('Błąd przy zapisywaniu wysyłki');
+      toast.error(t('offers.toast.sendSaveError'));
     },
   });
 }

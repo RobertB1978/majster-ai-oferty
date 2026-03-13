@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications, Token, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
 import { toast } from 'sonner';
@@ -11,6 +12,7 @@ export interface PushNotificationState {
 }
 
 export function usePushNotifications() {
+  const { t } = useTranslation();
   const [state, setState] = useState<PushNotificationState>({
     isSupported: false,
     isRegistered: false,
@@ -54,7 +56,7 @@ export function usePushNotifications() {
 
     PushNotifications.addListener('registrationError', (error: unknown) => {
       logger.error('Push registration error:', error);
-      toast.error('Błąd rejestracji powiadomień push');
+      toast.error(t('pushNotifications.toast.registrationError'));
     });
 
     PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
@@ -77,7 +79,7 @@ export function usePushNotifications() {
 
   const requestPermission = async () => {
     if (!Capacitor.isNativePlatform()) {
-      toast.info('Push notifications są dostępne tylko w natywnej aplikacji mobilnej');
+      toast.info(t('pushNotifications.toast.nativeOnly'));
       return false;
     }
 

@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -157,6 +158,7 @@ export function useProject(id: string) {
 }
 
 export function useAddProject() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -212,11 +214,11 @@ export function useAddProject() {
       if (context?.previousProjects) {
         queryClient.setQueryData(['projects', user!.id], context.previousProjects);
       }
-      toast.error('Błąd przy tworzeniu projektu');
+      toast.error(t('projects.toast.createError'));
       logger.error(err);
     },
     onSuccess: () => {
-      toast.success('Projekt utworzony');
+      toast.success(t('projects.toast.created'));
     },
     onSettled: () => {
       // Always refetch to ensure sync with server
@@ -226,6 +228,7 @@ export function useAddProject() {
 }
 
 export function useUpdateProject() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -243,16 +246,17 @@ export function useUpdateProject() {
     onSuccess: () => {
       // Invalidate all projects queries (both paginated and non-paginated)
       queryClient.invalidateQueries({ queryKey: projectsKeys.all });
-      toast.success('Projekt zaktualizowany');
+      toast.success(t('projects.toast.updated'));
     },
     onError: (error) => {
-      toast.error('Błąd przy aktualizacji projektu');
+      toast.error(t('projects.toast.updateError'));
       logger.error(error);
     },
   });
 }
 
 export function useDeleteProject() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -286,11 +290,11 @@ export function useDeleteProject() {
       if (context?.previousProjects) {
         queryClient.setQueryData(['projects', user!.id], context.previousProjects);
       }
-      toast.error('Błąd przy usuwaniu projektu');
+      toast.error(t('projects.toast.deleteError'));
       logger.error(err);
     },
     onSuccess: () => {
-      toast.success('Projekt usunięty');
+      toast.success(t('projects.toast.deleted'));
     },
     onSettled: () => {
       // Always refetch to ensure sync with server
