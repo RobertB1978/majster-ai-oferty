@@ -132,7 +132,6 @@ describe('Navigation — niedokończone moduły niewidoczne w nawigacji użytkow
 
   it('nie wyświetla linku do /app/team (comingSoon, visible: false)', () => {
     renderNav();
-    const teamLinks = screen.queryAllByRole('link', { name: /zesp/i });
     // Even if found by label, should not link to /app/team
     const teamNavLink = screen.queryByRole('link', { name: /^zesp/i });
     if (teamNavLink) {
