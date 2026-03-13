@@ -98,7 +98,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (email: string, password: string): Promise<{ error: string | null }> => {
-    const redirectUrl = `${window.location.origin}/dashboard`;
+    // Use /auth/callback so the SDK can exchange the confirmation token and
+    // fire onAuthStateChange(SIGNED_IN) before redirecting to the app.
+    // Matches the redirect used by resendVerificationEmail() — single source of truth.
+    const redirectUrl = `${window.location.origin}/auth/callback`;
 
     const { error } = await supabase.auth.signUp({
       email,

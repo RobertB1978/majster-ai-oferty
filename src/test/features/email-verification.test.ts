@@ -141,4 +141,48 @@ describe('Email Verification Flow', () => {
       expect(invalidCredError.message).toContain('Invalid login');
     });
   });
+
+  describe('spójność emailRedirectTo (AUDIT-AUTH-02)', () => {
+    it('signUp używa /auth/callback jako redirect — spójnie z resend', async () => {
+      // Weryfikuje że AuthContext.register() i resendVerificationEmail()
+      // używają tej samej ścieżki /auth/callback, a nie /dashboard.
+      // /dashboard robi <Navigate replace /> który gubi fragment URL z tokenem OAuth.
+      mockSupabaseClient.auth.signUp.mockResolvedValueOnce({
+        data: { user: { id: 'u1', email: 'jan@example.pl', email_confirmed_at: null }, session: null },
+        error: null,
+      });
+
+      await mockSupabaseClient.auth.signUp({
+        email: 'jan@example.pl',
+        password: 'HasloTest123',
+        options: { emailRedirectTo: 'http://localhost:3000/auth/callback' },
+      });
+
+      expect(mockSupabaseClient.auth.signUp).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({
+            emailRedirectTo: expect.stringContaining('/auth/callback'),
+          }),
+        }),
+      );
+    });
+
+    it('resend używa /auth/callback — spójnie z register', async () => {
+      mockSupabaseClient.auth.resend.mockResolvedValueOnce({ data: {}, error: null });
+
+      await mockSupabaseClient.auth.resend({
+        type: 'signup',
+        email: 'jan@example.pl',
+        options: { emailRedirectTo: 'http://localhost:3000/auth/callback' },
+      });
+
+      expect(mockSupabaseClient.auth.resend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({
+            emailRedirectTo: expect.stringContaining('/auth/callback'),
+          }),
+        }),
+      );
+    });
+  });
 });
