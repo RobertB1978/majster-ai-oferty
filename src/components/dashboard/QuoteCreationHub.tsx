@@ -1,26 +1,21 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Mic, Bot, PenTool, Sparkles, ArrowRight } from 'lucide-react';
+import { Zap, Bot, PenTool, Sparkles, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 
-interface QuoteCreationHubProps {
-  _onVoiceQuoteCreated?: (result: unknown) => void;
-}
+type CreationMode = 'idle' | 'quick' | 'ai' | 'manual';
 
-type CreationMode = 'idle' | 'voice' | 'ai' | 'manual';
-
-export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps) {
+export function QuoteCreationHub() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<CreationMode>('idle');
-  const [_isRecording, _setIsRecording] = useState(false);
-  const [isProcessing, _setIsProcessing] = useState(false);
 
-  const handleVoiceClick = () => {
-    setMode('voice');
-    navigate('/app/offers/new');
+  // Szybka wycena — inny flow niż kreator ofert (workspace z listą pozycji)
+  const handleQuickClick = () => {
+    setMode('quick');
+    navigate('/app/szybka-wycena');
   };
 
   const handleAiClick = () => {
@@ -35,11 +30,11 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
 
   const buttons = [
     {
-      id: 'voice' as const,
-      icon: Mic,
-      label: t('dashboard.quoteCreation.voiceTitle'),
-      sublabel: t('dashboard.quoteCreation.voiceDesc'),
-      onClick: handleVoiceClick
+      id: 'quick' as const,
+      icon: Zap,
+      label: t('dashboard.quoteCreation.quickTitle', 'Szybka wycena'),
+      sublabel: t('dashboard.quoteCreation.quickDesc', 'Wprowadź pozycje i wyślij w kilka minut'),
+      onClick: handleQuickClick
     },
     {
       id: 'ai' as const,
@@ -68,7 +63,7 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
         {buttons.map((btn) => {
           const isActive = mode === btn.id;
           const colorClasses = {
-            voice: {
+            quick: {
               icon: 'text-destructive',
               iconBg: 'bg-destructive/10',
               border: 'border-destructive/20',
@@ -104,7 +99,6 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
                 isActive ? colorClasses.activeBorder : colorClasses.border,
                 !isActive && colorClasses.hoverBorder,
                 "hover:shadow-md",
-                isProcessing && "opacity-50 cursor-not-allowed",
                 "group"
               )}
             >
@@ -148,7 +142,7 @@ export function QuoteCreationHub({ _onVoiceQuoteCreated }: QuoteCreationHubProps
                   <div className="absolute top-3 right-3">
                     <div className={cn(
                       "w-2 h-2 rounded-full",
-                      btn.id === 'voice' ? 'bg-destructive' :
+                      btn.id === 'quick' ? 'bg-destructive' :
                       btn.id === 'ai' ? 'bg-primary' : 'bg-success',
                       "animate-pulse"
                     )} />
