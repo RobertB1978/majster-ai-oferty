@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ interface SubcontractorCardProps {
 }
 
 export function SubcontractorCard({ subcontractor, onViewDetails, onInvite }: SubcontractorCardProps) {
+  const { t } = useTranslation();
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-2">
@@ -88,12 +90,12 @@ export function SubcontractorCard({ subcontractor, onViewDetails, onInvite }: Su
           {onViewDetails && (
             <Button variant="outline" size="sm" className="flex-1" onClick={onViewDetails}>
               <ExternalLink className="h-4 w-4 mr-2" />
-              Szczegóły
+              {t('marketplace.details', 'Szczegóły')}
             </Button>
           )}
           {onInvite && (
             <Button size="sm" className="flex-1" onClick={onInvite}>
-              Zaproś
+              {t('marketplace.invite', 'Zaproś')}
             </Button>
           )}
         </div>

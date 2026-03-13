@@ -59,10 +59,6 @@ export default function Dashboard() {
     }
   }, [onboardingProgress]);
 
-  // Handle voice quote creation
-  const handleVoiceQuoteCreated = (result: unknown) => {
-    navigate('/app/projects/new', { state: { voiceQuote: result } });
-  };
 
   // Show skeleton while data is loading
   if (isLoading) {
@@ -212,7 +208,7 @@ export default function Dashboard() {
 
       {/* Quote Creation Hub — secondary entry point for voice/AI/manual modes */}
       <div className="border rounded-lg p-4 sm:p-6 bg-muted/30">
-        <QuoteCreationHub onVoiceQuoteCreated={handleVoiceQuoteCreated} />
+        <QuoteCreationHub />
       </div>
 
       {/* Trial countdown banner — upsell, below fold */}
