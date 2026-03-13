@@ -25,6 +25,11 @@ const BIOMETRIC_FEATURE_ENABLED = false;
 // Hidden until persistence is implemented to avoid pretending readiness.
 const PUSH_NOTIFICATIONS_ENABLED = false;
 
+// BETA-CAL-01: Calendar sync has zero functional providers (OAuth not wired).
+// Showing a tab that leads only to "Coming Soon" badges erodes beta trust.
+// Hidden until at least one provider is live. Change to true to re-enable.
+const CALENDAR_SYNC_SETTINGS_VISIBLE = false;
+
 interface SettingsSection {
   id: string;
   icon: React.ElementType;
@@ -35,7 +40,9 @@ const SETTINGS_SECTIONS: SettingsSection[] = [
   { id: 'company',      icon: Building2,  labelKey: 'settings.companyProfileTab' },
   { id: 'general',      icon: Globe,       labelKey: 'settings.language' },
   { id: 'documents',    icon: FileText,    labelKey: 'settings.documents' },
-  { id: 'calendar',     icon: Calendar,    labelKey: 'nav.calendar' },
+  ...(CALENDAR_SYNC_SETTINGS_VISIBLE
+    ? [{ id: 'calendar', icon: Calendar, labelKey: 'nav.calendar' } as SettingsSection]
+    : []),
   { id: 'email',        icon: Mail,        labelKey: 'settings.contactEmailTab' },
   { id: 'subscription', icon: CreditCard,  labelKey: 'settings.subscriptionTab' },
   { id: 'privacy',      icon: ShieldCheck, labelKey: 'settings.privacy' },
@@ -103,10 +110,12 @@ export default function Settings() {
                 <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                 <span>{t('settings.documents')}</span>
               </TabsTrigger>
-              <TabsTrigger value="calendar" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
-                <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
-                <span>{t('nav.calendar')}</span>
-              </TabsTrigger>
+              {CALENDAR_SYNC_SETTINGS_VISIBLE && (
+                <TabsTrigger value="calendar" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
+                  <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                  <span>{t('nav.calendar')}</span>
+                </TabsTrigger>
+              )}
               {PUSH_NOTIFICATIONS_ENABLED && (
                 <TabsTrigger value="notifications" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                   <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
@@ -203,9 +212,11 @@ export default function Settings() {
             <CompanyDocuments />
           </TabsContent>
 
-          <TabsContent value="calendar" className="mt-4">
-            <CalendarSync />
-          </TabsContent>
+          {CALENDAR_SYNC_SETTINGS_VISIBLE && (
+            <TabsContent value="calendar" className="mt-4">
+              <CalendarSync />
+            </TabsContent>
+          )}
 
           {PUSH_NOTIFICATIONS_ENABLED && (
             <TabsContent value="notifications" className="mt-4">
