@@ -25,6 +25,12 @@ function AppleIcon() {
   );
 }
 
+// AUDIT-AUTH-01: Apple Sign In requires owner to configure Apple Developer
+// Service ID, team ID, and private key in the Supabase dashboard before it
+// can function.  That configuration cannot be verified from code alone.
+// Hidden until owner confirms Apple provider is fully set up in Supabase.
+const APPLE_LOGIN_ENABLED = false;
+
 interface SocialLoginButtonsProps {
   disabled?: boolean;
 }
@@ -81,22 +87,24 @@ export function SocialLoginButtons({ disabled = false }: SocialLoginButtonsProps
         {loadingProvider === 'google' ? t('auth.social.signingIn') : t('auth.social.continueWithGoogle')}
       </Button>
 
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full gap-2 border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-100"
-        size="lg"
-        onClick={handleApple}
-        disabled={disabled || isLoading}
-        aria-label={t('auth.social.continueWithApple')}
-      >
-        {loadingProvider === 'apple' ? (
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-        ) : (
-          <AppleIcon />
-        )}
-        {loadingProvider === 'apple' ? t('auth.social.signingIn') : t('auth.social.continueWithApple')}
-      </Button>
+      {APPLE_LOGIN_ENABLED && (
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full gap-2 border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+          size="lg"
+          onClick={handleApple}
+          disabled={disabled || isLoading}
+          aria-label={t('auth.social.continueWithApple')}
+        >
+          {loadingProvider === 'apple' ? (
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+          ) : (
+            <AppleIcon />
+          )}
+          {loadingProvider === 'apple' ? t('auth.social.signingIn') : t('auth.social.continueWithApple')}
+        </Button>
+      )}
     </div>
   );
 }
