@@ -4,11 +4,11 @@
  * Covers: list rendering, create, edit, delete, search, import dialog.
  *
  * Translation keys (pl locale):
- *   templates.newTemplate     = "Nowy szablon"
+ *   templates.newTemplate     = "Nowa pozycja"
  *   templates.create          = "Utwórz"
  *   templates.import          = "Importuj"
  *   templates.namePlaceholder = "np. Płytki ceramiczne 60x60"
- *   templates.noTemplates     = "Brak szablonów"
+ *   templates.noTemplates     = "Cennik jest pusty"
  *   common.edit               = "Edytuj"
  *   common.save               = "Zapisz"
  *   common.cancel             = "Anuluj"
@@ -99,7 +99,7 @@ function setupHooks(overrides: { data?: typeof mockPaginatedResult; isLoading?: 
 // ── helpers ────────────────────────────────────────────────────────────────
 
 async function openAddDialog() {
-  const addBtn = screen.getByRole('button', { name: /nowy szablon/i });
+  const addBtn = screen.getByRole('button', { name: /nowa pozycja/i });
   fireEvent.click(addBtn);
   await waitFor(() => expect(screen.getByRole('dialog')).toBeDefined());
 }
@@ -122,7 +122,7 @@ describe('ItemTemplates', () => {
   describe('rendering', () => {
     it('should render without crashing', () => {
       render(<ItemTemplates />);
-      expect(screen.getAllByText(/szablony/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/cennik/i).length).toBeGreaterThan(0);
     });
 
     it('should show loading spinner while fetching', () => {
@@ -146,14 +146,14 @@ describe('ItemTemplates', () => {
     it('should show empty state when there are no templates', () => {
       setupHooks({ data: { data: [], totalCount: 0, totalPages: 0, currentPage: 1 } });
       render(<ItemTemplates />);
-      expect(screen.getByText(/brak szablonów/i)).toBeDefined();
+      expect(screen.getByText(/cennik jest pusty/i)).toBeDefined();
     });
   });
 
   // ── CREATE TEMPLATE ──────────────────────────────────────────────────────
 
   describe('create template', () => {
-    it('should open create dialog when "Nowy szablon" is clicked', async () => {
+    it('should open create dialog when "Nowa pozycja" is clicked', async () => {
       render(<ItemTemplates />);
       await openAddDialog();
       expect(screen.getByRole('dialog')).toBeDefined();
@@ -314,7 +314,7 @@ describe('ItemTemplates', () => {
       await waitFor(() => expect(mockCreate.mutateAsync).toHaveBeenCalledOnce());
 
       // Page should not crash
-      expect(screen.getAllByText(/szablony/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/cennik/i).length).toBeGreaterThan(0);
     });
 
     it('should reset form when dialog is closed via Anuluj', async () => {
