@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  BookOpen,
   ChevronLeft,
   ChevronRight,
   Columns2,
@@ -22,12 +23,16 @@ import {
   FileSpreadsheet,
   List,
   Plus,
+  Search,
   Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { isValidDecimal, parseDecimal } from '@/lib/numberParsing';
 import { itemLineTotal } from '@/lib/estimateCalc';
 import { BulkAddModal } from './BulkAddModal';
+import { SaveToPriceBookButton } from '@/components/offers/SaveToPriceBookButton';
+import { useItemNameSuggestions } from '@/hooks/useItemNameSuggestions';
+import type { ItemSuggestion } from '@/hooks/useItemNameSuggestions';
 
 const PAGE_SIZE = 50;
 
@@ -155,6 +160,8 @@ export function WorkspaceLineItems({
   const [bulkOpen, setBulkOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [cols, setCols] = useState<ColsVisible>(DEFAULT_COLS);
+  const [pbOpen, setPbOpen] = useState(false);
+  const [pbSearch, setPbSearch] = useState('');
 
   const [rawInputs, setRawInputs] = useState<Record<string, ItemRaw>>(() => {
     const init: Record<string, ItemRaw> = {};
@@ -216,6 +223,41 @@ export function WorkspaceLineItems({
     setCurrentPage(Math.floor(items.length / PAGE_SIZE));
   };
 
+  const fillFromSuggestion = (id: string, s: ItemSuggestion) => {
+    const itemType: ItemType =
+      s.source === 'price_book' && s.category === 'Materiał' ? 'material' : 'labor';
+    setItems((prev) =>
+      prev.map((i) =>
+        i.id === id ? { ...i, name: s.name, unit: s.unit, price: s.price, itemType } : i,
+      ),
+    );
+    setRawInputs((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], price: String(s.price) },
+    }));
+  };
+
+  const addFromSuggestion = (s: ItemSuggestion) => {
+    const itemType: ItemType =
+      s.source === 'price_book' && s.category === 'Materiał' ? 'material' : 'labor';
+    const newItem: LineItem = {
+      id: crypto.randomUUID(),
+      name: s.name,
+      qty: 1,
+      unit: s.unit,
+      priceMode: 'single',
+      price: s.price,
+      laborCost: 0,
+      materialCost: 0,
+      marginPct: 0,
+      showMargin: true,
+      itemType,
+    };
+    const isOnlyBlank = items.length === 1 && !items[0].name.trim() && items[0].price === 0;
+    setItems((prev) => isOnlyBlank ? [newItem] : [...prev, newItem]);
+    setRawInputs((prev) => ({ ...prev, [newItem.id]: initRaw(newItem) }));
+  };
+
   const handleBulkAdd = (newItems: LineItem[]) => {
     const isOnlyBlank =
       items.length === 1 && !items[0].name.trim() && items[0].price === 0;
@@ -262,6 +304,19 @@ export function WorkspaceLineItems({
             </CardTitle>
 
             <div className="flex items-center gap-2 flex-wrap">
+              {/* Price book search toggle */}
+              <Button
+                variant={pbOpen ? 'default' : 'outline'}
+                size="sm"
+                type="button"
+                onClick={() => { setPbOpen((v) => !v); if (!pbOpen) setPbSearch(''); }}
+                className="h-7 text-xs gap-1.5"
+                data-testid="toggle-price-book"
+              >
+                <BookOpen className="h-3 w-3" />
+                {t('priceBook.fromPriceBook')}
+              </Button>
+
               {/* Bulk add */}
               <Button
                 variant="outline"
@@ -337,6 +392,15 @@ export function WorkspaceLineItems({
         </CardHeader>
 
         <CardContent className="pb-4">
+          {/* ── Price book search panel ─── */}
+          {pbOpen && (
+            <PriceBookPanel
+              search={pbSearch}
+              onSearchChange={setPbSearch}
+              onSelect={addFromSuggestion}
+            />
+          )}
+
           {/* ── Desktop column headers ─── */}
           <DesktopColHeaders cols={cols} />
 
@@ -362,6 +426,8 @@ export function WorkspaceLineItems({
                   onUpdateNum={(field, raw) => updateNum(item.id, field, raw)}
                   onCycleType={() => cycleType(item.id, item.itemType)}
                   onRemove={() => remove(item.id)}
+                  onFillFromSuggestion={(s) => fillFromSuggestion(item.id, s)}
+                  showSaveBtn
                 />
               );
             })}
@@ -419,6 +485,231 @@ export function WorkspaceLineItems({
   );
 }
 
+/* ── PriceBookPanel ──────────────────────────────────────────────── */
+
+interface PriceBookPanelProps {
+  search: string;
+  onSearchChange: (v: string) => void;
+  onSelect: (s: ItemSuggestion) => void;
+}
+
+function PriceBookPanel({ search, onSearchChange, onSelect }: PriceBookPanelProps) {
+  const { t } = useTranslation();
+  const { suggestions, priceBookSuggestions, historicalSuggestions, isLoading } =
+    useItemNameSuggestions(search);
+
+  const hasSuggestions = suggestions.length > 0;
+  const showEmpty = search.trim().length >= 2 && !isLoading && !hasSuggestions;
+  const showHint = search.trim().length < 2;
+
+  return (
+    <div
+      className="mb-3 rounded-lg border border-border bg-muted/30 p-2.5 space-y-2"
+      data-testid="price-book-panel"
+    >
+      <div className="relative">
+        <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+        <Input
+          className="pl-7 h-8 text-sm"
+          placeholder={t('priceBook.searchPlaceholder')}
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
+          autoFocus
+          data-testid="price-book-search"
+        />
+      </div>
+
+      {showHint && (
+        <p className="text-xs text-muted-foreground px-1">
+          {t('priceBook.searchPlaceholder')}
+        </p>
+      )}
+
+      {showEmpty && (
+        <p className="text-xs text-muted-foreground text-center py-2">
+          {t('priceBook.noResults')}
+        </p>
+      )}
+
+      {hasSuggestions && (
+        <div className="space-y-0.5 max-h-48 overflow-y-auto">
+          {/* Price book section */}
+          {priceBookSuggestions.length > 0 && (
+            <>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide px-1 pt-1">
+                {t('priceBook.sourcePriceBook')}
+              </p>
+              {priceBookSuggestions.map((s) => (
+                <SuggestionRow key={s.id} suggestion={s} onSelect={onSelect} />
+              ))}
+            </>
+          )}
+
+          {/* Historical section */}
+          {historicalSuggestions.length > 0 && (
+            <>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide px-1 pt-1.5">
+                {t('priceBook.recentlyUsed')}
+              </p>
+              {historicalSuggestions.map((s) => (
+                <SuggestionRow key={s.id} suggestion={s} onSelect={onSelect} />
+              ))}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface SuggestionRowProps {
+  suggestion: ItemSuggestion;
+  onSelect: (s: ItemSuggestion) => void;
+}
+
+function SuggestionRow({ suggestion, onSelect }: SuggestionRowProps) {
+  const { t } = useTranslation();
+  const sourceLabel =
+    suggestion.source === 'price_book'
+      ? t('priceBook.sourcePriceBook')
+      : t('priceBook.sourceRecentlyUsed', {
+          price: suggestion.price.toFixed(0),
+          unit: suggestion.unit,
+        });
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(suggestion)}
+      className="w-full flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-accent transition-colors group"
+      data-testid="suggestion-row"
+    >
+      <Plus className="h-3.5 w-3.5 shrink-0 text-primary opacity-60 group-hover:opacity-100" />
+      <span className="flex-1 truncate">{suggestion.name}</span>
+      <span className="text-xs text-muted-foreground shrink-0">
+        {suggestion.price.toFixed(0)} zł / {suggestion.unit}
+      </span>
+      <span
+        className={cn(
+          'text-[10px] rounded-full px-1.5 py-0.5 shrink-0',
+          suggestion.source === 'price_book'
+            ? 'bg-primary/10 text-primary'
+            : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+        )}
+        data-testid={`suggestion-source-${suggestion.source}`}
+      >
+        {sourceLabel}
+      </span>
+    </button>
+  );
+}
+
+/* ── NameFieldWithAutocomplete ───────────────────────────────────── */
+
+interface NameFieldProps {
+  value: string;
+  placeholder: string;
+  containerClassName?: string;
+  onChange: (v: string) => void;
+  onSelect?: (s: ItemSuggestion) => void;
+}
+
+function NameFieldWithAutocomplete({
+  value,
+  placeholder,
+  containerClassName,
+  onChange,
+  onSelect,
+}: NameFieldProps) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const { priceBookSuggestions, historicalSuggestions, isLoading } =
+    useItemNameSuggestions(value);
+
+  const hasSuggestions = priceBookSuggestions.length > 0 || historicalSuggestions.length > 0;
+  const showDropdown = open && value.trim().length >= 2 && (isLoading || hasSuggestions);
+
+  return (
+    <div className={cn('relative', containerClassName)}>
+      <Input
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => { onChange(e.target.value); setOpen(true); }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        className="h-9 text-sm w-full"
+        data-testid="name-field"
+      />
+      {showDropdown && (
+        <div
+          className="absolute z-50 top-full left-0 right-0 mt-0.5 rounded-md border border-border bg-background shadow-lg max-h-48 overflow-y-auto"
+          data-testid="name-suggestions-dropdown"
+        >
+          {isLoading && (
+            <p className="text-xs text-muted-foreground px-2 py-1.5">…</p>
+          )}
+          {priceBookSuggestions.length > 0 && (
+            <>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide px-2 pt-1.5 pb-0.5">
+                {t('priceBook.sourcePriceBook')}
+              </p>
+              {priceBookSuggestions.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    onSelect?.(s);
+                    setOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-accent transition-colors"
+                  data-testid="name-suggestion-row"
+                >
+                  <span className="flex-1 truncate">{s.name}</span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {s.price.toFixed(0)} zł / {s.unit}
+                  </span>
+                  <span className="text-[10px] rounded-full px-1.5 py-0.5 bg-primary/10 text-primary shrink-0">
+                    {t('priceBook.sourcePriceBook')}
+                  </span>
+                </button>
+              ))}
+            </>
+          )}
+          {historicalSuggestions.length > 0 && (
+            <>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide px-2 pt-1.5 pb-0.5">
+                {t('priceBook.recentlyUsed')}
+              </p>
+              {historicalSuggestions.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    onSelect?.(s);
+                    setOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-accent transition-colors"
+                  data-testid="name-suggestion-row"
+                >
+                  <span className="flex-1 truncate">{s.name}</span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {s.price.toFixed(0)} zł / {s.unit}
+                  </span>
+                  <span className="text-[10px] rounded-full px-1.5 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 shrink-0">
+                    {t('priceBook.sourceRecentlyUsed', { price: s.price.toFixed(0), unit: s.unit })}
+                  </span>
+                </button>
+              ))}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ── DesktopColHeaders ───────────────────────────────────────────── */
 
 function DesktopColHeaders({ cols }: { cols: ColsVisible }) {
@@ -463,6 +754,8 @@ interface ItemRowProps {
   ) => void;
   onCycleType: () => void;
   onRemove: () => void;
+  onFillFromSuggestion?: (s: ItemSuggestion) => void;
+  showSaveBtn?: boolean;
 }
 
 function ItemRow({
@@ -474,6 +767,8 @@ function ItemRow({
   onUpdateNum,
   onCycleType,
   onRemove,
+  onFillFromSuggestion,
+  showSaveBtn = false,
 }: ItemRowProps) {
   const { t } = useTranslation();
 
@@ -513,11 +808,12 @@ function ItemRow({
         )}
 
         {/* Name */}
-        <Input
-          placeholder={t('szybkaWycena.itemPlaceholder')}
+        <NameFieldWithAutocomplete
           value={item.name}
-          onChange={(e) => onUpdate('name', e.target.value)}
-          className="flex-1 min-w-0 h-9 text-sm"
+          placeholder={t('szybkaWycena.itemPlaceholder')}
+          containerClassName="flex-1 min-w-0"
+          onChange={(v) => onUpdate('name', v)}
+          onSelect={onFillFromSuggestion}
         />
 
         {/* Qty */}
@@ -660,6 +956,16 @@ function ItemRow({
           </div>
         )}
 
+        {/* Save to price book (desktop) */}
+        {showSaveBtn && (
+          <SaveToPriceBookButton
+            name={item.name}
+            unit={item.unit}
+            price={item.price}
+            category={item.itemType === 'material' ? 'Materiał' : 'Robocizna'}
+          />
+        )}
+
         {/* Delete */}
         <Button
           variant="ghost"
@@ -688,11 +994,12 @@ function ItemRow({
               {TYPE_LABELS[item.itemType].slice(0, 3)}
             </button>
           )}
-          <Input
-            placeholder={t('szybkaWycena.itemPlaceholder')}
+          <NameFieldWithAutocomplete
             value={item.name}
-            onChange={(e) => onUpdate('name', e.target.value)}
-            className="flex-1 h-9 text-sm"
+            placeholder={t('szybkaWycena.itemPlaceholder')}
+            containerClassName="flex-1"
+            onChange={(v) => onUpdate('name', v)}
+            onSelect={onFillFromSuggestion}
           />
           <Button
             variant="ghost"
@@ -816,6 +1123,18 @@ function ItemRow({
                 {fmt(lineTotal)} zł
               </div>
             )}
+          </div>
+        )}
+
+        {/* Save to price book (mobile) */}
+        {showSaveBtn && item.name.trim() && (
+          <div className="flex justify-end">
+            <SaveToPriceBookButton
+              name={item.name}
+              unit={item.unit}
+              price={item.price}
+              category={item.itemType === 'material' ? 'Materiał' : 'Robocizna'}
+            />
           </div>
         )}
       </div>
