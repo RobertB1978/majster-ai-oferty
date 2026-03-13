@@ -47,13 +47,13 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
 
   const handleGoToStep = (stepId: number) => {
     const routes: Record<number, string> = {
-      1: '/profile',
-      2: '/clients',
-      3: '/projects/new',
-      4: '/projects',
-      5: '/projects',
+      1: '/app/profile',
+      2: '/app/customers',
+      3: '/app/offers/new',
+      4: '/app/offers',
+      5: '/app/offers',
     };
-    
+
     onClose();
     navigate(routes[stepId]);
   };
