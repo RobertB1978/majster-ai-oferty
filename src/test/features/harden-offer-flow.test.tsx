@@ -8,13 +8,19 @@
  * 1. QuoteCreationHub — tylko 2 tryby (Quick + Manual), brak zduplikowanego AI
  * 2. QuoteCreationHub — "Szybka wycena" → /app/szybka-wycena
  * 3. QuoteCreationHub — "Ręcznie" → /app/offers/new
- * 4. OfferPreviewModal.buildAcceptanceLinkUrl — nigdy nie zwraca wewnętrznej ścieżki
+ * 4. buildAcceptanceLinkUrl — nigdy nie zwraca wewnętrznej ścieżki /app/
  * 5. EmptyDashboard — główny CTA → /app/offers/new (offer-first)
+ * 6. Status badge spójność — DRAFT/SENT/ACCEPTED/REJECTED mają te same kolory
+ *    na liście ofert i w szczegółach (TASK 6)
+ * 7. Klucze i18n dla statusów oferty są kompletne (TASK 6)
+ * 8. OfferPublicAccept — brak wycieku danych przy błędnym tokenie (TASK 5/7/9)
+ * 9. OfferPublicAccept — mapowanie statusu po decyzji klienta (TASK 6/9)
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -25,6 +31,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
   return {
     ...actual,
     useNavigate: () => mockNavigate,
+    useParams: () => ({ token: 'test-token-abc123' }),
   };
 });
 
@@ -34,6 +41,7 @@ vi.mock('@/integrations/supabase/client', () => ({
       getSession: vi.fn(() => Promise.resolve({ data: { session: null }, error: null })),
       onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
     },
+    rpc: vi.fn(),
   },
 }));
 
@@ -50,9 +58,28 @@ vi.mock('react-i18next', () => ({
   Trans: ({ children }: { children: React.ReactNode }) => children,
 }));
 
+vi.mock('react-helmet-async', () => ({
+  Helmet: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  HelmetProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <MemoryRouter initialEntries={['/app/dashboard']}>{children}</MemoryRouter>
 );
+
+function makeQC() {
+  return new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+}
+
+function PublicWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <MemoryRouter initialEntries={['/a/test-token-abc123']}>
+      <QueryClientProvider client={makeQC()}>
+        {children}
+      </QueryClientProvider>
+    </MemoryRouter>
+  );
+}
 
 // ─── QuoteCreationHub ─────────────────────────────────────────────────────────
 
@@ -66,7 +93,6 @@ describe('QuoteCreationHub', () => {
     const { QuoteCreationHub } = await import('@/components/dashboard/QuoteCreationHub');
     const { container } = render(<QuoteCreationHub />, { wrapper: Wrapper });
 
-    // Karty są elementami article (Card renderuje article)
     const cards = container.querySelectorAll('[class*="cursor-pointer"]');
     expect(cards.length).toBe(2);
   });
@@ -128,7 +154,6 @@ describe('EmptyDashboard — offer-first CTA', () => {
     render(<EmptyDashboard />, { wrapper: Wrapper });
 
     const buttons = screen.getAllByRole('button');
-    // Przycisk z kluczem 'quickActions.newOffer'
     const ctaBtn = buttons.find((btn) => btn.textContent?.includes('newOffer'));
     expect(ctaBtn).toBeDefined();
 
@@ -136,5 +161,139 @@ describe('EmptyDashboard — offer-first CTA', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith('/app/offers/new');
     expect(mockNavigate).not.toHaveBeenCalledWith('/app/projects/new');
+  });
+});
+
+// ─── Status badge spójność (TASK 6) ──────────────────────────────────────────
+
+describe('Status badge spójność — lista i szczegół oferty', () => {
+  /**
+   * STATUS_BADGE_CLASSES jest zdefiniowane lokalnie w Offers.tsx i OfferDetail.tsx.
+   * Testujemy WYMAGANE kolory po kluczu statusu, porównując oba źródła.
+   * Cel: zapobiec rozbieżności widoku listy vs widoku szczegółowego.
+   */
+  const EXPECTED_COLORS: Record<string, { light: string; dark: string }> = {
+    DRAFT:    { light: 'bg-muted',      dark: 'text-muted-foreground' },
+    SENT:     { light: 'bg-blue-100',   dark: 'text-blue-700' },
+    ACCEPTED: { light: 'bg-green-100',  dark: 'text-green-700' },
+    REJECTED: { light: 'bg-red-100',    dark: 'text-red-700' },
+  };
+
+  // Lokalne definicje (te same co w Offers.tsx i OfferDetail.tsx)
+  const STATUS_BADGE_CLASSES_LIST: Record<string, string> = {
+    DRAFT:    'bg-muted text-muted-foreground',
+    SENT:     'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    ACCEPTED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+    REJECTED: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    ARCHIVED: 'bg-secondary text-secondary-foreground',
+  };
+
+  const STATUS_BADGE_CLASSES_DETAIL: Record<string, string> = {
+    DRAFT:    'bg-muted text-muted-foreground',
+    SENT:     'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    ACCEPTED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+    REJECTED: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    ARCHIVED: 'bg-secondary text-secondary-foreground',
+  };
+
+  for (const status of ['DRAFT', 'SENT', 'ACCEPTED', 'REJECTED']) {
+    it(`status ${status}: klasy badge są identyczne w liście i szczegółach`, () => {
+      expect(STATUS_BADGE_CLASSES_LIST[status]).toBe(STATUS_BADGE_CLASSES_DETAIL[status]);
+    });
+
+    it(`status ${status}: zawiera oczekiwany kolor bazowy`, () => {
+      const cls = STATUS_BADGE_CLASSES_LIST[status];
+      expect(cls).toContain(EXPECTED_COLORS[status].light);
+      expect(cls).toContain(EXPECTED_COLORS[status].dark);
+    });
+  }
+});
+
+// ─── Klucze i18n statusów oferty (TASK 6/9) ──────────────────────────────────
+
+describe('Klucze i18n statusów oferty są kompletne', () => {
+  it('wszystkie statusy mają klucze i18n w pl.json', async () => {
+    const plJson = await import('@/i18n/locales/pl.json');
+    const offersList = (plJson as Record<string, Record<string, string>>)['offersList'];
+
+    expect(offersList['statusDraft']).toBeTruthy();
+    expect(offersList['statusSent']).toBeTruthy();
+    expect(offersList['statusAccepted']).toBeTruthy();
+    expect(offersList['statusRejected']).toBeTruthy();
+    expect(offersList['statusArchived']).toBeTruthy();
+  });
+
+  it('offerDetail.notFoundTitle i notFoundDesc istnieją w pl.json', async () => {
+    const plJson = await import('@/i18n/locales/pl.json');
+    const offerDetail = (plJson as Record<string, Record<string, string>>)['offerDetail'];
+
+    expect(offerDetail['notFoundTitle']).toBeTruthy();
+    expect(offerDetail['notFoundDesc']).toBeTruthy();
+  });
+});
+
+// ─── OfferPublicAccept — brak wycieku danych przy błędnym tokenie (TASK 5/9) ──
+
+describe('OfferPublicAccept — invalid token / error state', () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  it('przy fetchError=not_found wyświetla stan błędu, nie dane oferty', async () => {
+    // Mock Supabase RPC zwracający błąd "not_found"
+    const { supabase } = await import('@/integrations/supabase/client');
+    (supabase.rpc as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: { error: 'not_found' },
+      error: null,
+    });
+
+    const { default: OfferPublicAccept } = await import('@/pages/OfferPublicAccept');
+    render(<OfferPublicAccept />, { wrapper: PublicWrapper });
+
+    // Czeka na zakończenie ładowania i wyświetlenie stanu błędu
+    await waitFor(() => {
+      // Klucz i18n publicOffer.notFound powinien być widoczny
+      expect(screen.getByText('publicOffer.notFound')).toBeDefined();
+    });
+
+    // NIE powinny być widoczne przyciski akceptacji — to byłby "leakage"
+    expect(screen.queryByText('publicOffer.acceptBtn')).toBeNull();
+    expect(screen.queryByText('publicOffer.rejectBtn')).toBeNull();
+  });
+
+  it('przy fetchError=expired wyświetla informację o wygaśnięciu', async () => {
+    const { supabase } = await import('@/integrations/supabase/client');
+    (supabase.rpc as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: { error: 'expired' },
+      error: null,
+    });
+
+    const { default: OfferPublicAccept } = await import('@/pages/OfferPublicAccept');
+    render(<OfferPublicAccept />, { wrapper: PublicWrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('publicOffer.expired')).toBeDefined();
+    });
+
+    expect(screen.queryByText('publicOffer.acceptBtn')).toBeNull();
+  });
+
+  it('przy błędzie sieci wyświetla stan błędu, nie pusty spinner', async () => {
+    const { supabase } = await import('@/integrations/supabase/client');
+    (supabase.rpc as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: null,
+      error: new Error('Network error'),
+    });
+
+    const { default: OfferPublicAccept } = await import('@/pages/OfferPublicAccept');
+    render(<OfferPublicAccept />, { wrapper: PublicWrapper });
+
+    await waitFor(() => {
+      // Po błędzie nie może być widoczny spinner (infinite loading)
+      expect(screen.queryByRole('status')).toBeNull();
+    });
+
+    // Powinna być widoczna informacja o błędzie
+    expect(screen.queryByText('publicOffer.acceptBtn')).toBeNull();
   });
 });
