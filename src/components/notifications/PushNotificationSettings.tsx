@@ -48,13 +48,13 @@ export function PushNotificationSettings() {
         // Register service worker and subscribe
         if ('serviceWorker' in navigator) {
           const _registration = await navigator.serviceWorker.ready;
-          
+
           // In production, you would subscribe to push here
           // const subscription = await registration.pushManager.subscribe({
           //   userVisibleOnly: true,
           //   applicationServerKey: VAPID_PUBLIC_KEY
           // });
-          
+
           setIsSubscribed(true);
           toast.success(t('pushNotifications.toast.enabled'));
         }
@@ -91,7 +91,7 @@ export function PushNotificationSettings() {
   const testNotification = () => {
     if (permission === 'granted') {
       new Notification('Majster.AI - Test', {
-        body: 'Powiadomienia działają poprawnie!',
+        body: t('pushNotifications.testBody'),
         icon: '/icon-192.png',
         badge: '/icon-192.png',
       });
@@ -103,10 +103,10 @@ export function PushNotificationSettings() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5" />
-          Powiadomienia Push
+          {t('pushNotifications.title')}
         </CardTitle>
         <CardDescription>
-          Otrzymuj powiadomienia w przeglądarce i na telefonie
+          {t('pushNotifications.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -124,14 +124,14 @@ export function PushNotificationSettings() {
             )}
             <div>
               <p className="font-medium">
-                {isSubscribed ? 'Powiadomienia włączone' : 'Powiadomienia wyłączone'}
+                {isSubscribed ? t('pushNotifications.enabled') : t('pushNotifications.disabled')}
               </p>
               <p className="text-sm text-muted-foreground">
-                {permission === 'denied' 
-                  ? 'Zablokowane w ustawieniach przeglądarki' 
-                  : isSubscribed 
-                    ? 'Otrzymujesz powiadomienia push' 
-                    : 'Włącz, aby otrzymywać powiadomienia'}
+                {permission === 'denied'
+                  ? t('pushNotifications.blockedInBrowser')
+                  : isSubscribed
+                    ? t('pushNotifications.receiving')
+                    : t('pushNotifications.enablePrompt')}
               </p>
             </div>
           </div>
@@ -144,9 +144,9 @@ export function PushNotificationSettings() {
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : isSubscribed ? (
-                'Wyłącz'
+                t('pushNotifications.disable')
               ) : (
-                'Włącz'
+                t('pushNotifications.enable')
               )}
             </Button>
           )}
@@ -155,13 +155,13 @@ export function PushNotificationSettings() {
         {/* Settings */}
         {isSubscribed && (
           <div className="space-y-4">
-            <h4 className="font-medium">Rodzaje powiadomień</h4>
-            
+            <h4 className="font-medium">{t('pushNotifications.notificationTypes')}</h4>
+
             <div className="flex items-center justify-between">
               <div>
-                <Label>Nowe oferty</Label>
+                <Label>{t('pushNotifications.newOffers')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Powiadomienia o nowych zapytaniach ofertowych
+                  {t('pushNotifications.newOffersDesc')}
                 </p>
               </div>
               <Switch
@@ -172,9 +172,9 @@ export function PushNotificationSettings() {
 
             <div className="flex items-center justify-between">
               <div>
-                <Label>Terminy projektów</Label>
+                <Label>{t('pushNotifications.projectDeadlines')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Przypomnienia o zbliżających się terminach
+                  {t('pushNotifications.projectDeadlinesDesc')}
                 </p>
               </div>
               <Switch
@@ -185,9 +185,9 @@ export function PushNotificationSettings() {
 
             <div className="flex items-center justify-between">
               <div>
-                <Label>Akceptacje ofert</Label>
+                <Label>{t('pushNotifications.offerApprovals')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Gdy klient zaakceptuje lub odrzuci ofertę
+                  {t('pushNotifications.offerApprovalsDesc')}
                 </p>
               </div>
               <Switch
@@ -198,9 +198,9 @@ export function PushNotificationSettings() {
 
             <div className="flex items-center justify-between">
               <div>
-                <Label>Marketing i nowości</Label>
+                <Label>{t('pushNotifications.marketing')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Informacje o nowych funkcjach i promocjach
+                  {t('pushNotifications.marketingDesc')}
                 </p>
               </div>
               <Switch
@@ -210,7 +210,7 @@ export function PushNotificationSettings() {
             </div>
 
             <Button variant="outline" size="sm" onClick={testNotification}>
-              Wyślij testowe powiadomienie
+              {t('pushNotifications.sendTest')}
             </Button>
           </div>
         )}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,7 @@ import { useTeamMembers, useAddTeamMember, useUpdateTeamMember, useDeleteTeamMem
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export function TeamMembersPanel() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -38,7 +40,7 @@ export function TeamMembersPanel() {
     } else {
       await addMember.mutateAsync(formData);
     }
-    
+
     setIsOpen(false);
     resetForm();
   };
@@ -57,9 +59,9 @@ export function TeamMembersPanel() {
 
   const getRoleName = (role: string) => {
     switch (role) {
-      case 'manager': return 'Kierownik';
-      case 'foreman': return 'Brygadzista';
-      case 'worker': return 'Pracownik';
+      case 'manager': return t('team.members.manager');
+      case 'foreman': return t('team.members.foreman');
+      case 'worker': return t('team.members.worker');
       default: return role;
     }
   };
@@ -70,57 +72,57 @@ export function TeamMembersPanel() {
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Zespół ({members.length})
+            {t('team.members.teamTitle', { count: members.length })}
           </span>
           <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
               <Button size="sm">
                 <Plus className="h-4 w-4 mr-2" />
-                Dodaj
+                {t('team.members.add')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{editingId ? 'Edytuj pracownika' : 'Dodaj pracownika'}</DialogTitle>
+                <DialogTitle>{editingId ? t('team.members.editEmployee') : t('team.members.addEmployee')}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Imię i nazwisko *</Label>
-                  <Input 
-                    value={formData.name} 
+                  <Label>{t('team.members.fullName')}</Label>
+                  <Input
+                    value={formData.name}
                     onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Telefon</Label>
-                  <Input 
-                    value={formData.phone} 
+                  <Label>{t('team.members.phone')}</Label>
+                  <Input
+                    value={formData.phone}
                     onChange={(e) => setFormData(p => ({ ...p, phone: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Email</Label>
-                  <Input 
+                  <Label>{t('team.members.email')}</Label>
+                  <Input
                     type="email"
-                    value={formData.email} 
+                    value={formData.email}
                     onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Rola</Label>
+                  <Label>{t('team.members.role')}</Label>
                   <Select value={formData.role} onValueChange={(v) => setFormData(p => ({ ...p, role: v }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="manager">Kierownik</SelectItem>
-                      <SelectItem value="foreman">Brygadzista</SelectItem>
-                      <SelectItem value="worker">Pracownik</SelectItem>
+                      <SelectItem value="manager">{t('team.members.manager')}</SelectItem>
+                      <SelectItem value="foreman">{t('team.members.foreman')}</SelectItem>
+                      <SelectItem value="worker">{t('team.members.worker')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <Button onClick={handleSubmit} className="w-full">
-                  {editingId ? 'Zapisz zmiany' : 'Dodaj pracownika'}
+                  {editingId ? t('team.members.saveChanges') : t('team.members.addEmployeeBtn')}
                 </Button>
               </div>
             </DialogContent>
@@ -131,13 +133,13 @@ export function TeamMembersPanel() {
         {members.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
-            <p>Brak pracowników</p>
+            <p>{t('team.members.noEmployees')}</p>
           </div>
         ) : (
           <div className="space-y-3">
             {members.map((member) => (
-              <div 
-                key={member.id} 
+              <div
+                key={member.id}
                 className={`p-4 rounded-lg border ${member.is_active ? 'bg-card' : 'bg-muted opacity-60'}`}
               >
                 <div className="flex items-start justify-between">
@@ -153,7 +155,7 @@ export function TeamMembersPanel() {
                         <Badge variant="outline" className="text-xs">
                           {getRoleName(member.role)}
                         </Badge>
-                        {!member.is_active && <Badge variant="secondary">Nieaktywny</Badge>}
+                        {!member.is_active && <Badge variant="secondary">{t('team.members.inactive')}</Badge>}
                       </div>
                     </div>
                   </div>
@@ -161,16 +163,16 @@ export function TeamMembersPanel() {
                     <Button size="sm" variant="ghost" onClick={() => handleEdit(member)}>
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
+                    <Button
+                      size="sm"
+                      variant="ghost"
                       onClick={() => deleteMember.mutate(member.id)}
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
                 </div>
-                
+
                 {(member.phone || member.email) && (
                   <div className="mt-3 flex gap-4 text-sm text-muted-foreground">
                     {member.phone && (

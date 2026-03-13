@@ -88,7 +88,7 @@ export function AuditLogPanel() {
 
   const handleExport = () => {
     const csv = [
-      ['Data', 'Akcja', 'Typ', 'ID obiektu', 'User Agent'].join(','),
+      [t('admin.auditLog.csvHeaders.date'), t('admin.auditLog.csvHeaders.action'), t('admin.auditLog.csvHeaders.type'), t('admin.auditLog.csvHeaders.entityId'), t('admin.auditLog.csvHeaders.userAgent')].join(','),
       ...filteredLogs.map(log => [
         format(new Date(log.created_at), 'yyyy-MM-dd HH:mm:ss'),
         t(actionLabelKey(log.action), { defaultValue: log.action }),
@@ -112,8 +112,8 @@ export function AuditLogPanel() {
   return (
     <>
       <SEOHead
-        title="Dziennik Audytu"
-        description="Przegląd wszystkich akcji wykonanych w systemie"
+        title={t('admin.auditLog.seoTitle')}
+        description={t('admin.auditLog.seoDescription')}
         noIndex={true}
       />
 
@@ -125,13 +125,13 @@ export function AuditLogPanel() {
                 <Shield className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <CardTitle>Dziennik Audytu</CardTitle>
-                <CardDescription>Historia wszystkich akcji w systemie</CardDescription>
+                <CardTitle>{t('admin.auditLog.title')}</CardTitle>
+                <CardDescription>{t('admin.auditLog.description')}</CardDescription>
               </div>
             </div>
             <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
-              Eksport CSV
+              {t('admin.auditLog.exportCsv')}
             </Button>
           </div>
         </CardHeader>
@@ -141,7 +141,7 @@ export function AuditLogPanel() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Szukaj akcji..."
+                placeholder={t('admin.auditLog.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -150,16 +150,16 @@ export function AuditLogPanel() {
             <Select value={actionFilter} onValueChange={setActionFilter}>
               <SelectTrigger className="w-[180px]">
                 <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Filtruj typ" />
+                <SelectValue placeholder={t('admin.auditLog.filterPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Wszystkie</SelectItem>
-                <SelectItem value="user">Użytkownik</SelectItem>
-                <SelectItem value="client">Klienci</SelectItem>
-                <SelectItem value="project">Projekty</SelectItem>
-                <SelectItem value="quote">Wyceny</SelectItem>
-                <SelectItem value="offer">Oferty</SelectItem>
-                <SelectItem value="team">Zespół</SelectItem>
+                <SelectItem value="all">{t('admin.auditLog.all')}</SelectItem>
+                <SelectItem value="user">{t('admin.auditLog.user')}</SelectItem>
+                <SelectItem value="client">{t('admin.auditLog.clients')}</SelectItem>
+                <SelectItem value="project">{t('admin.auditLog.projects')}</SelectItem>
+                <SelectItem value="quote">{t('admin.auditLog.quotes')}</SelectItem>
+                <SelectItem value="offer">{t('admin.auditLog.offers')}</SelectItem>
+                <SelectItem value="team">{t('admin.auditLog.teamFilter')}</SelectItem>
                 <SelectItem value="api">API</SelectItem>
               </SelectContent>
             </Select>
@@ -173,18 +173,18 @@ export function AuditLogPanel() {
           ) : filteredLogs.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <Shield className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p>Brak wpisów w dzienniku audytu</p>
+              <p>{t('admin.auditLog.noEntries')}</p>
             </div>
           ) : (
             <div className="rounded-lg border overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[180px]">Data</TableHead>
-                    <TableHead>Akcja</TableHead>
-                    <TableHead>Typ</TableHead>
-                    <TableHead className="hidden md:table-cell">ID</TableHead>
-                    <TableHead className="hidden lg:table-cell">Urządzenie</TableHead>
+                    <TableHead className="w-[180px]">{t('admin.auditLog.dateHeader')}</TableHead>
+                    <TableHead>{t('admin.auditLog.actionHeader')}</TableHead>
+                    <TableHead>{t('admin.auditLog.typeHeader')}</TableHead>
+                    <TableHead className="hidden md:table-cell">{t('admin.auditLog.idHeader')}</TableHead>
+                    <TableHead className="hidden lg:table-cell">{t('admin.auditLog.deviceHeader')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -223,7 +223,7 @@ export function AuditLogPanel() {
           )}
 
           <div className="mt-4 text-xs text-muted-foreground">
-            Pokazano {filteredLogs.length} z {logs.length} wpisów
+            {t('admin.auditLog.showing', { filtered: filteredLogs.length, total: logs.length })}
           </div>
         </CardContent>
       </Card>

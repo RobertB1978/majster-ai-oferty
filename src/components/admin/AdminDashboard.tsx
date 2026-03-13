@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -32,14 +33,15 @@ const mockStats: AdminStats = {
   apiCalls: 15678,
 };
 
-const mockUsageData = [
-  { date: 'Pon', users: 45, projects: 12 },
-  { date: 'Wt', users: 52, projects: 18 },
-  { date: 'Śr', users: 48, projects: 15 },
-  { date: 'Cz', users: 61, projects: 22 },
-  { date: 'Pt', users: 55, projects: 20 },
-  { date: 'Sb', users: 32, projects: 8 },
-  { date: 'Nd', users: 28, projects: 5 },
+const mockUsageDataKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
+const mockUsageValues = [
+  { users: 45, projects: 12 },
+  { users: 52, projects: 18 },
+  { users: 48, projects: 15 },
+  { users: 61, projects: 22 },
+  { users: 55, projects: 20 },
+  { users: 32, projects: 8 },
+  { users: 28, projects: 5 },
 ];
 
 const mockPlanDistribution = [
@@ -50,7 +52,21 @@ const mockPlanDistribution = [
 ];
 
 export function AdminDashboard() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
+
+  const mockUsageData = mockUsageDataKeys.map((key, i) => ({
+    date: t(`admin.dashboard.${key}`),
+    ...mockUsageValues[i],
+  }));
+
+  const mockActivityData = [
+    { action: t('admin.dashboard.newUser'), user: 'jan.kowalski@example.com', time: t('admin.dashboard.minutesAgo', { count: 2 }) },
+    { action: t('admin.dashboard.newProject'), user: 'anna.nowak@example.com', time: t('admin.dashboard.minutesAgo', { count: 15 }) },
+    { action: t('admin.dashboard.upgradeToBusiness'), user: 'firma.xyz@example.com', time: t('admin.dashboard.hoursAgo', { count: 1 }) },
+    { action: t('admin.dashboard.apiCallAction'), user: 'api-key-xxx', time: t('admin.dashboard.hoursAgo', { count: 2 }) },
+    { action: t('admin.dashboard.offerAccepted'), user: 'klient@example.com', time: t('admin.dashboard.hoursAgo', { count: 3 }) },
+  ];
 
   return (
     <div className="space-y-6">
@@ -59,13 +75,13 @@ export function AdminDashboard() {
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
-            Panel Administratora
+            {t('admin.dashboard.adminPanel')}
           </h2>
-          <p className="text-muted-foreground">Zarządzaj platformą Majster.AI</p>
+          <p className="text-muted-foreground">{t('admin.dashboard.managePlatform')}</p>
         </div>
         <Badge variant="outline" className="text-sm">
           <Activity className="h-3 w-3 mr-1" />
-          System aktywny
+          {t('admin.dashboard.systemActive')}
         </Badge>
       </div>
 
@@ -75,9 +91,9 @@ export function AdminDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Użytkownicy</p>
+                <p className="text-sm text-muted-foreground">{t('admin.dashboard.users')}</p>
                 <p className="text-2xl font-bold">{mockStats.totalUsers}</p>
-                <p className="text-xs text-green-500">+12 w tym tygodniu</p>
+                <p className="text-xs text-green-500">{t('admin.dashboard.thisWeek', { count: 12 })}</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <Users className="h-6 w-6 text-primary" />
@@ -90,9 +106,9 @@ export function AdminDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Aktywne projekty</p>
+                <p className="text-sm text-muted-foreground">{t('admin.dashboard.activeProjects')}</p>
                 <p className="text-2xl font-bold">{mockStats.activeProjects}</p>
-                <p className="text-xs text-green-500">+45 w tym miesiącu</p>
+                <p className="text-xs text-green-500">{t('admin.dashboard.thisMonth', { count: 45 })}</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                 <Database className="h-6 w-6 text-blue-600" />
@@ -105,9 +121,9 @@ export function AdminDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Przychody (MRR)</p>
+                <p className="text-sm text-muted-foreground">{t('admin.dashboard.revenue')}</p>
                 <p className="text-2xl font-bold">{mockStats.totalRevenue.toLocaleString()} zł</p>
-                <p className="text-xs text-green-500">+8% vs poprzedni miesiąc</p>
+                <p className="text-xs text-green-500">{t('admin.dashboard.vsPrevMonth', { percent: 8 })}</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                 <DollarSign className="h-6 w-6 text-green-600" />
@@ -120,9 +136,9 @@ export function AdminDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Wywołania API</p>
+                <p className="text-sm text-muted-foreground">{t('admin.dashboard.apiCalls')}</p>
                 <p className="text-2xl font-bold">{mockStats.apiCalls.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">Dziś</p>
+                <p className="text-xs text-muted-foreground">{t('admin.dashboard.today')}</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
                 <Server className="h-6 w-6 text-purple-600" />
@@ -134,14 +150,14 @@ export function AdminDashboard() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="overview">Przegląd</TabsTrigger>
+          <TabsTrigger value="overview">{t('admin.dashboard.overview')}</TabsTrigger>
           <TabsTrigger value="cron" className="flex items-center gap-1">
             <Timer className="h-3 w-3" />
             CRON
           </TabsTrigger>
-          <TabsTrigger value="users">Użytkownicy</TabsTrigger>
-          <TabsTrigger value="system">System</TabsTrigger>
-          <TabsTrigger value="logs">Logi</TabsTrigger>
+          <TabsTrigger value="users">{t('admin.dashboard.usersTab')}</TabsTrigger>
+          <TabsTrigger value="system">{t('admin.dashboard.systemTab')}</TabsTrigger>
+          <TabsTrigger value="logs">{t('admin.dashboard.logsTab')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6 mt-4">
@@ -151,7 +167,7 @@ export function AdminDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  Aktywność użytkowników
+                  {t('admin.dashboard.userActivity')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -166,14 +182,14 @@ export function AdminDashboard() {
                       dataKey="users" 
                       stroke="hsl(var(--primary))" 
                       fill="hsl(var(--primary)/0.3)" 
-                      name="Użytkownicy"
+                      name={t('admin.dashboard.chartUsers')}
                     />
                     <Area 
                       type="monotone" 
                       dataKey="projects" 
                       stroke="hsl(var(--chart-2))" 
                       fill="hsl(var(--chart-2)/0.3)" 
-                      name="Projekty"
+                      name={t('admin.dashboard.chartProjects')}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -185,7 +201,7 @@ export function AdminDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5" />
-                  Rozkład planów
+                  {t('admin.dashboard.planDistribution')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -225,18 +241,12 @@ export function AdminDashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
-                Ostatnia aktywność
+                {t('admin.dashboard.recentActivity')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {[
-                  { action: 'Nowy użytkownik', user: 'jan.kowalski@example.com', time: '2 min temu' },
-                  { action: 'Nowy projekt', user: 'anna.nowak@example.com', time: '15 min temu' },
-                  { action: 'Upgrade do Business', user: 'firma.xyz@example.com', time: '1 godz. temu' },
-                  { action: 'Wywołanie API', user: 'api-key-xxx', time: '2 godz. temu' },
-                  { action: 'Oferta zaakceptowana', user: 'klient@example.com', time: '3 godz. temu' },
-                ].map((item, i) => (
+                {mockActivityData.map((item, i) => (
                   <div key={i} className="flex items-center justify-between py-2 border-b last:border-0">
                     <div>
                       <p className="font-medium">{item.action}</p>
@@ -257,14 +267,14 @@ export function AdminDashboard() {
         <TabsContent value="users" className="mt-4">
           <Card>
             <CardHeader>
-              <CardTitle>Lista użytkowników</CardTitle>
-              <CardDescription>Zarządzaj użytkownikami platformy</CardDescription>
+              <CardTitle>{t('admin.dashboard.usersList')}</CardTitle>
+              <CardDescription>{t('admin.dashboard.usersListDesc')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12 text-muted-foreground">
                 <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Funkcja zarządzania użytkownikami wymaga uprawnień administratora</p>
-                <p className="text-sm mt-2">Skontaktuj się z działem wsparcia</p>
+                <p>{t('admin.dashboard.usersAdminRequired')}</p>
+                <p className="text-sm mt-2">{t('admin.dashboard.contactSupport')}</p>
               </div>
             </CardContent>
           </Card>
@@ -274,20 +284,20 @@ export function AdminDashboard() {
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle>Stan systemu</CardTitle>
+                <CardTitle>{t('admin.dashboard.systemStatus')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {[
                   { name: 'API Gateway', status: 'operational' },
-                  { name: 'Baza danych', status: 'operational' },
-                  { name: 'Funkcje Edge', status: 'operational' },
+                  { name: t('admin.dashboard.database'), status: 'operational' },
+                  { name: t('admin.dashboard.edgeFunctions'), status: 'operational' },
                   { name: 'Storage', status: 'operational' },
                   { name: 'AI Services', status: 'operational' },
                 ].map((service) => (
                   <div key={service.name} className="flex items-center justify-between">
                     <span>{service.name}</span>
                     <Badge variant={service.status === 'operational' ? 'default' : 'destructive'}>
-                      {service.status === 'operational' ? 'Działa' : 'Problem'}
+                      {service.status === 'operational' ? t('admin.dashboard.operational') : t('admin.dashboard.problem')}
                     </Badge>
                   </div>
                 ))}
@@ -296,14 +306,14 @@ export function AdminDashboard() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Alerty</CardTitle>
+                <CardTitle>{t('admin.dashboard.alerts')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-950/30 rounded-lg">
                   <Activity className="h-5 w-5 text-green-600" />
                   <div>
-                    <p className="font-medium text-green-700 dark:text-green-400">System sprawny</p>
-                    <p className="text-sm text-green-600">Brak aktywnych alertów</p>
+                    <p className="font-medium text-green-700 dark:text-green-400">{t('admin.dashboard.systemHealthy')}</p>
+                    <p className="text-sm text-green-600">{t('admin.dashboard.noActiveAlerts')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -314,7 +324,7 @@ export function AdminDashboard() {
         <TabsContent value="logs" className="mt-4">
           <Card>
             <CardHeader>
-              <CardTitle>Logi systemowe</CardTitle>
+              <CardTitle>{t('admin.dashboard.systemLogs')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="font-mono text-sm bg-muted rounded-lg p-4 max-h-96 overflow-auto">

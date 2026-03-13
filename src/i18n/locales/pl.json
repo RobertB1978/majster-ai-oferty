@@ -810,7 +810,15 @@
           "noAi": "Brak AI asystenta",
           "noExcel": "Brak eksportu Excel"
         },
-        "name": "Darmowy"
+        "name": "Darmowy",
+        "faq": {
+          "q1": "Jak długo działa plan darmowy?",
+          "a1": "Plan darmowy jest bezpłatny bez limitu czasu. Możesz korzystać z niego tak długo, jak chcesz.",
+          "q2": "Czy mogę zmienić na płatny plan?",
+          "a2": "Tak, w każdej chwili. Dane są zachowane.",
+          "q3": "Czy pokazują się reklamy?",
+          "a3": "W planie darmowym mogą pojawiać się banery informacyjne."
+        }
       },
       "pro": {
         "description": "Dla początkujących firm",
@@ -822,7 +830,15 @@
           "excelExport": "Eksport do Excel",
           "emailSupport": "Wsparcie email"
         },
-        "name": "Pro"
+        "name": "Pro",
+        "faq": {
+          "q1": "Czy mogę anulować?",
+          "a1": "Tak — płatność można anulować w dowolnym momencie.",
+          "q2": "Czy jest faktura VAT?",
+          "a2": "Tak, wystawiamy fakturę VAT do każdego zakupu.",
+          "q3": "Co się stanie po anulowaniu?",
+          "a3": "Masz dostęp do końca opłaconego okresu."
+        }
       },
       "business": {
         "description": "Dla rozwijających się firm",
@@ -835,7 +851,15 @@
           "companyDocuments": "Dokumenty firmowe",
           "prioritySupport": "Priorytetowe wsparcie"
         },
-        "name": "Biznes"
+        "name": "Biznes",
+        "faq": {
+          "q1": "Ile osób może pracować?",
+          "a1": "Do 10 członków zespołu w planie Biznes.",
+          "q2": "Czy AI jest wliczone?",
+          "a2": "Tak — asystent AI i wycena ze zdjęcia wliczone w plan.",
+          "q3": "Czy zarządzanie zespołem jest już dostępne?",
+          "a3": "Moduł Zespół jest w przygotowaniu i będzie dostępny w kolejnej aktualizacji."
+        }
       },
       "enterprise": {
         "description": "Pełne możliwości",
@@ -849,7 +873,15 @@
           "teamTraining": "Szkolenia zespołu",
           "priorityFeatures": "Priorytetowe funkcje"
         },
-        "name": "Enterprise"
+        "name": "Enterprise",
+        "faq": {
+          "q1": "Czy jest umowa SLA?",
+          "a1": "Tak — dla planów Enterprise dostępna jest umowa SLA.",
+          "q2": "Czy cena jest negocjowalna?",
+          "a2": "Tak — przy większych zespołach zapraszamy do kontaktu.",
+          "q3": "Jak uzyskać dostęp do API?",
+          "a3": "Po zakupie klucze API dostępne są w Ustawieniach → API."
+        }
       }
     },
     "features": "Funkcje",
@@ -1093,7 +1125,55 @@
   "admin": {
     "title": "Panel administratora",
     "subtitle": "Zarządzanie systemem",
-    "dashboard": "Pulpit",
+    "dashboard": {
+      "adminPanel": "Panel Administratora",
+      "managePlatform": "Zarządzaj platformą Majster.AI",
+      "systemActive": "System aktywny",
+      "users": "Użytkownicy",
+      "thisWeek": "+{{count}} w tym tygodniu",
+      "activeProjects": "Aktywne projekty",
+      "thisMonth": "+{{count}} w tym miesiącu",
+      "revenue": "Przychody (MRR)",
+      "vsPrevMonth": "+{{percent}}% vs poprzedni miesiąc",
+      "apiCalls": "Wywołania API",
+      "today": "Dziś",
+      "overview": "Przegląd",
+      "usersTab": "Użytkownicy",
+      "systemTab": "System",
+      "logsTab": "Logi",
+      "userActivity": "Aktywność użytkowników",
+      "planDistribution": "Rozkład planów",
+      "recentActivity": "Ostatnia aktywność",
+      "usersList": "Lista użytkowników",
+      "usersListDesc": "Zarządzaj użytkownikami platformy",
+      "usersAdminRequired": "Funkcja zarządzania użytkownikami wymaga uprawnień administratora",
+      "contactSupport": "Skontaktuj się z działem wsparcia",
+      "systemStatus": "Stan systemu",
+      "alerts": "Alerty",
+      "systemHealthy": "System sprawny",
+      "noActiveAlerts": "Brak aktywnych alertów",
+      "operational": "Działa",
+      "problem": "Problem",
+      "systemLogs": "Logi systemowe",
+      "chartUsers": "Użytkownicy",
+      "chartProjects": "Projekty",
+      "newUser": "Nowy użytkownik",
+      "newProject": "Nowy projekt",
+      "upgradeToBusiness": "Upgrade do Business",
+      "apiCallAction": "Wywołanie API",
+      "offerAccepted": "Oferta zaakceptowana",
+      "minutesAgo": "{{count}} min temu",
+      "hoursAgo": "{{count}} godz. temu",
+      "mon": "Pon",
+      "tue": "Wt",
+      "wed": "Śr",
+      "thu": "Cz",
+      "fri": "Pt",
+      "sat": "Sb",
+      "sun": "Nd",
+      "database": "Baza danych",
+      "edgeFunctions": "Funkcje Edge"
+    },
     "users": "Użytkownicy",
     "theme": "Motyw",
     "content": "Treści",
@@ -1202,37 +1282,6 @@
     "effectsComingSoon": "Efekty wizualne: animacje, cienie, gradienty - wkrótce dostępne",
     "previewOff": "Wyłącz podgląd",
     "saveTheme": "Zapisz motyw",
-    "dashboard": {
-      "adminPanel": "Panel Administratora",
-      "managePlatform": "Zarządzaj platformą Majster.AI",
-      "systemActive": "System aktywny",
-      "users": "Użytkownicy",
-      "thisWeek": "+{{count}} w tym tygodniu",
-      "activeProjects": "Aktywne projekty",
-      "thisMonth": "+{{count}} w tym miesiącu",
-      "revenue": "Przychody (MRR)",
-      "vsPrevMonth": "+{{percent}}% vs poprzedni miesiąc",
-      "apiCalls": "Wywołania API",
-      "today": "Dziś",
-      "overview": "Przegląd",
-      "usersTab": "Użytkownicy",
-      "systemTab": "System",
-      "logsTab": "Logi",
-      "userActivity": "Aktywność użytkowników",
-      "planDistribution": "Rozkład planów",
-      "recentActivity": "Ostatnia aktywność",
-      "usersList": "Lista użytkowników",
-      "usersListDesc": "Zarządzaj użytkownikami platformy",
-      "usersAdminRequired": "Funkcja zarządzania użytkownikami wymaga uprawnień administratora",
-      "contactSupport": "Skontaktuj się z działem wsparcia",
-      "systemStatus": "Stan systemu",
-      "alerts": "Alerty",
-      "systemHealthy": "System sprawny",
-      "noActiveAlerts": "Brak aktywnych alertów",
-      "operational": "Działa",
-      "problem": "Problem",
-      "systemLogs": "Logi systemowe"
-    },
     "usersManager": {
       "title": "Zarządzanie użytkownikami",
       "description": "Przeglądaj, edytuj i zarządzaj kontami użytkowników",
@@ -4500,7 +4549,8 @@
       "disableError": "Błąd przy wyłączaniu powiadomień",
       "registrationError": "Błąd rejestracji powiadomień push",
       "nativeOnly": "Push notifications są dostępne tylko w natywnej aplikacji mobilnej"
-    }
+    },
+    "testBody": "Powiadomienia działają poprawnie!"
   },
   "biometric": {
     "toast": {

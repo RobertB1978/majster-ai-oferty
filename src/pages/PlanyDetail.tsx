@@ -120,15 +120,15 @@ export default function PlanyDetail() {
             )}
           </div>
 
-          {/* FAQ — domain data (plan-specific Q&A), intentionally not translated */}
+          {/* FAQ */}
           <div>
             <h2 className="text-2xl font-bold mb-6">{t('planyDetail.faq')}</h2>
             <div className="space-y-4">
-              {plan.faq.map((item) => (
-                <Card key={item.q}>
+              {plan.faqKeys.map((item) => (
+                <Card key={item.qKey}>
                   <CardContent className="py-4">
-                    <p className="font-semibold mb-1">{item.q}</p>
-                    <p className="text-sm text-muted-foreground">{item.a}</p>
+                    <p className="font-semibold mb-1">{t(item.qKey)}</p>
+                    <p className="text-sm text-muted-foreground">{t(item.aKey)}</p>
                   </CardContent>
                 </Card>
               ))}

@@ -104,10 +104,10 @@ export function AdminContentEditor() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FileText className="h-5 w-5" />
-          Edytor treści
+          {t('admin.contentEditor')}
         </CardTitle>
         <CardDescription>
-          Edytuj teksty, opisy i treści wyświetlane w aplikacji
+          {t('admin.contentEditorDesc')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -115,54 +115,54 @@ export function AdminContentEditor() {
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="landing" className="flex items-center gap-1">
               <Home className="h-4 w-4" />
-              Landing
+              {t('admin.landingPage')}
             </TabsTrigger>
             <TabsTrigger value="features" className="flex items-center gap-1">
               <Type className="h-4 w-4" />
-              Funkcje
+              {t('admin.featuresTab')}
             </TabsTrigger>
             <TabsTrigger value="contact" className="flex items-center gap-1">
               <Mail className="h-4 w-4" />
-              Kontakt
+              {t('admin.contactLabel')}
             </TabsTrigger>
             <TabsTrigger value="seo" className="flex items-center gap-1">
               <Link2 className="h-4 w-4" />
-              SEO
+              {t('admin.seoSettings')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="landing" className="space-y-6 mt-4">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Tytuł główny (Hero)</Label>
+                <Label>{t('admin.heroTitle')}</Label>
                 <Input
                   value={content.heroTitle}
                   onChange={(e) => updateContent('heroTitle', e.target.value)}
-                  placeholder="Tytuł główny..."
+                  placeholder={t('admin.heroTitlePlaceholder')}
                 />
               </div>
               
               <div className="space-y-2">
-                <Label>Podtytuł</Label>
+                <Label>{t('admin.heroSubtitle')}</Label>
                 <Textarea
                   value={content.heroSubtitle}
                   onChange={(e) => updateContent('heroSubtitle', e.target.value)}
-                  placeholder="Opis główny..."
+                  placeholder={t('admin.heroSubtitlePlaceholder')}
                   rows={2}
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Tekst CTA</Label>
+                  <Label>{t('admin.ctaText')}</Label>
                   <Input
                     value={content.heroCtaText}
                     onChange={(e) => updateContent('heroCtaText', e.target.value)}
-                    placeholder="Rozpocznij"
+                    placeholder={t('admin.ctaPlaceholder')}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Link CTA</Label>
+                  <Label>{t('admin.ctaLink')}</Label>
                   <Input
                     value={content.heroCtaLink}
                     onChange={(e) => updateContent('heroCtaLink', e.target.value)}
@@ -173,17 +173,17 @@ export function AdminContentEditor() {
             </div>
 
             <div className="space-y-4 pt-4 border-t">
-              <Label className="text-base font-medium">Stopka</Label>
+              <Label className="text-base font-medium">{t('admin.footer')}</Label>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Nazwa firmy</Label>
+                  <Label>{t('admin.companyName')}</Label>
                   <Input
                     value={content.footerCompanyName}
                     onChange={(e) => updateContent('footerCompanyName', e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Copyright</Label>
+                  <Label>{t('admin.copyright')}</Label>
                   <Input
                     value={content.footerCopyright}
                     onChange={(e) => updateContent('footerCopyright', e.target.value)}
@@ -191,7 +191,7 @@ export function AdminContentEditor() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Opis w stopce</Label>
+                <Label>{t('admin.footerDescription')}</Label>
                 <Textarea
                   value={content.footerDescription}
                   onChange={(e) => updateContent('footerDescription', e.target.value)}
@@ -204,16 +204,16 @@ export function AdminContentEditor() {
           <TabsContent value="features" className="space-y-6 mt-4">
             {[1, 2, 3].map((num) => (
               <div key={num} className="space-y-4 p-4 rounded-lg border">
-                <Label className="text-base font-medium">Funkcja {num}</Label>
+                <Label className="text-base font-medium">{t('admin.featureNum', { num })}</Label>
                 <div className="space-y-2">
-                  <Label>Tytuł</Label>
+                  <Label>{t('admin.featureTitle')}</Label>
                   <Input
                     value={content[`feature${num}Title` as keyof ContentConfig] as string}
                     onChange={(e) => updateContent(`feature${num}Title` as keyof ContentConfig, e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Opis</Label>
+                  <Label>{t('admin.featureDesc')}</Label>
                   <Textarea
                     value={content[`feature${num}Desc` as keyof ContentConfig] as string}
                     onChange={(e) => updateContent(`feature${num}Desc` as keyof ContentConfig, e.target.value)}
@@ -226,7 +226,7 @@ export function AdminContentEditor() {
 
           <TabsContent value="contact" className="space-y-4 mt-4">
             <div className="space-y-2">
-              <Label>Email wsparcia</Label>
+              <Label>{t('admin.supportEmail')}</Label>
               <Input
                 type="email"
                 value={content.supportEmail}
@@ -235,7 +235,7 @@ export function AdminContentEditor() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Numer telefonu</Label>
+              <Label>{t('admin.phoneNumber')}</Label>
               <Input
                 value={content.phoneNumber}
                 onChange={(e) => updateContent('phoneNumber', e.target.value)}
@@ -243,7 +243,7 @@ export function AdminContentEditor() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Adres</Label>
+              <Label>{t('admin.address')}</Label>
               <Textarea
                 value={content.address}
                 onChange={(e) => updateContent('address', e.target.value)}
@@ -254,29 +254,29 @@ export function AdminContentEditor() {
 
           <TabsContent value="seo" className="space-y-4 mt-4">
             <div className="space-y-2">
-              <Label>Meta Title</Label>
+              <Label>{t('admin.metaTitle')}</Label>
               <Input
                 value={content.metaTitle}
                 onChange={(e) => updateContent('metaTitle', e.target.value)}
-                placeholder="Tytuł strony..."
+                placeholder={t('admin.pageTitlePlaceholder')}
               />
               <p className="text-xs text-muted-foreground">
-                {content.metaTitle.length}/60 znaków
+                {content.metaTitle.length}/60 {t('admin.characters')}
               </p>
             </div>
             <div className="space-y-2">
-              <Label>Meta Description</Label>
+              <Label>{t('admin.metaDescription')}</Label>
               <Textarea
                 value={content.metaDescription}
                 onChange={(e) => updateContent('metaDescription', e.target.value)}
                 rows={3}
               />
               <p className="text-xs text-muted-foreground">
-                {content.metaDescription.length}/160 znaków
+                {content.metaDescription.length}/160 {t('admin.characters')}
               </p>
             </div>
             <div className="space-y-2">
-              <Label>OG Image URL</Label>
+              <Label>{t('admin.ogImage')}</Label>
               <Input
                 value={content.ogImage}
                 onChange={(e) => updateContent('ogImage', e.target.value)}
@@ -290,16 +290,16 @@ export function AdminContentEditor() {
         <div className="flex items-center justify-between mt-6 pt-4 border-t">
           <Button variant="outline" onClick={resetContent}>
             <RotateCcw className="h-4 w-4 mr-2" />
-            Resetuj
+            {t('admin.reset')}
           </Button>
           <div className="flex gap-2">
             <Button variant="outline">
               <Eye className="h-4 w-4 mr-2" />
-              Podgląd
+              {t('admin.preview')}
             </Button>
             <Button onClick={saveContent} disabled={!hasChanges}>
               <Save className="h-4 w-4 mr-2" />
-              Zapisz treści
+              {t('admin.saveContent')}
             </Button>
           </div>
         </div>

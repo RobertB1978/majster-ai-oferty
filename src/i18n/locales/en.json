@@ -813,7 +813,15 @@
           "noAi": "No AI assistant",
           "noExcel": "No Excel export"
         },
-        "name": "Free"
+        "name": "Free",
+        "faq": {
+          "q1": "How long does the free plan last?",
+          "a1": "The free plan has no time limit. You can use it as long as you want.",
+          "q2": "Can I switch to a paid plan?",
+          "a2": "Yes, at any time. Your data is preserved.",
+          "q3": "Are there ads?",
+          "a3": "The free plan may show informational banners."
+        }
       },
       "pro": {
         "description": "For starting businesses",
@@ -825,7 +833,15 @@
           "excelExport": "Excel export",
           "emailSupport": "Email support"
         },
-        "name": "Pro"
+        "name": "Pro",
+        "faq": {
+          "q1": "Can I cancel?",
+          "a1": "Yes — you can cancel payment at any time.",
+          "q2": "Is a VAT invoice available?",
+          "a2": "Yes, we issue a VAT invoice for every purchase.",
+          "q3": "What happens after cancellation?",
+          "a3": "You keep access until the end of the paid period."
+        }
       },
       "business": {
         "description": "For growing businesses",
@@ -838,7 +854,15 @@
           "companyDocuments": "Company documents",
           "prioritySupport": "Priority support"
         },
-        "name": "Business"
+        "name": "Business",
+        "faq": {
+          "q1": "How many people can work?",
+          "a1": "Up to 10 team members on the Business plan.",
+          "q2": "Is AI included?",
+          "a2": "Yes — AI assistant and photo estimation are included.",
+          "q3": "Is team management available yet?",
+          "a3": "The Team module is in preparation and will be available in the next update."
+        }
       },
       "enterprise": {
         "description": "Full capabilities",
@@ -852,7 +876,15 @@
           "teamTraining": "Team training",
           "priorityFeatures": "Priority features"
         },
-        "name": "Enterprise"
+        "name": "Enterprise",
+        "faq": {
+          "q1": "Is there an SLA agreement?",
+          "a1": "Yes — an SLA agreement is available for Enterprise plans.",
+          "q2": "Is the price negotiable?",
+          "a2": "Yes — for larger teams, please contact us.",
+          "q3": "How to get API access?",
+          "a3": "After purchase, API keys are available in Settings → API."
+        }
       }
     },
     "features": "Features",
@@ -1122,7 +1154,25 @@
       "noActiveAlerts": "No active alerts",
       "operational": "Operational",
       "problem": "Problem",
-      "systemLogs": "System logs"
+      "systemLogs": "System logs",
+      "chartUsers": "Users",
+      "chartProjects": "Projects",
+      "newUser": "New user",
+      "newProject": "New project",
+      "upgradeToBusiness": "Upgrade to Business",
+      "apiCallAction": "API Call",
+      "offerAccepted": "Offer accepted",
+      "minutesAgo": "{{count}} min ago",
+      "hoursAgo": "{{count}} hr ago",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun",
+      "database": "Database",
+      "edgeFunctions": "Edge Functions"
     },
     "users": "Users",
     "theme": "Theme",
@@ -4499,7 +4549,8 @@
       "disableError": "Error disabling notifications",
       "registrationError": "Push notification registration error",
       "nativeOnly": "Push notifications are only available in the native mobile app"
-    }
+    },
+    "testBody": "Notifications are working correctly!"
   },
   "biometric": {
     "toast": {

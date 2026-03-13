@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +20,7 @@ interface PlanRequestModalProps {
 type ModalState = 'form' | 'loading' | 'success' | 'error';
 
 export function PlanRequestModal({ open, planSlug, planName, onClose }: PlanRequestModalProps) {
+  const { t } = useTranslation();
   const [state, setState] = useState<ModalState>('form');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
@@ -67,7 +69,7 @@ export function PlanRequestModal({ open, planSlug, planName, onClose }: PlanRequ
 
       setState('success');
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Nieznany błąd';
+      const msg = err instanceof Error ? err.message : t('billing.planRequest.unknownError');
       setErrorMsg(msg);
       setState('error');
     }
@@ -77,28 +79,28 @@ export function PlanRequestModal({ open, planSlug, planName, onClose }: PlanRequ
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Zamów plan {planName}</DialogTitle>
+          <DialogTitle>{t('billing.planRequest.title', { plan: planName })}</DialogTitle>
           <DialogDescription>
-            Wyślij zgłoszenie — odezwiemy się do Ciebie wkrótce.
+            {t('billing.planRequest.description')}
           </DialogDescription>
         </DialogHeader>
 
         {state === 'success' ? (
           <div className="flex flex-col items-center gap-4 py-6 text-center">
             <CheckCircle2 className="h-12 w-12 text-success" />
-            <p className="font-semibold text-lg">Zgłoszenie zapisane!</p>
+            <p className="font-semibold text-lg">{t('billing.planRequest.success')}</p>
             <p className="text-sm text-muted-foreground">
-              Skontaktujemy się z Tobą pod adresem:{' '}
+              {t('billing.planRequest.contactInfo')}{' '}
               <span className="font-medium text-foreground">{CONTACT_EMAIL}</span>
             </p>
             <Button onClick={onClose} className="mt-2">
-              Zamknij
+              {t('billing.planRequest.close')}
             </Button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
             <div className="space-y-1.5">
-              <Label htmlFor="plan-request-phone">Telefon (opcjonalnie)</Label>
+              <Label htmlFor="plan-request-phone">{t('billing.planRequest.phone')}</Label>
               <Input
                 id="plan-request-phone"
                 type="tel"
@@ -111,10 +113,10 @@ export function PlanRequestModal({ open, planSlug, planName, onClose }: PlanRequ
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="plan-request-message">Wiadomość (opcjonalnie)</Label>
+              <Label htmlFor="plan-request-message">{t('billing.planRequest.message')}</Label>
               <Textarea
                 id="plan-request-message"
-                placeholder="Dodatkowe informacje lub pytania..."
+                placeholder={t('billing.planRequest.messagePlaceholder')}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 maxLength={500}
@@ -125,23 +127,23 @@ export function PlanRequestModal({ open, planSlug, planName, onClose }: PlanRequ
 
             {state === 'error' && (
               <p className="text-sm text-destructive">
-                Błąd: {errorMsg}. Spróbuj ponownie lub napisz na{' '}
+                {t('billing.planRequest.error', { message: errorMsg })}{' '}
                 <span className="font-medium">{CONTACT_EMAIL}</span>.
               </p>
             )}
 
             <div className="flex gap-3 pt-1">
               <Button type="button" variant="outline" className="flex-1" onClick={onClose} disabled={state === 'loading'}>
-                Anuluj
+                {t('billing.planRequest.cancel')}
               </Button>
               <Button type="submit" className="flex-1" disabled={state === 'loading'}>
                 {state === 'loading' ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Wysyłanie...
+                    {t('billing.planRequest.sending')}
                   </>
                 ) : (
-                  'Wyślij zgłoszenie'
+                  t('billing.planRequest.submit')
                 )}
               </Button>
             </div>
