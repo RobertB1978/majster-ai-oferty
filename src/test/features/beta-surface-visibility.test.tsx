@@ -77,6 +77,7 @@ vi.mock('@/components/billing/SubscriptionSection', () => ({ SubscriptionSection
 import Settings from '@/pages/Settings';
 import { Navigation } from '@/components/layout/Navigation';
 import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
+import { PLANS } from '@/config/plans';
 
 // ─── 1. Settings — brak zakładki kalendarza ──────────────────────────────────
 
@@ -179,5 +180,23 @@ describe('SocialLoginButtons — stan beta', () => {
     renderSocial();
     const appleBtn = screen.queryByRole('button', { name: /apple/i });
     expect(appleBtn).toBeNull();
+  });
+});
+
+// ─── 4. Plans — excelExport nie obiecywany bez UI (BETA-EXCEL-01) ─────────────
+
+describe('Plans — excelExport nieobecny w cennikowych featuresKeys (BETA-EXCEL-01)', () => {
+  it('żaden plan nie zawiera klucza excelExport w featuresKeys', () => {
+    for (const plan of PLANS) {
+      const hasExcel = plan.featuresKeys.some((k) => k.includes('excelExport'));
+      expect(hasExcel, `Plan "${plan.id}" zawiera excelExport w featuresKeys — brak UI przycisku`).toBe(false);
+    }
+  });
+
+  it('żaden plan nie zawiera "Eksport Excel" w fallback features[]', () => {
+    for (const plan of PLANS) {
+      const hasExcel = plan.features.some((f) => f.toLowerCase().includes('excel'));
+      expect(hasExcel, `Plan "${plan.id}" zawiera Excel w features[] — brak UI przycisku`).toBe(false);
+    }
   });
 });
