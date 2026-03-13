@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bell, BellOff, Check, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 
 export function PushNotificationSettings() {
+  const { t } = useTranslation();
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +34,7 @@ export function PushNotificationSettings() {
 
   const requestPermission = async () => {
     if (!('Notification' in window)) {
-      toast.error('Twoja przeglądarka nie obsługuje powiadomień push');
+      toast.error(t('pushNotifications.toast.notSupported'));
       return;
     }
 
@@ -54,14 +56,14 @@ export function PushNotificationSettings() {
           // });
           
           setIsSubscribed(true);
-          toast.success('Powiadomienia push zostały włączone');
+          toast.success(t('pushNotifications.toast.enabled'));
         }
       } else if (result === 'denied') {
-        toast.error('Powiadomienia zostały zablokowane. Zmień ustawienia przeglądarki.');
+        toast.error(t('pushNotifications.toast.blocked'));
       }
     } catch (error) {
       console.error('Error requesting notification permission:', error);
-      toast.error('Błąd przy włączaniu powiadomień');
+      toast.error(t('pushNotifications.toast.enableError'));
     } finally {
       setIsLoading(false);
     }
@@ -78,9 +80,9 @@ export function PushNotificationSettings() {
         }
       }
       setIsSubscribed(false);
-      toast.success('Powiadomienia push zostały wyłączone');
+      toast.success(t('pushNotifications.toast.disabled'));
     } catch (_error) {
-      toast.error('Błąd przy wyłączaniu powiadomień');
+      toast.error(t('pushNotifications.toast.disableError'));
     } finally {
       setIsLoading(false);
     }

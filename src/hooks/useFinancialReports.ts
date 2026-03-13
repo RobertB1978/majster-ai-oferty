@@ -1,4 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -108,6 +109,7 @@ export function useFinancialSummary() {
 }
 
 export function useAIFinancialAnalysis() {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   return useMutation({
@@ -139,10 +141,10 @@ export function useAIFinancialAnalysis() {
       return data.analysis;
     },
     onSuccess: () => {
-      toast.success('Analiza AI zakończona');
+      toast.success(t('ai.toast.analysisComplete'));
     },
     onError: () => {
-      toast.error('Błąd analizy AI');
+      toast.error(t('ai.toast.analysisError'));
     },
   });
 }

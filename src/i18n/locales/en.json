@@ -367,7 +367,15 @@
     "listErrorDesc": "Failed to load the project list. Check your connection and try again.",
     "listErrorRetry": "Try again",
     "noResults": "No results",
-    "noResultsDesc": "No projects match the selected filters."
+    "noResultsDesc": "No projects match the selected filters.",
+    "toast": {
+      "created": "Project created",
+      "createError": "Error creating project",
+      "updated": "Project updated",
+      "updateError": "Error updating project",
+      "deleted": "Project deleted",
+      "deleteError": "Error deleting project"
+    }
   },
   "clients": {
     "title": "Clients",
@@ -392,7 +400,15 @@
     "emailPlaceholder": "john@example.com",
     "addressPlaceholder": "123 Main St, 00-001 Warsaw",
     "clearSearch": "Clear search",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "toast": {
+      "added": "Client added",
+      "addError": "Error adding client",
+      "updated": "Client updated",
+      "updateError": "Error updating client",
+      "deleted": "Client deleted",
+      "deleteError": "Error deleting client"
+    }
   },
   "calendar": {
     "title": "Calendar",
@@ -549,7 +565,13 @@
       "active": "Active",
       "inactive": "Inactive"
     },
-    "addFirst": "Add your first team member"
+    "addFirst": "Add your first team member",
+    "toast": {
+      "added": "Team member added",
+      "addError": "Error adding team member",
+      "updated": "Team member updated",
+      "deleted": "Team member deleted"
+    }
   },
   "templates": {
     "title": "Item Templates",
@@ -661,7 +683,11 @@
     "deleteVersion": "Delete version?",
     "irreversible": "This operation is irreversible.",
     "noVersionsHint": "No saved versions. Click \"Save version\" to preserve the current state.",
-    "category": "Category"
+    "category": "Category",
+    "toast": {
+      "saved": "Quote saved",
+      "saveError": "Error saving quote"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -712,7 +738,13 @@
       "title": "Reply-to email",
       "unverified": "Unverified",
       "verified": "Verified",
-      "verifyPrompt": "Verify your email address so clients can reply to your offers."
+      "verifyPrompt": "Verify your email address so clients can reply to your offers.",
+      "toast": {
+        "saved": "Reply email saved. Check your inbox to verify it.",
+        "saveError": "Failed to save email address",
+        "verificationSent": "Verification email sent. Check your inbox.",
+        "verificationSentNoService": "Verification email sent (email service must be configured)."
+      }
     }
   },
   "billing": {
@@ -904,7 +936,12 @@
     "emailGreeting": "Email Greeting",
     "emailSignature": "Email Signature",
     "subjectTemplate": "Subject Template",
-    "emailSubject": "Email subject"
+    "emailSubject": "Email subject",
+    "toast": {
+      "saved": "Company profile saved",
+      "saveError": "Failed to save profile",
+      "logoUploaded": "Logo uploaded"
+    }
   },
   "pdf": {
     "title": "PDF Generator",
@@ -921,7 +958,10 @@
     "sendEmail": "Send via Email",
     "deadline": "Validity deadline",
     "offerTitle": "Offer title",
-    "version": "Version"
+    "version": "Version",
+    "toast": {
+      "saveError": "Error saving PDF data: {{message}}"
+    }
   },
   "ai": {
     "title": "AI Assistant",
@@ -956,7 +996,13 @@
     "errorNotConfiguredToast": "AI assistant is not configured",
     "errorConnectionToast": "AI connection error",
     "errorNotConfiguredContent": "The AI assistant is not yet available. The administrator needs to configure an API key (OpenAI, Anthropic or Gemini) in the server settings. Please contact technical support.",
-    "errorGeneralContent": "Sorry, an error occurred. Please try again in a moment."
+    "errorGeneralContent": "Sorry, an error occurred. Please try again in a moment.",
+    "toast": {
+      "rateLimitExceeded": "AI request limit exceeded. Try again later.",
+      "noCredits": "No AI credits. Top up your account.",
+      "analysisComplete": "AI analysis complete",
+      "analysisError": "AI analysis error"
+    }
   },
   "quickActions": {
     "newOffer": "New offer"
@@ -1077,7 +1123,20 @@
     "userManagement": "User Management",
     "backToDashboard": "Back to Dashboard",
     "accessDenied": "No access to admin panel",
-    "panelAccess": "Admin panel"
+    "panelAccess": "Admin panel",
+    "toast": {
+      "contentSaved": "Content saved",
+      "contentRestored": "Default content restored",
+      "cronSkipped": "Task skipped - missing key {{key}}",
+      "cronSuccess": "Task completed successfully",
+      "cronError": "Error: {{message}}",
+      "statsRefreshed": "Statistics refreshed",
+      "roleAssigned": "Role assigned successfully",
+      "roleAssignError": "Error assigning role",
+      "roleRemoved": "Role removed",
+      "settingsSaveError": "Unable to save settings",
+      "themeSaveError": "Unable to save theme"
+    }
   },
   "adminConfig": {
     "pageTitle": "Configuration",
@@ -1438,7 +1497,17 @@
     "noMembers": "No members",
     "selectOrg": "Select an organisation to manage members",
     "slugHint": "Will be used in the URL. Only lowercase letters, digits and hyphens.",
-    "yourOrganizations": "Your organisations"
+    "yourOrganizations": "Your organisations",
+    "toast": {
+      "created": "Organization created",
+      "createError": "Error creating organization",
+      "inviteSent": "Invitation sent",
+      "inviteError": "Error inviting member",
+      "memberRemoved": "Member removed",
+      "removeError": "Error removing member",
+      "roleUpdated": "Role updated",
+      "roleUpdateError": "Error updating role"
+    }
   },
   "marketplace": {
     "title": "Marketplace",
@@ -2497,7 +2566,8 @@
     "noResults": "No subcontractors",
     "noResultsHint": "Try changing the search criteria",
     "noOwn": "No own subcontractors",
-    "noOwnHint": "Add subcontractors you work with"
+    "noOwnHint": "Add subcontractors you work with",
+    "title": "Marketplace"
   },
   "offerPublicPage": {
     "notFoundError": "Offer not found or the link is invalid.",
@@ -2683,6 +2753,14 @@
       "cta": "Create offer",
       "desc": "Create your first offer to get started",
       "title": "No offers"
+    },
+    "toast": {
+      "approvalLinkCreated": "Approval link created",
+      "approvalLinkError": "Error creating link",
+      "extendedValidity": "Offer validity extended by 30 days",
+      "extendError": "Error extending offer",
+      "processingError": "Processing error",
+      "sendSaveError": "Error saving send record"
     }
   },
   "legal": {
@@ -3527,6 +3605,9 @@
       "expiredDesc": "This share link has expired. Contact the contractor to get a new link.",
       "notFoundTitle": "Link not found",
       "notFoundDesc": "This link is invalid or has been revoked."
+    },
+    "toast": {
+      "exportError": "PDF export error. Please try again."
     }
   },
   "docTemplates": {
@@ -4044,5 +4125,160 @@
     "betaNotice": "Synchronisation with external calendars (Google, Outlook, Apple) is in preparation. It will be available in the next version.",
     "description": "Connect external calendars to synchronise events",
     "title": "Calendar synchronisation"
+  },
+  "seo": {
+    "landing": {
+      "title": "Majster.AI — PDF Estimates & Project Management for Contractors",
+      "description": "Platform for builders and contractors. PDF estimates, projects, client database, AI assistant. Start free — no credit card required.",
+      "keywords": "PDF estimates, quote generator, contractors, construction company, cost estimate, project management, builder, electrician, plumber",
+      "ogDescription": "Platform for builders and contractors. PDF estimates, projects, client database. Start free — no credit card.",
+      "twitterTitle": "Majster.AI — PDF Estimates for Contractors",
+      "twitterDescription": "Professional estimates, project management, and AI for renovation companies."
+    },
+    "login": {
+      "title": "Login | Majster.AI",
+      "description": "Log in to Majster.AI — platform for contractors. Manage projects, create PDF estimates, and use the AI assistant.",
+      "ogDescription": "Log in to Majster.AI — platform for construction professionals."
+    },
+    "register": {
+      "title": "Register — start for free | Majster.AI",
+      "description": "Sign up for Majster.AI for free — no credit card needed. Create PDF estimates, manage projects and clients as a professional.",
+      "ogTitle": "Register — start for free | Majster.AI",
+      "ogDescription": "Sign up for Majster.AI for free. Platform for construction professionals."
+    },
+    "forgotPassword": {
+      "title": "Forgot Password | Majster.AI",
+      "description": "Reset your Majster.AI account password. Enter your email and we'll send a link to set a new password."
+    },
+    "resetPassword": {
+      "title": "Set New Password | Majster.AI",
+      "description": "Set a new password for your Majster.AI account."
+    },
+    "notFound": {
+      "title": "404 — Page Not Found | Majster.AI"
+    },
+    "marketplace": {
+      "title": "Marketplace | Majster.AI"
+    },
+    "privacy": {
+      "description": "Majster.AI Privacy Policy - learn how we protect your data."
+    },
+    "terms": {
+      "description": "Majster.AI Terms of Service - rules and conditions of use."
+    },
+    "planDetail": {
+      "title": "Plan {{plan}} | Majster.AI",
+      "description": "{{description}} Price: {{price}}",
+      "pricePerMonth": "{{amount}} PLN/mo."
+    }
+  },
+  "apiKeys": {
+    "toast": {
+      "nameRequired": "Enter key name",
+      "copied": "Key copied",
+      "created": "API key created",
+      "createError": "Error creating key",
+      "updated": "Key updated",
+      "deleted": "Key deleted"
+    }
+  },
+  "documents": {
+    "toast": {
+      "added": "Document added",
+      "addError": "Error adding document",
+      "deleted": "Document deleted",
+      "deleteError": "Error deleting document"
+    }
+  },
+  "pushNotifications": {
+    "toast": {
+      "notSupported": "Your browser does not support push notifications",
+      "enabled": "Push notifications enabled",
+      "blocked": "Notifications are blocked. Change your browser settings.",
+      "enableError": "Error enabling notifications",
+      "disabled": "Push notifications disabled",
+      "disableError": "Error disabling notifications",
+      "registrationError": "Push notification registration error",
+      "nativeOnly": "Push notifications are only available in the native mobile app"
+    }
+  },
+  "biometric": {
+    "toast": {
+      "registered": "Biometric registered successfully",
+      "authSuccess": "Biometric authentication successful",
+      "credentialDeleted": "Biometric credential deleted",
+      "deleteError": "Error deleting credential"
+    }
+  },
+  "calendarEvents": {
+    "toast": {
+      "added": "Event added",
+      "addError": "Error adding event",
+      "updated": "Event updated",
+      "updateError": "Error updating event",
+      "deleted": "Event deleted",
+      "deleteError": "Error deleting event"
+    }
+  },
+  "projectPhotos": {
+    "toast": {
+      "uploaded": "Photo uploaded (EXIF metadata removed)",
+      "analysisComplete": "Analysis complete",
+      "analysisError": "Error analyzing photo",
+      "deleted": "Photo deleted"
+    }
+  },
+  "costs": {
+    "toast": {
+      "invoiceUploaded": "Invoice uploaded",
+      "ocrComplete": "OCR complete",
+      "ocrError": "OCR error",
+      "deleted": "Cost deleted"
+    }
+  },
+  "quoteVersions": {
+    "toast": {
+      "saved": "Quote version saved",
+      "saveError": "Error saving version",
+      "activated": "Version set as active",
+      "activateError": "Error changing active version",
+      "deleted": "Version deleted",
+      "deleteError": "Error deleting version"
+    }
+  },
+  "subcontractors": {
+    "toast": {
+      "added": "Subcontractor added",
+      "addError": "Error adding subcontractor",
+      "updated": "Subcontractor updated",
+      "reviewAdded": "Review added"
+    }
+  },
+  "tasks": {
+    "toast": {
+      "added": "Task added",
+      "addError": "Error adding task",
+      "updated": "Task updated",
+      "deleted": "Task deleted"
+    }
+  },
+  "seoStructuredData": {
+    "orgDescription": "SaaS platform for construction professionals and contractors — PDF estimates, project management, AI.",
+    "appDescription": "Tool for creating PDF estimates, managing projects and clients for construction and renovation companies.",
+    "features": {
+      "pdfOffers": "PDF offer generation",
+      "projectMgmt": "Project management",
+      "clientDb": "Client database",
+      "aiAssistant": "AI assistant",
+      "voiceDictation": "Voice dictation",
+      "ocrInvoice": "Invoice OCR analysis",
+      "marketplace": "Marketplace for contractors"
+    },
+    "faq1q": "Is Majster.AI free?",
+    "faq1a": "Yes, Majster.AI offers a free starter plan with no credit card required. You can start for free.",
+    "faq2q": "Who is Majster.AI for?",
+    "faq2a": "Majster.AI is designed for construction companies, renovation firms, electricians, plumbers, and other professionals looking to professionalize their business.",
+    "faq3q": "Can I generate a PDF offer?",
+    "faq3a": "Yes, Majster.AI allows you to generate professional PDF offers with your company logo, cost items, and payment terms."
   }
 }

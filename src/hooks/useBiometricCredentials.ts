@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -64,6 +65,7 @@ export function useBiometricCredentials() {
 }
 
 export function useRegisterBiometric() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -140,7 +142,7 @@ export function useRegisterBiometric() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['biometric-credentials'] });
-      toast.success('Biometria została zarejestrowana');
+      toast.success(t('biometric.toast.registered'));
     },
     onError: (error) => {
       logger.error('Biometric registration error:', error);
@@ -150,6 +152,7 @@ export function useRegisterBiometric() {
 }
 
 export function useAuthenticateBiometric() {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   return useMutation({
@@ -211,7 +214,7 @@ export function useAuthenticateBiometric() {
       return true;
     },
     onSuccess: () => {
-      toast.success('Autentykacja biometryczna udana');
+      toast.success(t('biometric.toast.authSuccess'));
     },
     onError: (error) => {
       logger.error('Biometric auth error:', error);
@@ -221,6 +224,7 @@ export function useAuthenticateBiometric() {
 }
 
 export function useDeleteBiometricCredential() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -234,11 +238,11 @@ export function useDeleteBiometricCredential() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['biometric-credentials'] });
-      toast.success('Poświadczenie biometryczne zostało usunięte');
+      toast.success(t('biometric.toast.credentialDeleted'));
     },
     onError: (error) => {
       logger.error('Delete credential error:', error);
-      toast.error('Błąd podczas usuwania poświadczenia');
+      toast.error(t('biometric.toast.deleteError'));
     },
   });
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -61,6 +62,7 @@ interface UserSubscription {
 }
 
 export function AdminUsersManager() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
@@ -120,11 +122,11 @@ export function AdminUsersManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-user-roles'] });
-      toast.success('Rola przypisana pomyślnie');
+      toast.success(t('admin.toast.roleAssigned'));
       setRoleDialogOpen(false);
     },
     onError: () => {
-      toast.error('Błąd podczas przypisywania roli');
+      toast.error(t('admin.toast.roleAssignError'));
     },
   });
 
@@ -141,7 +143,7 @@ export function AdminUsersManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-user-roles'] });
-      toast.success('Rola usunięta');
+      toast.success(t('admin.toast.roleRemoved'));
     },
   });
 

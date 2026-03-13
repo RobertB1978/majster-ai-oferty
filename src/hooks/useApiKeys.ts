@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -34,6 +35,7 @@ export function useApiKeys() {
 }
 
 export function useCreateApiKey() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -54,15 +56,16 @@ export function useCreateApiKey() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['api_keys'] });
-      toast.success('Klucz API utworzony');
+      toast.success(t('apiKeys.toast.created'));
     },
     onError: () => {
-      toast.error('Błąd podczas tworzenia klucza');
+      toast.error(t('apiKeys.toast.createError'));
     },
   });
 }
 
 export function useUpdateApiKey() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -79,12 +82,13 @@ export function useUpdateApiKey() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['api_keys'] });
-      toast.success('Klucz zaktualizowany');
+      toast.success(t('apiKeys.toast.updated'));
     },
   });
 }
 
 export function useDeleteApiKey() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -98,7 +102,7 @@ export function useDeleteApiKey() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['api_keys'] });
-      toast.success('Klucz usunięty');
+      toast.success(t('apiKeys.toast.deleted'));
     },
   });
 }

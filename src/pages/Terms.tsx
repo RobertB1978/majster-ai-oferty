@@ -14,7 +14,7 @@ export default function Terms() {
     <>
       <Helmet>
         <title>{t('legal.termsTitle')}</title>
-        <meta name="description" content="Regulamin korzystania z aplikacji Majster.AI - zasady i warunki użytkowania." />
+        <meta name="description" content={t('seo.terms.description')} />
       </Helmet>
 
       <div className="min-h-screen bg-background py-8 px-4">

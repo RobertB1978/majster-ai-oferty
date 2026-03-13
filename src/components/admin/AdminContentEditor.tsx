@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -71,6 +72,7 @@ const defaultContent: ContentConfig = {
 };
 
 export function AdminContentEditor() {
+  const { t } = useTranslation();
   const [content, setContent] = useState<ContentConfig>(() => {
     const saved = localStorage.getItem('admin-content-config');
     return saved ? JSON.parse(saved) : defaultContent;
@@ -88,13 +90,13 @@ export function AdminContentEditor() {
   const saveContent = () => {
     localStorage.setItem('admin-content-config', JSON.stringify(content));
     setHasChanges(false);
-    toast.success('Treści zapisane');
+    toast.success(t('admin.toast.contentSaved'));
   };
 
   const resetContent = () => {
     setContent(defaultContent);
     setHasChanges(true);
-    toast.info('Przywrócono domyślne treści');
+    toast.info(t('admin.toast.contentRestored'));
   };
 
   return (

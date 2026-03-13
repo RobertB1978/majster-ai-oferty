@@ -19,7 +19,7 @@ const NotFound = () => {
   return (
     <>
       <Helmet>
-        <title>404 — Strona nie znaleziona | Majster.AI</title>
+        <title>{t('seo.notFound.title')}</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">

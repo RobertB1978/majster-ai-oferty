@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 
 export function ApiKeysPanel() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [keyName, setKeyName] = useState('');
   const [permissions, setPermissions] = useState<string[]>(['read']);
@@ -25,7 +27,7 @@ export function ApiKeysPanel() {
 
   const handleCreate = async () => {
     if (!keyName) {
-      toast.error('Podaj nazwę klucza');
+      toast.error(t('apiKeys.toast.nameRequired'));
       return;
     }
 
@@ -37,7 +39,7 @@ export function ApiKeysPanel() {
 
   const copyKey = (key: string) => {
     navigator.clipboard.writeText(key);
-    toast.success('Klucz skopiowany');
+    toast.success(t('apiKeys.toast.copied'));
   };
 
   const toggleVisibility = (id: string) => {

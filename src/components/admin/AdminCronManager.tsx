@@ -36,7 +36,7 @@ interface CronJob {
 }
 
 export function AdminCronManager() {
-  const { t: _t } = useTranslation();
+  const { t } = useTranslation();
   const [isRunning, setIsRunning] = useState<string | null>(null);
   const [jobResults, setJobResults] = useState<Record<string, { success: boolean; message: string }>>({});
 
@@ -97,7 +97,7 @@ export function AdminCronManager() {
             message: `Wymagany klucz: ${job.requiresSecret}`,
           },
         }));
-        toast.warning(`Zadanie pominięte - brak klucza ${job.requiresSecret}`);
+        toast.warning(t('admin.toast.cronSkipped', { key: job.requiresSecret }));
       } else if (result.success) {
         setJobResults(prev => ({
           ...prev,
@@ -106,7 +106,7 @@ export function AdminCronManager() {
             message: result.message || `Wysłano ${result.sent || 0} wiadomości`,
           },
         }));
-        toast.success(result.message || 'Zadanie wykonane pomyślnie');
+        toast.success(result.message || t('admin.toast.cronSuccess'));
       } else {
         throw new Error(result.message || 'Nieznany błąd');
       }
@@ -119,7 +119,7 @@ export function AdminCronManager() {
           message: errorMessage,
         },
       }));
-      toast.error(`Błąd: ${errorMessage}`);
+      toast.error(t('admin.toast.cronError', { message: errorMessage }));
     } finally {
       setIsRunning(null);
     }

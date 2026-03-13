@@ -15,7 +15,7 @@ export default function Privacy() {
     <>
       <Helmet>
         <title>{t('legal.privacyTitle')}</title>
-        <meta name="description" content="Polityka prywatności aplikacji Majster.AI - dowiedz się jak chronimy Twoje dane." />
+        <meta name="description" content={t('seo.privacy.description')} />
       </Helmet>
 
       <div className="min-h-screen bg-background py-8 px-4">

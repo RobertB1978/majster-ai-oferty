@@ -21,10 +21,10 @@ export default function PlanyDetail() {
   return (
     <>
       <Helmet>
-        <title>Plan {planName} | Majster.AI</title>
+        <title>{t('seo.planDetail.title', { plan: planName })}</title>
         <meta
           name="description"
-          content={`${t(plan.descriptionKey, plan.description)} Cena: ${plan.pricePLN === 0 ? t('landing.pricing.freeBadge') : `${plan.pricePLN} zł/mies.`}`}
+          content={t('seo.planDetail.description', { description: t(plan.descriptionKey, plan.description), price: plan.pricePLN === 0 ? t('landing.pricing.freeBadge') : t('seo.planDetail.pricePerMonth', { amount: plan.pricePLN }) })}
         />
       </Helmet>
 

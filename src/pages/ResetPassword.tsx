@@ -138,8 +138,8 @@ export default function ResetPassword() {
   return (
     <>
     <Helmet>
-      <title>Ustaw nowe hasło | Majster.AI</title>
-      <meta name="description" content="Ustaw nowe hasło do swojego konta Majster.AI." />
+      <title>{t('seo.resetPassword.title')}</title>
+      <meta name="description" content={t('seo.resetPassword.description')} />
       <meta name="robots" content="noindex, nofollow" />
     </Helmet>
     <div className="flex min-h-screen items-center justify-center bg-background p-4">

@@ -18,6 +18,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -302,6 +303,8 @@ export function useDeleteDossierToken() {
 // - No file merging — reliable on mobile
 
 export function useExportDossierPdf() {
+  const { t } = useTranslation();
+
   return useMutation({
     mutationFn: async ({
       projectTitle,
@@ -385,7 +388,7 @@ export function useExportDossierPdf() {
     },
     onError: (err) => {
       logger.error('[Dossier] PDF export failed', err);
-      toast.error('Błąd eksportu PDF. Spróbuj ponownie.');
+      toast.error(t('dossier.toast.exportError'));
     },
   });
 }

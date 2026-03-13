@@ -134,7 +134,7 @@ export function useAdminSettings(organizationId: string | null): UseAdminSetting
   const updateSettings = useCallback(
     async (updates: Partial<AdminSystemSettings>) => {
       if (!organizationId || !settings) {
-        toast.error('Nie można zapisać ustawień');
+        toast.error(t('admin.toast.settingsSaveError'));
         return;
       }
 

@@ -367,7 +367,15 @@
     "listErrorDesc": "Nie udało się wczytać listy projektów. Sprawdź połączenie i spróbuj ponownie.",
     "listErrorRetry": "Spróbuj ponownie",
     "noResults": "Brak wyników",
-    "noResultsDesc": "Żaden projekt nie pasuje do wybranych filtrów."
+    "noResultsDesc": "Żaden projekt nie pasuje do wybranych filtrów.",
+    "toast": {
+      "created": "Projekt utworzony",
+      "createError": "Błąd przy tworzeniu projektu",
+      "updated": "Projekt zaktualizowany",
+      "updateError": "Błąd przy aktualizacji projektu",
+      "deleted": "Projekt usunięty",
+      "deleteError": "Błąd przy usuwaniu projektu"
+    }
   },
   "clients": {
     "title": "Klienci",
@@ -392,7 +400,15 @@
     "emailPlaceholder": "jan@example.pl",
     "addressPlaceholder": "ul. Przykładowa 1, 00-001 Warszawa",
     "clearSearch": "Wyczyść wyszukiwanie",
-    "saveChanges": "Zapisz zmiany"
+    "saveChanges": "Zapisz zmiany",
+    "toast": {
+      "added": "Klient dodany",
+      "addError": "Błąd przy dodawaniu klienta",
+      "updated": "Klient zaktualizowany",
+      "updateError": "Błąd przy aktualizacji klienta",
+      "deleted": "Klient usunięty",
+      "deleteError": "Błąd przy usuwaniu klienta"
+    }
   },
   "calendar": {
     "title": "Kalendarz",
@@ -549,7 +565,13 @@
     "noMembersDesc": "Dodaj pierwszego członka zespołu",
     "startWork": "Rozpocznij pracę",
     "onBreak": "Na przerwie",
-    "traveling": "W podróży"
+    "traveling": "W podróży",
+    "toast": {
+      "added": "Pracownik dodany",
+      "addError": "Błąd podczas dodawania pracownika",
+      "updated": "Pracownik zaktualizowany",
+      "deleted": "Pracownik usunięty"
+    }
   },
   "templates": {
     "title": "Szablony pozycji",
@@ -661,7 +683,11 @@
     "deleteVersion": "Usunąć wersję?",
     "irreversible": "Ta operacja jest nieodwracalna.",
     "noVersionsHint": "Brak zapisanych wersji. Kliknij \"Zapisz wersję\" aby zachować aktualny stan wyceny.",
-    "category": "Kategoria"
+    "category": "Kategoria",
+    "toast": {
+      "saved": "Wycena zapisana",
+      "saveError": "Błąd przy zapisywaniu wyceny"
+    }
   },
   "settings": {
     "title": "Ustawienia",
@@ -712,7 +738,13 @@
       "title": "Email do odpowiedzi",
       "unverified": "Niezweryfikowany",
       "verified": "Zweryfikowany",
-      "verifyPrompt": "Zweryfikuj adres email, aby klienci mogli do Ciebie odpisywać na oferty."
+      "verifyPrompt": "Zweryfikuj adres email, aby klienci mogli do Ciebie odpisywać na oferty.",
+      "toast": {
+        "saved": "Email do odpowiedzi zapisany. Sprawdź skrzynkę pocztową, by go zweryfikować.",
+        "saveError": "Nie udało się zapisać adresu email",
+        "verificationSent": "Email weryfikacyjny został wysłany. Sprawdź skrzynkę pocztową.",
+        "verificationSentNoService": "Email weryfikacyjny wysłany (usługa email musi być skonfigurowana)."
+      }
     }
   },
   "billing": {
@@ -904,7 +936,12 @@
     "emailGreeting": "Powitanie",
     "emailSignature": "Podpis",
     "emailSubject": "Temat wiadomości",
-    "subjectTemplate": "Szablon tematu"
+    "subjectTemplate": "Szablon tematu",
+    "toast": {
+      "saved": "Profil firmy został zapisany",
+      "saveError": "Nie udało się zapisać profilu",
+      "logoUploaded": "Logo zostało przesłane"
+    }
   },
   "pdf": {
     "title": "Generator oferty PDF",
@@ -921,7 +958,10 @@
     "premium": "Premium",
     "template": "Szablon",
     "deadlineText": "Tekst terminu",
-    "sendEmail": "Wyślij przez email"
+    "sendEmail": "Wyślij przez email",
+    "toast": {
+      "saveError": "Błąd przy zapisywaniu danych PDF: {{message}}"
+    }
   },
   "ai": {
     "title": "Asystent AI",
@@ -956,7 +996,13 @@
     "errorNotConfiguredToast": "Asystent AI nie jest skonfigurowany",
     "errorConnectionToast": "Błąd połączenia z AI",
     "errorNotConfiguredContent": "Asystent AI nie jest jeszcze dostępny. Administrator musi skonfigurować klucz API (OpenAI, Anthropic lub Gemini) w ustawieniach serwera. Skontaktuj się z pomocą techniczną.",
-    "errorGeneralContent": "Przepraszam, wystąpił błąd. Spróbuj ponownie za chwilę."
+    "errorGeneralContent": "Przepraszam, wystąpił błąd. Spróbuj ponownie za chwilę.",
+    "toast": {
+      "rateLimitExceeded": "Przekroczono limit zapytań AI. Spróbuj później.",
+      "noCredits": "Brak kredytów AI. Doładuj konto.",
+      "analysisComplete": "Analiza AI zakończona",
+      "analysisError": "Błąd analizy AI"
+    }
   },
   "quickActions": {
     "newOffer": "Nowa oferta"
@@ -1077,7 +1123,20 @@
     "noAccessDesc": "Nie masz uprawnień do wyświetlenia tej strony",
     "backToDashboard": "Wróć do panelu",
     "accessDenied": "Brak dostępu do panelu administracyjnego",
-    "panelAccess": "Panel administracyjny"
+    "panelAccess": "Panel administracyjny",
+    "toast": {
+      "contentSaved": "Treści zapisane",
+      "contentRestored": "Przywrócono domyślne treści",
+      "cronSkipped": "Zadanie pominięte - brak klucza {{key}}",
+      "cronSuccess": "Zadanie wykonane pomyślnie",
+      "cronError": "Błąd: {{message}}",
+      "statsRefreshed": "Statystyki odświeżone",
+      "roleAssigned": "Rola przypisana pomyślnie",
+      "roleAssignError": "Błąd podczas przypisywania roli",
+      "roleRemoved": "Rola usunięta",
+      "settingsSaveError": "Nie można zapisać ustawień",
+      "themeSaveError": "Nie można zapisać motywu"
+    }
   },
   "adminConfig": {
     "pageTitle": "Konfiguracja",
@@ -1197,7 +1256,17 @@
     "noMembers": "Brak członków",
     "selectOrg": "Wybierz organizację, aby zarządzać członkami",
     "slugHint": "Zostanie użyty w adresie URL. Tylko małe litery, cyfry i myślniki.",
-    "yourOrganizations": "Twoje organizacje"
+    "yourOrganizations": "Twoje organizacje",
+    "toast": {
+      "created": "Organizacja została utworzona",
+      "createError": "Błąd podczas tworzenia organizacji",
+      "inviteSent": "Zaproszenie zostało wysłane",
+      "inviteError": "Błąd podczas zapraszania członka",
+      "memberRemoved": "Członek został usunięty",
+      "removeError": "Błąd podczas usuwania członka",
+      "roleUpdated": "Rola została zaktualizowana",
+      "roleUpdateError": "Błąd podczas aktualizacji roli"
+    }
   },
   "marketplace": {
     "title": "Marketplace",
@@ -2497,7 +2566,8 @@
     "noResults": "Brak podwykonawców",
     "noResultsHint": "Spróbuj zmienić kryteria wyszukiwania",
     "noOwn": "Brak własnych podwykonawców",
-    "noOwnHint": "Dodaj podwykonawców, z którymi współpracujesz"
+    "noOwnHint": "Dodaj podwykonawców, z którymi współpracujesz",
+    "title": "Marketplace"
   },
   "offerPublicPage": {
     "notFoundError": "Nie znaleziono oferty lub link jest nieprawidłowy.",
@@ -2683,6 +2753,14 @@
       "cta": "Utwórz ofertę",
       "desc": "Utwórz pierwszą ofertę, aby rozpocząć",
       "title": "Brak ofert"
+    },
+    "toast": {
+      "approvalLinkCreated": "Link do akceptacji utworzony",
+      "approvalLinkError": "Błąd podczas tworzenia linku",
+      "extendedValidity": "Ważność oferty przedłużona o 30 dni",
+      "extendError": "Błąd podczas przedłużania oferty",
+      "processingError": "Błąd podczas przetwarzania",
+      "sendSaveError": "Błąd przy zapisywaniu wysyłki"
     }
   },
   "legal": {
@@ -3527,6 +3605,9 @@
       "expiredDesc": "Ten link udostepniania wygasl. Skontaktuj sie z wykonawca, aby uzyskac nowy link.",
       "notFoundTitle": "Link nie znaleziony",
       "notFoundDesc": "Ten link jest nieprawidlowy lub zostal odwolany."
+    },
+    "toast": {
+      "exportError": "Błąd eksportu PDF. Spróbuj ponownie."
     }
   },
   "docTemplates": {
@@ -4044,5 +4125,160 @@
     "betaNotice": "Synchronizacja z zewnętrznymi kalendarzami (Google, Outlook, Apple) jest w przygotowaniu. Zostanie udostępniona w kolejnej wersji.",
     "description": "Połącz zewnętrzne kalendarze, aby synchronizować wydarzenia",
     "title": "Synchronizacja kalendarzy"
+  },
+  "seo": {
+    "landing": {
+      "title": "Majster.AI — Wyceny PDF i zarządzanie projektami dla fachowców",
+      "description": "Platforma dla majstrów i wykonawców. Wyceny PDF, projekty, baza klientów, asystent AI. Zacznij bezpłatnie — bez karty kredytowej.",
+      "keywords": "wyceny PDF, generator ofert, fachowcy, firma budowlana, kosztorys, zarządzanie projektami, majster, elektryk, hydraulik",
+      "ogDescription": "Platforma dla majstrów i wykonawców. Wyceny PDF, projekty, baza klientów. Zacznij bezpłatnie — bez karty kredytowej.",
+      "twitterTitle": "Majster.AI — Wyceny PDF dla fachowców",
+      "twitterDescription": "Profesjonalne wyceny, zarządzanie projektami i AI dla firm remontowych."
+    },
+    "login": {
+      "title": "Logowanie | Majster.AI",
+      "description": "Zaloguj się do Majster.AI — platformy dla fachowców. Zarządzaj projektami, twórz wyceny PDF i korzystaj z asystenta AI.",
+      "ogDescription": "Zaloguj się do Majster.AI — platformy dla fachowców budowlanych."
+    },
+    "register": {
+      "title": "Rejestracja — zacznij za darmo | Majster.AI",
+      "description": "Zarejestruj się w Majster.AI za darmo — bez karty kredytowej. Twórz wyceny PDF, zarządzaj projektami i klientami jako fachowiec.",
+      "ogTitle": "Rejestracja — zacznij za darmo | Majster.AI",
+      "ogDescription": "Zarejestruj się w Majster.AI za darmo. Platforma dla fachowców budowlanych."
+    },
+    "forgotPassword": {
+      "title": "Przypomnij hasło | Majster.AI",
+      "description": "Zresetuj hasło do konta Majster.AI. Podaj adres e-mail, a wyślemy link do ustawienia nowego hasła."
+    },
+    "resetPassword": {
+      "title": "Ustaw nowe hasło | Majster.AI",
+      "description": "Ustaw nowe hasło do swojego konta Majster.AI."
+    },
+    "notFound": {
+      "title": "404 — Strona nie znaleziona | Majster.AI"
+    },
+    "marketplace": {
+      "title": "Marketplace | Majster.AI"
+    },
+    "privacy": {
+      "description": "Polityka prywatności aplikacji Majster.AI - dowiedz się jak chronimy Twoje dane."
+    },
+    "terms": {
+      "description": "Regulamin korzystania z aplikacji Majster.AI - zasady i warunki użytkowania."
+    },
+    "planDetail": {
+      "title": "Plan {{plan}} | Majster.AI",
+      "description": "{{description}} Cena: {{price}}",
+      "pricePerMonth": "{{amount}} zł/mies."
+    }
+  },
+  "apiKeys": {
+    "toast": {
+      "nameRequired": "Podaj nazwę klucza",
+      "copied": "Klucz skopiowany",
+      "created": "Klucz API utworzony",
+      "createError": "Błąd podczas tworzenia klucza",
+      "updated": "Klucz zaktualizowany",
+      "deleted": "Klucz usunięty"
+    }
+  },
+  "documents": {
+    "toast": {
+      "added": "Dokument został dodany",
+      "addError": "Błąd przy dodawaniu dokumentu",
+      "deleted": "Dokument usunięty",
+      "deleteError": "Błąd przy usuwaniu dokumentu"
+    }
+  },
+  "pushNotifications": {
+    "toast": {
+      "notSupported": "Twoja przeglądarka nie obsługuje powiadomień push",
+      "enabled": "Powiadomienia push zostały włączone",
+      "blocked": "Powiadomienia zostały zablokowane. Zmień ustawienia przeglądarki.",
+      "enableError": "Błąd przy włączaniu powiadomień",
+      "disabled": "Powiadomienia push zostały wyłączone",
+      "disableError": "Błąd przy wyłączaniu powiadomień",
+      "registrationError": "Błąd rejestracji powiadomień push",
+      "nativeOnly": "Push notifications są dostępne tylko w natywnej aplikacji mobilnej"
+    }
+  },
+  "biometric": {
+    "toast": {
+      "registered": "Biometria została zarejestrowana",
+      "authSuccess": "Autentykacja biometryczna udana",
+      "credentialDeleted": "Poświadczenie biometryczne zostało usunięte",
+      "deleteError": "Błąd podczas usuwania poświadczenia"
+    }
+  },
+  "calendarEvents": {
+    "toast": {
+      "added": "Wydarzenie dodane",
+      "addError": "Błąd przy dodawaniu wydarzenia",
+      "updated": "Wydarzenie zaktualizowane",
+      "updateError": "Błąd przy aktualizacji wydarzenia",
+      "deleted": "Wydarzenie usunięte",
+      "deleteError": "Błąd przy usuwaniu wydarzenia"
+    }
+  },
+  "projectPhotos": {
+    "toast": {
+      "uploaded": "Zdjęcie przesłane (metadane EXIF usunięte)",
+      "analysisComplete": "Analiza zakończona",
+      "analysisError": "Błąd podczas analizy zdjęcia",
+      "deleted": "Zdjęcie usunięte"
+    }
+  },
+  "costs": {
+    "toast": {
+      "invoiceUploaded": "Faktura przesłana",
+      "ocrComplete": "OCR zakończony",
+      "ocrError": "Błąd OCR",
+      "deleted": "Koszt usunięty"
+    }
+  },
+  "quoteVersions": {
+    "toast": {
+      "saved": "Wersja wyceny zapisana",
+      "saveError": "Błąd przy zapisywaniu wersji",
+      "activated": "Wersja ustawiona jako aktywna",
+      "activateError": "Błąd przy zmianie aktywnej wersji",
+      "deleted": "Wersja usunięta",
+      "deleteError": "Błąd przy usuwaniu wersji"
+    }
+  },
+  "subcontractors": {
+    "toast": {
+      "added": "Podwykonawca dodany",
+      "addError": "Błąd podczas dodawania podwykonawcy",
+      "updated": "Podwykonawca zaktualizowany",
+      "reviewAdded": "Opinia dodana"
+    }
+  },
+  "tasks": {
+    "toast": {
+      "added": "Zadanie dodane",
+      "addError": "Błąd podczas dodawania zadania",
+      "updated": "Zadanie zaktualizowane",
+      "deleted": "Zadanie usunięte"
+    }
+  },
+  "seoStructuredData": {
+    "orgDescription": "Platforma SaaS dla fachowców i wykonawców budowlanych — wyceny PDF, zarządzanie projektami, AI.",
+    "appDescription": "Narzędzie do tworzenia wycen PDF, zarządzania projektami i klientami dla firm budowlanych i remontowych.",
+    "features": {
+      "pdfOffers": "Generowanie ofert PDF",
+      "projectMgmt": "Zarządzanie projektami",
+      "clientDb": "Baza klientów",
+      "aiAssistant": "Asystent AI",
+      "voiceDictation": "Dyktowanie głosowe",
+      "ocrInvoice": "Analiza OCR faktur",
+      "marketplace": "Marketplace dla fachowców"
+    },
+    "faq1q": "Czy Majster.AI jest bezpłatny?",
+    "faq1a": "Tak, Majster.AI oferuje darmowy plan startowy bez karty kredytowej. Możesz zacząć bez opłat.",
+    "faq2q": "Dla kogo jest Majster.AI?",
+    "faq2a": "Majster.AI jest przeznaczony dla firm budowlanych, remontowych, elektryków, hydraulików i innych fachowców, którzy chcą profesjonalizować swój biznes.",
+    "faq3q": "Czy mogę wygenerować ofertę PDF?",
+    "faq3a": "Tak, Majster.AI umożliwia generowanie profesjonalnych ofert w formacie PDF z logo firmy, pozycjami kosztorysowymi i warunkami płatności."
   }
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,7 @@ interface TableStats {
 }
 
 export function AdminDatabaseManager() {
+  const { t } = useTranslation();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Fetch table counts
@@ -85,7 +87,7 @@ export function AdminDatabaseManager() {
     setIsRefreshing(true);
     await refetch();
     setIsRefreshing(false);
-    toast.success('Statystyki odświeżone');
+    toast.success(t('admin.toast.statsRefreshed'));
   };
 
   const totalRecords = tableStats?.reduce((sum, t) => sum + t.count, 0) || 0;

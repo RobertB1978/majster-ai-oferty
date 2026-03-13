@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -21,6 +22,8 @@ interface AiSuggestion {
 // }
 
 export function useAiSuggestions() {
+  const { t } = useTranslation();
+
   return useMutation({
     mutationFn: async ({ 
       projectName, 
@@ -44,9 +47,9 @@ export function useAiSuggestions() {
       const errorMessage = error instanceof Error ? error.message : String(error);
 
       if (errorMessage.includes('429') || errorMessage.includes('limit')) {
-        toast.error('Przekroczono limit zapytań AI. Spróbuj później.');
+        toast.error(t('ai.toast.rateLimitExceeded'));
       } else if (errorMessage.includes('402')) {
-        toast.error('Brak kredytów AI. Doładuj konto.');
+        toast.error(t('ai.toast.noCredits'));
       } else {
         toast.error('Błąd AI: ' + errorMessage);
       }

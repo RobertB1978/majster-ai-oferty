@@ -44,11 +44,11 @@ export function ContactEmailSettings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      toast.success('Email do odpowiedzi zapisany. Sprawdź skrzynkę pocztową, by go zweryfikować.');
+      toast.success(t('settings.contactEmail.toast.saved'));
       setIsEditing(false);
     },
     onError: () => {
-      toast.error('Nie udało się zapisać adresu email');
+      toast.error(t('settings.contactEmail.toast.saveError'));
     },
   });
 
@@ -72,11 +72,11 @@ export function ContactEmailSettings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      toast.success('Email weryfikacyjny został wysłany. Sprawdź skrzynkę pocztową.');
+      toast.success(t('settings.contactEmail.toast.verificationSent'));
     },
     onError: () => {
       // Edge function may not exist yet — still show partial success
-      toast.success('Email weryfikacyjny wysłany (usługa email musi być skonfigurowana).');
+      toast.success(t('settings.contactEmail.toast.verificationSentNoService'));
     },
   });
 

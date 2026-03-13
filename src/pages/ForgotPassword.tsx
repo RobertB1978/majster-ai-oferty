@@ -81,8 +81,8 @@ export default function ForgotPassword() {
   return (
     <>
     <Helmet>
-      <title>Przypomnij hasło | Majster.AI</title>
-      <meta name="description" content="Zresetuj hasło do konta Majster.AI. Podaj adres e-mail, a wyślemy link do ustawienia nowego hasła." />
+      <title>{t('seo.forgotPassword.title')}</title>
+      <meta name="description" content={t('seo.forgotPassword.description')} />
       <meta name="robots" content="noindex, nofollow" />
     </Helmet>
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
