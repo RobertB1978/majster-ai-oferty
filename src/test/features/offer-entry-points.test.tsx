@@ -82,7 +82,7 @@ describe('Kanoniczny route oferty = /app/offers/new', () => {
 
       render(<HomeLobby />, { wrapper: Wrapper });
 
-      const newOfferBtn = screen.getByText('Nowa wycena');
+      const newOfferBtn = screen.getByText('newShell.home.qs.newOffer');
       fireEvent.click(newOfferBtn);
 
       expect(mockNavigate).toHaveBeenCalledWith(CANONICAL_OFFER_ROUTE);
@@ -93,7 +93,7 @@ describe('Kanoniczny route oferty = /app/offers/new', () => {
 
       render(<HomeLobby />, { wrapper: Wrapper });
 
-      const quickEstBtn = screen.getByText('Szybka wycena');
+      const quickEstBtn = screen.getByText('newShell.home.qs.quickEst');
       fireEvent.click(quickEstBtn);
 
       expect(mockNavigate).toHaveBeenCalledWith('/app/szybka-wycena');
@@ -106,7 +106,7 @@ describe('Kanoniczny route oferty = /app/offers/new', () => {
 
       render(<HomeLobby />, { wrapper: Wrapper });
 
-      const projectsBtn = screen.getByRole('button', { name: 'Projekty' });
+      const projectsBtn = screen.getByRole('button', { name: 'newShell.home.qs.projects' });
       fireEvent.click(projectsBtn);
 
       expect(mockNavigate).toHaveBeenCalledWith('/app/projects');
@@ -122,7 +122,7 @@ describe('Kanoniczny route oferty = /app/offers/new', () => {
       render(<NewShellFAB />, { wrapper: Wrapper });
 
       // Otwórz bottom sheet klikając FAB
-      const fabBtn = screen.getByRole('button', { name: /Utwórz/i });
+      const fabBtn = screen.getByRole('button', { name: /newShell\.fab\.open/i });
       fireEvent.click(fabBtn);
 
       // Kliknij akcję oferty w otwartym bottom sheet

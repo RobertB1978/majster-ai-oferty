@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,6 +40,7 @@ const documentTypeConfig = {
 };
 
 export function CompanyDocuments() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -102,12 +104,12 @@ export function CompanyDocuments() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['company-documents'] });
-      toast.success('Dokument został dodany');
+      toast.success(t('documents.toast.added'));
       setIsDialogOpen(false);
       setNewDoc({ name: '', document_type: 'uprawnienia', description: '' });
     },
     onError: (error) => {
-      toast.error('Błąd przy dodawaniu dokumentu');
+      toast.error(t('documents.toast.addError'));
       console.error(error);
     },
     onSettled: () => {
@@ -133,10 +135,10 @@ export function CompanyDocuments() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['company-documents'] });
-      toast.success('Dokument usunięty');
+      toast.success(t('documents.toast.deleted'));
     },
     onError: () => {
-      toast.error('Błąd przy usuwaniu dokumentu');
+      toast.error(t('documents.toast.deleteError'));
     },
   });
 

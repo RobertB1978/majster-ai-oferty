@@ -65,9 +65,9 @@ export function BillingDashboard() {
               <span className="text-2xl font-bold capitalize">{currentPlan}</span>
               <Badge variant={status === 'active' ? 'default' : 'secondary'}>
                 {status === 'trial'
-                  ? t('billing.subscription.statusTrialing', 'Testowy')
+                  ? t('billing.subscription.statusTrialing')
                   : status === 'cancelled'
-                  ? t('billing.subscription.statusCanceled', 'Anulowany')
+                  ? t('billing.subscription.statusCanceled')
                   : t('billing.active')}
               </Badge>
             </div>
@@ -79,7 +79,7 @@ export function BillingDashboard() {
                 onClick={() => navigate('/app/plan')}
               >
                 <ArrowUpRight className="h-4 w-4" />
-                {t('billing.subscription.upgradeCta', 'Ulepsz do Pro')}
+                {t('billing.subscription.upgradeCta')}
               </Button>
             )}
           </CardContent>
@@ -88,7 +88,7 @@ export function BillingDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('billing.subscription.periodEnd', 'Ważny do')}
+              {t('billing.subscription.periodEnd')}
             </CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -106,8 +106,8 @@ export function BillingDashboard() {
             )}
             <p className="text-xs text-muted-foreground mt-1">
               {currentPlan === 'free'
-                ? t('billing.freePlan', 'Plan darmowy')
-                : t('billing.paidSubscription', 'Subskrypcja aktywna')}
+                ? t('billing.freePlan')
+                : t('billing.paidSubscription')}
             </p>
           </CardContent>
         </Card>

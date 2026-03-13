@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -61,6 +62,7 @@ interface UserSubscription {
 }
 
 export function AdminUsersManager() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
@@ -120,11 +122,11 @@ export function AdminUsersManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-user-roles'] });
-      toast.success('Rola przypisana pomyślnie');
+      toast.success(t('admin.toast.roleAssigned'));
       setRoleDialogOpen(false);
     },
     onError: () => {
-      toast.error('Błąd podczas przypisywania roli');
+      toast.error(t('admin.toast.roleAssignError'));
     },
   });
 
@@ -141,7 +143,7 @@ export function AdminUsersManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-user-roles'] });
-      toast.success('Rola usunięta');
+      toast.success(t('admin.toast.roleRemoved'));
     },
   });
 
@@ -178,10 +180,10 @@ export function AdminUsersManager() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Users className="h-5 w-5" />
-          Zarządzanie użytkownikami
+          {t('admin.usersManager.title')}
         </CardTitle>
         <CardDescription>
-          Przeglądaj, edytuj i zarządzaj kontami użytkowników
+          {t('admin.usersManager.description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -190,14 +192,14 @@ export function AdminUsersManager() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Szukaj użytkownika..."
+              placeholder={t('admin.usersManager.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
           </div>
           <Badge variant="outline">
-            {filteredUsers?.length || 0} użytkowników
+            {t('admin.usersManager.usersCount', { count: filteredUsers?.length || 0 })}
           </Badge>
         </div>
 
@@ -206,25 +208,25 @@ export function AdminUsersManager() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Firma / Użytkownik</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Plan</TableHead>
-                <TableHead>Rola</TableHead>
-                <TableHead>Data rejestracji</TableHead>
-                <TableHead className="w-[70px]">Akcje</TableHead>
+                <TableHead>{t('admin.usersManager.companyUser')}</TableHead>
+                <TableHead>{t('admin.usersManager.email')}</TableHead>
+                <TableHead>{t('admin.usersManager.plan')}</TableHead>
+                <TableHead>{t('admin.usersManager.role')}</TableHead>
+                <TableHead>{t('admin.usersManager.registrationDate')}</TableHead>
+                <TableHead className="w-[70px]">{t('admin.usersManager.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
-                    Ładowanie...
+                    {t('admin.usersManager.loading')}
                   </TableCell>
                 </TableRow>
               ) : filteredUsers?.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    Brak użytkowników
+                    {t('admin.usersManager.noUsers')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -246,7 +248,7 @@ export function AdminUsersManager() {
                             )}
                           </div>
                           <div>
-                            <p className="font-medium">{user.company_name || 'Brak nazwy'}</p>
+                            <p className="font-medium">{user.company_name || t('admin.usersManager.noName')}</p>
                             <p className="text-sm text-muted-foreground">{user.owner_name || '-'}</p>
                           </div>
                         </div>
@@ -290,7 +292,7 @@ export function AdminUsersManager() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Akcje</DropdownMenuLabel>
+                            <DropdownMenuLabel>{t('admin.usersManager.actions')}</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={() => {
@@ -299,16 +301,16 @@ export function AdminUsersManager() {
                               }}
                             >
                               <UserCog className="h-4 w-4 mr-2" />
-                              Zarządzaj rolami
+                              {t('admin.usersManager.manageRoles')}
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                               <Mail className="h-4 w-4 mr-2" />
-                              Wyślij email
+                              {t('admin.usersManager.sendEmail')}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-destructive">
                               <Ban className="h-4 w-4 mr-2" />
-                              Zablokuj konto
+                              {t('admin.usersManager.blockAccount')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -325,7 +327,7 @@ export function AdminUsersManager() {
         <Dialog open={roleDialogOpen} onOpenChange={setRoleDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Zarządzaj rolami użytkownika</DialogTitle>
+              <DialogTitle>{t('admin.usersManager.roleDialogTitle')}</DialogTitle>
               <DialogDescription>
                 {selectedUser?.company_name} ({selectedUser?.owner_name})
               </DialogDescription>
@@ -369,20 +371,20 @@ export function AdminUsersManager() {
                   disabled={!selectedUser || !getUserRole(selectedUser?.user_id || '')}
                 >
                   <UserX className="h-6 w-6 text-muted-foreground" />
-                  <span>Usuń rolę</span>
+                  <span>{t('admin.usersManager.removeRole')}</span>
                 </Button>
               </div>
               
               {selectedUser && getUserRole(selectedUser.user_id) && (
                 <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
                   <CheckCircle className="h-5 w-5 text-green-600" />
-                  <span>Aktualna rola: <strong>{getUserRole(selectedUser.user_id)}</strong></span>
+                  <span>{t('admin.usersManager.currentRole')}<strong>{getUserRole(selectedUser.user_id)}</strong></span>
                 </div>
               )}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setRoleDialogOpen(false)}>
-                Zamknij
+                {t('admin.usersManager.close')}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -52,7 +52,11 @@
     "send": "Send",
     "stopRecording": "Stop recording",
     "dontShowAgain": "Don't show again",
-    "startVoiceRecording": "Start voice recording"
+    "startVoiceRecording": "Start voice recording",
+    "errorGeneric": "An error occurred. Please try again.",
+    "offline": "Offline",
+    "online": "Online",
+    "unknownError": "Unknown error"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -72,7 +76,8 @@
     "menu": "Menu",
     "comingSoon": "Soon",
     "quickEstimate": "Quick Estimate",
-    "offers": "Offers"
+    "offers": "Offers",
+    "skipToContent": "Skip to main content"
   },
   "auth": {
     "login": "Login",
@@ -145,7 +150,9 @@
       "securityTitle": "Security",
       "securityDesc": "Configure additional security options",
       "fingerprintLabel": "Fingerprint login",
-      "fingerprintDesc": "Fast and secure biometric login"
+      "fingerprintDesc": "Fast and secure biometric login",
+      "error": "Biometric authentication failed",
+      "loginLabel": "Log in with fingerprint"
     },
     "passwordStrength": "Password strength:",
     "passwordRequirements": {
@@ -246,7 +253,9 @@
       "aiDesc": "Open the offer form",
       "aiOpening": "Opening AI assistant...",
       "manualTitle": "Manually",
-      "manualDesc": "Fill in the form"
+      "manualDesc": "Fill in the form",
+      "quickDesc": "Enter items and send in a few minutes",
+      "quickTitle": "Quick estimate"
     },
     "createFirst": "Create your first",
     "noClients": "No clients",
@@ -288,7 +297,8 @@
       "pendingOffer": "Offer",
       "expiringOffer": "Expiring",
       "inactiveProject": "Project"
-    }
+    },
+    "expiringOffersDesc": "{{count}} offers expiring soon"
   },
   "projects": {
     "title": "Projects",
@@ -358,7 +368,15 @@
     "listErrorDesc": "Failed to load the project list. Check your connection and try again.",
     "listErrorRetry": "Try again",
     "noResults": "No results",
-    "noResultsDesc": "No projects match the selected filters."
+    "noResultsDesc": "No projects match the selected filters.",
+    "toast": {
+      "created": "Project created",
+      "createError": "Error creating project",
+      "updated": "Project updated",
+      "updateError": "Error updating project",
+      "deleted": "Project deleted",
+      "deleteError": "Error deleting project"
+    }
   },
   "clients": {
     "title": "Clients",
@@ -383,7 +401,15 @@
     "emailPlaceholder": "john@example.com",
     "addressPlaceholder": "123 Main St, 00-001 Warsaw",
     "clearSearch": "Clear search",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "toast": {
+      "added": "Client added",
+      "addError": "Error adding client",
+      "updated": "Client updated",
+      "updateError": "Error updating client",
+      "deleted": "Client deleted",
+      "deleteError": "Error deleting client"
+    }
   },
   "calendar": {
     "title": "Calendar",
@@ -448,7 +474,10 @@
       "october": "October",
       "november": "November",
       "december": "December"
-    }
+    },
+    "loadError": "Failed to load calendar",
+    "loadErrorHint": "Check your internet connection and refresh the page",
+    "selectedDate": "Selected date"
   },
   "finance": {
     "title": "Finance",
@@ -537,7 +566,30 @@
       "active": "Active",
       "inactive": "Inactive"
     },
-    "addFirst": "Add your first team member"
+    "addFirst": "Add your first team member",
+    "toast": {
+      "added": "Team member added",
+      "addError": "Error adding team member",
+      "updated": "Team member updated",
+      "deleted": "Team member deleted"
+    },
+    "members": {
+      "teamTitle": "Team ({{count}})",
+      "add": "Add",
+      "editEmployee": "Edit employee",
+      "addEmployee": "Add employee",
+      "fullName": "Full name *",
+      "phone": "Phone",
+      "email": "Email",
+      "role": "Role",
+      "manager": "Manager",
+      "foreman": "Foreman",
+      "worker": "Worker",
+      "saveChanges": "Save changes",
+      "addEmployeeBtn": "Add employee",
+      "noEmployees": "No employees",
+      "inactive": "Inactive"
+    }
   },
   "templates": {
     "title": "Item Templates",
@@ -648,7 +700,12 @@
     "loadToEditor": "Load into editor",
     "deleteVersion": "Delete version?",
     "irreversible": "This operation is irreversible.",
-    "noVersionsHint": "No saved versions. Click \"Save version\" to preserve the current state."
+    "noVersionsHint": "No saved versions. Click \"Save version\" to preserve the current state.",
+    "category": "Category",
+    "toast": {
+      "saved": "Quote saved",
+      "saveError": "Error saving quote"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -676,6 +733,32 @@
     "admin": "Admin Panel",
     "biometric": "Biometric Login",
     "biometricDescription": "Use fingerprint or Face ID to login",
+    "biometricSettings": {
+      "supported": "Supported",
+      "notSupported": "Not supported",
+      "detectedDevice": "Detected device",
+      "biometricUnavailable": "Biometric unavailable",
+      "biometricUnavailableDesc": "Your browser ({{browser}}) or device ({{os}}) does not support biometric login",
+      "registeredDevices": "Registered devices ({{count}})",
+      "unknownDevice": "Unknown device",
+      "added": "Added",
+      "lastUsed": "Last used",
+      "noDevices": "No registered biometric devices",
+      "addDevicePrompt": "Add your device to log in with {{icon}}",
+      "registration": "Registration {{icon}}",
+      "deviceName": "Device name",
+      "autoDetected": "Auto-detected: {{name}}",
+      "cancel": "Cancel",
+      "register": "Register",
+      "addDevice": "Add this device ({{type}})",
+      "devicePhone": "phone",
+      "deviceTablet": "tablet",
+      "deviceDesktop": "desktop",
+      "deleteTitle": "Delete biometric credential?",
+      "deleteDescription": "After deletion you will not be able to use this device for biometric login",
+      "deleteCancel": "Cancel",
+      "deleteConfirm": "Delete"
+    },
     "calendarSync": "Calendar synchronization",
     "documentsDescription": "Manage company documents and files",
     "plugins": "Integrations and plugins",
@@ -688,7 +771,25 @@
     "contactEmailTab": "Email",
     "companyProfileTab": "Company",
     "accountTab": "Account",
-    "subscriptionTab": "Subscription"
+    "subscriptionTab": "Subscription",
+    "contactEmail": {
+      "add": "Add reply-to email",
+      "change": "Change email",
+      "changeWarning": "Changing the email address requires re-verification.",
+      "desc": "This address will be set as Reply-To in offer emails so clients can reply to you.",
+      "inputLabel": "New email address",
+      "sendVerification": "Send verification email",
+      "title": "Reply-to email",
+      "unverified": "Unverified",
+      "verified": "Verified",
+      "verifyPrompt": "Verify your email address so clients can reply to your offers.",
+      "toast": {
+        "saved": "Reply email saved. Check your inbox to verify it.",
+        "saveError": "Failed to save email address",
+        "verificationSent": "Verification email sent. Check your inbox.",
+        "verificationSentNoService": "Verification email sent (email service must be configured)."
+      }
+    }
   },
   "billing": {
     "title": "Billing & Subscriptions",
@@ -713,7 +814,15 @@
           "noAi": "No AI assistant",
           "noExcel": "No Excel export"
         },
-        "name": "Free"
+        "name": "Free",
+        "faq": {
+          "q1": "How long does the free plan last?",
+          "a1": "The free plan has no time limit. You can use it as long as you want.",
+          "q2": "Can I switch to a paid plan?",
+          "a2": "Yes, at any time. Your data is preserved.",
+          "q3": "Are there ads?",
+          "a3": "The free plan may show informational banners."
+        }
       },
       "pro": {
         "description": "For starting businesses",
@@ -725,7 +834,15 @@
           "excelExport": "Excel export",
           "emailSupport": "Email support"
         },
-        "name": "Pro"
+        "name": "Pro",
+        "faq": {
+          "q1": "Can I cancel?",
+          "a1": "Yes — you can cancel payment at any time.",
+          "q2": "Is a VAT invoice available?",
+          "a2": "Yes, we issue a VAT invoice for every purchase.",
+          "q3": "What happens after cancellation?",
+          "a3": "You keep access until the end of the paid period."
+        }
       },
       "business": {
         "description": "For growing businesses",
@@ -738,7 +855,15 @@
           "companyDocuments": "Company documents",
           "prioritySupport": "Priority support"
         },
-        "name": "Business"
+        "name": "Business",
+        "faq": {
+          "q1": "How many people can work?",
+          "a1": "Up to 10 team members on the Business plan.",
+          "q2": "Is AI included?",
+          "a2": "Yes — AI assistant and photo estimation are included.",
+          "q3": "Is team management available yet?",
+          "a3": "The Team module is in preparation and will be available in the next update."
+        }
       },
       "enterprise": {
         "description": "Full capabilities",
@@ -752,7 +877,15 @@
           "teamTraining": "Team training",
           "priorityFeatures": "Priority features"
         },
-        "name": "Enterprise"
+        "name": "Enterprise",
+        "faq": {
+          "q1": "Is there an SLA agreement?",
+          "a1": "Yes — an SLA agreement is available for Enterprise plans.",
+          "q2": "Is the price negotiable?",
+          "a2": "Yes — for larger teams, please contact us.",
+          "q3": "How to get API access?",
+          "a3": "After purchase, API keys are available in Settings → API."
+        }
       }
     },
     "features": "Features",
@@ -839,7 +972,8 @@
       "statusActive": "Active",
       "statusCanceled": "Canceled",
       "statusTrialing": "Trial",
-      "statusExpired": "Expired"
+      "statusExpired": "Expired",
+      "noPortalAdmin": "Plan assigned manually — payment portal unavailable."
     },
     "checkoutSuccess": "Payment complete! Refreshing your plan...",
     "checkoutCanceled": "Payment canceled",
@@ -853,7 +987,26 @@
     "freePlan": "Free plan",
     "projects": "projects",
     "history": "History",
-    "perMonthNet": "/mo net"
+    "perMonthNet": "/mo net",
+    "paidSubscription": "Active subscription",
+    "stripeNotConfigured": "Stripe is not fully configured",
+    "stripeNotConfiguredDesc": "VITE_STRIPE_ENABLED=true, but real Stripe Price IDs are missing. Checkout is blocked until VITE_STRIPE_PRICE_* variables are set.",
+    "trialDaysRemaining": "{{count}} trial days remaining",
+    "planRequest": {
+      "title": "Order {{plan}} plan",
+      "description": "Send a request — we'll get back to you shortly.",
+      "phone": "Phone (optional)",
+      "message": "Message (optional)",
+      "messagePlaceholder": "Additional information or questions...",
+      "success": "Request submitted!",
+      "contactInfo": "We'll contact you at:",
+      "close": "Close",
+      "cancel": "Cancel",
+      "submit": "Submit request",
+      "sending": "Sending...",
+      "error": "Error: {{message}}. Try again or write to",
+      "unknownError": "Unknown error"
+    }
   },
   "profile": {
     "title": "Company Profile",
@@ -874,7 +1027,12 @@
     "emailGreeting": "Email Greeting",
     "emailSignature": "Email Signature",
     "subjectTemplate": "Subject Template",
-    "emailSubject": "Email subject"
+    "emailSubject": "Email subject",
+    "toast": {
+      "saved": "Company profile saved",
+      "saveError": "Failed to save profile",
+      "logoUploaded": "Logo uploaded"
+    }
   },
   "pdf": {
     "title": "PDF Generator",
@@ -891,7 +1049,10 @@
     "sendEmail": "Send via Email",
     "deadline": "Validity deadline",
     "offerTitle": "Offer title",
-    "version": "Version"
+    "version": "Version",
+    "toast": {
+      "saveError": "Error saving PDF data: {{message}}"
+    }
   },
   "ai": {
     "title": "AI Assistant",
@@ -926,7 +1087,13 @@
     "errorNotConfiguredToast": "AI assistant is not configured",
     "errorConnectionToast": "AI connection error",
     "errorNotConfiguredContent": "The AI assistant is not yet available. The administrator needs to configure an API key (OpenAI, Anthropic or Gemini) in the server settings. Please contact technical support.",
-    "errorGeneralContent": "Sorry, an error occurred. Please try again in a moment."
+    "errorGeneralContent": "Sorry, an error occurred. Please try again in a moment.",
+    "toast": {
+      "rateLimitExceeded": "AI request limit exceeded. Try again later.",
+      "noCredits": "No AI credits. Top up your account.",
+      "analysisComplete": "AI analysis complete",
+      "analysisError": "AI analysis error"
+    }
   },
   "quickActions": {
     "newOffer": "New offer"
@@ -959,7 +1126,55 @@
   "admin": {
     "title": "Admin Panel",
     "subtitle": "Manage application, users and settings",
-    "dashboard": "Dashboard",
+    "dashboard": {
+      "adminPanel": "Admin Panel",
+      "managePlatform": "Manage the Majster.AI platform",
+      "systemActive": "System active",
+      "users": "Users",
+      "thisWeek": "+{{count}} this week",
+      "activeProjects": "Active projects",
+      "thisMonth": "+{{count}} this month",
+      "revenue": "Revenue (MRR)",
+      "vsPrevMonth": "+{{percent}}% vs previous month",
+      "apiCalls": "API Calls",
+      "today": "Today",
+      "overview": "Overview",
+      "usersTab": "Users",
+      "systemTab": "System",
+      "logsTab": "Logs",
+      "userActivity": "User activity",
+      "planDistribution": "Plan distribution",
+      "recentActivity": "Recent activity",
+      "usersList": "User list",
+      "usersListDesc": "Manage platform users",
+      "usersAdminRequired": "User management requires admin privileges",
+      "contactSupport": "Contact support",
+      "systemStatus": "System status",
+      "alerts": "Alerts",
+      "systemHealthy": "System healthy",
+      "noActiveAlerts": "No active alerts",
+      "operational": "Operational",
+      "problem": "Problem",
+      "systemLogs": "System logs",
+      "chartUsers": "Users",
+      "chartProjects": "Projects",
+      "newUser": "New user",
+      "newProject": "New project",
+      "upgradeToBusiness": "Upgrade to Business",
+      "apiCallAction": "API Call",
+      "offerAccepted": "Offer accepted",
+      "minutesAgo": "{{count}} min ago",
+      "hoursAgo": "{{count}} hr ago",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun",
+      "database": "Database",
+      "edgeFunctions": "Edge Functions"
+    },
     "users": "Users",
     "theme": "Theme",
     "content": "Content",
@@ -1045,7 +1260,160 @@
     "noAccessDescription": "You don't have permission to view this page",
     "systemStatus": "System Status",
     "userManagement": "User Management",
-    "backToDashboard": "Back to Dashboard"
+    "backToDashboard": "Back to Dashboard",
+    "accessDenied": "No access to admin panel",
+    "panelAccess": "Admin panel",
+    "featuresTab": "Features",
+    "featureNum": "Feature {{num}}",
+    "featureTitle": "Title",
+    "featureDesc": "Description",
+    "reset": "Reset",
+    "preview": "Preview",
+    "saveContent": "Save content",
+    "characters": "characters",
+    "heroTitlePlaceholder": "Main title...",
+    "heroSubtitlePlaceholder": "Main subtitle...",
+    "ctaPlaceholder": "Get Started",
+    "pageTitlePlaceholder": "Page title...",
+    "loadingTheme": "Loading theme...",
+    "themeLoadError": "Error loading theme: {{message}}",
+    "unknownError": "Unknown error",
+    "colors": "Colors",
+    "effects": "Effects",
+    "effectsComingSoon": "Visual effects: animations, shadows, gradients - coming soon",
+    "previewOff": "Hide preview",
+    "saveTheme": "Save theme",
+    "usersManager": {
+      "title": "User Management",
+      "description": "Browse, edit, and manage user accounts",
+      "searchPlaceholder": "Search user...",
+      "usersCount": "{{count}} users",
+      "companyUser": "Company / User",
+      "email": "Email",
+      "plan": "Plan",
+      "role": "Role",
+      "registrationDate": "Registration date",
+      "actions": "Actions",
+      "loading": "Loading...",
+      "noUsers": "No users",
+      "noName": "No name",
+      "manageRoles": "Manage roles",
+      "sendEmail": "Send email",
+      "blockAccount": "Block account",
+      "roleDialogTitle": "Manage user roles",
+      "removeRole": "Remove role",
+      "currentRole": "Current role: ",
+      "close": "Close"
+    },
+    "auditLog": {
+      "title": "Audit Log",
+      "seoTitle": "Audit Log",
+      "seoDescription": "Overview of all actions performed in the system",
+      "description": "History of all actions in the system",
+      "exportCsv": "Export CSV",
+      "searchPlaceholder": "Search actions...",
+      "filterPlaceholder": "Filter type",
+      "all": "All",
+      "user": "User",
+      "clients": "Clients",
+      "projects": "Projects",
+      "quotes": "Quotes",
+      "offers": "Offers",
+      "teamFilter": "Team",
+      "noEntries": "No audit log entries",
+      "dateHeader": "Date",
+      "actionHeader": "Action",
+      "typeHeader": "Type",
+      "idHeader": "ID",
+      "deviceHeader": "Device",
+      "showing": "Showing {{filtered}} of {{total}} entries",
+      "csvHeaders": {
+        "date": "Date",
+        "action": "Action",
+        "type": "Type",
+        "entityId": "Entity ID",
+        "userAgent": "User Agent"
+      }
+    },
+    "toast": {
+      "contentSaved": "Content saved",
+      "contentRestored": "Default content restored",
+      "cronSkipped": "Task skipped - missing key {{key}}",
+      "cronSuccess": "Task completed successfully",
+      "cronError": "Error: {{message}}",
+      "statsRefreshed": "Statistics refreshed",
+      "roleAssigned": "Role assigned successfully",
+      "roleAssignError": "Error assigning role",
+      "roleRemoved": "Role removed",
+      "settingsSaveError": "Unable to save settings",
+      "themeSaveError": "Unable to save theme"
+    },
+    "cron": {
+      "title": "CRON Jobs",
+      "description": "Automated tasks run on a schedule",
+      "configTitle": "CRON Configuration",
+      "configDescription": "To enable automatic CRON jobs, configure them in the database settings using pg_cron and pg_net. You can also run jobs manually below.",
+      "requiresKey": "Requires key",
+      "requires": "Requires: {{key}}",
+      "active": "Active",
+      "disabled": "Disabled",
+      "running": "Running...",
+      "runNow": "Run now",
+      "requiredKey": "Required key: {{key}}",
+      "sentMessages": "Sent {{count}} messages",
+      "setupGuide": "CRON configuration guide",
+      "setupStep1": "Enable pg_cron and pg_net extensions in the database",
+      "setupStep2": "Add the SQL job:",
+      "expiringOffers": {
+        "name": "Expiring offer reminders",
+        "description": "Sends email to clients with offers expiring in 3 days",
+        "scheduleText": "Daily at 9:00"
+      },
+      "subscriptionCheck": {
+        "name": "Subscription check",
+        "description": "Checks expiring subscriptions and sends notifications",
+        "scheduleText": "Daily at 8:00"
+      },
+      "databaseCleanup": {
+        "name": "Database cleanup",
+        "description": "Removes expired tokens and old logs (30+ days)",
+        "scheduleText": "Every Sunday at 3:00"
+      }
+    },
+    "db": {
+      "title": "Database management",
+      "description": "Overview and management of application data",
+      "refresh": "Refresh",
+      "totalRecords": "Total records",
+      "activeTables": "Active tables",
+      "colTable": "Table",
+      "colDesc": "Description",
+      "colRecords": "Records",
+      "colShare": "Share",
+      "colActions": "Actions",
+      "export": "Export",
+      "exportAll": "Export all (CSV)",
+      "backup": "Database backup",
+      "clearOld": "Clear old data",
+      "tables": {
+        "profiles": "Profiles",
+        "profilesDesc": "User profiles",
+        "clients": "Clients",
+        "clientsDesc": "Client data",
+        "projects": "Projects",
+        "projectsDesc": "Quote projects",
+        "quotes": "Quotes",
+        "quotesDesc": "Cost calculations",
+        "templates": "Templates",
+        "templatesDesc": "Item templates",
+        "events": "Events",
+        "eventsDesc": "Calendar",
+        "notifications": "Notifications",
+        "notificationsDesc": "Notifications",
+        "offerSends": "Sends",
+        "offerSendsDesc": "Send history"
+      }
+    }
   },
   "adminConfig": {
     "pageTitle": "Configuration",
@@ -1230,7 +1598,11 @@
     "returnHome": "Return to home page",
     "generic": "An error occurred",
     "maxLength": "Maximum {{count}} characters",
-    "minLength": "Minimum {{count}} characters"
+    "minLength": "Minimum {{count}} characters",
+    "checkConnection": "Check your internet connection",
+    "goBack": "Go back",
+    "loadFailed": "Failed to load data",
+    "pageNotFoundDesc": "The page you are looking for does not exist or has been moved. Check the URL or return to the home page."
   },
   "cookies": {
     "title": "Cookie settings",
@@ -1397,7 +1769,22 @@
       "member": "Member"
     },
     "noOrganizations": "No organizations",
-    "createFirst": "Create your first organization"
+    "createFirst": "Create your first organization",
+    "membersCount": "members",
+    "noMembers": "No members",
+    "selectOrg": "Select an organisation to manage members",
+    "slugHint": "Will be used in the URL. Only lowercase letters, digits and hyphens.",
+    "yourOrganizations": "Your organisations",
+    "toast": {
+      "created": "Organization created",
+      "createError": "Error creating organization",
+      "inviteSent": "Invitation sent",
+      "inviteError": "Error inviting member",
+      "memberRemoved": "Member removed",
+      "removeError": "Error removing member",
+      "roleUpdated": "Role updated",
+      "roleUpdateError": "Error updating role"
+    }
   },
   "marketplace": {
     "title": "Marketplace",
@@ -1409,7 +1796,9 @@
     "rating": "Rating",
     "hourlyRate": "Hourly rate",
     "contact": "Contact",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "details": "Details",
+    "invite": "Invite"
   },
   "emailTemplates": {
     "generalConstruction": {
@@ -1593,7 +1982,29 @@
     "completedOf": "Completed {{completed}} of {{total}} steps",
     "startStep": "Start",
     "skipForNow": "Skip for now",
-    "returnHint": "You can return to this guide from the help menu"
+    "returnHint": "You can return to this guide from the help menu",
+    "steps": {
+      "companyProfile": {
+        "title": "Company profile",
+        "description": "Add your logo and company contact details"
+      },
+      "firstClient": {
+        "title": "First client",
+        "description": "Add your first client"
+      },
+      "firstOffer": {
+        "title": "First offer",
+        "description": "Create your first offer for a client"
+      },
+      "sendOffer": {
+        "title": "Send offer",
+        "description": "Send the offer to the client for approval"
+      },
+      "exportPdf": {
+        "title": "Export PDF",
+        "description": "Generate a professional PDF of the offer"
+      }
+    }
   },
   "adminSettings": {
     "loadingSettings": "Loading settings...",
@@ -1885,7 +2296,8 @@
       },
       "ariaLabel": "Main section",
       "socialProof": "Start free — no credit card required",
-      "valueProp": "⚡ Your first professional PDF quote in 5 minutes."
+      "valueProp": "⚡ Your first professional PDF quote in 5 minutes.",
+      "freeBadge": "Start for free — no credit card required"
     },
     "stats": {
       "quoteTime": "Average quote time",
@@ -2011,7 +2423,10 @@
       "t3Role": "Renovation company owner",
       "t3Text": "Three languages is a perfect match. I employ Ukrainians and everyone works in their own.",
       "sectionTitle": "What users say",
-      "sectionSubtitle": "What contractors and tradespeople say about Majster.AI."
+      "sectionSubtitle": "What contractors and tradespeople say about Majster.AI.",
+      "t1Outcome": "Save 3 hours per week",
+      "t2Outcome": "+40% more offers won",
+      "t3Outcome": "5 minutes for a professional offer"
     },
     "cta": {
       "title": "Ready for digital transformation?",
@@ -2023,7 +2438,9 @@
       "cta_start": "Start for free",
       "cta_login": "I already have an account",
       "microcopy": "No obligations · Cancel any time",
-      "trust1": "Free plan to start"
+      "trust1": "Free plan to start",
+      "subheading": "today — no credit card required",
+      "trust2": "Ready in 2 minutes"
     },
     "footer": {
       "desc": "Professional quotes and project management for tradespeople. Fast, easy, secure.",
@@ -2102,7 +2519,8 @@
       "prepBadge": "In preparation",
       "planFeaturesLabel": "Plan features",
       "enterpriseNote": "Need more?",
-      "enterpriseContact": "Contact us — Enterprise plan coming soon."
+      "enterpriseContact": "Contact us — Enterprise plan coming soon.",
+      "per_month_suffix": "PLN/mo."
     },
     "faq": {
       "sectionTitle": "Frequently asked questions",
@@ -2127,7 +2545,11 @@
     "purchased": "Purchased",
     "selected": "Selected",
     "vatNote": "Net price + 23% VAT. Payment via Stripe.",
-    "buy": "Buy now"
+    "buy": "Buy now",
+    "comingSoon": "Purchasing individual add-ons via Stripe will be available soon. To increase limits now, upgrade to a higher plan.",
+    "comingSoonBadge": "Coming soon",
+    "priceSoon": "estimated price",
+    "seePlans": "See plans"
   },
   "quickEstimate": {
     "title": "Quick Estimate",
@@ -2271,7 +2693,39 @@
     "bulkLoadCsvAriaLabel": "Load CSV file",
     "bulkConfirmCount_one": "Add {{count}} item",
     "bulkConfirmCount_few": "Add {{count}} items",
-    "bulkConfirmCount_other": "Add {{count}} items"
+    "bulkConfirmCount_other": "Add {{count}} items",
+    "bulkConfirmCount": "Add {{count}} items",
+    "colItemHeader": "Item",
+    "colLabour": "Labour",
+    "colMargin": "Margin %",
+    "colMarginHeader": "Margin %",
+    "colMaterials": "Materials",
+    "colNetPrice": "Net price",
+    "colRowTotal": "Row total",
+    "colSplit": "L+M (labour / materials)",
+    "colTotal": "Total",
+    "colType": "Item type",
+    "colTypeHeader": "Type",
+    "columns": "Columns",
+    "columnsToggleAriaLabel": "Toggle column visibility",
+    "draftSaveError": "Draft save error",
+    "draftSaved": "Draft saved",
+    "hideMarginAriaLabel": "Hide margin from client",
+    "invalidAmount": "Invalid amount",
+    "invalidPrice": "Invalid price",
+    "invalidQty": "Invalid quantity",
+    "labourAbbr": "Lab.",
+    "labourPerUnit": "Labour / unit",
+    "marginHiddenClickTitle": "Margin hidden from client (included in price) — click to show",
+    "marginHiddenTitle": "Margin hidden from client (included in price)",
+    "marginVisibleClickTitle": "Margin visible to client — click to hide",
+    "marginVisibleTitle": "Margin % (visible to client)",
+    "materialAbbr": "Mat.",
+    "materialsPerUnit": "Materials / unit",
+    "removeItemAriaLabel": "Remove item",
+    "showMarginAriaLabel": "Show margin to client",
+    "typeBadgeTitle": "Type: {{type}} (click to change)",
+    "visibleColumns": "Visible columns"
   },
   "tradeOnboarding": {
     "step1Title": "What is your trade?",
@@ -2412,7 +2866,8 @@
     "noResults": "No subcontractors",
     "noResultsHint": "Try changing the search criteria",
     "noOwn": "No own subcontractors",
-    "noOwnHint": "Add subcontractors you work with"
+    "noOwnHint": "Add subcontractors you work with",
+    "title": "Marketplace"
   },
   "offerPublicPage": {
     "notFoundError": "Offer not found or the link is invalid.",
@@ -2595,6 +3050,19 @@
     "signature": {
       "hint": "Sign above",
       "clear": "Clear"
+    },
+    "empty": {
+      "cta": "Create offer",
+      "desc": "Create your first offer to get started",
+      "title": "No offers"
+    },
+    "toast": {
+      "approvalLinkCreated": "Approval link created",
+      "approvalLinkError": "Error creating link",
+      "extendedValidity": "Offer validity extended by 30 days",
+      "extendError": "Error extending offer",
+      "processingError": "Processing error",
+      "sendSaveError": "Error saving send record"
     }
   },
   "legal": {
@@ -2623,7 +3091,46 @@
       "s5title": "5. Liability",
       "s5content": "5.1. Majster.AI is not liable for:\n• User-submitted content\n• Outages caused by force majeure\n• Losses from errors in estimates\n• Technical issues on the User's side\n\n5.2. Total liability is limited to subscription fees paid in the past 12 months.\n\n5.3. Users are responsible for data accuracy, password security, and tax compliance.",
       "s6title": "6. Final Provisions",
-      "s6content": "6.1. Governing law: Polish law.\n\n6.2. Disputes shall be resolved by the court having jurisdiction over Majster.AI's registered office.\n\n6.3. These Terms may be amended with 30 days notice.\n\n6.4. Contact: kontakt.majsterai@gmail.com\n\n6.5. These Terms are effective from the date of publication."
+      "s6content": "6.1. Governing law: Polish law.\n\n6.2. Disputes shall be resolved by the court having jurisdiction over Majster.AI's registered office.\n\n6.3. These Terms may be amended with 30 days notice.\n\n6.4. Contact: kontakt.majsterai@gmail.com\n\n6.5. These Terms are effective from the date of publication.",
+      "page": {
+        "heading": "Terms of Service",
+        "lastUpdated": "Last updated:",
+        "section1Title": "1. General Provisions",
+        "section1Text1": "These terms define the rules for using the Majster.AI application — a tool for managing construction projects and creating estimates.",
+        "section1Text2": "By using the application, you accept the provisions of these terms.",
+        "section2Title": "2. Scope of Services",
+        "section2Intro": "Majster.AI offers the following features:",
+        "service1": "Creating and managing construction projects",
+        "service2": "Generating estimates and offers",
+        "service3": "Managing clients and subcontractors",
+        "service4": "Project financial analytics",
+        "service5": "AI assistant for creating offers",
+        "service6": "Exporting documents to PDF",
+        "section3Title": "3. Plans & Payments",
+        "section3Intro": "Available subscription plans:",
+        "planFree": "free for the first 30 days, then with limited features",
+        "planPro": "49 PLN/mo — basic features without ads",
+        "planBusiness": "99 PLN/mo — full features + AI",
+        "planEnterprise": "199 PLN/mo — all features + priority support",
+        "section3Text": "Payments are processed through the secure Stripe system. You can cancel your subscription at any time.",
+        "section4Title": "4. Restrictions & Prohibitions",
+        "section4Intro": "The following are prohibited:",
+        "prohibition1": "Sharing your account with third parties",
+        "prohibition2": "Attempting to bypass system security",
+        "prohibition3": "Using the application for unlawful purposes",
+        "prohibition4": "Entering false data",
+        "prohibition5": "Automated data scraping",
+        "section5Title": "5. Liability",
+        "section5Intro": "Majster.AI makes every effort to ensure the service operates correctly. We are not liable for:",
+        "liability1": "Technical outages and failures",
+        "liability2": "Errors in estimates resulting from incorrect data",
+        "liability3": "Damages resulting from improper use of the application",
+        "liability4": "Data loss due to causes beyond our control",
+        "section6Title": "6. Final Provisions",
+        "section6Text1": "We reserve the right to change the terms. Users will be notified of significant changes by email with 14 days notice.",
+        "section6Text2": "Matters not covered by these terms are governed by Polish law.",
+        "section6Contact": "Contact: kontakt.majsterai@gmail.com"
+      }
     },
     "privacy": {
       "pageTitle": "Privacy Policy",
@@ -2644,7 +3151,56 @@
       "s6title": "6. Data Transfers",
       "s6content": "Data may be transferred to:\n• Hosting providers (Supabase — EU/USA)\n• Email providers (Resend)\n• Government authorities (on legal request)\n\nAll data processors are bound by DPA agreements.",
       "s7title": "7. Contact",
-      "s7content": "For data protection enquiries:\n• Email: kontakt.majsterai@gmail.com\n• In-app: Settings → GDPR Centre\n\nYou have the right to lodge a complaint with the supervisory authority."
+      "s7content": "For data protection enquiries:\n• Email: kontakt.majsterai@gmail.com\n• In-app: Settings → GDPR Centre\n\nYou have the right to lodge a complaint with the supervisory authority.",
+      "page": {
+        "heading": "Privacy Policy",
+        "lastUpdated": "Last updated:",
+        "section1Title": "1. Data Controller",
+        "section1Text": "Majster.AI is the controller of your personal data. We make every effort to keep your data safe and process it in compliance with GDPR.",
+        "section2Title": "2. Data We Collect",
+        "dataAccountLabel": "Account data",
+        "dataAccountDesc": "first name, last name, email address, phone number",
+        "dataCompanyLabel": "Company data",
+        "dataCompanyDesc": "company name, VAT number, address, contact details",
+        "dataProjectLabel": "Project data",
+        "dataProjectDesc": "client information, quotes, offers",
+        "dataTechLabel": "Technical data",
+        "dataTechDesc": "IP address, browser type, device",
+        "dataAnalyticsLabel": "Analytics data",
+        "dataAnalyticsDesc": "app usage patterns (with consent)",
+        "section3Title": "3. Purpose of Data Processing",
+        "purpose1": "Providing Majster.AI application services",
+        "purpose2": "Generating offers and quotes for your clients",
+        "purpose3": "Service-related communication",
+        "purpose4": "Improving service quality",
+        "purpose5": "Fulfilling legal obligations",
+        "section4Title": "4. Your Rights (GDPR)",
+        "rightsIntro": "Under GDPR, you have the following rights:",
+        "rightAccessLabel": "Right of access",
+        "rightAccessDesc": "you can obtain information about your processed data",
+        "rightRectifyLabel": "Right to rectification",
+        "rightRectifyDesc": "you can correct inaccurate data",
+        "rightEraseLabel": "Right to erasure",
+        "rightEraseDesc": "you can request deletion of your data (\"right to be forgotten\")",
+        "rightPortLabel": "Right to data portability",
+        "rightPortDesc": "you can download your data in a machine-readable format",
+        "rightObjectLabel": "Right to object",
+        "rightObjectDesc": "you can object to the processing of your data",
+        "rightWithdrawLabel": "Right to withdraw consent",
+        "rightWithdrawDesc": "you can withdraw your consent at any time",
+        "section5Title": "5. Data Security",
+        "securityIntro": "We apply the following security measures:",
+        "security1": "SSL/TLS data encryption",
+        "security2": "Secure password storage (hashing)",
+        "security3": "Regular backups",
+        "security4": "Access control (Row Level Security)",
+        "security5": "Security monitoring and auditing",
+        "section6Title": "6. Contact",
+        "contactIntro": "For matters related to personal data protection, you can contact us:",
+        "contactEmail": "Email: kontakt.majsterai@gmail.com",
+        "contactForm": "Contact form in the application",
+        "contactComplaint": "You also have the right to file a complaint with the President of the Personal Data Protection Office (PUODO)."
+      }
     },
     "cookies": {
       "pageTitle": "Cookie Policy",
@@ -3018,6 +3574,12 @@
       "saveDraft": "Save draft",
       "saving": "Saving...",
       "previewAndSend": "Preview & Send"
+    },
+    "errors": {
+      "selectClient": "Select a client or enter a new client name",
+      "clientNameRequired": "First name / company name is required",
+      "addItem": "Add at least one item",
+      "itemNameRequired": "Every item must have a name"
     }
   },
   "offerPreview": {
@@ -3230,7 +3792,11 @@
     },
     "offerFirstNote": "Projects are created from accepted offers",
     "manualCta": "Create project manually",
-    "manualCreationHint": "Recommended flow: Offer → Acceptance → Project. Manual creation is for small direct jobs or work without a formal offer."
+    "manualCreationHint": "Recommended flow: Offer → Acceptance → Project. Manual creation is for small direct jobs or work without a formal offer.",
+    "archiveConfirmAction": "Archive",
+    "archiveConfirmDesc": "The project will be marked as cancelled. You can still view it.",
+    "archiveConfirmTitle": "Archive project?",
+    "archiveProject": "Archive project"
   },
   "burnBar": {
     "budget": "Budget",
@@ -3414,7 +3980,8 @@
       "linkRevoked": "Link revoked",
       "revokeError": "Error revoking link",
       "expiresIn": "Expires in {{days}} days",
-      "expired": "Expired"
+      "expired": "Expired",
+      "linkGenerated": "Sharing link generated"
     },
     "public": {
       "loading": "Loading dossier...",
@@ -3431,6 +3998,9 @@
       "expiredDesc": "This share link has expired. Contact the contractor to get a new link.",
       "notFoundTitle": "Link not found",
       "notFoundDesc": "This link is invalid or has been revoked."
+    },
+    "toast": {
+      "exportError": "PDF export error. Please try again."
     }
   },
   "docTemplates": {
@@ -3838,6 +4408,12 @@
       "sigWarrantor": "Warrantor signature",
       "sigBeneficiary": "Beneficiary signature",
       "footerGenerated": "generated"
+    },
+    "email": {
+      "greeting": "Hello {{name}},",
+      "body": "Attached please find the warranty card for project <strong>{{project}}</strong>.",
+      "validUntil": "Warranty valid until: <strong>{{date}}</strong>.",
+      "contact": "Please contact us if you have any questions."
     }
   },
   "inspection": {
@@ -3917,9 +4493,395 @@
     "inspectionDueIn30": "Inspection due in 30 days ({{date}})",
     "inspectionDueIn7": "Inspection due in 7 days ({{date}})"
   },
+  "photos": {
+    "title": "Project photos",
+    "subtitle": "All photos from your projects. AI can analyze technical condition.",
+    "goToProjects": "Add photos in a project",
+    "empty": "No photos",
+    "emptyHint": "Add photos in the project view. AI will analyze the technical condition and suggest items for the quote.",
+    "openProjects": "Open projects",
+    "photoAlt": "Project photo"
+  },
+  "offerDetail": {
+    "template": {
+      "purpose": "Purpose",
+      "duration": "Estimated duration",
+      "complexity": "Complexity",
+      "starterNotes": "Starter notes",
+      "materials": "Materials",
+      "labor": "Labour"
+    }
+  },
   "offline": {
     "banner": "Offline mode — showing last cached data",
     "actionBlocked": "This action requires an internet connection",
     "readOnlyNote": "You are viewing locally cached data. Go online to make changes."
+  },
+  "app": {
+    "loading": "Starting application"
+  },
+  "calendarSync": {
+    "betaNotice": "Synchronisation with external calendars (Google, Outlook, Apple) is in preparation. It will be available in the next version.",
+    "description": "Connect external calendars to synchronise events",
+    "title": "Calendar synchronisation"
+  },
+  "seo": {
+    "landing": {
+      "title": "Majster.AI — PDF Estimates & Project Management for Contractors",
+      "description": "Platform for builders and contractors. PDF estimates, projects, client database, AI assistant. Start free — no credit card required.",
+      "keywords": "PDF estimates, quote generator, contractors, construction company, cost estimate, project management, builder, electrician, plumber",
+      "ogDescription": "Platform for builders and contractors. PDF estimates, projects, client database. Start free — no credit card.",
+      "twitterTitle": "Majster.AI — PDF Estimates for Contractors",
+      "twitterDescription": "Professional estimates, project management, and AI for renovation companies."
+    },
+    "login": {
+      "title": "Login | Majster.AI",
+      "description": "Log in to Majster.AI — platform for contractors. Manage projects, create PDF estimates, and use the AI assistant.",
+      "ogDescription": "Log in to Majster.AI — platform for construction professionals."
+    },
+    "register": {
+      "title": "Register — start for free | Majster.AI",
+      "description": "Sign up for Majster.AI for free — no credit card needed. Create PDF estimates, manage projects and clients as a professional.",
+      "ogTitle": "Register — start for free | Majster.AI",
+      "ogDescription": "Sign up for Majster.AI for free. Platform for construction professionals."
+    },
+    "forgotPassword": {
+      "title": "Forgot Password | Majster.AI",
+      "description": "Reset your Majster.AI account password. Enter your email and we'll send a link to set a new password."
+    },
+    "resetPassword": {
+      "title": "Set New Password | Majster.AI",
+      "description": "Set a new password for your Majster.AI account."
+    },
+    "notFound": {
+      "title": "404 — Page Not Found | Majster.AI"
+    },
+    "marketplace": {
+      "title": "Marketplace | Majster.AI"
+    },
+    "privacy": {
+      "description": "Majster.AI Privacy Policy - learn how we protect your data."
+    },
+    "terms": {
+      "description": "Majster.AI Terms of Service - rules and conditions of use."
+    },
+    "planDetail": {
+      "title": "Plan {{plan}} | Majster.AI",
+      "description": "{{description}} Price: {{price}}",
+      "pricePerMonth": "{{amount}} PLN/mo."
+    }
+  },
+  "apiKeys": {
+    "title": "API Keys",
+    "newKey": "New key",
+    "createTitle": "Create API key",
+    "keyName": "Key name",
+    "keyNamePlaceholder": "e.g. CRM integration",
+    "permissions": "Permissions",
+    "readPerm": "Read",
+    "writePerm": "Write",
+    "deletePerm": "Delete",
+    "createKey": "Create key",
+    "description": "Manage API keys for integrating with external systems",
+    "noKeys": "No API keys",
+    "noKeysDesc": "Create a key to integrate external systems",
+    "created": "Created: {{date}}",
+    "active": "Active",
+    "inactive": "Inactive",
+    "disable": "Disable",
+    "enable": "Enable",
+    "lastUsed": "Last used: {{date}}",
+    "apiDocs": "API Documentation",
+    "authorization": "Authorization",
+    "endpoints": "Endpoints",
+    "listProjects": "List projects",
+    "createProject": "Create project",
+    "listClients": "List clients",
+    "listQuotes": "List quotes",
+    "toast": {
+      "nameRequired": "Enter key name",
+      "copied": "Key copied",
+      "created": "API key created",
+      "createError": "Error creating key",
+      "updated": "Key updated",
+      "deleted": "Key deleted"
+    }
+  },
+  "documents": {
+    "toast": {
+      "added": "Document added",
+      "addError": "Error adding document",
+      "deleted": "Document deleted",
+      "deleteError": "Error deleting document"
+    }
+  },
+  "pushNotifications": {
+    "title": "Push Notifications",
+    "description": "Receive notifications in your browser and on your phone",
+    "enabled": "Notifications enabled",
+    "disabled": "Notifications disabled",
+    "blockedInBrowser": "Blocked in browser settings",
+    "receiving": "You are receiving push notifications",
+    "enablePrompt": "Enable to receive notifications",
+    "enable": "Enable",
+    "disable": "Disable",
+    "notificationTypes": "Notification types",
+    "newOffers": "New offers",
+    "newOffersDesc": "Notifications about new quote requests",
+    "projectDeadlines": "Project deadlines",
+    "projectDeadlinesDesc": "Reminders about upcoming deadlines",
+    "offerApprovals": "Offer approvals",
+    "offerApprovalsDesc": "When a client accepts or rejects an offer",
+    "marketing": "Marketing & news",
+    "marketingDesc": "Information about new features and promotions",
+    "sendTest": "Send test notification",
+    "toast": {
+      "notSupported": "Your browser does not support push notifications",
+      "enabled": "Push notifications enabled",
+      "blocked": "Notifications are blocked. Change your browser settings.",
+      "enableError": "Error enabling notifications",
+      "disabled": "Push notifications disabled",
+      "disableError": "Error disabling notifications",
+      "registrationError": "Push notification registration error",
+      "nativeOnly": "Push notifications are only available in the native mobile app"
+    },
+    "testBody": "Notifications are working correctly!"
+  },
+  "biometric": {
+    "toast": {
+      "registered": "Biometric registered successfully",
+      "authSuccess": "Biometric authentication successful",
+      "credentialDeleted": "Biometric credential deleted",
+      "deleteError": "Error deleting credential"
+    }
+  },
+  "calendarEvents": {
+    "toast": {
+      "added": "Event added",
+      "addError": "Error adding event",
+      "updated": "Event updated",
+      "updateError": "Error updating event",
+      "deleted": "Event deleted",
+      "deleteError": "Error deleting event"
+    }
+  },
+  "projectPhotos": {
+    "toast": {
+      "uploaded": "Photo uploaded (EXIF metadata removed)",
+      "analysisComplete": "Analysis complete",
+      "analysisError": "Error analyzing photo",
+      "deleted": "Photo deleted"
+    }
+  },
+  "costs": {
+    "toast": {
+      "invoiceUploaded": "Invoice uploaded",
+      "ocrComplete": "OCR complete",
+      "ocrError": "OCR error",
+      "deleted": "Cost deleted"
+    }
+  },
+  "quoteVersions": {
+    "toast": {
+      "saved": "Quote version saved",
+      "saveError": "Error saving version",
+      "activated": "Version set as active",
+      "activateError": "Error changing active version",
+      "deleted": "Version deleted",
+      "deleteError": "Error deleting version"
+    }
+  },
+  "subcontractors": {
+    "toast": {
+      "added": "Subcontractor added",
+      "addError": "Error adding subcontractor",
+      "updated": "Subcontractor updated",
+      "reviewAdded": "Review added"
+    }
+  },
+  "tasks": {
+    "toast": {
+      "added": "Task added",
+      "addError": "Error adding task",
+      "updated": "Task updated",
+      "deleted": "Task deleted"
+    }
+  },
+  "seoStructuredData": {
+    "orgDescription": "SaaS platform for construction professionals and contractors — PDF estimates, project management, AI.",
+    "appDescription": "Tool for creating PDF estimates, managing projects and clients for construction and renovation companies.",
+    "features": {
+      "pdfOffers": "PDF offer generation",
+      "projectMgmt": "Project management",
+      "clientDb": "Client database",
+      "aiAssistant": "AI assistant",
+      "voiceDictation": "Voice dictation",
+      "ocrInvoice": "Invoice OCR analysis",
+      "marketplace": "Marketplace for contractors"
+    },
+    "faq1q": "Is Majster.AI free?",
+    "faq1a": "Yes, Majster.AI offers a free starter plan with no credit card required. You can start for free.",
+    "faq2q": "Who is Majster.AI for?",
+    "faq2a": "Majster.AI is designed for construction companies, renovation firms, electricians, plumbers, and other professionals looking to professionalize their business.",
+    "faq3q": "Can I generate a PDF offer?",
+    "faq3a": "Yes, Majster.AI allows you to generate professional PDF offers with your company logo, cost items, and payment terms."
+  },
+  "notifications": {
+    "deleteNotification": "Delete notification"
+  },
+  "workTasks": {
+    "unknownProject": "Unknown project",
+    "schedule": "Schedule",
+    "noTasksThisMonth": "No tasks this month",
+    "taskStatus": "Task status",
+    "teamLoad": "Team workload",
+    "noTeamMembers": "No team members",
+    "status": {
+      "planned": "Planned",
+      "in_progress": "In progress",
+      "done": "Done"
+    }
+  },
+  "plugins": {
+    "title": "Integrations & Plugins",
+    "subtitle": "Extend Majster.AI with external services",
+    "activeCount": "Active integrations",
+    "availableCount": "Available plugins",
+    "premiumCount": "Requiring Premium",
+    "active": "Active",
+    "configure": "Configure",
+    "categories": {
+      "accounting": "Accounting",
+      "warehouse": "Wholesale",
+      "crm": "CRM",
+      "sms": "SMS",
+      "payments": "Payments",
+      "logistics": "Logistics"
+    },
+    "marketplace": {
+      "title": "Integration marketplace",
+      "description": "We'll soon launch a marketplace with additional integrations built by the community. Become a partner and build your own integration!",
+      "cta": "Become a partner"
+    },
+    "toast": {
+      "enabled": "{{name}} enabled",
+      "disabled": "{{name}} disabled"
+    },
+    "infakt": {
+      "name": "Infakt",
+      "description": "Integration with Infakt accounting system - automatic invoices"
+    },
+    "ifirma": {
+      "name": "iFirma",
+      "description": "Export data to iFirma accounting"
+    },
+    "castorama": {
+      "name": "Castorama B2B",
+      "description": "Integration with Castorama wholesale - prices and availability"
+    },
+    "leroy": {
+      "name": "Leroy Merlin",
+      "description": "Fetch material prices from Leroy Merlin"
+    },
+    "smsapi": {
+      "name": "SMSAPI",
+      "description": "Send SMS messages to clients - reminders and notifications"
+    },
+    "przelewy24": {
+      "name": "Przelewy24",
+      "description": "Online payments for clients"
+    },
+    "dpd": {
+      "name": "DPD",
+      "description": "Parcel and material delivery tracking"
+    }
+  },
+  "upgrade": {
+    "unlockFeature": "Unlock: {{feature}}",
+    "changePlan": "Change plan",
+    "choosePlan": "Choose the plan that best fits your needs",
+    "mostPopular": "Most popular",
+    "currentPlan": "Current plan",
+    "select": "Select",
+    "cancelAnytime": "You can cancel your subscription at any time. Access remains active until the end of the paid period.",
+    "planFeatures": {
+      "pro": [
+        "15 projects",
+        "30 clients",
+        "Excel/CSV export",
+        "All PDF templates",
+        "Email support"
+      ],
+      "business": [
+        "Unlimited projects",
+        "Unlimited clients",
+        "AI assistant",
+        "Voice estimation",
+        "AI photo estimation",
+        "Invoice OCR",
+        "Calendar sync",
+        "Priority support"
+      ],
+      "enterprise": [
+        "Everything in Business",
+        "Public API",
+        "Custom templates",
+        "Team management",
+        "Advanced analytics",
+        "Dedicated account manager",
+        "SLA 99.9%"
+      ]
+    }
+  },
+  "planGate": {
+    "features": {
+      "ai": "AI Assistant",
+      "voice": "Voice estimation",
+      "documents": "Company documents",
+      "excelExport": "Excel export",
+      "calendarSync": "Calendar sync",
+      "prioritySupport": "Priority support",
+      "api": "Public API",
+      "customTemplates": "Custom templates",
+      "team": "Team management",
+      "marketplace": "Subcontractor marketplace",
+      "advancedAnalytics": "Advanced analytics",
+      "photoEstimation": "AI photo estimation",
+      "ocr": "Invoice OCR",
+      "unlimitedProjects": "Unlimited projects",
+      "unlimitedClients": "Unlimited clients"
+    },
+    "featureRequiresUpgrade": "Feature \"{{feature}}\" requires a higher plan",
+    "goToSettings": "Go to settings to change your plan.",
+    "changePlan": "Change plan",
+    "limitReached": "Limit reached: {{type}}",
+    "limitDescription": "Your plan \"{{plan}}\" allows {{limit}} {{type}}.",
+    "unlimited": "unlimited",
+    "limits": {
+      "projects": "projects",
+      "clients": "clients",
+      "teamMembers": "team members",
+      "apiCalls": "API calls",
+      "storageMB": "MB of storage"
+    },
+    "upgradeMessage": "This feature requires the {{plan}} plan or higher.",
+    "planNames": {
+      "business": "Business"
+    }
+  },
+  "expirationMonitor": {
+    "client": "client",
+    "offerExpiresToday": "Offer expires today!",
+    "offerExpiresTodayMsg": "Offer for {{client}} expires in {{hours}} hours. Consider extending or contacting the client.",
+    "offerExpiresSoon": "Offer expiring soon",
+    "offerExpiresSoonMsg": "Offer for {{client}} expires in {{days}} days.",
+    "offerExpiryReminder": "Expiring offer reminder",
+    "offerExpiryReminderMsg": "Offer for {{client}} expires in {{days}} days.",
+    "planExpired": "Plan expired",
+    "planExpiredMsg": "Your {{plan}} plan has expired. Renew your subscription to keep access to all features.",
+    "planExpiresSoon": "Plan expiring soon!",
+    "planExpiresSoonMsg": "Your {{plan}} plan expires in {{days}} days. Renew now to avoid service interruption.",
+    "planExpiryReminder": "Plan renewal reminder",
+    "planExpiryReminderMsg": "Your {{plan}} plan expires in {{days}} days."
   }
 }

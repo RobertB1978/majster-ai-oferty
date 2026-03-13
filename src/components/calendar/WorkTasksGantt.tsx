@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isWithinInterval } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,17 +18,12 @@ const statusColors: Record<string, string> = {
   done: 'bg-emerald-500',
 };
 
-const statusLabels: Record<string, string> = {
-  planned: 'Planowane',
-  in_progress: 'W trakcie',
-  done: 'Zakończone',
-};
-
 interface WorkTasksGanttProps {
   projectId?: string;
 }
 
 export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
+  const { t } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const { data: tasks = [], isLoading: tasksLoading } = useWorkTasks(projectId);
   const { data: teamMembers = [] } = useTeamMembers();
@@ -89,7 +85,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
       
       return {
         ...task,
-        projectName: project?.project_name || 'Nieznany projekt',
+        projectName: project?.project_name || t('workTasks.unknownProject'),
         memberName: member?.name,
         leftPercent,
         widthPercent,
@@ -97,7 +93,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
         endsAfterMonth: end > monthEnd,
       };
     });
-  }, [tasks, projects, teamMembers, monthStart, monthEnd, totalDays]);
+  }, [tasks, projects, teamMembers, monthStart, monthEnd, totalDays, t]);
 
   // Week markers
   const weekMarkers = useMemo(() => {
@@ -127,7 +123,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Harmonogram - {format(currentMonth, 'LLLL yyyy', { locale: pl })}
+            {t('workTasks.schedule')} - {format(currentMonth, 'LLLL yyyy', { locale: pl })}
           </CardTitle>
           <div className="flex gap-1">
             <Button variant="outline" size="icon" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
@@ -158,7 +154,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
           {visibleTasks.length === 0 ? (
             <div className="py-12 text-center">
               <Calendar className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-              <p className="text-muted-foreground">Brak zadań w tym miesiącu</p>
+              <p className="text-muted-foreground">{t('workTasks.noTasksThisMonth')}</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -203,7 +199,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
                         variant="secondary" 
                         className="text-[10px] px-1 py-0 shrink-0 bg-white/20 text-white border-0"
                       >
-                        {statusLabels[task.status]}
+                        {t(`workTasks.status.${task.status}`, task.status)}
                       </Badge>
                     </div>
                   </div>
@@ -214,12 +210,12 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
 
           {/* Legend */}
           <div className="mt-6 pt-4 border-t border-border">
-            <p className="text-xs text-muted-foreground mb-2">Status zadań:</p>
+            <p className="text-xs text-muted-foreground mb-2">{t('workTasks.taskStatus')}:</p>
             <div className="flex flex-wrap gap-3">
               {Object.entries(statusColors).map(([status, color]) => (
                 <div key={status} className="flex items-center gap-1.5">
                   <div className={cn('w-3 h-3 rounded-sm', color)} />
-                  <span className="text-xs">{statusLabels[status]}</span>
+                  <span className="text-xs">{t(`workTasks.status.${status}`, status)}</span>
                 </div>
               ))}
             </div>
@@ -232,12 +228,12 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Obciążenie zespołu
+            {t('workTasks.teamLoad')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {teamMembers.length === 0 ? (
-            <p className="text-center py-6 text-muted-foreground">Brak członków zespołu</p>
+            <p className="text-center py-6 text-muted-foreground">{t('workTasks.noTeamMembers')}</p>
           ) : (
             <div className="space-y-4">
               {teamMembers.map((member) => {

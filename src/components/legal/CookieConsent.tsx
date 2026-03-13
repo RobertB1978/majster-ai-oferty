@@ -94,9 +94,9 @@ export function CookieConsent() {
                 <Cookie className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-lg">{t('cookies.title', 'Ustawienia plików cookies')}</CardTitle>
+                <CardTitle className="text-lg">{t('cookies.title')}</CardTitle>
                 <CardDescription>
-                  {t('cookies.subtitle', 'Dbamy o Twoją prywatność')}
+                  {t('cookies.subtitle')}
                 </CardDescription>
               </div>
             </div>
@@ -104,7 +104,7 @@ export function CookieConsent() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            {t('cookies.description', 'Używamy plików cookies, aby zapewnić najlepsze doświadczenia na naszej stronie. Niektóre z nich są niezbędne do działania serwisu, inne pomagają nam ulepszać usługi.')}
+            {t('cookies.description')}
           </p>
 
           {showDetails && (
@@ -112,18 +112,18 @@ export function CookieConsent() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Shield className="h-4 w-4 text-primary" />
-                  <Label className="font-medium">{t('cookies.essential', 'Niezbędne')}</Label>
+                  <Label className="font-medium">{t('cookies.essential')}</Label>
                 </div>
                 <Switch checked={true} disabled />
               </div>
               <p className="text-xs text-muted-foreground ml-6">
-                {t('cookies.essentialDescription', 'Wymagane do prawidłowego działania strony. Nie można ich wyłączyć.')}
+                {t('cookies.essentialDescription')}
               </p>
 
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-2">
                   <BarChart className="h-4 w-4 text-blue-500" />
-                  <Label className="font-medium">{t('cookies.analytics', 'Analityczne')}</Label>
+                  <Label className="font-medium">{t('cookies.analytics')}</Label>
                 </div>
                 <Switch
                   checked={consent.analytics}
@@ -131,13 +131,13 @@ export function CookieConsent() {
                 />
               </div>
               <p className="text-xs text-muted-foreground ml-6">
-                {t('cookies.analyticsDescription', 'Pomagają nam zrozumieć, jak korzystasz z serwisu.')}
+                {t('cookies.analyticsDescription')}
               </p>
 
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-2">
                   <Megaphone className="h-4 w-4 text-orange-500" />
-                  <Label className="font-medium">{t('cookies.marketing', 'Marketingowe')}</Label>
+                  <Label className="font-medium">{t('cookies.marketing')}</Label>
                 </div>
                 <Switch
                   checked={consent.marketing}
@@ -145,7 +145,7 @@ export function CookieConsent() {
                 />
               </div>
               <p className="text-xs text-muted-foreground ml-6">
-                {t('cookies.marketingDescription', 'Służą do personalizacji reklam.')}
+                {t('cookies.marketingDescription')}
               </p>
             </div>
           )}
@@ -156,32 +156,32 @@ export function CookieConsent() {
               className="flex-1"
               onClick={() => setShowDetails(!showDetails)}
             >
-              {showDetails ? t('cookies.hideDetails', 'Ukryj szczegóły') : t('cookies.customize', 'Dostosuj')}
+              {showDetails ? t('cookies.hideDetails') : t('cookies.customize')}
             </Button>
             <Button
               variant="outline"
               className="flex-1"
               onClick={handleRejectAll}
             >
-              {t('cookies.essentialOnly', 'Tylko niezbędne')}
+              {t('cookies.essentialOnly')}
             </Button>
             {showDetails ? (
               <Button className="flex-1" onClick={handleAcceptSelected}>
-                {t('cookies.saveSelected', 'Zapisz wybrane')}
+                {t('cookies.saveSelected')}
               </Button>
             ) : (
               <Button className="flex-1" onClick={handleAcceptAll}>
-                {t('cookies.acceptAll', 'Akceptuję wszystkie')}
+                {t('cookies.acceptAll')}
               </Button>
             )}
           </div>
 
           <div className="flex justify-center gap-4 pt-2">
             <Link to="/legal/privacy" className="text-xs text-muted-foreground hover:text-primary transition-colors">
-              {t('cookies.privacyPolicy', 'Polityka prywatności')}
+              {t('cookies.privacyPolicy')}
             </Link>
             <Link to="/legal/terms" className="text-xs text-muted-foreground hover:text-primary transition-colors">
-              {t('cookies.terms', 'Regulamin')}
+              {t('cookies.terms')}
             </Link>
           </div>
         </CardContent>

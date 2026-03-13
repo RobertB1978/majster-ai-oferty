@@ -79,22 +79,22 @@ export function OrganizationManager() {
             <Building2 className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold">{t('organizations.title', 'Organizacje')}</h2>
+            <h2 className="text-xl font-semibold">{t('organizations.title')}</h2>
             <p className="text-sm text-muted-foreground">
-              {t('organizations.subtitle', 'Zarządzaj zespołami i firmami')}
+              {t('organizations.subtitle')}
             </p>
           </div>
         </div>
         <Button onClick={() => setIsCreateDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          {t('organizations.create', 'Utwórz organizację')}
+          {t('organizations.create')}
         </Button>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Organizations list */}
         <div className="lg:col-span-1 space-y-3">
-          <Label className="text-sm font-medium">{t('organizations.yourOrganizations', 'Twoje organizacje')}</Label>
+          <Label className="text-sm font-medium">{t('organizations.yourOrganizations')}</Label>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -130,7 +130,7 @@ export function OrganizationManager() {
               <CardContent className="py-8 text-center">
                 <Building2 className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  {t('organizations.noOrganizations', 'Brak organizacji')}
+                  {t('organizations.noOrganizations')}
                 </p>
                 <Button
                   variant="outline"
@@ -139,7 +139,7 @@ export function OrganizationManager() {
                   onClick={() => setIsCreateDialogOpen(true)}
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  {t('organizations.createFirst', 'Utwórz pierwszą')}
+                  {t('organizations.createFirst')}
                 </Button>
               </CardContent>
             </Card>
@@ -155,15 +155,15 @@ export function OrganizationManager() {
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       <Users className="h-5 w-5" />
-                      {t('organizations.members', 'Członkowie')}
+                      {t('organizations.members')}
                     </CardTitle>
                     <CardDescription>
-                      {members?.length || 0} {t('organizations.membersCount', 'członków')}
+                      {members?.length || 0} {t('organizations.membersCount')}
                     </CardDescription>
                   </div>
                   <Button size="sm">
                     <UserPlus className="h-4 w-4 mr-2" />
-                    {t('organizations.invite', 'Zaproś')}
+                    {t('organizations.invite')}
                   </Button>
                 </div>
               </CardHeader>
@@ -198,9 +198,9 @@ export function OrganizationManager() {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="admin">{t('organizations.roles.admin', 'Admin')}</SelectItem>
-                              <SelectItem value="manager">{t('organizations.roles.manager', 'Manager')}</SelectItem>
-                              <SelectItem value="member">{t('organizations.roles.member', 'Członek')}</SelectItem>
+                              <SelectItem value="admin">{t('organizations.roles.admin')}</SelectItem>
+                              <SelectItem value="manager">{t('organizations.roles.manager')}</SelectItem>
+                              <SelectItem value="member">{t('organizations.roles.member')}</SelectItem>
                             </SelectContent>
                           </Select>
                           {member.role !== 'owner' && (
@@ -224,7 +224,7 @@ export function OrganizationManager() {
                   <div className="text-center py-8">
                     <Users className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground">
-                      {t('organizations.noMembers', 'Brak członków')}
+                      {t('organizations.noMembers')}
                     </p>
                   </div>
                 )}
@@ -235,7 +235,7 @@ export function OrganizationManager() {
               <CardContent className="py-16 text-center">
                 <Settings className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground">
-                  {t('organizations.selectOrg', 'Wybierz organizację, aby zarządzać członkami')}
+                  {t('organizations.selectOrg')}
                 </p>
               </CardContent>
             </Card>
@@ -249,12 +249,12 @@ export function OrganizationManager() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5" />
-              {t('organizations.create', 'Utwórz organizację')}
+              {t('organizations.create')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <Label htmlFor="org-name">{t('organizations.name', 'Nazwa organizacji')}</Label>
+              <Label htmlFor="org-name">{t('organizations.name')}</Label>
               <Input
                 id="org-name"
                 value={newOrgName}
@@ -263,7 +263,7 @@ export function OrganizationManager() {
               />
             </div>
             <div>
-              <Label htmlFor="org-slug">{t('organizations.slug', 'Identyfikator URL')}</Label>
+              <Label htmlFor="org-slug">{t('organizations.slug')}</Label>
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">/</span>
                 <Input
@@ -274,17 +274,17 @@ export function OrganizationManager() {
                 />
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                {t('organizations.slugHint', 'Zostanie użyty w adresie URL. Tylko małe litery, cyfry i myślniki.')}
+                {t('organizations.slugHint')}
               </p>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-              {t('common.cancel', 'Anuluj')}
+              {t('common.cancel')}
             </Button>
             <Button onClick={handleCreateOrg} disabled={createOrg.isPending || !newOrgName.trim()}>
               {createOrg.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              {t('common.save', 'Utwórz')}
+              {t('common.save')}
             </Button>
           </DialogFooter>
         </DialogContent>

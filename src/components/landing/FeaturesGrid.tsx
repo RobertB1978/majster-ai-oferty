@@ -56,6 +56,7 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
       icon: Icon,
       title: t(`${prefix}.title`) || feature.title,
       description: t(`${prefix}.description`) || feature.desc,
+
       benefits: [b1, b2, b3].filter(
         (b) => b && !b.endsWith('.b1') && !b.endsWith('.b2') && !b.endsWith('.b3'),
       ),
@@ -75,7 +76,7 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
           ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleDemo(); } }
           : undefined
       }
-      aria-label={hasDemo ? `${t('landing.features.demoTitle')}: ${t(`landing.features.${feature.key}.title`, feature.title)}` : undefined}
+      aria-label={hasDemo ? `${t('landing.features.demoTitle')}: ${t(`landing.features.${feature.key}.title`)}` : undefined}
     >
       <div className="flex items-center justify-between">
         <div className="w-11 h-11 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-amber-500/20">
@@ -91,16 +92,16 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
 
       <div className="flex-1">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          {t(`landing.features.${feature.key}.title`, feature.title)}
+          {t(`landing.features.${feature.key}.title`)}
         </h3>
         <p className="text-sm text-gray-600 dark:text-[#A3A3A3] leading-relaxed">
-          {t(`landing.features.${feature.key}.description`, feature.desc)}
+          {t(`landing.features.${feature.key}.description`)}
         </p>
       </div>
 
       {hasDemo && (
         <div className="text-xs font-medium text-gray-400 dark:text-[#525252] group-hover:text-amber-400 transition-colors duration-200">
-          {t('landing.features.demoTitle', 'Podgląd')} →
+          {t('landing.features.demoTitle')} →
         </div>
       )}
     </div>
@@ -125,10 +126,10 @@ export function FeaturesGrid() {
             id="features-heading"
             className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4"
           >
-            {t('landing.features.sectionTitle', 'Co dostaniesz')}
+            {t('landing.features.sectionTitle')}
           </h2>
           <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto">
-            {t('landing.features.sectionDesc', 'Kompletny zestaw narzędzi do zarządzania firmą remontową i budowlaną.')}
+            {t('landing.features.sectionDesc')}
           </p>
         </div>
 
@@ -137,9 +138,9 @@ export function FeaturesGrid() {
             <div className="text-amber-500 mb-3 flex justify-center">
               <Rocket className="w-10 h-10" aria-hidden="true" />
             </div>
-            <h3 className="text-gray-900 dark:text-white font-semibold text-xl mb-2">{t('landing.features.mvpTitle', 'Startujemy')}</h3>
+            <h3 className="text-gray-900 dark:text-white font-semibold text-xl mb-2">{t('landing.features.mvpTitle')}</h3>
             <p className="text-gray-600 dark:text-[#A3A3A3] max-w-md mx-auto leading-relaxed">
-              {t('landing.features.mvpDesc', 'Wersja MVP: zaczynamy od wycen PDF i zarządzania projektami. Reszta funkcji jest aktywnie rozwijana i pojawi się wkrótce.')}
+              {t('landing.features.mvpDesc')}
             </p>
           </div>
         ) : (

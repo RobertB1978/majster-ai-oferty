@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -46,6 +47,7 @@ export function useTeamMembers() {
 }
 
 export function useAddTeamMember() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -66,15 +68,16 @@ export function useAddTeamMember() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team_members'] });
-      toast.success('Pracownik dodany');
+      toast.success(t('team.toast.added'));
     },
     onError: () => {
-      toast.error('Błąd podczas dodawania pracownika');
+      toast.error(t('team.toast.addError'));
     },
   });
 }
 
 export function useUpdateTeamMember() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -91,12 +94,13 @@ export function useUpdateTeamMember() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team_members'] });
-      toast.success('Pracownik zaktualizowany');
+      toast.success(t('team.toast.updated'));
     },
   });
 }
 
 export function useDeleteTeamMember() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -110,7 +114,7 @@ export function useDeleteTeamMember() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team_members'] });
-      toast.success('Pracownik usunięty');
+      toast.success(t('team.toast.deleted'));
     },
   });
 }

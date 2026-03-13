@@ -32,8 +32,8 @@ export function QuoteCreationHub() {
     {
       id: 'quick' as const,
       icon: Zap,
-      label: t('dashboard.quoteCreation.quickTitle', 'Szybka wycena'),
-      sublabel: t('dashboard.quoteCreation.quickDesc', 'Wprowadź pozycje i wyślij w kilka minut'),
+      label: t('dashboard.quoteCreation.quickTitle'),
+      sublabel: t('dashboard.quoteCreation.quickDesc'),
       onClick: handleQuickClick
     },
     {

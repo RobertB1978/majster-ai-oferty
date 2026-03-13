@@ -64,10 +64,10 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div>
             <CardTitle className="text-base font-semibold">
-              {t('dashboard.recentProjects', 'Ostatnie projekty')}
+              {t('dashboard.recentProjects')}
             </CardTitle>
             <CardDescription className="text-xs">
-              {t('dashboard.yourLatestProjects', 'Twoje najnowsze projekty')}
+              {t('dashboard.yourLatestProjects')}
             </CardDescription>
           </div>
           <Button
@@ -76,7 +76,7 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
             onClick={() => navigate('/app/projects')}
             className="text-xs gap-1 hover:text-primary"
           >
-            {t('dashboard.viewAll', 'Zobacz wszystkie')}
+            {t('dashboard.viewAll')}
             <ArrowRight className="h-3.5 w-3.5" />
           </Button>
         </CardHeader>
@@ -115,7 +115,7 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
               <div className="divide-y divide-border/60">
                 {projects.map((project, index) => {
                   const statusCfg = STATUS_CONFIG[project.status] ?? STATUS_CONFIG['Nowy'];
-                  const clientName = project.clients?.name || t('dashboard.unknownClient', 'Nieznany klient');
+                  const clientName = project.clients?.name || t('dashboard.unknownClient');
 
                   return (
                     <motion.div

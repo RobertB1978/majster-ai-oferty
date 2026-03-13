@@ -40,6 +40,8 @@ export interface PlanConfig {
   /** Stripe price ID — null until Stripe account is configured */
   stripePriceId: string | null;
   faq: Array<{ q: string; a: string }>;
+  /** i18n keys for FAQ items */
+  faqKeys: Array<{ qKey: string; aKey: string }>;
 }
 
 export const PLANS: PlanConfig[] = [
@@ -76,6 +78,11 @@ export const PLANS: PlanConfig[] = [
       { q: 'Jak długo działa plan darmowy?', a: 'Plan darmowy jest bezpłatny bez limitu czasu. Możesz korzystać z niego tak długo, jak chcesz.' },
       { q: 'Czy mogę zmienić na płatny plan?', a: 'Tak, w każdej chwili. Dane są zachowane.' },
       { q: 'Czy pokazują się reklamy?', a: 'W planie darmowym mogą pojawiać się banery informacyjne.' },
+    ],
+    faqKeys: [
+      { qKey: 'billing.plans.free.faq.q1', aKey: 'billing.plans.free.faq.a1' },
+      { qKey: 'billing.plans.free.faq.q2', aKey: 'billing.plans.free.faq.a2' },
+      { qKey: 'billing.plans.free.faq.q3', aKey: 'billing.plans.free.faq.a3' },
     ],
   },
   {
@@ -114,6 +121,11 @@ export const PLANS: PlanConfig[] = [
       { q: 'Czy mogę anulować?', a: 'Tak — płatność można anulować w dowolnym momencie.' },
       { q: 'Czy jest faktura VAT?', a: 'Tak, wystawiamy fakturę VAT do każdego zakupu.' },
       { q: 'Co się stanie po anulowaniu?', a: 'Masz dostęp do końca opłaconego okresu.' },
+    ],
+    faqKeys: [
+      { qKey: 'billing.plans.pro.faq.q1', aKey: 'billing.plans.pro.faq.a1' },
+      { qKey: 'billing.plans.pro.faq.q2', aKey: 'billing.plans.pro.faq.a2' },
+      { qKey: 'billing.plans.pro.faq.q3', aKey: 'billing.plans.pro.faq.a3' },
     ],
   },
   {
@@ -156,6 +168,11 @@ export const PLANS: PlanConfig[] = [
       { q: 'Czy AI jest wliczone?', a: 'Tak — asystent AI i wycena ze zdjęcia wliczone w plan.' },
       { q: 'Czy zarządzanie zespołem jest już dostępne?', a: 'Moduł Zespół jest w przygotowaniu i będzie dostępny w kolejnej aktualizacji.' },
     ],
+    faqKeys: [
+      { qKey: 'billing.plans.business.faq.q1', aKey: 'billing.plans.business.faq.a1' },
+      { qKey: 'billing.plans.business.faq.q2', aKey: 'billing.plans.business.faq.a2' },
+      { qKey: 'billing.plans.business.faq.q3', aKey: 'billing.plans.business.faq.a3' },
+    ],
   },
   {
     slug: 'enterprise',
@@ -195,6 +212,11 @@ export const PLANS: PlanConfig[] = [
       { q: 'Czy jest umowa SLA?', a: 'Tak — dla planów Enterprise dostępna jest umowa SLA.' },
       { q: 'Czy cena jest negocjowalna?', a: 'Tak — przy większych zespołach zapraszamy do kontaktu.' },
       { q: 'Jak uzyskać dostęp do API?', a: 'Po zakupie klucze API dostępne są w Ustawieniach → API.' },
+    ],
+    faqKeys: [
+      { qKey: 'billing.plans.enterprise.faq.q1', aKey: 'billing.plans.enterprise.faq.a1' },
+      { qKey: 'billing.plans.enterprise.faq.q2', aKey: 'billing.plans.enterprise.faq.a2' },
+      { qKey: 'billing.plans.enterprise.faq.q3', aKey: 'billing.plans.enterprise.faq.a3' },
     ],
   },
 ];

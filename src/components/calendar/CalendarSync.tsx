@@ -31,10 +31,7 @@ export function CalendarSync() {
       <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/50 p-4">
         <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
         <p className="text-sm text-muted-foreground">
-          {t(
-            'calendarSync.betaNotice',
-            'Synchronizacja z zewnętrznymi kalendarzami (Google, Outlook, Apple) jest w przygotowaniu. Zostanie udostępniona w kolejnej wersji.'
-          )}
+          {t('calendarSync.betaNotice')}
         </p>
       </div>
 
@@ -42,10 +39,10 @@ export function CalendarSync() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            {t('calendarSync.title', 'Synchronizacja kalendarzy')}
+            {t('calendarSync.title')}
           </CardTitle>
           <CardDescription>
-            {t('calendarSync.description', 'Połącz zewnętrzne kalendarze, aby synchronizować wydarzenia')}
+            {t('calendarSync.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -59,7 +56,7 @@ export function CalendarSync() {
                 <p className="font-medium">{provider.name}</p>
               </div>
               <Badge variant="secondary" className="text-xs">
-                {t('nav.comingSoon', 'Wkrótce')}
+                {t('nav.comingSoon')}
               </Badge>
             </div>
           ))}

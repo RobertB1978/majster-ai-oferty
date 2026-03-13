@@ -17,9 +17,9 @@ export default function HomeLobby() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-card border-b border-border px-4 pt-4 pb-3 sticky top-12 z-40">
-        <h1 className="text-xl font-bold text-foreground">{t('newShell.home.title', 'Majster.AI')}</h1>
+        <h1 className="text-xl font-bold text-foreground">{t('newShell.home.title')}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          {t('newShell.home.subtitle', 'Twoje centrum zarządzania')}
+          {t('newShell.home.subtitle')}
         </p>
       </div>
 
@@ -27,11 +27,11 @@ export default function HomeLobby() {
         {/* Blok 1: Continue */}
         <section aria-labelledby="continue-heading">
           <h2 id="continue-heading" className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-            {t('newShell.home.continueTitle', 'Kontynuuj')}
+            {t('newShell.home.continueTitle')}
           </h2>
           <div className="bg-card border border-border rounded-xl p-4">
             <p className="text-sm text-muted-foreground text-center py-4">
-              {t('newShell.home.continueEmpty', 'Brak ostatnio otwartych elementów')}
+              {t('newShell.home.continueEmpty')}
             </p>
           </div>
         </section>
@@ -39,27 +39,27 @@ export default function HomeLobby() {
         {/* Blok 2: Quick Start */}
         <section aria-labelledby="quickstart-heading">
           <h2 id="quickstart-heading" className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-            {t('newShell.home.quickStartTitle', 'Szybki start')}
+            {t('newShell.home.quickStartTitle')}
           </h2>
           <div className="grid grid-cols-2 gap-3">
             <QuickStartButton
               icon={<FileText className="h-6 w-6" />}
-              label={t('newShell.home.qs.newOffer', 'Nowa wycena')}
+              label={t('newShell.home.qs.newOffer')}
               onClick={() => navigate('/app/offers/new')}
             />
             <QuickStartButton
               icon={<FolderKanban className="h-6 w-6" />}
-              label={t('newShell.home.qs.projects', 'Projekty')}
+              label={t('newShell.home.qs.projects')}
               onClick={() => navigate('/app/projects')}
             />
             <QuickStartButton
               icon={<Users className="h-6 w-6" />}
-              label={t('newShell.home.qs.clients', 'Klienci')}
+              label={t('newShell.home.qs.clients')}
               onClick={() => navigate('/app/customers')}
             />
             <QuickStartButton
               icon={<Zap className="h-6 w-6" />}
-              label={t('newShell.home.qs.quickEst', 'Szybka wycena')}
+              label={t('newShell.home.qs.quickEst')}
               onClick={() => navigate('/app/szybka-wycena')}
             />
           </div>

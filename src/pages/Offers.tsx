@@ -184,7 +184,7 @@ function OfferRow({ offer, onOpen, onCreateProject, onArchive, isCreatingProject
           {offer.status !== 'ARCHIVED' && (
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive(offer.id); }}>
               <Archive className="mr-2 h-4 w-4" />
-              {t('offersList.actionArchive', 'Archiwizuj')}
+              {t('offersList.actionArchive')}
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
@@ -220,9 +220,9 @@ export default function Offers() {
   const handleArchive = async (offerId: string) => {
     try {
       await archiveOffer.mutateAsync(offerId);
-      toast.success(t('offersList.archiveSuccess', 'Oferta zarchiwizowana'));
+      toast.success(t('offersList.archiveSuccess'));
     } catch {
-      toast.error(t('offersList.archiveError', 'Nie udało się zarchiwizować oferty'));
+      toast.error(t('offersList.archiveError'));
     }
   };
 

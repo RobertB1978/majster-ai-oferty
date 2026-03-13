@@ -52,7 +52,7 @@ export default function Photos() {
   return (
     <>
       <Helmet>
-        <title>{t('photos.title', 'Zdjęcia')} | Majster.AI</title>
+        <title>{t('photos.title')} | Majster.AI</title>
       </Helmet>
 
       <div className="space-y-6 animate-fade-in">
@@ -62,16 +62,16 @@ export default function Photos() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
                 <Camera className="h-5 w-5 text-primary-foreground" />
               </div>
-              {t('photos.title', 'Zdjęcia projektów')}
+              {t('photos.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              {t('photos.subtitle', 'Wszystkie zdjęcia z Twoich projektów. AI może analizować stan techniczny.')}
+              {t('photos.subtitle')}
             </p>
           </div>
           <Button asChild variant="outline">
             <Link to="/app/projects">
               <FolderOpen className="h-4 w-4 mr-2" />
-              {t('photos.goToProjects', 'Dodaj zdjęcia w projekcie')}
+              {t('photos.goToProjects')}
             </Link>
           </Button>
         </div>
@@ -91,18 +91,15 @@ export default function Photos() {
                 <ImageOff className="h-8 w-8 text-muted-foreground" />
               </div>
               <div className="text-center">
-                <p className="font-medium">{t('photos.empty', 'Brak zdjęć')}</p>
+                <p className="font-medium">{t('photos.empty')}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {t(
-                    'photos.emptyHint',
-                    'Dodaj zdjęcia w widoku projektu. AI przeanalizuje stan techniczny i zaproponuje pozycje w wycenie.'
-                  )}
+                  {t('photos.emptyHint')}
                 </p>
               </div>
               <Button asChild>
                 <Link to="/app/projects">
                   <FolderOpen className="h-4 w-4 mr-2" />
-                  {t('photos.openProjects', 'Otwórz projekty')}
+                  {t('photos.openProjects')}
                 </Link>
               </Button>
             </CardContent>
@@ -120,7 +117,7 @@ export default function Photos() {
                 <div className="aspect-square bg-muted overflow-hidden">
                   <img
                     src={photo.photo_url}
-                    alt={photo.description ?? t('photos.photoAlt', 'Zdjęcie projektu')}
+                    alt={photo.description ?? t('photos.photoAlt')}
                     className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
                   />

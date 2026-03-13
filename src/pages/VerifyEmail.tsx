@@ -37,7 +37,7 @@ export default function VerifyEmail() {
 
   const handleResend = async () => {
     if (!email) {
-      toast.error(t('auth.verifyEmail.noEmailError', 'Brak adresu email. Wróć do rejestracji.'));
+      toast.error(t('auth.verifyEmail.noEmailError'));
       return;
     }
     if (cooldown > 0) return;
@@ -57,7 +57,7 @@ export default function VerifyEmail() {
   return (
     <>
       <Helmet>
-        <title>{t('auth.verifyEmail.pageTitle', 'Weryfikacja emaila')} | Majster.AI</title>
+        <title>{t('auth.verifyEmail.pageTitle')} | Majster.AI</title>
         <meta name="robots" content="noindex" />
       </Helmet>
       <div className="flex min-h-screen items-center justify-center bg-background p-4">

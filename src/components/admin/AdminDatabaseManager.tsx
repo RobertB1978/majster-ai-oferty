@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,22 +37,26 @@ interface TableStats {
 }
 
 export function AdminDatabaseManager() {
+  const { t } = useTranslation();
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Table metadata (names/desc translated at render time, counts fetched from DB)
+  const TABLE_DEFS = [
+    { table: 'profiles', name: t('admin.db.tables.profiles'), icon: <Users className="h-4 w-4" />, desc: t('admin.db.tables.profilesDesc') },
+    { table: 'clients', name: t('admin.db.tables.clients'), icon: <Users className="h-4 w-4" />, desc: t('admin.db.tables.clientsDesc') },
+    { table: 'projects', name: t('admin.db.tables.projects'), icon: <FolderOpen className="h-4 w-4" />, desc: t('admin.db.tables.projectsDesc') },
+    { table: 'quotes', name: t('admin.db.tables.quotes'), icon: <FileText className="h-4 w-4" />, desc: t('admin.db.tables.quotesDesc') },
+    { table: 'item_templates', name: t('admin.db.tables.templates'), icon: <Table2 className="h-4 w-4" />, desc: t('admin.db.tables.templatesDesc') },
+    { table: 'calendar_events', name: t('admin.db.tables.events'), icon: <Calendar className="h-4 w-4" />, desc: t('admin.db.tables.eventsDesc') },
+    { table: 'notifications', name: t('admin.db.tables.notifications'), icon: <FileText className="h-4 w-4" />, desc: t('admin.db.tables.notificationsDesc') },
+    { table: 'offer_sends', name: t('admin.db.tables.offerSends'), icon: <FileText className="h-4 w-4" />, desc: t('admin.db.tables.offerSendsDesc') },
+  ];
 
   // Fetch table counts
   const { data: tableStats, refetch } = useQuery({
     queryKey: ['admin-db-stats'],
     queryFn: async () => {
-      const tables = [
-        { table: 'profiles', name: 'Profile', icon: <Users className="h-4 w-4" />, desc: 'Profile użytkowników' },
-        { table: 'clients', name: 'Klienci', icon: <Users className="h-4 w-4" />, desc: 'Dane klientów' },
-        { table: 'projects', name: 'Projekty', icon: <FolderOpen className="h-4 w-4" />, desc: 'Projekty wycen' },
-        { table: 'quotes', name: 'Wyceny', icon: <FileText className="h-4 w-4" />, desc: 'Kalkulacje kosztów' },
-        { table: 'item_templates', name: 'Szablony', icon: <Table2 className="h-4 w-4" />, desc: 'Szablony pozycji' },
-        { table: 'calendar_events', name: 'Wydarzenia', icon: <Calendar className="h-4 w-4" />, desc: 'Kalendarz' },
-        { table: 'notifications', name: 'Powiadomienia', icon: <FileText className="h-4 w-4" />, desc: 'Notyfikacje' },
-        { table: 'offer_sends', name: 'Wysyłki', icon: <FileText className="h-4 w-4" />, desc: 'Historia wysyłek' },
-      ];
+      const tables = TABLE_DEFS;
 
       const stats: TableStats[] = [];
 
@@ -85,7 +90,7 @@ export function AdminDatabaseManager() {
     setIsRefreshing(true);
     await refetch();
     setIsRefreshing(false);
-    toast.success('Statystyki odświeżone');
+    toast.success(t('admin.toast.statsRefreshed'));
   };
 
   const totalRecords = tableStats?.reduce((sum, t) => sum + t.count, 0) || 0;
@@ -102,15 +107,15 @@ export function AdminDatabaseManager() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <Database className="h-5 w-5" />
-              Zarządzanie bazą danych
+              {t('admin.db.title')}
             </CardTitle>
             <CardDescription>
-              Przegląd i zarządzanie danymi aplikacji
+              {t('admin.db.description')}
             </CardDescription>
           </div>
           <Button variant="outline" size="sm" onClick={refreshStats} disabled={isRefreshing}>
             <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            Odśwież
+            {t('admin.db.refresh')}
           </Button>
         </div>
       </CardHeader>
@@ -121,7 +126,7 @@ export function AdminDatabaseManager() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Łącznie rekordów</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.db.totalRecords')}</p>
                   <p className="text-2xl font-bold">{totalRecords.toLocaleString()}</p>
                 </div>
                 <BarChart3 className="h-8 w-8 text-primary opacity-50" />
@@ -133,7 +138,7 @@ export function AdminDatabaseManager() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Tabel aktywnych</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.db.activeTables')}</p>
                   <p className="text-2xl font-bold">{tableStats?.length || 0}</p>
                 </div>
                 <Table2 className="h-8 w-8 text-blue-500 opacity-50" />
@@ -159,11 +164,11 @@ export function AdminDatabaseManager() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Tabela</TableHead>
-                <TableHead>Opis</TableHead>
-                <TableHead className="text-right">Rekordów</TableHead>
-                <TableHead className="text-right">Udział</TableHead>
-                <TableHead className="w-[100px]">Akcje</TableHead>
+                <TableHead>{t('admin.db.colTable')}</TableHead>
+                <TableHead>{t('admin.db.colDesc')}</TableHead>
+                <TableHead className="text-right">{t('admin.db.colRecords')}</TableHead>
+                <TableHead className="text-right">{t('admin.db.colShare')}</TableHead>
+                <TableHead className="w-[100px]">{t('admin.db.colActions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -194,7 +199,7 @@ export function AdminDatabaseManager() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" title="Eksportuj">
+                        <Button variant="ghost" size="icon" title={t('admin.db.export')}>
                           <Download className="h-4 w-4" />
                         </Button>
                       </div>
@@ -210,15 +215,15 @@ export function AdminDatabaseManager() {
         <div className="flex flex-wrap gap-2 pt-4 border-t">
           <Button variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />
-            Eksportuj wszystko (CSV)
+            {t('admin.db.exportAll')}
           </Button>
           <Button variant="outline" size="sm">
             <HardDrive className="h-4 w-4 mr-2" />
-            Backup bazy
+            {t('admin.db.backup')}
           </Button>
           <Button variant="outline" size="sm" className="text-orange-600 hover:text-orange-700">
             <Trash2 className="h-4 w-4 mr-2" />
-            Wyczyść stare dane
+            {t('admin.db.clearOld')}
           </Button>
         </div>
       </CardContent>

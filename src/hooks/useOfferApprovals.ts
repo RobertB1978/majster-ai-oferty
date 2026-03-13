@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -43,6 +44,7 @@ export function useOfferApprovals(projectId: string) {
 }
 
 export function useCreateOfferApproval() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -68,15 +70,16 @@ export function useCreateOfferApproval() {
     },
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: ['offer_approvals', projectId] });
-      toast.success('Link do akceptacji utworzony');
+      toast.success(t('offers.toast.approvalLinkCreated'));
     },
     onError: () => {
-      toast.error('Błąd podczas tworzenia linku');
+      toast.error(t('offers.toast.approvalLinkError'));
     },
   });
 }
 
 export function useExtendOfferApproval() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -102,10 +105,10 @@ export function useExtendOfferApproval() {
     },
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: ['offer_approvals', projectId] });
-      toast.success('Ważność oferty przedłużona o 30 dni');
+      toast.success(t('offers.toast.extendedValidity'));
     },
     onError: () => {
-      toast.error('Błąd podczas przedłużania oferty');
+      toast.error(t('offers.toast.extendError'));
     },
   });
 }
@@ -127,6 +130,8 @@ export function usePublicOfferApproval(token: string) {
 }
 
 export function useSubmitOfferApproval() {
+  const { t } = useTranslation();
+
   return useMutation({
     mutationFn: async ({ token, action, signatureData, comment }: { 
       token: string;
@@ -142,10 +147,10 @@ export function useSubmitOfferApproval() {
       return data;
     },
     onSuccess: (_, { action }) => {
-      toast.success(action === 'approve' ? 'Oferta zaakceptowana!' : 'Oferta odrzucona');
+      toast.success(action === 'approve' ? t('offers.toast.accepted') : t('offers.toast.rejected'));
     },
     onError: () => {
-      toast.error('Błąd podczas przetwarzania');
+      toast.error(t('offers.toast.processingError'));
     },
   });
 }

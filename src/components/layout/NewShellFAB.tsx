@@ -62,17 +62,17 @@ export function NewShellFAB() {
           style={{ zIndex: 60, bottom: 'calc(var(--nav-height, 4rem) + env(safe-area-inset-bottom, 0px))' }}
           role="dialog"
           aria-modal="true"
-          aria-label={t('newShell.fab.sheetTitle', 'Szybkie akcje')}
+          aria-label={t('newShell.fab.sheetTitle')}
         >
           <div className="p-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold text-foreground">
-                {t('newShell.fab.sheetTitle', 'Szybkie akcje')}
+                {t('newShell.fab.sheetTitle')}
               </h2>
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-1 rounded-md text-muted-foreground hover:text-foreground"
-                aria-label={t('common.close', 'Zamknij')}
+                aria-label={t('common.close')}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -114,7 +114,7 @@ export function NewShellFAB() {
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
         )}
         style={{ zIndex: 61, bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}
-        aria-label={isOpen ? t('common.close', 'Zamknij') : t('newShell.fab.open', 'Utwórz')}
+        aria-label={isOpen ? t('common.close') : t('newShell.fab.open')}
         aria-expanded={isOpen}
       >
         <Plus className="h-6 w-6" />

@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -54,6 +55,7 @@ export function useQuote(projectId: string) {
 }
 
 export function useSaveQuote() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -115,10 +117,10 @@ export function useSaveQuote() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['quotes', variables.projectId] });
-      toast.success('Wycena zapisana');
+      toast.success(t('quotes.toast.saved'));
     },
     onError: (error) => {
-      toast.error('Błąd przy zapisywaniu wyceny');
+      toast.error(t('quotes.toast.saveError'));
       console.error(error);
     },
   });

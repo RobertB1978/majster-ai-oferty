@@ -19,7 +19,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isLoading && user && !isAdmin && !toastShown.current) {
       toastShown.current = true;
-      toast.error(t('admin.accessDenied', 'Brak dostępu do panelu administracyjnego'));
+      toast.error(t('admin.accessDenied'));
     }
   }, [isLoading, user, isAdmin, t]);
 

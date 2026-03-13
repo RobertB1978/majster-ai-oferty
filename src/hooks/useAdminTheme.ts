@@ -144,7 +144,7 @@ export function useAdminTheme(organizationId: string | null): UseAdminThemeResul
   const updateTheme = useCallback(
     async (updates: Partial<AdminThemeConfig>) => {
       if (!organizationId) {
-        toast.error('Nie można zapisać motywu');
+        toast.error(t('admin.toast.themeSaveError'));
         return;
       }
 

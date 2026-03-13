@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -45,6 +46,7 @@ export function useCalendarEvents(startDate?: string, endDate?: string) {
 }
 
 export function useAddCalendarEvent() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -63,16 +65,17 @@ export function useAddCalendarEvent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar_events'] });
-      toast.success('Wydarzenie dodane');
+      toast.success(t('calendarEvents.toast.added'));
     },
     onError: (error) => {
-      toast.error('Błąd przy dodawaniu wydarzenia');
+      toast.error(t('calendarEvents.toast.addError'));
       logger.error(error);
     },
   });
 }
 
 export function useUpdateCalendarEvent() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -90,16 +93,17 @@ export function useUpdateCalendarEvent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar_events'] });
-      toast.success('Wydarzenie zaktualizowane');
+      toast.success(t('calendarEvents.toast.updated'));
     },
     onError: (error) => {
-      toast.error('Błąd przy aktualizacji wydarzenia');
+      toast.error(t('calendarEvents.toast.updateError'));
       logger.error(error);
     },
   });
 }
 
 export function useDeleteCalendarEvent() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -113,10 +117,10 @@ export function useDeleteCalendarEvent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar_events'] });
-      toast.success('Wydarzenie usunięte');
+      toast.success(t('calendarEvents.toast.deleted'));
     },
     onError: (error) => {
-      toast.error('Błąd przy usuwaniu wydarzenia');
+      toast.error(t('calendarEvents.toast.deleteError'));
       logger.error(error);
     },
   });

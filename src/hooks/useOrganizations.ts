@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -65,6 +66,7 @@ export function useOrganizationMembers(organizationId: string | null) {
 }
 
 export function useCreateOrganization() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -101,16 +103,17 @@ export function useCreateOrganization() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
-      toast.success('Organizacja została utworzona');
+      toast.success(t('organizations.toast.created'));
     },
     onError: (error) => {
       logger.error('Create organization error:', error);
-      toast.error('Błąd podczas tworzenia organizacji');
+      toast.error(t('organizations.toast.createError'));
     },
   });
 }
 
 export function useInviteMember() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -135,16 +138,17 @@ export function useInviteMember() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['organization-members', variables.organizationId] });
-      toast.success('Zaproszenie zostało wysłane');
+      toast.success(t('organizations.toast.inviteSent'));
     },
     onError: (error) => {
       logger.error('Invite member error:', error);
-      toast.error('Błąd podczas zapraszania członka');
+      toast.error(t('organizations.toast.inviteError'));
     },
   });
 }
 
 export function useRemoveMember() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -158,16 +162,17 @@ export function useRemoveMember() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['organization-members', variables.organizationId] });
-      toast.success('Członek został usunięty');
+      toast.success(t('organizations.toast.memberRemoved'));
     },
     onError: (error) => {
       logger.error('Remove member error:', error);
-      toast.error('Błąd podczas usuwania członka');
+      toast.error(t('organizations.toast.removeError'));
     },
   });
 }
 
 export function useUpdateMemberRole() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -185,11 +190,11 @@ export function useUpdateMemberRole() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['organization-members', variables.organizationId] });
-      toast.success('Rola została zaktualizowana');
+      toast.success(t('organizations.toast.roleUpdated'));
     },
     onError: (error) => {
       logger.error('Update role error:', error);
-      toast.error('Błąd podczas aktualizacji roli');
+      toast.error(t('organizations.toast.roleUpdateError'));
     },
   });
 }

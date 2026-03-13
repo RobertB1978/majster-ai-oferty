@@ -93,7 +93,7 @@ export function NewShellOnboarding() {
         <button
           onClick={complete}
           className="absolute top-4 right-4 p-1 rounded-md text-muted-foreground hover:text-foreground"
-          aria-label={t('newShell.onboarding.skip', 'Pomiń')}
+          aria-label={t('newShell.onboarding.skip')}
         >
           <X className="h-5 w-5" />
         </button>
@@ -133,11 +133,11 @@ export function NewShellOnboarding() {
         >
           {step < STEPS.length - 1 ? (
             <>
-              {t('newShell.onboarding.next', 'Dalej')}
+              {t('newShell.onboarding.next')}
               <ArrowRight className="h-4 w-4" />
             </>
           ) : (
-            t('newShell.onboarding.finish', 'Zaczynamy!')
+            t('newShell.onboarding.finish')
           )}
         </button>
       </div>

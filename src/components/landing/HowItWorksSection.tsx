@@ -8,20 +8,20 @@ export function HowItWorksSection() {
     {
       number: '1',
       icon: UserPlus,
-      title: t('landing.how.step1_title', 'Załóż konto'),
-      desc: t('landing.how.step1_desc', 'Rejestracja zajmuje chwilę. Pierwsze 30 dni bezpłatnie — bez karty kredytowej.'),
+      title: t('landing.how.step1_title'),
+      desc: t('landing.how.step1_desc'),
     },
     {
       number: '2',
       icon: FolderPlus,
-      title: t('landing.how.step2_title', 'Dodaj projekt'),
-      desc: t('landing.how.step2_desc', 'Stwórz projekt, przypisz klienta, dodaj zadania i materiały.'),
+      title: t('landing.how.step2_title'),
+      desc: t('landing.how.step2_desc'),
     },
     {
       number: '3',
       icon: Send,
-      title: t('landing.how.step3_title', 'Wyślij wycenę'),
-      desc: t('landing.how.step3_desc', 'Wygeneruj profesjonalne PDF i wyślij klientowi w kilka kliknięć.'),
+      title: t('landing.how.step3_title'),
+      desc: t('landing.how.step3_desc'),
     },
   ];
 
@@ -37,10 +37,10 @@ export function HowItWorksSection() {
             id="how-heading"
             className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4"
           >
-            {t('landing.how.sectionTitle', 'Jak to działa?')}
+            {t('landing.how.sectionTitle')}
           </h2>
           <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed max-w-xl mx-auto">
-            {t('landing.how.sectionSubtitle', 'Trzy kroki i jesteś gotowy do pracy.')}
+            {t('landing.how.sectionSubtitle')}
           </p>
         </div>
 
@@ -84,7 +84,7 @@ export function HowItWorksSection() {
               </div>
               <div className={`flex-1 pb-6 ${idx === STEPS.length - 1 ? '' : ''}`}>
                 <div className="text-amber-500 text-xs font-bold mb-1">
-                  {t('landing.how.step', 'Krok')} {step.number}
+                  {t('landing.how.step')} {step.number}
                 </div>
                 <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1">{step.title}</h3>
                 <p className="text-sm text-gray-600 dark:text-[#A3A3A3] leading-relaxed">{step.desc}</p>

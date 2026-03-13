@@ -31,7 +31,7 @@ export function NewShellBottomNav() {
     <nav
       className="lg:hidden fixed bottom-0 left-0 right-0 border-t border-border/60 bg-card/95 backdrop-blur-md safe-area-bottom"
       style={{ zIndex: 'var(--z-nav, 50)' }}
-      aria-label={t('newShell.nav.ariaLabel', 'Nawigacja')}
+      aria-label={t('newShell.nav.ariaLabel')}
     >
       <div className="flex h-16 items-stretch justify-around px-1">
         {/* Zakładka 1-2: Home, Oferty */}

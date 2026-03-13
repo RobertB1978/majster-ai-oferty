@@ -21,10 +21,10 @@ export default function PlanyDetail() {
   return (
     <>
       <Helmet>
-        <title>Plan {planName} | Majster.AI</title>
+        <title>{t('seo.planDetail.title', { plan: planName })}</title>
         <meta
           name="description"
-          content={`${t(plan.descriptionKey, plan.description)} Cena: ${plan.pricePLN === 0 ? t('landing.pricing.freeBadge') : `${plan.pricePLN} zł/mies.`}`}
+          content={t('seo.planDetail.description', { description: t(plan.descriptionKey, plan.description), price: plan.pricePLN === 0 ? t('landing.pricing.freeBadge') : t('seo.planDetail.pricePerMonth', { amount: plan.pricePLN }) })}
         />
       </Helmet>
 
@@ -120,15 +120,15 @@ export default function PlanyDetail() {
             )}
           </div>
 
-          {/* FAQ — domain data (plan-specific Q&A), intentionally not translated */}
+          {/* FAQ */}
           <div>
             <h2 className="text-2xl font-bold mb-6">{t('planyDetail.faq')}</h2>
             <div className="space-y-4">
-              {plan.faq.map((item) => (
-                <Card key={item.q}>
+              {plan.faqKeys.map((item) => (
+                <Card key={item.qKey}>
                   <CardContent className="py-4">
-                    <p className="font-semibold mb-1">{item.q}</p>
-                    <p className="text-sm text-muted-foreground">{item.a}</p>
+                    <p className="font-semibold mb-1">{t(item.qKey)}</p>
+                    <p className="text-sm text-muted-foreground">{t(item.aKey)}</p>
                   </CardContent>
                 </Card>
               ))}

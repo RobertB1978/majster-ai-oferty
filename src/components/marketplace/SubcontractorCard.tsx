@@ -90,12 +90,12 @@ export function SubcontractorCard({ subcontractor, onViewDetails, onInvite }: Su
           {onViewDetails && (
             <Button variant="outline" size="sm" className="flex-1" onClick={onViewDetails}>
               <ExternalLink className="h-4 w-4 mr-2" />
-              {t('marketplace.details', 'Szczegóły')}
+              {t('marketplace.details')}
             </Button>
           )}
           {onInvite && (
             <Button size="sm" className="flex-1" onClick={onInvite}>
-              {t('marketplace.invite', 'Zaproś')}
+              {t('marketplace.invite')}
             </Button>
           )}
         </div>

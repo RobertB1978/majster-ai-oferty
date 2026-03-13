@@ -125,7 +125,7 @@ export default function Settings() {
               </TabsTrigger>
               <TabsTrigger value="subscription" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <CreditCard className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
-                <span>{t('settings.subscriptionTab', 'Subskrypcja')}</span>
+                <span>{t('settings.subscriptionTab')}</span>
               </TabsTrigger>
               <TabsTrigger value="privacy" className="flex items-center gap-1.5 whitespace-nowrap text-xs sm:text-sm px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />

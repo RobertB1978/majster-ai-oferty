@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { pl } from 'date-fns/locale';
@@ -44,6 +45,7 @@ const typeColors: Record<string, string> = {
 };
 
 export function NotificationCenter() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const { data: notifications = [], isLoading } = useNotifications();
@@ -158,7 +160,7 @@ export function NotificationCenter() {
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6 text-destructive hover:text-destructive"
-                          aria-label="Usuń powiadomienie"
+                          aria-label={t('notifications.deleteNotification')}
                           onClick={(e) => {
                             e.stopPropagation();
                             deleteNotification.mutate(notification.id);

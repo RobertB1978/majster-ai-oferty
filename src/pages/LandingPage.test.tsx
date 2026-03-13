@@ -34,7 +34,7 @@ describe('Landing', () => {
 
   it('H1 contains expected copy', () => {
     renderLanding();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Zarządzaj firmą');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('landing.hero.title1');
   });
 
   it('features section exists', () => {
@@ -58,7 +58,7 @@ describe('Landing', () => {
 
   it('CTA buttons link to /register', () => {
     renderLanding();
-    const ctaLinks = screen.getAllByRole('link', { name: /Zacznij za darmo/i });
+    const ctaLinks = screen.getAllByRole('link', { name: /cta_start/i });
     expect(ctaLinks.length).toBeGreaterThan(0);
     ctaLinks.forEach((link) => {
       expect(link).toHaveAttribute('href', '/register');

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdminTheme } from '@/hooks/useAdminTheme';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -42,6 +43,7 @@ const fontOptions = [
 ];
 
 export function AdminThemeEditor() {
+  const { t } = useTranslation();
   const { session } = useAuth();
   const organizationId = session?.user?.user_metadata?.organization_id;
   const { theme: dbTheme, loading, error, updateTheme: updateDbTheme, applyTheme: applyDbTheme, resetTheme: resetDbTheme } = useAdminTheme(organizationId);
@@ -93,7 +95,7 @@ export function AdminThemeEditor() {
       <Card>
         <CardContent className="pt-6 flex items-center justify-center">
           <Loader className="h-5 w-5 animate-spin" />
-          <span className="ml-2">Wczytywanie motywu...</span>
+          <span className="ml-2">{t('admin.loadingTheme')}</span>
         </CardContent>
       </Card>
     );
@@ -103,7 +105,7 @@ export function AdminThemeEditor() {
     return (
       <Card>
         <CardContent className="pt-6 text-red-600">
-          Błąd wczytywania motywu: {error?.message || 'Nieznany błąd'}
+          {t('admin.themeLoadError', { message: error?.message || t('admin.unknownError') })}
         </CardContent>
       </Card>
     );
@@ -114,10 +116,10 @@ export function AdminThemeEditor() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Palette className="h-5 w-5" />
-          Edytor motywu
+          {t('admin.themeEditor')}
         </CardTitle>
         <CardDescription>
-          Dostosuj wygląd aplikacji: kolory, czcionki, zaokrąglenia
+          {t('admin.themeCustomization')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -125,19 +127,19 @@ export function AdminThemeEditor() {
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="colors" className="flex items-center gap-1">
               <Palette className="h-4 w-4" />
-              Kolory
+              {t('admin.colors')}
             </TabsTrigger>
             <TabsTrigger value="typography" className="flex items-center gap-1">
               <Type className="h-4 w-4" />
-              Typografia
+              {t('admin.typography')}
             </TabsTrigger>
             <TabsTrigger value="layout" className="flex items-center gap-1">
               <Layout className="h-4 w-4" />
-              Układ
+              {t('admin.layout')}
             </TabsTrigger>
             <TabsTrigger value="effects" className="flex items-center gap-1">
               <Sparkles className="h-4 w-4" />
-              Efekty
+              {t('admin.effects')}
             </TabsTrigger>
           </TabsList>
 
@@ -145,7 +147,7 @@ export function AdminThemeEditor() {
             {/* Primary Color */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-base font-medium">Kolor główny (Primary)</Label>
+                <Label className="text-base font-medium">{t('admin.primaryColor')}</Label>
                 <div
                   className="w-12 h-12 rounded-lg border-2 border-border"
                   style={{
@@ -157,7 +159,7 @@ export function AdminThemeEditor() {
               <div className="space-y-3">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Odcień (Hue)</span>
+                    <span>{t('admin.hue')}</span>
                     <span>{displayTheme.primary_hue}°</span>
                   </div>
                   <Slider
@@ -171,7 +173,7 @@ export function AdminThemeEditor() {
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Nasycenie (Saturation)</span>
+                    <span>{t('admin.saturation')}</span>
                     <span>{displayTheme.primary_saturation}%</span>
                   </div>
                   <Slider
@@ -185,7 +187,7 @@ export function AdminThemeEditor() {
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Jasność (Lightness)</span>
+                    <span>{t('admin.lightness')}</span>
                     <span>{displayTheme.primary_lightness}%</span>
                   </div>
                   <Slider
@@ -202,7 +204,7 @@ export function AdminThemeEditor() {
             {/* Accent Color */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-base font-medium">Kolor akcentu</Label>
+                <Label className="text-base font-medium">{t('admin.accentColor')}</Label>
                 <div
                   className="w-12 h-12 rounded-lg border-2 border-border"
                   style={{
@@ -213,7 +215,7 @@ export function AdminThemeEditor() {
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Odcień akcentu</span>
+                  <span>{t('admin.accentHue')}</span>
                   <span>{displayTheme.accent_hue}°</span>
                 </div>
                 <Slider
@@ -228,7 +230,7 @@ export function AdminThemeEditor() {
 
             {/* Color Presets */}
             <div className="space-y-2">
-              <Label className="text-base font-medium">Gotowe schematy kolorów</Label>
+              <Label className="text-base font-medium">{t('admin.colorPresets')}</Label>
               <div className="grid grid-cols-6 gap-2">
                 {[
                   { name: 'Ocean', hue: 222, sat: 47, light: 11 },
@@ -261,7 +263,7 @@ export function AdminThemeEditor() {
           <TabsContent value="typography" className="space-y-6 mt-4">
             {/* Font Family */}
             <div className="space-y-2">
-              <Label className="text-base font-medium">Czcionka</Label>
+              <Label className="text-base font-medium">{t('admin.font')}</Label>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                 {fontOptions.map((font) => (
                   <button
@@ -283,7 +285,7 @@ export function AdminThemeEditor() {
             {/* Font Size */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-base font-medium">Rozmiar bazowy</Label>
+                <Label className="text-base font-medium">{t('admin.baseFontSize')}</Label>
                 <span className="text-sm text-muted-foreground">{displayTheme.font_size}px</span>
               </div>
               <Slider
@@ -296,10 +298,10 @@ export function AdminThemeEditor() {
               />
               <div className="p-4 rounded-lg bg-muted">
                 <p style={{ fontSize: `${displayTheme.font_size}px`, fontFamily: displayTheme.font_family }}>
-                  Przykładowy tekst - Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  {t('admin.sampleText')}
                 </p>
                 <p className="mt-2" style={{ fontSize: `${displayTheme.font_size * 0.875}px`, fontFamily: displayTheme.font_family }}>
-                  Mniejszy tekst - Ut enim ad minim veniam.
+                  {t('admin.smallerText')}
                 </p>
               </div>
             </div>
@@ -309,7 +311,7 @@ export function AdminThemeEditor() {
             {/* Border Radius */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-base font-medium">Zaokrąglenie rogów</Label>
+                <Label className="text-base font-medium">{t('admin.borderRadius')}</Label>
                 <span className="text-sm text-muted-foreground">{displayTheme.border_radius}px</span>
               </div>
               <Slider
@@ -339,7 +341,7 @@ export function AdminThemeEditor() {
             {/* Spacing */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-base font-medium">Bazowy spacing</Label>
+                <Label className="text-base font-medium">{t('admin.baseSpacing')}</Label>
                 <span className="text-sm text-muted-foreground">{displayTheme.spacing}px</span>
               </div>
               <Slider
@@ -358,7 +360,7 @@ export function AdminThemeEditor() {
               <Card className="border-dashed">
                 <CardContent className="pt-6">
                   <p className="text-center text-muted-foreground">
-                    Efekty wizualne: animacje, cienie, gradienty - wkrótce dostępne
+                    {t('admin.effectsComingSoon')}
                   </p>
                 </CardContent>
               </Card>
@@ -370,19 +372,19 @@ export function AdminThemeEditor() {
         <div className="flex items-center justify-between mt-6 pt-4 border-t">
           <Button variant="outline" onClick={resetTheme}>
             <RotateCcw className="h-4 w-4 mr-2" />
-            Resetuj
+            {t('admin.reset')}
           </Button>
           <div className="flex gap-2">
-            <Button 
-              variant={previewMode ? "secondary" : "outline"} 
+            <Button
+              variant={previewMode ? "secondary" : "outline"}
               onClick={togglePreview}
             >
               <Eye className="h-4 w-4 mr-2" />
-              {previewMode ? 'Wyłącz podgląd' : 'Podgląd'}
+              {previewMode ? t('admin.previewOff') : t('admin.preview')}
             </Button>
             <Button onClick={saveTheme}>
               <Save className="h-4 w-4 mr-2" />
-              Zapisz motyw
+              {t('admin.saveTheme')}
             </Button>
           </div>
         </div>

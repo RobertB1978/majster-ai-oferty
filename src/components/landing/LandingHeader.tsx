@@ -25,10 +25,10 @@ export function LandingHeader() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { i18n, t } = useTranslation();
   const NAV_ITEMS = [
-    { label: t('landing.nav.features', 'Funkcje'),    id: 'features'     },
-    { label: t('landing.nav.howItWorks', 'Jak działa'), id: 'how-it-works' },
-    { label: t('landing.nav.pricing', 'Ceny'),        id: 'pricing'      },
-    { label: t('landing.nav.faq', 'FAQ'),             id: 'faq'          },
+    { label: t('landing.nav.features'),    id: 'features'     },
+    { label: t('landing.nav.howItWorks'), id: 'how-it-works' },
+    { label: t('landing.nav.pricing'),        id: 'pricing'      },
+    { label: t('landing.nav.faq'),             id: 'faq'          },
   ];
   const { isDark, toggleTheme } = useTheme();
 
@@ -140,14 +140,14 @@ export function LandingHeader() {
               to="/login"
               className="hidden sm:inline-flex items-center text-sm font-medium text-gray-600 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white transition-colors duration-200 px-3 py-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black"
             >
-              {t('landing.nav.login', 'Zaloguj się')}
+              {t('landing.nav.login')}
             </Link>
 
             <Link
               to={CTA_ROUTE}
               className="inline-flex items-center bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold px-4 py-2 rounded-xl text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[44px]"
             >
-              {t('landing.nav.getStarted', 'Zacznij za darmo')}
+              {t('landing.nav.getStarted')}
             </Link>
 
             {/* Hamburger */}
@@ -255,14 +255,14 @@ export function LandingHeader() {
             onClick={closeDrawer}
             className="block text-center py-3 px-4 rounded-xl border border-gray-200 dark:border-[#2A2A2A] text-gray-900 dark:text-white font-medium hover:border-amber-500/40 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           >
-            {t('landing.nav.login', 'Zaloguj się')}
+            {t('landing.nav.login')}
           </Link>
           <Link
             to={CTA_ROUTE}
             onClick={closeDrawer}
             className="block text-center py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           >
-            {t('landing.nav.getStarted', 'Zacznij za darmo')}
+            {t('landing.nav.getStarted')}
           </Link>
         </div>
       </div>

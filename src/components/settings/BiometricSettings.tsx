@@ -14,11 +14,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { 
-  Fingerprint, 
-  Plus, 
-  Trash2, 
-  Smartphone, 
+import {
+  Fingerprint,
+  Plus,
+  Trash2,
+  Smartphone,
   Loader2,
   Shield,
   CheckCircle,
@@ -28,10 +28,10 @@ import {
   ScanFace
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { 
-  useBiometricCredentials, 
-  useRegisterBiometric, 
-  useDeleteBiometricCredential 
+import {
+  useBiometricCredentials,
+  useRegisterBiometric,
+  useDeleteBiometricCredential
 } from '@/hooks/useBiometricCredentials';
 import { useDeviceDetection, getBiometricIcon } from '@/hooks/useDeviceDetection';
 import { formatDistanceToNow } from 'date-fns';
@@ -43,7 +43,7 @@ export function BiometricSettings() {
   const registerBiometric = useRegisterBiometric();
   const deleteCredential = useDeleteBiometricCredential();
   const deviceInfo = useDeviceDetection();
-  
+
   const [isRegistering, setIsRegistering] = useState(false);
   const [deviceName, setDeviceName] = useState('');
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -100,9 +100,17 @@ export function BiometricSettings() {
   };
 
   // Get biometric icon component
-  const BiometricTypeIcon = deviceInfo.biometricType === 'face' 
-    ? ScanFace 
+  const BiometricTypeIcon = deviceInfo.biometricType === 'face'
+    ? ScanFace
     : Fingerprint;
+
+  const getDeviceTypeLabel = (type: string) => {
+    switch (type) {
+      case 'mobile': return t('settings.biometricSettings.devicePhone');
+      case 'tablet': return t('settings.biometricSettings.deviceTablet');
+      default: return t('settings.biometricSettings.deviceDesktop');
+    }
+  };
 
   return (
     <Card>
@@ -113,9 +121,9 @@ export function BiometricSettings() {
               <Fingerprint className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle>{t('settings.biometric', 'Logowanie biometryczne')}</CardTitle>
+              <CardTitle>{t('settings.biometric')}</CardTitle>
               <CardDescription>
-                {t('settings.biometricDescription', 'Używaj odcisku palca lub Face ID do logowania')}
+                {t('settings.biometricDescription')}
               </CardDescription>
             </div>
           </div>
@@ -124,12 +132,12 @@ export function BiometricSettings() {
               {isSupported ? (
                 <>
                   <CheckCircle className="h-3 w-3 mr-1" />
-                  Obsługiwane
+                  {t('settings.biometricSettings.supported')}
                 </>
               ) : (
                 <>
                   <XCircle className="h-3 w-3 mr-1" />
-                  Nieobsługiwane
+                  {t('settings.biometricSettings.notSupported')}
                 </>
               )}
             </Badge>
@@ -143,7 +151,7 @@ export function BiometricSettings() {
             {getDeviceIcon(deviceInfo.type)}
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium">Wykryte urządzenie</p>
+            <p className="text-sm font-medium">{t('settings.biometricSettings.detectedDevice')}</p>
             <p className="text-xs text-muted-foreground">
               {deviceInfo.deviceName}
             </p>
@@ -163,10 +171,10 @@ export function BiometricSettings() {
           <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-center">
             <Shield className="h-8 w-8 text-destructive mx-auto mb-2" />
             <p className="text-sm text-destructive font-medium mb-1">
-              Biometria niedostępna
+              {t('settings.biometricSettings.biometricUnavailable')}
             </p>
             <p className="text-xs text-muted-foreground">
-              Twoja przeglądarka ({deviceInfo.browser}) lub urządzenie ({deviceInfo.os}) nie wspiera logowania biometrycznego (WebAuthn).
+              {t('settings.biometricSettings.biometricUnavailableDesc', { browser: deviceInfo.browser, os: deviceInfo.os })}
             </p>
           </div>
         )}
@@ -180,17 +188,17 @@ export function BiometricSettings() {
               </div>
             ) : credentials && credentials.length > 0 ? (
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Zarejestrowane urządzenia ({credentials.length})</Label>
+                <Label className="text-sm font-medium">{t('settings.biometricSettings.registeredDevices', { count: credentials.length })}</Label>
                 <div className="space-y-2">
                   {credentials.map((cred) => {
                     // Detect device type from stored name
                     const isPhone = /iPhone|Android|Phone|Mobile/i.test(cred.device_name || '');
                     const isTabletDevice = /iPad|Tablet/i.test(cred.device_name || '');
                     const credDeviceType = isTabletDevice ? 'tablet' : (isPhone ? 'mobile' : 'desktop');
-                    
+
                     return (
-                      <div 
-                        key={cred.id} 
+                      <div
+                        key={cred.id}
                         className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/50 hover:border-border transition-colors"
                       >
                         <div className="flex items-center gap-3">
@@ -199,17 +207,17 @@ export function BiometricSettings() {
                           </div>
                           <div>
                             <p className="text-sm font-medium">
-                              {cred.device_name || 'Nieznane urządzenie'}
+                              {cred.device_name || t('settings.biometricSettings.unknownDevice')}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              Dodano {formatDistanceToNow(new Date(cred.created_at), { 
-                                addSuffix: true, 
-                                locale: pl 
+                              {t('settings.biometricSettings.added')} {formatDistanceToNow(new Date(cred.created_at), {
+                                addSuffix: true,
+                                locale: pl
                               })}
                               {cred.last_used_at && (
-                                <> • Ostatnio użyto {formatDistanceToNow(new Date(cred.last_used_at), { 
-                                  addSuffix: true, 
-                                  locale: pl 
+                                <> • {t('settings.biometricSettings.lastUsed')} {formatDistanceToNow(new Date(cred.last_used_at), {
+                                  addSuffix: true,
+                                  locale: pl
                                 })}</>
                               )}
                             </p>
@@ -232,10 +240,10 @@ export function BiometricSettings() {
               <div className="text-center py-6 bg-muted/30 rounded-lg border border-dashed border-border">
                 <BiometricTypeIcon className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  Brak zarejestrowanych urządzeń biometrycznych
+                  {t('settings.biometricSettings.noDevices')}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Dodaj swoje urządzenie, aby logować się za pomocą {getBiometricIcon(deviceInfo.biometricType)}
+                  {t('settings.biometricSettings.addDevicePrompt', { icon: getBiometricIcon(deviceInfo.biometricType) })}
                 </p>
               </div>
             )}
@@ -245,11 +253,11 @@ export function BiometricSettings() {
               <div className="space-y-4 p-4 border border-primary/20 rounded-lg bg-primary/5">
                 <div className="flex items-center gap-2 text-sm font-medium text-primary">
                   <BiometricTypeIcon className="h-4 w-4" />
-                  Rejestracja {getBiometricIcon(deviceInfo.biometricType)}
+                  {t('settings.biometricSettings.registration', { icon: getBiometricIcon(deviceInfo.biometricType) })}
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label htmlFor="device-name">Nazwa urządzenia</Label>
+                  <Label htmlFor="device-name">{t('settings.biometricSettings.deviceName')}</Label>
                   <Input
                     id="device-name"
                     value={deviceName}
@@ -258,7 +266,7 @@ export function BiometricSettings() {
                     className="bg-background"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Automatycznie wykryto: {deviceInfo.deviceName}
+                    {t('settings.biometricSettings.autoDetected', { name: deviceInfo.deviceName })}
                   </p>
                 </div>
 
@@ -271,7 +279,7 @@ export function BiometricSettings() {
                     }}
                     className="flex-1"
                   >
-                    Anuluj
+                    {t('settings.biometricSettings.cancel')}
                   </Button>
                   <Button
                     onClick={handleRegister}
@@ -283,7 +291,7 @@ export function BiometricSettings() {
                     ) : (
                       <BiometricTypeIcon className="h-4 w-4 mr-2" />
                     )}
-                    Zarejestruj
+                    {t('settings.biometricSettings.register')}
                   </Button>
                 </div>
               </div>
@@ -294,7 +302,7 @@ export function BiometricSettings() {
                 className="w-full border-dashed"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Dodaj to urządzenie ({deviceInfo.type === 'mobile' ? 'telefon' : deviceInfo.type === 'tablet' ? 'tablet' : 'komputer'})
+                {t('settings.biometricSettings.addDevice', { type: getDeviceTypeLabel(deviceInfo.type) })}
               </Button>
             )}
           </>
@@ -304,14 +312,13 @@ export function BiometricSettings() {
         <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Usuń poświadczenie biometryczne?</AlertDialogTitle>
+              <AlertDialogTitle>{t('settings.biometricSettings.deleteTitle')}</AlertDialogTitle>
               <AlertDialogDescription>
-                Po usunięciu nie będziesz mógł używać tego urządzenia do logowania biometrycznego. 
-                Możesz je ponownie zarejestrować w dowolnym momencie.
+                {t('settings.biometricSettings.deleteDescription')}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Anuluj</AlertDialogCancel>
+              <AlertDialogCancel>{t('settings.biometricSettings.deleteCancel')}</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDelete}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -319,7 +326,7 @@ export function BiometricSettings() {
                 {deleteCredential.isPending && (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 )}
-                Usuń
+                {t('settings.biometricSettings.deleteConfirm')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

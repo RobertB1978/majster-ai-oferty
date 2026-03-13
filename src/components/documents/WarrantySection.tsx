@@ -329,10 +329,10 @@ function WarrantyCard({
         body: {
           to: warranty.client_email,
           subject: `${t('warranty.pdf.title')} — ${projectTitle}`,
-          html: `<p>Dzień dobry ${warranty.client_name ?? ''},</p>
-<p>W załączniku przesyłamy kartę gwarancyjną dla projektu <strong>${projectTitle}</strong>.</p>
-<p>Gwarancja obowiązuje do: <strong>${new Date(warranty.end_date).toLocaleDateString('pl-PL')}</strong>.</p>
-<p>W razie pytań prosimy o kontakt.</p>`,
+          html: `<p>${t('warranty.email.greeting', { name: warranty.client_name ?? '' })}</p>
+<p>${t('warranty.email.body', { project: projectTitle })}</p>
+<p>${t('warranty.email.validUntil', { date: new Date(warranty.end_date).toLocaleDateString('pl-PL') })}</p>
+<p>${t('warranty.email.contact')}</p>`,
           attachments: [
             {
               filename: `karta_gwarancyjna_${projectTitle.replace(/\s+/g, '_').slice(0, 30)}.pdf`,

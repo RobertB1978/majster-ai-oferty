@@ -155,9 +155,9 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
                     </div>
                     <div className="flex-1">
                       <p className={`font-medium ${isCompleted ? 'text-success' : ''}`}>
-                        {step.title}
+                        {t(step.titleKey)}
                       </p>
-                      <p className="text-sm text-muted-foreground">{step.description}</p>
+                      <p className="text-sm text-muted-foreground">{t(step.descriptionKey)}</p>
                     </div>
                     {!isCompleted && (
                       <Button

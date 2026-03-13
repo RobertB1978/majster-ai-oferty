@@ -173,18 +173,18 @@ export default function Login() {
     <MotionConfig reducedMotion="user">
       <>
       <Helmet>
-        <title>Logowanie | Majster.AI</title>
-        <meta name="description" content="Zaloguj się do Majster.AI — platformy dla fachowców. Zarządzaj projektami, twórz wyceny PDF i korzystaj z asystenta AI." />
+        <title>{t('seo.login.title')}</title>
+        <meta name="description" content={t('seo.login.description')} />
         <link rel="canonical" href="https://majsterai.com/login" />
         <meta name="robots" content="index, follow" />
-        <meta property="og:title" content="Logowanie | Majster.AI" />
-        <meta property="og:description" content="Zaloguj się do Majster.AI — platformy dla fachowców budowlanych." />
+        <meta property="og:title" content={t('seo.login.title')} />
+        <meta property="og:description" content={t('seo.login.ogDescription')} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://majsterai.com/login" />
         <meta property="og:image" content="https://majsterai.com/icon-512.png" />
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Logowanie | Majster.AI" />
-        <meta name="twitter:description" content="Zaloguj się do Majster.AI — platformy dla fachowców budowlanych." />
+        <meta name="twitter:title" content={t('seo.login.title')} />
+        <meta name="twitter:description" content={t('seo.login.ogDescription')} />
       </Helmet>
       <div className="min-h-screen flex flex-col lg:flex-row bg-background overflow-x-hidden">
 

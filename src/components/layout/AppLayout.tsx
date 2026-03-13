@@ -35,7 +35,7 @@ export function AppLayout() {
   }, [isLoading, user]);
 
   if (isLoading) {
-    return <LoadingScreen message={t('app.loading', 'Uruchamianie aplikacji')} variant="fullscreen" />;
+    return <LoadingScreen message={t('app.loading')} variant="fullscreen" />;
   }
 
   if (!user) {
@@ -49,7 +49,7 @@ export function AppLayout() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:ring-2 focus:ring-ring focus:ring-offset-2"
       >
-        {t('nav.skipToContent', 'Przejdź do treści głównej')}
+        {t('nav.skipToContent')}
       </a>
       <TopBar />
       <Navigation />

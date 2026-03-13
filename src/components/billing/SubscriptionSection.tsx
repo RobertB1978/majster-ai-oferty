@@ -27,22 +27,22 @@ function StatusBadge({ status }: { status: string }) {
     active: {
       variant: 'default',
       icon: <CheckCircle className="h-3 w-3" />,
-      label: t('billing.subscription.statusActive', 'Aktywny'),
+      label: t('billing.subscription.statusActive'),
     },
     trial: {
       variant: 'secondary',
       icon: <CheckCircle className="h-3 w-3" />,
-      label: t('billing.subscription.statusTrialing', 'Testowy'),
+      label: t('billing.subscription.statusTrialing'),
     },
     cancelled: {
       variant: 'outline',
       icon: <XCircle className="h-3 w-3" />,
-      label: t('billing.subscription.statusCanceled', 'Anulowany'),
+      label: t('billing.subscription.statusCanceled'),
     },
     expired: {
       variant: 'destructive',
       icon: <AlertCircle className="h-3 w-3" />,
-      label: t('billing.subscription.statusExpired', 'Wygasły'),
+      label: t('billing.subscription.statusExpired'),
     },
   };
 
@@ -79,7 +79,7 @@ export function SubscriptionSection() {
   const handleManageBilling = () => {
     openPortal(undefined, {
       onError: () => {
-        toast.error(t('billing.subscription.portalError', 'Nie można otworzyć portalu płatności'));
+        toast.error(t('billing.subscription.portalError'));
       },
     });
   };
@@ -90,7 +90,7 @@ export function SubscriptionSection() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CreditCard className="h-5 w-5" />
-            {t('billing.subscription.title', 'Subskrypcja')}
+            {t('billing.subscription.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -107,10 +107,10 @@ export function SubscriptionSection() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
-          {t('billing.subscription.title', 'Subskrypcja')}
+          {t('billing.subscription.title')}
         </CardTitle>
         <CardDescription>
-          {t('billing.subscription.description', 'Twój aktualny plan i status płatności')}
+          {t('billing.subscription.description')}
         </CardDescription>
       </CardHeader>
 
@@ -119,14 +119,14 @@ export function SubscriptionSection() {
         <div className="flex flex-wrap items-center gap-3">
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-              {t('billing.subscription.plan', 'Plan')}
+              {t('billing.subscription.plan')}
             </p>
             <p className="font-semibold capitalize text-lg">{plan}</p>
           </div>
 
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-              {t('billing.subscription.status', 'Status')}
+              {t('billing.subscription.status')}
             </p>
             <StatusBadge status={status} />
           </div>
@@ -134,7 +134,7 @@ export function SubscriptionSection() {
           {periodEnd && (
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                {t('billing.subscription.periodEnd', 'Ważny do')}
+                {t('billing.subscription.periodEnd')}
               </p>
               <p className="text-sm font-medium">{periodEnd}</p>
             </div>
@@ -152,19 +152,19 @@ export function SubscriptionSection() {
             >
               <ExternalLink className="h-4 w-4 mr-2" />
               {isPortalLoading
-                ? t('common.loading', 'Ładowanie...')
-                : t('billing.subscription.manageBilling', 'Portal płatności')}
+                ? t('common.loading')
+                : t('billing.subscription.manageBilling')}
             </Button>
           ) : isPaid && !hasStripeCustomer ? (
             // Płatny plan bez Stripe (np. manualnie ustawiony przez admina) — brak portalu
             <p className="text-xs text-muted-foreground">
-              {t('billing.subscription.noPortalAdmin', 'Plan przypisany ręcznie — portal płatności niedostępny.')}
+              {t('billing.subscription.noPortalAdmin')}
             </p>
           ) : (
             // Plan darmowy — CTA do upgrade
             <Button onClick={() => navigate('/app/plan')} className="gap-2">
               <ArrowUpRight className="h-4 w-4" />
-              {t('billing.subscription.upgradeCta', 'Ulepsz do Pro')}
+              {t('billing.subscription.upgradeCta')}
             </Button>
           )}
         </div>

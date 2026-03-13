@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger';
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 interface UseVoiceToTextOptions {
@@ -22,12 +23,13 @@ interface UseVoiceToTextReturn {
 }
 
 export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToTextReturn {
-  const { 
-    language = 'pl-PL', 
-    continuous = false, 
+  const { t } = useTranslation();
+  const {
+    language = 'pl-PL',
+    continuous = false,
     interimResults = true,
     onResult,
-    onError 
+    onError
   } = options;
 
   const [transcript, setTranscript] = useState('');
@@ -98,19 +100,19 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
         setIsListening(false);
         isListeningRef.current = false;
 
-        let errorMessage = 'Błąd rozpoznawania mowy';
+        let errorMessage = t('voice.toast.recognitionError');
         switch (event.error) {
           case 'not-allowed':
-            errorMessage = 'Brak dostępu do mikrofonu. Włącz mikrofon w ustawieniach przeglądarki.';
+            errorMessage = t('voice.toast.microphoneAccessDenied');
             break;
           case 'no-speech':
-            errorMessage = 'Nie wykryto mowy. Spróbuj ponownie.';
+            errorMessage = t('voice.toast.noSpeechDetected');
             break;
           case 'network':
-            errorMessage = 'Błąd sieci. Sprawdź połączenie internetowe.';
+            errorMessage = t('voice.toast.networkError');
             break;
           case 'audio-capture':
-            errorMessage = 'Nie można uzyskać dostępu do mikrofonu.';
+            errorMessage = t('voice.toast.audioCaptureError');
             break;
           case 'aborted':
             // User aborted, no error toast
@@ -152,11 +154,11 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
         }
       }
     };
-  }, [language, continuous, interimResults, onResult, onError]);
+  }, [language, continuous, interimResults, onResult, onError, t]);
 
   const startListening = useCallback(() => {
     if (!recognitionRef.current) {
-      const errorMsg = 'Rozpoznawanie mowy nie jest obsługiwane. Użyj Chrome, Edge lub Safari.';
+      const errorMsg = t('voice.toast.notSupported');
       toast.error(errorMsg);
       onError?.(errorMsg);
       return;
@@ -171,8 +173,8 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
       recognitionRef.current.start();
       
       if (browserSupport === 'partial') {
-        toast.info('Nagrywanie (tryb ograniczony)', {
-          description: 'Dla najlepszej jakości użyj Chrome lub Edge.',
+        toast.info(t('voice.toast.limitedMode'), {
+          description: t('voice.toast.limitedModeDescription'),
         });
       }
     } catch (error) {
@@ -180,7 +182,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
       setIsListening(false);
       isListeningRef.current = false;
     }
-  }, [browserSupport, onError]);
+  }, [browserSupport, onError, t]);
 
   const stopListening = useCallback(() => {
     isListeningRef.current = false;

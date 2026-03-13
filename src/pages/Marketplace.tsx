@@ -99,7 +99,7 @@ export default function Marketplace() {
   return (
     <>
       <Helmet>
-        <title>Marketplace | Majster.AI</title>
+        <title>{t('seo.marketplace.title')}</title>
         <meta name="description" content={t('marketplacePage.searchPlaceholder')} />
       </Helmet>
 
@@ -110,7 +110,7 @@ export default function Marketplace() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
                 <Store className="h-5 w-5 text-primary-foreground" />
               </div>
-              Marketplace
+              {t('marketplacePage.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
               {t('marketplacePage.searchPlaceholder')}

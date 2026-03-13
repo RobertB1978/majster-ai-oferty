@@ -35,10 +35,10 @@ export function BiometricLoginButton({ email, onSuccess, onError }: BiometricLog
       if (success) {
         onSuccess();
       } else {
-        onError(t('auth.biometric.error', 'Uwierzytelnianie biometryczne nie powiodło się'));
+        onError(t('auth.biometric.error'));
       }
     } catch {
-      onError(t('auth.biometric.error', 'Uwierzytelnianie biometryczne nie powiodło się'));
+      onError(t('auth.biometric.error'));
     }
   };
 
@@ -53,12 +53,12 @@ export function BiometricLoginButton({ email, onSuccess, onError }: BiometricLog
       {isAuthenticating ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          {t('auth.biometric.verifying', 'Weryfikacja...')}
+          {t('auth.biometric.verifying')}
         </>
       ) : (
         <>
           <Fingerprint className="mr-2 h-4 w-4" />
-          {t('auth.biometric.loginLabel', 'Zaloguj odciskiem palca')}
+          {t('auth.biometric.loginLabel')}
         </>
       )}
     </Button>

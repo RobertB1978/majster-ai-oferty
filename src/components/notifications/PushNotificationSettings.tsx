@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bell, BellOff, Check, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 
 export function PushNotificationSettings() {
+  const { t } = useTranslation();
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +34,7 @@ export function PushNotificationSettings() {
 
   const requestPermission = async () => {
     if (!('Notification' in window)) {
-      toast.error('Twoja przeglądarka nie obsługuje powiadomień push');
+      toast.error(t('pushNotifications.toast.notSupported'));
       return;
     }
 
@@ -46,22 +48,22 @@ export function PushNotificationSettings() {
         // Register service worker and subscribe
         if ('serviceWorker' in navigator) {
           const _registration = await navigator.serviceWorker.ready;
-          
+
           // In production, you would subscribe to push here
           // const subscription = await registration.pushManager.subscribe({
           //   userVisibleOnly: true,
           //   applicationServerKey: VAPID_PUBLIC_KEY
           // });
-          
+
           setIsSubscribed(true);
-          toast.success('Powiadomienia push zostały włączone');
+          toast.success(t('pushNotifications.toast.enabled'));
         }
       } else if (result === 'denied') {
-        toast.error('Powiadomienia zostały zablokowane. Zmień ustawienia przeglądarki.');
+        toast.error(t('pushNotifications.toast.blocked'));
       }
     } catch (error) {
       console.error('Error requesting notification permission:', error);
-      toast.error('Błąd przy włączaniu powiadomień');
+      toast.error(t('pushNotifications.toast.enableError'));
     } finally {
       setIsLoading(false);
     }
@@ -78,9 +80,9 @@ export function PushNotificationSettings() {
         }
       }
       setIsSubscribed(false);
-      toast.success('Powiadomienia push zostały wyłączone');
+      toast.success(t('pushNotifications.toast.disabled'));
     } catch (_error) {
-      toast.error('Błąd przy wyłączaniu powiadomień');
+      toast.error(t('pushNotifications.toast.disableError'));
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +91,7 @@ export function PushNotificationSettings() {
   const testNotification = () => {
     if (permission === 'granted') {
       new Notification('Majster.AI - Test', {
-        body: 'Powiadomienia działają poprawnie!',
+        body: t('pushNotifications.testBody'),
         icon: '/icon-192.png',
         badge: '/icon-192.png',
       });
@@ -101,10 +103,10 @@ export function PushNotificationSettings() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5" />
-          Powiadomienia Push
+          {t('pushNotifications.title')}
         </CardTitle>
         <CardDescription>
-          Otrzymuj powiadomienia w przeglądarce i na telefonie
+          {t('pushNotifications.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -122,14 +124,14 @@ export function PushNotificationSettings() {
             )}
             <div>
               <p className="font-medium">
-                {isSubscribed ? 'Powiadomienia włączone' : 'Powiadomienia wyłączone'}
+                {isSubscribed ? t('pushNotifications.enabled') : t('pushNotifications.disabled')}
               </p>
               <p className="text-sm text-muted-foreground">
-                {permission === 'denied' 
-                  ? 'Zablokowane w ustawieniach przeglądarki' 
-                  : isSubscribed 
-                    ? 'Otrzymujesz powiadomienia push' 
-                    : 'Włącz, aby otrzymywać powiadomienia'}
+                {permission === 'denied'
+                  ? t('pushNotifications.blockedInBrowser')
+                  : isSubscribed
+                    ? t('pushNotifications.receiving')
+                    : t('pushNotifications.enablePrompt')}
               </p>
             </div>
           </div>
@@ -142,9 +144,9 @@ export function PushNotificationSettings() {
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : isSubscribed ? (
-                'Wyłącz'
+                t('pushNotifications.disable')
               ) : (
-                'Włącz'
+                t('pushNotifications.enable')
               )}
             </Button>
           )}
@@ -153,13 +155,13 @@ export function PushNotificationSettings() {
         {/* Settings */}
         {isSubscribed && (
           <div className="space-y-4">
-            <h4 className="font-medium">Rodzaje powiadomień</h4>
-            
+            <h4 className="font-medium">{t('pushNotifications.notificationTypes')}</h4>
+
             <div className="flex items-center justify-between">
               <div>
-                <Label>Nowe oferty</Label>
+                <Label>{t('pushNotifications.newOffers')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Powiadomienia o nowych zapytaniach ofertowych
+                  {t('pushNotifications.newOffersDesc')}
                 </p>
               </div>
               <Switch
@@ -170,9 +172,9 @@ export function PushNotificationSettings() {
 
             <div className="flex items-center justify-between">
               <div>
-                <Label>Terminy projektów</Label>
+                <Label>{t('pushNotifications.projectDeadlines')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Przypomnienia o zbliżających się terminach
+                  {t('pushNotifications.projectDeadlinesDesc')}
                 </p>
               </div>
               <Switch
@@ -183,9 +185,9 @@ export function PushNotificationSettings() {
 
             <div className="flex items-center justify-between">
               <div>
-                <Label>Akceptacje ofert</Label>
+                <Label>{t('pushNotifications.offerApprovals')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Gdy klient zaakceptuje lub odrzuci ofertę
+                  {t('pushNotifications.offerApprovalsDesc')}
                 </p>
               </div>
               <Switch
@@ -196,9 +198,9 @@ export function PushNotificationSettings() {
 
             <div className="flex items-center justify-between">
               <div>
-                <Label>Marketing i nowości</Label>
+                <Label>{t('pushNotifications.marketing')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Informacje o nowych funkcjach i promocjach
+                  {t('pushNotifications.marketingDesc')}
                 </p>
               </div>
               <Switch
@@ -208,7 +210,7 @@ export function PushNotificationSettings() {
             </div>
 
             <Button variant="outline" size="sm" onClick={testNotification}>
-              Wyślij testowe powiadomienie
+              {t('pushNotifications.sendTest')}
             </Button>
           </div>
         )}

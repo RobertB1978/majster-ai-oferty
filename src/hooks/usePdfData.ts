@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -38,6 +39,7 @@ export function usePdfData(projectId: string) {
 }
 
 export function useSavePdfData() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -93,8 +95,8 @@ export function useSavePdfData() {
     },
     onError: (error) => {
       const message =
-        error instanceof Error ? error.message : 'Nieznany błąd';
-      toast.error(`Błąd przy zapisywaniu danych PDF: ${message}`);
+        error instanceof Error ? error.message : 'Unknown error';
+      toast.error(t('pdf.toast.saveError', { message }));
       logger.error(error);
     },
   });

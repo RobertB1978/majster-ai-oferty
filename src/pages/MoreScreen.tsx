@@ -73,7 +73,7 @@ export default function MoreScreen() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-card border-b border-border px-4 pt-4 pb-3 sticky top-12 z-40">
-        <h1 className="text-xl font-bold text-foreground">{t('newShell.more.title', 'Więcej')}</h1>
+        <h1 className="text-xl font-bold text-foreground">{t('newShell.more.title')}</h1>
       </div>
 
       <div className="px-4 py-4 space-y-6">
@@ -137,7 +137,7 @@ function MoreItemRow({
       <span className="flex-1 text-sm font-medium">{t(item.labelKey)}</span>
       {item.placeholder ? (
         <span className="text-[11px] font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
-          {t('nav.comingSoon', 'Wkrótce')}
+          {t('nav.comingSoon')}
         </span>
       ) : (
         <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />

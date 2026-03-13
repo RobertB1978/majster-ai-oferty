@@ -19,7 +19,7 @@ const NotFound = () => {
   return (
     <>
       <Helmet>
-        <title>404 — Strona nie znaleziona | Majster.AI</title>
+        <title>{t('seo.notFound.title')}</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
@@ -37,13 +37,10 @@ const NotFound = () => {
           </div>
 
           <h1 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
-            {t('errors.pageNotFound', 'Strona nie znaleziona')}
+            {t('errors.pageNotFound')}
           </h1>
           <p className="mb-8 text-base text-muted-foreground leading-relaxed">
-            {t(
-              'errors.pageNotFoundDesc',
-              'Strona, której szukasz, nie istnieje lub została przeniesiona. Sprawdź adres URL lub wróć do strony głównej.'
-            )}
+            {t('errors.pageNotFoundDesc')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -52,14 +49,14 @@ const NotFound = () => {
               className="inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold px-6 py-3 rounded-xl text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 min-h-[44px]"
             >
               <Home className="h-4 w-4" aria-hidden="true" />
-              {t('errors.returnHome', 'Strona główna')}
+              {t('errors.returnHome')}
             </Link>
             <button
               onClick={() => window.history.back()}
               className="inline-flex items-center justify-center gap-2 border border-border hover:border-amber-500/60 text-foreground font-medium px-6 py-3 rounded-xl text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 min-h-[44px]"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              {t('errors.goBack', 'Wróć')}
+              {t('errors.goBack')}
             </button>
           </div>
         </div>

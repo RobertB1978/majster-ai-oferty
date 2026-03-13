@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -73,6 +74,7 @@ export function useProjectPhotos(_projectId: string) {
 }
 
 export function useUploadProjectPhoto() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -120,7 +122,7 @@ export function useUploadProjectPhoto() {
     },
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: ['project_photos', projectId] });
-      toast.success('Zdjęcie przesłane (metadane EXIF usunięte)');
+      toast.success(t('projectPhotos.toast.uploaded'));
     },
     onError: (error) => {
       const message = error instanceof Error ? error.message : 'Błąd podczas przesyłania zdjęcia';
@@ -130,6 +132,7 @@ export function useUploadProjectPhoto() {
 }
 
 export function useAnalyzePhoto() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -164,19 +167,20 @@ export function useAnalyzePhoto() {
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['project_photos', result.projectId] });
-      toast.success('Analiza zakończona');
+      toast.success(t('projectPhotos.toast.analysisComplete'));
     },
     onError: async (_, { photoId, projectId: _projectId }) => {
       await supabase
         .from('project_photos')
         .update({ analysis_status: 'failed' })
         .eq('id', photoId);
-      toast.error('Błąd podczas analizy zdjęcia');
+      toast.error(t('projectPhotos.toast.analysisError'));
     },
   });
 }
 
 export function useDeleteProjectPhoto() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -191,7 +195,7 @@ export function useDeleteProjectPhoto() {
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['project_photos', result.projectId] });
-      toast.success('Zdjęcie usunięte');
+      toast.success(t('projectPhotos.toast.deleted'));
     },
   });
 }

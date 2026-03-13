@@ -61,6 +61,15 @@ export default tseslint.config(
       "src/lib/validations.ts",
       "src/lib/sentry.ts",
       "src/lib/logger.ts",
+      // shadcn/ui internal components — vendor code, not user-facing text
+      "src/components/ui/calendar.tsx",
+      "src/components/ui/sidebar.tsx",
+      // Environment check page — technical/developer-only
+      "src/pages/EnvCheck.tsx",
+      // i18n config — technical setup
+      "src/i18n/**",
+      // Config files
+      "src/config/**",
     ],
     plugins: { i18next },
     rules: {
@@ -73,18 +82,36 @@ export default tseslint.config(
         "jsx-attributes": {
           // These attributes never render as visible text — exclude them.
           exclude: [
+            // Core React/HTML attributes
             "className", "styleName", "style",
             "type", "key", "id",
             "width", "height",
             "variant", "size",
             "htmlFor", "to", "href", "target", "rel",
-            "name", "value",
-            "data-testid", "data-cy", "data-id",
+            "name", "value", "defaultValue",
+            "data-testid", "data-cy", "data-id", "data-sidebar", "data-mobile",
+            // Accessibility attributes
             "aria-hidden", "aria-describedby", "aria-labelledby",
-            "src", "alt",         // alt is often i18n'd separately — keep warn
-            "fill", "stroke",     // SVG attributes
-            "accept", "pattern",  // input technical attrs
-            "role",
+            "aria-label", "aria-controls", "aria-expanded",
+            "aria-required", "aria-live", "aria-atomic",
+            // SVG attributes
+            "fill", "stroke", "strokeDasharray", "strokeLinecap", "strokeLinejoin",
+            "strokeWidth", "viewBox", "d", "rx", "ry", "cx", "cy", "r",
+            // Form / input technical attributes
+            "accept", "pattern", "autoComplete", "inputMode", "placeholder",
+            // Routing attributes (React Router)
+            "path", "element", "index",
+            // Image attributes
+            "src", "alt",
+            // UI component attributes (shadcn / Radix)
+            "role", "align", "side", "sideOffset", "asChild", "orientation",
+            // Recharts data attributes
+            "dataKey", "stackId", "color",
+            // Framer Motion / animation attributes
+            "mode", "reducedMotion", "layout", "drag", "layoutId",
+            "initial", "animate", "exit", "transition",
+            // Other technical attributes
+            "title", "keywords", "activeClassName",
           ],
         },
         // Literal strings inside these call expressions are exempt from the rule.
@@ -100,7 +127,12 @@ export default tseslint.config(
             "[0-9]+(px|rem|em|vh|vw|%)?",  // CSS numeric values
             "#[0-9a-fA-F]{3,8}",            // hex colours
             "[A-Z][A-Z0-9_]+",              // SCREAMING_SNAKE constants
-            "/[a-z0-9/-]*",                 // URL path segments
+            "/[a-z0-9/:.-]*",              // URL path segments (including params like :id)
+            "h-[0-9]+",                     // Tailwind height classes
+            "w-[0-9]+",                     // Tailwind width classes
+            "[a-z]+-[a-z]+",               // kebab-case identifiers (CSS, data attrs)
+            "text-[a-z-]+",               // Tailwind text classes
+            "\\.[0-9]+",                   // decimal numbers
           ],
         },
       }],

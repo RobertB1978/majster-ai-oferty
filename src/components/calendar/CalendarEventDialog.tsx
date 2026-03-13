@@ -110,7 +110,7 @@ export function CalendarEventDialog({
             />
           </div>
           <p className="text-xs text-muted-foreground">
-            {t('calendar.selectedDate', 'Selected date')}: {format(selectedDate, 'dd.MM.yyyy')}
+            {t('calendar.selectedDate')}: {format(selectedDate, 'dd.MM.yyyy')}
           </p>
         </div>
         <DialogFooter className="flex gap-2">

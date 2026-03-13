@@ -1,13 +1,14 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { 
-  Plug, 
-  Calculator, 
-  Building2, 
-  MessageSquare, 
+import {
+  Plug,
+  Calculator,
+  Building2,
+  MessageSquare,
   FileText,
   CreditCard,
   Package,
@@ -20,8 +21,8 @@ import { toast } from 'sonner';
 
 interface Plugin {
   id: string;
-  name: string;
-  description: string;
+  nameKey: string;
+  descriptionKey: string;
   category: 'accounting' | 'warehouse' | 'crm' | 'sms' | 'payments' | 'logistics';
   icon: React.ReactNode;
   enabled: boolean;
@@ -32,8 +33,8 @@ interface Plugin {
 const availablePlugins: Plugin[] = [
   {
     id: 'infakt',
-    name: 'Infakt',
-    description: 'Integracja z systemem księgowym Infakt - automatyczne faktury',
+    nameKey: 'plugins.infakt.name',
+    descriptionKey: 'plugins.infakt.description',
     category: 'accounting',
     icon: <Calculator className="h-6 w-6" />,
     enabled: false,
@@ -42,8 +43,8 @@ const availablePlugins: Plugin[] = [
   },
   {
     id: 'ifirma',
-    name: 'iFirma',
-    description: 'Eksport danych do księgowości iFirma',
+    nameKey: 'plugins.ifirma.name',
+    descriptionKey: 'plugins.ifirma.description',
     category: 'accounting',
     icon: <FileText className="h-6 w-6" />,
     enabled: false,
@@ -51,8 +52,8 @@ const availablePlugins: Plugin[] = [
   },
   {
     id: 'castorama',
-    name: 'Castorama B2B',
-    description: 'Integracja z hurtownią Castorama - ceny i dostępność',
+    nameKey: 'plugins.castorama.name',
+    descriptionKey: 'plugins.castorama.description',
     category: 'warehouse',
     icon: <Building2 className="h-6 w-6" />,
     enabled: false,
@@ -60,8 +61,8 @@ const availablePlugins: Plugin[] = [
   },
   {
     id: 'leroy',
-    name: 'Leroy Merlin',
-    description: 'Pobieraj ceny materiałów z Leroy Merlin',
+    nameKey: 'plugins.leroy.name',
+    descriptionKey: 'plugins.leroy.description',
     category: 'warehouse',
     icon: <Package className="h-6 w-6" />,
     enabled: false,
@@ -69,8 +70,8 @@ const availablePlugins: Plugin[] = [
   },
   {
     id: 'smsapi',
-    name: 'SMSAPI',
-    description: 'Wysyłaj SMS-y do klientów - przypomnienia i powiadomienia',
+    nameKey: 'plugins.smsapi.name',
+    descriptionKey: 'plugins.smsapi.description',
     category: 'sms',
     icon: <MessageSquare className="h-6 w-6" />,
     enabled: false,
@@ -78,8 +79,8 @@ const availablePlugins: Plugin[] = [
   },
   {
     id: 'przelewy24',
-    name: 'Przelewy24',
-    description: 'Płatności online dla klientów',
+    nameKey: 'plugins.przelewy24.name',
+    descriptionKey: 'plugins.przelewy24.description',
     category: 'payments',
     icon: <CreditCard className="h-6 w-6" />,
     enabled: false,
@@ -87,8 +88,8 @@ const availablePlugins: Plugin[] = [
   },
   {
     id: 'dpd',
-    name: 'DPD',
-    description: 'Śledzenie przesyłek i dostaw materiałów',
+    nameKey: 'plugins.dpd.name',
+    descriptionKey: 'plugins.dpd.description',
     category: 'logistics',
     icon: <Truck className="h-6 w-6" />,
     enabled: false,
@@ -96,34 +97,29 @@ const availablePlugins: Plugin[] = [
   },
 ];
 
-const categoryLabels: Record<string, string> = {
-  accounting: 'Księgowość',
-  warehouse: 'Hurtownie',
-  crm: 'CRM',
-  sms: 'SMS',
-  payments: 'Płatności',
-  logistics: 'Logistyka',
-};
-
 export function PluginsPanel() {
+  const { t } = useTranslation();
   const [plugins, setPlugins] = useState(availablePlugins);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handleToggle = async (pluginId: string) => {
     setLoadingId(pluginId);
-    
+
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setPlugins(plugins.map(p => 
+
+    setPlugins(plugins.map(p =>
       p.id === pluginId ? { ...p, enabled: !p.enabled } : p
     ));
-    
+
     const plugin = plugins.find(p => p.id === pluginId);
     if (plugin) {
-      toast.success(plugin.enabled ? `${plugin.name} wyłączony` : `${plugin.name} włączony`);
+      toast.success(plugin.enabled
+        ? t('plugins.toast.disabled', { name: t(plugin.nameKey) })
+        : t('plugins.toast.enabled', { name: t(plugin.nameKey) })
+      );
     }
-    
+
     setLoadingId(null);
   };
 
@@ -134,9 +130,9 @@ export function PluginsPanel() {
       <div>
         <h2 className="text-2xl font-bold flex items-center gap-2">
           <Plug className="h-6 w-6 text-primary" />
-          Integracje i pluginy
+          {t('plugins.title')}
         </h2>
-        <p className="text-muted-foreground">Rozszerz możliwości Majster.AI o zewnętrzne usługi</p>
+        <p className="text-muted-foreground">{t('plugins.subtitle')}</p>
       </div>
 
       {/* Stats */}
@@ -147,7 +143,7 @@ export function PluginsPanel() {
               <p className="text-3xl font-bold text-primary">
                 {plugins.filter(p => p.enabled).length}
               </p>
-              <p className="text-sm text-muted-foreground">Aktywnych integracji</p>
+              <p className="text-sm text-muted-foreground">{t('plugins.activeCount')}</p>
             </div>
           </CardContent>
         </Card>
@@ -155,7 +151,7 @@ export function PluginsPanel() {
           <CardContent className="p-6">
             <div className="text-center">
               <p className="text-3xl font-bold">{plugins.length}</p>
-              <p className="text-sm text-muted-foreground">Dostępnych pluginów</p>
+              <p className="text-sm text-muted-foreground">{t('plugins.availableCount')}</p>
             </div>
           </CardContent>
         </Card>
@@ -165,7 +161,7 @@ export function PluginsPanel() {
               <p className="text-3xl font-bold text-amber-500">
                 {plugins.filter(p => p.premium).length}
               </p>
-              <p className="text-sm text-muted-foreground">Wymagających Premium</p>
+              <p className="text-sm text-muted-foreground">{t('plugins.premiumCount')}</p>
             </div>
           </CardContent>
         </Card>
@@ -174,7 +170,7 @@ export function PluginsPanel() {
       {/* Plugins by category */}
       {categories.map((category) => (
         <div key={category}>
-          <h3 className="text-lg font-semibold mb-4">{categoryLabels[category]}</h3>
+          <h3 className="text-lg font-semibold mb-4">{t(`plugins.categories.${category}`)}</h3>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {plugins
               .filter(p => p.category === category)
@@ -187,7 +183,7 @@ export function PluginsPanel() {
                       </div>
                       <div>
                         <CardTitle className="text-base flex items-center gap-2">
-                          {plugin.name}
+                          {t(plugin.nameKey)}
                           {plugin.premium && (
                             <Badge variant="secondary" className="text-xs">Premium</Badge>
                           )}
@@ -206,24 +202,24 @@ export function PluginsPanel() {
                   </CardHeader>
                   <CardContent>
                     <CardDescription className="mb-4">
-                      {plugin.description}
+                      {t(plugin.descriptionKey)}
                     </CardDescription>
                     <div className="flex items-center gap-2">
                       {plugin.enabled && (
                         <Badge variant="default" className="text-xs">
                           <Check className="h-3 w-3 mr-1" />
-                          Aktywny
+                          {t('plugins.active')}
                         </Badge>
                       )}
                       {plugin.configUrl && plugin.enabled && (
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="h-7"
                           onClick={() => window.open(plugin.configUrl, '_blank')}
                         >
                           <ExternalLink className="h-3 w-3 mr-1" />
-                          Konfiguruj
+                          {t('plugins.configure')}
                         </Button>
                       )}
                     </div>
@@ -238,13 +234,12 @@ export function PluginsPanel() {
       <Card className="border-dashed">
         <CardContent className="py-12 text-center">
           <Plug className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="font-semibold mb-2">Marketplace integracji</h3>
+          <h3 className="font-semibold mb-2">{t('plugins.marketplace.title')}</h3>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Wkrótce udostępnimy marketplace z dodatkowymi integracjami tworzonymi przez społeczność.
-            Zostań partnerem i stwórz własną integrację!
+            {t('plugins.marketplace.description')}
           </p>
           <Button variant="outline" className="mt-4">
-            Zostań partnerem
+            {t('plugins.marketplace.cta')}
           </Button>
         </CardContent>
       </Card>

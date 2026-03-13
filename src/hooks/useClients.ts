@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -127,6 +128,7 @@ export function useClient(id: string) {
 }
 
 export function useAddClient() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -146,11 +148,11 @@ export function useAddClient() {
       await queryClient.cancelQueries({ queryKey: clientsKeys.all });
     },
     onError: (err) => {
-      toast.error('Błąd przy dodawaniu klienta');
+      toast.error(t('clients.toast.addError'));
       logger.error(err);
     },
     onSuccess: () => {
-      toast.success('Klient dodany');
+      toast.success(t('clients.toast.added'));
     },
     onSettled: () => {
       // Always refetch after error or success to ensure sync with server
@@ -160,6 +162,7 @@ export function useAddClient() {
 }
 
 export function useUpdateClient() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -177,16 +180,17 @@ export function useUpdateClient() {
     onSuccess: () => {
       // Invalidate all clients queries (both paginated and non-paginated)
       queryClient.invalidateQueries({ queryKey: clientsKeys.all });
-      toast.success('Klient zaktualizowany');
+      toast.success(t('clients.toast.updated'));
     },
     onError: (error) => {
-      toast.error('Błąd przy aktualizacji klienta');
+      toast.error(t('clients.toast.updateError'));
       logger.error(error);
     },
   });
 }
 
 export function useDeleteClient() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -203,11 +207,11 @@ export function useDeleteClient() {
       await queryClient.cancelQueries({ queryKey: clientsKeys.all });
     },
     onError: (err) => {
-      toast.error('Błąd przy usuwaniu klienta');
+      toast.error(t('clients.toast.deleteError'));
       logger.error(err);
     },
     onSuccess: () => {
-      toast.success('Klient usunięty');
+      toast.success(t('clients.toast.deleted'));
     },
     onSettled: () => {
       // Always refetch to ensure sync with server

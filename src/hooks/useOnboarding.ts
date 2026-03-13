@@ -15,11 +15,11 @@ export interface OnboardingProgress {
 }
 
 export const ONBOARDING_STEPS = [
-  { id: 1, title: 'Profil firmy', description: 'Dodaj logo i dane kontaktowe firmy' },
-  { id: 2, title: 'Pierwszy klient', description: 'Dodaj swojego pierwszego klienta' },
-  { id: 3, title: 'Pierwsza oferta', description: 'Utwórz pierwszą ofertę dla klienta' },
-  { id: 4, title: 'Wyślij ofertę', description: 'Prześlij ofertę klientowi do akceptacji' },
-  { id: 5, title: 'Eksport PDF', description: 'Wygeneruj profesjonalne PDF oferty' },
+  { id: 1, titleKey: 'onboarding.steps.companyProfile.title', descriptionKey: 'onboarding.steps.companyProfile.description' },
+  { id: 2, titleKey: 'onboarding.steps.firstClient.title', descriptionKey: 'onboarding.steps.firstClient.description' },
+  { id: 3, titleKey: 'onboarding.steps.firstOffer.title', descriptionKey: 'onboarding.steps.firstOffer.description' },
+  { id: 4, titleKey: 'onboarding.steps.sendOffer.title', descriptionKey: 'onboarding.steps.sendOffer.description' },
+  { id: 5, titleKey: 'onboarding.steps.exportPdf.title', descriptionKey: 'onboarding.steps.exportPdf.description' },
 ];
 
 export function useOnboardingProgress() {

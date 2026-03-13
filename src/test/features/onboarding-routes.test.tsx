@@ -80,17 +80,17 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('ONBOARDING_STEPS — definicje kroków', () => {
   it('krok 1 to Profil firmy', () => {
     expect(ONBOARDING_STEPS[0].id).toBe(1);
-    expect(ONBOARDING_STEPS[0].title).toBe('Profil firmy');
+    expect(ONBOARDING_STEPS[0].titleKey).toBe('onboarding.steps.companyProfile.title');
   });
 
   it('krok 3 to Pierwsza oferta (architektura offer-first)', () => {
     expect(ONBOARDING_STEPS[2].id).toBe(3);
-    expect(ONBOARDING_STEPS[2].title).toBe('Pierwsza oferta');
+    expect(ONBOARDING_STEPS[2].titleKey).toBe('onboarding.steps.firstOffer.title');
   });
 
   it('krok 4 to Wyślij ofertę', () => {
     expect(ONBOARDING_STEPS[3].id).toBe(4);
-    expect(ONBOARDING_STEPS[3].title).toBe('Wyślij ofertę');
+    expect(ONBOARDING_STEPS[3].titleKey).toBe('onboarding.steps.sendOffer.title');
   });
 
   it('wszystkie 5 kroków jest zdefiniowanych', () => {

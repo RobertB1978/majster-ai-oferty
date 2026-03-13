@@ -68,14 +68,14 @@ describe('HomeLobby — Lobby Honesty', () => {
 
   it('sekcja "Szybki start" jest wyświetlana', () => {
     render(<HomeLobby />, { wrapper: Wrapper });
-    expect(screen.getByText('Szybki start')).toBeDefined();
+    expect(screen.getByText('newShell.home.quickStartTitle')).toBeDefined();
   });
 
   it('przycisk "Szybka wycena" prowadzi do /app/szybka-wycena', async () => {
     const user = userEvent.setup();
     render(<HomeLobby />, { wrapper: Wrapper });
 
-    const quickEstBtn = screen.getByText('Szybka wycena');
+    const quickEstBtn = screen.getByText('newShell.home.qs.quickEst');
     expect(quickEstBtn).toBeDefined();
     await user.click(quickEstBtn.closest('button')!);
     expect(mockNavigate).toHaveBeenCalledWith('/app/szybka-wycena');
@@ -84,14 +84,14 @@ describe('HomeLobby — Lobby Honesty', () => {
 
   it('sekcja "Kontynuuj" wyświetla uczciwy komunikat o braku elementów', () => {
     render(<HomeLobby />, { wrapper: Wrapper });
-    expect(screen.getByText('Brak ostatnio otwartych elementów')).toBeDefined();
+    expect(screen.getByText('newShell.home.continueEmpty')).toBeDefined();
   });
 
   it('"Nowa wycena" prowadzi do /app/offers/new', async () => {
     const user = userEvent.setup();
     render(<HomeLobby />, { wrapper: Wrapper });
 
-    const newOfferBtn = screen.getByText('Nowa wycena');
+    const newOfferBtn = screen.getByText('newShell.home.qs.newOffer');
     await user.click(newOfferBtn.closest('button')!);
     expect(mockNavigate).toHaveBeenCalledWith('/app/offers/new');
   });

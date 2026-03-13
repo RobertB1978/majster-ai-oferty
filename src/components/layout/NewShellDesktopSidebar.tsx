@@ -103,7 +103,7 @@ export function NewShellDesktopSidebar() {
   return (
     <aside
       className="hidden lg:flex flex-col w-56 shrink-0 border-r border-border bg-card sticky top-12 h-[calc(100vh-3rem)] overflow-y-auto"
-      aria-label={t('newShell.nav.ariaLabel', 'Nawigacja')}
+      aria-label={t('newShell.nav.ariaLabel')}
     >
       <nav className="flex flex-col flex-1 py-4 px-3">
         {/* Sekcje główne */}

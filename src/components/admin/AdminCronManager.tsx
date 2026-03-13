@@ -36,17 +36,17 @@ interface CronJob {
 }
 
 export function AdminCronManager() {
-  const { t: _t } = useTranslation();
+  const { t } = useTranslation();
   const [isRunning, setIsRunning] = useState<string | null>(null);
   const [jobResults, setJobResults] = useState<Record<string, { success: boolean; message: string }>>({});
 
   const cronJobs: CronJob[] = [
     {
       id: 'expiring-offers',
-      name: 'Przypomnienia o wygasających ofertach',
-      description: 'Wysyła email do klientów z ofertami wygasającymi za 3 dni',
+      name: t('admin.cron.expiringOffers.name'),
+      description: t('admin.cron.expiringOffers.description'),
       schedule: '0 9 * * *',
-      scheduleText: 'Codziennie o 9:00',
+      scheduleText: t('admin.cron.expiringOffers.scheduleText'),
       icon: <Mail className="h-5 w-5" />,
       enabled: true,
       functionName: 'send-expiring-offer-reminders',
@@ -54,20 +54,20 @@ export function AdminCronManager() {
     },
     {
       id: 'subscription-check',
-      name: 'Kontrola subskrypcji',
-      description: 'Sprawdza wygasające subskrypcje i wysyła powiadomienia',
+      name: t('admin.cron.subscriptionCheck.name'),
+      description: t('admin.cron.subscriptionCheck.description'),
       schedule: '0 8 * * *',
-      scheduleText: 'Codziennie o 8:00',
+      scheduleText: t('admin.cron.subscriptionCheck.scheduleText'),
       icon: <Calendar className="h-5 w-5" />,
       enabled: true,
       functionName: 'check-subscriptions',
     },
     {
       id: 'database-cleanup',
-      name: 'Czyszczenie bazy danych',
-      description: 'Usuwa wygasłe tokeny i stare logi (30+ dni)',
+      name: t('admin.cron.databaseCleanup.name'),
+      description: t('admin.cron.databaseCleanup.description'),
       schedule: '0 3 * * 0',
-      scheduleText: 'Co niedzielę o 3:00',
+      scheduleText: t('admin.cron.databaseCleanup.scheduleText'),
       icon: <Database className="h-5 w-5" />,
       enabled: false,
       functionName: 'database-cleanup',
@@ -94,24 +94,24 @@ export function AdminCronManager() {
           ...prev,
           [job.id]: {
             success: false,
-            message: `Wymagany klucz: ${job.requiresSecret}`,
+            message: t('admin.cron.requiredKey', { key: job.requiresSecret }),
           },
         }));
-        toast.warning(`Zadanie pominięte - brak klucza ${job.requiresSecret}`);
+        toast.warning(t('admin.toast.cronSkipped', { key: job.requiresSecret }));
       } else if (result.success) {
         setJobResults(prev => ({
           ...prev,
           [job.id]: {
             success: true,
-            message: result.message || `Wysłano ${result.sent || 0} wiadomości`,
+            message: result.message || t('admin.cron.sentMessages', { count: result.sent || 0 }),
           },
         }));
-        toast.success(result.message || 'Zadanie wykonane pomyślnie');
+        toast.success(result.message || t('admin.toast.cronSuccess'));
       } else {
-        throw new Error(result.message || 'Nieznany błąd');
+        throw new Error(result.message || t('common.unknownError'));
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Nieznany błąd';
+      const errorMessage = error instanceof Error ? error.message : t('common.unknownError');
       setJobResults(prev => ({
         ...prev,
         [job.id]: {
@@ -119,7 +119,7 @@ export function AdminCronManager() {
           message: errorMessage,
         },
       }));
-      toast.error(`Błąd: ${errorMessage}`);
+      toast.error(t('admin.toast.cronError', { message: errorMessage }));
     } finally {
       setIsRunning(null);
     }
@@ -130,19 +130,18 @@ export function AdminCronManager() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
-          Zadania CRON
+          {t('admin.cron.title')}
         </CardTitle>
         <CardDescription>
-          Automatyczne zadania uruchamiane według harmonogramu
+          {t('admin.cron.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <Alert>
           <Info className="h-4 w-4" />
-          <AlertTitle>Konfiguracja CRON</AlertTitle>
+          <AlertTitle>{t('admin.cron.configTitle')}</AlertTitle>
           <AlertDescription>
-            Aby włączyć automatyczne zadania CRON, skonfiguruj je w ustawieniach bazy danych używając <code className="bg-muted px-1 rounded">pg_cron</code> i <code className="bg-muted px-1 rounded">pg_net</code>.
-            Możesz też uruchomić zadania ręcznie poniżej.
+            {t('admin.cron.configDescription')}
           </AlertDescription>
         </Alert>
 
@@ -164,11 +163,11 @@ export function AdminCronManager() {
                         <Tooltip>
                           <TooltipTrigger>
                             <Badge variant="outline" className="text-xs">
-                              Wymaga klucza
+                              {t('admin.cron.requiresKey')}
                             </Badge>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Wymaga: {job.requiresSecret}</p>
+                            <p>{t('admin.cron.requires', { key: job.requiresSecret })}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -201,7 +200,7 @@ export function AdminCronManager() {
                     disabled
                   />
                   <Label htmlFor={`cron-${job.id}`} className="text-xs text-muted-foreground">
-                    {job.enabled ? 'Aktywne' : 'Wyłączone'}
+                    {job.enabled ? t('admin.cron.active') : t('admin.cron.disabled')}
                   </Label>
                 </div>
                 <Button
@@ -213,12 +212,12 @@ export function AdminCronManager() {
                   {isRunning === job.id ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                      Uruchamianie...
+                      {t('admin.cron.running')}
                     </>
                   ) : (
                     <>
                       <Play className="h-4 w-4 mr-1" />
-                      Uruchom teraz
+                      {t('admin.cron.runNow')}
                     </>
                   )}
                 </Button>
@@ -228,10 +227,10 @@ export function AdminCronManager() {
         </div>
 
         <div className="pt-4 border-t">
-          <h4 className="font-medium mb-2">Instrukcja konfiguracji CRON</h4>
+          <h4 className="font-medium mb-2">{t('admin.cron.setupGuide')}</h4>
           <div className="text-sm text-muted-foreground space-y-2">
-            <p>1. Włącz rozszerzenia <code className="bg-muted px-1 rounded">pg_cron</code> i <code className="bg-muted px-1 rounded">pg_net</code> w bazie danych</p>
-            <p>2. Dodaj zadanie SQL:</p>
+            <p>1. {t('admin.cron.setupStep1')}</p>
+            <p>2. {t('admin.cron.setupStep2')}</p>
             <pre className="bg-muted p-3 rounded-lg text-xs overflow-x-auto">
 {`SELECT cron.schedule(
   'send-expiring-offer-reminders',

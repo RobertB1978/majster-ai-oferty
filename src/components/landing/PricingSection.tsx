@@ -32,13 +32,13 @@ export function PricingSection() {
             id="pricing-heading"
             className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4"
           >
-            {t('landing.pricing.sectionTitle', 'Przejrzyste ceny')}
+            {t('landing.pricing.sectionTitle')}
           </h2>
           <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed max-w-xl mx-auto">
-            {t('landing.pricing.sectionSubtitle', 'Darmowy plan na start — bez karty kredytowej. Upgrade kiedy chcesz.')}
+            {t('landing.pricing.sectionSubtitle')}
           </p>
           <p className="text-sm text-gray-400 dark:text-[#525252] mt-2">
-            {t('landing.pricing.vatNote', 'Ceny netto · Do każdego zakupu doliczamy 23% VAT')}
+            {t('landing.pricing.vatNote')}
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export function PricingSection() {
               {plan.highlighted && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                   <span className="bg-amber-500 text-black text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
-                    {t('landing.pricing.badge', 'Najpopularniejszy')}
+                    {t('landing.pricing.badge')}
                   </span>
                 </div>
               )}
@@ -64,23 +64,23 @@ export function PricingSection() {
               {/* Plan header */}
               <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                  {t(plan.displayNameKey, plan.name)}
+                  {t(plan.displayNameKey)}
                 </h3>
                 <div className="flex items-baseline gap-1 mb-2">
                   <span className="text-4xl font-bold text-gray-900 dark:text-white">
                     {plan.pricePLN === 0 ? '0' : plan.pricePLN}
                   </span>
                   <span className="text-sm text-gray-500 dark:text-[#A3A3A3]">
-                    {plan.pricePLN === 0 ? 'zł' : `zł ${t('landing.pricing.per_month', '/ mies')}`}
+                    {plan.pricePLN === 0 ? 'zł' : `zł ${t('landing.pricing.per_month')}`}
                   </span>
                 </div>
                 <p className="text-xs text-gray-400 dark:text-[#525252] leading-relaxed">
-                  {t(plan.descriptionKey, plan.description)}
+                  {t(plan.descriptionKey)}
                 </p>
               </div>
 
               {/* Features list */}
-              <ul className="flex flex-col gap-2.5 flex-1" aria-label={`${t('landing.pricing.planFeaturesLabel', 'Funkcje planu')} ${t(plan.displayNameKey, plan.name)}`}>
+              <ul className="flex flex-col gap-2.5 flex-1" aria-label={`${t('landing.pricing.planFeaturesLabel')} ${t(plan.displayNameKey)}`}>
                 {plan.featuresKeys.map((featureKey) => {
                   const isPrep = PREP_KEYS.has(featureKey);
                   return (
@@ -93,7 +93,7 @@ export function PricingSection() {
                         {t(featureKey)}
                         {isPrep && (
                           <span className="ml-1.5 text-[10px] font-medium text-gray-600 dark:text-[#A3A3A3] border border-gray-200 dark:border-[#2A2A2A] rounded px-1 py-0.5 uppercase tracking-wide align-middle">
-                            {t('landing.pricing.prepBadge', 'W przygotowaniu')}
+                            {t('landing.pricing.prepBadge')}
                           </span>
                         )}
                       </span>
@@ -112,24 +112,24 @@ export function PricingSection() {
                 }`}
               >
                 {plan.pricePLN === 0
-                  ? t('landing.pricing.ctaFree', 'Zacznij za darmo')
-                  : `${t('landing.pricing.ctaTry', 'Wypróbuj')} ${t(plan.displayNameKey, plan.name)}`}
+                  ? t('landing.pricing.ctaFree')
+                  : `${t('landing.pricing.ctaTry')} ${t(plan.displayNameKey)}`}
               </Link>
             </div>
           ))}
         </div>
 
         <p className="text-center text-sm text-gray-600 dark:text-[#A3A3A3] mt-8">
-          {t('landing.pricing.cancelNote', 'Anuluj w każdej chwili · Wystawiamy faktury VAT')}
+          {t('landing.pricing.cancelNote')}
         </p>
 
         <p className="text-center text-sm text-gray-400 dark:text-[#525252] mt-3">
-          {t('landing.pricing.enterpriseNote', 'Potrzebujesz więcej?')}{' '}
+          {t('landing.pricing.enterpriseNote')}{' '}
           <a
             href="mailto:kontakt@majster.ai"
             className="underline hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200"
           >
-            {t('landing.pricing.enterpriseContact', 'Napisz do nas — plan Enterprise wkrótce.')}
+            {t('landing.pricing.enterpriseContact')}
           </a>
         </p>
       </div>
