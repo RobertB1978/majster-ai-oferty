@@ -2465,7 +2465,9 @@
     "questionAriaLabel": "Treść pytania do wykonawcy",
     "sendQuestion": "Wyślij pytanie",
     "anotherQuestion": "Zadaj kolejne pytanie",
-    "justAccepted": "Oferta zaakceptowana!"
+    "justAccepted": "Oferta zaakceptowana!",
+    "printButton": "Drukuj / Zapisz PDF",
+    "printAriaLabel": "Wydrukuj lub zapisz ofertę jako PDF"
   },
   "pdfGenerator": {
     "defaultOfferText": "Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na realizację prac.",
@@ -3049,7 +3051,7 @@
     "alreadySent": "Oferta była już wcześniej wysłana.",
     "emailSentInfo": "Wiadomość e-mail wysłana na adres klienta.",
     "emailNotSent": "E-mail niedostępny — skopiuj link poniżej.",
-    "shareLink": "Link do oferty (udostępnij klientowi)",
+    "shareLink": "Link do akceptacji oferty",
     "copyLink": "Kopiuj link",
     "linkCopied": "Link skopiowany!",
     "quotaWarning": "Użyłeś {{used}}/{{limit}} ofert w tym miesiącu.",
@@ -3058,7 +3060,10 @@
     "pdfDownloaded": "PDF pobrany.",
     "pdfError": "Nie udało się wygenerować PDF. Spróbuj ponownie.",
     "statusBadgeSent": "Wysłana",
-    "statusBadgeDraft": "Szkic"
+    "statusBadgeDraft": "Szkic",
+    "shareLinkHint": "Skopiuj i wyślij klientowi — nie wymaga logowania",
+    "noAcceptanceLinkNote": "Wygeneruj link akceptacji w szczegółach oferty (zakładka Wyślij), aby udostępnić go klientowi.",
+    "missingCompanyAlert": "Profil firmy jest niekompletny — PDF nie będzie zawierał danych firmowych. Uzupełnij dane w Ustawieniach → Profil firmy."
   },
   "acceptanceLink": {
     "panelTitle": "Link akceptacji dla klienta",
@@ -3366,28 +3371,28 @@
   "dossier": {
     "category": {
       "CONTRACT": "Umowy",
-      "PROTOCOL": "Protokoly",
+      "PROTOCOL": "Protokoły",
       "RECEIPT": "Rachunki",
-      "PHOTO": "Fotoprotokol",
+      "PHOTO": "Fotoprotokół",
       "GUARANTEE": "Gwarancje",
       "OTHER": "Inne"
     },
-    "totalFiles": "{{count}} plikow",
-    "exportPdf": "Eksport PDF",
-    "shareLink": "Udostepnij",
+    "totalFiles": "{{count}} plików",
+    "exportPdf": "Spis dokumentów PDF",
+    "shareLink": "Udostępnij",
     "emptyCategory": "Brak plikow w tej kategorii",
     "uploadFirst": "Dodaj pierwszy plik",
     "uploadAriaLabel": "Dodaj plik do kategorii {{category}}",
     "uploadSuccess": "Plik dodany",
-    "uploadError": "Blad dodawania pliku. Sprobuj ponownie.",
+    "uploadError": "Błąd dodawania pliku. Spróbuj ponownie.",
     "deleteFile": "Usun plik",
     "deleteSuccess": "Plik usuniety",
-    "deleteError": "Blad usuwania pliku",
+    "deleteError": "Błąd usuwania pliku",
     "confirmDelete": "Potwierdz usuniecie",
     "openFile": "Otworz",
-    "exportEmpty": "Brak plikow do eksportu",
-    "loadError": "Blad ladowania",
-    "loadErrorDesc": "Nie mozna zaladowac teczki projektu.",
+    "exportEmpty": "Brak plików do wyeksportowania",
+    "loadError": "Błąd ładowania",
+    "loadErrorDesc": "Nie można załadować teczki projektu.",
     "share": {
       "title": "Udostepnij teczke",
       "selectCategories": "Wybierz kategorie do udostepnienia",

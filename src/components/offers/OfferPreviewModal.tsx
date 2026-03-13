@@ -36,6 +36,7 @@ import { FreeTierPaywallModal } from '@/components/billing/FreeTierPaywallModal'
 import { useSendOffer } from '@/hooks/useSendOffer';
 import { buildOfferPdfPayloadFromOffer } from '@/lib/offerPdfPayloadBuilder';
 import { generateOfferPdf } from '@/lib/offerPdfGenerator';
+import { useAcceptanceLink, buildAcceptanceLinkUrl } from '@/hooks/useAcceptanceLink';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -185,6 +186,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
   const { data, isLoading, isError } = useOfferPreviewData(offerId);
   const offerQuota = useFreeTierOfferQuota();
   const sendOffer = useSendOffer();
+  const { data: acceptanceLink } = useAcceptanceLink(offerId);
 
   const [showPaywall, setShowPaywall] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
@@ -203,7 +205,11 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `oferta-${offerId.slice(0, 8)}.pdf`;
+      // Use sanitized offer title for a meaningful filename
+      const safeTitle = data.title
+        ? data.title.replace(/[^\w\s\-ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/gi, '').trim().slice(0, 40).replace(/\s+/g, '_')
+        : offerId.slice(0, 8);
+      link.download = `oferta-${safeTitle}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
       toast.success(t('offerPreview.pdfDownloaded'));
@@ -252,7 +258,10 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
 
   // ── Copy share link ────────────────────────────────────────────────────────
   const handleCopyLink = async () => {
-    const url = `${window.location.origin}/app/offers/${offerId}`;
+    // Prefer the tokenized public acceptance link if it exists (doesn't require auth)
+    const url = acceptanceLink?.token
+      ? buildAcceptanceLinkUrl(acceptanceLink.token)
+      : `${window.location.origin}/app/offers/${offerId}`;
     await navigator.clipboard.writeText(url);
     setLinkCopied(true);
     toast.success(t('offerPreview.linkCopied'));
@@ -310,6 +319,16 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                             limit: offerQuota.limit,
                           })
                         : t('offerPreview.quotaBlocked')}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Company profile incomplete warning */}
+                {!data.company?.company_name && (
+                  <Alert className="mt-4 border-amber-300 bg-amber-50 dark:bg-amber-900/20">
+                    <AlertCircle className="h-4 w-4 text-amber-600" />
+                    <AlertDescription className="text-sm text-amber-800 dark:text-amber-200">
+                      {t('offerPreview.missingCompanyAlert')}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -479,29 +498,46 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                 {(isSent || sentPdfUrl) && (
                   <div className="mt-4 rounded-lg border bg-muted/40 p-4 space-y-2">
                     <p className="text-sm font-medium">{t('offerPreview.shareLink')}</p>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        onClick={handleCopyLink}
-                      >
-                        {linkCopied ? (
-                          <Check className="mr-2 h-4 w-4 text-green-600" />
-                        ) : (
-                          <Copy className="mr-2 h-4 w-4" />
+                    {acceptanceLink?.token ? (
+                      <>
+                        <p className="text-xs text-muted-foreground">{t('offerPreview.shareLinkHint')}</p>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1"
+                            onClick={handleCopyLink}
+                          >
+                            {linkCopied ? (
+                              <Check className="mr-2 h-4 w-4 text-green-600" />
+                            ) : (
+                              <Copy className="mr-2 h-4 w-4" />
+                            )}
+                            {linkCopied ? t('offerPreview.linkCopied') : t('offerPreview.copyLink')}
+                          </Button>
+                          {sentPdfUrl && (
+                            <Button variant="outline" size="sm" asChild>
+                              <a href={sentPdfUrl} target="_blank" rel="noopener noreferrer" download>
+                                <Download className="mr-2 h-4 w-4" />
+                                PDF
+                              </a>
+                            </Button>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-xs text-muted-foreground">{t('offerPreview.noAcceptanceLinkNote')}</p>
+                        {sentPdfUrl && (
+                          <Button variant="outline" size="sm" asChild>
+                            <a href={sentPdfUrl} target="_blank" rel="noopener noreferrer" download>
+                              <Download className="mr-2 h-4 w-4" />
+                              PDF
+                            </a>
+                          </Button>
                         )}
-                        {linkCopied ? t('offerPreview.linkCopied') : t('offerPreview.copyLink')}
-                      </Button>
-                      {sentPdfUrl && (
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={sentPdfUrl} target="_blank" rel="noopener noreferrer" download>
-                            <Download className="mr-2 h-4 w-4" />
-                            PDF
-                          </a>
-                        </Button>
-                      )}
-                    </div>
+                      </>
+                    )}
                   </div>
                 )}
               </>

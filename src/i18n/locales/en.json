@@ -2465,7 +2465,9 @@
     "questionAriaLabel": "Question to the contractor",
     "sendQuestion": "Send question",
     "anotherQuestion": "Ask another question",
-    "justAccepted": "Offer accepted!"
+    "justAccepted": "Offer accepted!",
+    "printButton": "Print / Save PDF",
+    "printAriaLabel": "Print or save offer as PDF"
   },
   "pdfGenerator": {
     "defaultOfferText": "Dear Sir/Madam,\n\nWe are pleased to present our offer for the requested works.",
@@ -3049,7 +3051,7 @@
     "alreadySent": "Offer was already sent previously.",
     "emailSentInfo": "Email sent to client.",
     "emailNotSent": "Email unavailable — copy the link below.",
-    "shareLink": "Offer link (share with client)",
+    "shareLink": "Offer acceptance link",
     "copyLink": "Copy link",
     "linkCopied": "Link copied!",
     "quotaWarning": "You have used {{used}}/{{limit}} offers this month.",
@@ -3058,7 +3060,10 @@
     "pdfDownloaded": "PDF downloaded.",
     "pdfError": "Failed to generate PDF. Please try again.",
     "statusBadgeSent": "Sent",
-    "statusBadgeDraft": "Draft"
+    "statusBadgeDraft": "Draft",
+    "shareLinkHint": "Copy and send to client — no login required",
+    "noAcceptanceLinkNote": "Generate an acceptance link from the offer details (Send tab) to share with your client.",
+    "missingCompanyAlert": "Company profile is incomplete — the PDF will not contain company information. Complete it in Settings → Company Profile."
   },
   "acceptanceLink": {
     "panelTitle": "Client Acceptance Link",
@@ -3373,7 +3378,7 @@
       "OTHER": "Other"
     },
     "totalFiles": "{{count}} files",
-    "exportPdf": "Export PDF",
+    "exportPdf": "Document index PDF",
     "shareLink": "Share link",
     "emptyCategory": "No files in this category",
     "uploadFirst": "Upload first file",

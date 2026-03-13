@@ -20,6 +20,7 @@ import {
   Ban,
   Phone,
   MessageSquare,
+  Printer,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/formatters';
@@ -228,6 +229,16 @@ export default function OfferPublicPage() {
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-1">{t('offerPublicPage.offerHeading')}</h1>
             <p className="text-muted-foreground text-sm">{t('offerPublicPage.offerSubtitle')}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-3 gap-2 print:hidden"
+              onClick={() => window.print()}
+              aria-label={t('offerPublicPage.printAriaLabel')}
+            >
+              <Printer className="h-4 w-4" />
+              {t('offerPublicPage.printButton')}
+            </Button>
           </div>
 
           {/* ─── Accepted banner with celebration ───────────────── */}
