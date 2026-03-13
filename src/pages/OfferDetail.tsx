@@ -85,6 +85,7 @@ interface TemplateDetailSheetProps {
 }
 
 function TemplateDetailSheet({ pack, open, onOpenChange }: TemplateDetailSheetProps) {
+  const { t } = useTranslation();
   const materialItems = pack.items.filter(i => i.category === 'Materiał');
   const laborItems   = pack.items.filter(i => i.category === 'Robocizna');
 
@@ -103,15 +104,15 @@ function TemplateDetailSheet({ pack, open, onOpenChange }: TemplateDetailSheetPr
           {/* Meta */}
           <div className="rounded-md bg-muted/50 p-3 space-y-1.5 text-sm">
             <p>
-              <span className="text-muted-foreground">Przeznaczenie: </span>
+              <span className="text-muted-foreground">{t('offerDetail.template.purpose')}: </span>
               {pack.bestFor}
             </p>
             <p>
-              <span className="text-muted-foreground">Czas realizacji: </span>
+              <span className="text-muted-foreground">{t('offerDetail.template.duration')}: </span>
               {pack.estimatedDuration}
             </p>
             <p>
-              <span className="text-muted-foreground">Złożoność: </span>
+              <span className="text-muted-foreground">{t('offerDetail.template.complexity')}: </span>
               {pack.complexity}
             </p>
           </div>
@@ -120,7 +121,7 @@ function TemplateDetailSheet({ pack, open, onOpenChange }: TemplateDetailSheetPr
           {pack.starterNotes && (
             <div>
               <p className="text-[11px] font-semibold mb-1.5 text-muted-foreground uppercase tracking-wide">
-                Notatki startowe
+                {t('offerDetail.template.starterNotes')}
               </p>
               <p className="text-sm leading-relaxed">{pack.starterNotes}</p>
             </div>
@@ -130,7 +131,7 @@ function TemplateDetailSheet({ pack, open, onOpenChange }: TemplateDetailSheetPr
           {materialItems.length > 0 && (
             <div>
               <p className="text-[11px] font-semibold mb-2 text-muted-foreground uppercase tracking-wide">
-                Materiały ({materialItems.length})
+                {t('offerDetail.template.materials')} ({materialItems.length})
               </p>
               <ul className="space-y-0.5">
                 {materialItems.map((item, i) => (
@@ -147,7 +148,7 @@ function TemplateDetailSheet({ pack, open, onOpenChange }: TemplateDetailSheetPr
           {laborItems.length > 0 && (
             <div>
               <p className="text-[11px] font-semibold mb-2 text-muted-foreground uppercase tracking-wide">
-                Robocizna ({laborItems.length})
+                {t('offerDetail.template.labor')} ({laborItems.length})
               </p>
               <ul className="space-y-0.5">
                 {laborItems.map((item, i) => (

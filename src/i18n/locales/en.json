@@ -3016,6 +3016,12 @@
       "saveDraft": "Save draft",
       "saving": "Saving...",
       "previewAndSend": "Preview & Send"
+    },
+    "errors": {
+      "selectClient": "Select a client or enter a new client name",
+      "clientNameRequired": "First name / company name is required",
+      "addItem": "Add at least one item",
+      "itemNameRequired": "Every item must have a name"
     }
   },
   "offerPreview": {
@@ -3911,6 +3917,25 @@
     "warrantyExpiresIn7": "Warranty expires in 7 days ({{date}})",
     "inspectionDueIn30": "Inspection due in 30 days ({{date}})",
     "inspectionDueIn7": "Inspection due in 7 days ({{date}})"
+  },
+  "photos": {
+    "title": "Project photos",
+    "subtitle": "All photos from your projects. AI can analyze technical condition.",
+    "goToProjects": "Add photos in a project",
+    "empty": "No photos",
+    "emptyHint": "Add photos in the project view. AI will analyze the technical condition and suggest items for the quote.",
+    "openProjects": "Open projects",
+    "photoAlt": "Project photo"
+  },
+  "offerDetail": {
+    "template": {
+      "purpose": "Purpose",
+      "duration": "Estimated duration",
+      "complexity": "Complexity",
+      "starterNotes": "Starter notes",
+      "materials": "Materials",
+      "labor": "Labour"
+    }
   },
   "offline": {
     "banner": "Offline mode — showing last cached data",

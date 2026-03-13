@@ -41,7 +41,7 @@ export default function Register() {
     }
 
     if (isCaptchaEnabled && !captchaToken) {
-      toast.error(t('auth.captcha.required', 'Wymagana weryfikacja CAPTCHA'));
+      toast.error(t('auth.captcha.required'));
       return;
     }
 
@@ -50,7 +50,7 @@ export default function Register() {
     if (phone.trim()) {
       digitsOnly = phone.replace(/\D/g, '');
       if (digitsOnly.length < 9) {
-        toast.error(t('auth.errors.invalidPhone', 'Please provide a valid phone number (min. 9 digits).'));
+        toast.error(t('auth.errors.invalidPhone'));
         return;
       }
 
@@ -61,11 +61,11 @@ export default function Register() {
         .eq('phone', digitsOnly)
         .maybeSingle();
       if (phoneCheckError) {
-        toast.error(t('auth.errors.registrationFailed', 'Registration failed. Please try again.'));
+        toast.error(t('auth.errors.registrationFailed'));
         return;
       }
       if (existingPhone) {
-        toast.error(t('auth.errors.phoneTaken', 'This phone number is already registered.'));
+        toast.error(t('auth.errors.phoneTaken'));
         return;
       }
     }
@@ -147,20 +147,20 @@ export default function Register() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">{t('auth.phone', 'Phone number')} <span className="text-muted-foreground text-xs">({t('common.optional', 'optional')})</span></Label>
+              <Label htmlFor="phone">{t('auth.phone')} <span className="text-muted-foreground text-xs">({t('common.optional')})</span></Label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder={t('auth.phonePlaceholder', '+48 500 000 000')}
+                  placeholder={t('auth.phonePlaceholder')}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="pl-10"
                   autoComplete="tel"
                 />
               </div>
-              <p className="text-xs text-muted-foreground">{t('auth.phoneHint', 'Used for account verification. Never shared with others.')}</p>
+              <p className="text-xs text-muted-foreground">{t('auth.phoneHint')}</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">{t('auth.password')}</Label>

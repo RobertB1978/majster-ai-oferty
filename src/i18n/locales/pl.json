@@ -3016,6 +3016,12 @@
       "saveDraft": "Zapisz szkic",
       "saving": "Zapisywanie...",
       "previewAndSend": "Podgląd i Wyślij"
+    },
+    "errors": {
+      "selectClient": "Wybierz klienta lub podaj imię nowego klienta",
+      "clientNameRequired": "Imię / nazwa firmy jest wymagana",
+      "addItem": "Dodaj co najmniej jedną pozycję",
+      "itemNameRequired": "Każda pozycja musi mieć nazwę"
     }
   },
   "offerPreview": {
@@ -3911,6 +3917,25 @@
     "warrantyExpiresIn7": "Gwarancja wygasa za 7 dni ({{date}})",
     "inspectionDueIn30": "Przegląd za 30 dni ({{date}})",
     "inspectionDueIn7": "Przegląd za 7 dni ({{date}})"
+  },
+  "photos": {
+    "title": "Zdjęcia projektów",
+    "subtitle": "Wszystkie zdjęcia z Twoich projektów. AI może analizować stan techniczny.",
+    "goToProjects": "Dodaj zdjęcia w projekcie",
+    "empty": "Brak zdjęć",
+    "emptyHint": "Dodaj zdjęcia w widoku projektu. AI przeanalizuje stan techniczny i zaproponuje pozycje w wycenie.",
+    "openProjects": "Otwórz projekty",
+    "photoAlt": "Zdjęcie projektu"
+  },
+  "offerDetail": {
+    "template": {
+      "purpose": "Przeznaczenie",
+      "duration": "Czas realizacji",
+      "complexity": "Złożoność",
+      "starterNotes": "Notatki startowe",
+      "materials": "Materiały",
+      "labor": "Robocizna"
+    }
   },
   "offline": {
     "banner": "Tryb offline — widoczne dane z ostatniego pobrania",

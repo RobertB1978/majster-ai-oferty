@@ -34,24 +34,28 @@ import { cn } from '@/lib/utils';
 
 // ── Validation ────────────────────────────────────────────────────────────────
 
-function validateStep(step: number, form: WizardFormData): Record<string, string> {
+function validateStep(
+  step: number,
+  form: WizardFormData,
+  t: (key: string) => string
+): Record<string, string> {
   const errs: Record<string, string> = {};
   if (step === 0) {
     const hasExisting = !!form.clientId;
     const hasNew = !!form.newClient?.name?.trim();
     if (!hasExisting && !hasNew) {
-      errs.client = 'Wybierz klienta lub podaj imię nowego klienta';
+      errs.client = t('offerWizard.errors.selectClient');
     }
     if (!hasExisting && form.newClient && !form.newClient.name.trim()) {
-      errs.newClientName = 'Imię / nazwa firmy jest wymagana';
+      errs.newClientName = t('offerWizard.errors.clientNameRequired');
     }
   }
   if (step === 1) {
     if (form.items.length === 0) {
-      errs.items = 'Dodaj co najmniej jedną pozycję';
+      errs.items = t('offerWizard.errors.addItem');
     }
     const emptyName = form.items.find((it) => !it.name.trim());
-    if (emptyName) errs.items = 'Każda pozycja musi mieć nazwę';
+    if (emptyName) errs.items = t('offerWizard.errors.itemNameRequired');
   }
   return errs;
 }
@@ -114,7 +118,7 @@ export function OfferWizard({ offerId }: Props) {
   };
 
   const handleNext = () => {
-    const errs = validateStep(step, form);
+    const errs = validateStep(step, form, t);
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
@@ -129,7 +133,7 @@ export function OfferWizard({ offerId }: Props) {
 
   const handleSave = async () => {
     setSaveError(null);
-    const errs = validateStep(2, form);
+    const errs = validateStep(2, form, t);
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
@@ -147,7 +151,7 @@ export function OfferWizard({ offerId }: Props) {
   // PR-11: Save draft then open preview modal
   const handlePreviewAndSend = async () => {
     setSaveError(null);
-    const errs = validateStep(2, form);
+    const errs = validateStep(2, form, t);
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
