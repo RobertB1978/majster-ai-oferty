@@ -1,27 +1,31 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Building2, 
-  Users, 
-  FolderOpen, 
-  FileText, 
-  Download, 
+import {
+  Building2,
+  Users,
+  FolderOpen,
+  FileText,
+  Download,
   CheckCircle2,
   ArrowRight,
   X,
-  Sparkles
+  Sparkles,
+  Clock
 } from 'lucide-react';
-import { 
-  useOnboardingProgress, 
+import { motion } from 'framer-motion';
+import {
+  useOnboardingProgress,
   useSkipOnboarding,
-  ONBOARDING_STEPS 
+  ONBOARDING_STEPS
 } from '@/hooks/useOnboarding';
 
 const stepIcons = [Building2, Users, FolderOpen, FileText, Download];
+
+/** Approximate time in minutes per step — based on real product flows */
+const STEP_TIME_MINUTES = [2, 1, 3, 1, 1];
 
 interface OnboardingWizardProps {
   open: boolean;
@@ -33,12 +37,22 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
   const navigate = useNavigate();
   const { data: progress, isLoading } = useOnboardingProgress();
   const skipOnboarding = useSkipOnboarding();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [showCongrats, _setShowCongrats] = useState(false);
 
-  const progressPercent = progress 
-    ? (progress.completed_steps.length / ONBOARDING_STEPS.length) * 100 
-    : 0;
+  const completedCount = progress?.completed_steps.length ?? 0;
+  const progressPercent = (completedCount / ONBOARDING_STEPS.length) * 100;
+  const isAllDone = completedCount === ONBOARDING_STEPS.length;
+
+  // Find the first incomplete step to recommend
+  const nextStepId = ONBOARDING_STEPS.find(
+    (s) => !progress?.completed_steps.includes(s.id)
+  )?.id ?? 1;
+
+  // Remaining time estimate based on incomplete steps
+  const remainingMinutes = ONBOARDING_STEPS.reduce(
+    (sum, step, idx) =>
+      progress?.completed_steps.includes(step.id) ? sum : sum + STEP_TIME_MINUTES[idx],
+    0
+  );
 
   const handleSkip = async () => {
     await skipOnboarding.mutateAsync();
@@ -69,26 +83,31 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 overflow-hidden" aria-describedby={undefined}>
         <DialogTitle className="sr-only">{t('onboarding.wizardTitle')}</DialogTitle>
-        {showCongrats ? (
+        {isAllDone ? (
           <div className="p-8 text-center animate-fade-in">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-success/10">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-success/10"
+            >
               <Sparkles className="h-10 w-10 text-success" />
-            </div>
+            </motion.div>
             <h2 className="text-2xl font-bold mb-2">{t('onboarding.congratsTitle')}</h2>
             <p className="text-muted-foreground mb-6">
               {t('onboarding.congratsDesc')}
             </p>
             <div className="grid grid-cols-3 gap-4 mb-8">
               <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-2xl font-bold text-primary">✓</p>
+                <CheckCircle2 className="h-6 w-6 text-success mx-auto mb-1" />
                 <p className="text-sm text-muted-foreground">{t('onboarding.completionCompanyProfile')}</p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-2xl font-bold text-primary">✓</p>
+                <CheckCircle2 className="h-6 w-6 text-success mx-auto mb-1" />
                 <p className="text-sm text-muted-foreground">{t('onboarding.completionFirstClient')}</p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-2xl font-bold text-primary">✓</p>
+                <CheckCircle2 className="h-6 w-6 text-success mx-auto mb-1" />
                 <p className="text-sm text-muted-foreground">{t('onboarding.completionFirstProject')}</p>
               </div>
             </div>
@@ -118,9 +137,17 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
                 </Button>
               </div>
               <Progress value={progressPercent} className="h-2" />
-              <p className="text-xs text-muted-foreground mt-2">
-                {t('onboarding.completedOf', { completed: progress?.completed_steps.length || 0, total: ONBOARDING_STEPS.length })}
-              </p>
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-muted-foreground">
+                  {t('onboarding.completedOf', { completed: completedCount, total: ONBOARDING_STEPS.length })}
+                </p>
+                {remainingMinutes > 0 && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    {t('onboarding.timeRemaining', { minutes: remainingMinutes })}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Steps */}
@@ -128,41 +155,60 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
               {ONBOARDING_STEPS.map((step, index) => {
                 const Icon = stepIcons[index];
                 const isCompleted = progress?.completed_steps.includes(step.id);
-                const isCurrent = currentStep === step.id;
+                const isNext = step.id === nextStepId;
 
                 return (
-                  <div
+                  <motion.div
                     key={step.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.06, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     className={`flex items-center gap-4 p-4 rounded-lg border transition-colors cursor-pointer ${
-                      isCompleted 
-                        ? 'bg-success/5 border-success/20' 
-                        : isCurrent 
-                          ? 'bg-primary/5 border-primary/20' 
+                      isCompleted
+                        ? 'bg-success/5 border-success/20'
+                        : isNext
+                          ? 'bg-primary/5 border-primary/30 ring-1 ring-primary/20'
                           : 'bg-muted/30 border-border hover:bg-muted/50'
                     }`}
-                    onClick={() => setCurrentStep(step.id)}
+                    onClick={() => !isCompleted && handleGoToStep(step.id)}
                   >
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                      isCompleted 
-                        ? 'bg-success text-success-foreground' 
-                        : 'bg-muted text-muted-foreground'
+                    {/* Step number / check circle */}
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold shrink-0 ${
+                      isCompleted
+                        ? 'bg-success text-success-foreground'
+                        : isNext
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-muted-foreground'
                     }`}>
                       {isCompleted ? (
                         <CheckCircle2 className="h-5 w-5" />
                       ) : (
-                        <Icon className="h-5 w-5" />
+                        <span>{step.id}</span>
                       )}
                     </div>
-                    <div className="flex-1">
-                      <p className={`font-medium ${isCompleted ? 'text-success' : ''}`}>
-                        {t(step.titleKey)}
-                      </p>
-                      <p className="text-sm text-muted-foreground">{t(step.descriptionKey)}</p>
+
+                    {/* Step content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Icon className={`h-4 w-4 shrink-0 ${isCompleted ? 'text-success' : isNext ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <p className={`font-medium truncate ${isCompleted ? 'text-success' : ''}`}>
+                          {t(step.titleKey)}
+                        </p>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-0.5">{t(step.descriptionKey)}</p>
+                      {!isCompleted && (
+                        <p className="text-xs text-muted-foreground/70 mt-1 flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          ~{STEP_TIME_MINUTES[index]} min
+                        </p>
+                      )}
                     </div>
+
+                    {/* Action */}
                     {!isCompleted && (
                       <Button
                         size="sm"
-                        variant={isCurrent ? 'default' : 'outline'}
+                        variant={isNext ? 'default' : 'outline'}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleGoToStep(step.id);
@@ -172,13 +218,22 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     )}
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
 
+            {/* Encouragement message */}
+            {completedCount > 0 && completedCount < ONBOARDING_STEPS.length && (
+              <div className="px-6 pb-2">
+                <p className="text-sm text-success font-medium text-center">
+                  {t('onboarding.encouragement', { completed: completedCount, total: ONBOARDING_STEPS.length })}
+                </p>
+              </div>
+            )}
+
             {/* Footer */}
-            <div className="p-6 pt-0 flex justify-between items-center">
+            <div className="p-6 pt-2 flex justify-between items-center">
               <Button variant="ghost" onClick={handleSkip}>
                 {t('onboarding.skipForNow')}
               </Button>

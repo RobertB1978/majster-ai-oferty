@@ -96,9 +96,14 @@ export const ActivityFeed = React.memo(function ActivityFeed() {
             ))}
           </div>
         ) : activities.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4 text-center">
-            {t('dashboard.noActivity')}
-          </p>
+          <div className="py-6 text-center">
+            <p className="text-sm text-muted-foreground mb-1">
+              {t('dashboard.noActivityTitle')}
+            </p>
+            <p className="text-xs text-muted-foreground/70">
+              {t('dashboard.noActivityHint')}
+            </p>
+          </div>
         ) : (
           <div className="space-y-0">
             {activities.map((activity, index) => (

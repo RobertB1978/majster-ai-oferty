@@ -298,7 +298,24 @@
       "expiringOffer": "Wygasa",
       "inactiveProject": "Projekt"
     },
-    "expiringOffersDesc": "{{count}} ofert wygasa wkrótce"
+    "expiringOffersDesc": "{{count}} ofert wygasa wkrótce",
+    "emptyWelcomeTitle": "Gotowy na pierwszą ofertę?",
+    "emptyWelcomeSubtitle": "Majster.AI pomaga tworzyć profesjonalne wyceny, śledzić projekty i zarządzać klientami — wszystko w jednym miejscu.",
+    "emptyTimeEstimate": "Pierwsza oferta w ok. 3 minuty",
+    "emptyCtaLabel": "Stwórz pierwszą ofertę",
+    "noProjectsTitle": "Brak projektów",
+    "noProjectsHint": "Stwórz pierwszą ofertę — automatycznie stanie się projektem.",
+    "noActivityTitle": "Brak aktywności",
+    "noActivityHint": "Twoje ostatnie działania pojawią się tutaj gdy zaczniesz tworzyć oferty i zarządzać projektami.",
+    "nextStep": {
+      "label": "Krok {{current}} z {{total}}",
+      "viewAll": "Zobacz wszystkie kroki"
+    },
+    "trust": {
+      "autosave": "Autozapis aktywny",
+      "encrypted": "Połączenie szyfrowane",
+      "rodo": "Zgodność z RODO"
+    }
   },
   "projects": {
     "title": "Projekty",
@@ -2007,7 +2024,10 @@
         "title": "Eksport PDF",
         "description": "Wygeneruj profesjonalne PDF oferty"
       }
-    }
+    },
+    "continueStep": "Kontynuuj",
+    "timeRemaining": "~{{minutes}} min pozostało",
+    "encouragement": "Świetnie! {{completed}} z {{total}} kroków ukończone."
   },
   "adminSettings": {
     "loadingSettings": "Wczytywanie ustawień...",

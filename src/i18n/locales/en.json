@@ -298,7 +298,24 @@
       "expiringOffer": "Expiring",
       "inactiveProject": "Project"
     },
-    "expiringOffersDesc": "{{count}} offers expiring soon"
+    "expiringOffersDesc": "{{count}} offers expiring soon",
+    "emptyWelcomeTitle": "Ready to build your first offer?",
+    "emptyWelcomeSubtitle": "Majster.AI helps you create professional quotes, track projects, and manage clients — all in one place.",
+    "emptyTimeEstimate": "Your first offer in about 3 minutes",
+    "emptyCtaLabel": "Create your first offer",
+    "noProjectsTitle": "No projects yet",
+    "noProjectsHint": "Create your first offer — it will automatically become a project.",
+    "noActivityTitle": "No activity yet",
+    "noActivityHint": "Your recent actions will appear here as you create offers and manage projects.",
+    "nextStep": {
+      "label": "Step {{current}} of {{total}}",
+      "viewAll": "View all steps"
+    },
+    "trust": {
+      "autosave": "Autosave active",
+      "encrypted": "Encrypted connection",
+      "rodo": "GDPR compliant"
+    }
   },
   "projects": {
     "title": "Projects",
@@ -2007,7 +2024,10 @@
         "title": "Export PDF",
         "description": "Generate a professional PDF of the offer"
       }
-    }
+    },
+    "continueStep": "Continue",
+    "timeRemaining": "~{{minutes}} min remaining",
+    "encouragement": "Great progress! {{completed}} of {{total}} steps done."
   },
   "adminSettings": {
     "loadingSettings": "Loading settings...",

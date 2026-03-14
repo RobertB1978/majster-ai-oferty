@@ -298,7 +298,24 @@
       "expiringOffer": "Завершується",
       "inactiveProject": "Проєкт"
     },
-    "expiringOffersDesc": "{{count}} пропозицій закінчуються незабаром"
+    "expiringOffersDesc": "{{count}} пропозицій закінчуються незабаром",
+    "emptyWelcomeTitle": "Готові створити першу пропозицію?",
+    "emptyWelcomeSubtitle": "Majster.AI допомагає створювати професійні кошториси, відстежувати проекти та керувати клієнтами — все в одному місці.",
+    "emptyTimeEstimate": "Перша пропозиція приблизно за 3 хвилини",
+    "emptyCtaLabel": "Створити першу пропозицію",
+    "noProjectsTitle": "Ще немає проектів",
+    "noProjectsHint": "Створіть першу пропозицію — вона автоматично стане проектом.",
+    "noActivityTitle": "Ще немає активності",
+    "noActivityHint": "Ваші останні дії з'являться тут, коли ви почнете створювати пропозиції та керувати проектами.",
+    "nextStep": {
+      "label": "Крок {{current}} з {{total}}",
+      "viewAll": "Переглянути всі кроки"
+    },
+    "trust": {
+      "autosave": "Автозбереження активне",
+      "encrypted": "Зашифроване з'єднання",
+      "rodo": "Відповідність GDPR"
+    }
   },
   "projects": {
     "title": "Проєкти",
@@ -2007,7 +2024,10 @@
         "title": "Експорт PDF",
         "description": "Згенеруйте професійний PDF пропозиції"
       }
-    }
+    },
+    "continueStep": "Продовжити",
+    "timeRemaining": "~{{minutes}} хв залишилось",
+    "encouragement": "Чудовий прогрес! {{completed}} з {{total}} кроків виконано."
   },
   "adminSettings": {
     "loadingSettings": "Завантаження налаштувань...",

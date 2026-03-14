@@ -96,16 +96,19 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
             </div>
           ) : projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted mb-3">
-                <FolderOpen className="h-7 w-7 text-muted-foreground/60" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 mb-3">
+                <FolderOpen className="h-7 w-7 text-primary/60" />
               </div>
-              <p className="text-sm text-muted-foreground mb-2">
-                {t('dashboard.noProjects')}
+              <p className="text-sm font-medium text-foreground mb-1">
+                {t('dashboard.noProjectsTitle')}
+              </p>
+              <p className="text-xs text-muted-foreground mb-3 max-w-[240px]">
+                {t('dashboard.noProjectsHint')}
               </p>
               <Button
-                variant="link"
-                onClick={() => navigate('/app/projects/new')}
-                className="text-sm p-0 h-auto text-primary"
+                size="sm"
+                onClick={() => navigate('/app/offers/new')}
+                className="text-sm"
               >
                 {t('dashboard.createFirstProject')}
               </Button>

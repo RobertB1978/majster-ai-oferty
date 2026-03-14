@@ -12,6 +12,8 @@ import { RecentProjects } from '@/components/dashboard/RecentProjects';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 import { QuoteCreationHub } from '@/components/dashboard/QuoteCreationHub';
+import { DashboardNextStep } from '@/components/dashboard/DashboardNextStep';
+import { DashboardTrustBar } from '@/components/dashboard/DashboardTrustBar';
 import { Badge } from '@/components/ui/badge';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { usePlanFeatures } from '@/hooks/useSubscription';
@@ -160,6 +162,14 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Next onboarding step — inline guidance for in-progress users */}
+      {onboardingProgress && !onboardingProgress.is_completed && !onboardingProgress.skipped_at && (
+        <DashboardNextStep
+          progress={onboardingProgress}
+          onOpenWizard={() => setShowOnboarding(true)}
+        />
+      )}
+
       {/* Today's tasks — actionable items first */}
       <TodayTasks />
 
@@ -210,6 +220,9 @@ export default function Dashboard() {
       <div className="border rounded-lg p-4 sm:p-6 bg-muted/30">
         <QuoteCreationHub />
       </div>
+
+      {/* Trust signals — subtle confidence cues */}
+      <DashboardTrustBar />
 
       {/* Trial countdown banner — upsell, below fold */}
       <TrialBanner />
