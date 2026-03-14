@@ -32,6 +32,9 @@ import {
   Building2,
   User,
   Layers,
+  Shield,
+  Phone,
+  Mail,
 } from 'lucide-react';
 
 import { supabase } from '@/integrations/supabase/client';
@@ -347,8 +350,21 @@ export default function OfferPublicAccept() {
               {t('publicOffer.issuedAt')}: {fmtDate(data.offer.created_at)}
             </p>
             {daysLeft > 0 && isSent && (
-              <Badge variant="outline" className="text-xs">
-                <Clock className="h-3 w-3 mr-1" />
+              <Badge
+                variant="outline"
+                className={cn(
+                  'text-xs',
+                  daysLeft <= 3
+                    ? 'border-red-400 text-red-600 bg-red-50 dark:bg-red-900/20 dark:border-red-600'
+                    : daysLeft <= 7
+                      ? 'border-amber-400 text-amber-700 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-600'
+                      : 'border-green-400 text-green-700 bg-green-50 dark:bg-green-900/20 dark:border-green-600',
+                )}
+              >
+                <Clock className={cn(
+                  'h-3 w-3 mr-1',
+                  daysLeft <= 3 ? 'text-red-500' : daysLeft <= 7 ? 'text-amber-500' : 'text-green-500',
+                )} />
                 {t('publicOffer.expiresIn', { days: daysLeft })}
               </Badge>
             )}
@@ -358,19 +374,25 @@ export default function OfferPublicAccept() {
           {(isAlreadyAccepted || isAlreadyRejected) && (
             <div
               className={cn(
-                'rounded-lg border p-4 flex items-center gap-3',
+                'rounded-lg border p-5 flex items-center gap-4',
                 isAlreadyAccepted
                   ? 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-900/20'
-                  : 'border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-900/20'
+                  : 'border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-900/20',
+                actionResult === 'ACCEPTED' && 'ring-2 ring-green-400 ring-offset-2',
               )}
             >
               {isAlreadyAccepted ? (
-                <CheckCircle2 className="h-7 w-7 text-green-600 shrink-0" />
+                <CheckCircle2
+                  className={cn(
+                    'h-8 w-8 text-green-600 shrink-0',
+                    actionResult === 'ACCEPTED' && 'animate-bounce',
+                  )}
+                />
               ) : (
-                <XCircle className="h-7 w-7 text-red-600 shrink-0" />
+                <XCircle className="h-8 w-8 text-red-600 shrink-0" />
               )}
               <div>
-                <p className={cn('font-semibold', isAlreadyAccepted ? 'text-green-700' : 'text-red-700')}>
+                <p className={cn('font-semibold text-base', isAlreadyAccepted ? 'text-green-700' : 'text-red-700')}>
                   {isAlreadyAccepted ? t('publicOffer.alreadyAccepted') : t('publicOffer.alreadyRejected')}
                 </p>
                 {isAlreadyAccepted && data.offer.accepted_at && (
@@ -422,26 +444,51 @@ export default function OfferPublicAccept() {
           <div className="rounded-lg border bg-card text-sm">
             {/* Company section */}
             {data.company && (
-              <div className="p-4 border-b">
-                <div className="flex items-start gap-2">
-                  <Building2 className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <div>
-                    <p className="font-semibold">{data.company.company_name}</p>
+              <div className="p-4 border-b bg-muted/30">
+                <div className="flex items-start gap-3">
+                  {data.company.logo_url ? (
+                    <img
+                      src={data.company.logo_url}
+                      alt="Logo"
+                      className="h-10 w-10 rounded object-contain shrink-0 border border-border bg-white"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 rounded bg-primary/10 flex items-center justify-center shrink-0">
+                      <Building2 className="h-5 w-5 text-primary" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm">{data.company.company_name}</p>
                     {data.company.nip && (
                       <p className="text-xs text-muted-foreground">NIP: {data.company.nip}</p>
                     )}
                     {(data.company.street || data.company.city) && (
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground truncate">
                         {[data.company.street, data.company.postal_code, data.company.city]
                           .filter(Boolean)
                           .join(', ')}
                       </p>
                     )}
-                    {data.company.phone && (
-                      <a href={`tel:${data.company.phone}`} className="text-xs text-primary hover:underline">
-                        {data.company.phone}
-                      </a>
-                    )}
+                    <div className="flex flex-wrap gap-x-3 mt-1">
+                      {data.company.phone && (
+                        <a
+                          href={`tel:${data.company.phone}`}
+                          className="text-xs text-primary hover:underline flex items-center gap-0.5"
+                        >
+                          <Phone className="h-3 w-3" />
+                          {data.company.phone}
+                        </a>
+                      )}
+                      {data.company.email_for_offers && (
+                        <a
+                          href={`mailto:${data.company.email_for_offers}`}
+                          className="text-xs text-primary hover:underline flex items-center gap-0.5"
+                        >
+                          <Mail className="h-3 w-3" />
+                          {data.company.email_for_offers}
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -579,8 +626,17 @@ export default function OfferPublicAccept() {
             </div>
           )}
 
-          {/* Footer */}
-          <p className="text-center text-xs text-muted-foreground">{t('publicOffer.poweredBy')}</p>
+          {/* Trust strip + Footer */}
+          <div className="flex flex-col items-center gap-1.5 pb-2">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Shield className="h-3 w-3 text-green-500" />
+                {t('publicOffer.secureConnection')}
+              </span>
+              <span aria-hidden>·</span>
+              <span>{t('publicOffer.poweredBy')}</span>
+            </div>
+          </div>
         </div>
       </div>
     </>

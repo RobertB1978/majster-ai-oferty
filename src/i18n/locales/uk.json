@@ -3728,7 +3728,8 @@
     "variantsTitle": "Варіанти пропозиції",
     "variantsDesc": "Виконавець підготував кілька варіантів. Натисніть, щоб переглянути деталі кожного з них.",
     "variantsAriaLabel": "Варіанти пропозиції",
-    "viewingVariant": "Переглядаєте"
+    "viewingVariant": "Переглядаєте",
+    "secureConnection": "Захищене з'єднання"
   },
   "offerPhotos": {
     "sectionTitle": "Фотографії до пропозиції",

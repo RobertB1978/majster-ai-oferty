@@ -21,6 +21,7 @@ import {
   Phone,
   MessageSquare,
   Printer,
+  Shield,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/formatters';
@@ -286,15 +287,24 @@ export default function OfferPublicPage() {
                     <p className="font-medium">{new Date(offer.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
-                {offer.valid_until && (
-                  <div className="flex items-start gap-3">
-                    <Clock className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">{t('offerPublicPage.validUntilLabel')}</p>
-                      <p className="font-medium">{new Date(offer.valid_until).toLocaleDateString()}</p>
+                {offer.valid_until && (() => {
+                  const daysLeft = Math.ceil(
+                    (new Date(offer.valid_until).getTime() - Date.now()) / 86_400_000
+                  );
+                  const isUrgent = daysLeft >= 0 && daysLeft <= 3;
+                  const isWarning = daysLeft > 3 && daysLeft <= 7;
+                  return (
+                    <div className="flex items-start gap-3">
+                      <Clock className={`h-5 w-5 mt-0.5 shrink-0 ${isUrgent ? 'text-red-500' : isWarning ? 'text-amber-500' : 'text-muted-foreground'}`} />
+                      <div>
+                        <p className="text-sm text-muted-foreground">{t('offerPublicPage.validUntilLabel')}</p>
+                        <p className={`font-medium ${isUrgent ? 'text-red-600' : isWarning ? 'text-amber-600' : ''}`}>
+                          {new Date(offer.valid_until).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
 
               {/* Positions table */}
@@ -453,11 +463,19 @@ export default function OfferPublicPage() {
             </Card>
           )}
 
-          {/* ─── Footer ────────────────────────────────────────── */}
-          <p className="text-center text-xs text-muted-foreground pb-4">
-            Powered by{' '}
-            <span className="font-medium">Majster.AI</span>
-          </p>
+          {/* ─── Footer ───────────────────────────────────────── */}
+          <div className="flex flex-col items-center gap-1.5 pb-4">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Shield className="h-3 w-3 text-green-500" />
+                {t('publicOffer.secureConnection')}
+              </span>
+              <span aria-hidden>·</span>
+              <span>
+                Powered by <span className="font-medium">Majster.AI</span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </>

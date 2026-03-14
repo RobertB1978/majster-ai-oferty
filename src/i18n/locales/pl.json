@@ -3728,7 +3728,8 @@
     "variantsTitle": "Opcje oferty",
     "variantsDesc": "Wykonawca przygotował kilka wariantów. Kliknij, aby zobaczyć szczegóły każdego z nich.",
     "variantsAriaLabel": "Warianty oferty",
-    "viewingVariant": "Przeglądasz"
+    "viewingVariant": "Przeglądasz",
+    "secureConnection": "Bezpieczne połączenie"
   },
   "offerPhotos": {
     "sectionTitle": "Zdjęcia do oferty",
