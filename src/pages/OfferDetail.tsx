@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/sheet';
 import { getStarterPack } from '@/data/starterPacks';
 import type { StarterPack } from '@/data/starterPacks';
+import { OfferPhotoAttach } from '@/components/offers/OfferPhotoAttach';
 
 // ── Offer meta loader ─────────────────────────────────────────────────────────
 
@@ -314,6 +315,8 @@ export default function OfferDetail() {
           )}
         </div>
         <OfferWizard offerId={id} />
+        {/* Photo attachments — shown below wizard for existing draft offers */}
+        {id && <OfferPhotoAttach offerId={id} />}
         {/* Sheet renders in portal — safe to place here */}
         {templatePack && (
           <TemplateDetailSheet
@@ -378,6 +381,9 @@ export default function OfferDetail() {
         acceptedAt={meta.accepted_at}
         rejectedAt={meta.rejected_at}
       />
+
+      {/* Sprint offer-versioning: Photo attachments — read-only for sent/accepted/rejected */}
+      <OfferPhotoAttach offerId={meta.id} readOnly />
     </div>
   );
 }
