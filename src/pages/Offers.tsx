@@ -2,12 +2,13 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { differenceInDays } from 'date-fns';
-import { FileText, MoreHorizontal, ExternalLink, FolderPlus, Sparkles, Archive, Plus } from 'lucide-react';
+import { differenceInDays, addDays, format } from 'date-fns';
+import { FileText, MoreHorizontal, ExternalLink, FolderPlus, Sparkles, Archive, Plus, CalendarDays } from 'lucide-react';
 
 import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
 import { IndustryTemplateSheet } from '@/components/offers/IndustryTemplateSheet';
 import { getStarterPack } from '@/data/starterPacks';
+import { useAddCalendarEvent } from '@/hooks/useCalendarEvents';
 
 import { useOffers, useArchiveOffer, NO_RESPONSE_DAYS } from '@/hooks/useOffers';
 import type { Offer, OfferStatus, OfferSort } from '@/hooks/useOffers';
@@ -92,10 +93,11 @@ interface OfferRowProps {
   onOpen: (id: string) => void;
   onCreateProject: (id: string) => void;
   onArchive: (id: string) => void;
+  onScheduleFollowup: (offer: Offer) => void;
   isCreatingProject?: boolean;
 }
 
-function OfferRow({ offer, onOpen, onCreateProject, onArchive, isCreatingProject }: OfferRowProps) {
+function OfferRow({ offer, onOpen, onCreateProject, onArchive, onScheduleFollowup, isCreatingProject }: OfferRowProps) {
   const { t } = useTranslation();
   const noResp = offer.status === 'SENT' ? noResponseDays(offer.sent_at) : null;
   const amount = formatAmount(offer.total_net, offer.currency);
@@ -181,6 +183,12 @@ function OfferRow({ offer, onOpen, onCreateProject, onArchive, isCreatingProject
             <ExternalLink className="mr-2 h-4 w-4" />
             {t('offersList.actionOpen')}
           </DropdownMenuItem>
+          {offer.status === 'SENT' && (
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onScheduleFollowup(offer); }}>
+              <CalendarDays className="mr-2 h-4 w-4" />
+              {t('offersList.actionScheduleFollowup')}
+            </DropdownMenuItem>
+          )}
           {offer.status !== 'ARCHIVED' && (
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive(offer.id); }}>
               <Archive className="mr-2 h-4 w-4" />
@@ -208,6 +216,7 @@ export default function Offers() {
   const search = useDebounce(searchRaw, 300);
   const createProject = useCreateProjectV2();
   const archiveOffer = useArchiveOffer();
+  const addCalendarEvent = useAddCalendarEvent();
 
   const { data: offers = [], isLoading, isError, error, refetch } = useOffers({
     status: statusFilter,
@@ -247,6 +256,20 @@ export default function Offers() {
     }
   };
 
+
+  // Pack 4: Schedule a manual follow-up calendar event for a SENT offer
+  const handleScheduleFollowup = (offer: Offer) => {
+    const followupDate = format(addDays(new Date(), 2), 'yyyy-MM-dd');
+    addCalendarEvent.mutate({
+      title: `Follow-up: ${offer.title ?? t('offersList.noTitle')}`,
+      description: null,
+      event_type: 'follow_up',
+      event_date: followupDate,
+      event_time: null,
+      project_id: null,
+      status: 'pending',
+    });
+  };
 
   const errorDescription = useMemo(() => {
     if (!error) return t('offersList.errorDesc');
@@ -387,6 +410,7 @@ export default function Offers() {
               onOpen={handleOpen}
               onCreateProject={handleCreateProject}
               onArchive={handleArchive}
+              onScheduleFollowup={handleScheduleFollowup}
               isCreatingProject={creatingProjectId === offer.id}
             />
           ))}

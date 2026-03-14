@@ -71,6 +71,7 @@ export function CalendarEventDialog({
                   <SelectItem value="deadline">{t('calendar.eventTypes.deadline')}</SelectItem>
                   <SelectItem value="meeting">{t('calendar.eventTypes.meeting')}</SelectItem>
                   <SelectItem value="reminder">{t('calendar.eventTypes.reminder')}</SelectItem>
+                  <SelectItem value="follow_up">{t('calendar.eventTypes.follow_up')}</SelectItem>
                   <SelectItem value="other">{t('calendar.eventTypes.other')}</SelectItem>
                 </SelectContent>
               </Select>

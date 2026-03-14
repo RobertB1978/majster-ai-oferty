@@ -177,6 +177,23 @@ export default function Plan() {
           </Card>
         )}
 
+        {/* Beta notice — shown when Stripe checkout is disabled (fallback = manual request flow) */}
+        {!STRIPE_ENABLED && (
+          <Card className="border-blue-500/30 bg-blue-500/5" data-testid="billing-beta-notice">
+            <CardContent className="flex items-start gap-3 py-4">
+              <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-sm text-blue-800 dark:text-blue-300">
+                  {t('billing.betaNoticeTitle')}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {t('billing.betaNoticeDesc', { email: CONTACT_EMAIL })}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Current plan notice */}
         <Card className={isPaid ? 'border-green-500/30 bg-green-500/5' : 'border-primary/30 bg-primary/5'}>
           <CardContent className="flex items-center gap-4 py-4">

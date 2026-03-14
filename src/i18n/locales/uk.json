@@ -434,6 +434,7 @@
       "deadline": "Дедлайн",
       "meeting": "Зустріч",
       "reminder": "Нагадування",
+      "follow_up": "Follow-up пропозиції",
       "other": "Інше",
       "work": "Робота"
     },
@@ -991,6 +992,8 @@
     "paidSubscription": "Активна підписка",
     "stripeNotConfigured": "Stripe не повністю налаштований",
     "stripeNotConfiguredDesc": "VITE_STRIPE_ENABLED=true, але відсутні реальні Stripe Price IDs. Оплата заблокована до налаштування змінних VITE_STRIPE_PRICE_*.",
+    "betaNoticeTitle": "Бета — активація тарифу через e-mail",
+    "betaNoticeDesc": "Онлайн-оплати ще не активні. Щоб змінити тариф, натисніть на картку та надішліть запит — ми зв'яжемось із вами за адресою {{email}}.",
     "trialDaysRemaining": "Залишилось {{count}} днів пробного періоду",
     "planRequest": {
       "cancel": "Скасувати",
@@ -3514,6 +3517,7 @@
     "actionOpen": "Відкрити",
     "actionDuplicate": "Дублювати",
     "actionArchive": "Архівувати",
+    "actionScheduleFollowup": "Запланувати follow-up",
     "archiveSuccess": "Пропозицію заархівовано",
     "archiveError": "Не вдалося заархівувати пропозицію",
     "duplicateComingSoon": "Дублювання пропозицій — незабаром",
