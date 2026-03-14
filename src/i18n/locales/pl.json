@@ -3570,10 +3570,22 @@
       "titlePlaceholder": "Np. Oferta remontowa 2026",
       "client": "Klient",
       "itemCount": "Liczba pozycji",
+      "items": "poz.",
       "draftInfo": "Szkic nie zużywa limitu miesięcznych ofert. Możesz edytować i zapisywać bez ograniczeń.",
       "saveDraft": "Zapisz szkic",
       "saving": "Zapisywanie...",
-      "previewAndSend": "Podgląd i Wyślij"
+      "previewAndSend": "Podgląd i Wyślij",
+      "variantTotalsNote": "Kwoty podane oddzielnie per wariant. Oferta zawiera kilka opcji do wyboru."
+    },
+    "variants": {
+      "defaultLabel": "Wariant",
+      "addVariant": "+ Dodaj wariant",
+      "addFirstVariant": "Utwórz warianty oferty",
+      "removeVariant": "Usuń wariant",
+      "tabsAriaLabel": "Warianty oferty",
+      "labelAriaLabel": "Nazwa wariantu",
+      "editingLabel": "Edytujesz",
+      "itemsCount": "poz."
     },
     "errors": {
       "selectClient": "Wybierz klienta lub podaj imię nowego klienta",
@@ -3686,7 +3698,24 @@
     "acceptedBanner": "Zaakceptowano",
     "rejectedBanner": "Odrzucono",
     "poweredBy": "Obsługiwane przez Majster.AI",
-    "noItems": "Brak pozycji"
+    "noItems": "Brak pozycji",
+    "variantsTitle": "Opcje oferty",
+    "variantsDesc": "Wykonawca przygotował kilka wariantów. Kliknij, aby zobaczyć szczegóły każdego z nich.",
+    "variantsAriaLabel": "Warianty oferty",
+    "viewingVariant": "Przeglądasz"
+  },
+  "offerPhotos": {
+    "sectionTitle": "Zdjęcia do oferty",
+    "addPhoto": "Dodaj zdjęcie",
+    "uploadAriaLabel": "Wybierz zdjęcie do dodania",
+    "noPhotosHint": "Brak zdjęć. Dodaj zdjęcia, które pomogą klientowi podjąć decyzję.",
+    "noPhotosReadOnly": "Brak zdjęć w tej ofercie.",
+    "photoAlt": "Zdjęcie oferty",
+    "visibilityInternal": "Wewnętrzne",
+    "visibilityPublic": "Publiczne",
+    "togglePublic": "Pokaż klientowi w linku",
+    "togglePdf": "Dodaj do PDF",
+    "visibilityLegend": "Oko = widoczne dla klienta w linku. PDF = dodane do dokumentu. Kłódka = tylko Twój wgląd."
   },
   "bulkAdd": {
     "triggerBtn": "Dodaj wiele pozycji",

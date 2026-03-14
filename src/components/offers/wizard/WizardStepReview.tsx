@@ -1,14 +1,15 @@
 /**
- * WizardStepReview — PR-10 Step 3 (extended in PR-11)
+ * WizardStepReview — PR-10 Step 3 (extended in PR-11, offer-versioning-7RcU5)
  * Display totals and save the draft.
  * PR-11: Added "Preview & Send" button that saves draft then opens OfferPreviewModal.
+ * offer-versioning-7RcU5: Shows per-variant totals when variants exist.
  * Drafts are always allowed — quota applies only to SEND (ADR-0004).
  */
 import { useTranslation } from 'react-i18next';
-import { CheckCircle, Eye, Send } from 'lucide-react';
+import { CheckCircle, Eye, Send, Layers } from 'lucide-react';
 
 import type { WizardFormData } from '@/hooks/useOfferWizard';
-import { computeTotals } from '@/hooks/useOfferWizard';
+import { computeTotals, computeTotalsForItems } from '@/hooks/useOfferWizard';
 
 import { useClients } from '@/hooks/useClients';
 import { Button } from '@/components/ui/button';
@@ -32,9 +33,10 @@ function formatMoney(val: number): string {
 
 export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isSaving, saveError, errors }: Props) {
   const { t } = useTranslation();
-  const totals = computeTotals(form.items);
+  const totals = computeTotals(form);
   const { data: allClients = [] } = useClients();
   const selectedClient = allClients.find((c) => c.id === form.clientId);
+  const hasVariants = form.variants.length > 0;
 
   const clientName = selectedClient?.name ?? form.newClient?.name ?? '—';
 
@@ -58,22 +60,56 @@ export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isS
           <span className="text-muted-foreground">{t('offerWizard.reviewStep.client')}</span>
           <span className="font-medium text-right max-w-[55%] truncate">{clientName}</span>
         </div>
-        <div className="flex justify-between px-4 py-2.5">
-          <span className="text-muted-foreground">{t('offerWizard.reviewStep.itemCount')}</span>
-          <span className="font-medium">{form.items.length}</span>
-        </div>
-        <div className="flex justify-between px-4 py-2.5">
-          <span className="text-muted-foreground">{t('common.net')}</span>
-          <span className="font-medium">{formatMoney(totals.total_net)} zł</span>
-        </div>
-        <div className="flex justify-between px-4 py-2.5">
-          <span className="text-muted-foreground">VAT</span>
-          <span>{formatMoney(totals.total_vat)} zł</span>
-        </div>
-        <div className="flex justify-between px-4 py-2.5 bg-muted rounded-b-lg">
-          <span className="font-semibold">{t('common.gross')}</span>
-          <span className="font-bold text-lg">{formatMoney(totals.total_gross)} zł</span>
-        </div>
+
+        {/* No-variant summary */}
+        {!hasVariants && (
+          <>
+            <div className="flex justify-between px-4 py-2.5">
+              <span className="text-muted-foreground">{t('offerWizard.reviewStep.itemCount')}</span>
+              <span className="font-medium">{form.items.length}</span>
+            </div>
+            <div className="flex justify-between px-4 py-2.5">
+              <span className="text-muted-foreground">{t('common.net')}</span>
+              <span className="font-medium">{formatMoney(totals.total_net)} zł</span>
+            </div>
+            <div className="flex justify-between px-4 py-2.5">
+              <span className="text-muted-foreground">VAT</span>
+              <span>{formatMoney(totals.total_vat)} zł</span>
+            </div>
+            <div className="flex justify-between px-4 py-2.5 bg-muted rounded-b-lg">
+              <span className="font-semibold">{t('common.gross')}</span>
+              <span className="font-bold text-lg">{formatMoney(totals.total_gross)} zł</span>
+            </div>
+          </>
+        )}
+
+        {/* Per-variant summary */}
+        {hasVariants && form.variants.map((v, idx) => {
+          const vTotals = computeTotalsForItems(v.items);
+          return (
+            <div key={v.localId} className="px-4 py-2.5 space-y-1">
+              <div className="flex items-center gap-1.5">
+                <Layers className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="font-medium text-sm">{v.label}</span>
+                <span className="text-xs text-muted-foreground">({v.items.length} {t('offerWizard.reviewStep.items')})</span>
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground pl-5">
+                <span>{t('common.net')}</span>
+                <span>{formatMoney(vTotals.total_net)} zł</span>
+              </div>
+              <div className={`flex justify-between text-sm font-semibold pl-5 ${idx === form.variants.length - 1 ? '' : ''}`}>
+                <span>{t('common.gross')}</span>
+                <span>{formatMoney(vTotals.total_gross)} zł</span>
+              </div>
+            </div>
+          );
+        })}
+
+        {hasVariants && (
+          <div className="px-4 py-2.5 bg-muted rounded-b-lg">
+            <p className="text-xs text-muted-foreground">{t('offerWizard.reviewStep.variantTotalsNote')}</p>
+          </div>
+        )}
       </div>
 
       {/* Draft info */}

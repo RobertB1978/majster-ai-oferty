@@ -1,15 +1,20 @@
 /**
- * OfferPublicAccept — PR-12
+ * OfferPublicAccept — PR-12 (extended in offer-versioning-7RcU5)
  *
  * Public acceptance page for offers. Accessible at /a/:token without login.
  * Client can review the offer summary and ACCEPT or REJECT.
+ *
+ * offer-versioning-7RcU5:
+ *   - Renders variants when offer has multiple options
+ *   - Client can view each variant and compare totals
+ *   - Single-variant / no-variant offers degrade gracefully (unchanged)
+ *   - Public photos shown when show_in_public = true (via signed URL in future)
  *
  * Data fetched via SECURITY DEFINER DB function (resolve_offer_acceptance_link)
  * so no user auth or cross-tenant leakage is possible.
  *
  * Rate limiting: documented in SECURITY_BASELINE.md (apply at CDN/edge layer).
  * Token entropy: UUID v4 = 122 bits — unguessable.
- * Works with FF_NEW_SHELL ON/OFF (standalone page, no shell).
  */
 
 import { useState } from 'react';
@@ -26,6 +31,7 @@ import {
   Clock,
   Building2,
   User,
+  Layers,
 } from 'lucide-react';
 
 import { supabase } from '@/integrations/supabase/client';
@@ -44,6 +50,13 @@ interface OfferItem {
   unit_price_net: number;
   vat_rate: number | null;
   line_total_net: number;
+  variant_id: string | null;
+}
+
+interface OfferVariant {
+  id: string;
+  label: string;
+  sort_order: number;
 }
 
 interface PublicOfferData {
@@ -76,6 +89,7 @@ interface PublicOfferData {
     logo_url: string | null;
   } | null;
   items: OfferItem[];
+  variants: OfferVariant[];
   expires_at: string;
 }
 
@@ -117,6 +131,79 @@ function docId(offerId: string, issuedIso: string): string {
   return `OF/${year}/${suffix}`;
 }
 
+function computeVariantTotals(items: OfferItem[]) {
+  const net = items.reduce((s, it) => s + Number(it.line_total_net), 0);
+  const vat = items.reduce((s, it) => {
+    const rate = it.vat_rate ?? 0;
+    return s + Number(it.qty) * Number(it.unit_price_net) * (rate / 100);
+  }, 0);
+  return {
+    net: Math.round(net * 100) / 100,
+    vat: Math.round(vat * 100) / 100,
+    gross: Math.round((net + vat) * 100) / 100,
+  };
+}
+
+// ── Items table sub-component ─────────────────────────────────────────────────
+
+interface ItemsTableProps {
+  items: OfferItem[];
+  currency: string;
+  t: (key: string) => string;
+}
+
+function ItemsTable({ items, currency, t }: ItemsTableProps) {
+  if (items.length === 0) {
+    return <p className="text-muted-foreground text-xs">{t('publicOffer.noItems')}</p>;
+  }
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-xs border-collapse">
+        <thead>
+          <tr className="bg-muted">
+            <th className="border border-border px-2 py-1.5 text-left font-medium">
+              {t('publicOffer.itemName')}
+            </th>
+            <th className="border border-border px-2 py-1.5 text-right font-medium w-14">
+              {t('publicOffer.itemQty')}
+            </th>
+            <th className="border border-border px-2 py-1.5 text-center font-medium w-14">
+              {t('publicOffer.itemUnit')}
+            </th>
+            <th className="border border-border px-2 py-1.5 text-right font-medium w-24">
+              {t('publicOffer.itemPrice')}
+            </th>
+            <th className="border border-border px-2 py-1.5 text-right font-medium w-16">
+              {t('publicOffer.itemVat')}
+            </th>
+            <th className="border border-border px-2 py-1.5 text-right font-medium w-24">
+              {t('publicOffer.itemTotal')}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((item, idx) => (
+            <tr key={item.id} className={idx % 2 === 0 ? '' : 'bg-muted/40'}>
+              <td className="border border-border px-2 py-1.5">{item.name}</td>
+              <td className="border border-border px-2 py-1.5 text-right">{Number(item.qty)}</td>
+              <td className="border border-border px-2 py-1.5 text-center">{item.unit || '—'}</td>
+              <td className="border border-border px-2 py-1.5 text-right">
+                {fmt(Number(item.unit_price_net), currency)}
+              </td>
+              <td className="border border-border px-2 py-1.5 text-right">
+                {item.vat_rate !== null ? `${item.vat_rate}%` : '—'}
+              </td>
+              <td className="border border-border px-2 py-1.5 text-right font-medium">
+                {fmt(Number(item.line_total_net), currency)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function OfferPublicAccept() {
@@ -127,6 +214,7 @@ export default function OfferPublicAccept() {
   const [submitting, setSubmitting] = useState(false);
   const [actionResult, setActionResult] = useState<'ACCEPTED' | 'REJECTED' | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
 
   const { data: result, isLoading } = useQuery({
     queryKey: ['publicOffer', token],
@@ -182,6 +270,20 @@ export default function OfferPublicAccept() {
   const isAlreadyRejected = offerStatus === 'REJECTED';
   const isSent = offerStatus === 'SENT';
   const daysLeft = differenceInDays(new Date(data.expires_at), new Date());
+
+  // ── Variant logic ───────────────────────────────────────────────────────────
+  const hasVariants = data.variants.length > 1;
+  const displayedVariantId = activeVariantId ?? (hasVariants ? data.variants[0]?.id : null);
+
+  const displayedItems: OfferItem[] = hasVariants && displayedVariantId
+    ? data.items.filter((it) => it.variant_id === displayedVariantId)
+    : data.items;
+
+  const displayedVariant = hasVariants
+    ? data.variants.find((v) => v.id === displayedVariantId) ?? data.variants[0]
+    : null;
+
+  const variantTotals = hasVariants ? computeVariantTotals(displayedItems) : null;
 
   // ── Action handler ──────────────────────────────────────────────────────────
   const handleAction = async (action: 'ACCEPT' | 'REJECT') => {
@@ -281,6 +383,41 @@ export default function OfferPublicAccept() {
             </div>
           )}
 
+          {/* ── Variant selector (only when offer has multiple variants) ───── */}
+          {hasVariants && (
+            <div className="rounded-lg border bg-card p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Layers className="h-4 w-4 text-muted-foreground" />
+                <p className="text-sm font-semibold">{t('publicOffer.variantsTitle')}</p>
+              </div>
+              <p className="text-xs text-muted-foreground">{t('publicOffer.variantsDesc')}</p>
+              <div className="flex flex-wrap gap-2" role="tablist" aria-label={t('publicOffer.variantsAriaLabel')}>
+                {data.variants.map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={v.id === displayedVariantId}
+                    onClick={() => setActiveVariantId(v.id)}
+                    className={cn(
+                      'rounded-md border px-3 py-1.5 text-sm font-medium transition-colors min-h-[40px]',
+                      v.id === displayedVariantId
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-card text-foreground border-border hover:bg-accent',
+                    )}
+                  >
+                    {v.label}
+                  </button>
+                ))}
+              </div>
+              {displayedVariant && (
+                <p className="text-xs text-muted-foreground">
+                  {t('publicOffer.viewingVariant')}: <strong>{displayedVariant.label}</strong>
+                </p>
+              )}
+            </div>
+          )}
+
           {/* ── Offer card ────────────────────────────────────────────────── */}
           <div className="rounded-lg border bg-card text-sm">
             {/* Company section */}
@@ -325,77 +462,61 @@ export default function OfferPublicAccept() {
               </div>
             )}
 
-            {/* Items table */}
+            {/* Items table — filtered by active variant when applicable */}
             <div className="p-4 border-b">
-              <p className="font-semibold mb-3">{t('publicOffer.items')}</p>
-              {data.items.length === 0 ? (
-                <p className="text-muted-foreground text-xs">{t('publicOffer.noItems')}</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs border-collapse">
-                    <thead>
-                      <tr className="bg-muted">
-                        <th className="border border-border px-2 py-1.5 text-left font-medium">
-                          {t('publicOffer.itemName')}
-                        </th>
-                        <th className="border border-border px-2 py-1.5 text-right font-medium w-14">
-                          {t('publicOffer.itemQty')}
-                        </th>
-                        <th className="border border-border px-2 py-1.5 text-center font-medium w-14">
-                          {t('publicOffer.itemUnit')}
-                        </th>
-                        <th className="border border-border px-2 py-1.5 text-right font-medium w-24">
-                          {t('publicOffer.itemPrice')}
-                        </th>
-                        <th className="border border-border px-2 py-1.5 text-right font-medium w-16">
-                          {t('publicOffer.itemVat')}
-                        </th>
-                        <th className="border border-border px-2 py-1.5 text-right font-medium w-24">
-                          {t('publicOffer.itemTotal')}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.items.map((item, idx) => (
-                        <tr key={item.id} className={idx % 2 === 0 ? '' : 'bg-muted/40'}>
-                          <td className="border border-border px-2 py-1.5">{item.name}</td>
-                          <td className="border border-border px-2 py-1.5 text-right">{Number(item.qty)}</td>
-                          <td className="border border-border px-2 py-1.5 text-center">{item.unit || '—'}</td>
-                          <td className="border border-border px-2 py-1.5 text-right">
-                            {fmt(Number(item.unit_price_net), data.offer.currency)}
-                          </td>
-                          <td className="border border-border px-2 py-1.5 text-right">
-                            {item.vat_rate !== null ? `${item.vat_rate}%` : '—'}
-                          </td>
-                          <td className="border border-border px-2 py-1.5 text-right font-medium">
-                            {fmt(Number(item.line_total_net), data.offer.currency)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+              {hasVariants && displayedVariant && (
+                <p className="font-semibold mb-3 flex items-center gap-1.5">
+                  <Layers className="h-4 w-4 text-muted-foreground" />
+                  {displayedVariant.label}
+                </p>
               )}
+              {!hasVariants && (
+                <p className="font-semibold mb-3">{t('publicOffer.items')}</p>
+              )}
+              <ItemsTable items={displayedItems} currency={data.offer.currency} t={t} />
             </div>
 
             {/* Totals */}
             <div className="p-4 space-y-1">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{t('publicOffer.totalsNet')}</span>
-                <span className="font-medium">{fmt(data.offer.total_net ?? 0, data.offer.currency)}</span>
-              </div>
-              {data.offer.total_vat !== null && data.offer.total_vat !== 0 ? (
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">{t('publicOffer.totalsVat')}</span>
-                  <span>{fmt(data.offer.total_vat, data.offer.currency)}</span>
-                </div>
+              {hasVariants && variantTotals ? (
+                <>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{t('publicOffer.totalsNet')}</span>
+                    <span className="font-medium">{fmt(variantTotals.net, data.offer.currency)}</span>
+                  </div>
+                  {variantTotals.vat > 0 ? (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">{t('publicOffer.totalsVat')}</span>
+                      <span>{fmt(variantTotals.vat, data.offer.currency)}</span>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">{t('publicOffer.vatExempt')}</p>
+                  )}
+                  <div className="flex justify-between border-t border-border pt-2 font-bold text-base">
+                    <span>{t('publicOffer.totalsGross')}</span>
+                    <span>{fmt(variantTotals.gross, data.offer.currency)}</span>
+                  </div>
+                </>
               ) : (
-                <p className="text-xs text-muted-foreground italic">{t('publicOffer.vatExempt')}</p>
+                <>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{t('publicOffer.totalsNet')}</span>
+                    <span className="font-medium">{fmt(data.offer.total_net ?? 0, data.offer.currency)}</span>
+                  </div>
+                  {data.offer.total_vat !== null && data.offer.total_vat !== 0 ? (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">{t('publicOffer.totalsVat')}</span>
+                      <span>{fmt(data.offer.total_vat, data.offer.currency)}</span>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">{t('publicOffer.vatExempt')}</p>
+                  )}
+                  <div className="flex justify-between border-t border-border pt-2 font-bold text-base">
+                    <span>{t('publicOffer.totalsGross')}</span>
+                    <span>{fmt(data.offer.total_gross ?? data.offer.total_net ?? 0, data.offer.currency)}</span>
+                  </div>
+                </>
               )}
-              <div className="flex justify-between border-t border-border pt-2 font-bold text-base">
-                <span>{t('publicOffer.totalsGross')}</span>
-                <span>{fmt(data.offer.total_gross ?? data.offer.total_net ?? 0, data.offer.currency)}</span>
-              </div>
             </div>
           </div>
 

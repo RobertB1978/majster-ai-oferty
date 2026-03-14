@@ -91,6 +91,18 @@ export interface PdfConfig {
 }
 
 /**
+ * A single named variant section for PDF output.
+ * Present only when the offer has multiple variants.
+ * Sprint: offer-versioning-7RcU5.
+ */
+export interface OfferVariantSection {
+  id: string;
+  label: string;
+  sort_order: number;
+  quote: QuoteData;
+}
+
+/**
  * Complete offer payload ready for PDF generation or email
  */
 export interface OfferPdfPayload {
@@ -107,6 +119,11 @@ export interface OfferPdfPayload {
   issuedAt: Date;
   /** Date until which the offer is valid */
   validUntil: Date;
+  /**
+   * Named variant sections. Present when offer has variants.
+   * When undefined/empty, PDF renders as single offer (current behavior).
+   */
+  variantSections?: OfferVariantSection[];
 }
 
 /**

@@ -3570,10 +3570,22 @@
       "titlePlaceholder": "E.g. Renovation offer 2026",
       "client": "Client",
       "itemCount": "Items",
+      "items": "items",
       "draftInfo": "Saving as draft does not use your monthly offer quota. Edit freely.",
       "saveDraft": "Save draft",
       "saving": "Saving...",
-      "previewAndSend": "Preview & Send"
+      "previewAndSend": "Preview & Send",
+      "variantTotalsNote": "Totals shown per variant. The offer contains several options for the client to choose from."
+    },
+    "variants": {
+      "defaultLabel": "Option",
+      "addVariant": "+ Add variant",
+      "addFirstVariant": "Create offer variants",
+      "removeVariant": "Remove variant",
+      "tabsAriaLabel": "Offer variants",
+      "labelAriaLabel": "Variant name",
+      "editingLabel": "Editing",
+      "itemsCount": "items"
     },
     "errors": {
       "selectClient": "Select a client or enter a new client name",
@@ -3686,7 +3698,24 @@
     "acceptedBanner": "Accepted",
     "rejectedBanner": "Rejected",
     "poweredBy": "Powered by Majster.AI",
-    "noItems": "No items"
+    "noItems": "No items",
+    "variantsTitle": "Offer options",
+    "variantsDesc": "The contractor has prepared several options. Click each to see the details.",
+    "variantsAriaLabel": "Offer variants",
+    "viewingVariant": "Viewing"
+  },
+  "offerPhotos": {
+    "sectionTitle": "Offer photos",
+    "addPhoto": "Add photo",
+    "uploadAriaLabel": "Choose a photo to add",
+    "noPhotosHint": "No photos yet. Add photos to help the client decide.",
+    "noPhotosReadOnly": "No photos attached to this offer.",
+    "photoAlt": "Offer photo",
+    "visibilityInternal": "Internal",
+    "visibilityPublic": "Public",
+    "togglePublic": "Show to client in link",
+    "togglePdf": "Add to PDF",
+    "visibilityLegend": "Eye = visible to client in link. PDF = included in document. Lock = your view only."
   },
   "bulkAdd": {
     "triggerBtn": "Bulk add items",

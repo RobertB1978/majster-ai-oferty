@@ -3570,10 +3570,22 @@
       "titlePlaceholder": "Напр. Пропозиція на ремонт 2026",
       "client": "Клієнт",
       "itemCount": "Кількість позицій",
+      "items": "поз.",
       "draftInfo": "Чернетка не використовує місячний ліміт пропозицій. Редагуйте без обмежень.",
       "saveDraft": "Зберегти чернетку",
       "saving": "Збереження...",
-      "previewAndSend": "Перегляд та Надіслати"
+      "previewAndSend": "Перегляд та Надіслати",
+      "variantTotalsNote": "Суми вказані окремо по варіанту. Пропозиція містить кілька варіантів на вибір."
+    },
+    "variants": {
+      "defaultLabel": "Варіант",
+      "addVariant": "+ Додати варіант",
+      "addFirstVariant": "Створити варіанти пропозиції",
+      "removeVariant": "Видалити варіант",
+      "tabsAriaLabel": "Варіанти пропозиції",
+      "labelAriaLabel": "Назва варіанту",
+      "editingLabel": "Редагуєте",
+      "itemsCount": "поз."
     },
     "errors": {
       "selectClient": "Виберіть клієнта або введіть ім'я нового клієнта",
@@ -3686,7 +3698,24 @@
     "acceptedBanner": "Прийнято",
     "rejectedBanner": "Відхилено",
     "poweredBy": "Працює на Majster.AI",
-    "noItems": "Немає позицій"
+    "noItems": "Немає позицій",
+    "variantsTitle": "Варіанти пропозиції",
+    "variantsDesc": "Виконавець підготував кілька варіантів. Натисніть, щоб переглянути деталі кожного з них.",
+    "variantsAriaLabel": "Варіанти пропозиції",
+    "viewingVariant": "Переглядаєте"
+  },
+  "offerPhotos": {
+    "sectionTitle": "Фотографії до пропозиції",
+    "addPhoto": "Додати фото",
+    "uploadAriaLabel": "Виберіть фото для додавання",
+    "noPhotosHint": "Немає фото. Додайте фотографії, які допоможуть клієнту прийняти рішення.",
+    "noPhotosReadOnly": "Немає фотографій у цій пропозиції.",
+    "photoAlt": "Фото пропозиції",
+    "visibilityInternal": "Внутрішнє",
+    "visibilityPublic": "Публічне",
+    "togglePublic": "Показати клієнту в посиланні",
+    "togglePdf": "Додати до PDF",
+    "visibilityLegend": "Око = видно клієнту в посиланні. PDF = додано до документа. Замок = лише ваш перегляд."
   },
   "bulkAdd": {
     "triggerBtn": "Додати багато позицій",
