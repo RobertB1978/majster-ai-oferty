@@ -110,6 +110,16 @@ export async function buildOfferPdfPayloadFromOffer(
     .eq('offer_id', offerId)
     .order('sort_order', { ascending: true });
 
+  // ── 3b. Load acceptance link token (for QR code) ─────────────────────────
+  const { data: linkData } = await supabase
+    .from('acceptance_links')
+    .select('token')
+    .eq('offer_id', offerId)
+    .maybeSingle();
+  const acceptanceUrl = linkData?.token
+    ? `${window.location.origin}/a/${linkData.token}`
+    : undefined;
+
   const rawVariants: RawVariant[] = (variantsData ?? []) as RawVariant[];
 
   // ── 4. Load client (if linked) ───────────────────────────────────────────
@@ -260,5 +270,6 @@ export async function buildOfferPdfPayloadFromOffer(
     issuedAt,
     validUntil,
     variantSections,
+    acceptanceUrl,
   };
 }

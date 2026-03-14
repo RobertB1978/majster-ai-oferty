@@ -12,6 +12,7 @@
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import QRCode from 'qrcode';
 
 /** jsPDF extended with jspdf-autotable dynamic property */
 interface JsPDFWithAutoTable extends jsPDF {
@@ -215,9 +216,35 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   // TITLE SECTION
   // ========================================
 
+  // QR code for digital version (top-right corner, 22×22mm)
+  const QR_SIZE = 22;
+  const qrX = pageWidth - margin - QR_SIZE;
+  let qrPlaced = false;
+  if (payload.acceptanceUrl) {
+    try {
+      const qrDataUrl = await QRCode.toDataURL(payload.acceptanceUrl, {
+        width: 132,   // 22mm at 150dpi — small but scannable
+        margin: 1,
+        errorCorrectionLevel: 'M',
+        color: { dark: '#000000', light: '#FFFFFF' },
+      });
+      doc.addImage(qrDataUrl, 'PNG', qrX, yPosition - 2, QR_SIZE, QR_SIZE);
+      doc.setFontSize(6);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(120);
+      doc.text('Wersja cyfrowa', qrX + QR_SIZE / 2, yPosition + QR_SIZE + 1, { align: 'center' });
+      doc.setTextColor(0);
+      qrPlaced = true;
+    } catch {
+      // QR generation failure is non-fatal — PDF continues without QR
+    }
+  }
+
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
-  doc.text(payload.pdfConfig.title, margin, yPosition);
+  // Leave room for QR code when present
+  const titleMaxWidth = qrPlaced ? qrX - margin - 5 : pageWidth - 2 * margin;
+  doc.text(payload.pdfConfig.title, margin, yPosition, { maxWidth: titleMaxWidth });
   yPosition += 8;
 
   doc.setFontSize(10);
@@ -225,12 +252,18 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
 
   // Compliance: document ID + dates (uses getPdfComplianceLines for testable strings)
   const complianceLines = getPdfComplianceLines(payload);
-  doc.text(complianceLines.documentIdLine, pageWidth - margin, yPosition, { align: 'right' });
+  const complianceRightX = qrPlaced ? qrX - 3 : pageWidth - margin;
+  doc.text(complianceLines.documentIdLine, complianceRightX, yPosition, { align: 'right' });
   doc.text(complianceLines.issuedAtLine, margin, yPosition);
   yPosition += 5;
 
   doc.text(complianceLines.validUntilLine, margin, yPosition);
-  yPosition += 10;
+  // Advance past QR code if it was placed
+  if (qrPlaced) {
+    yPosition = Math.max(yPosition + 5, yPosition + QR_SIZE - 3);
+  } else {
+    yPosition += 10;
+  }
 
   // ========================================
   // CLIENT SECTION

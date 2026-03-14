@@ -17,7 +17,7 @@
  * Token entropy: UUID v4 = 122 bits — unguessable.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
@@ -97,6 +97,15 @@ interface PublicOfferData {
 }
 
 type FetchError = 'not_found' | 'expired' | 'offer_not_found' | 'not_available' | 'unknown';
+
+interface PublicOfferPhoto {
+  id: string;
+  storage_path: string;
+  caption: string | null;
+  sort_order: number;
+  /** Populated after signed URL generation */
+  signedUrl?: string;
+}
 
 // ── Data fetcher ──────────────────────────────────────────────────────────────
 
@@ -218,6 +227,7 @@ export default function OfferPublicAccept() {
   const [actionResult, setActionResult] = useState<'ACCEPTED' | 'REJECTED' | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
+  const [publicPhotos, setPublicPhotos] = useState<PublicOfferPhoto[]>([]);
 
   const { data: result, isLoading } = useQuery({
     queryKey: ['publicOffer', token],
@@ -226,6 +236,36 @@ export default function OfferPublicAccept() {
     staleTime: 0,
     retry: false,
   });
+
+  // Fetch public photos via SECURITY DEFINER RPC, then generate signed URLs
+  useEffect(() => {
+    if (!token || isLoading) return;
+    let cancelled = false;
+
+    async function loadPhotos() {
+      const { data: raw, error } = await supabase.rpc('get_public_offer_photos', {
+        p_token: token,
+      });
+      if (error || !raw || cancelled) return;
+
+      const rows = Array.isArray(raw) ? (raw as PublicOfferPhoto[]) : [];
+      if (rows.length === 0) return;
+
+      // Generate signed URLs (1 hour) using the anon client
+      const withUrls = await Promise.all(
+        rows.map(async (row) => {
+          const { data: signed } = await supabase.storage
+            .from('project-photos')
+            .createSignedUrl(row.storage_path, 3600);
+          return { ...row, signedUrl: signed?.signedUrl ?? undefined };
+        }),
+      );
+      if (!cancelled) setPublicPhotos(withUrls.filter((p) => !!p.signedUrl));
+    }
+
+    void loadPhotos();
+    return () => { cancelled = true; };
+  }, [token, isLoading]);
 
   // ── Loading ─────────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -566,6 +606,33 @@ export default function OfferPublicAccept() {
               )}
             </div>
           </div>
+
+          {/* ── Public photos (show_in_public = true) ─────────────────────── */}
+          {publicPhotos.length > 0 && (
+            <div className="rounded-lg border bg-card p-4 space-y-3">
+              <p className="text-sm font-semibold">{t('publicOffer.photosTitle')}</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {publicPhotos.map((photo) => (
+                  <div
+                    key={photo.id}
+                    className="relative rounded-md overflow-hidden border border-border bg-muted aspect-square"
+                  >
+                    <img
+                      src={photo.signedUrl}
+                      alt={photo.caption ?? ''}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    {photo.caption && (
+                      <div className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-[10px] px-1.5 py-1 truncate">
+                        {photo.caption}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* ── Action section (only when SENT) ────────────────────────────── */}
           {isSent && (

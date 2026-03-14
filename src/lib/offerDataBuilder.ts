@@ -124,6 +124,12 @@ export interface OfferPdfPayload {
    * When undefined/empty, PDF renders as single offer (current behavior).
    */
   variantSections?: OfferVariantSection[];
+  /**
+   * URL to the digital (web) version of this offer.
+   * When present, a QR code is embedded in the PDF.
+   * Format: https://app.example.com/a/{token}
+   */
+  acceptanceUrl?: string;
 }
 
 /**
