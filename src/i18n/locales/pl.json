@@ -425,6 +425,7 @@
       "deadline": "Termin",
       "meeting": "Spotkanie",
       "reminder": "Przypomnienie",
+      "follow_up": "Follow-up oferty",
       "work": "Praca",
       "other": "Inne"
     },
@@ -991,6 +992,8 @@
     "paidSubscription": "Subskrypcja aktywna",
     "stripeNotConfigured": "Stripe nie jest w pełni skonfigurowany",
     "stripeNotConfiguredDesc": "VITE_STRIPE_ENABLED=true, ale brakuje prawdziwych Stripe Price IDs. Checkout jest zablokowany do czasu ustawienia zmiennych VITE_STRIPE_PRICE_*.",
+    "betaNoticeTitle": "Wersja beta — aktywacja planu przez e-mail",
+    "betaNoticeDesc": "W tej chwili płatności online nie są aktywne. Aby zmienić plan, kliknij wybrany kafelek i wyślij zgłoszenie — skontaktujemy się z Tobą pod adresem {{email}}.",
     "trialDaysRemaining": "Pozostało {{count}} dni okresu próbnego",
     "planRequest": {
       "title": "Zamów plan {{plan}}",
@@ -3514,6 +3517,7 @@
     "actionOpen": "Otwórz",
     "actionDuplicate": "Duplikuj",
     "actionArchive": "Archiwizuj",
+    "actionScheduleFollowup": "Zaplanuj follow-up",
     "archiveSuccess": "Oferta zarchiwizowana",
     "archiveError": "Nie udało się zarchiwizować oferty",
     "duplicateComingSoon": "Duplikowanie ofert — wkrótce dostępne",

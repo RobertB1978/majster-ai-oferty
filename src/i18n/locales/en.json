@@ -434,6 +434,7 @@
       "deadline": "Deadline",
       "meeting": "Meeting",
       "reminder": "Reminder",
+      "follow_up": "Offer follow-up",
       "other": "Other",
       "work": "Work"
     },
@@ -991,6 +992,8 @@
     "paidSubscription": "Active subscription",
     "stripeNotConfigured": "Stripe is not fully configured",
     "stripeNotConfiguredDesc": "VITE_STRIPE_ENABLED=true, but real Stripe Price IDs are missing. Checkout is blocked until VITE_STRIPE_PRICE_* variables are set.",
+    "betaNoticeTitle": "Beta — plan activation via email",
+    "betaNoticeDesc": "Online payments are not active yet. To change your plan, click on a tile and submit a request — we will contact you at {{email}}.",
     "trialDaysRemaining": "{{count}} trial days remaining",
     "planRequest": {
       "title": "Order {{plan}} plan",
@@ -3514,6 +3517,7 @@
     "actionOpen": "Open",
     "actionDuplicate": "Duplicate",
     "actionArchive": "Archive",
+    "actionScheduleFollowup": "Schedule follow-up",
     "archiveSuccess": "Offer archived",
     "archiveError": "Failed to archive offer",
     "duplicateComingSoon": "Offer duplication — coming soon",
