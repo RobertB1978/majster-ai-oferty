@@ -80,14 +80,16 @@ Po przeanalizowaniu 6 audytów (łącznie ~2500 linii analiz) i porównaniu z HE
 |---|---------|---------------|-------------|
 | 1 | **Stripe Price IDs = null** — monetyzacja niemożliwa | Wszystkie 6 audytów | ❌ NADAL — wymaga akcji właściciela |
 | 2 | **Migracje DB na produkcji** — niezweryfikowane | Runtime Audit, Closing Audit | ⚠️ NADAL NIEZNANE — wymaga `supabase db push` |
-| 3 | **1259 hardcoded strings** w komponentach (i18n niekompletne w kodzie) | Closing Audit | ❌ NADAL — problem systemowy |
+| 3 | **~~1259~~ 639 hardcoded strings** w komponentach (~200 realnie widocznych) | Closing Audit | ⚠️ MNIEJSZY niż raportowano — poprawa po PRach #416, #425 |
 | 4 | **Brak OG image 1200×630** — kwadratowe icon-512.png | Meta Audit, Closing Audit | ❌ NADAL |
-| 5 | **AI prompty hardcoded po polsku** — EN/UK wysyłają polskie prompty | Runtime Audit | ❌ NADAL |
-| 6 | **Voice hardcoded pl-PL** | Runtime Audit | ❌ NADAL |
-| 7 | **Finance export = disabled "coming soon"** | Runtime Audit, Closing Audit | ❌ NADAL |
+| 5 | **~~AI prompty hardcoded po polsku~~** | Runtime Audit | ✅ NAPRAWIONE — AiChatAgent używa t() i getSpeechLocale() |
+| 6 | **Voice default pl-PL** (ale runtime dynamiczny) | Runtime Audit | ⚠️ CZĘŚCIOWO — default hardcoded, runtime prawidłowy |
+| 7 | **~~Finance export = disabled "coming soon"~~** | Runtime Audit, Closing Audit | ✅ ZMIENIONE — przyciski usunięte w PR #420 |
 | 8 | **Brak linku klient → oferty/projekty** w module klientów | Runtime Audit | ❌ NADAL |
 | 9 | **Analytics URL leak** — `/app/analytics` dostępna przez URL | Closing Audit | ❌ NADAL |
-| 10 | **Offer duplication = "coming soon" toast** | Audit 360, Closing Audit | ❌ NADAL |
+| 10 | **~~Offer duplication = "coming soon" toast~~** | Audit 360, Closing Audit | ✅ ZMIENIONE — przycisk usunięty z Offers.tsx |
+| 11 | **🆕 hasVariants niespójność** (PR #430) — wizard vs public accept | Nowe odkrycie | 🔴 NOWY BUG |
+| 12 | **🆕 Brak transakcji przy zapisie wariantów** (PR #430) | Nowe odkrycie | 🔴 NOWY BUG |
 
 ### Prawda potwierdzona — cechy nadal silne:
 
@@ -640,4 +642,23 @@ To jest **wystarczające** dla B2B SaaS. SSR dałoby marginalny zysk w SEO — m
 
 ---
 
-*Raport wygenerowany na podstawie analizy 6 audytów, 47 plików dokumentacji, >200 plików źródłowych, ~60 commitów (PRs #370-#431), i pełnej weryfikacji obecnego stanu repozytorium.*
+---
+
+# ZAŁĄCZNIKI
+
+Pełna dokumentacja uzupełniająca znajduje się w: `docs/STRATEGIC_ARCHITECTURE_REVIEW_SUPPLEMENT_2026-03-14.md`
+
+Zawiera:
+- **ANEKS A:** Weryfikacja runtime (build/test/lint/bundle z dowodami)
+- **ANEKS B:** Deep audit PRów #428-431 (z 2 nowymi krytycznymi bugami)
+- **ANEKS C:** Benchmark konkurencji — 14 konkurentów na polskim rynku
+- **ANEKS D:** Analiza zależności i dead code (31 nieużywanych itemów)
+- **ANEKS E:** Korekta 16 twierdzeń audytowych (3 fałszywe, 1 usunięty, 1 przesadzony)
+- **ANEKS F:** Precyzyjna analiza kosztowa z liczbami plików i LOC per etap
+- **ANEKS G:** 8 nowo znalezionych bugów z PRów #428-431
+- **ANEKS H:** Skorygowana tabela stanu produktu
+- **ANEKS I:** Zaktualizowana rekomendacja z dodatkowymi argumentami
+
+---
+
+*Raport wygenerowany na podstawie analizy 6 audytów, 47 plików dokumentacji, 465 plików źródłowych (81,924 LOC), ~60 commitów (PRs #370-#431), runtime weryfikacji (build + 1200 testów + TypeScript strict + ESLint), web research 14 konkurentów, dependency audit 143 packages, dead code scan, i claim-by-claim weryfikacji 16 twierdzeń audytowych.*
