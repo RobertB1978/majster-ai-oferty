@@ -63,6 +63,7 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+          muted: "hsl(var(--card-muted))",
         },
         chrome: {
           DEFAULT: "hsl(var(--chrome))",
