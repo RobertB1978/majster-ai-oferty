@@ -3728,7 +3728,9 @@
     "variantsTitle": "Offer options",
     "variantsDesc": "The contractor has prepared several options. Click each to see the details.",
     "variantsAriaLabel": "Offer variants",
-    "viewingVariant": "Viewing"
+    "viewingVariant": "Viewing",
+    "secureConnection": "Secure connection",
+    "photosTitle": "Project photos"
   },
   "offerPhotos": {
     "sectionTitle": "Offer photos",

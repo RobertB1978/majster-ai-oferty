@@ -12,6 +12,7 @@
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import QRCode from 'qrcode';
 
 /** jsPDF extended with jspdf-autotable dynamic property */
 interface JsPDFWithAutoTable extends jsPDF {
@@ -38,8 +39,14 @@ interface TemplateTheme {
   tableTheme: 'grid' | 'striped' | 'plain';
   /** Optional colored band behind the company name in the header */
   companyBg?: [number, number, number];
+  /** Optional lighter top stripe for depth in header band */
+  companyBgLight?: [number, number, number];
   /** Optional alternating row fill color */
   alternateRowFill?: [number, number, number];
+  /** Background fill for summary / totals box */
+  summaryBg: [number, number, number];
+  /** Accent color for gross total line */
+  grossAccent: [number, number, number];
 }
 
 const TEMPLATE_THEMES: Record<PdfTemplateId, TemplateTheme> = {
@@ -48,6 +55,8 @@ const TEMPLATE_THEMES: Record<PdfTemplateId, TemplateTheme> = {
     headerText: [255, 255, 255],
     accentColor: [0, 0, 0],
     tableTheme: 'grid',
+    summaryBg: [240, 246, 255],
+    grossAccent: [30, 90, 160],
   },
   modern: {
     headerFill: [30, 58, 95],
@@ -55,13 +64,18 @@ const TEMPLATE_THEMES: Record<PdfTemplateId, TemplateTheme> = {
     accentColor: [30, 58, 95],
     tableTheme: 'striped',
     companyBg: [30, 58, 95],
+    companyBgLight: [42, 78, 122],
     alternateRowFill: [240, 245, 255],
+    summaryBg: [235, 242, 250],
+    grossAccent: [30, 58, 95],
   },
   minimal: {
     headerFill: [60, 60, 60],
     headerText: [255, 255, 255],
     accentColor: [80, 80, 80],
     tableTheme: 'plain',
+    summaryBg: [245, 245, 245],
+    grossAccent: [40, 40, 40],
   },
 };
 
@@ -108,16 +122,28 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   // ========================================
 
   if (theme.companyBg) {
-    // Modern template: full-width colored header band
-    const bandHeight = 42;
+    // Modern template: full-width colored header band with subtle depth
+    const bandHeight = 50;
     doc.setFillColor(theme.companyBg[0], theme.companyBg[1], theme.companyBg[2]);
     doc.rect(0, 0, pageWidth, bandHeight, 'F');
 
+    // Lighter stripe at the very top (3mm) for depth effect
+    if (theme.companyBgLight) {
+      doc.setFillColor(theme.companyBgLight[0], theme.companyBgLight[1], theme.companyBgLight[2]);
+      doc.rect(0, 0, pageWidth, 3, 'F');
+    }
+
+    // "OFERTA" label right-aligned in header
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(160, 200, 240);
+    doc.text('OFERTA', pageWidth - margin, 12, { align: 'right' });
+
     // Company name in white
-    doc.setFontSize(20);
+    doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 255, 255);
-    doc.text(payload.company.name, margin, 18);
+    doc.text(payload.company.name, margin, 20);
 
     // Company details: NIP + address on one line, contact on next
     doc.setFontSize(9);
@@ -130,15 +156,15 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     if (payload.company.postalCode || payload.company.city) {
       addrParts.push([payload.company.postalCode, payload.company.city].filter(Boolean).join(' '));
     }
-    if (addrParts.length > 0) doc.text(addrParts.join('  |  '), margin, 27);
+    if (addrParts.length > 0) doc.text(addrParts.join('  |  '), margin, 30);
 
     const contactParts: string[] = [];
     if (payload.company.phone) contactParts.push(`Tel: ${payload.company.phone}`);
     if (payload.company.email) contactParts.push(`Email: ${payload.company.email}`);
-    if (contactParts.length > 0) doc.text(contactParts.join('  |  '), margin, 34);
+    if (contactParts.length > 0) doc.text(contactParts.join('  |  '), margin, 38);
 
     doc.setTextColor(0, 0, 0);
-    yPosition = bandHeight + 5;
+    yPosition = bandHeight + 6;
   } else {
     // Classic / Minimal template: text-only header
     doc.setFontSize(18);
@@ -190,9 +216,35 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   // TITLE SECTION
   // ========================================
 
+  // QR code for digital version (top-right corner, 22×22mm)
+  const QR_SIZE = 22;
+  const qrX = pageWidth - margin - QR_SIZE;
+  let qrPlaced = false;
+  if (payload.acceptanceUrl) {
+    try {
+      const qrDataUrl = await QRCode.toDataURL(payload.acceptanceUrl, {
+        width: 132,   // 22mm at 150dpi — small but scannable
+        margin: 1,
+        errorCorrectionLevel: 'M',
+        color: { dark: '#000000', light: '#FFFFFF' },
+      });
+      doc.addImage(qrDataUrl, 'PNG', qrX, yPosition - 2, QR_SIZE, QR_SIZE);
+      doc.setFontSize(6);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(120);
+      doc.text('Wersja cyfrowa', qrX + QR_SIZE / 2, yPosition + QR_SIZE + 1, { align: 'center' });
+      doc.setTextColor(0);
+      qrPlaced = true;
+    } catch {
+      // QR generation failure is non-fatal — PDF continues without QR
+    }
+  }
+
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
-  doc.text(payload.pdfConfig.title, margin, yPosition);
+  // Leave room for QR code when present
+  const titleMaxWidth = qrPlaced ? qrX - margin - 5 : pageWidth - 2 * margin;
+  doc.text(payload.pdfConfig.title, margin, yPosition, { maxWidth: titleMaxWidth });
   yPosition += 8;
 
   doc.setFontSize(10);
@@ -200,12 +252,18 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
 
   // Compliance: document ID + dates (uses getPdfComplianceLines for testable strings)
   const complianceLines = getPdfComplianceLines(payload);
-  doc.text(complianceLines.documentIdLine, pageWidth - margin, yPosition, { align: 'right' });
+  const complianceRightX = qrPlaced ? qrX - 3 : pageWidth - margin;
+  doc.text(complianceLines.documentIdLine, complianceRightX, yPosition, { align: 'right' });
   doc.text(complianceLines.issuedAtLine, margin, yPosition);
   yPosition += 5;
 
   doc.text(complianceLines.validUntilLine, margin, yPosition);
-  yPosition += 10;
+  // Advance past QR code if it was placed
+  if (qrPlaced) {
+    yPosition = Math.max(yPosition + 5, yPosition + QR_SIZE - 3);
+  } else {
+    yPosition += 10;
+  }
 
   // ========================================
   // CLIENT SECTION
@@ -320,11 +378,20 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     yPosition = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 6;
 
     // Summary
-    const summaryX = pageWidth - margin - 60;
+    const summaryX = pageWidth - margin - 68;
+    const summaryBoxWidth = pageWidth - margin - summaryX + 4;
+
+    // Estimate summary box height: vat-exempt → ~18mm, with VAT → ~28mm
+    const summaryBoxHeight = quote.isVatExempt ? 18 : (quote.vatRate !== null ? 28 : 22);
+
+    // Draw subtle background for summary section
+    doc.setFillColor(theme.summaryBg[0], theme.summaryBg[1], theme.summaryBg[2]);
+    doc.roundedRect(summaryX - 4, yPosition - 2, summaryBoxWidth, summaryBoxHeight, 1.5, 1.5, 'F');
+
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
-    doc.text('Podsumowanie:', margin, yPosition);
+    doc.text('Podsumowanie:', margin, yPosition + 4);
     doc.setTextColor(0, 0, 0);
     yPosition += 6;
 
@@ -334,29 +401,44 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     if (quote.isVatExempt) {
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
+      doc.setTextColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
       doc.text('Wartość końcowa:', summaryX, yPosition);
       doc.text(formatCurrency(quote.total), pageWidth - margin, yPosition, { align: 'right' });
+      doc.setTextColor(0, 0, 0);
       yPosition += 6;
       doc.setFontSize(9);
       doc.setFont('helvetica', 'italic');
       doc.setTextColor(100);
       doc.text('Sprzedawca zwolniony z podatku VAT', summaryX, yPosition);
       doc.setTextColor(0);
-      yPosition += 8;
+      yPosition += 10;
     } else {
+      doc.setTextColor(80, 80, 80);
       doc.text('Wartość netto:', summaryX, yPosition);
       doc.text(formatCurrency(quote.netTotal), pageWidth - margin, yPosition, { align: 'right' });
+      doc.setTextColor(0, 0, 0);
       yPosition += 5;
       if (quote.vatRate !== null) {
+        doc.setTextColor(80, 80, 80);
         doc.text(`VAT (${quote.vatRate}%):`, summaryX, yPosition);
         doc.text(formatCurrency(quote.vatAmount), pageWidth - margin, yPosition, { align: 'right' });
+        doc.setTextColor(0, 0, 0);
         yPosition += 5;
       }
+      // Separator line above gross total
+      doc.setDrawColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
+      doc.setLineWidth(0.4);
+      doc.line(summaryX - 2, yPosition - 1, pageWidth - margin + 2, yPosition - 1);
+      doc.setLineWidth(0.2);
+      doc.setDrawColor(180);
+
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.text('Wartość brutto:', summaryX, yPosition);
-      doc.text(formatCurrency(quote.grossTotal), pageWidth - margin, yPosition, { align: 'right' });
-      yPosition += 10;
+      doc.setTextColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
+      doc.text('Do zapłaty (brutto):', summaryX, yPosition + 4);
+      doc.text(formatCurrency(quote.grossTotal), pageWidth - margin, yPosition + 4, { align: 'right' });
+      doc.setTextColor(0, 0, 0);
+      yPosition += 14;
     }
   }
 
@@ -461,19 +543,40 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   yPosition = sigLineY + 10;
 
   // ========================================
-  // FOOTER
+  // FOOTER — add to all pages
   // ========================================
 
-  const footerY = doc.internal.pageSize.getHeight() - 20;
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'italic');
-  doc.setTextColor(100);
-  doc.text(
-    `Oferta wygenerowana przez Majster.AI - ${payload.generatedAt.toLocaleString('pl-PL')}`,
-    pageWidth / 2,
-    footerY,
-    { align: 'center' }
-  );
+  const totalPages = doc.getNumberOfPages();
+  const footerY = doc.internal.pageSize.getHeight() - 10;
+
+  for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+    doc.setPage(pageNum);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(130);
+
+    // Thin separator line above footer
+    doc.setDrawColor(200);
+    doc.setLineWidth(0.2);
+    doc.line(margin, footerY - 6, pageWidth - margin, footerY - 6);
+
+    // Centered generator notice
+    doc.text(
+      `Oferta wygenerowana przez Majster.AI — ${payload.generatedAt.toLocaleString('pl-PL')}`,
+      pageWidth / 2,
+      footerY - 2,
+      { align: 'center' }
+    );
+
+    // Page number right-aligned
+    doc.setFont('helvetica', 'normal');
+    doc.text(
+      `${pageNum} / ${totalPages}`,
+      pageWidth - margin,
+      footerY - 2,
+      { align: 'right' }
+    );
+  }
 
   // Convert to Blob
   const pdfBlob = doc.output('blob');
