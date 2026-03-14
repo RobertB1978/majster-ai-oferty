@@ -315,6 +315,9 @@
       "autosave": "Автозбереження активне",
       "encrypted": "Зашифроване з'єднання",
       "rodo": "Відповідність GDPR"
+    },
+    "profileProgress": {
+      "label": "Прогрес налаштування"
     }
   },
   "projects": {
@@ -2025,7 +2028,6 @@
         "description": "Згенеруйте професійний PDF пропозиції"
       }
     },
-    "continueStep": "Продовжити",
     "timeRemaining": "~{{minutes}} хв залишилось",
     "encouragement": "Чудовий прогрес! {{completed}} з {{total}} кроків виконано."
   },

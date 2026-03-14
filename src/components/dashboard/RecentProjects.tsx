@@ -96,9 +96,14 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
             </div>
           ) : projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 mb-3">
-                <FolderOpen className="h-7 w-7 text-primary/60" />
-              </div>
+              {/* Mini illustration — empty folder */}
+              <svg viewBox="0 0 80 80" fill="none" className="w-16 h-16 mb-3" aria-hidden="true">
+                <rect x="12" y="24" width="56" height="40" rx="4" className="fill-primary/10 stroke-primary/30" strokeWidth="1.5" />
+                <path d="M12 28C12 25.8 13.8 24 16 24H30L35 18H64C66.2 18 68 19.8 68 22V28H12Z" className="fill-primary/20" />
+                <rect x="24" y="36" width="32" height="3" rx="1.5" className="fill-primary/25" />
+                <rect x="24" y="44" width="24" height="3" rx="1.5" className="fill-primary/15" />
+                <rect x="24" y="52" width="28" height="3" rx="1.5" className="fill-primary/15" />
+              </svg>
               <p className="text-sm font-medium text-foreground mb-1">
                 {t('dashboard.noProjectsTitle')}
               </p>

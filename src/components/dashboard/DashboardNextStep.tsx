@@ -96,7 +96,7 @@ export function DashboardNextStep({ progress, onOpenWizard }: DashboardNextStepP
             size="sm"
             onClick={() => navigate(STEP_ROUTES[nextStep.id])}
           >
-            {t('onboarding.continueStep')}
+            {t('onboarding.startStep')}
             <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
           </Button>
           <Button

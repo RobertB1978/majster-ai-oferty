@@ -315,6 +315,9 @@
       "autosave": "Autozapis aktywny",
       "encrypted": "Połączenie szyfrowane",
       "rodo": "Zgodność z RODO"
+    },
+    "profileProgress": {
+      "label": "Postęp konfiguracji"
     }
   },
   "projects": {
@@ -2025,7 +2028,6 @@
         "description": "Wygeneruj profesjonalne PDF oferty"
       }
     },
-    "continueStep": "Kontynuuj",
     "timeRemaining": "~{{minutes}} min pozostało",
     "encouragement": "Świetnie! {{completed}} z {{total}} kroków ukończone."
   },

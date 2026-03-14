@@ -315,6 +315,9 @@
       "autosave": "Autosave active",
       "encrypted": "Encrypted connection",
       "rodo": "GDPR compliant"
+    },
+    "profileProgress": {
+      "label": "Setup progress"
     }
   },
   "projects": {
@@ -2025,7 +2028,6 @@
         "description": "Generate a professional PDF of the offer"
       }
     },
-    "continueStep": "Continue",
     "timeRemaining": "~{{minutes}} min remaining",
     "encouragement": "Great progress! {{completed}} of {{total}} steps done."
   },

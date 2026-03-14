@@ -27,6 +27,39 @@ const stepIcons = [Building2, Users, FolderOpen, FileText, Download];
 /** Approximate time in minutes per step — based on real product flows */
 const STEP_TIME_MINUTES = [2, 1, 3, 1, 1];
 
+/** Lightweight confetti-style celebration particles using Framer Motion */
+function CelebrationParticles() {
+  // Deterministic particle positions — no randomness, no layout shift
+  const particles = [
+    { x: -60, y: -80, rotate: 45, delay: 0, color: 'bg-success' },
+    { x: 70, y: -70, rotate: -30, delay: 0.1, color: 'bg-primary' },
+    { x: -40, y: -100, rotate: 60, delay: 0.15, color: 'bg-warning' },
+    { x: 50, y: -90, rotate: -45, delay: 0.05, color: 'bg-success' },
+    { x: -80, y: -50, rotate: 30, delay: 0.2, color: 'bg-primary' },
+    { x: 80, y: -60, rotate: -60, delay: 0.12, color: 'bg-warning' },
+  ];
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          className={`absolute left-1/2 top-1/2 h-2 w-2 rounded-full ${p.color}`}
+          initial={{ x: 0, y: 0, opacity: 1, scale: 0 }}
+          animate={{
+            x: p.x,
+            y: p.y,
+            opacity: [1, 1, 0],
+            scale: [0, 1.2, 0.6],
+            rotate: p.rotate,
+          }}
+          transition={{ duration: 1.2, delay: p.delay, ease: [0.16, 1, 0.3, 1] }}
+        />
+      ))}
+    </div>
+  );
+}
+
 interface OnboardingWizardProps {
   open: boolean;
   onClose: () => void;
@@ -84,7 +117,8 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
       <DialogContent className="max-w-2xl p-0 overflow-hidden" aria-describedby={undefined}>
         <DialogTitle className="sr-only">{t('onboarding.wizardTitle')}</DialogTitle>
         {isAllDone ? (
-          <div className="p-8 text-center animate-fade-in">
+          <div className="p-8 text-center animate-fade-in relative">
+            <CelebrationParticles />
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}

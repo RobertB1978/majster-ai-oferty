@@ -13,6 +13,7 @@ import { QuickActions } from '@/components/dashboard/QuickActions';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 import { QuoteCreationHub } from '@/components/dashboard/QuoteCreationHub';
 import { DashboardNextStep } from '@/components/dashboard/DashboardNextStep';
+import { DashboardOnboardingProgress } from '@/components/dashboard/DashboardOnboardingProgress';
 import { DashboardTrustBar } from '@/components/dashboard/DashboardTrustBar';
 import { Badge } from '@/components/ui/badge';
 import { AdBanner } from '@/components/ads/AdBanner';
@@ -150,6 +151,12 @@ export default function Dashboard() {
             <p className="text-muted-foreground">
               {t('dashboard.tagline')}
             </p>
+            {/* Profile setup progress — shown only during onboarding */}
+            {onboardingProgress && !onboardingProgress.is_completed && !onboardingProgress.skipped_at && (
+              <div className="mt-2">
+                <DashboardOnboardingProgress progress={onboardingProgress} />
+              </div>
+            )}
           </div>
           <Button
             size="lg"
