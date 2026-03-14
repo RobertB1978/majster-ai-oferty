@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowRight, FolderOpen, ExternalLink } from 'lucide-react';
+import { ArrowRight, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { STATUS_CONFIG } from '@/data/statusConfig';
@@ -96,16 +96,24 @@ export function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
             </div>
           ) : projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted mb-3">
-                <FolderOpen className="h-7 w-7 text-muted-foreground/60" />
-              </div>
-              <p className="text-sm text-muted-foreground mb-2">
-                {t('dashboard.noProjects')}
+              {/* Mini illustration — empty folder */}
+              <svg viewBox="0 0 80 80" fill="none" className="w-16 h-16 mb-3" aria-hidden="true">
+                <rect x="12" y="24" width="56" height="40" rx="4" className="fill-primary/10 stroke-primary/30" strokeWidth="1.5" />
+                <path d="M12 28C12 25.8 13.8 24 16 24H30L35 18H64C66.2 18 68 19.8 68 22V28H12Z" className="fill-primary/20" />
+                <rect x="24" y="36" width="32" height="3" rx="1.5" className="fill-primary/25" />
+                <rect x="24" y="44" width="24" height="3" rx="1.5" className="fill-primary/15" />
+                <rect x="24" y="52" width="28" height="3" rx="1.5" className="fill-primary/15" />
+              </svg>
+              <p className="text-sm font-medium text-foreground mb-1">
+                {t('dashboard.noProjectsTitle')}
+              </p>
+              <p className="text-xs text-muted-foreground mb-3 max-w-[240px]">
+                {t('dashboard.noProjectsHint')}
               </p>
               <Button
-                variant="link"
-                onClick={() => navigate('/app/projects/new')}
-                className="text-sm p-0 h-auto text-primary"
+                size="sm"
+                onClick={() => navigate('/app/offers/new')}
+                className="text-sm"
               >
                 {t('dashboard.createFirstProject')}
               </Button>

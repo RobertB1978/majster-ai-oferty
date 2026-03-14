@@ -156,10 +156,14 @@ export function EmptyDashboard() {
 
       {/* Heading */}
       <motion.h1 variants={itemVariants} className="text-3xl sm:text-4xl font-bold mb-3 text-foreground">
-        {t('dashboard.welcome')}
+        {t('dashboard.emptyWelcomeTitle')}
       </motion.h1>
-      <motion.p variants={itemVariants} className="text-muted-foreground max-w-md mb-5 text-base leading-relaxed">
-        {t('dashboard.welcomeSubtitle')}
+      <motion.p variants={itemVariants} className="text-muted-foreground max-w-md mb-2 text-base leading-relaxed">
+        {t('dashboard.emptyWelcomeSubtitle')}
+      </motion.p>
+      <motion.p variants={itemVariants} className="text-xs text-muted-foreground/70 mb-6 flex items-center gap-1 justify-center">
+        <Clock className="h-3 w-3" />
+        {t('dashboard.emptyTimeEstimate')}
       </motion.p>
 
       {/* Feature pills */}

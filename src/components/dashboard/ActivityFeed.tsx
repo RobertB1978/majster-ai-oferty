@@ -96,9 +96,24 @@ export const ActivityFeed = React.memo(function ActivityFeed() {
             ))}
           </div>
         ) : activities.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4 text-center">
-            {t('dashboard.noActivity')}
-          </p>
+          <div className="py-6 text-center flex flex-col items-center">
+            {/* Mini illustration — timeline */}
+            <svg viewBox="0 0 64 56" fill="none" className="w-12 h-12 mb-2" aria-hidden="true">
+              <circle cx="12" cy="12" r="6" className="fill-muted stroke-muted-foreground/30" strokeWidth="1" />
+              <rect x="20" y="10" width="32" height="4" rx="2" className="fill-muted-foreground/15" />
+              <line x1="12" y1="18" x2="12" y2="26" className="stroke-muted-foreground/20" strokeWidth="1.5" />
+              <circle cx="12" cy="32" r="6" className="fill-muted stroke-muted-foreground/30" strokeWidth="1" />
+              <rect x="20" y="30" width="24" height="4" rx="2" className="fill-muted-foreground/15" />
+              <line x1="12" y1="38" x2="12" y2="46" className="stroke-muted-foreground/20" strokeWidth="1.5" strokeDasharray="3 3" />
+              <circle cx="12" cy="50" r="4" className="fill-none stroke-muted-foreground/20" strokeWidth="1" strokeDasharray="2 2" />
+            </svg>
+            <p className="text-sm text-muted-foreground mb-1">
+              {t('dashboard.noActivityTitle')}
+            </p>
+            <p className="text-xs text-muted-foreground/70 max-w-[240px]">
+              {t('dashboard.noActivityHint')}
+            </p>
+          </div>
         ) : (
           <div className="space-y-0">
             {activities.map((activity, index) => (
