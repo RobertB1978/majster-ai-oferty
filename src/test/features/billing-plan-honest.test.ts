@@ -84,11 +84,11 @@ describe('PLANS config — uczciwe wartości', () => {
     }
   });
 
-  it('każdy plan ma id, name i maxProjects zdefiniowane', () => {
+  it('każdy plan ma id, name i limits.maxProjects zdefiniowane', () => {
     for (const plan of PLANS) {
       expect(plan.id, `Plan missing id`).toBeTruthy();
       expect(plan.name, `Plan ${plan.id} missing name`).toBeTruthy();
-      expect(plan.maxProjects, `Plan ${plan.id} missing maxProjects`).toBeGreaterThan(0);
+      expect(plan.limits.maxProjects, `Plan ${plan.id} missing limits.maxProjects`).toBeGreaterThan(0);
     }
   });
 });
