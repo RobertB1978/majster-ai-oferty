@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    /* Industrial "Digital Power Tool" palette */
-    --background: 210 20% 96%;
+    /* Premium warm palette — upgraded from industrial/cool to warm/premium */
+    --background: 36 18% 97%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -20,12 +20,12 @@
     --primary: 30 90% 32%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Neutral cool gray */
-    --secondary: 215 16% 94%;
+    /* Secondary - Neutral warm gray */
+    --secondary: 36 12% 93%;
     --secondary-foreground: 215 25% 27%;
 
-    --muted: 220 14% 92%;
-    --muted-foreground: 220 9% 43%;
+    --muted: 36 10% 93%;
+    --muted-foreground: 30 8% 44%;
 
     /* Accent - Slate-800 chrome */
     --accent: 217 33% 17%;
@@ -44,27 +44,31 @@
     --info: 199 89% 48%;
     --info-foreground: 0 0% 100%;
 
-    --border: 220 13% 87%;
-    --input: 220 13% 87%;
+    --border: 36 8% 88%;
+    --input: 36 8% 88%;
     --ring: 30 90% 32%;
 
     --radius: 0.5rem;
 
-    /* Backward-compatible aliases (no glow/gradient, map to primary) */
+    /* Backward-compatible aliases */
     --primary-glow: 30 90% 32%;
     --gradient-start: 30 90% 32%;
     --gradient-mid: 30 90% 32%;
     --gradient-end: 30 90% 32%;
 
-    /* Industrial shadows - flat, no glow */
-    --shadow-sm: 0 1px 2px 0 hsl(220 13% 11% / 0.08);
-    --shadow-md: 0 2px 6px -1px hsl(220 13% 11% / 0.10);
-    --shadow-lg: 0 4px 12px -2px hsl(220 13% 11% / 0.12);
-    --shadow-xl: 0 8px 24px -4px hsl(220 13% 11% / 0.14);
-    --shadow-glow: 0 1px 3px 0 hsl(220 13% 11% / 0.08);
-    --shadow-vibrant: 0 2px 6px -1px hsl(220 13% 11% / 0.10);
-    --shadow-card: 0 1px 4px 0 hsl(220 13% 11% / 0.08);
-    --shadow-card-hover: 0 3px 10px -2px hsl(220 13% 11% / 0.14);
+    /* Premium gradient tokens */
+    --gradient-primary-from: 30 90% 32%;
+    --gradient-primary-to: 25 92% 26%;
+
+    /* Premium layered shadows — ambient + directional */
+    --shadow-sm: 0 1px 2px 0 hsl(220 13% 11% / 0.06);
+    --shadow-md: 0 2px 8px -1px hsl(220 13% 11% / 0.10), 0 1px 2px 0 hsl(220 13% 11% / 0.04);
+    --shadow-lg: 0 4px 16px -2px hsl(220 13% 11% / 0.12), 0 2px 4px -1px hsl(220 13% 11% / 0.06);
+    --shadow-xl: 0 8px 32px -4px hsl(220 13% 11% / 0.15), 0 4px 8px -2px hsl(220 13% 11% / 0.08);
+    --shadow-glow: 0 1px 3px 0 hsl(30 90% 32% / 0.15), 0 0 0 1px hsl(30 90% 32% / 0.08);
+    --shadow-vibrant: 0 2px 8px -1px hsl(30 90% 32% / 0.20), 0 1px 2px 0 hsl(30 90% 32% / 0.10);
+    --shadow-card: 0 1px 3px 0 hsl(220 13% 11% / 0.08), 0 1px 2px -1px hsl(220 13% 11% / 0.05);
+    --shadow-card-hover: 0 4px 14px -2px hsl(220 13% 11% / 0.14), 0 2px 4px -1px hsl(220 13% 11% / 0.07);
 
     /* Chrome - slate-900 for menus/sidebars */
     --chrome: 222 47% 11%;
@@ -129,15 +133,19 @@
     --gradient-mid: 38 92% 55%;
     --gradient-end: 38 92% 55%;
 
-    /* Dark mode shadows */
+    /* Premium gradient tokens — dark mode (brighter amber) */
+    --gradient-primary-from: 38 92% 55%;
+    --gradient-primary-to: 33 88% 48%;
+
+    /* Dark mode shadows — richer depth */
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 2px 6px -1px hsl(0 0% 0% / 0.4);
-    --shadow-lg: 0 4px 12px -2px hsl(0 0% 0% / 0.5);
-    --shadow-xl: 0 8px 24px -4px hsl(0 0% 0% / 0.6);
-    --shadow-glow: 0 1px 3px 0 hsl(0 0% 0% / 0.3);
-    --shadow-vibrant: 0 2px 6px -1px hsl(0 0% 0% / 0.3);
-    --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.3);
-    --shadow-card-hover: 0 2px 8px -2px hsl(0 0% 0% / 0.4);
+    --shadow-md: 0 2px 8px -1px hsl(0 0% 0% / 0.40), 0 1px 2px 0 hsl(0 0% 0% / 0.20);
+    --shadow-lg: 0 4px 16px -2px hsl(0 0% 0% / 0.50), 0 2px 4px -1px hsl(0 0% 0% / 0.25);
+    --shadow-xl: 0 8px 32px -4px hsl(0 0% 0% / 0.60), 0 4px 8px -2px hsl(0 0% 0% / 0.30);
+    --shadow-glow: 0 1px 3px 0 hsl(38 92% 55% / 0.20), 0 0 0 1px hsl(38 92% 55% / 0.10);
+    --shadow-vibrant: 0 2px 8px -1px hsl(38 92% 55% / 0.25), 0 1px 2px 0 hsl(38 92% 55% / 0.12);
+    --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.30), 0 1px 2px -1px hsl(0 0% 0% / 0.20);
+    --shadow-card-hover: 0 4px 14px -2px hsl(0 0% 0% / 0.45), 0 2px 4px -1px hsl(0 0% 0% / 0.25);
 
     --chrome: 222 47% 8%;
     --chrome-foreground: 210 40% 98%;
@@ -277,16 +285,17 @@
 .stagger-7 { animation-delay: 0.35s; }
 .stagger-8 { animation-delay: 0.4s; }
 
-/* Hover transitions - industrial (no lift/glow) */
+/* Hover transitions - premium lift */
 .hover-lift {
-  transition: box-shadow 0.15s ease;
+  transition: box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .hover-lift:hover {
   box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .hover-scale {
-  transition: transform 0.15s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .hover-scale:hover {
   transform: scale(1.01);
@@ -311,46 +320,53 @@
   background: hsl(var(--muted-foreground) / 0.4);
 }
 
-/* Backward-compatible: glass, gradient, glow classes (now industrial no-ops) */
+/* Backward-compatible: glass, gradient, glow classes */
 .glass {
-  background: hsl(var(--card));
+  background: hsl(var(--card) / 0.9);
   border: 1px solid hsl(var(--border));
+  backdrop-filter: blur(8px);
 }
 
 .glass-strong {
-  background: hsl(var(--card));
+  background: hsl(var(--card) / 0.95);
   border: 1px solid hsl(var(--border));
+  backdrop-filter: blur(16px);
 }
 
+/* Premium gradient text — real amber gradient */
 .gradient-text {
-  color: hsl(var(--primary));
+  background: linear-gradient(135deg, hsl(var(--gradient-primary-from)), hsl(var(--gradient-primary-to)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .gradient-border {
   position: relative;
   background: hsl(var(--card));
   border-radius: var(--radius);
-  border: 1px solid hsl(var(--border));
+  border: 1px solid hsl(var(--primary) / 0.25);
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.08);
 }
 
 .btn-glow {
-  /* no-op: industrial buttons have no glow */
+  box-shadow: var(--shadow-glow);
 }
 
-.hover-glow {
-  /* no-op: industrial has no glow hover */
+.hover-glow:hover {
+  box-shadow: var(--shadow-glow);
 }
 
 .animate-pulse-glow {
-  /* no-op */
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .animate-float {
-  /* no-op */
+  animation: float 4s ease-in-out infinite;
 }
 
 .animate-bounce-soft {
-  /* no-op */
+  animation: bounce 1s ease-in-out infinite;
 }
 
 /* ============================================
@@ -398,11 +414,12 @@ button, a, [role="button"] {
   }
 }
 
-/* Input focus ring — consistent across all browsers */
+/* Input focus ring — warm amber with soft outer glow */
 input:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid hsl(var(--primary) / 0.4);
+  outline: 2px solid hsl(var(--primary) / 0.55);
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.08);
 }
 
 /* ============================================
@@ -413,9 +430,9 @@ textarea:focus-visible {
 .icon-thin  { --lucide-stroke-width: 1.5; }
 .icon-bold  { --lucide-stroke-width: 2.5; }
 
-/* Enterprise button micro-interaction */
+/* Premium button micro-interaction — spring-style press */
 .btn-press {
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .btn-press:active {
   transform: scale(0.97);
@@ -479,14 +496,15 @@ textarea:focus-visible {
   animation: shimmer 2s ease-in-out infinite;
 }
 
-/* Card enhancements - industrial (subtle) */
+/* Card enhancements - premium lift with spring easing */
 .card-interactive {
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card-interactive:hover {
-  box-shadow: var(--shadow-md);
-  border-color: hsl(var(--primary) / 0.3);
+  box-shadow: var(--shadow-card-hover);
+  border-color: hsl(var(--primary) / 0.25);
+  transform: translateY(-1px);
 }
 
 /* Focus ring */
@@ -497,6 +515,18 @@ textarea:focus-visible {
 .focus-ring:focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
+}
+
+/* Premium card surface — subtle warm gradient + enhanced shadow */
+.card-premium {
+  background: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted) / 0.4));
+  border: 1px solid hsl(var(--border));
+  box-shadow: var(--shadow-card);
+}
+
+/* Premium surface for sidebars, panels — warm tint */
+.surface-warm {
+  background: linear-gradient(180deg, hsl(36 20% 98.5%), hsl(36 15% 97%));
 }
 
 /* Icon container */

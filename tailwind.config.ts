@@ -112,11 +112,12 @@ export default {
         'card': 'var(--shadow-card)',
         'card-hover': 'var(--shadow-card-hover)',
       },
-      // Backward-compatible: gradient images now resolve to solid colors
+      // Premium gradient images — real amber gradients using CSS vars
       backgroundImage: {
-        'gradient-primary': 'linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-mid)), hsl(var(--gradient-end)))',
-        'gradient-subtle': 'linear-gradient(135deg, hsl(var(--primary) / 0.05), hsl(var(--accent) / 0.05))',
-        'gradient-card': 'linear-gradient(145deg, hsl(var(--card)), hsl(var(--background)))',
+        'gradient-primary': 'linear-gradient(135deg, hsl(var(--gradient-primary-from)), hsl(var(--gradient-primary-to)))',
+        'gradient-subtle': 'linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--primary) / 0.02))',
+        'gradient-card': 'linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted) / 0.5))',
+        'gradient-warm-surface': 'linear-gradient(180deg, hsl(36 20% 98.5%), hsl(36 15% 97%))',
         'mesh-gradient': 'none',
       },
       keyframes: {
