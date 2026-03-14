@@ -302,7 +302,6 @@
     "emptyWelcomeTitle": "Gotowy na pierwszą ofertę?",
     "emptyWelcomeSubtitle": "Majster.AI pomaga tworzyć profesjonalne wyceny, śledzić projekty i zarządzać klientami — wszystko w jednym miejscu.",
     "emptyTimeEstimate": "Pierwsza oferta w ok. 3 minuty",
-    "emptyCtaLabel": "Stwórz pierwszą ofertę",
     "noProjectsTitle": "Brak projektów",
     "noProjectsHint": "Stwórz pierwszą ofertę — automatycznie stanie się projektem.",
     "noActivityTitle": "Brak aktywności",
@@ -2029,7 +2028,8 @@
       }
     },
     "timeRemaining": "~{{minutes}} min pozostało",
-    "encouragement": "Świetnie! {{completed}} z {{total}} kroków ukończone."
+    "encouragement": "Świetnie! {{completed}} z {{total}} kroków ukończone.",
+    "stepTimeEstimate": "~{{minutes}} min"
   },
   "adminSettings": {
     "loadingSettings": "Wczytywanie ustawień...",

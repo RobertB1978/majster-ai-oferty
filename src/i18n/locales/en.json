@@ -302,7 +302,6 @@
     "emptyWelcomeTitle": "Ready to build your first offer?",
     "emptyWelcomeSubtitle": "Majster.AI helps you create professional quotes, track projects, and manage clients — all in one place.",
     "emptyTimeEstimate": "Your first offer in about 3 minutes",
-    "emptyCtaLabel": "Create your first offer",
     "noProjectsTitle": "No projects yet",
     "noProjectsHint": "Create your first offer — it will automatically become a project.",
     "noActivityTitle": "No activity yet",
@@ -2029,7 +2028,8 @@
       }
     },
     "timeRemaining": "~{{minutes}} min remaining",
-    "encouragement": "Great progress! {{completed}} of {{total}} steps done."
+    "encouragement": "Great progress! {{completed}} of {{total}} steps done.",
+    "stepTimeEstimate": "~{{minutes}} min"
   },
   "adminSettings": {
     "loadingSettings": "Loading settings...",

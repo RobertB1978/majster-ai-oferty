@@ -233,7 +233,7 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
                       {!isCompleted && (
                         <p className="text-xs text-muted-foreground/70 mt-1 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          ~{STEP_TIME_MINUTES[index]} min
+                          {t('onboarding.stepTimeEstimate', { minutes: STEP_TIME_MINUTES[index] })}
                         </p>
                       )}
                     </div>

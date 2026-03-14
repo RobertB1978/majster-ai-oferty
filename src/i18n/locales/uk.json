@@ -302,7 +302,6 @@
     "emptyWelcomeTitle": "Готові створити першу пропозицію?",
     "emptyWelcomeSubtitle": "Majster.AI допомагає створювати професійні кошториси, відстежувати проекти та керувати клієнтами — все в одному місці.",
     "emptyTimeEstimate": "Перша пропозиція приблизно за 3 хвилини",
-    "emptyCtaLabel": "Створити першу пропозицію",
     "noProjectsTitle": "Ще немає проектів",
     "noProjectsHint": "Створіть першу пропозицію — вона автоматично стане проектом.",
     "noActivityTitle": "Ще немає активності",
@@ -2029,7 +2028,8 @@
       }
     },
     "timeRemaining": "~{{minutes}} хв залишилось",
-    "encouragement": "Чудовий прогрес! {{completed}} з {{total}} кроків виконано."
+    "encouragement": "Чудовий прогрес! {{completed}} з {{total}} кроків виконано.",
+    "stepTimeEstimate": "~{{minutes}} хв"
   },
   "adminSettings": {
     "loadingSettings": "Завантаження налаштувань...",
