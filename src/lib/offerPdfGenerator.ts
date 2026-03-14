@@ -257,18 +257,32 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
 
   // ========================================
   // QUOTE POSITIONS TABLE
+  // Variant mode: render each variant as a labeled section.
+  // No-variant mode: render as before (single section).
   // ========================================
 
-  if (payload.quote && payload.quote.positions.length > 0) {
+  const hasVariants =
+    Array.isArray(payload.variantSections) && payload.variantSections.length > 1;
+
+  /** Renders items table + summary for a single quote slice */
+  function renderQuoteSection(quote: typeof payload.quote, sectionLabel?: string) {
+    if (!quote || quote.positions.length === 0) {
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'italic');
+      doc.text('Brak pozycji.', margin, yPosition);
+      yPosition += 8;
+      return;
+    }
+
+    // Section header (variant label or default "Pozycje wyceny")
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
-    doc.text('Pozycje wyceny:', margin, yPosition);
+    doc.text(sectionLabel ?? 'Pozycje wyceny:', margin, yPosition);
     doc.setTextColor(0, 0, 0);
     yPosition += 8;
 
-    // Prepare table data
-    const tableData = payload.quote.positions.map((pos) => [
+    const tableData = quote.positions.map((pos) => [
       pos.name,
       pos.qty.toString(),
       pos.unit,
@@ -277,7 +291,6 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
       formatCurrency(pos.qty * pos.price),
     ]);
 
-    // Generate table using jspdf-autotable with template-specific styles
     autoTable(doc, {
       startY: yPosition,
       head: [['Nazwa', 'Ilość', 'Jedn.', 'Cena jedn.', 'Kategoria', 'Wartość']],
@@ -289,31 +302,26 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
         fontStyle: 'bold',
         fontSize: 9,
       },
-      bodyStyles: {
-        fontSize: 9,
-      },
+      bodyStyles: { fontSize: 9 },
       alternateRowStyles: theme.alternateRowFill
         ? { fillColor: theme.alternateRowFill }
         : undefined,
       columnStyles: {
-        0: { cellWidth: 50 }, // Nazwa
-        1: { cellWidth: 20, halign: 'center' }, // Ilość
-        2: { cellWidth: 20, halign: 'center' }, // Jednostka
-        3: { cellWidth: 25, halign: 'right' }, // Cena jedn.
-        4: { cellWidth: 25, halign: 'center' }, // Kategoria
-        5: { cellWidth: 25, halign: 'right' }, // Wartość
+        0: { cellWidth: 50 },
+        1: { cellWidth: 20, halign: 'center' },
+        2: { cellWidth: 20, halign: 'center' },
+        3: { cellWidth: 25, halign: 'right' },
+        4: { cellWidth: 25, halign: 'center' },
+        5: { cellWidth: 25, halign: 'right' },
       },
       margin: { left: margin, right: margin },
     });
 
-    // Update yPosition after table
-    yPosition = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 10;
+    yPosition = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 6;
 
-    // ========================================
-    // SUMMARY SECTION
-    // ========================================
-
-    doc.setFontSize(11);
+    // Summary
+    const summaryX = pageWidth - margin - 60;
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
     doc.text('Podsumowanie:', margin, yPosition);
@@ -323,71 +331,50 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
 
-    const summaryX = pageWidth - margin - 60;
-
-    doc.text('Materiały:', summaryX, yPosition);
-    doc.text(formatCurrency(payload.quote.summaryMaterials), pageWidth - margin, yPosition, {
-      align: 'right',
-    });
-    yPosition += 5;
-
-    doc.text('Robocizna:', summaryX, yPosition);
-    doc.text(formatCurrency(payload.quote.summaryLabor), pageWidth - margin, yPosition, {
-      align: 'right',
-    });
-    yPosition += 5;
-
-    doc.text(`Marża (${payload.quote.marginPercent}%):`, summaryX, yPosition);
-    const marginValue =
-      (payload.quote.summaryMaterials + payload.quote.summaryLabor) *
-      (payload.quote.marginPercent / 100);
-    doc.text(formatCurrency(marginValue), pageWidth - margin, yPosition, {
-      align: 'right',
-    });
-    yPosition += 8;
-
-    // Total (bold, larger)
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Wartość końcowa:', summaryX, yPosition);
-    doc.text(formatCurrency(payload.quote.total), pageWidth - margin, yPosition, {
-      align: 'right',
-    });
-    yPosition += 8;
-
-    // ========================================
-    // VAT SECTION
-    // ========================================
-
-    doc.setFontSize(9);
-    if (payload.quote.isVatExempt) {
+    if (quote.isVatExempt) {
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Wartość końcowa:', summaryX, yPosition);
+      doc.text(formatCurrency(quote.total), pageWidth - margin, yPosition, { align: 'right' });
+      yPosition += 6;
+      doc.setFontSize(9);
       doc.setFont('helvetica', 'italic');
       doc.setTextColor(100);
-      doc.text(complianceLines.vatExemptLine, summaryX, yPosition);
+      doc.text('Sprzedawca zwolniony z podatku VAT', summaryX, yPosition);
       doc.setTextColor(0);
       yPosition += 8;
-    } else if (complianceLines.vatRateLine !== null) {
-      doc.setFont('helvetica', 'normal');
+    } else {
       doc.text('Wartość netto:', summaryX, yPosition);
-      doc.text(formatCurrency(payload.quote.netTotal), pageWidth - margin, yPosition, {
-        align: 'right',
-      });
+      doc.text(formatCurrency(quote.netTotal), pageWidth - margin, yPosition, { align: 'right' });
       yPosition += 5;
-
-      doc.text(complianceLines.vatRateLine, summaryX, yPosition);
-      doc.text(formatCurrency(payload.quote.vatAmount), pageWidth - margin, yPosition, {
-        align: 'right',
-      });
-      yPosition += 5;
-
+      if (quote.vatRate !== null) {
+        doc.text(`VAT (${quote.vatRate}%):`, summaryX, yPosition);
+        doc.text(formatCurrency(quote.vatAmount), pageWidth - margin, yPosition, { align: 'right' });
+        yPosition += 5;
+      }
+      doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
       doc.text('Wartość brutto:', summaryX, yPosition);
-      doc.text(formatCurrency(payload.quote.grossTotal), pageWidth - margin, yPosition, {
-        align: 'right',
-      });
-      yPosition += 8;
+      doc.text(formatCurrency(quote.grossTotal), pageWidth - margin, yPosition, { align: 'right' });
+      yPosition += 10;
     }
+  }
+
+  if (hasVariants && payload.variantSections) {
+    // Multi-variant: render each variant as a labeled section
+    payload.variantSections.forEach((section, idx) => {
+      if (idx > 0) {
+        // Thin separator between variants
+        doc.setDrawColor(180);
+        doc.setLineDashPattern([2, 2], 0);
+        doc.line(margin, yPosition - 2, pageWidth - margin, yPosition - 2);
+        doc.setLineDashPattern([], 0);
+        yPosition += 4;
+      }
+      renderQuoteSection(section.quote, `${section.label}:`);
+    });
+  } else if (payload.quote && payload.quote.positions.length > 0) {
+    renderQuoteSection(payload.quote);
   } else {
     // No quote available
     doc.setFontSize(10);

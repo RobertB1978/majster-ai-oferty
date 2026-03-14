@@ -1,11 +1,12 @@
 /**
- * offerPdfPayloadBuilder — PR-11
+ * offerPdfPayloadBuilder — PR-11 (extended in offer-versioning-7RcU5)
  *
  * Builds an OfferPdfPayload from the new `offers` + `offer_items` tables
  * (PR-09/PR-10 data model). Used by OfferPreviewModal and useSendOffer.
  *
- * Unlike the legacy `buildOfferData` (which reads from `quotes` + `pdf_data`),
- * this builder queries the new tables directly.
+ * offer-versioning-7RcU5:
+ *   - Loads offer_variants when present
+ *   - Adds variants to payload so PDF generator can render per-variant sections
  */
 
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +17,7 @@ import {
   QuoteData,
   PdfConfig,
   generateDocumentId,
+  OfferVariantSection,
 } from './offerDataBuilder';
 
 // ── Types returned from Supabase queries ──────────────────────────────────────
@@ -40,6 +42,13 @@ interface RawOfferItem {
   vat_rate: number | null;
   line_total_net: number;
   item_type: string;
+  variant_id: string | null;
+}
+
+interface RawVariant {
+  id: string;
+  label: string;
+  sort_order: number;
 }
 
 interface RawClient {
@@ -84,17 +93,26 @@ export async function buildOfferPdfPayloadFromOffer(
   if (offerErr) throw offerErr;
   const rawOffer = offer as RawOffer;
 
-  // ── 2. Load offer items ──────────────────────────────────────────────────
+  // ── 2. Load offer items (now includes variant_id) ────────────────────────
   const { data: itemsData, error: itemsErr } = await supabase
     .from('offer_items')
-    .select('id, name, unit, qty, unit_price_net, vat_rate, line_total_net, item_type')
+    .select('id, name, unit, qty, unit_price_net, vat_rate, line_total_net, item_type, variant_id')
     .eq('offer_id', offerId)
     .order('created_at', { ascending: true });
 
   if (itemsErr) throw itemsErr;
   const rawItems: RawOfferItem[] = (itemsData ?? []) as RawOfferItem[];
 
-  // ── 3. Load client (if linked) ───────────────────────────────────────────
+  // ── 3. Load variants (if any) ────────────────────────────────────────────
+  const { data: variantsData } = await supabase
+    .from('offer_variants')
+    .select('id, label, sort_order')
+    .eq('offer_id', offerId)
+    .order('sort_order', { ascending: true });
+
+  const rawVariants: RawVariant[] = (variantsData ?? []) as RawVariant[];
+
+  // ── 4. Load client (if linked) ───────────────────────────────────────────
   let rawClient: RawClient | null = null;
   if (rawOffer.client_id) {
     const { data: clientData } = await supabase
@@ -105,7 +123,7 @@ export async function buildOfferPdfPayloadFromOffer(
     rawClient = clientData as RawClient | null;
   }
 
-  // ── 4. Load profile (company info) ──────────────────────────────────────
+  // ── 5. Load profile (company info) ──────────────────────────────────────
   const { data: profileData } = await supabase
     .from('profiles')
     .select('company_name, nip, street, postal_code, city, phone, email_for_offers, logo_url')
@@ -113,7 +131,7 @@ export async function buildOfferPdfPayloadFromOffer(
     .maybeSingle();
   const rawProfile = profileData as RawProfile | null;
 
-  // ── 5. Build company info ────────────────────────────────────────────────
+  // ── 6. Build company info ────────────────────────────────────────────────
   const company: CompanyInfo = {
     name: rawProfile?.company_name || 'Majster.AI',
     nip: rawProfile?.nip ?? undefined,
@@ -125,7 +143,7 @@ export async function buildOfferPdfPayloadFromOffer(
     email: rawProfile?.email_for_offers ?? undefined,
   };
 
-  // ── 6. Build client info ─────────────────────────────────────────────────
+  // ── 7. Build client info ─────────────────────────────────────────────────
   const client: ClientInfo | null = rawClient
     ? {
         name: rawClient.name,
@@ -135,20 +153,25 @@ export async function buildOfferPdfPayloadFromOffer(
       }
     : null;
 
-  // ── 7. Build quote data from offer_items ─────────────────────────────────
-  let quoteData: QuoteData | null = null;
-  if (rawItems.length > 0) {
-    // Determine a representative VAT rate (use the most common non-null rate, or null if all exempt)
-    const vatRates = rawItems.map((it) => it.vat_rate).filter((r): r is number => r !== null);
+  // ── 8. Build quote data from offer_items ─────────────────────────────────
+
+  // Helper to build QuoteData from a slice of items
+  function buildQuoteData(items: RawOfferItem[], overrideTotals?: {
+    net: number; vat: number; gross: number;
+  }): QuoteData | null {
+    if (items.length === 0) return null;
+    const vatRates = items.map((it) => it.vat_rate).filter((r): r is number => r !== null);
     const vatRate = vatRates.length > 0 ? vatRates[0] : null;
     const isVatExempt = vatRate === null;
+    const netTotal = overrideTotals?.net ?? items.reduce((s, it) => s + it.line_total_net, 0);
+    const vatAmount = overrideTotals?.vat ?? (isVatExempt ? 0 : items.reduce((s, it) => {
+      const r = it.vat_rate ?? 0;
+      return s + Number(it.qty) * Number(it.unit_price_net) * (r / 100);
+    }, 0));
+    const grossTotal = overrideTotals?.gross ?? netTotal + vatAmount;
 
-    const netTotal = rawOffer.total_net ?? rawItems.reduce((s, it) => s + it.line_total_net, 0);
-    const vatAmount = rawOffer.total_vat ?? 0;
-    const grossTotal = rawOffer.total_gross ?? netTotal + vatAmount;
-
-    quoteData = {
-      positions: rawItems.map((it) => ({
+    return {
+      positions: items.map((it) => ({
         id: it.id,
         name: it.name,
         qty: Number(it.qty),
@@ -156,13 +179,8 @@ export async function buildOfferPdfPayloadFromOffer(
         price: Number(it.unit_price_net),
         category: it.item_type === 'material' ? 'Materiał' : 'Robocizna',
       })),
-      // Legacy summary fields — compute from items
-      summaryMaterials: rawItems
-        .filter((it) => it.item_type === 'material')
-        .reduce((s, it) => s + it.line_total_net, 0),
-      summaryLabor: rawItems
-        .filter((it) => it.item_type !== 'material')
-        .reduce((s, it) => s + it.line_total_net, 0),
+      summaryMaterials: items.filter((it) => it.item_type === 'material').reduce((s, it) => s + it.line_total_net, 0),
+      summaryLabor: items.filter((it) => it.item_type !== 'material').reduce((s, it) => s + it.line_total_net, 0),
       marginPercent: 0,
       total: netTotal,
       vatRate,
@@ -173,7 +191,51 @@ export async function buildOfferPdfPayloadFromOffer(
     };
   }
 
-  // ── 8. Build PDF config (minimal defaults for wizard offers) ─────────────
+  let quoteData: QuoteData | null = null;
+  let variantSections: OfferVariantSection[] | undefined;
+
+  if (rawVariants.length > 0) {
+    // Variant mode: build per-variant sections
+    variantSections = rawVariants.map((v) => {
+      const vItems = rawItems.filter((it) => it.variant_id === v.id);
+      return {
+        id: v.id,
+        label: v.label,
+        sort_order: v.sort_order,
+        quote: buildQuoteData(vItems) ?? {
+          positions: [],
+          summaryMaterials: 0,
+          summaryLabor: 0,
+          marginPercent: 0,
+          total: 0,
+          vatRate: null,
+          isVatExempt: true,
+          netTotal: 0,
+          vatAmount: 0,
+          grossTotal: 0,
+        },
+      };
+    });
+
+    // quoteData = first variant (for overall offer totals)
+    const firstVariantItems = rawItems.filter((it) => it.variant_id === rawVariants[0]?.id);
+    quoteData = buildQuoteData(firstVariantItems, {
+      net: rawOffer.total_net ?? 0,
+      vat: rawOffer.total_vat ?? 0,
+      gross: rawOffer.total_gross ?? 0,
+    });
+  } else {
+    // No-variant mode: current behavior
+    const noVariantItems = rawItems.filter((it) => it.variant_id === null);
+    const allItems = noVariantItems.length > 0 ? noVariantItems : rawItems;
+    quoteData = buildQuoteData(allItems, {
+      net: rawOffer.total_net ?? allItems.reduce((s, it) => s + it.line_total_net, 0),
+      vat: rawOffer.total_vat ?? 0,
+      gross: rawOffer.total_gross ?? rawOffer.total_net ?? 0,
+    });
+  }
+
+  // ── 9. Build PDF config ───────────────────────────────────────────────────
   const issuedAt = new Date();
   const validUntil = new Date(issuedAt.getTime() + 30 * 24 * 60 * 60 * 1000);
 
@@ -197,5 +259,6 @@ export async function buildOfferPdfPayloadFromOffer(
     documentId: generateDocumentId(offerId, issuedAt),
     issuedAt,
     validUntil,
+    variantSections,
   };
 }
