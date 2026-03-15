@@ -52,7 +52,7 @@ const ActivityItem = React.memo(function ActivityItem({ activity, index }: Activ
           </div>
           <div className="shrink-0 text-right">
             {activity.amount !== undefined && (
-              <p className="text-sm font-semibold text-success">
+              <p className="text-sm font-semibold text-success font-mono">
                 {`+${activity.amount.toLocaleString('pl-PL')} z\u0142`}
               </p>
             )}

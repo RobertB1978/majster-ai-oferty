@@ -85,9 +85,9 @@ export default function Dashboard() {
     const badges: Record<string, { label: string; className: string }> = {
       free: { label: 'Free', className: 'bg-muted text-muted-foreground' },
       // 'starter' is a legacy alias for 'pro' — display identically.
-      starter: { label: 'Pro', className: 'bg-green-500/20 text-green-500' },
-      pro: { label: 'Pro', className: 'bg-green-500/20 text-green-500' },
-      business: { label: 'Business', className: 'bg-purple-500/20 text-purple-500' },
+      starter: { label: 'Pro', className: 'bg-success/15 text-success' },
+      pro: { label: 'Pro', className: 'bg-success/15 text-success' },
+      business: { label: 'Business', className: 'bg-warning/15 text-warning' },
       enterprise: { label: 'Enterprise', className: 'bg-primary/20 text-primary' },
     };
     return badges[currentPlan] ?? badges.free;

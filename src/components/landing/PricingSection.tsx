@@ -127,7 +127,7 @@ export function PricingSection() {
           {t('landing.pricing.enterpriseNote')}{' '}
           <a
             href="mailto:kontakt@majster.ai"
-            className="underline hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200"
+            className="underline text-gray-600 dark:text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200"
           >
             {t('landing.pricing.enterpriseContact')}
           </a>
