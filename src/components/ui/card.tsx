@@ -41,7 +41,9 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border bg-card text-card-foreground shadow-card transition-all duration-200",
+        // Roadmap 3.4: rounded-token-lg = 16px (radius-lg dla kart/paneli)
+        // Roadmap 3.1: border-[var(--border-default)] + bg-[var(--bg-surface)]
+        "rounded-token-lg border-[var(--border-default)] border bg-[var(--bg-surface)] text-card-foreground shadow-card transition-all duration-200",
         className
       )}
       {...props}
@@ -89,7 +91,7 @@ const CardInteractive = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HT
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border bg-card text-card-foreground shadow-card cursor-pointer",
+        "rounded-token-lg border-[var(--border-default)] border bg-[var(--bg-surface)] text-card-foreground shadow-card cursor-pointer",
         "transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
         "hover:shadow-card-hover hover:-translate-y-0.5 hover:border-primary/20",
         className
@@ -106,7 +108,7 @@ const CardPremium = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border border-primary/15 bg-gradient-card text-card-foreground shadow-card",
+        "rounded-token-lg border border-primary/15 bg-gradient-card text-card-foreground shadow-card",
         "transition-all duration-200",
         className
       )}
