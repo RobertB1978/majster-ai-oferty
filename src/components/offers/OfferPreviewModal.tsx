@@ -36,7 +36,7 @@ import { FreeTierPaywallModal } from '@/components/billing/FreeTierPaywallModal'
 import { useSendOffer } from '@/hooks/useSendOffer';
 import { buildOfferPdfPayloadFromOffer } from '@/lib/offerPdfPayloadBuilder';
 import { generateOfferPdf } from '@/lib/offerPdfGenerator';
-import { useAcceptanceLink, buildAcceptanceLinkUrl } from '@/hooks/useAcceptanceLink';
+import { useAcceptanceLink, useCreateAcceptanceLink, buildAcceptanceLinkUrl } from '@/hooks/useAcceptanceLink';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -187,6 +187,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
   const offerQuota = useFreeTierOfferQuota();
   const sendOffer = useSendOffer();
   const { data: acceptanceLink } = useAcceptanceLink(offerId);
+  const createLink = useCreateAcceptanceLink(offerId);
 
   const [showPaywall, setShowPaywall] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
@@ -237,6 +238,11 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
       {
         onSuccess: (result) => {
           setSentPdfUrl(result.pdfUrl);
+          // Auto-create public acceptance link so the sender can copy it immediately.
+          // Fire-and-forget — non-fatal. AcceptanceLinkPanel also allows manual creation.
+          if (!acceptanceLink?.token) {
+            createLink.mutate();
+          }
           if (result.alreadySent) {
             toast.info(t('offerPreview.alreadySent'));
           } else {
