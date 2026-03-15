@@ -28,11 +28,11 @@ export function HowItWorksSection() {
   return (
     <section
       id="how-it-works"
-      className="py-20 md:py-28 bg-gray-50 dark:bg-[#141414]"
+      className="py-20 md:py-28 bg-white dark:bg-[#0F0F0F]"
       aria-labelledby="how-heading"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-14">
           <h2
             id="how-heading"
             className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4"
@@ -44,16 +44,16 @@ export function HowItWorksSection() {
           </p>
         </div>
 
-        {/* Desktop: row with dashed connectors */}
+        {/* Desktop: row with gradient connectors */}
         <div className="hidden md:flex items-start gap-0 max-w-4xl mx-auto">
           {STEPS.map((step, idx) => (
             <div key={step.number} className="flex items-start flex-1">
               <div className="flex-1 text-center px-4">
                 <div className="relative inline-block">
-                  <div className="w-14 h-14 rounded-2xl bg-amber-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <step.icon className="w-6 h-6 text-black" aria-hidden="true" />
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-amber-500/25">
+                    <step.icon className="w-7 h-7 text-white" aria-hidden="true" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white dark:bg-[#0F0F0F] border border-gray-200 dark:border-[#2A2A2A] flex items-center justify-center">
+                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-white dark:bg-[#0F0F0F] border-2 border-amber-500 flex items-center justify-center shadow-sm">
                     <span className="text-amber-500 text-xs font-bold">{step.number}</span>
                   </div>
                 </div>
@@ -62,7 +62,7 @@ export function HowItWorksSection() {
               </div>
               {idx < STEPS.length - 1 && (
                 <div
-                  className="shrink-0 mt-7 w-12 border-t-2 border-dashed border-amber-500/30"
+                  className="shrink-0 mt-8 w-12 border-t-2 border-dashed border-amber-500/30"
                   aria-hidden="true"
                 />
               )}
@@ -75,14 +75,14 @@ export function HowItWorksSection() {
           {STEPS.map((step, idx) => (
             <div key={step.number} className="flex gap-4">
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center shrink-0">
-                  <step.icon className="w-5 h-5 text-black" aria-hidden="true" />
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shrink-0 shadow-md shadow-amber-500/20">
+                  <step.icon className="w-5 h-5 text-white" aria-hidden="true" />
                 </div>
                 {idx < STEPS.length - 1 && (
                   <div className="w-0.5 flex-1 mt-2 mb-2 bg-amber-500/20" aria-hidden="true" />
                 )}
               </div>
-              <div className={`flex-1 pb-6 ${idx === STEPS.length - 1 ? '' : ''}`}>
+              <div className="flex-1 pb-6">
                 <div className="text-amber-500 text-xs font-bold mb-1">
                   {t('landing.how.step')} {step.number}
                 </div>

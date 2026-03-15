@@ -2,18 +2,32 @@
 //
 // Every item below is verified to be real:
 //   • "3 języki" — src/i18n/locales/pl.json + en.json + uk.json confirmed in detection
-//   • "PDF" — src/App.tsx /app/projects/:id/quote → QuoteEditor + /app/projects/:id/pdf → PdfGenerator
+//   • "PDF" — src/App.tsx /app/projects/:id/quote → QuoteEditor, /app/projects/:id/pdf → PdfGenerator
 //   • "Plan Free" — PricingSection shows 0 zł / mies, no card required
 //   • "Mobile-first" — Capacitor installed + UI itself is the evidence
 
 import { useTranslation } from 'react-i18next';
+import { FileText, Globe, Clock, Smartphone } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
-const TRUST_ITEMS = [
+interface TrustItem {
+  value: string;
+  labelKey: string;
+  labelDefault: string;
+  subKey?: string;
+  subDefault?: string;
+  sub?: string;
+  icon: LucideIcon;
+  verified: boolean;
+}
+
+const TRUST_ITEMS: TrustItem[] = [
   {
     value: '3',
     labelKey: 'landing.trust.languages_label',
     labelDefault: 'języki interfejsu',
     sub: 'PL / EN / UK',
+    icon: Globe,
     verified: true,
   },
   {
@@ -22,6 +36,7 @@ const TRUST_ITEMS = [
     labelDefault: 'w kilka kliknięć',
     subKey: 'landing.trust.pdf_sub',
     subDefault: 'profesjonalne oferty',
+    icon: FileText,
     verified: true,
   },
   {
@@ -30,6 +45,7 @@ const TRUST_ITEMS = [
     labelDefault: 'pierwsza oferta',
     subKey: 'landing.trust.speed_sub',
     subDefault: 'od rejestracji do PDF',
+    icon: Clock,
     verified: true,
   },
   {
@@ -38,9 +54,10 @@ const TRUST_ITEMS = [
     labelDefault: 'Mobile-first',
     subKey: 'landing.trust.mobile_sub',
     subDefault: 'iOS, Android, Web',
+    icon: Smartphone,
     verified: true,
   },
-] as const;
+];
 
 export function TrustBar() {
   const { t } = useTranslation();
@@ -51,22 +68,26 @@ export function TrustBar() {
       className="bg-gray-50 dark:bg-[#141414] border-y border-gray-200 dark:border-[#2A2A2A]"
       aria-label={t('landing.trust.ariaLabel')}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {visible.map((item) => (
-            <div key={item.labelDefault} className="flex flex-col items-center gap-1">
-              <span
-                className="text-2xl font-bold text-amber-500"
-                aria-hidden="true"
-              >
-                {item.value}
-              </span>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
-                {t(item.labelKey, item.labelDefault)}
-              </span>
-              <span className="text-xs text-gray-400 dark:text-[#525252]">
-                {'subKey' in item ? t(item.subKey, item.subDefault) : item.sub}
-              </span>
+            <div key={item.labelDefault} className="flex items-center gap-3 justify-center md:justify-start">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                <item.icon className="w-5 h-5 text-amber-500" aria-hidden="true" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-lg font-bold text-amber-500">
+                    {item.value}
+                  </span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white leading-tight truncate">
+                    {t(item.labelKey, item.labelDefault)}
+                  </span>
+                </div>
+                <span className="text-xs text-gray-400 dark:text-[#525252]">
+                  {'subKey' in item && item.subKey ? t(item.subKey, item.subDefault) : item.sub}
+                </span>
+              </div>
             </div>
           ))}
         </div>

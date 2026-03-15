@@ -2453,6 +2453,60 @@
       "t2Outcome": "+40% more offers won",
       "t3Outcome": "5 minutes for a professional offer"
     },
+    "results": {
+      "badge": "What you get",
+      "sectionTitle": "What does it give you?",
+      "sectionSubtitle": "A platform designed to help — not to promise miracles. Here are the real benefits of daily use.",
+      "time": {
+        "metric": "~5 min",
+        "title": "Faster quotes",
+        "desc": "Instead of manually creating spreadsheets — fill in items, choose a template, and generate a PDF. Ready to send.",
+        "how": "Item templates + automatic PDF"
+      },
+      "quality": {
+        "metric": "PDF",
+        "title": "Professional-looking offers",
+        "desc": "Your offers look like they come from a large company — with logo, itemised table, and professional formatting. The client sees quality.",
+        "how": "3 PDF templates + company logo"
+      },
+      "control": {
+        "metric": "1 place",
+        "title": "Order in projects",
+        "desc": "Clients, projects, quotes, and finances — all in one system instead of scattered files and notes.",
+        "how": "Dashboard + client database + calendar"
+      },
+      "principlesTitle": "Our philosophy",
+      "principles": {
+        "noLock": "No commitments — cancel anytime",
+        "youDecide": "You decide — AI helps, doesn't replace",
+        "dataYours": "Your data belongs to you"
+      }
+    },
+    "beforeAfter": {
+      "sectionTitle": "Excel & notepad vs. Majster.AI",
+      "sectionSubtitle": "Compare daily work with spreadsheets versus a dedicated tool.",
+      "beforeLabel": "Before",
+      "quotes": {
+        "before": "Quotes in Excel — formatting, copying, manual calculations",
+        "after": "Fill in items → click → PDF ready"
+      },
+      "clients": {
+        "before": "Contacts in phone, notes on paper",
+        "after": "Client database with project history"
+      },
+      "tracking": {
+        "before": "Project status? Call and ask",
+        "after": "Dashboard with progress of every project"
+      },
+      "mobile": {
+        "before": "Laptop on site? Not really",
+        "after": "Full access from your phone on site"
+      },
+      "language": {
+        "before": "Team speaks Ukrainian — separate instructions",
+        "after": "3 interface languages — everyone works in theirs"
+      }
+    },
     "cta": {
       "title": "Ready for digital transformation?",
       "desc": "Start free for 30 days.",
@@ -2507,6 +2561,8 @@
       "pdf_sub": "estimates and quotes",
       "unlimited_label": "unlimited projects",
       "unlimited_sub": "Pro plan and above",
+      "speed_label": "first quote",
+      "speed_sub": "from registration to PDF",
       "mobile_label": "Mobile-first",
       "mobile_sub": "works on any phone",
       "pdfLabel": "PDF Quotes",

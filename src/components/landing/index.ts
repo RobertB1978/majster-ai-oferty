@@ -3,6 +3,7 @@ export { HeroSection } from './HeroSection';
 export { TrustBar } from './TrustBar';
 export { FeaturesGrid } from './FeaturesGrid';
 export { HowItWorksSection } from './HowItWorksSection';
+export { BeforeAfterSection } from './BeforeAfterSection';
 export { TestimonialsSection } from './TestimonialsSection';
 export { PricingSection } from './PricingSection';
 export { FAQSection } from './FAQSection';
