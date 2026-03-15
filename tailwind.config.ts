@@ -15,7 +15,12 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        /* Roadmap 3.2: sans = Inter (treść, formularze) */
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        /* Roadmap 3.2: display = Bricolage Grotesque (nagłówki H1-H4) — self-hosted */
+        display: ['Bricolage Grotesque', 'system-ui', 'sans-serif'],
+        /* Roadmap 3.2: mono = JetBrains Mono (liczby, kwoty PLN, kody) — self-hosted */
+        mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -95,6 +100,28 @@ export default {
           border:       '#2A2A2A',
           surface:      '#141414',
         },
+        // === Roadmap 3.1 — Semantic design system tokens ===
+        // Używane via: bg-ds-bg-base, text-ds-text-primary, border-ds-border-default, etc.
+        ds: {
+          'bg-base':           'var(--bg-base)',
+          'bg-surface':        'var(--bg-surface)',
+          'bg-surface-raised': 'var(--bg-surface-raised)',
+          'bg-sidebar':        'var(--bg-sidebar)',
+          'border-default':    'var(--border-default)',
+          'border-subtle':     'var(--border-subtle)',
+          'text-primary':      'var(--text-primary)',
+          'text-secondary':    'var(--text-secondary)',
+          'text-muted':        'var(--text-muted)',
+          'accent-amber':      'var(--accent-amber)',
+          'accent-amber-hover':'var(--accent-amber-hover)',
+          'accent-amber-subtle':'var(--accent-amber-subtle)',
+          'accent-blue':       'var(--accent-blue)',
+          'accent-blue-subtle':'var(--accent-blue-subtle)',
+          'state-success':     'var(--state-success)',
+          'state-warning':     'var(--state-warning)',
+          'state-error':       'var(--state-error)',
+          'state-info':        'var(--state-info)',
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -112,6 +139,18 @@ export default {
         'vibrant': 'var(--shadow-vibrant)',
         'card': 'var(--shadow-card)',
         'card-hover': 'var(--shadow-card-hover)',
+        /* Roadmap section 3.3 */
+        'xs': 'var(--shadow-xs)',
+        'amber': 'var(--shadow-amber)',
+        'amber-lg': 'var(--shadow-amber-lg)',
+      },
+      borderRadius: {
+        /* Roadmap section 3.4 — named radius tokens */
+        'token-sm':   'var(--radius-sm)',
+        'token-md':   'var(--radius-md)',
+        'token-lg':   'var(--radius-lg)',
+        'token-xl':   'var(--radius-xl)',
+        'token-full': 'var(--radius-full)',
       },
       // Premium gradient images — real amber gradients using CSS vars
       backgroundImage: {
