@@ -41,7 +41,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border bg-card text-card-foreground shadow-card transition-all duration-300",
+        "rounded-xl border bg-card text-card-foreground shadow-card transition-all duration-200",
         className
       )}
       {...props}
@@ -59,7 +59,7 @@ CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("text-xl font-semibold leading-none tracking-tight", className)} {...props} />
+    <h3 ref={ref} className={cn("text-xl font-bold leading-none tracking-[-0.018em]", className)} {...props} />
   ),
 );
 CardTitle.displayName = "CardTitle";
@@ -83,13 +83,15 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardFooter.displayName = "CardFooter";
 
-// New interactive card variant
+// Interactive card variant — premium spring lift
 const CardInteractive = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border bg-card text-card-foreground shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 cursor-pointer",
+        "rounded-xl border bg-card text-card-foreground shadow-card cursor-pointer",
+        "transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+        "hover:shadow-card-hover hover:-translate-y-0.5 hover:border-primary/20",
         className
       )}
       {...props}
@@ -98,4 +100,20 @@ const CardInteractive = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HT
 );
 CardInteractive.displayName = "CardInteractive";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, CardInteractive };
+// Premium card variant — warm gradient surface for highlighted content
+const CardPremium = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "rounded-xl border border-primary/15 bg-gradient-card text-card-foreground shadow-card",
+        "transition-all duration-200",
+        className
+      )}
+      {...props}
+    />
+  )
+);
+CardPremium.displayName = "CardPremium";
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, CardInteractive, CardPremium };

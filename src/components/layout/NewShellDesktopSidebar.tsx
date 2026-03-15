@@ -83,11 +83,11 @@ export function NewShellDesktopSidebar() {
         <NavLink
           to={item.path}
           className={cn(
-            'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors min-h-[44px]',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+            'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-150 min-h-[44px]',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2',
             isActive
-              ? 'bg-primary/10 text-primary'
-              : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+              ? 'bg-gradient-to-r from-primary/15 to-primary/5 text-primary font-semibold shadow-sm'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
           )}
         >
           <Icon
@@ -102,7 +102,7 @@ export function NewShellDesktopSidebar() {
 
   return (
     <aside
-      className="hidden lg:flex flex-col w-56 shrink-0 border-r border-border bg-card sticky top-12 h-[calc(100vh-3rem)] overflow-y-auto"
+      className="hidden lg:flex flex-col w-56 shrink-0 border-r border-border bg-gradient-warm-surface sticky top-12 h-[calc(100vh-3rem)] overflow-y-auto"
       aria-label={t('newShell.nav.ariaLabel')}
     >
       <nav className="flex flex-col flex-1 py-4 px-3">
@@ -110,7 +110,7 @@ export function NewShellDesktopSidebar() {
         <div className="flex-1 space-y-5">
           {NAV_SECTIONS.map((section) => (
             <div key={section.id}>
-              <p className="px-3 mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/60">
+              <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
                 {t(section.labelKey)}
               </p>
               <ul className="space-y-0.5">
