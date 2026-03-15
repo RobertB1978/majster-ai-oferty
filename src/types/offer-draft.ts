@@ -84,7 +84,12 @@ export interface DraftLineItem {
   qty: number;
   unit: string;
   unitPriceNet: number;
-  vatRate: number;
+  /**
+   * VAT rate as a percentage (e.g. 23 for 23%, 0 for zero-rate).
+   * null = not yet configured — triggers §19.5 condition 4 (modal 'Netto czy brutto?').
+   * Use pricing.isVatExempt = true to consciously waive VAT on all items.
+   */
+  vatRate: number | null;
   totals: DraftLineItemTotals;
   source: DraftLineItemSource;
 }

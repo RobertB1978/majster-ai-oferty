@@ -324,6 +324,26 @@ describe('isReadyForPDF — invalid cases', () => {
     expect(result.ok).toBe(false);
     expect(result.failedConditions).toContain('client_has_name_and_contact');
   });
+
+  it('fails when vatRate is null and isVatExempt is false (VAT not configured)', () => {
+    const draft = makePdfReadyDraft();
+    draft.pricing.isVatExempt = false;
+    draft.pricing.lineItems = [makeLineItem({ vatRate: null })];
+    const result = isReadyForPDF(draft);
+    expect(result.ok).toBe(false);
+    expect(result.failedConditions).toContain('vat_configured');
+  });
+});
+
+// ── Additional coverage: existing client path ─────────────────────────────────
+
+describe('isReadyForPDF — existing client identified by id', () => {
+  it('passes condition 1 when client.id is set (existing client on file)', () => {
+    const draft = makePdfReadyDraft();
+    draft.client = { id: 'client-db-001', tempName: null, tempPhone: null, tempEmail: null };
+    const result = isReadyForPDF(draft);
+    expect(result.ok).toBe(true);
+  });
 });
 
 // ── 6. Mode transition constraints ───────────────────────────────────────────

@@ -149,10 +149,11 @@ export function isReadyForPDF(draft: OfferDraft): PdfReadinessResult {
     failed.push('all_line_items_complete');
   }
 
-  // Condition 4: VAT configured or consciously exempt
+  // Condition 4: VAT configured (vatRate !== null on every item) OR consciously exempt
+  // vatRate === null means "not yet decided" → triggers the 'Netto czy brutto?' modal (§19.5)
   const vatConfigured =
     draft.pricing.isVatExempt ||
-    allItems.every((item) => item.vatRate >= 0);
+    (allItems.length > 0 && allItems.every((item) => item.vatRate !== null));
   if (!vatConfigured) {
     failed.push('vat_configured');
   }
