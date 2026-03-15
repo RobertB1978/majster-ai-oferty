@@ -5015,5 +5015,52 @@
     "planExpiresSoonMsg": "Twój plan {{plan}} wygasa za {{days}} dni. Odnów teraz, aby uniknąć przerwy w działaniu.",
     "planExpiryReminder": "Przypomnienie o odnowieniu planu",
     "planExpiryReminderMsg": "Twój plan {{plan}} wygasa za {{days}} dni."
+  },
+  "fieldCapture": {
+    "photo": {
+      "addPhoto": "Dodaj zdjęcie",
+      "addFromCamera": "Zrób zdjęcie",
+      "addFromGallery": "Wybierz z galerii",
+      "removePhoto": "Usuń zdjęcie",
+      "removeConfirm": "Czy na pewno chcesz usunąć to zdjęcie?",
+      "removeConfirmYes": "Usuń",
+      "removeConfirmNo": "Anuluj",
+      "andMore": "+{{count}} więcej",
+      "empty": "Brak zdjęć. Dodaj pierwsze.",
+      "ariaLabel": "Zdjęcie {{index}}"
+    },
+    "note": {
+      "label": "Notatka z terenu",
+      "placeholder": "Opisz co widzisz na miejscu — stan ścian, wymiary, uwagi...",
+      "ariaLabel": "Notatka tekstowa"
+    },
+    "checklist": {
+      "title": "Dokumentacja klienta",
+      "hasDocumentation": "Klient ma dokumentację?",
+      "hasInvestorEstimate": "Jest kosztorys inwestorski?",
+      "clientRequirements": "Wytyczne klienta",
+      "clientRequirementsPlaceholder": "Opisz wytyczne klienta (opcjonalnie)...",
+      "yes": "TAK",
+      "no": "NIE",
+      "waiting": "CZEKAM",
+      "checking": "SPRAWDZAM"
+    },
+    "measurement": {
+      "title": "Pomiary",
+      "label": "Opis",
+      "labelPlaceholder": "np. Ściana wschodnia",
+      "value": "Wartość",
+      "unit": "Jednostka",
+      "addMeasurement": "Dodaj pomiar",
+      "removeMeasurement": "Usuń pomiar",
+      "empty": "Brak pomiarów",
+      "units": {
+        "m": "m",
+        "m2": "m²",
+        "m3": "m³",
+        "pcs": "szt.",
+        "mb": "mb"
+      }
+    }
   }
 }
