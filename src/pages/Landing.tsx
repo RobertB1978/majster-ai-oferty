@@ -6,6 +6,7 @@ import {
   TrustBar,
   FeaturesGrid,
   HowItWorksSection,
+  BeforeAfterSection,
   TestimonialsSection,
   PricingSection,
   FAQSection,
@@ -156,7 +157,10 @@ export default function Landing() {
           {/* 3. How it works */}
           <HowItWorksSection />
 
-          {/* 4. Testimonials — after features (proof sequence) */}
+          {/* 3b. Before/After — Excel vs Majster.AI contrast */}
+          <BeforeAfterSection />
+
+          {/* 4. Expected results — honest framing, no fake testimonials */}
           <TestimonialsSection />
 
           {/* 5. Pricing */}

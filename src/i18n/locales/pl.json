@@ -2300,6 +2300,8 @@
       "pdf_sub": "wyceny i oferty",
       "unlimited_label": "bez limitu projektów",
       "unlimited_sub": "plan Pro i wyższe",
+      "speed_label": "pierwsza oferta",
+      "speed_sub": "od rejestracji do PDF",
       "mobile_label": "Mobile-first",
       "mobile_sub": "działa na każdym telefonie",
       "pdfLabel": "Wyceny PDF",
@@ -2367,6 +2369,60 @@
       "t1Outcome": "Oszczędność 3h tygodniowo",
       "t2Outcome": "+40% więcej ofert wygranych",
       "t3Outcome": "5 minut na profesjonalną ofertę"
+    },
+    "results": {
+      "badge": "Co zyskujesz",
+      "sectionTitle": "Co Ci to daje?",
+      "sectionSubtitle": "Platforma zaprojektowana, by pomagać — nie obiecywać cudów. Oto realne korzyści z codziennego użytkowania.",
+      "time": {
+        "metric": "~5 min",
+        "title": "Szybsze wyceny",
+        "desc": "Zamiast ręcznie tworzyć arkusze — wypełniasz pozycje, wybierasz szablon i generujesz PDF. Gotowe do wysyłki.",
+        "how": "Szablony pozycji + automatyczny PDF"
+      },
+      "quality": {
+        "metric": "PDF",
+        "title": "Profesjonalny wygląd ofert",
+        "desc": "Twoje oferty wyglądają jak od dużej firmy — z logo, tabelą pozycji i profesjonalnym formatowaniem. Klient widzi jakość.",
+        "how": "3 szablony PDF + logo firmy"
+      },
+      "control": {
+        "metric": "1 miejsce",
+        "title": "Porządek w projektach",
+        "desc": "Klienci, projekty, wyceny i finanse — wszystko w jednym systemie zamiast w rozrzuconych plikach i notatkach.",
+        "how": "Dashboard + baza klientów + kalendarz"
+      },
+      "principlesTitle": "Nasza filozofia",
+      "principles": {
+        "noLock": "Bez zobowiązań — anuluj kiedy chcesz",
+        "youDecide": "Ty decydujesz — AI pomaga, nie zastępuje",
+        "dataYours": "Twoje dane należą do Ciebie"
+      }
+    },
+    "beforeAfter": {
+      "sectionTitle": "Excel i notatnik vs. Majster.AI",
+      "sectionSubtitle": "Porównaj codzienną pracę z arkuszem kalkulacyjnym i z dedykowanym narzędziem.",
+      "beforeLabel": "Przed",
+      "quotes": {
+        "before": "Wycena w Excelu — formatowanie, kopiowanie, ręczne przeliczanie",
+        "after": "Wypełnij pozycje → kliknij → PDF gotowy"
+      },
+      "clients": {
+        "before": "Kontakty w telefonie, notatki na kartce",
+        "after": "Baza klientów z historią projektów"
+      },
+      "tracking": {
+        "before": "Status projektu? Dzwonię i pytam",
+        "after": "Dashboard z postępem każdego projektu"
+      },
+      "mobile": {
+        "before": "Laptop na budowie? Raczej nie",
+        "after": "Pełny dostęp z telefonu na budowie"
+      },
+      "language": {
+        "before": "Ekipa mówi po ukraińsku — osobne instrukcje",
+        "after": "3 języki interfejsu — każdy pracuje w swoim"
+      }
     },
     "hero": {
       "badge": "Cyfrowe narzędzie dla branży budowlanej",

@@ -36,14 +36,14 @@ export function LandingFooter() {
 
   return (
     <footer
-      className="bg-white dark:bg-[#0F0F0F] border-t border-gray-200 dark:border-[#2A2A2A] pb-[env(safe-area-inset-bottom)]"
+      className="bg-gray-50 dark:bg-[#0A0A0A] border-t border-gray-200 dark:border-[#2A2A2A] pb-[env(safe-area-inset-bottom)]"
       aria-label={t('landing.footer.ariaLabel')}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-10">
           {/* Brand */}
           <div>
-            <div className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+            <div className="text-xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">
               Majster<span className="text-amber-500">.</span>AI
             </div>
             <p className="text-sm text-gray-500 dark:text-[#A3A3A3] leading-relaxed mb-3">
@@ -59,7 +59,7 @@ export function LandingFooter() {
 
           {/* Legal */}
           <div>
-            <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-3">
+            <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-4 uppercase tracking-wider text-xs">
               {t('landing.footer.legal_title')}
             </h4>
             <ul className="space-y-2">
@@ -78,7 +78,7 @@ export function LandingFooter() {
 
           {/* Product */}
           <div>
-            <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-3">
+            <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-4 uppercase tracking-wider text-xs">
               {t('landing.footer.product_title')}
             </h4>
             <ul className="space-y-2">
@@ -97,7 +97,7 @@ export function LandingFooter() {
 
           {/* Language switcher */}
           <div>
-            <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-3">
+            <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-4 uppercase tracking-wider text-xs">
               {t('landing.footer.language_title')}
             </h4>
             <div className="flex gap-2" role="group" aria-label={t('landing.header.languageSwitch')}>
