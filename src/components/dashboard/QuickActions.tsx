@@ -14,24 +14,24 @@ interface Action {
 
 const colorMap = {
   blue: {
-    card: 'bg-blue-50/70 hover:bg-blue-50 dark:bg-blue-900/10 dark:hover:bg-blue-900/20 text-foreground border-blue-100 dark:border-blue-800/30',
-    icon: 'bg-blue-100 dark:bg-blue-800/40',
-    iconColor: 'text-blue-600 dark:text-blue-400',
+    card: 'bg-ds-accent-blue-subtle dark:bg-muted/40 hover:bg-muted text-foreground border-border',
+    icon: 'bg-ds-accent-blue-subtle dark:bg-muted',
+    iconColor: 'text-ds-accent-blue',
   },
   green: {
-    card: 'bg-green-50/70 hover:bg-green-50 dark:bg-green-900/10 dark:hover:bg-green-900/20 text-foreground border-green-100 dark:border-green-800/30',
-    icon: 'bg-green-100 dark:bg-green-800/40',
-    iconColor: 'text-green-600 dark:text-green-400',
+    card: 'bg-success/8 hover:bg-success/[0.12] dark:bg-success/10 dark:hover:bg-success/[0.15] text-foreground border-success/10',
+    icon: 'bg-success/15 dark:bg-success/20',
+    iconColor: 'text-success',
   },
   teal: {
-    card: 'bg-teal-50/70 hover:bg-teal-50 dark:bg-teal-900/10 dark:hover:bg-teal-900/20 text-foreground border-teal-100 dark:border-teal-800/30',
-    icon: 'bg-teal-100 dark:bg-teal-800/40',
-    iconColor: 'text-teal-600 dark:text-teal-400',
+    card: 'bg-warning/8 hover:bg-warning/[0.12] dark:bg-warning/10 dark:hover:bg-warning/[0.15] text-foreground border-warning/10',
+    icon: 'bg-warning/15 dark:bg-warning/20',
+    iconColor: 'text-warning',
   },
   violet: {
-    card: 'bg-violet-50/70 hover:bg-violet-50 dark:bg-violet-900/10 dark:hover:bg-violet-900/20 text-foreground border-violet-100 dark:border-violet-800/30',
-    icon: 'bg-violet-100 dark:bg-violet-800/40',
-    iconColor: 'text-violet-600 dark:text-violet-400',
+    card: 'bg-primary/8 hover:bg-primary/[0.12] dark:bg-primary/10 dark:hover:bg-primary/[0.15] text-foreground border-primary/10',
+    icon: 'bg-primary/15 dark:bg-primary/20',
+    iconColor: 'text-primary',
   },
 } as const;
 

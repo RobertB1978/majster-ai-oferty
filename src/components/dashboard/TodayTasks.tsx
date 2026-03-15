@@ -116,8 +116,8 @@ function useTypeLabels() {
 }
 
 const TYPE_VARIANTS: Record<TodayTask['type'], string> = {
-  pending_offer: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  expiring_offer: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  pending_offer: 'bg-ds-accent-blue-subtle text-ds-accent-blue dark:bg-muted dark:text-ds-accent-blue',
+  expiring_offer: 'bg-ds-accent-amber-subtle text-ds-accent-amber dark:bg-warning/15 dark:text-warning',
   inactive_project: 'bg-muted text-muted-foreground',
 };
 
@@ -139,8 +139,8 @@ export const TodayTasks = React.memo(function TodayTasks() {
           <Badge
             variant="secondary"
             className={cn(
-              'text-xs font-semibold tabular-nums',
-              'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+              'text-xs font-semibold tabular-nums font-mono',
+              'bg-ds-accent-amber-subtle text-ds-accent-amber dark:bg-warning/15 dark:text-warning'
             )}
           >
             {tasks.length}

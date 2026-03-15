@@ -127,9 +127,9 @@ const colorConfig = {
     spark: 'hsl(30 90% 42%)',
   },
   accent: {
-    bg: 'bg-slate-800/8 dark:bg-slate-700/20',
-    iconBg: 'bg-slate-800 dark:bg-slate-700',
-    text: 'text-foreground',
+    bg: 'bg-ds-accent-blue-subtle dark:bg-muted/50',
+    iconBg: 'bg-ds-accent-blue',
+    text: 'text-ds-accent-blue',
     spark: 'hsl(217 33% 40%)',
   },
   success: {
@@ -176,7 +176,7 @@ function StatsCard({ title, value, icon, trend, color = 'primary', delay = 0 }: 
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
                 {title}
               </p>
-              <p className={cn('text-3xl font-bold tabular-nums tracking-tight', cfg.text)}>
+              <p className={cn('text-3xl font-bold tabular-nums tracking-tight font-mono', cfg.text)}>
                 <AnimatedCounter value={value} />
               </p>
             </div>
