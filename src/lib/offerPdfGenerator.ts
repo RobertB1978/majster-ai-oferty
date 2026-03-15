@@ -23,6 +23,8 @@ import { OfferPdfPayload } from './offerDataBuilder';
 import { formatCurrency } from './formatters';
 import { logger } from './logger';
 import { supabase } from '@/integrations/supabase/client';
+import { trackEvent } from './analytics/track';
+import { ANALYTICS_EVENTS } from './analytics/events';
 
 // ---------------------------------------------------------------------------
 // Template theme system
@@ -49,14 +51,22 @@ interface TemplateTheme {
   grossAccent: [number, number, number];
 }
 
+// Amber design tokens (Tailwind amber scale)
+// amber-50: #fffbeb  amber-100: #fef3c7  amber-200: #fde68a
+// amber-700: #b45309  amber-800: #92400e
+const AMBER_50: [number, number, number] = [255, 251, 235];
+const AMBER_100: [number, number, number] = [254, 243, 199];
+const AMBER_700: [number, number, number] = [180, 83, 9];
+
 const TEMPLATE_THEMES: Record<PdfTemplateId, TemplateTheme> = {
   classic: {
-    headerFill: [66, 139, 202],
+    headerFill: [30, 58, 95],
     headerText: [255, 255, 255],
-    accentColor: [0, 0, 0],
+    accentColor: [30, 58, 95],
     tableTheme: 'grid',
-    summaryBg: [240, 246, 255],
-    grossAccent: [30, 90, 160],
+    alternateRowFill: [248, 250, 252],
+    summaryBg: AMBER_50,
+    grossAccent: AMBER_700,
   },
   modern: {
     headerFill: [30, 58, 95],
@@ -66,16 +76,17 @@ const TEMPLATE_THEMES: Record<PdfTemplateId, TemplateTheme> = {
     companyBg: [30, 58, 95],
     companyBgLight: [42, 78, 122],
     alternateRowFill: [240, 245, 255],
-    summaryBg: [235, 242, 250],
-    grossAccent: [30, 58, 95],
+    summaryBg: AMBER_50,
+    grossAccent: AMBER_700,
   },
   minimal: {
     headerFill: [60, 60, 60],
     headerText: [255, 255, 255],
-    accentColor: [80, 80, 80],
+    accentColor: [60, 60, 60],
     tableTheme: 'plain',
-    summaryBg: [245, 245, 245],
-    grossAccent: [40, 40, 40],
+    alternateRowFill: [248, 248, 248],
+    summaryBg: AMBER_50,
+    grossAccent: AMBER_700,
   },
 };
 
@@ -216,23 +227,27 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   // TITLE SECTION
   // ========================================
 
-  // QR code for digital version (top-right corner, 22×22mm)
-  const QR_SIZE = 22;
+  // QR code for digital version (top-right corner, 28×28mm)
+  const QR_SIZE = 28;
   const qrX = pageWidth - margin - QR_SIZE;
   let qrPlaced = false;
   if (payload.acceptanceUrl) {
     try {
       const qrDataUrl = await QRCode.toDataURL(payload.acceptanceUrl, {
-        width: 132,   // 22mm at 150dpi — small but scannable
-        margin: 1,
-        errorCorrectionLevel: 'M',
+        width: 168,   // 28mm at 150dpi — clear and scannable
+        margin: 2,
+        errorCorrectionLevel: 'Q',
         color: { dark: '#000000', light: '#FFFFFF' },
       });
+      // Thin border frame around QR code
+      doc.setDrawColor(200, 200, 200);
+      doc.setLineWidth(0.3);
+      doc.rect(qrX - 1, yPosition - 3, QR_SIZE + 2, QR_SIZE + 2);
       doc.addImage(qrDataUrl, 'PNG', qrX, yPosition - 2, QR_SIZE, QR_SIZE);
-      doc.setFontSize(6);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(120);
-      doc.text('Wersja cyfrowa', qrX + QR_SIZE / 2, yPosition + QR_SIZE + 1, { align: 'center' });
+      doc.setFontSize(6.5);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(180, 83, 9); // amber-700
+      doc.text('OFERTA ONLINE', qrX + QR_SIZE / 2, yPosition + QR_SIZE + 1.5, { align: 'center' });
       doc.setTextColor(0);
       qrPlaced = true;
     } catch {
@@ -333,12 +348,17 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     }
 
     // Section header (variant label or default "Pozycje wyceny")
-    doc.setFontSize(12);
+    doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
     doc.text(sectionLabel ?? 'Pozycje wyceny:', margin, yPosition);
+    // Thin underline accent
+    doc.setDrawColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
+    doc.setLineWidth(0.5);
+    doc.line(margin, yPosition + 1.5, margin + 60, yPosition + 1.5);
+    doc.setLineWidth(0.2);
     doc.setTextColor(0, 0, 0);
-    yPosition += 8;
+    yPosition += 9;
 
     const tableData = quote.positions.map((pos) => [
       pos.name,
@@ -366,27 +386,47 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
         : undefined,
       columnStyles: {
         0: { cellWidth: 50 },
-        1: { cellWidth: 20, halign: 'center' },
-        2: { cellWidth: 20, halign: 'center' },
-        3: { cellWidth: 25, halign: 'right' },
-        4: { cellWidth: 25, halign: 'center' },
-        5: { cellWidth: 25, halign: 'right' },
+        1: { cellWidth: 18, halign: 'center' },
+        2: { cellWidth: 16, halign: 'center' },
+        3: { cellWidth: 27, halign: 'right' },
+        4: { cellWidth: 24, halign: 'center' },
+        5: { cellWidth: 27, halign: 'right' },
       },
       margin: { left: margin, right: margin },
+      // Apply Courier (monospace) for monetary amount columns — col 3 & 5
+      willDrawCell: (data) => {
+        if (
+          data.section === 'body' &&
+          (data.column.index === 3 || data.column.index === 5)
+        ) {
+          data.doc.setFont('courier', 'normal');
+        }
+      },
+      didDrawCell: (data) => {
+        if (
+          data.section === 'body' &&
+          (data.column.index === 3 || data.column.index === 5)
+        ) {
+          data.doc.setFont('helvetica', 'normal');
+        }
+      },
     });
 
     yPosition = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 6;
 
     // Summary
-    const summaryX = pageWidth - margin - 68;
+    const summaryX = pageWidth - margin - 72;
     const summaryBoxWidth = pageWidth - margin - summaryX + 4;
 
-    // Estimate summary box height: vat-exempt → ~18mm, with VAT → ~28mm
-    const summaryBoxHeight = quote.isVatExempt ? 18 : (quote.vatRate !== null ? 28 : 22);
+    // Estimate summary box height: vat-exempt → ~22mm, with VAT → ~32mm
+    const summaryBoxHeight = quote.isVatExempt ? 22 : (quote.vatRate !== null ? 32 : 26);
 
-    // Draw subtle background for summary section
+    // Draw amber-50 background for summary section
     doc.setFillColor(theme.summaryBg[0], theme.summaryBg[1], theme.summaryBg[2]);
-    doc.roundedRect(summaryX - 4, yPosition - 2, summaryBoxWidth, summaryBoxHeight, 1.5, 1.5, 'F');
+    doc.roundedRect(summaryX - 4, yPosition - 2, summaryBoxWidth, summaryBoxHeight, 2, 2, 'F');
+    // Left border accent
+    doc.setFillColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
+    doc.rect(summaryX - 4, yPosition - 2, 2.5, summaryBoxHeight, 'F');
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
@@ -399,35 +439,48 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     doc.setFont('helvetica', 'normal');
 
     if (quote.isVatExempt) {
+      // Amber highlight band behind the total row
+      doc.setFillColor(AMBER_100[0], AMBER_100[1], AMBER_100[2]);
+      doc.rect(summaryX - 4, yPosition - 1, summaryBoxWidth, 10, 'F');
+
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
-      doc.text('Wartość końcowa:', summaryX, yPosition);
-      doc.text(formatCurrency(quote.total), pageWidth - margin, yPosition, { align: 'right' });
+      doc.text('Wartość końcowa:', summaryX + 1, yPosition + 5);
+      doc.setFont('courier', 'bold');
+      doc.text(formatCurrency(quote.total), pageWidth - margin, yPosition + 5, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
-      yPosition += 6;
-      doc.setFontSize(9);
+      yPosition += 12;
+      doc.setFontSize(8.5);
       doc.setFont('helvetica', 'italic');
-      doc.setTextColor(100);
-      doc.text('Sprzedawca zwolniony z podatku VAT', summaryX, yPosition);
+      doc.setTextColor(120);
+      doc.text('Sprzedawca zwolniony z podatku VAT (art. 43 ust. 1 ustawy o VAT)', summaryX + 1, yPosition);
       doc.setTextColor(0);
       yPosition += 10;
     } else {
       doc.setTextColor(80, 80, 80);
-      doc.text('Wartość netto:', summaryX, yPosition);
+      doc.text('Wartość netto:', summaryX + 1, yPosition);
+      doc.setFont('courier', 'normal');
       doc.text(formatCurrency(quote.netTotal), pageWidth - margin, yPosition, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
-      yPosition += 5;
+      yPosition += 6;
       if (quote.vatRate !== null) {
         doc.setTextColor(80, 80, 80);
-        doc.text(`VAT (${quote.vatRate}%):`, summaryX, yPosition);
+        doc.text(`VAT (${quote.vatRate}%):`, summaryX + 1, yPosition);
+        doc.setFont('courier', 'normal');
         doc.text(formatCurrency(quote.vatAmount), pageWidth - margin, yPosition, { align: 'right' });
+        doc.setFont('helvetica', 'normal');
         doc.setTextColor(0, 0, 0);
-        yPosition += 5;
+        yPosition += 6;
       }
+      // Amber highlight band behind the gross total row
+      doc.setFillColor(AMBER_100[0], AMBER_100[1], AMBER_100[2]);
+      doc.rect(summaryX - 4, yPosition - 1, summaryBoxWidth, 11, 'F');
       // Separator line above gross total
       doc.setDrawColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
-      doc.setLineWidth(0.4);
+      doc.setLineWidth(0.5);
       doc.line(summaryX - 2, yPosition - 1, pageWidth - margin + 2, yPosition - 1);
       doc.setLineWidth(0.2);
       doc.setDrawColor(180);
@@ -435,10 +488,12 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
-      doc.text('Do zapłaty (brutto):', summaryX, yPosition + 4);
-      doc.text(formatCurrency(quote.grossTotal), pageWidth - margin, yPosition + 4, { align: 'right' });
+      doc.text('Do zapłaty (brutto):', summaryX + 1, yPosition + 5);
+      doc.setFont('courier', 'bold');
+      doc.text(formatCurrency(quote.grossTotal), pageWidth - margin, yPosition + 5, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
-      yPosition += 14;
+      yPosition += 15;
     }
   }
 
@@ -548,38 +603,54 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
 
   const totalPages = doc.getNumberOfPages();
   const footerY = doc.internal.pageSize.getHeight() - 10;
+  const locale = 'pl-PL';
+  const validUntilStr = payload.validUntil.toLocaleDateString(locale);
+  const generatedStr = payload.generatedAt.toLocaleString(locale);
 
   for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
     doc.setPage(pageNum);
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(7.5);
     doc.setTextColor(130);
 
     // Thin separator line above footer
     doc.setDrawColor(200);
     doc.setLineWidth(0.2);
-    doc.line(margin, footerY - 6, pageWidth - margin, footerY - 6);
+    doc.line(margin, footerY - 7, pageWidth - margin, footerY - 7);
 
-    // Centered generator notice
+    // Left: validity date
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Ważna do: ${validUntilStr}`, margin, footerY - 2);
+
+    // Center: generator notice
+    doc.setFont('helvetica', 'italic');
     doc.text(
-      `Oferta wygenerowana przez Majster.AI — ${payload.generatedAt.toLocaleString('pl-PL')}`,
+      `Wygenerowano przez Majster.AI | ${generatedStr}`,
       pageWidth / 2,
       footerY - 2,
       { align: 'center' }
     );
 
-    // Page number right-aligned
-    doc.setFont('helvetica', 'normal');
+    // Right: page X / Y
+    doc.setFont('helvetica', 'bold');
     doc.text(
-      `${pageNum} / ${totalPages}`,
+      `Str. ${pageNum} / ${totalPages}`,
       pageWidth - margin,
       footerY - 2,
       { align: 'right' }
     );
+
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0);
   }
 
   // Convert to Blob
   const pdfBlob = doc.output('blob');
+
+  // Fire analytics event after successful generation
+  trackEvent(ANALYTICS_EVENTS.OFFER_PDF_GENERATED, {
+    meta: { templateId },
+  });
+
   return pdfBlob;
 }
 
