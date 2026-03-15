@@ -39,8 +39,8 @@ function FAQItem({ item, isOpen, onToggle }: FAQItemProps) {
           {item.question}
         </span>
         <ChevronDown
-          className={`w-5 h-5 text-gray-400 dark:text-[#A3A3A3] shrink-0 transition-transform duration-300 ${
-            isOpen ? 'rotate-180' : ''
+          className={`w-5 h-5 shrink-0 transition-all duration-300 ${
+            isOpen ? 'rotate-180 text-amber-500' : 'text-gray-400 dark:text-[#A3A3A3]'
           }`}
           aria-hidden="true"
         />
@@ -53,7 +53,7 @@ function FAQItem({ item, isOpen, onToggle }: FAQItemProps) {
         hidden={!isOpen}
         className={`overflow-hidden transition-all duration-300 ${isOpen ? 'pb-5' : ''}`}
       >
-        <p className="text-gray-600 dark:text-[#A3A3A3] text-base leading-relaxed">{item.answer}</p>
+        <p className="text-gray-600 dark:text-[#A3A3A3] text-base leading-relaxed pl-0">{item.answer}</p>
       </div>
     </div>
   );
@@ -112,7 +112,7 @@ export function FAQSection() {
           </p>
         </div>
 
-        <div className="bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl px-6">
+        <div className="bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl px-6 shadow-sm">
           {FAQ_ITEMS.map((item) => (
             <FAQItem
               key={item.id}

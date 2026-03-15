@@ -65,7 +65,7 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
 
   return (
     <div
-      className={`group bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-amber-500/40 ${
+      className={`group bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-amber-500/40 hover:shadow-lg hover:shadow-amber-500/5 ${
         hasDemo ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1F1F1F]' : ''
       }`}
       onClick={hasDemo ? handleDemo : undefined}
@@ -79,7 +79,7 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
       aria-label={hasDemo ? `${t('landing.features.demoTitle')}: ${t(`landing.features.${feature.key}.title`)}` : undefined}
     >
       <div className="flex items-center justify-between">
-        <div className="w-11 h-11 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-amber-500/20">
+        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-400/5 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:from-amber-500/20 group-hover:to-amber-400/10 group-hover:shadow-sm group-hover:shadow-amber-500/10">
           <Icon className="w-5 h-5 text-amber-500" aria-hidden="true" />
         </div>
         {hasDemo && (
@@ -144,7 +144,7 @@ export function FeaturesGrid() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
             {liveFeatures.map((feature) => (
               <FeatureCard key={feature.key} feature={feature} onDemoClick={setDemoFeature} />
             ))}

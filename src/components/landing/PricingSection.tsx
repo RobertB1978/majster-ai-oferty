@@ -42,20 +42,20 @@ export function PricingSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-4xl mx-auto">
           {PLANS.filter((p) => HOMEPAGE_PLAN_SLUGS.includes(p.slug)).map((plan) => (
             <div
               key={plan.slug}
               className={`relative bg-white dark:bg-[#1A1A1A] rounded-2xl p-6 flex flex-col gap-5 transition-all duration-300 ${
                 plan.highlighted
-                  ? 'border-2 border-amber-500'
-                  : 'border border-gray-200 dark:border-[#2A2A2A] hover:border-amber-500/40'
+                  ? 'border-2 border-amber-500 shadow-lg shadow-amber-500/10 ring-1 ring-amber-500/20'
+                  : 'border border-gray-200 dark:border-[#2A2A2A] hover:border-amber-500/40 hover:shadow-md hover:shadow-gray-200/50 dark:hover:shadow-black/30'
               }`}
             >
               {/* Popular badge */}
               {plan.highlighted && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="bg-amber-500 text-black text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
+                  <span className="bg-gradient-to-r from-amber-500 to-amber-400 text-black text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap shadow-sm shadow-amber-500/30">
                     {t('landing.pricing.badge')}
                   </span>
                 </div>
@@ -107,7 +107,7 @@ export function PricingSection() {
                 to={CTA_ROUTE}
                 className={`block text-center py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[44px] flex items-center justify-center ${
                   plan.highlighted
-                    ? 'bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black'
+                    ? 'bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black shadow-md shadow-amber-500/20 hover:shadow-lg hover:shadow-amber-500/25'
                     : 'border border-gray-200 dark:border-[#2A2A2A] hover:border-amber-500/60 text-gray-900 dark:text-white hover:text-amber-500 dark:hover:text-amber-400'
                 }`}
               >
