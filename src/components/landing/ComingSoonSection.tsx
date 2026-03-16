@@ -48,10 +48,10 @@ function ComingSoonCard({ feature }: ComingSoonCardProps) {
   const isBeta = feature.status === 'beta';
 
   return (
-    <div className="bg-[#1A1A1A] border border-dashed border-[#2A2A2A] rounded-2xl p-5 opacity-75 flex flex-col gap-3">
+    <div className="bg-brand-card border border-dashed border-brand-border rounded-2xl p-5 opacity-75 flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <div className="w-10 h-10 rounded-xl bg-[#0F0F0F] flex items-center justify-center shrink-0">
-          <Icon className="w-5 h-5 text-[#525252]" aria-hidden="true" />
+        <div className="w-10 h-10 rounded-xl bg-brand-dark flex items-center justify-center shrink-0">
+          <Icon className="w-5 h-5 text-neutral-600" aria-hidden="true" />
         </div>
         {isBeta ? (
           <span className="text-xs font-bold bg-amber-500 text-black rounded-full px-2.5 py-0.5 uppercase tracking-wide">
@@ -64,10 +64,10 @@ function ComingSoonCard({ feature }: ComingSoonCardProps) {
         )}
       </div>
       <div>
-        <h3 className="text-sm font-semibold text-[#A3A3A3] mb-1">
+        <h3 className="text-sm font-semibold text-neutral-400 mb-1">
           {t(`landing.comingSoon.features.${feature.key}.title`, feature.title)}
         </h3>
-        <p className="text-xs text-[#525252] leading-relaxed">
+        <p className="text-xs text-neutral-600 leading-relaxed">
           {t(`landing.comingSoon.features.${feature.key}.desc`, feature.desc)}
         </p>
       </div>
@@ -83,7 +83,7 @@ export function ComingSoonSection() {
 
   return (
     <section
-      className="py-20 md:py-28 bg-[#0F0F0F]"
+      className="py-20 md:py-28 bg-brand-dark"
       aria-labelledby="coming-soon-heading"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -94,7 +94,7 @@ export function ComingSoonSection() {
           >
             {t('landing.comingSoon.sectionTitle')}
           </h2>
-          <p className="text-lg text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg text-neutral-400 leading-relaxed max-w-2xl mx-auto">
             {t('landing.comingSoon.sectionSubtitle')}
           </p>
         </div>

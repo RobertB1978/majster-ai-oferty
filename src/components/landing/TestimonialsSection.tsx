@@ -43,7 +43,7 @@ export function TestimonialsSection() {
 
   return (
     <section
-      className="py-20 md:py-28 bg-white dark:bg-[#0F0F0F]"
+      className="py-20 md:py-28 bg-white dark:bg-brand-dark"
       aria-labelledby="results-heading"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,7 +57,7 @@ export function TestimonialsSection() {
           >
             {t('landing.results.sectionTitle')}
           </h2>
-          <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-neutral-400 leading-relaxed max-w-2xl mx-auto">
             {t('landing.results.sectionSubtitle')}
           </p>
         </div>
@@ -67,7 +67,7 @@ export function TestimonialsSection() {
           {RESULTS.map((result) => (
             <div
               key={result.key}
-              className={`relative bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-amber-500/40 hover:shadow-lg hover:shadow-amber-500/5`}
+              className={`relative bg-gray-50 dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-amber-500/40 hover:shadow-lg hover:shadow-amber-500/5`}
             >
               {/* Icon */}
               <div className={`w-12 h-12 rounded-xl ${result.bgColor} flex items-center justify-center`}>
@@ -85,7 +85,7 @@ export function TestimonialsSection() {
               </div>
 
               {/* Description */}
-              <p className="text-sm text-gray-600 dark:text-[#A3A3A3] leading-relaxed flex-1">
+              <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed flex-1">
                 {t(`landing.results.${result.key}.desc`)}
               </p>
 
@@ -100,7 +100,7 @@ export function TestimonialsSection() {
         </div>
 
         {/* Honesty principles bar */}
-        <div className="bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6">
+        <div className="bg-gray-50 dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6">
           <p className="text-center text-sm font-semibold text-gray-900 dark:text-white mb-4">
             {t('landing.results.principlesTitle')}
           </p>
@@ -108,7 +108,7 @@ export function TestimonialsSection() {
             {PRINCIPLES.map((p) => (
               <div key={p.key} className="flex items-center gap-3 justify-center sm:justify-start">
                 <p.icon className="w-4 h-4 text-amber-500 shrink-0" aria-hidden="true" />
-                <span className="text-sm text-gray-600 dark:text-[#A3A3A3]">
+                <span className="text-sm text-gray-600 dark:text-neutral-400">
                   {t(`landing.results.principles.${p.key}`)}
                 </span>
               </div>

@@ -18,7 +18,7 @@ function FAQItem({ item, isOpen, onToggle }: FAQItemProps) {
   const panelId = `${item.id}-panel`;
 
   return (
-    <div className="border-b border-gray-200 dark:border-[#2A2A2A] last:border-b-0">
+    <div className="border-b border-gray-200 dark:border-brand-border last:border-b-0">
       <button
         id={item.id}
         aria-expanded={isOpen}
@@ -40,7 +40,7 @@ function FAQItem({ item, isOpen, onToggle }: FAQItemProps) {
         </span>
         <ChevronDown
           className={`w-5 h-5 shrink-0 transition-all duration-300 ${
-            isOpen ? 'rotate-180 text-amber-500' : 'text-gray-400 dark:text-[#A3A3A3]'
+            isOpen ? 'rotate-180 text-amber-500' : 'text-gray-400 dark:text-neutral-400'
           }`}
           aria-hidden="true"
         />
@@ -53,7 +53,7 @@ function FAQItem({ item, isOpen, onToggle }: FAQItemProps) {
         hidden={!isOpen}
         className={`overflow-hidden transition-all duration-300 ${isOpen ? 'pb-5' : ''}`}
       >
-        <p className="text-gray-600 dark:text-[#A3A3A3] text-base leading-relaxed pl-0">{item.answer}</p>
+        <p className="text-gray-600 dark:text-neutral-400 text-base leading-relaxed pl-0">{item.answer}</p>
       </div>
     </div>
   );
@@ -96,7 +96,7 @@ export function FAQSection() {
   return (
     <section
       id="faq"
-      className="py-20 md:py-28 bg-white dark:bg-[#0F0F0F]"
+      className="py-20 md:py-28 bg-white dark:bg-brand-dark"
       aria-labelledby="faq-heading"
     >
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -107,12 +107,12 @@ export function FAQSection() {
           >
             {t('landing.faq.sectionTitle')}
           </h2>
-          <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed">
+          <p className="text-lg text-gray-600 dark:text-neutral-400 leading-relaxed">
             {t('landing.faq.sectionSubtitle')}
           </p>
         </div>
 
-        <div className="bg-gray-50 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl px-6 shadow-sm">
+        <div className="bg-gray-50 dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl px-6 shadow-sm">
           {FAQ_ITEMS.map((item) => (
             <FAQItem
               key={item.id}
