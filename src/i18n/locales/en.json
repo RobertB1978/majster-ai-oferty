@@ -5015,5 +5015,52 @@
     "planExpiresSoonMsg": "Your {{plan}} plan expires in {{days}} days. Renew now to avoid service interruption.",
     "planExpiryReminder": "Plan renewal reminder",
     "planExpiryReminderMsg": "Your {{plan}} plan expires in {{days}} days."
+  },
+  "fieldCapture": {
+    "photo": {
+      "addPhoto": "Add photo",
+      "addFromCamera": "Take photo",
+      "addFromGallery": "Choose from gallery",
+      "removePhoto": "Remove photo",
+      "removeConfirm": "Are you sure you want to remove this photo?",
+      "removeConfirmYes": "Remove",
+      "removeConfirmNo": "Cancel",
+      "andMore": "+{{count}} more",
+      "empty": "No photos yet. Add the first one.",
+      "ariaLabel": "Photo {{index}}"
+    },
+    "note": {
+      "label": "Field note",
+      "placeholder": "Describe what you see on site — wall condition, dimensions, remarks...",
+      "ariaLabel": "Text note"
+    },
+    "checklist": {
+      "title": "Client documentation",
+      "hasDocumentation": "Does client have documentation?",
+      "hasInvestorEstimate": "Is there an investor cost estimate?",
+      "clientRequirements": "Client requirements",
+      "clientRequirementsPlaceholder": "Describe client requirements (optional)...",
+      "yes": "YES",
+      "no": "NO",
+      "waiting": "WAITING",
+      "checking": "CHECKING"
+    },
+    "measurement": {
+      "title": "Measurements",
+      "label": "Description",
+      "labelPlaceholder": "e.g. East wall",
+      "value": "Value",
+      "unit": "Unit",
+      "addMeasurement": "Add measurement",
+      "removeMeasurement": "Remove measurement",
+      "empty": "No measurements yet",
+      "units": {
+        "m": "m",
+        "m2": "m²",
+        "m3": "m³",
+        "pcs": "pcs",
+        "mb": "mb"
+      }
+    }
   }
 }
