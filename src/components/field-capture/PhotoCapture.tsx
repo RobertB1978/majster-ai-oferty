@@ -242,7 +242,6 @@ export function PhotoCapture({
                 size="lg"
                 className="flex-1 min-h-[48px]"
                 onClick={handleRemoveCancel}
-                // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
               >
                 {t('fieldCapture.photo.removeConfirmNo')}

@@ -5015,5 +5015,52 @@
     "planExpiresSoonMsg": "Ваш план {{plan}} закінчується через {{days}} днів. Поновіть зараз, щоб уникнути переривання.",
     "planExpiryReminder": "Нагадування про поновлення плану",
     "planExpiryReminderMsg": "Ваш план {{plan}} закінчується через {{days}} днів."
+  },
+  "fieldCapture": {
+    "photo": {
+      "addPhoto": "Додати фото",
+      "addFromCamera": "Зробити фото",
+      "addFromGallery": "Вибрати з галереї",
+      "removePhoto": "Видалити фото",
+      "removeConfirm": "Ви впевнені, що хочете видалити це фото?",
+      "removeConfirmYes": "Видалити",
+      "removeConfirmNo": "Скасувати",
+      "andMore": "+{{count}} ще",
+      "empty": "Немає фото. Додайте перше.",
+      "ariaLabel": "Фото {{index}}"
+    },
+    "note": {
+      "label": "Нотатка з місця",
+      "placeholder": "Опишіть що бачите на місці — стан стін, розміри, зауваження...",
+      "ariaLabel": "Текстова нотатка"
+    },
+    "checklist": {
+      "title": "Документація клієнта",
+      "hasDocumentation": "Клієнт має документацію?",
+      "hasInvestorEstimate": "Є кошторис інвестора?",
+      "clientRequirements": "Вимоги клієнта",
+      "clientRequirementsPlaceholder": "Опишіть вимоги клієнта (необов'язково)...",
+      "yes": "ТАК",
+      "no": "НІ",
+      "waiting": "ЧЕКАЮ",
+      "checking": "ПЕРЕВІРЯЮ"
+    },
+    "measurement": {
+      "title": "Вимірювання",
+      "label": "Опис",
+      "labelPlaceholder": "напр. Східна стіна",
+      "value": "Значення",
+      "unit": "Одиниця",
+      "addMeasurement": "Додати вимірювання",
+      "removeMeasurement": "Видалити вимірювання",
+      "empty": "Немає вимірювань",
+      "units": {
+        "m": "м",
+        "m2": "м²",
+        "m3": "м³",
+        "pcs": "шт.",
+        "mb": "пм"
+      }
+    }
   }
 }
