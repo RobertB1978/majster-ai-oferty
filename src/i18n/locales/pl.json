@@ -5078,6 +5078,12 @@
       "ownerUserId": "Zaloguj się, aby zapisać wycenę",
       "clientIdentified": "Podaj imię i telefon klienta",
       "contextSource": "Dodaj zdjęcie, notatkę lub odpowiedz na checkliste"
+    },
+    "contextPanel": {
+      "title": "Dane z wizji terenowej",
+      "client": "Klient",
+      "photos": "{{count}} zdjęć z terenu",
+      "photos_plural": "{{count}} zdjęć z terenu"
     }
   }
 }
