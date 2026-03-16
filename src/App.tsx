@@ -59,6 +59,7 @@ const Calendar = lazy(() => import("./pages/Calendar"));
 const Finance = lazy(() => import("./pages/Finance"));
 const Analytics = lazy(() => import("./pages/Analytics"));
 const QuickEstimateWorkspace = lazy(() => import("./pages/QuickEstimateWorkspace"));
+const QuickMode = lazy(() => import("./pages/QuickMode"));
 const Photos = lazy(() => import("./pages/Photos"));
 const Plan = lazy(() => import("./pages/Plan"));
 
@@ -255,6 +256,8 @@ const App = () => (
                     {/* Legacy quick-est redirect → canonical szybka-wycena */}
                     <Route path="quick-est" element={<Navigate to="/app/szybka-wycena" replace />} />
                     <Route path="szybka-wycena" element={<QuickEstimateWorkspace />} />
+                    {/* Gate 1 Condition 1: Quick Mode — field data capture one-handed on mobile */}
+                    <Route path="quick-mode" element={<QuickMode />} />
                     <Route path="photos" element={<Photos />} />
                     <Route path="calendar" element={<Calendar />} />
                     <Route path="team" element={<Navigate to="/app/dashboard" replace />} />
@@ -317,6 +320,7 @@ const App = () => (
                   <Route path="/billing" element={<Navigate to="/app/settings" replace />} />
                   <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
                   <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
+                  <Route path="/quick-mode" element={<Navigate to="/app/quick-mode" replace />} />
 
                   {/* 404 */}
                   <Route path="*" element={<NotFound />} />

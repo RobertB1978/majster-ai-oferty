@@ -5062,5 +5062,22 @@
         "mb": "mb"
       }
     }
+  },
+  "quickMode": {
+    "pageTitle": "Quick Mode",
+    "cta": "Zaczynam wycenę →",
+    "client": {
+      "title": "Klient",
+      "name": "Imię i nazwisko",
+      "namePlaceholder": "np. Jan Kowalski",
+      "phone": "Telefon",
+      "phonePlaceholder": "np. 600 100 200"
+    },
+    "missing": {
+      "draftId": "Błąd sesji — odśwież stronę",
+      "ownerUserId": "Zaloguj się, aby zapisać wycenę",
+      "clientIdentified": "Podaj imię i telefon klienta",
+      "contextSource": "Dodaj zdjęcie, notatkę lub odpowiedz na checkliste"
+    }
   }
 }
