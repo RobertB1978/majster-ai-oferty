@@ -320,6 +320,7 @@ const App = () => (
                   <Route path="/billing" element={<Navigate to="/app/settings" replace />} />
                   <Route path="/profile" element={<Navigate to="/app/profile" replace />} />
                   <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
+                  <Route path="/quick-mode" element={<Navigate to="/app/quick-mode" replace />} />
 
                   {/* 404 */}
                   <Route path="*" element={<NotFound />} />
