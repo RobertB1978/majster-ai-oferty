@@ -19,6 +19,7 @@ import { StickyTotalsCard } from '@/components/quickEstimate/StickyTotalsCard';
 import type { ItemTemplate } from '@/hooks/useItemTemplates';
 import type { StarterPack } from '@/data/starterPacks';
 import { useQuickEstimateDraft } from '@/hooks/useQuickEstimateDraft';
+import { useDraftContext } from '@/contexts/DraftContext';
 
 export default function QuickEstimateWorkspace() {
   const { t } = useTranslation();
@@ -66,6 +67,15 @@ export default function QuickEstimateWorkspace() {
   // Draft persistence
   const { loadDraft, scheduleSave, promoteDraft, draftOfferId, lastSavedAt, saveStatus } =
     useQuickEstimateDraft();
+
+  // Quick Mode context: data captured in Quick Mode before transitioning here.
+  const { draft: quickDraft, isHydrating: isDraftHydrating } = useDraftContext();
+  const quickContext =
+    !isDraftHydrating &&
+    quickDraft?.mode === 'full' &&
+    quickDraft?.sourceContext.createdFrom === 'quick-mode'
+      ? quickDraft
+      : null;
 
   // Flag to prevent scheduling saves before draft is loaded
   const draftLoadedRef = useRef(false);
@@ -295,6 +305,49 @@ export default function QuickEstimateWorkspace() {
             </div>
           )}
         </div>
+
+        {/* ── Quick Mode context panel ──────────────────────────── */}
+        {/* Shown when the user arrived here via Quick Mode transition.         */}
+        {/* Contains all Quick Mode captured data: client, note, photos, checklist. */}
+        {quickContext && (
+          <div
+            className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 p-3 space-y-1"
+            data-testid="qm-context-panel"
+            role="region"
+            aria-label={t('quickMode.contextPanel.title')}
+          >
+            <p className="text-sm font-semibold text-amber-800 dark:text-amber-200 flex items-center gap-1.5">
+              <Zap className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              {t('quickMode.contextPanel.title')}
+            </p>
+
+            {quickContext.client.tempName && (
+              <p className="text-sm text-muted-foreground">
+                {t('quickMode.contextPanel.client')}:{' '}
+                <span className="text-foreground font-medium">
+                  {quickContext.client.tempName}
+                </span>
+                {quickContext.client.tempPhone && (
+                  <span> · {quickContext.client.tempPhone}</span>
+                )}
+              </p>
+            )}
+
+            {quickContext.fieldCapture.textNote && (
+              <p className="text-sm text-muted-foreground line-clamp-2">
+                {quickContext.fieldCapture.textNote}
+              </p>
+            )}
+
+            {quickContext.fieldCapture.photos.length > 0 && (
+              <p className="text-sm text-muted-foreground">
+                {t('quickMode.contextPanel.photos', {
+                  count: quickContext.fieldCapture.photos.length,
+                })}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* ── Two-column layout (1 col mobile, 3/1 desktop) ─────── */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-5">

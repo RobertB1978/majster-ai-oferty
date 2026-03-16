@@ -5078,6 +5078,12 @@
       "ownerUserId": "Sign in to save your estimate",
       "clientIdentified": "Enter client name and phone",
       "contextSource": "Add a photo, note, or answer the checklist"
+    },
+    "contextPanel": {
+      "title": "Field capture data",
+      "client": "Client",
+      "photos": "{{count}} site photo",
+      "photos_plural": "{{count}} site photos"
     }
   }
 }

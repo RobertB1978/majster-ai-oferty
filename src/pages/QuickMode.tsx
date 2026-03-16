@@ -39,7 +39,7 @@ import {
   ChecklistPanel,
 } from '@/components/field-capture';
 import type { PhotoCapturePhoto } from '@/components/field-capture';
-import { useDraft } from '@/hooks/useDraft';
+import { useDraftContext } from '@/contexts/DraftContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { trackEvent } from '@/lib/analytics/track';
@@ -100,16 +100,34 @@ export default function QuickMode() {
   const { user } = useAuth();
   const userId = user?.id ?? '';
 
-  // E1-B: Draft engine — read-only import; internals untouched
+  // Shared draft engine — survives navigation so data carries into QuickEstimateWorkspace.
   const {
     draft,
+    isHydrating,
     canTransitionToFull,
     missingTransitionFields,
+    initDraft,
     updateClient,
     updateFieldCapture,
     updateChecklist,
     transitionToFull,
-  } = useDraft(userId);
+  } = useDraftContext();
+
+  // ── Init draft on QuickMode entry ────────────────────────────────────────
+  // After IDB hydration completes, create a fresh draft when:
+  //   a) no draft exists yet (first visit), or
+  //   b) the previous draft already transitioned to Full Mode (new session).
+  // If an in-progress quick-mode draft was hydrated from IDB, reuse it.
+  const initFiredRef = useRef(false);
+  useEffect(() => {
+    if (isHydrating) return;
+    if (initFiredRef.current) return;
+    initFiredRef.current = true;
+    if (draft === null || draft.mode === 'full') {
+      initDraft(userId);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHydrating]);
 
   // ── Local display state ──────────────────────────────────────────────────
 
@@ -159,28 +177,33 @@ export default function QuickMode() {
   // ── Session save on field change ────────────────────────────────────────
 
   useEffect(() => {
-    if (!restoredRef.current) return;
+    if (!restoredRef.current || !draft) return;
     writeSession({
       clientName: tempName,
       clientPhone: tempPhone,
       note,
       checklist: draft.checklist,
     });
-  }, [tempName, tempPhone, note, draft.checklist]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tempName, tempPhone, note, draft?.checklist]);
 
-  // ── Analytics: fire OFFER_QUICK_STARTED on first mount ─────────────────
+  // ── Analytics: fire OFFER_QUICK_STARTED once a draft is available ───────
+  // Depends on draft?.id so it re-evaluates when initDraft creates the draft.
 
   useEffect(() => {
-    if (startedFiredRef.current) return;
+    if (startedFiredRef.current || !draft) return;
     startedFiredRef.current = true;
     trackEvent(ANALYTICS_EVENTS.OFFER_QUICK_STARTED, {
       draftId: draft.id,
       source: 'quick-mode',
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [draft?.id]);
 
   // ── Photo handlers ──────────────────────────────────────────────────────
+
+  // Null-safe photos array — draft is null during IDB hydration.
+  const currentPhotos = draft?.fieldCapture.photos ?? [];
 
   const handlePhotoAdd = useCallback(
     (file: File) => {
@@ -191,12 +214,12 @@ export default function QuickMode() {
 
       updateFieldCapture({
         photos: [
-          ...draft.fieldCapture.photos,
+          ...currentPhotos,
           { id, storagePath: '', localQueueId: id, caption: null, category: null },
         ],
       });
     },
-    [draft.fieldCapture.photos, updateFieldCapture],
+    [currentPhotos, updateFieldCapture],
   );
 
   const handlePhotoRemove = useCallback(
@@ -208,10 +231,10 @@ export default function QuickMode() {
       });
 
       updateFieldCapture({
-        photos: draft.fieldCapture.photos.filter((p) => p.id !== id),
+        photos: currentPhotos.filter((p) => p.id !== id),
       });
     },
-    [draft.fieldCapture.photos, updateFieldCapture],
+    [currentPhotos, updateFieldCapture],
   );
 
   // ── Note handler ────────────────────────────────────────────────────────
@@ -278,6 +301,17 @@ export default function QuickMode() {
         .map((c) => t(CONDITION_TO_I18N_KEY[c]))
         .join(' · ')
     : '';
+
+  // ── Guard: show spinner while IDB hydrates or draft is being created ────
+  // Hooks are all called above; this JSX-level return is safe.
+
+  if (isHydrating || !draft) {
+    return (
+      <div className="flex items-center justify-center min-h-[200px]">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden />
+      </div>
+    );
+  }
 
   // ── Render ──────────────────────────────────────────────────────────────
 

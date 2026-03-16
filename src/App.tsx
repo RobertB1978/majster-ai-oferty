@@ -11,6 +11,7 @@ const ReactQueryDevtools = import.meta.env.MODE === 'development'
   : null;
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ConfigProvider } from "@/contexts/ConfigContext";
+import { DraftProvider } from "@/contexts/DraftContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { NewShellLayout } from "@/components/layout/NewShellLayout";
@@ -171,6 +172,7 @@ const App = () => (
               <OfflineBanner />
               <InstallPrompt />
               <CookieConsent />
+              <DraftProvider>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   {/* ============================================
@@ -326,6 +328,7 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
+              </DraftProvider>
             </AuthProvider>
             </ConfigProvider>
           </BrowserRouter>
