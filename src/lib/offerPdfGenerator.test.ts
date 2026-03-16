@@ -1,10 +1,17 @@
 /**
- * Tests for Offer PDF Generator - Phase 5B
+ * Tests for Offer PDF Generator - Phase 5B / Gate 1 Prestige Uplift
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { generateOfferPdf, uploadOfferPdf, getPdfComplianceLines } from './offerPdfGenerator';
 import { OfferPdfPayload } from './offerDataBuilder';
+
+// Mock analytics track so we can assert OFFER_PDF_GENERATED fires
+vi.mock('./analytics/track', () => ({
+  trackEvent: vi.fn(),
+}));
+
+import { trackEvent } from './analytics/track';
 
 // Mock Supabase client
 vi.mock('@/integrations/supabase/client', () => ({
@@ -226,6 +233,52 @@ describe('PDF compliance fields (Δ3)', () => {
     const payload = createMockPayload(); // default: isVatExempt: true
     const lines = getPdfComplianceLines(payload);
     expect(lines.vatRateLine).toBeNull();
+  });
+});
+
+describe('Gate 1 prestige — OFFER_PDF_GENERATED analytics', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('fires OFFER_PDF_GENERATED after successful generation', async () => {
+    const payload = createMockPayload();
+    await generateOfferPdf(payload);
+
+    expect(trackEvent).toHaveBeenCalledTimes(1);
+    expect(trackEvent).toHaveBeenCalledWith(
+      'offer_pdf_generated',
+      expect.objectContaining({ meta: expect.objectContaining({ templateId: expect.any(String) }) }),
+    );
+  });
+
+  it('fires with the correct templateId for modern template', async () => {
+    const payload = createMockPayload({
+      pdfConfig: {
+        version: 'standard' as const,
+        title: 'Test',
+        offerText: '',
+        terms: '',
+        deadlineText: '',
+        templateId: 'modern',
+      },
+    });
+    await generateOfferPdf(payload);
+
+    expect(trackEvent).toHaveBeenCalledWith(
+      'offer_pdf_generated',
+      expect.objectContaining({ meta: { templateId: 'modern' } }),
+    );
+  });
+
+  it('still returns a valid PDF Blob when analytics fires', async () => {
+    const payload = createMockPayload();
+    const blob = await generateOfferPdf(payload);
+
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.type).toBe('application/pdf');
+    expect(blob.size).toBeGreaterThan(0);
+    expect(trackEvent).toHaveBeenCalledTimes(1);
   });
 });
 
