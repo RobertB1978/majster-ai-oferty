@@ -25,6 +25,26 @@ import { logger } from './logger';
 import { supabase } from '@/integrations/supabase/client';
 import { trackEvent } from './analytics/track';
 import { ANALYTICS_EVENTS } from './analytics/events';
+import { JETBRAINS_MONO_REGULAR_B64 } from './jetbrains-mono-b64';
+
+// ---------------------------------------------------------------------------
+// JetBrains Mono font registration
+// ---------------------------------------------------------------------------
+
+const JBM_FONT_NAME = 'JetBrainsMono';
+const JBM_FILE = 'JetBrainsMono-Regular.ttf';
+
+/** Registers JetBrains Mono in jsPDF VFS (idempotent). Returns font name on success, 'courier' fallback on failure. */
+function registerJetBrainsMono(doc: jsPDF): string {
+  try {
+    doc.addFileToVFS(JBM_FILE, JETBRAINS_MONO_REGULAR_B64);
+    doc.addFont(JBM_FILE, JBM_FONT_NAME, 'normal');
+    doc.addFont(JBM_FILE, JBM_FONT_NAME, 'bold');
+    return JBM_FONT_NAME;
+  } catch {
+    return 'courier';
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Template theme system
@@ -119,6 +139,9 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     unit: 'mm',
     format: 'a4',
   });
+
+  // Register JetBrains Mono — used for all monetary amounts
+  const monoFont = registerJetBrainsMono(doc);
 
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 15;
@@ -399,7 +422,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
           data.section === 'body' &&
           (data.column.index === 3 || data.column.index === 5)
         ) {
-          data.doc.setFont('courier', 'normal');
+          data.doc.setFont(monoFont, 'normal');
         }
       },
       didDrawCell: (data) => {
@@ -447,7 +470,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
       doc.text('Wartość końcowa:', summaryX + 1, yPosition + 5);
-      doc.setFont('courier', 'bold');
+      doc.setFont(monoFont, 'bold');
       doc.text(formatCurrency(quote.total), pageWidth - margin, yPosition + 5, { align: 'right' });
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
@@ -461,7 +484,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     } else {
       doc.setTextColor(80, 80, 80);
       doc.text('Wartość netto:', summaryX + 1, yPosition);
-      doc.setFont('courier', 'normal');
+      doc.setFont(monoFont, 'normal');
       doc.text(formatCurrency(quote.netTotal), pageWidth - margin, yPosition, { align: 'right' });
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
@@ -469,7 +492,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
       if (quote.vatRate !== null) {
         doc.setTextColor(80, 80, 80);
         doc.text(`VAT (${quote.vatRate}%):`, summaryX + 1, yPosition);
-        doc.setFont('courier', 'normal');
+        doc.setFont(monoFont, 'normal');
         doc.text(formatCurrency(quote.vatAmount), pageWidth - margin, yPosition, { align: 'right' });
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(0, 0, 0);
@@ -489,7 +512,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
       doc.text('Do zapłaty (brutto):', summaryX + 1, yPosition + 5);
-      doc.setFont('courier', 'bold');
+      doc.setFont(monoFont, 'bold');
       doc.text(formatCurrency(quote.grossTotal), pageWidth - margin, yPosition + 5, { align: 'right' });
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
