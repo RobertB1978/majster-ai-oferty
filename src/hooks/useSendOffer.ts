@@ -22,6 +22,8 @@ import { offersKeys } from '@/hooks/useOffers';
 import { offerWizardKeys } from '@/hooks/useOfferWizard';
 import { generateOfferPdf, uploadOfferPdf } from '@/lib/offerPdfGenerator';
 import { buildOfferPdfPayloadFromOffer } from '@/lib/offerPdfPayloadBuilder';
+import { trackEvent } from '@/lib/analytics/track';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -132,7 +134,11 @@ export function useSendOffer() {
       return { offerId, alreadySent: false, pdfUrl, emailSent };
     },
 
-    onSuccess: (_, { offerId }) => {
+    onSuccess: (result, { offerId }) => {
+      // Fire OFFER_SENT only on a fresh transition (not idempotent re-send)
+      if (!result.alreadySent) {
+        trackEvent(ANALYTICS_EVENTS.OFFER_SENT, { offerId });
+      }
       queryClient.invalidateQueries({ queryKey: offersKeys.all });
       queryClient.invalidateQueries({ queryKey: offerWizardKeys.detail(offerId) });
       // Refresh quota indicator
