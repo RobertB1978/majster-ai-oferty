@@ -5062,5 +5062,22 @@
         "mb": "mb"
       }
     }
+  },
+  "quickMode": {
+    "pageTitle": "Quick Mode",
+    "cta": "Start estimate →",
+    "client": {
+      "title": "Client",
+      "name": "Full name",
+      "namePlaceholder": "e.g. John Smith",
+      "phone": "Phone",
+      "phonePlaceholder": "e.g. 600 100 200"
+    },
+    "missing": {
+      "draftId": "Session error — refresh the page",
+      "ownerUserId": "Sign in to save your estimate",
+      "clientIdentified": "Enter client name and phone",
+      "contextSource": "Add a photo, note, or answer the checklist"
+    }
   }
 }
