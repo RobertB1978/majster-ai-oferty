@@ -65,7 +65,7 @@ export function TrustBar() {
 
   return (
     <div
-      className="bg-gray-50 dark:bg-[#141414] border-y border-gray-200 dark:border-[#2A2A2A]"
+      className="bg-gray-50 dark:bg-brand-surface border-y border-gray-200 dark:border-brand-border"
       aria-label={t('landing.trust.ariaLabel')}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -84,7 +84,7 @@ export function TrustBar() {
                     {t(item.labelKey, item.labelDefault)}
                   </span>
                 </div>
-                <span className="text-xs text-gray-400 dark:text-[#525252]">
+                <span className="text-xs text-gray-400 dark:text-neutral-600">
                   {'subKey' in item && item.subKey ? t(item.subKey, item.subDefault) : item.sub}
                 </span>
               </div>

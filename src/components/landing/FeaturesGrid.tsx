@@ -65,8 +65,8 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
 
   return (
     <div
-      className={`group bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-amber-500/40 hover:shadow-lg hover:shadow-amber-500/5 ${
-        hasDemo ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1F1F1F]' : ''
+      className={`group bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-amber-500/40 hover:shadow-lg hover:shadow-amber-500/5 ${
+        hasDemo ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-brand-card' : ''
       }`}
       onClick={hasDemo ? handleDemo : undefined}
       role={hasDemo ? 'button' : undefined}
@@ -84,7 +84,7 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
         </div>
         {hasDemo && (
           <ExternalLink
-            className="w-4 h-4 text-gray-300 dark:text-[#525252] group-hover:text-amber-500/60 transition-colors duration-300"
+            className="w-4 h-4 text-gray-300 dark:text-neutral-600 group-hover:text-amber-500/60 transition-colors duration-300"
             aria-hidden="true"
           />
         )}
@@ -94,13 +94,13 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
           {t(`landing.features.${feature.key}.title`)}
         </h3>
-        <p className="text-sm text-gray-600 dark:text-[#A3A3A3] leading-relaxed">
+        <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed">
           {t(`landing.features.${feature.key}.description`)}
         </p>
       </div>
 
       {hasDemo && (
-        <div className="text-xs font-medium text-gray-400 dark:text-[#525252] group-hover:text-amber-400 transition-colors duration-200">
+        <div className="text-xs font-medium text-gray-400 dark:text-neutral-600 group-hover:text-amber-400 transition-colors duration-200">
           {t('landing.features.demoTitle')} →
         </div>
       )}
@@ -117,7 +117,7 @@ export function FeaturesGrid() {
   return (
     <section
       id="features"
-      className="py-20 md:py-28 bg-gray-50 dark:bg-[#0F0F0F]"
+      className="py-20 md:py-28 bg-gray-50 dark:bg-brand-dark"
       aria-labelledby="features-heading"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -128,18 +128,18 @@ export function FeaturesGrid() {
           >
             {t('landing.features.sectionTitle')}
           </h2>
-          <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-neutral-400 leading-relaxed max-w-2xl mx-auto">
             {t('landing.features.sectionDesc')}
           </p>
         </div>
 
         {liveFeatures.length < 3 ? (
-          <div className="text-center py-12 px-6 rounded-2xl border border-dashed border-gray-200 dark:border-[#2A2A2A]">
+          <div className="text-center py-12 px-6 rounded-2xl border border-dashed border-gray-200 dark:border-brand-border">
             <div className="text-amber-500 mb-3 flex justify-center">
               <Rocket className="w-10 h-10" aria-hidden="true" />
             </div>
             <h3 className="text-gray-900 dark:text-white font-semibold text-xl mb-2">{t('landing.features.mvpTitle')}</h3>
-            <p className="text-gray-600 dark:text-[#A3A3A3] max-w-md mx-auto leading-relaxed">
+            <p className="text-gray-600 dark:text-neutral-400 max-w-md mx-auto leading-relaxed">
               {t('landing.features.mvpDesc')}
             </p>
           </div>

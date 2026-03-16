@@ -19,7 +19,7 @@ export function BeforeAfterSection() {
 
   return (
     <section
-      className="py-20 md:py-28 bg-gray-50 dark:bg-[#141414]"
+      className="py-20 md:py-28 bg-gray-50 dark:bg-brand-surface"
       aria-labelledby="before-after-heading"
     >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -30,21 +30,21 @@ export function BeforeAfterSection() {
           >
             {t('landing.beforeAfter.sectionTitle')}
           </h2>
-          <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-neutral-400 leading-relaxed max-w-2xl mx-auto">
             {t('landing.beforeAfter.sectionSubtitle')}
           </p>
         </div>
 
         {/* Comparison grid */}
-        <div className="bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl overflow-hidden">
+        <div className="bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl overflow-hidden">
           {/* Header row */}
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-gray-200 dark:border-[#2A2A2A]">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-gray-200 dark:border-brand-border">
             <div className="p-4 md:p-5 text-center">
-              <span className="text-sm font-semibold text-gray-400 dark:text-[#525252] uppercase tracking-wide">
+              <span className="text-sm font-semibold text-gray-400 dark:text-neutral-600 uppercase tracking-wide">
                 {t('landing.beforeAfter.beforeLabel')}
               </span>
             </div>
-            <div className="w-px h-full bg-gray-200 dark:bg-[#2A2A2A]" aria-hidden="true" />
+            <div className="w-px h-full bg-gray-200 dark:bg-brand-border" aria-hidden="true" />
             <div className="p-4 md:p-5 text-center">
               <span className="text-sm font-semibold text-amber-500 uppercase tracking-wide">
                 Majster.AI
@@ -57,13 +57,13 @@ export function BeforeAfterSection() {
             <div
               key={item.key}
               className={`grid grid-cols-[1fr_auto_1fr] items-center ${
-                idx < ITEMS.length - 1 ? 'border-b border-gray-100 dark:border-[#2A2A2A]/50' : ''
+                idx < ITEMS.length - 1 ? 'border-b border-gray-100 dark:border-brand-border/50' : ''
               }`}
             >
               {/* Before */}
               <div className="p-4 md:p-5 flex items-start gap-3">
                 <X className="w-4 h-4 text-red-400 shrink-0 mt-0.5" aria-hidden="true" />
-                <span className="text-sm text-gray-500 dark:text-[#A3A3A3]">
+                <span className="text-sm text-gray-500 dark:text-neutral-400">
                   {t(`landing.beforeAfter.${item.key}.before`)}
                 </span>
               </div>

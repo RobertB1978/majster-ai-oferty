@@ -36,7 +36,7 @@ export function LandingFooter() {
 
   return (
     <footer
-      className="bg-gray-50 dark:bg-[#0A0A0A] border-t border-gray-200 dark:border-[#2A2A2A] pb-[env(safe-area-inset-bottom)]"
+      className="bg-gray-50 dark:bg-neutral-950 border-t border-gray-200 dark:border-brand-border pb-[env(safe-area-inset-bottom)]"
       aria-label={t('landing.footer.ariaLabel')}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -46,12 +46,12 @@ export function LandingFooter() {
             <div className="text-xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">
               Majster<span className="text-amber-500">.</span>AI
             </div>
-            <p className="text-sm text-gray-500 dark:text-[#A3A3A3] leading-relaxed mb-3">
+            <p className="text-sm text-gray-500 dark:text-neutral-400 leading-relaxed mb-3">
               {t('landing.footer.brand_desc')}
             </p>
             <a
               href="mailto:kontakt@majster.ai"
-              className="text-sm text-gray-500 dark:text-[#A3A3A3] hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+              className="text-sm text-gray-500 dark:text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
             >
               kontakt@majster.ai
             </a>
@@ -67,7 +67,7 @@ export function LandingFooter() {
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-sm text-gray-500 dark:text-[#A3A3A3] hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+                    className="text-sm text-gray-500 dark:text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
                   >
                     {link.label}
                   </Link>
@@ -86,7 +86,7 @@ export function LandingFooter() {
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-sm text-gray-500 dark:text-[#A3A3A3] hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+                    className="text-sm text-gray-500 dark:text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
                   >
                     {link.label}
                   </Link>
@@ -107,8 +107,8 @@ export function LandingFooter() {
                   onClick={() => changeLanguage(lang.code)}
                   className={`py-1.5 px-3 rounded-lg text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                     currentLang === lang.code
-                      ? 'bg-gray-200 dark:bg-[#2A2A2A] text-gray-900 dark:text-white'
-                      : 'text-gray-500 dark:text-[#A3A3A3] hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-gray-200 dark:bg-brand-border text-gray-900 dark:text-white'
+                      : 'text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white'
                   }`}
                   aria-label={t('landing.header.changeLangTo', { lang: lang.label })}
                   aria-pressed={currentLang === lang.code}
@@ -121,11 +121,11 @@ export function LandingFooter() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-gray-200 dark:border-[#2A2A2A] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-500 dark:text-[#A3A3A3]">
+        <div className="border-t border-gray-200 dark:border-brand-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-gray-500 dark:text-neutral-400">
             © {new Date().getFullYear()} Majster.AI. {t('landing.footer.copyright')}
           </p>
-          <p className="text-sm text-gray-500 dark:text-[#A3A3A3]">
+          <p className="text-sm text-gray-500 dark:text-neutral-400">
             {t('landing.footer.built_in')}
           </p>
         </div>

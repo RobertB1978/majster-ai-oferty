@@ -28,7 +28,7 @@ export function HowItWorksSection() {
   return (
     <section
       id="how-it-works"
-      className="py-20 md:py-28 bg-white dark:bg-[#0F0F0F]"
+      className="py-20 md:py-28 bg-white dark:bg-brand-dark"
       aria-labelledby="how-heading"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,7 +39,7 @@ export function HowItWorksSection() {
           >
             {t('landing.how.sectionTitle')}
           </h2>
-          <p className="text-lg text-gray-600 dark:text-[#A3A3A3] leading-relaxed max-w-xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-neutral-400 leading-relaxed max-w-xl mx-auto">
             {t('landing.how.sectionSubtitle')}
           </p>
         </div>
@@ -53,12 +53,12 @@ export function HowItWorksSection() {
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-amber-500/25">
                     <step.icon className="w-7 h-7 text-white" aria-hidden="true" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-white dark:bg-[#0F0F0F] border-2 border-amber-500 flex items-center justify-center shadow-sm">
+                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-white dark:bg-brand-dark border-2 border-amber-500 flex items-center justify-center shadow-sm">
                     <span className="text-amber-500 text-xs font-bold">{step.number}</span>
                   </div>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{step.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-[#A3A3A3] leading-relaxed">{step.desc}</p>
+                <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed">{step.desc}</p>
               </div>
               {idx < STEPS.length - 1 && (
                 <div
@@ -87,7 +87,7 @@ export function HowItWorksSection() {
                   {t('landing.how.step')} {step.number}
                 </div>
                 <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1">{step.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-[#A3A3A3] leading-relaxed">{step.desc}</p>
+                <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed">{step.desc}</p>
               </div>
             </div>
           ))}
