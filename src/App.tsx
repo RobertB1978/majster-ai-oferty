@@ -12,6 +12,7 @@ const ReactQueryDevtools = import.meta.env.MODE === 'development'
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ConfigProvider } from "@/contexts/ConfigContext";
 import { DraftProvider } from "@/contexts/DraftContext";
+import { useOfflineSync } from "@/hooks/useOfflineSync";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { NewShellLayout } from "@/components/layout/NewShellLayout";
@@ -110,6 +111,12 @@ function JobsRedirect({ suffix = '' }: { suffix?: string }) {
   return <Navigate to={`/app/projects/${id}${suffix}`} replace />;
 }
 
+/** Wires offline queue sync into the app lifecycle (§3.9, §18.1). */
+function OfflineSyncWatcher() {
+  useOfflineSync();
+  return null;
+}
+
 /** Initialize theme + lang from localStorage or system preference for all routes. */
 function ThemeInitializer() {
   useEffect(() => {
@@ -165,6 +172,7 @@ const App = () => (
           <BrowserRouter>
             <ConfigProvider>
             <AuthProvider>
+              <OfflineSyncWatcher />
               <ThemeInitializer />
               <ScrollRestoration />
               <Sonner />
