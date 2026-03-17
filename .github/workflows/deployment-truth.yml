@@ -147,6 +147,7 @@ jobs:
             scripts/verify/reality-report.json
             scripts/verify/reality-report.md
           if-no-files-found: warn
+          retention-days: 90
       # ─────────────────────────────────────────────────────────────────────
 
       - name: Supabase deploy marker (PASS)
