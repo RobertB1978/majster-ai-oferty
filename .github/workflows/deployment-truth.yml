@@ -9,6 +9,10 @@ concurrency:
   group: deployment-truth-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   # ============================================================
   # JOB 1: Supabase — migracje + Edge Functions
@@ -140,14 +144,63 @@ jobs:
 
       - name: Upload Reality Check report artifacts
         uses: actions/upload-artifact@v4
-        if: always() && steps.reality-check.outcome != 'skipped'
+        if: always()
         with:
           name: reality-check-report
           path: |
             scripts/verify/reality-report.json
             scripts/verify/reality-report.md
-          if-no-files-found: warn
           retention-days: 90
+          if-no-files-found: warn
+
+      - name: Publish Reality Check comment in Pull Request
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const reportPath = 'scripts/verify/reality-report.md';
+
+            if (!fs.existsSync(reportPath)) {
+              core.warning(
+                'PHASE 2 PR COMMENT: Plik reality-report.md nie istnieje. ' +
+                'Wymagany output Phase 1 nie został znaleziony. ' +
+                'Sprawdź step "Supabase Reality Check" w tym workflow run.'
+              );
+              return;
+            }
+
+            const reportContent = fs.readFileSync(reportPath, 'utf8');
+            const marker = '<!-- reality-check-report -->';
+            const body = `## 🔍 Supabase Reality Check\n\n${marker}\n\n${reportContent}`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+              core.info('PHASE 2 PR COMMENT: Zaktualizowano istniejący komentarz Reality Check.');
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+              core.info('PHASE 2 PR COMMENT: Utworzono nowy komentarz Reality Check.');
+            }
       # ─────────────────────────────────────────────────────────────────────
 
       - name: Supabase deploy marker (PASS)
