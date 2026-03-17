@@ -90,3 +90,7 @@ yarn-error.log*
 **/supabase/.branches
 **/supabase/.temp
 /capacitor.config.local.ts
+
+# Supabase Reality Check — generated reports (uploaded as CI artifacts)
+scripts/verify/reality-report.json
+scripts/verify/reality-report.md
