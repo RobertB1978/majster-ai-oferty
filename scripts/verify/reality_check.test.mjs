@@ -15,6 +15,7 @@ import {
   compareTable,
   deriveOverallStatus,
   deriveExitCode,
+  checkMissingEnvVars,
 } from './supabase_reality_check.mjs';
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
@@ -286,5 +287,77 @@ describe('scenario: introspekcja niedostępna', () => {
     assert.equal(caught, null, 'Nie powinno rzucać wyjątku');
     assert.equal(overall, 'UNKNOWN');
     assert.equal(code, 0);
+  });
+});
+
+// ── scenario: brak env → czytelny błąd, exit code 1, brak wycieku sekretów ──
+// Testuje czystą funkcję checkMissingEnvVars (nie wywołuje process.exit).
+// Weryfikuje: zwraca nazwy brakujących zmiennych, nigdy wartości sekretów.
+
+describe('scenario: brak env', () => {
+  const REQUIRED = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
+
+  it('oba brakują → zwraca obie nazwy', () => {
+    const missing = checkMissingEnvVars({}, REQUIRED);
+    assert.deepEqual(missing, ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']);
+  });
+
+  it('tylko SUPABASE_URL brakuje → zwraca jedną nazwę', () => {
+    const missing = checkMissingEnvVars(
+      { SUPABASE_SERVICE_ROLE_KEY: 'secret-value' },
+      REQUIRED,
+    );
+    assert.deepEqual(missing, ['SUPABASE_URL']);
+  });
+
+  it('tylko SUPABASE_SERVICE_ROLE_KEY brakuje → zwraca jedną nazwę', () => {
+    const missing = checkMissingEnvVars(
+      { SUPABASE_URL: 'https://proj.supabase.co' },
+      REQUIRED,
+    );
+    assert.deepEqual(missing, ['SUPABASE_SERVICE_ROLE_KEY']);
+  });
+
+  it('wszystkie dostępne → zwraca pustą listę (brak błędu)', () => {
+    const missing = checkMissingEnvVars(
+      { SUPABASE_URL: 'https://proj.supabase.co', SUPABASE_SERVICE_ROLE_KEY: 'secret-value' },
+      REQUIRED,
+    );
+    assert.deepEqual(missing, []);
+  });
+
+  it('wynik zawiera tylko NAZWY zmiennych, nigdy wartości sekretów', () => {
+    const secretValue = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.super-secret';
+    const missing = checkMissingEnvVars(
+      { SUPABASE_URL: 'https://proj.supabase.co' },
+      REQUIRED,
+    );
+    // Wynik to lista nazw — żadna wartość klucza nie może się w niej znaleźć
+    for (const item of missing) {
+      assert.ok(
+        !item.includes(secretValue),
+        `Wyciek wartości sekretu w wynikach: "${item}"`,
+      );
+      // Nazwa zmiennej musi być jednym ze znanych wymaganych kluczy
+      assert.ok(
+        REQUIRED.includes(item),
+        `Nieoczekiwany element w liście brakujących: "${item}"`,
+      );
+    }
+  });
+
+  it('brak missing → exit code byłby 0 (brak błędu)', () => {
+    const missing = checkMissingEnvVars(
+      { SUPABASE_URL: 'https://proj.supabase.co', SUPABASE_SERVICE_ROLE_KEY: 'key' },
+      REQUIRED,
+    );
+    // Gdy missing jest puste — warunek "missing.length > 0" jest false → process.exit(1) nie zostanie wywołany
+    assert.equal(missing.length > 0, false);
+  });
+
+  it('brak env → exit code byłby 1 (missing.length > 0)', () => {
+    const missing = checkMissingEnvVars({}, REQUIRED);
+    // Gdy missing nie jest puste — process.exit(1) zostanie wywołany
+    assert.equal(missing.length > 0, true);
   });
 });

@@ -191,9 +191,22 @@ async function fetchTablesFromOpenAPI(supabaseUrl, serviceRoleKey) {
 
 // ── ENV validation ───────────────────────────────────────────────────────────
 
+/**
+ * Czysta funkcja: zwraca listę NAZW brakujących zmiennych środowiskowych.
+ * Nigdy nie zwraca wartości sekretów — tylko nazwy.
+ * Eksportowana dla testów jednostkowych.
+ *
+ * @param {Record<string, string|undefined>} env  - obiekt środowiska (np. process.env)
+ * @param {string[]} required                     - lista wymaganych nazw
+ * @returns {string[]} nazwy brakujących zmiennych
+ */
+export function checkMissingEnvVars(env, required) {
+  return required.filter((name) => !env[name]);
+}
+
 function validateRequiredEnv() {
   const required = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
-  const missing = required.filter((name) => !process.env[name]);
+  const missing = checkMissingEnvVars(process.env, required);
 
   if (missing.length > 0) {
     // Logujemy tylko NAZWY brakujących zmiennych, nigdy wartości
