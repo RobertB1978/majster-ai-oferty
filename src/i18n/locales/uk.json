@@ -3579,6 +3579,7 @@
     "statusAccepted": "Прийняті",
     "statusRejected": "Відхилені",
     "statusArchived": "Архівовані",
+    "statusExpired": "Прострочені",
     "noResponseBadge": "Немає відповіді {{days}} дн.",
     "updatedAgo": "зм. {{time}}",
     "emptyTitle": "Немає пропозицій",

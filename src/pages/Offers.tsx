@@ -39,7 +39,7 @@ import { cn } from '@/lib/utils';
 
 type StatusFilter = OfferStatus | 'ALL';
 
-const STATUS_TABS: StatusFilter[] = ['ALL', 'DRAFT', 'SENT', 'ACCEPTED', 'REJECTED', 'ARCHIVED'];
+const STATUS_TABS: StatusFilter[] = ['ALL', 'DRAFT', 'SENT', 'ACCEPTED', 'REJECTED', 'ARCHIVED', 'EXPIRED'];
 
 const STATUS_BADGE_CLASSES: Record<OfferStatus, string> = {
   DRAFT:    'bg-muted text-muted-foreground',
@@ -47,6 +47,7 @@ const STATUS_BADGE_CLASSES: Record<OfferStatus, string> = {
   ACCEPTED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
   REJECTED: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
   ARCHIVED: 'bg-secondary text-secondary-foreground',
+  EXPIRED:  'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
 };
 
 const STATUS_I18N_KEYS: Record<StatusFilter, string> = {
@@ -56,6 +57,7 @@ const STATUS_I18N_KEYS: Record<StatusFilter, string> = {
   ACCEPTED: 'offersList.statusAccepted',
   REJECTED: 'offersList.statusRejected',
   ARCHIVED: 'offersList.statusArchived',
+  EXPIRED:  'offersList.statusExpired',
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────

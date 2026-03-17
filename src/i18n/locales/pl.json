@@ -3579,6 +3579,7 @@
     "statusAccepted": "Zaakceptowane",
     "statusRejected": "Odrzucone",
     "statusArchived": "Zarchiwizowane",
+    "statusExpired": "Wygasłe",
     "noResponseBadge": "Brak odpowiedzi {{days}} dni",
     "updatedAgo": "zm. {{time}}",
     "emptyTitle": "Brak ofert",

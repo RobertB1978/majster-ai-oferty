@@ -3579,6 +3579,7 @@
     "statusAccepted": "Accepted",
     "statusRejected": "Rejected",
     "statusArchived": "Archived",
+    "statusExpired": "Expired",
     "noResponseBadge": "No response {{days}} days",
     "updatedAgo": "upd. {{time}}",
     "emptyTitle": "No offers yet",

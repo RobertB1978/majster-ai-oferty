@@ -6,7 +6,7 @@
       "migration_source": "20260301140000_pr09_offers_table.sql",
       "required_columns": ["id", "user_id", "status", "total_net", "created_at"],
       "rls_required": true,
-      "notes": "Status enum: DRAFT/SENT/ACCEPTED/REJECTED/ARCHIVED. RLS: user_id = auth.uid()"
+      "notes": "Status enum: DRAFT/SENT/ACCEPTED/REJECTED/ARCHIVED/EXPIRED. RLS: user_id = auth.uid()"
     },
     {
       "name": "v2_projects",
