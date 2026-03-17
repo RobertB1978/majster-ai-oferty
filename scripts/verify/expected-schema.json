@@ -1,26 +1,275 @@
 {
-  "_comment": "Source of truth: supabase/migrations/ — tylko tabele potwierdzone przez migracje SQL. Tabela 'payments' NIE istnieje w migracjach — nieuwzględniona. Kolumny: tylko te potwierdzone przez CREATE TABLE w migracjach.",
+  "_comment": "Source of truth: supabase/migrations/ — wszystkie tabele potwierdzone przez migracje SQL. Kolumny: tylko te potwierdzone przez CREATE TABLE + ALTER TABLE ADD COLUMN w migracjach. Rozszerzono z 5 do 57 tabel (2026-03-17).",
+  "known_gaps": [
+    {
+      "id": "EXPIRED_STATUS_MISSING",
+      "table": "offers",
+      "field": "status",
+      "description": "offers.status CHECK constraint allows only DRAFT/SENT/ACCEPTED/REJECTED/ARCHIVED. EXPIRED status is NOT in the constraint — offers that expire must be handled via application logic or a new migration adding EXPIRED to the CHECK.",
+      "severity": "P2",
+      "required_migration": "ALTER TABLE public.offers DROP CONSTRAINT offers_status_check; ALTER TABLE public.offers ADD CONSTRAINT offers_status_check CHECK (status IN ('DRAFT', 'SENT', 'ACCEPTED', 'REJECTED', 'ARCHIVED', 'EXPIRED'));",
+      "found_in_audit": "2026-03-17"
+    }
+  ],
   "tables": [
-    {
-      "name": "offers",
-      "migration_source": "20260301140000_pr09_offers_table.sql",
-      "required_columns": ["id", "user_id", "status", "total_net", "created_at"],
-      "rls_required": true,
-      "notes": "Status enum: DRAFT/SENT/ACCEPTED/REJECTED/ARCHIVED. RLS: user_id = auth.uid()"
-    },
-    {
-      "name": "v2_projects",
-      "migration_source": "20260301180000_pr13_projects_v2.sql",
-      "required_columns": ["id", "user_id", "title", "status", "created_at"],
-      "rls_required": true,
-      "notes": "Status enum: ACTIVE/COMPLETED/ON_HOLD. RLS: user_id = auth.uid()"
-    },
     {
       "name": "clients",
       "migration_source": "20251205160746_6a58fb47-b2dd-4b92-98f6-ba211dc13689.sql",
-      "required_columns": ["id", "user_id", "name", "created_at"],
+      "required_columns": ["id", "user_id", "name", "phone", "email", "address", "created_at"],
       "rls_required": true,
       "notes": "RLS: user_id = auth.uid(). enforce_client_limit trigger installed."
+    },
+    {
+      "name": "projects",
+      "migration_source": "20251205160746_6a58fb47-b2dd-4b92-98f6-ba211dc13689.sql",
+      "required_columns": ["id", "user_id", "client_id", "project_name", "status", "created_at", "start_date", "end_date", "priority"],
+      "rls_required": true,
+      "notes": "Status: Nowy/Wycena w toku/Oferta wysłana/Zaakceptowany. Extra cols from 20251205220356. enforce_project_limit trigger."
+    },
+    {
+      "name": "quotes",
+      "migration_source": "20251205160746_6a58fb47-b2dd-4b92-98f6-ba211dc13689.sql",
+      "required_columns": ["id", "project_id", "user_id", "positions", "summary_materials", "summary_labor", "margin_percent", "total", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). UNIQUE(project_id)."
+    },
+    {
+      "name": "pdf_data",
+      "migration_source": "20251205160746_6a58fb47-b2dd-4b92-98f6-ba211dc13689.sql",
+      "required_columns": ["id", "project_id", "user_id", "version", "title", "offer_text", "terms", "deadline_text", "created_at", "vat_rate"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). vat_rate added in 20260223110000. FK to projects relaxed in 20260311000000."
+    },
+    {
+      "name": "profiles",
+      "migration_source": "20251205164727_c0d6cba6-5adf-4a2e-ad97-db70f142d298.sql",
+      "required_columns": ["id", "user_id", "company_name", "owner_name", "nip", "street", "city", "postal_code", "phone", "email_for_offers", "bank_account", "logo_url", "created_at", "updated_at", "email_subject_template", "email_greeting", "email_signature", "contact_email", "contact_email_verified", "address_line2", "country", "website"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). Auto-created on auth.users INSERT via trigger. Extra cols from 20251205170743, 20260220120000, 20260301120000."
+    },
+    {
+      "name": "item_templates",
+      "migration_source": "20251205170743_62650200-473b-4d91-9c2d-d69171409f31.sql",
+      "required_columns": ["id", "user_id", "name", "unit", "default_qty", "default_price", "category", "description", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
+    },
+    {
+      "name": "quote_versions",
+      "migration_source": "20251205170743_62650200-473b-4d91-9c2d-d69171409f31.sql",
+      "required_columns": ["id", "project_id", "user_id", "version_name", "quote_snapshot", "is_active", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
+    },
+    {
+      "name": "offer_sends",
+      "migration_source": "20251205170743_62650200-473b-4d91-9c2d-d69171409f31.sql",
+      "required_columns": ["id", "project_id", "user_id", "client_email", "subject", "message", "status", "error_message", "sent_at", "pdf_url", "pdf_generated_at", "tracking_status", "delivery_status", "delivery_failed_at", "resend_count", "resend_message_id"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). Extra cols from 20251209152221, 20251209154608, 20260220120000."
+    },
+    {
+      "name": "calendar_events",
+      "migration_source": "20251205192507_95697a22-e254-4e2a-ac94-fc2873b81e0a.sql",
+      "required_columns": ["id", "user_id", "project_id", "title", "description", "event_date", "event_time", "event_type", "status", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
+    },
+    {
+      "name": "onboarding_progress",
+      "migration_source": "20251205220356_a6edf8bd-0a1a-4d88-80d4-79dc3b8cb7ed.sql",
+      "required_columns": ["id", "user_id", "current_step", "completed_steps", "is_completed", "skipped_at", "completed_at", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). UNIQUE(user_id)."
+    },
+    {
+      "name": "notifications",
+      "migration_source": "20251205220356_a6edf8bd-0a1a-4d88-80d4-79dc3b8cb7ed.sql",
+      "required_columns": ["id", "user_id", "title", "message", "type", "is_read", "action_url", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
+    },
+    {
+      "name": "project_photos",
+      "migration_source": "20251205230527_143aedf1-03a7-4204-9a86-f200f74cfa53.sql",
+      "required_columns": ["id", "project_id", "user_id", "photo_url", "file_name", "analysis_status", "analysis_result", "created_at", "phase", "mime_type", "size_bytes", "width", "height"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). Extra cols from 20260301200000 (phase, mime_type, size_bytes, width, height)."
+    },
+    {
+      "name": "purchase_costs",
+      "migration_source": "20251205230527_143aedf1-03a7-4204-9a86-f200f74cfa53.sql",
+      "required_columns": ["id", "project_id", "user_id", "supplier_name", "invoice_number", "invoice_date", "items", "net_amount", "vat_amount", "gross_amount", "document_url", "ocr_status", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
+    },
+    {
+      "name": "offer_approvals",
+      "migration_source": "20251205230527_143aedf1-03a7-4204-9a86-f200f74cfa53.sql",
+      "required_columns": ["id", "project_id", "user_id", "public_token", "client_name", "client_email", "status", "signature_data", "client_comment", "approved_at", "created_at", "expires_at", "accept_token", "accepted_via", "viewed_at", "withdrawn_at", "rejected_reason", "valid_until", "v2_project_id"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). Extra cols from 20251207123630, 20260220120000, 20260311180000. Status extended to include draft/sent/viewed/accepted/rejected/expired/withdrawn."
+    },
+    {
+      "name": "team_members",
+      "migration_source": "20251205230527_143aedf1-03a7-4204-9a86-f200f74cfa53.sql",
+      "required_columns": ["id", "user_id", "owner_user_id", "name", "phone", "email", "role", "is_active", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: owner_user_id = auth.uid()."
+    },
+    {
+      "name": "team_locations",
+      "migration_source": "20251205230527_143aedf1-03a7-4204-9a86-f200f74cfa53.sql",
+      "required_columns": ["id", "team_member_id", "project_id", "user_id", "latitude", "longitude", "status", "recorded_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
+    },
+    {
+      "name": "subcontractors",
+      "migration_source": "20251205230527_143aedf1-03a7-4204-9a86-f200f74cfa53.sql",
+      "required_columns": ["id", "user_id", "company_name", "contact_name", "phone", "email", "description", "location_city", "location_lat", "location_lng", "hourly_rate", "is_public", "avatar_url", "portfolio_images", "rating", "review_count", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid() for management. Public SELECT for is_public = true."
+    },
+    {
+      "name": "subcontractor_services",
+      "migration_source": "20251205230527_143aedf1-03a7-4204-9a86-f200f74cfa53.sql",
+      "required_columns": ["id", "subcontractor_id", "service_name", "price_per_unit", "unit", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: public SELECT (USING true)."
+    },
+    {
+      "name": "subcontractor_reviews",
+      "migration_source": "20251205230527_143aedf1-03a7-4204-9a86-f200f74cfa53.sql",
+      "required_columns": ["id", "subcontractor_id", "reviewer_user_id", "rating", "comment", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: reviewer_user_id = auth.uid() for INSERT. Public SELECT."
+    },
+    {
+      "name": "work_tasks",
+      "migration_source": "20251205230527_143aedf1-03a7-4204-9a86-f200f74cfa53.sql",
+      "required_columns": ["id", "project_id", "user_id", "title", "description", "assigned_team_member_id", "task_type", "status", "start_date", "end_date", "color", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
+    },
+    {
+      "name": "financial_reports",
+      "migration_source": "20251205230527_143aedf1-03a7-4204-9a86-f200f74cfa53.sql",
+      "required_columns": ["id", "user_id", "report_month", "total_revenue", "total_costs", "gross_margin", "project_count", "report_data", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). UNIQUE(user_id, report_month)."
+    },
+    {
+      "name": "api_keys",
+      "migration_source": "20251205230527_143aedf1-03a7-4204-9a86-f200f74cfa53.sql",
+      "required_columns": ["id", "user_id", "key_name", "api_key", "permissions", "is_active", "last_used_at", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
+    },
+    {
+      "name": "ai_chat_history",
+      "migration_source": "20251206073947_dbba8272-c7ab-422b-b702-a7c8498adc54.sql",
+      "required_columns": ["id", "user_id", "session_id", "role", "content", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
+    },
+    {
+      "name": "company_documents",
+      "migration_source": "20251206073947_dbba8272-c7ab-422b-b702-a7c8498adc54.sql",
+      "required_columns": ["id", "user_id", "document_type", "name", "description", "file_url", "file_name", "file_size", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
+    },
+    {
+      "name": "user_consents",
+      "migration_source": "20251206073947_dbba8272-c7ab-422b-b702-a7c8498adc54.sql",
+      "required_columns": ["id", "user_id", "consent_type", "granted", "ip_address", "user_agent", "granted_at", "revoked_at", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: anyone can INSERT. user_id = auth.uid() for SELECT/UPDATE."
+    },
+    {
+      "name": "user_subscriptions",
+      "migration_source": "20251206073947_dbba8272-c7ab-422b-b702-a7c8498adc54.sql",
+      "required_columns": ["id", "user_id", "plan_id", "status", "stripe_customer_id", "stripe_subscription_id", "current_period_start", "current_period_end", "created_at", "updated_at", "cancel_at_period_end", "trial_end"],
+      "rls_required": true,
+      "notes": "RLS: SELECT only for authenticated users. Writes only via service_role. Extra cols from 20251217000000."
+    },
+    {
+      "name": "push_tokens",
+      "migration_source": "20251206073947_dbba8272-c7ab-422b-b702-a7c8498adc54.sql",
+      "required_columns": ["id", "user_id", "token", "platform", "is_active", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). UNIQUE(user_id, token)."
+    },
+    {
+      "name": "user_roles",
+      "migration_source": "20251206221151_3de2c381-4106-4dfe-b189-85119bb757df.sql",
+      "required_columns": ["id", "user_id", "role", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid() for SELECT. Admins can manage all. UNIQUE(user_id, role)."
+    },
+    {
+      "name": "api_rate_limits",
+      "migration_source": "20251206221151_3de2c381-4106-4dfe-b189-85119bb757df.sql",
+      "required_columns": ["id", "identifier", "endpoint", "request_count", "window_start", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: service role can manage (USING true)."
+    },
+    {
+      "name": "organizations",
+      "migration_source": "20251207082500_bedade0c-2e85-41f5-a8a7-3cc2502fa89a.sql",
+      "required_columns": ["id", "name", "slug", "logo_url", "owner_user_id", "settings", "plan_id", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "RLS: owner_user_id = auth.uid() for management. Members can view."
+    },
+    {
+      "name": "organization_members",
+      "migration_source": "20251207082500_bedade0c-2e85-41f5-a8a7-3cc2502fa89a.sql",
+      "required_columns": ["id", "organization_id", "user_id", "role", "invited_by", "invited_at", "accepted_at", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: members can view their org. Admins can manage. UNIQUE(organization_id, user_id)."
+    },
+    {
+      "name": "biometric_credentials",
+      "migration_source": "20251207082500_bedade0c-2e85-41f5-a8a7-3cc2502fa89a.sql",
+      "required_columns": ["id", "user_id", "credential_id", "public_key", "counter", "device_name", "created_at", "last_used_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
+    },
+    {
+      "name": "subscription_events",
+      "migration_source": "20251217000000_add_stripe_integration.sql",
+      "required_columns": ["id", "user_id", "subscription_id", "event_type", "event_data", "processed", "processed_at", "error", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid() for SELECT. Service role can manage. subscription_id made nullable in PR-20."
+    },
+    {
+      "name": "admin_system_settings",
+      "migration_source": "20260126_admin_control_plane.sql",
+      "required_columns": ["id", "organization_id", "email_enabled", "smtp_host", "smtp_port", "email_from_name", "email_from_address", "registration_enabled", "maintenance_mode", "api_enabled", "ai_enabled", "voice_enabled", "ocr_enabled", "max_clients_per_user", "max_projects_per_user", "max_storage_per_user", "session_timeout_minutes", "require_email_verification", "two_factor_enabled", "rate_limit_requests", "rate_limit_window_seconds", "created_by", "created_at", "updated_by", "updated_at"],
+      "rls_required": true,
+      "notes": "RLS: org admins only."
+    },
+    {
+      "name": "admin_audit_log",
+      "migration_source": "20260126_admin_control_plane.sql",
+      "required_columns": ["id", "organization_id", "action_type", "entity_type", "entity_id", "old_value", "new_value", "changed_fields", "user_id", "ip_address", "user_agent", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: org admins can read. Insert allowed for all (audit trigger)."
+    },
+    {
+      "name": "admin_theme_config",
+      "migration_source": "20260126_admin_control_plane.sql",
+      "required_columns": ["id", "organization_id", "primary_hue", "primary_saturation", "primary_lightness", "accent_hue", "border_radius", "font_size", "font_family", "spacing", "version", "created_by", "created_at", "updated_by", "updated_at"],
+      "rls_required": true,
+      "notes": "RLS: org members can read. Admins can update."
+    },
+    {
+      "name": "user_addons",
+      "migration_source": "20260220130000_user_addons.sql",
+      "required_columns": ["id", "user_id", "addon_key", "quantity", "purchased_at", "expires_at", "stripe_payment_intent_id", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid()."
     },
     {
       "name": "plan_limits",
@@ -30,11 +279,137 @@
       "notes": "RLS: SELECT allowed for all (USING true). Seeded: free/pro/starter/business/enterprise."
     },
     {
-      "name": "profiles",
-      "migration_source": "20251205164727_c0d6cba6-5adf-4a2e-ad97-db70f142d298.sql",
-      "required_columns": ["id", "user_id", "company_name", "created_at"],
+      "name": "stripe_events",
+      "migration_source": "20260223000002_stripe_events_idempotency.sql",
+      "required_columns": ["event_id", "processed_at", "payload_hash"],
       "rls_required": true,
-      "notes": "RLS: user_id = auth.uid(). Auto-created on auth.users INSERT via trigger."
+      "notes": "RLS: service_role only. Idempotency store for Stripe webhooks."
+    },
+    {
+      "name": "plan_requests",
+      "migration_source": "20260224000001_plan_requests.sql",
+      "required_columns": ["id", "created_at", "user_id", "email", "phone", "plan_slug", "locale", "message", "status"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid() for own rows. Admins can read/update all."
+    },
+    {
+      "name": "offers",
+      "migration_source": "20260301140000_pr09_offers_table.sql",
+      "required_columns": ["id", "user_id", "client_id", "status", "title", "total_net", "total_gross", "currency", "sent_at", "accepted_at", "rejected_at", "last_activity_at", "created_at", "updated_at", "total_vat", "source", "vat_enabled", "source_template_id"],
+      "rls_required": true,
+      "notes": "Status enum: DRAFT/SENT/ACCEPTED/REJECTED/ARCHIVED. KNOWN_GAP: EXPIRED not in CHECK constraint. RLS: user_id = auth.uid(). Extra cols from PR-10, 20260311120000, 20260312200835."
+    },
+    {
+      "name": "offer_items",
+      "migration_source": "20260301150000_pr10_offer_items.sql",
+      "required_columns": ["id", "user_id", "offer_id", "item_type", "name", "unit", "qty", "unit_price_net", "vat_rate", "line_total_net", "created_at", "updated_at", "metadata", "variant_id"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). Extra cols from 20260311120000 (metadata), 20260314120000 (variant_id)."
+    },
+    {
+      "name": "acceptance_links",
+      "migration_source": "20260301170000_pr12_acceptance_links.sql",
+      "required_columns": ["id", "user_id", "offer_id", "token", "expires_at", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). UNIQUE(token), UNIQUE(offer_id). 30-day TTL."
+    },
+    {
+      "name": "offer_public_actions",
+      "migration_source": "20260301170000_pr12_acceptance_links.sql",
+      "required_columns": ["id", "offer_id", "token", "action", "comment", "acted_at"],
+      "rls_required": true,
+      "notes": "RLS: owner can read via offer_id join. Insert via SECURITY DEFINER function only."
+    },
+    {
+      "name": "v2_projects",
+      "migration_source": "20260301180000_pr13_projects_v2.sql",
+      "required_columns": ["id", "user_id", "client_id", "source_offer_id", "title", "status", "start_date", "end_date", "progress_percent", "stages_json", "total_from_offer", "created_at", "updated_at", "budget_net", "budget_source", "budget_updated_at"],
+      "rls_required": true,
+      "notes": "Status enum: ACTIVE/COMPLETED/ON_HOLD. RLS: user_id = auth.uid(). Extra cols from PR-14 (budget)."
+    },
+    {
+      "name": "project_public_status_tokens",
+      "migration_source": "20260301180000_pr13_projects_v2.sql",
+      "required_columns": ["id", "user_id", "project_id", "token", "expires_at", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). UNIQUE(token), UNIQUE(project_id). 30-day TTL."
+    },
+    {
+      "name": "project_costs",
+      "migration_source": "20260301190000_pr14_burn_bar.sql",
+      "required_columns": ["id", "user_id", "project_id", "cost_type", "amount_net", "note", "incurred_at", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). cost_type: MATERIAL/LABOR/TRAVEL/OTHER."
+    },
+    {
+      "name": "project_checklists",
+      "migration_source": "20260301200000_pr15_photo_report.sql",
+      "required_columns": ["id", "user_id", "project_id", "template_key", "items_json", "updated_at", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). UNIQUE(project_id, template_key)."
+    },
+    {
+      "name": "project_acceptance",
+      "migration_source": "20260301200000_pr15_photo_report.sql",
+      "required_columns": ["id", "user_id", "project_id", "accepted_at", "signature_path", "client_name", "notes", "updated_at", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). UNIQUE(project_id)."
+    },
+    {
+      "name": "project_dossier_items",
+      "migration_source": "20260302000000_pr16_dossier.sql",
+      "required_columns": ["id", "user_id", "project_id", "category", "file_path", "file_name", "mime_type", "size_bytes", "source", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). category: CONTRACT/PROTOCOL/RECEIPT/PHOTO/GUARANTEE/OTHER."
+    },
+    {
+      "name": "project_dossier_share_tokens",
+      "migration_source": "20260302000000_pr16_dossier.sql",
+      "required_columns": ["id", "user_id", "project_id", "token", "expires_at", "allowed_categories", "label", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). 30-day TTL. Scoped by allowed_categories."
+    },
+    {
+      "name": "document_instances",
+      "migration_source": "20260302100000_pr17_document_instances.sql",
+      "required_columns": ["id", "user_id", "project_id", "client_id", "offer_id", "template_key", "template_version", "locale", "title", "data_json", "references_json", "pdf_path", "dossier_item_id", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). Templates are code-defined; instances store filled form data."
+    },
+    {
+      "name": "project_warranties",
+      "migration_source": "20260302200000_pr18_warranties.sql",
+      "required_columns": ["id", "user_id", "project_id", "client_email", "client_name", "contact_phone", "warranty_months", "start_date", "scope_of_work", "exclusions", "pdf_storage_path", "reminder_30_sent_at", "reminder_7_sent_at", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). UNIQUE(project_id). warranty_months 1-120."
+    },
+    {
+      "name": "project_inspections",
+      "migration_source": "20260302210000_pr18_inspections.sql",
+      "required_columns": ["id", "user_id", "project_id", "inspection_type", "object_address", "due_date", "completed_at", "status", "protocol_pdf_path", "reminder_30_sent_at", "reminder_7_sent_at", "notes", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). Types: ANNUAL_BUILDING/FIVE_YEAR_BUILDING/FIVE_YEAR_ELECTRICAL/ANNUAL_GAS_CHIMNEY/LARGE_AREA_SEMIANNUAL/OTHER."
+    },
+    {
+      "name": "project_reminders",
+      "migration_source": "20260302220000_pr18_reminders.sql",
+      "required_columns": ["id", "user_id", "entity_type", "entity_id", "remind_at", "channel", "status", "label", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). entity_type: WARRANTY/INSPECTION. status: PENDING/SENT/DISMISSED."
+    },
+    {
+      "name": "offer_variants",
+      "migration_source": "20260314120000_offer_variants.sql",
+      "required_columns": ["id", "offer_id", "user_id", "label", "sort_order", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). Named variants (e.g. Basic/Standard/Premium) per offer."
+    },
+    {
+      "name": "offer_photos",
+      "migration_source": "20260314120000_offer_variants.sql",
+      "required_columns": ["id", "offer_id", "user_id", "storage_path", "show_in_pdf", "show_in_public", "caption", "sort_order", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). Visibility per photo (PDF/public). Public access via get_public_offer_photos()."
     }
   ]
 }
