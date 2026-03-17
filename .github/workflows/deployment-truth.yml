@@ -105,6 +105,50 @@ jobs:
           supabase functions list
           echo "PASS: Supabase deploy commands zakończone kodem 0"
 
+      # ── Supabase Reality Check — Phase 1 ─────────────────────────────────
+      # Weryfikuje rzeczywisty stan schematu bazy po deployu.
+      # Tabele + kolumny: PostgREST OpenAPI (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY).
+      # RLS: UNKNOWN w Phase 1 — patrz docs/ops/REALITY_CHECK_RUNBOOK.md.
+      # Failuje workflow WYŁĄCZNIE dla P0 FAIL (brak tabeli lub kolumny).
+      # Wymagane sekrety: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
+
+      - name: Setup Node.js (Reality Check)
+        if: always()
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Supabase Reality Check
+        id: reality-check
+        if: always()
+        shell: bash
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          # Sprawdzamy obecność sekretów przed uruchomieniem skryptu.
+          # Logujemy tylko NAZWY zmiennych, nigdy wartości.
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_SERVICE_ROLE_KEY:-}" ]; then
+            echo "REALITY_CHECK: UNKNOWN — brak wymaganych sekretów:"
+            [ -z "${SUPABASE_URL:-}" ]             && echo "  - SUPABASE_URL"
+            [ -z "${SUPABASE_SERVICE_ROLE_KEY:-}" ] && echo "  - SUPABASE_SERVICE_ROLE_KEY"
+            echo "Dodaj sekrety w GitHub → Settings → Secrets → Actions"
+            echo "Patrz: docs/ops/REALITY_CHECK_RUNBOOK.md"
+            exit 0
+          fi
+          node scripts/verify/supabase_reality_check.mjs
+
+      - name: Upload Reality Check report artifacts
+        uses: actions/upload-artifact@v4
+        if: always() && steps.reality-check.outcome != 'skipped'
+        with:
+          name: reality-check-report
+          path: |
+            scripts/verify/reality-report.json
+            scripts/verify/reality-report.md
+          if-no-files-found: warn
+      # ─────────────────────────────────────────────────────────────────────
+
       - name: Supabase deploy marker (PASS)
         if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && success() }}
         shell: bash

@@ -1,0 +1,40 @@
+{
+  "_comment": "Source of truth: supabase/migrations/ — tylko tabele potwierdzone przez migracje SQL. Tabela 'payments' NIE istnieje w migracjach — nieuwzględniona. Kolumny: tylko te potwierdzone przez CREATE TABLE w migracjach.",
+  "tables": [
+    {
+      "name": "offers",
+      "migration_source": "20260301140000_pr09_offers_table.sql",
+      "required_columns": ["id", "user_id", "status", "total_net", "created_at"],
+      "rls_required": true,
+      "notes": "Status enum: DRAFT/SENT/ACCEPTED/REJECTED/ARCHIVED. RLS: user_id = auth.uid()"
+    },
+    {
+      "name": "v2_projects",
+      "migration_source": "20260301180000_pr13_projects_v2.sql",
+      "required_columns": ["id", "user_id", "title", "status", "created_at"],
+      "rls_required": true,
+      "notes": "Status enum: ACTIVE/COMPLETED/ON_HOLD. RLS: user_id = auth.uid()"
+    },
+    {
+      "name": "clients",
+      "migration_source": "20251205160746_6a58fb47-b2dd-4b92-98f6-ba211dc13689.sql",
+      "required_columns": ["id", "user_id", "name", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). enforce_client_limit trigger installed."
+    },
+    {
+      "name": "plan_limits",
+      "migration_source": "20260223000001_server_side_plan_limits.sql",
+      "required_columns": ["plan_id", "max_projects", "max_clients", "max_offers"],
+      "rls_required": true,
+      "notes": "RLS: SELECT allowed for all (USING true). Seeded: free/pro/starter/business/enterprise."
+    },
+    {
+      "name": "profiles",
+      "migration_source": "20251205164727_c0d6cba6-5adf-4a2e-ad97-db70f142d298.sql",
+      "required_columns": ["id", "user_id", "company_name", "created_at"],
+      "rls_required": true,
+      "notes": "RLS: user_id = auth.uid(). Auto-created on auth.users INSERT via trigger."
+    }
+  ]
+}
