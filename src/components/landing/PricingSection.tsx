@@ -89,7 +89,7 @@ export function PricingSection() {
                         className="w-4 h-4 text-amber-500 shrink-0 mt-0.5"
                         aria-hidden="true"
                       />
-                      <span className={isPrep ? 'text-gray-300 dark:text-neutral-600' : 'text-gray-600 dark:text-neutral-400'}>
+                      <span className={isPrep ? 'text-gray-500 dark:text-neutral-500' : 'text-gray-600 dark:text-neutral-400'}>
                         {t(featureKey)}
                         {isPrep && (
                           <span className="ml-1.5 text-[10px] font-medium text-gray-600 dark:text-neutral-400 border border-gray-200 dark:border-brand-border rounded px-1 py-0.5 uppercase tracking-wide align-middle">
@@ -123,7 +123,7 @@ export function PricingSection() {
           {t('landing.pricing.cancelNote')}
         </p>
 
-        <p className="text-center text-sm text-gray-400 dark:text-neutral-600 mt-3">
+        <p className="text-center text-sm text-gray-500 dark:text-neutral-500 mt-3">
           {t('landing.pricing.enterpriseNote')}{' '}
           <a
             href="mailto:kontakt@majster.ai"
