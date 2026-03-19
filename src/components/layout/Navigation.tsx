@@ -59,7 +59,8 @@ export function Navigation() {
 
   // Items that belong in admin panel only - never show in user navigation
   // 'plan' is intentionally excluded — users should access their subscription page
-  const ADMIN_ONLY_IDS = new Set(['marketplace', 'analytics', 'team']);
+  // 'marketplace' and 'team' removed: both features activated in PR activation-framework
+  const ADMIN_ONLY_IDS = new Set(['analytics']);
 
   const navItems = useMemo(() => {
     const configItems = config.navigation.mainItems
