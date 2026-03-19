@@ -5,7 +5,10 @@ import type { Subcontractor } from '@/hooks/useSubcontractors';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, fallback?: string) => fallback ?? key,
+    t: (key: string, opts?: unknown) => {
+      if (typeof opts === 'string') return opts;
+      return key;
+    },
   }),
 }));
 
