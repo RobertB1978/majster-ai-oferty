@@ -194,6 +194,7 @@ function OptimisticPhotoTile({ opt, onRetry }: { opt: OptimisticPhoto; onRetry: 
         <img
           src={opt.localPreview}
           alt={opt.file_name ?? 'preview'}
+          loading="lazy"
           className={cn('w-full h-full object-cover', (opt.uploading || opt.uploadError) && 'opacity-50')}
         />
       )}

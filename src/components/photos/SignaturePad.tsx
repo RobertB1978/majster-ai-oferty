@@ -143,6 +143,7 @@ export function SignaturePad({ onSave, savedSignatureUrl, className }: Signature
           <img
             src={savedSignatureUrl}
             alt={t('signature.savedAlt')}
+            loading="lazy"
             className="h-20 border rounded-md bg-white object-contain"
           />
         </div>

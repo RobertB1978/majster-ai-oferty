@@ -377,6 +377,7 @@ export default function OfferPublicAccept() {
               <img
                 src={data.company.logo_url}
                 alt="Logo"
+                loading="lazy"
                 className="h-10 mx-auto object-contain mb-2"
               />
             )}
@@ -489,6 +490,7 @@ export default function OfferPublicAccept() {
                     <img
                       src={data.company.logo_url}
                       alt="Logo"
+                      loading="lazy"
                       className="h-10 w-10 rounded object-contain shrink-0 border border-border bg-white"
                     />
                   ) : (

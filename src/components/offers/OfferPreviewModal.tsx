@@ -347,6 +347,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                           <img
                             src={data.company.logo_url}
                             alt="Logo"
+                            loading="lazy"
                             className="h-12 mb-2 object-contain"
                           />
                         )}
