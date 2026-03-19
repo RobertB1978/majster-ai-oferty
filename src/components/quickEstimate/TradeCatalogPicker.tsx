@@ -22,6 +22,7 @@ import { tradeCategories } from '@/data/tradeCatalog';
 import type { CatalogCategory, CatalogSubcategory, CatalogTrade } from '@/data/tradeCatalog';
 import { getStarterPack } from '@/data/starterPacks';
 import type { StarterPack } from '@/data/starterPacks';
+import { formatNumberCompact } from '@/lib/formatters';
 
 /** Map icon name string → Lucide component */
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -92,7 +93,7 @@ function SubcategoryRow({ sub, onClick }: { sub: CatalogSubcategory; onClick: (s
 }
 
 export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [step, setStep] = useState<CatalogStep>('categories');
   const [selectedCategory, setSelectedCategory] = useState<CatalogCategory | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<CatalogSubcategory | null>(null);
@@ -192,7 +193,7 @@ export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerP
                         </span>
                         {estimatedTotal !== null && (
                           <span className="text-xs text-muted-foreground">
-                            ~{new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 }).format(estimatedTotal)} zł
+                            ~{formatNumberCompact(estimatedTotal, i18n.language)} zł
                           </span>
                         )}
                         {pack.estimatedDuration && (

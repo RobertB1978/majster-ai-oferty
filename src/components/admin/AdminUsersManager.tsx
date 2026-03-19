@@ -74,7 +74,7 @@ export function AdminUsersManager() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, user_id, company_name, owner_name, email_for_offers, created_at')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -88,7 +88,7 @@ export function AdminUsersManager() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_roles')
-        .select('*');
+        .select('id, user_id, role');
 
       if (error) throw error;
       return data;

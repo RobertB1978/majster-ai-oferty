@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Cookie, Shield, BarChart, Megaphone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 interface ConsentState {
   essential: boolean;
@@ -60,7 +61,7 @@ export function CookieConsent() {
         });
       }
     } catch (error) {
-      console.error('Error saving consent:', error);
+      logger.error('Error saving consent:', error);
     }
 
     setIsVisible(false);

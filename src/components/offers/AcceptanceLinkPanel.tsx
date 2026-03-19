@@ -27,6 +27,7 @@ import {
   daysUntilExpiry,
 } from '@/hooks/useAcceptanceLink';
 import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
+import { formatDateTime } from '@/lib/formatters';
 
 interface Props {
   offerId: string;
@@ -36,7 +37,7 @@ interface Props {
 }
 
 export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejectedAt }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [creatingProject, setCreatingProject] = useState(false);
@@ -82,7 +83,7 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
         </div>
         {acceptedAt && (
           <p className="text-sm text-green-600 dark:text-green-500">
-            {t('acceptanceLink.acceptedAt', { date: new Date(acceptedAt).toLocaleString('pl-PL') })}
+            {t('acceptanceLink.acceptedAt', { date: formatDateTime(acceptedAt, i18n.language) })}
           </p>
         )}
         <div className="pt-1">
@@ -129,7 +130,7 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
         </div>
         {rejectedAt && (
           <p className="text-sm text-red-600 dark:text-red-500 mt-1">
-            {t('acceptanceLink.rejectedAt', { date: new Date(rejectedAt).toLocaleString('pl-PL') })}
+            {t('acceptanceLink.rejectedAt', { date: formatDateTime(rejectedAt, i18n.language) })}
           </p>
         )}
       </div>

@@ -2,6 +2,7 @@ import { createContext, useContext, useCallback, useEffect, useReducer } from 'r
 import type { ReactNode } from 'react';
 import { toast } from 'sonner';
 import i18n from '@/i18n';
+import { formatDateTime } from '@/lib/formatters';
 import { appConfigSchema } from '@/data/appConfigSchema';
 import type { AppConfig, ConfigVersion } from '@/data/appConfigSchema';
 import { DEFAULT_CONFIG } from '@/data/defaultConfig';
@@ -44,7 +45,7 @@ function configReducer(state: ConfigState, action: ConfigAction): ConfigState {
         config: target.config,
         timestamp: new Date().toISOString(),
         actor: 'owner',
-        summary: i18n.t('configContext.rolledBackTo', { date: new Date(target.timestamp).toLocaleString('pl-PL') }),
+        summary: i18n.t('configContext.rolledBackTo', { date: formatDateTime(target.timestamp, i18n.language) }),
       };
       const versions = [entry, ...state.versions].slice(0, MAX_VERSIONS);
       persist(target.config, versions);

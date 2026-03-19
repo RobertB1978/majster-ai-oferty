@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 import { normalizeProfileData } from '@/lib/dataValidation';
 
@@ -45,7 +46,7 @@ export function useProfile() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, user_id, company_name, owner_name, nip, street, address_line2, city, postal_code, country, phone, email_for_offers, bank_account, website, logo_url, email_subject_template, email_greeting, email_signature, contact_email, contact_email_verified, contact_email_verified_at, contact_email_verification_token, contact_email_verification_sent_at, created_at, updated_at')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -103,7 +104,7 @@ export function useUpdateProfile() {
       toast.success(t('profile.toast.saved'));
     },
     onError: (error) => {
-      console.error('Error updating profile:', error);
+      logger.error('Error updating profile:', error);
       toast.error(t('profile.toast.saveError'));
     },
   });
@@ -154,7 +155,7 @@ export function useUploadLogo() {
       toast.success(t('profile.toast.logoUploaded'));
     },
     onError: (error) => {
-      console.error('Error uploading logo:', error);
+      logger.error('Error uploading logo:', error);
       const message = error instanceof Error ? error.message : 'Nie udało się przesłać logo';
       toast.error(message);
     },

@@ -31,6 +31,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Trash2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 /** Confirmation keyword that the user must type exactly (case-sensitive) */
 const CONFIRMATION_KEYWORD = 'USUŃ';
@@ -68,7 +69,7 @@ export function DeleteAccountSection() {
 
       navigate('/login');
     } catch (error) {
-      console.error('Error deleting account:', error);
+      logger.error('Error deleting account:', error);
       toast.error(t('deleteAccount.errorTitle'), {
         description: t('deleteAccount.errorDescription'),
       });

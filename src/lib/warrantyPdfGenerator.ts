@@ -8,6 +8,7 @@
 import { jsPDF } from 'jspdf';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
+import { formatDate } from '@/lib/formatters';
 import type { ProjectWarranty } from '@/hooks/useWarranty';
 
 export interface WarrantyPdfContext {
@@ -17,13 +18,14 @@ export interface WarrantyPdfContext {
   companyAddress?: string;
   companyPhone?: string;
   t: (key: string) => string;
+  locale?: string;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function fmtDate(iso: string | null | undefined): string {
+function fmtDate(iso: string | null | undefined, locale?: string): string {
   if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('pl-PL');
+  return formatDate(iso, locale);
 }
 
 function drawLine(doc: jsPDF, y: number): void {
@@ -56,7 +58,7 @@ function field(doc: jsPDF, label: string, value: string, y: number): number {
 // ── Main generator ────────────────────────────────────────────────────────────
 
 export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
-  const { warranty, projectTitle, companyName, companyAddress, companyPhone, t } = ctx;
+  const { warranty, projectTitle, companyName, companyAddress, companyPhone, t, locale } = ctx;
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
@@ -79,7 +81,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   doc.setFontSize(8);
   doc.setTextColor(200, 220, 255);
   doc.text(`${t('warranty.pdf.docNo')}: ${docNum}`, 195, 10, { align: 'right' });
-  doc.text(`${t('warranty.pdf.issueDate')}: ${fmtDate(new Date().toISOString())}`, 195, 16, { align: 'right' });
+  doc.text(`${t('warranty.pdf.issueDate')}: ${fmtDate(new Date().toISOString(), locale)}`, 195, 16, { align: 'right' });
 
   let y = 40;
 
@@ -99,8 +101,8 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
 
   // ── Warranty period ──────────────────────────────────────────────────────────
   y = sectionTitle(doc, t('warranty.pdf.sectionPeriod'), y);
-  y = field(doc, t('warranty.pdf.startDate'), fmtDate(warranty.start_date), y);
-  y = field(doc, t('warranty.pdf.endDate'), fmtDate(warranty.end_date), y);
+  y = field(doc, t('warranty.pdf.startDate'), fmtDate(warranty.start_date, locale), y);
+  y = field(doc, t('warranty.pdf.endDate'), fmtDate(warranty.end_date, locale), y);
   y = field(doc, t('warranty.pdf.duration'), `${warranty.warranty_months} ${t('warranty.pdf.months')}`, y);
   y += 4;
 
@@ -154,7 +156,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   // ── Footer ───────────────────────────────────────────────────────────────────
   doc.setFontSize(7);
   doc.setTextColor(180, 180, 180);
-  doc.text(`Majster.AI — ${t('warranty.pdf.footerGenerated')} ${new Date().toLocaleDateString('pl-PL')}`, 105, 290, { align: 'center' });
+  doc.text(`Majster.AI — ${t('warranty.pdf.footerGenerated')} ${formatDate(new Date(), locale)}`, 105, 290, { align: 'center' });
 
   return doc.output('blob');
 }

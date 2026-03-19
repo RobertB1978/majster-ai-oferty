@@ -254,7 +254,7 @@ export function useCreateDocumentInstance() {
           data_json: input.dataJson,
           references_json: input.template.references,
         })
-        .select('*')
+        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at')
         .single();
 
       if (error) throw error;
@@ -288,7 +288,7 @@ export function useUpdateDocumentInstance() {
         .from('document_instances')
         .update(updatePayload)
         .eq('id', input.id)
-        .select('*')
+        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at')
         .single();
 
       if (error) throw error;

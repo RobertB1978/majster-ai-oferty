@@ -27,7 +27,7 @@ export function usePdfData(projectId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('pdf_data')
-        .select('*')
+        .select('id, project_id, user_id, version, title, offer_text, terms, deadline_text, vat_rate, created_at')
         .eq('project_id', projectId)
         .maybeSingle();
 

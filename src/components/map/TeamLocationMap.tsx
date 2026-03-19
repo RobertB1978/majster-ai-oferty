@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Navigation, RefreshCw, Users } from 'lucide-react';
 import { useTeamLocations, TeamLocation } from '@/hooks/useTeamMembers';
+import { formatDateTime } from '@/lib/formatters';
 
 // Fix Leaflet default marker icons
 delete (L.Icon.Default.prototype as Record<string, unknown>)._getIconUrl;
@@ -35,6 +37,7 @@ interface TeamLocationMapProps {
 }
 
 export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) {
+  const { i18n } = useTranslation();
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
@@ -125,7 +128,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
           <div style="min-width: 150px;">
             <strong>${memberName}</strong><br/>
             <span style="color: ${statusColors[status]};">● ${statusLabels[status]}</span><br/>
-            <small>Ostatnia aktualizacja: ${new Date(loc.recorded_at).toLocaleString('pl-PL')}</small>
+            <small>Ostatnia aktualizacja: ${formatDateTime(loc.recorded_at, i18n.language)}</small>
           </div>
         `);
 

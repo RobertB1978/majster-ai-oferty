@@ -29,6 +29,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useLogAuditEvent } from '@/hooks/useAuditLog';
+import { logger } from '@/lib/logger';
 
 export default function GDPRCenter() {
   const navigate = useNavigate();
@@ -98,7 +99,7 @@ export default function GDPRCenter() {
 
       toast.success(t('legal.gdpr.toast.exportSuccess'));
     } catch (error) {
-      console.error('Export error:', error);
+      logger.error('Export error:', error);
       toast.error(t('legal.gdpr.toast.exportError'));
     } finally {
       setIsExporting(false);
@@ -130,7 +131,7 @@ export default function GDPRCenter() {
 
       setShowDeleteDialog(false);
     } catch (error) {
-      console.error('Delete request error:', error);
+      logger.error('Delete request error:', error);
       toast.error(t('legal.gdpr.toast.deleteError'));
     } finally {
       setIsDeleting(false);

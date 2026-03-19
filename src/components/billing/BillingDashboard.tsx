@@ -9,9 +9,10 @@ import { PricingPlans } from './PricingPlans';
 import { useUserSubscription } from '@/hooks/useSubscription';
 import { useCreateCheckoutSession } from '@/hooks/useStripe';
 import { toast } from 'sonner';
+import { formatDate } from '@/lib/formatters';
 
 export function BillingDashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { data: subscription, isLoading } = useUserSubscription();
   const { mutate: createCheckout, isPending: isCheckoutLoading } = useCreateCheckoutSession();
@@ -95,7 +96,7 @@ export function BillingDashboard() {
           <CardContent>
             {subscription?.current_period_end ? (
               <div className="text-2xl font-bold">
-                {new Date(subscription.current_period_end).toLocaleDateString('pl-PL', {
+                {formatDate(subscription.current_period_end, i18n.language, {
                   day: 'numeric',
                   month: 'short',
                   year: 'numeric',

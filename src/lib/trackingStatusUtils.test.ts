@@ -5,6 +5,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { normalizeTrackingStatus, type TrackingStatus } from './trackingStatusUtils';
+import { logger } from './logger';
 
 describe('normalizeTrackingStatus', () => {
   it('powinien zwrócić "sent" dla undefined', () => {
@@ -32,29 +33,29 @@ describe('normalizeTrackingStatus', () => {
   });
 
   it('powinien zwrócić "sent" dla niepoprawnej wartości i wyświetlić warning', () => {
-    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const loggerWarnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
 
     const result = normalizeTrackingStatus('invalid-status');
 
     expect(result).toBe('sent');
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
       'Invalid tracking_status received: "invalid-status", falling back to \'sent\''
     );
 
-    consoleWarnSpy.mockRestore();
+    loggerWarnSpy.mockRestore();
   });
 
   it('powinien obsłużyć różne niepoprawne wartości', () => {
     const invalidValues = ['SENT', 'Opened', 'random', '123', 'null'];
-    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const loggerWarnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
 
     invalidValues.forEach((value) => {
       const result = normalizeTrackingStatus(value);
       expect(result).toBe('sent');
     });
 
-    expect(consoleWarnSpy).toHaveBeenCalledTimes(invalidValues.length);
-    consoleWarnSpy.mockRestore();
+    expect(loggerWarnSpy).toHaveBeenCalledTimes(invalidValues.length);
+    loggerWarnSpy.mockRestore();
   });
 
   it('powinien obsłużyć wszystkie edge cases w jednym teście', () => {

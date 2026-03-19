@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { Json } from '@/integrations/supabase/types';
 import { normalizeQuantity, normalizePrice, normalizeString, normalizePercentage } from '@/lib/dataValidation';
 
@@ -121,7 +122,7 @@ export function useSaveQuote() {
     },
     onError: (error) => {
       toast.error(t('quotes.toast.saveError'));
-      console.error(error);
+      logger.error(error);
     },
   });
 }

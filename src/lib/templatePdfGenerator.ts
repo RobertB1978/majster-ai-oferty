@@ -15,6 +15,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
+import { formatDate } from '@/lib/formatters';
 import type { DocumentTemplate } from '@/data/documentTemplates';
 import type { AutofillContext } from '@/hooks/useDocumentInstances';
 
@@ -145,7 +146,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   doc.setTextColor(...gray);
   doc.text(`${t('docTemplates.pdf.docNumber')}: ${docNum}`, pageWidth - margin, y, { align: 'right' });
   doc.text(
-    `${t('docTemplates.pdf.generatedAt')}: ${new Date().toLocaleDateString('pl-PL')}`,
+    `${t('docTemplates.pdf.generatedAt')}: ${formatDate(new Date(), input.locale)}`,
     pageWidth - margin,
     y + 5,
     { align: 'right' }
@@ -305,7 +306,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
       pageHeight - 8
     );
     doc.text(
-      new Date().toLocaleDateString('pl-PL'),
+      formatDate(new Date(), input.locale),
       pageWidth - margin,
       pageHeight - 8,
       { align: 'right' }

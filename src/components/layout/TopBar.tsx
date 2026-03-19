@@ -15,6 +15,7 @@ import {
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 const NotificationCenter = lazy(() =>
   import('@/components/notifications/NotificationCenter').then((module) => ({
@@ -82,7 +83,7 @@ export function TopBar() {
       queryClient.clear(); // Clear all cached data
       navigate('/login');
     } catch (error) {
-      console.error('Logout failed:', error);
+      logger.error('Logout failed:', error);
       toast.error(t('errors.logoutFailed'));
     }
   };

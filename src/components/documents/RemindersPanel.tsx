@@ -18,6 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { SkeletonList } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/formatters';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -29,6 +30,7 @@ function resolveReminderLabel(
   label: string | null,
   isWarranty: boolean,
   t: (key: string, opts?: Record<string, unknown>) => string,
+  language: string,
 ): string {
   if (!label) {
     return isWarranty ? t('reminders.warrantyReminder') : t('reminders.inspectionReminder');
@@ -36,19 +38,19 @@ function resolveReminderLabel(
   // Parse stored key patterns: "warranty.reminder.t30:2026-12-01"
   if (label.startsWith('warranty.reminder.t30:')) {
     const date = label.split(':')[1];
-    return t('reminders.warrantyExpiresIn30', { date: new Date(date).toLocaleDateString('pl-PL') });
+    return t('reminders.warrantyExpiresIn30', { date: formatDate(date, language) });
   }
   if (label.startsWith('warranty.reminder.t7:')) {
     const date = label.split(':')[1];
-    return t('reminders.warrantyExpiresIn7', { date: new Date(date).toLocaleDateString('pl-PL') });
+    return t('reminders.warrantyExpiresIn7', { date: formatDate(date, language) });
   }
   if (label.startsWith('inspection.reminder.t30:')) {
     const date = label.split(':')[1];
-    return t('reminders.inspectionDueIn30', { date: new Date(date).toLocaleDateString('pl-PL') });
+    return t('reminders.inspectionDueIn30', { date: formatDate(date, language) });
   }
   if (label.startsWith('inspection.reminder.t7:')) {
     const date = label.split(':')[1];
-    return t('reminders.inspectionDueIn7', { date: new Date(date).toLocaleDateString('pl-PL') });
+    return t('reminders.inspectionDueIn7', { date: formatDate(date, language) });
   }
   // Fallback: return raw label
   return label;
@@ -58,8 +60,8 @@ function isOverdue(remindAt: string): boolean {
   return new Date(remindAt) < new Date();
 }
 
-function formatRemindAt(remindAt: string): string {
-  return new Date(remindAt).toLocaleDateString('pl-PL', {
+function formatRemindAt(remindAt: string, language: string): string {
+  return formatDate(remindAt, language, {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
@@ -69,7 +71,7 @@ function formatRemindAt(remindAt: string): string {
 // ── Reminder item ─────────────────────────────────────────────────────────────
 
 function ReminderItem({ reminder }: { reminder: ProjectReminder }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dismiss = useDismissReminder();
 
   const overdue = isOverdue(reminder.remind_at);
@@ -111,10 +113,10 @@ function ReminderItem({ reminder }: { reminder: ProjectReminder }) {
           'text-sm font-medium leading-snug',
           overdue ? 'text-destructive' : 'text-amber-800 dark:text-amber-200',
         )}>
-          {resolveReminderLabel(reminder.label, isWarranty, t)}
+          {resolveReminderLabel(reminder.label, isWarranty, t, i18n.language)}
         </p>
         <p className="text-xs text-muted-foreground">
-          {overdue ? t('reminders.overdue') : t('reminders.due')}: {formatRemindAt(reminder.remind_at)}
+          {overdue ? t('reminders.overdue') : t('reminders.due')}: {formatRemindAt(reminder.remind_at, i18n.language)}
         </p>
       </div>
 

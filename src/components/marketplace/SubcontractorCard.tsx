@@ -19,9 +19,10 @@ export function SubcontractorCard({ subcontractor, onViewDetails, onInvite }: Su
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             {subcontractor.avatar_url ? (
-              <img 
-                src={subcontractor.avatar_url} 
+              <img
+                src={subcontractor.avatar_url}
                 alt={subcontractor.company_name}
+                loading="lazy"
                 className="h-12 w-12 rounded-full object-cover"
               />
             ) : (
@@ -65,7 +66,7 @@ export function SubcontractorCard({ subcontractor, onViewDetails, onInvite }: Su
           )}
           {subcontractor.hourly_rate && (
             <Badge variant="secondary">
-              {subcontractor.hourly_rate} zł/godz.
+              {t('marketplace.perHour', { rate: subcontractor.hourly_rate })}
             </Badge>
           )}
         </div>

@@ -19,6 +19,7 @@ import { CreditCard, ExternalLink, ArrowUpRight, CheckCircle, AlertCircle, XCirc
 import { useUserSubscription } from '@/hooks/useSubscription';
 import { useCustomerPortal } from '@/hooks/useStripe';
 import { toast } from 'sonner';
+import { formatDateLong } from '@/lib/formatters';
 
 function StatusBadge({ status }: { status: string }) {
   const { t } = useTranslation();
@@ -61,7 +62,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export function SubscriptionSection() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { data: subscription, isLoading } = useUserSubscription();
   const { mutate: openPortal, isPending: isPortalLoading } = useCustomerPortal();
@@ -73,7 +74,7 @@ export function SubscriptionSection() {
   // Użytkownicy z manualnie ustawionym planem (bez Stripe) nie mają stripe_customer_id.
   const hasStripeCustomer = !!subscription?.stripe_customer_id;
   const periodEnd = subscription?.current_period_end
-    ? new Date(subscription.current_period_end).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })
+    ? formatDateLong(subscription.current_period_end, i18n.language)
     : null;
 
   const handleManageBilling = () => {

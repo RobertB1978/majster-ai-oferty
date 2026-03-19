@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export interface AdminThemeConfig {
   id: string;
@@ -60,7 +61,7 @@ export function useAdminTheme(organizationId: string | null): UseAdminThemeResul
       setLoading(true);
       const { data, error: fetchError } = await supabase
         .from('admin_theme_config')
-        .select('*')
+        .select('id, organization_id, primary_hue, primary_saturation, primary_lightness, accent_hue, border_radius, font_size, font_family, spacing, version, created_by, created_at, updated_by, updated_at')
         .eq('organization_id', organizationId)
         .single();
 
@@ -78,7 +79,7 @@ export function useAdminTheme(organizationId: string | null): UseAdminThemeResul
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to fetch theme');
       setError(error);
-      console.error('Error fetching admin theme:', error);
+      logger.error('Error fetching admin theme:', error);
       setTheme(DEFAULT_THEME);
     } finally {
       setLoading(false);
@@ -165,7 +166,7 @@ export function useAdminTheme(organizationId: string | null): UseAdminThemeResul
       } catch (err) {
         const error = err instanceof Error ? err : new Error('Failed to update theme');
         setError(error);
-        console.error('Error updating admin theme:', error);
+        logger.error('Error updating admin theme:', error);
         toast.error(t('errors.themeSaveFailed'));
       }
     },

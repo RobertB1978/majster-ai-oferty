@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Circle, Clock, FolderKanban, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/formatters';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -40,7 +41,7 @@ interface PublicProjectData {
 
 export default function ProjectPublicStatus() {
   const { token } = useParams<{ token: string }>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const publicProjectQuery = useQuery({
     queryKey: ['projectPublicStatus', token],
@@ -146,13 +147,13 @@ export default function ProjectPublicStatus() {
           {project.start_date && (
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">{t('projectsV2.startDate')}</span>
-              <span>{new Date(project.start_date).toLocaleDateString('pl-PL')}</span>
+              <span>{formatDate(project.start_date, i18n.language)}</span>
             </div>
           )}
           {project.end_date && (
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">{t('projectsV2.hub.endDate')}</span>
-              <span>{new Date(project.end_date).toLocaleDateString('pl-PL')}</span>
+              <span>{formatDate(project.end_date, i18n.language)}</span>
             </div>
           )}
         </div>
@@ -179,7 +180,7 @@ export default function ProjectPublicStatus() {
                   </span>
                   {stage.due_date && (
                     <span className="ml-auto text-xs text-muted-foreground shrink-0">
-                      {new Date(stage.due_date).toLocaleDateString('pl-PL')}
+                      {formatDate(stage.due_date, i18n.language)}
                     </span>
                   )}
                 </li>

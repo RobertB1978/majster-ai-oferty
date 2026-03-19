@@ -166,6 +166,7 @@ export default function CompanyProfile() {
                   <img
                     src={profile.logo_url}
                     alt={t('companyProfile.logoAlt')}
+                    loading="lazy"
                     className="h-32 w-32 rounded-lg border border-border object-contain transition-transform group-hover:scale-105"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
@@ -215,6 +216,7 @@ export default function CompanyProfile() {
                   <img
                     src={profile.logo_url}
                     alt="Logo"
+                    loading="lazy"
                     className="h-8 w-8 object-contain"
                   />
                   <div>

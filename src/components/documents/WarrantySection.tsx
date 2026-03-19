@@ -28,6 +28,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SkeletonList } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/formatters';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -238,7 +239,7 @@ function WarrantyCard({
   projectTitle: string;
   onEdit: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: warranty } = useWarranty(projectId);
   const deleteMut = useDeleteWarranty(projectId);
   const markPdf = useMarkWarrantyPdfPath(projectId);
@@ -331,7 +332,7 @@ function WarrantyCard({
           subject: `${t('warranty.pdf.title')} — ${projectTitle}`,
           html: `<p>${t('warranty.email.greeting', { name: warranty.client_name ?? '' })}</p>
 <p>${t('warranty.email.body', { project: projectTitle })}</p>
-<p>${t('warranty.email.validUntil', { date: new Date(warranty.end_date).toLocaleDateString('pl-PL') })}</p>
+<p>${t('warranty.email.validUntil', { date: formatDate(warranty.end_date, i18n.language) })}</p>
 <p>${t('warranty.email.contact')}</p>`,
           attachments: [
             {
@@ -374,7 +375,7 @@ function WarrantyCard({
         </div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span>{t('warranty.fields.warrantyMonths')}: <b className="text-foreground">{warranty.warranty_months}</b></span>
-          <span>{t('warranty.pdf.endDate')}: <b className="text-foreground">{new Date(warranty.end_date).toLocaleDateString('pl-PL')}</b></span>
+          <span>{t('warranty.pdf.endDate')}: <b className="text-foreground">{formatDate(warranty.end_date, i18n.language)}</b></span>
           {warranty.client_email && (
             <span className="col-span-2 truncate">{warranty.client_email}</span>
           )}

@@ -1,5 +1,6 @@
 import { QuotePosition } from '@/hooks/useQuotes';
 import { toast } from 'sonner';
+import { formatDate } from '@/lib/formatters';
 
 interface ExportQuoteData {
   projectName: string;
@@ -133,7 +134,8 @@ interface ProjectForExport {
  */
 export function exportProjectsToCSV(
   projects: ProjectForExport[],
-  maxLimit: number = 500
+  maxLimit: number = 500,
+  locale?: string,
 ) {
   if (projects.length > maxLimit) {
     const isUnlimited = maxLimit === Infinity;
@@ -160,7 +162,7 @@ export function exportProjectsToCSV(
       p.project_name,
       p.clients?.name || '-',
       p.status,
-      new Date(p.created_at).toLocaleDateString('pl-PL'),
+      formatDate(p.created_at, locale),
       p.total?.toFixed(2) || '-',
     ]),
   ];

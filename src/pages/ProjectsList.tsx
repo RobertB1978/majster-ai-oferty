@@ -30,6 +30,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/formatters';
 
 // ── Status config ─────────────────────────────────────────────────────────────
 
@@ -53,7 +54,7 @@ const STATUS_I18N_KEYS: Record<StatusFilter, string> = {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ProjectsList() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
@@ -201,7 +202,7 @@ export default function ProjectsList() {
                   </div>
                   {project.start_date && (
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {t('projectsV2.startDate')}: {new Date(project.start_date).toLocaleDateString('pl-PL')}
+                      {t('projectsV2.startDate')}: {formatDate(project.start_date, i18n.language)}
                     </p>
                   )}
                 </div>

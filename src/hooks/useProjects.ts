@@ -114,7 +114,7 @@ export function useProjectsPaginated(params: ProjectsQueryParams = {}) {
  */
 export function useProjects() {
   if (import.meta.env.DEV) {
-    console.warn(
+    logger.warn(
       '[useProjects] DEPRECATED — use useProjectsPaginated or useProjectsV2List instead. ' +
       'This hook queries the legacy `projects` table.'
     );

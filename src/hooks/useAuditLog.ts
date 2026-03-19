@@ -101,7 +101,7 @@ export function useLogAuditEvent() {
       });
 
       if (error) {
-        console.error('[AUDIT] Error logging event:', error);
+        logger.error('[AUDIT] Error logging event:', error);
       }
     },
     onSuccess: () => {
@@ -122,7 +122,7 @@ export function useAuditLogs(options?: {
     queryFn: async () => {
       const query = supabase
         .from('notifications')
-        .select('*')
+        .select('id, user_id, title, message, created_at')
         .eq('user_id', user!.id)
         .like('title', 'Audit:%')
         .order('created_at', { ascending: false })

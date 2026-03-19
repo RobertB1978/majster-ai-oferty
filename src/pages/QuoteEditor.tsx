@@ -31,7 +31,6 @@ interface PositionInputs {
 }
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
-const categories = ['Materiał', 'Robocizna'] as const;
 
 export default function QuoteEditor() {
   const { id } = useParams<{ id: string }>();

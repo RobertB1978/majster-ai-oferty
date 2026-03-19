@@ -24,6 +24,7 @@ import { generateOfferPdf, uploadOfferPdf } from '@/lib/offerPdfGenerator';
 import { buildOfferPdfPayloadFromOffer } from '@/lib/offerPdfPayloadBuilder';
 import { trackEvent } from '@/lib/analytics/track';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { logger } from '@/lib/logger';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -102,7 +103,7 @@ export function useSendOffer() {
         pdfUrl = publicUrl;
       } catch (pdfErr) {
         // Non-fatal: offer is SENT even if PDF fails
-        console.error('[useSendOffer] PDF generation failed (non-fatal):', pdfErr);
+        logger.error('[useSendOffer] PDF generation failed (non-fatal):', pdfErr);
       }
 
       // ── 4. Send email (non-fatal) ─────────────────────────────────────
@@ -127,7 +128,7 @@ export function useSendOffer() {
           if (!emailErr) emailSent = true;
         } catch (emailErr) {
           // Non-fatal: SENT status was already set
-          console.error('[useSendOffer] Email send failed (non-fatal):', emailErr);
+          logger.error('[useSendOffer] Email send failed (non-fatal):', emailErr);
         }
       }
 

@@ -117,16 +117,16 @@ export function useAIFinancialAnalysis() {
       // Get projects from v2_projects — RLS enforces user isolation
       const { data: projects } = await supabase
         .from('v2_projects')
-        .select('*');
+        .select('id, title, status, start_date, end_date, progress_percent, total_from_offer, budget_net, created_at');
 
       const { data: quotes } = await supabase
         .from('quotes')
-        .select('*')
+        .select('id, project_id, total, created_at')
         .eq('user_id', user!.id);
 
       const { data: costs } = await supabase
         .from('purchase_costs')
-        .select('*')
+        .select('id, project_id, gross_amount, created_at')
         .eq('user_id', user!.id);
 
       const { data, error } = await supabase.functions.invoke('finance-ai-analysis', {

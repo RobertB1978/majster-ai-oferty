@@ -63,7 +63,7 @@ export function useWarranty(projectId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('project_warranties_with_end')
-        .select('*')
+        .select('id, user_id, project_id, client_email, client_name, contact_phone, warranty_months, start_date, end_date, scope_of_work, exclusions, pdf_storage_path, reminder_30_sent_at, reminder_7_sent_at, created_at, updated_at')
         .eq('project_id', projectId!)
         .maybeSingle();
 

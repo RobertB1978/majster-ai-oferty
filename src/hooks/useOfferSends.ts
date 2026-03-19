@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export interface OfferSend {
   id: string;
@@ -29,7 +30,7 @@ export function useOfferSends(projectId: string) {
         .order('sent_at', { ascending: false });
 
       if (error) {
-        console.warn('useOfferSends: query failed', error.message);
+        logger.warn('useOfferSends: query failed', error.message);
         return [] as OfferSend[];
       }
       return data as OfferSend[];

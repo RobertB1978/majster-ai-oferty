@@ -38,7 +38,7 @@ export function useOfferVariants(offerId: string | null) {
       if (!offerId) return [];
       const { data, error } = await supabase
         .from('offer_variants')
-        .select('*')
+        .select('id, offer_id, user_id, label, sort_order, created_at, updated_at')
         .eq('offer_id', offerId)
         .order('sort_order', { ascending: true });
       if (error) throw error;

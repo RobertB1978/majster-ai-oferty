@@ -78,7 +78,7 @@ export function SEOHead({
       <meta property="og:url" content={canonical} />
       <meta property="og:image" content={`${siteUrl}${ogImage}`} />
       <meta property="og:site_name" content="Majster.AI" />
-      <meta property="og:locale" content="pl_PL" />
+      <meta property="og:locale" content={lang === 'en' ? 'en_US' : lang === 'uk' ? 'uk_UA' : 'pl_PL'} />
       
       {/* Twitter Card — użyj summary_large_image gdy dostępny jest właściwy obraz OG 1200x630 */}
       <meta name="twitter:card" content="summary" />
@@ -94,7 +94,7 @@ export function SEOHead({
       
       {/* Mobile Optimization */}
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-      <meta name="theme-color" content="#4f46e5" />
+      <meta name="theme-color" content="#9b5208" />
       <meta name="mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="default" />
