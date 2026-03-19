@@ -1519,7 +1519,8 @@
     "configHistoryDesc": "Config versions with rollback capability (max 10)",
     "noHistory": "No change history",
     "current": "Current",
-    "restore": "Restore"
+    "restore": "Restore",
+    "versionLabel": "{{date}} · v{{version}}"
   },
   "configContext": {
     "invalidConfig": "Invalid configuration — defaults restored",

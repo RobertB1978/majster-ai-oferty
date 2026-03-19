@@ -1519,7 +1519,8 @@
     "configHistoryDesc": "Версії конфігурації з можливістю відкату (макс. 10)",
     "noHistory": "Немає історії змін",
     "current": "Поточна",
-    "restore": "Відновити"
+    "restore": "Відновити",
+    "versionLabel": "{{date}} · v{{version}}"
   },
   "configContext": {
     "invalidConfig": "Недійсна конфігурація — відновлено за замовчуванням",

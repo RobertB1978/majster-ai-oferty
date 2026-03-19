@@ -1519,7 +1519,8 @@
     "configHistoryDesc": "Wersje konfiguracji z możliwością przywrócenia (max 10)",
     "noHistory": "Brak historii zmian",
     "current": "Aktualna",
-    "restore": "Przywróć"
+    "restore": "Przywróć",
+    "versionLabel": "{{date}} · v{{version}}"
   },
   "configContext": {
     "invalidConfig": "Nieprawidłowa konfiguracja — przywrócono domyślną",
