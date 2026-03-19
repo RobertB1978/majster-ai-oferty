@@ -660,9 +660,21 @@
     "defaultQty": "Ilość domyślna",
     "noTemplatesDesc": "Dodaj pozycje do szybkiego tworzenia wycen"
   },
+  "unsavedChanges": {
+    "title": "Niezapisane zmiany",
+    "description": "Masz niezapisane zmiany. Czy na pewno chcesz opuścić tę stronę?",
+    "confirm": "Opuść stronę",
+    "cancel": "Zostań na stronie"
+  },
+  "saveState": {
+    "saved": "Zapisano",
+    "saving": "Zapisywanie...",
+    "unsaved": "Niezapisane zmiany"
+  },
   "quotes": {
     "title": "Wycena",
     "subtitle": "Edytuj pozycje kosztorysu",
+    "breadcrumbQuote": "Wycena",
     "addPosition": "Dodaj pozycję",
     "position": "Pozycja",
     "quantity": "Ilość",
