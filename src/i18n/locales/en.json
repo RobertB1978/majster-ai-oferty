@@ -1817,6 +1817,7 @@
     "specialty": "Specialty",
     "rating": "Rating",
     "hourlyRate": "Hourly rate",
+    "perHour": "{{rate}} PLN/hr",
     "contact": "Contact",
     "reviews": "Reviews",
     "details": "Details",

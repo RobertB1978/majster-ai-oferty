@@ -1576,6 +1576,7 @@
     "specialty": "Specjalizacja",
     "rating": "Ocena",
     "hourlyRate": "Stawka godzinowa",
+    "perHour": "{{rate}} zł/godz.",
     "contact": "Kontakt",
     "reviews": "Opinie",
     "details": "Szczegóły",

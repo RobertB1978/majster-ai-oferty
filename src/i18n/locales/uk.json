@@ -1799,6 +1799,7 @@
     "specialty": "Спеціалізація",
     "rating": "Рейтинг",
     "hourlyRate": "Погодинна ставка",
+    "perHour": "{{rate}} PLN/год.",
     "contact": "Контакт",
     "reviews": "Відгуки",
     "details": "Деталі",

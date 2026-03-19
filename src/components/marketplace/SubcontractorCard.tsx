@@ -66,7 +66,7 @@ export function SubcontractorCard({ subcontractor, onViewDetails, onInvite }: Su
           )}
           {subcontractor.hourly_rate && (
             <Badge variant="secondary">
-              {subcontractor.hourly_rate} zł/godz.
+              {t('marketplace.perHour', { rate: subcontractor.hourly_rate })}
             </Badge>
           )}
         </div>
