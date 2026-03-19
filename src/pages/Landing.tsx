@@ -13,8 +13,9 @@ import {
   CTASection,
   LandingFooter,
 } from '@/components/landing';
+import { getSiteUrl } from '@/lib/siteUrl';
 
-const SITE_URL = 'https://majsterai.com';
+const SITE_URL = getSiteUrl();
 
 export default function Landing() {
   const { t } = useTranslation();

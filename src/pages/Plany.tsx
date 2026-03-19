@@ -7,11 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { PLANS } from '@/config/plans';
 import { formatDualCurrency } from '@/config/currency';
+import { getSiteUrl } from '@/lib/siteUrl';
 
 // Re-export for backwards compatibility (PlanyDetail.tsx imports from here)
 export { PLANS };
 
-const SITE_URL = 'https://majsterai.com';
+const SITE_URL = getSiteUrl();
 
 const pricingStructuredData = {
   '@context': 'https://schema.org',

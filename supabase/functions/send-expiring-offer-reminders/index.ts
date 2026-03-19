@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
       return new Response(
         JSON.stringify({
           success: false,
-          message: 'FRONTEND_URL not configured — set it to your production app URL (e.g. https://majster-ai-oferty.vercel.app)',
+          message: 'FRONTEND_URL not configured — set it to your production app URL (e.g. https://your-app.vercel.app or your custom domain)',
           skipped: true,
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

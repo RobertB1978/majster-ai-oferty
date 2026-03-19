@@ -18,6 +18,7 @@ import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
 import { BuilderHeroIllustration } from '@/components/auth/BuilderHeroIllustration';
 import { motion, AnimatePresence, useReducedMotion, MotionConfig } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
+import { getSiteUrl } from '@/lib/siteUrl';
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -175,13 +176,13 @@ export default function Login() {
       <Helmet>
         <title>{t('seo.login.title')}</title>
         <meta name="description" content={t('seo.login.description')} />
-        <link rel="canonical" href="https://majsterai.com/login" />
+        <link rel="canonical" href={`${getSiteUrl()}/login`} />
         <meta name="robots" content="index, follow" />
         <meta property="og:title" content={t('seo.login.title')} />
         <meta property="og:description" content={t('seo.login.ogDescription')} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://majsterai.com/login" />
-        <meta property="og:image" content="https://majsterai.com/icon-512.png" />
+        <meta property="og:url" content={`${getSiteUrl()}/login`} />
+        <meta property="og:image" content={`${getSiteUrl()}/icon-512.png`} />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={t('seo.login.title')} />
         <meta name="twitter:description" content={t('seo.login.ogDescription')} />

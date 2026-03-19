@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { getSiteUrl } from '@/lib/siteUrl';
 
 interface SEOHeadProps {
   title: string;
@@ -26,11 +27,11 @@ export function SEOHead({
   alternateLanguages,
 }: SEOHeadProps) {
   const fullTitle = `${title} | Majster.AI`;
-  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://majsterai.com';
+  const siteUrl = getSiteUrl();
   // Use pathname only (no query params) so canonical never varies by language query param
   const cleanUrl = typeof window !== 'undefined'
     ? window.location.origin + window.location.pathname
-    : 'https://majsterai.com';
+    : siteUrl;
   const canonical = canonicalUrl || cleanUrl;
 
   const defaultStructuredData = {
@@ -102,7 +103,9 @@ export function SEOHead({
       {/* Performance */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link rel="dns-prefetch" href="https://xwxvqhhnozfrjcjmcltv.supabase.co" />
+      {import.meta.env.VITE_SUPABASE_URL && (
+        <link rel="dns-prefetch" href={new URL(import.meta.env.VITE_SUPABASE_URL as string).origin} />
+      )}
       
       {/* Structured Data */}
       <script type="application/ld+json">
