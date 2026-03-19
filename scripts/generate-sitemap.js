@@ -7,7 +7,7 @@
  * Usage: node scripts/generate-sitemap.js
  */
 
-import { writeFileSync } from 'fs';
+import { writeFileSync, readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -21,18 +21,19 @@ const BASE_URL =
 
 // Get base URL from environment or use fallback
 const getBaseUrl = () => {
-  // Check various possible env vars
+  // Priority: explicit site URL → Vercel system URL → Vercel URL env → fallback
   const envUrl =
     process.env.VITE_PUBLIC_SITE_URL ||
-    process.env.VITE_APP_URL ||
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null ||
-    process.env.URL;
+    process.env.PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+    process.env.URL ||
+    null;
 
   if (envUrl) {
     return envUrl.replace(/\/$/, ''); // Remove trailing slash
   }
 
-  // Default fallback — production domain
+  // Default fallback — used when no env vars are set (e.g. local dev without .env)
   console.warn('⚠️  No VITE_PUBLIC_SITE_URL found, using default: ' + BASE_URL);
   return BASE_URL;
 };
@@ -99,6 +100,26 @@ ${standardUrls}
 `;
 };
 
+/**
+ * Update the Sitemap directive in public/robots.txt to match the build-time base URL.
+ * Only the Sitemap line is replaced — all other directives are preserved.
+ */
+const updateRobotsTxt = (baseUrl) => {
+  const robotsPath = join(__dirname, '..', 'public', 'robots.txt');
+  try {
+    const content = readFileSync(robotsPath, 'utf-8');
+    const updated = content.replace(
+      /^Sitemap:.*$/m,
+      `Sitemap: ${baseUrl}/sitemap.xml`
+    );
+    writeFileSync(robotsPath, updated, 'utf-8');
+    console.log(`🤖 robots.txt updated: Sitemap → ${baseUrl}/sitemap.xml`);
+  } catch (err) {
+    // Non-fatal: robots.txt may not exist in all environments
+    console.warn('⚠️  Could not update robots.txt:', err.message);
+  }
+};
+
 // Main execution
 try {
   const baseUrl = getBaseUrl();
@@ -106,6 +127,7 @@ try {
   const outputPath = join(__dirname, '..', 'public', 'sitemap.xml');
 
   writeFileSync(outputPath, sitemap, 'utf-8');
+  updateRobotsTxt(baseUrl);
 
   console.log('✅ Sitemap generated successfully!');
   console.log(`📍 Base URL: ${baseUrl}`);

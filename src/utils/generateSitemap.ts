@@ -40,8 +40,9 @@ export function getBaseUrl(): string {
     return window.location.origin;
   }
 
-  // Fallback for SSR/build time (shouldn't normally happen)
-  return 'https://majster-ai-oferty.vercel.app'; // TEMP: use Vercel URL until custom domain is configured
+  // Fallback for SSR/build time — should not be reached at runtime.
+  // Set VITE_PUBLIC_SITE_URL in Vercel environment variables to configure the canonical domain.
+  return '';
 }
 
 /**

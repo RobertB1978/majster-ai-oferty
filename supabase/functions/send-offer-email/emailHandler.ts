@@ -133,7 +133,10 @@ export function generateOfferEmailHtml(
   const safeProjectName = sanitizeString(projectName);
   const safeMessage = sanitizeString(message).replace(/\n/g, '<br>');
   const safeCompanyName = opts?.companyName ? sanitizeString(opts.companyName) : 'Majster.AI';
-  const baseUrl = opts?.frontendUrl ?? 'https://majster-ai-oferty.vercel.app'; // TEMP: configure FRONTEND_URL secret in Supabase
+  // frontendUrl must be provided via FRONTEND_URL Supabase secret.
+  // checkEmailDeliveryConfig() in index.ts rejects requests when it is missing,
+  // so reaching this fallback at runtime indicates a misconfiguration.
+  const baseUrl = opts?.frontendUrl ?? '';
 
   const viewUrl = opts?.publicToken
     ? `${baseUrl}/offer/${opts.publicToken}`

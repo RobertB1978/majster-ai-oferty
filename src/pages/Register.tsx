@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWidget';
 import { Helmet } from 'react-helmet-async';
+import { getSiteUrl } from '@/lib/siteUrl';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -110,13 +111,13 @@ export default function Register() {
     <Helmet>
       <title>{t('seo.register.title')}</title>
       <meta name="description" content={t('seo.register.description')} />
-      <link rel="canonical" href="https://majsterai.com/register" />
+      <link rel="canonical" href={`${getSiteUrl()}/register`} />
       <meta name="robots" content="index, follow" />
       <meta property="og:title" content={t('seo.register.ogTitle')} />
       <meta property="og:description" content={t('seo.register.ogDescription')} />
       <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://majsterai.com/register" />
-      <meta property="og:image" content="https://majsterai.com/icon-512.png" />
+      <meta property="og:url" content={`${getSiteUrl()}/register`} />
+      <meta property="og:image" content={`${getSiteUrl()}/icon-512.png`} />
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:title" content={t('seo.register.title')} />
       <meta name="twitter:description" content={t('seo.register.ogDescription')} />
