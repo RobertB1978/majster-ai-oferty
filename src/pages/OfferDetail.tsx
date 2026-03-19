@@ -8,7 +8,7 @@
  * Sprint E: Add TemplateRecoveryCard + TemplateDetailSheet for full template continuity.
  */
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Loader2, FileText, Sparkles, Eye } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -20,6 +20,7 @@ import { AcceptanceLinkPanel } from '@/components/offers/AcceptanceLinkPanel';
 import { ErrorState } from '@/components/ui/error-state';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import {
   Sheet,
   SheetContent,
@@ -230,15 +231,19 @@ export default function OfferDetail() {
   if (isNew) {
     return (
       <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mb-4 -ml-2"
-          onClick={() => navigate('/app/offers')}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {t('common.back')}
-        </Button>
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/app/offers">{t('nav.offers')}</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{t('offerWizard.titleNew')}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <h1 className="text-2xl font-bold mb-6">{t('offerWizard.titleNew')}</h1>
         <OfferWizard offerId={undefined} />
       </div>
@@ -284,15 +289,19 @@ export default function OfferDetail() {
   if (!meta || meta.status === 'DRAFT') {
     return (
       <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mb-4 -ml-2"
-          onClick={() => navigate('/app/offers')}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {t('common.back')}
-        </Button>
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/app/offers">{t('nav.offers')}</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{meta?.title ?? t('offerWizard.titleEdit')}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <div className="flex items-center gap-2 flex-wrap mb-6">
           <h1 className="text-2xl font-bold">{t('offerWizard.titleEdit')}</h1>
           {templatePack && (
@@ -331,15 +340,19 @@ export default function OfferDetail() {
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-6 pb-24 space-y-6">
-      <Button
-        variant="ghost"
-        size="sm"
-        className="-ml-2"
-        onClick={() => navigate('/app/offers')}
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        {t('common.back')}
-      </Button>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to="/app/offers">{t('nav.offers')}</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{meta?.title ?? t('offersList.noTitle')}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <div className="flex items-center gap-2 flex-wrap">
         <FileText className="h-5 w-5 text-muted-foreground shrink-0" />

@@ -18,6 +18,8 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
+import { UnsavedChangesDialog } from '@/components/ui/unsaved-changes-dialog';
 
 import type { WizardFormData } from '@/hooks/useOfferWizard';
 import { useLoadOfferDraft, useSaveDraft } from '@/hooks/useOfferWizard';
@@ -91,6 +93,9 @@ export function OfferWizard({ offerId }: Props) {
   const [form, setForm] = useState<WizardFormData>(() => emptyForm(offerId ?? null));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isDirty, setIsDirty] = useState(false);
+
+  const { blocker } = useUnsavedChanges(isDirty);
 
   // PR-11: Preview modal state
   const [previewOfferId, setPreviewOfferId] = useState<string | null>(null);
@@ -115,6 +120,7 @@ export function OfferWizard({ offerId }: Props) {
   const handleChange = (partial: Partial<WizardFormData>) => {
     setForm((prev) => ({ ...prev, ...partial }));
     setErrors({});
+    setIsDirty(true);
   };
 
   const handleNext = () => {
@@ -140,6 +146,7 @@ export function OfferWizard({ offerId }: Props) {
     }
     try {
       await saveDraft.mutateAsync(form);
+      setIsDirty(false);
       toast.success(t('offerWizard.savedSuccess'));
       navigate('/app/offers');
     } catch (err) {
@@ -158,6 +165,7 @@ export function OfferWizard({ offerId }: Props) {
     }
     try {
       const savedOfferId = await saveDraft.mutateAsync(form);
+      setIsDirty(false);
       setPreviewOfferId(savedOfferId);
     } catch (err) {
       const msg = err instanceof Error ? err.message : t('offerWizard.saveErrorGeneric');
@@ -183,6 +191,8 @@ export function OfferWizard({ offerId }: Props) {
 
   return (
     <>
+      <UnsavedChangesDialog blocker={blocker} />
+
       {/* PR-11: Preview + Send modal */}
       {previewOfferId && (
         <OfferPreviewModal

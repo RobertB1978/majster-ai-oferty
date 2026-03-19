@@ -660,9 +660,21 @@
       "suchazabudowa": "Drywall"
     }
   },
+  "unsavedChanges": {
+    "title": "Unsaved changes",
+    "description": "You have unsaved changes. Are you sure you want to leave this page?",
+    "confirm": "Leave page",
+    "cancel": "Stay on page"
+  },
+  "saveState": {
+    "saved": "Saved",
+    "saving": "Saving...",
+    "unsaved": "Unsaved changes"
+  },
   "quotes": {
     "title": "Quote",
     "subtitle": "Create and manage quotes",
+    "breadcrumbQuote": "Quote",
     "positions": "Items",
     "addPosition": "Add Item",
     "itemName": "Item Name",

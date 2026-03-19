@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Navigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useProject } from '@/hooks/useProjects';
 import { useProjectV2 } from '@/hooks/useProjectsV2';
 import { useQuote, useSaveQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useCreateItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
 import { useAiSuggestions } from '@/hooks/useAiSuggestions';
+import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, Trash2, Save, Loader2, AlertCircle, Bookmark, Sparkles } from 'lucide-react';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import { UnsavedChangesDialog } from '@/components/ui/unsaved-changes-dialog';
+import { Plus, Trash2, Save, Loader2, AlertCircle, Bookmark, Sparkles, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { TemplateSelector } from '@/components/quotes/TemplateSelector';
 import { QuoteVersionsPanel } from '@/components/quotes/QuoteVersionsPanel';
@@ -62,6 +65,10 @@ export default function QuoteEditor() {
   const [isInitialized, setIsInitialized] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [positionInputs, setPositionInputs] = useState<Record<string, PositionInputs>>({});
+  const [isDirty, setIsDirty] = useState(false);
+  const [savedOnce, setSavedOnce] = useState(false);
+
+  const { blocker } = useUnsavedChanges(isDirty);
 
   useEffect(() => {
     if (existingQuote && !isInitialized) {
@@ -98,6 +105,8 @@ export default function QuoteEditor() {
     setPositions([...positions, newPosition]);
     setPositionInputs((prev) => ({ ...prev, [newPosition.id]: { qty: '1', price: '0' } }));
     setValidationErrors({});
+    setIsDirty(true);
+    setSavedOnce(false);
   };
 
   const addFromTemplate = (template: ItemTemplate) => {
@@ -145,6 +154,8 @@ export default function QuoteEditor() {
       delete newErrors[`${positionId}_${field}`];
       return newErrors;
     });
+    setIsDirty(true);
+    setSavedOnce(false);
   };
 
   const updateNumericInput = (
@@ -168,6 +179,8 @@ export default function QuoteEditor() {
 
   const removePosition = (positionId: string) => {
     setPositions(positions.filter(p => p.id !== positionId));
+    setIsDirty(true);
+    setSavedOnce(false);
   };
 
   const validateQuote = (): boolean => {
@@ -278,6 +291,8 @@ export default function QuoteEditor() {
         positions,
         marginPercent,
       });
+      setIsDirty(false);
+      setSavedOnce(true);
       navigate(`/app/projects/${id}`);
     } catch {
       // Error handled by hook
@@ -289,15 +304,47 @@ export default function QuoteEditor() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <Button variant="ghost" onClick={() => navigate(`/app/projects/${id}`)}>
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        {t('quotes.backToProject')}
-      </Button>
+      <UnsavedChangesDialog blocker={blocker} />
 
-      <div>
-        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-          {t('quotes.titleFor', { name: project?.project_name ?? '' })}
-        </h1>
+      {/* Breadcrumbs */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to="/app/projects">{t('nav.projects')}</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to={`/app/projects/${id}`}>{project?.project_name ?? '…'}</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{t('quotes.breadcrumbQuote')}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+            {t('quotes.titleFor', { name: project?.project_name ?? '' })}
+          </h1>
+        </div>
+        {/* Save-state indicator */}
+        {savedOnce && !isDirty && (
+          <span className="inline-flex items-center gap-1.5 text-sm text-green-600 dark:text-green-400">
+            <CheckCircle2 className="h-4 w-4" />
+            {t('saveState.saved')}
+          </span>
+        )}
+        {isDirty && (
+          <span className="inline-flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400">
+            {t('saveState.unsaved')}
+          </span>
+        )}
       </div>
 
       {/* Versions Panel */}
@@ -473,7 +520,7 @@ export default function QuoteEditor() {
                 max="100"
                 className={`w-24 ${validationErrors['marginPercent'] ? 'border-destructive' : ''}`}
                 value={marginPercent}
-                onChange={(e) => setMarginPercent(parseFloat(e.target.value) || 0)}
+                onChange={(e) => { setMarginPercent(parseFloat(e.target.value) || 0); setIsDirty(true); setSavedOnce(false); }}
               />
               {validationErrors['marginPercent'] && (
                 <p className="mt-1 text-xs text-destructive">{validationErrors['marginPercent']}</p>
