@@ -58,7 +58,7 @@ export function CompanyDocuments() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_documents')
-        .select('*')
+        .select('id, user_id, document_type, name, description, file_url, file_name, file_size, created_at')
         .eq('user_id', user!.id)
         .order('created_at', { ascending: false });
 
