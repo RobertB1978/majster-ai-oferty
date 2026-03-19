@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { BulkAddItems } from '@/components/offers/BulkAddItems';
 import { SaveToPriceBookButton } from '@/components/offers/SaveToPriceBookButton';
 import { cn } from '@/lib/utils';
+import { formatNumber } from '@/lib/formatters';
 
 const MAX_VARIANTS = 3;
 
@@ -33,8 +34,8 @@ interface Props {
   errors: Record<string, string>;
 }
 
-function formatMoney(val: number): string {
-  return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
+function formatMoney(val: number, language?: string): string {
+  return formatNumber(val, 2, language);
 }
 
 // ── Shared item editor ────────────────────────────────────────────────────────
@@ -46,7 +47,7 @@ interface ItemListProps {
 }
 
 function ItemList({ items, onUpdate, onRemove }: ItemListProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <div className="space-y-2">
       {items.map((item) => (
@@ -114,7 +115,7 @@ function ItemList({ items, onUpdate, onRemove }: ItemListProps) {
           </div>
           <div className="flex items-center justify-between">
             <p className="text-xs text-muted-foreground">
-              {t('offerWizard.itemsStep.lineTotal')}: <strong>{formatMoney(item.qty * item.unit_price_net)} zł</strong>
+              {t('offerWizard.itemsStep.lineTotal')}: <strong>{formatMoney(item.qty * item.unit_price_net, i18n.language)} zł</strong>
             </p>
             <SaveToPriceBookButton
               name={item.name}
@@ -132,7 +133,7 @@ function ItemList({ items, onUpdate, onRemove }: ItemListProps) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function WizardStepItems({ form, onChange, errors }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [libSearch, setLibSearch] = useState('');
   const [activeVariantLocalId, setActiveVariantLocalId] = useState<string | null>(
@@ -438,7 +439,7 @@ export function WizardStepItems({ form, onChange, errors }: Props) {
               <Plus className="h-3.5 w-3.5 shrink-0 text-primary" />
               <span className="flex-1 truncate">{tpl.name}</span>
               <span className="text-xs text-muted-foreground shrink-0">
-                {formatMoney(Number(tpl.default_price))} / {tpl.unit}
+                {formatMoney(Number(tpl.default_price), i18n.language)} / {tpl.unit}
               </span>
               <span
                 className="text-[10px] rounded-full px-1.5 py-0.5 bg-primary/10 text-primary shrink-0"
@@ -481,15 +482,15 @@ export function WizardStepItems({ form, onChange, errors }: Props) {
           )}
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t('common.net')}</span>
-            <span className="font-medium">{formatMoney(totals.total_net)} zł</span>
+            <span className="font-medium">{formatMoney(totals.total_net, i18n.language)} zł</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">VAT</span>
-            <span>{formatMoney(totals.total_vat)} zł</span>
+            <span>{formatMoney(totals.total_vat, i18n.language)} zł</span>
           </div>
           <div className="flex justify-between border-t border-border pt-1 font-semibold">
             <span>{t('common.gross')}</span>
-            <span>{formatMoney(totals.total_gross)} zł</span>
+            <span>{formatMoney(totals.total_gross, i18n.language)} zł</span>
           </div>
         </div>
       )}

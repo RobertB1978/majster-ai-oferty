@@ -65,7 +65,7 @@ export function useProjectCosts(projectId: string | undefined) {
       if (!projectId) return [];
       const { data, error } = await supabase
         .from('project_costs')
-        .select('*')
+        .select('id, user_id, project_id, cost_type, amount_net, note, incurred_at, created_at, updated_at')
         .eq('project_id', projectId)
         .order('incurred_at', { ascending: false })
         .order('created_at', { ascending: false });
@@ -98,7 +98,7 @@ export function useAddProjectCost() {
           note: input.note ?? null,
           incurred_at: input.incurred_at ?? today,
         })
-        .select('*')
+        .select('id, user_id, project_id, cost_type, amount_net, note, incurred_at, created_at, updated_at')
         .single();
 
       if (error) throw error;

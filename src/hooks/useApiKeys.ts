@@ -23,7 +23,7 @@ export function useApiKeys() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('api_keys')
-        .select('*')
+        .select('id, user_id, key_name, api_key, permissions, is_active, last_used_at, created_at')
         .eq('user_id', user!.id)
         .order('created_at', { ascending: false });
 

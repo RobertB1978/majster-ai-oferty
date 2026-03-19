@@ -37,6 +37,7 @@ import { useSendOffer } from '@/hooks/useSendOffer';
 import { buildOfferPdfPayloadFromOffer } from '@/lib/offerPdfPayloadBuilder';
 import { generateOfferPdf } from '@/lib/offerPdfGenerator';
 import { useAcceptanceLink, useCreateAcceptanceLink, buildAcceptanceLinkUrl } from '@/hooks/useAcceptanceLink';
+import { formatNumber, formatDate as formatDateLocale } from '@/lib/formatters';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -154,21 +155,18 @@ function useOfferPreviewData(offerId: string) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function fmt(val: number, currency = 'PLN'): string {
-  return new Intl.NumberFormat('pl-PL', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(val) + ` ${currency}`;
+function fmt(val: number, currency = 'PLN', language = 'pl'): string {
+  return formatNumber(val, 2, language) + ` ${currency}`;
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('pl-PL');
+function fmtDate(iso: string, language = 'pl'): string {
+  return formatDateLocale(iso, language);
 }
 
-function validUntilDate(issuedIso: string): string {
+function validUntilDate(issuedIso: string, language = 'pl'): string {
   const d = new Date(issuedIso);
   d.setDate(d.getDate() + 30);
-  return d.toLocaleDateString('pl-PL');
+  return formatDateLocale(d, language);
 }
 
 function docId(offerId: string, issuedIso: string): string {
@@ -180,7 +178,7 @@ function docId(offerId: string, issuedIso: string): string {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPreviewModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
 
   const { data, isLoading, isError } = useOfferPreviewData(offerId);
@@ -380,10 +378,10 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                           {t('offerPreview.offerNumber')}: {docId(data.id, data.created_at)}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {t('offerPreview.issuedAt')}: {formatDate(data.created_at)}
+                          {t('offerPreview.issuedAt')}: {fmtDate(data.created_at, i18n.language)}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {t('offerPreview.validUntil')}: {validUntilDate(data.created_at)}
+                          {t('offerPreview.validUntil')}: {validUntilDate(data.created_at, i18n.language)}
                         </p>
                       </div>
                     </div>
@@ -456,13 +454,13 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                                   {item.unit || '—'}
                                 </td>
                                 <td className="border border-gray-200 px-3 py-2 text-right text-gray-700">
-                                  {fmt(Number(item.unit_price_net), data.currency)}
+                                  {fmt(Number(item.unit_price_net), data.currency, i18n.language)}
                                 </td>
                                 <td className="border border-gray-200 px-3 py-2 text-right text-gray-700">
                                   {item.vat_rate !== null ? `${item.vat_rate}%` : '—'}
                                 </td>
                                 <td className="border border-gray-200 px-3 py-2 text-right font-medium text-gray-900">
-                                  {fmt(Number(item.line_total_net), data.currency)}
+                                  {fmt(Number(item.line_total_net), data.currency, i18n.language)}
                                 </td>
                               </tr>
                             ))}
@@ -475,12 +473,12 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                     <div className="ml-auto max-w-xs space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600">{t('offerPreview.totalsNet')}</span>
-                        <span className="font-medium">{fmt(data.total_net ?? 0, data.currency)}</span>
+                        <span className="font-medium">{fmt(data.total_net ?? 0, data.currency, i18n.language)}</span>
                       </div>
                       {data.total_vat !== null && data.total_vat !== 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600">{t('offerPreview.totalsVat')}</span>
-                          <span>{fmt(data.total_vat ?? 0, data.currency)}</span>
+                          <span>{fmt(data.total_vat ?? 0, data.currency, i18n.language)}</span>
                         </div>
                       )}
                       {(data.total_vat === null || data.total_vat === 0) && (
@@ -488,7 +486,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                       )}
                       <div className="flex justify-between border-t border-gray-300 pt-1 font-bold text-base">
                         <span>{t('offerPreview.totalsGross')}</span>
-                        <span>{fmt(data.total_gross ?? data.total_net ?? 0, data.currency)}</span>
+                        <span>{fmt(data.total_gross ?? data.total_net ?? 0, data.currency, i18n.language)}</span>
                       </div>
                     </div>
 

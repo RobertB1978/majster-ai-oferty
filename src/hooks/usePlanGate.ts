@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePlanFeatures, useUserSubscription } from './useSubscription';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { getLimitsForPlan, normalizePlanId } from '@/config/plans';
 
 export type PlanFeature = 
@@ -203,7 +204,7 @@ export function PlanGateWrapper({
     // Brak fallbacka — w trybie deweloperskim loguj ostrzeżenie,
     // aby author komponentu wiedział, że musi go dostarczyć.
     if (import.meta.env.DEV) {
-      console.warn(
+      logger.warn(
         `[PlanGateWrapper] feature="${feature}" jest zablokowany, ale nie podano fallback. ` +
         'Użytkownik widzi pustą przestrzeń bez wyjaśnienia. Dodaj prop fallback={<UpgradeModal />}.'
       );

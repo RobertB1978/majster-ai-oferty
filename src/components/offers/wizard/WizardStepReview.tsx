@@ -15,6 +15,7 @@ import { useClients } from '@/hooks/useClients';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { formatNumber } from '@/lib/formatters';
 
 interface Props {
   form: WizardFormData;
@@ -27,12 +28,12 @@ interface Props {
   errors: Record<string, string>;
 }
 
-function formatMoney(val: number): string {
-  return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
+function formatMoney(val: number, language?: string): string {
+  return formatNumber(val, 2, language);
 }
 
 export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isSaving, saveError, errors }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const totals = computeTotals(form);
   const { data: allClients = [] } = useClients();
   const selectedClient = allClients.find((c) => c.id === form.clientId);
@@ -70,15 +71,15 @@ export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isS
             </div>
             <div className="flex justify-between px-4 py-2.5">
               <span className="text-muted-foreground">{t('common.net')}</span>
-              <span className="font-medium">{formatMoney(totals.total_net)} zł</span>
+              <span className="font-medium">{formatMoney(totals.total_net, i18n.language)} zł</span>
             </div>
             <div className="flex justify-between px-4 py-2.5">
               <span className="text-muted-foreground">VAT</span>
-              <span>{formatMoney(totals.total_vat)} zł</span>
+              <span>{formatMoney(totals.total_vat, i18n.language)} zł</span>
             </div>
             <div className="flex justify-between px-4 py-2.5 bg-muted rounded-b-lg">
               <span className="font-semibold">{t('common.gross')}</span>
-              <span className="font-bold text-lg">{formatMoney(totals.total_gross)} zł</span>
+              <span className="font-bold text-lg">{formatMoney(totals.total_gross, i18n.language)} zł</span>
             </div>
           </>
         )}
@@ -95,11 +96,11 @@ export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isS
               </div>
               <div className="flex justify-between text-xs text-muted-foreground pl-5">
                 <span>{t('common.net')}</span>
-                <span>{formatMoney(vTotals.total_net)} zł</span>
+                <span>{formatMoney(vTotals.total_net, i18n.language)} zł</span>
               </div>
               <div className={`flex justify-between text-sm font-semibold pl-5 ${idx === form.variants.length - 1 ? '' : ''}`}>
                 <span>{t('common.gross')}</span>
-                <span>{formatMoney(vTotals.total_gross)} zł</span>
+                <span>{formatMoney(vTotals.total_gross, i18n.language)} zł</span>
               </div>
             </div>
           );

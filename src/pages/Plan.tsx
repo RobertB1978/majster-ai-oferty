@@ -26,6 +26,7 @@ import { PlanRequestModal } from '@/components/billing/PlanRequestModal';
 import { useUserSubscription } from '@/hooks/useSubscription';
 import { useCreateCheckoutSession, useCustomerPortal, STRIPE_PRICE_IDS, isRealStripePriceId, isStripeConfigured } from '@/hooks/useStripe';
 import { formatDualCurrency } from '@/config/currency';
+import { formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 
 const STRIPE_ENABLED = import.meta.env.VITE_STRIPE_ENABLED === 'true';
@@ -213,7 +214,7 @@ export default function Plan() {
                   <p className="text-xs text-muted-foreground">
                     {subscription?.current_period_end
                       ? t('billing.renewsOn', {
-                          date: new Date(subscription.current_period_end).toLocaleDateString('pl-PL'),
+                          date: formatDate(subscription.current_period_end, i18n.language),
                         })
                       : t('billing.activePlan')}
                   </p>

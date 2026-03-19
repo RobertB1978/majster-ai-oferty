@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { logger } from '@/lib/logger';
 
 export interface OfferStats {
   sentCount: number;
@@ -35,7 +36,7 @@ export function useOfferStats() {
 
       // Return empty stats on error instead of crashing the page
       if (error) {
-        console.warn('useOfferStats: offer_sends query failed', error.message);
+        logger.warn('useOfferStats: offer_sends query failed', error.message);
         return { sentCount: 0, acceptedCount: 0, conversionRate: 0, followupCount: 0, followupNotOpened: 0, followupOpenedNoDecision: 0 };
       }
 
@@ -51,7 +52,7 @@ export function useOfferStats() {
         .gte('created_at', thirtyDaysAgo.toISOString());
 
       if (approvalsError) {
-        console.warn('useOfferStats: offer_approvals query failed', approvalsError.message);
+        logger.warn('useOfferStats: offer_approvals query failed', approvalsError.message);
       }
 
       const acceptedCount = approvals?.length || 0;

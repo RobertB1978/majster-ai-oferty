@@ -9,6 +9,7 @@ import {
   DollarSign, CheckCircle, Calendar, Loader2, BarChart3
 } from 'lucide-react';
 import { pl, enUS, uk } from 'date-fns/locale';
+import { formatCurrency } from '@/lib/formatters';
 
 const AnalyticsCharts = lazy(() => import('@/components/analytics/AnalyticsCharts'));
 
@@ -112,14 +113,14 @@ export default function Analytics() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">{t('analytics.totalValue')}</p>
-                  <p className="text-3xl font-bold">{stats.totalValue.toLocaleString()} zł</p>
+                  <p className="text-3xl font-bold">{formatCurrency(stats.totalValue, i18n.language)}</p>
                 </div>
                 <div className="h-12 w-12 rounded-lg bg-success/10 flex items-center justify-center">
                   <DollarSign className="h-6 w-6 text-success" />
                 </div>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">
-                {t('analytics.averageValue')}: {stats.avgValue.toLocaleString(undefined, { maximumFractionDigits: 0 })} zł
+                {t('analytics.averageValue')}: {formatCurrency(stats.avgValue, i18n.language)}
               </p>
             </CardContent>
           </Card>

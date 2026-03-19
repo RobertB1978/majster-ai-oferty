@@ -49,6 +49,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { formatDate } from '@/lib/formatters';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -277,7 +278,7 @@ export function TemplateEditor({
   onBack,
   onSaved,
 }: TemplateEditorProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
 
   const [data, setData] = useState<Record<string, string>>(() => {
@@ -451,7 +452,7 @@ export function TemplateEditor({
 
       // 4. Create dossier item
       const safeTitle = t(template.titleKey).trim() || template.key;
-      const fileName = `${safeTitle}_${new Date().toLocaleDateString('pl-PL').replace(/\./g, '-')}.pdf`;
+      const fileName = `${safeTitle}_${formatDate(new Date(), i18n.language).replace(/\./g, '-')}.pdf`;
 
       const { data: dossierItem, error: dossierErr } = await supabase
         .from('project_dossier_items')

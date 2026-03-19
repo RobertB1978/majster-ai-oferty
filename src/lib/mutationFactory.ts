@@ -15,6 +15,7 @@
 
 import { useQueryClient, type UseMutationOptions } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export interface OptimisticMutationConfig<TData, TVariables> {
   /** Query key który będzie invalidowany */
@@ -88,7 +89,7 @@ export function createOptimisticMutation<TData, TVariables>(
         toast.error(config.errorMessage);
       }
 
-      console.error(err);
+      logger.error(err);
     },
 
     onSuccess: () => {

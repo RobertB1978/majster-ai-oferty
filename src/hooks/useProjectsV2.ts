@@ -178,7 +178,7 @@ export function useCreateProjectV2() {
           budget_source: budgetSource,
           budget_updated_at: budgetNet != null ? new Date().toISOString() : null,
         })
-        .select('*')
+        .select('id, user_id, client_id, source_offer_id, title, status, start_date, end_date, progress_percent, stages_json, total_from_offer, budget_net, budget_source, budget_updated_at, created_at, updated_at')
         .single();
 
       if (error) throw error;
@@ -202,7 +202,7 @@ export function useUpdateProjectV2() {
         .from('v2_projects')
         .update(fields)
         .eq('id', id)
-        .select('*')
+        .select('id, user_id, client_id, source_offer_id, title, status, start_date, end_date, progress_percent, stages_json, total_from_offer, budget_net, budget_source, budget_updated_at, created_at, updated_at')
         .single();
 
       if (error) throw error;
@@ -276,7 +276,7 @@ export function useCreateProjectPublicToken(projectId: string) {
           user_id: user.id,
           project_id: projectId,
         })
-        .select('*')
+        .select('id, user_id, project_id, token, expires_at, created_at')
         .single();
 
       if (error) throw error;

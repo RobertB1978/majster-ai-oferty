@@ -112,7 +112,7 @@ export function useUpsertAcceptance() {
           },
           { onConflict: 'project_id' }
         )
-        .select('*')
+        .select('id, user_id, project_id, accepted_at, signature_path, client_name, notes, updated_at, created_at')
         .single();
 
       if (error) throw error;
@@ -163,7 +163,7 @@ export function useSaveSignature() {
           },
           { onConflict: 'project_id' }
         )
-        .select('*')
+        .select('id, user_id, project_id, accepted_at, signature_path, client_name, notes, updated_at, created_at')
         .single();
 
       if (error) throw error;

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export interface AdminSystemSettings {
   id: string;
@@ -80,7 +81,8 @@ export function useAdminSettings(organizationId: string | null): UseAdminSetting
       setLoading(true);
       const { data, error: fetchError } = await supabase
         .from('admin_system_settings')
-        .select('*')
+        // All columns needed — full settings object used for display and updates
+        .select('id, organization_id, email_enabled, smtp_host, smtp_port, email_from_name, email_from_address, registration_enabled, maintenance_mode, api_enabled, ai_enabled, voice_enabled, ocr_enabled, max_clients_per_user, max_projects_per_user, max_storage_per_user, session_timeout_minutes, require_email_verification, two_factor_enabled, rate_limit_requests, rate_limit_window_seconds, created_by, created_at, updated_by, updated_at')
         .eq('organization_id', organizationId)
         .single();
 
@@ -98,7 +100,7 @@ export function useAdminSettings(organizationId: string | null): UseAdminSetting
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to fetch settings');
       setError(error);
-      console.error('Error fetching admin settings:', error);
+      logger.error('Error fetching admin settings:', error);
       setSettings(DEFAULT_SETTINGS);
     } finally {
       setLoading(false);
@@ -154,7 +156,7 @@ export function useAdminSettings(organizationId: string | null): UseAdminSetting
       } catch (err) {
         const error = err instanceof Error ? err : new Error('Failed to update settings');
         setError(error);
-        console.error('Error updating admin settings:', error);
+        logger.error('Error updating admin settings:', error);
         toast.error(t('errors.settingsSaveFailed'));
       }
     },

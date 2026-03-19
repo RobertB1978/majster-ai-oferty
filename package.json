@@ -40,7 +40,7 @@
     "check:no-hardcoded-polish": "node scripts/check-no-hardcoded-polish.mjs",
     "check:no-hardcoded-polish:fail": "node scripts/check-no-hardcoded-polish.mjs --fail",
     "check:perf": "bash scripts/check-perf-regressions.sh",
-    "prepare": "node -e \"try { require('husky').install() } catch (e) {}\""
+    "prepare": "husky"
   },
   "dependencies": {
     "@capacitor/cli": "^7.4.4",
@@ -135,8 +135,10 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
+    "husky": "9.1.7",
     "jsdom": "^27.2.0",
     "postcss": "^8.5.6",
+    "prettier": "3.8.1",
     "rollup-plugin-visualizer": "6.0.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",

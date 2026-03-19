@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { TradeCatalogPicker } from '@/components/quickEstimate/TradeCatalogPicker';
 import { useCreateOfferFromTemplate } from '@/hooks/useCreateOfferFromTemplate';
 import type { StarterPack, TemplateComplexity } from '@/data/starterPacks';
+import { formatNumberCompact } from '@/lib/formatters';
 
 interface IndustryTemplateSheetProps {
   open: boolean;
@@ -60,7 +61,7 @@ function ComplexityBadge({ complexity }: { complexity: TemplateComplexity }) {
 }
 
 export function IndustryTemplateSheet({ open, onOpenChange }: IndustryTemplateSheetProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { createFromTemplate, isCreating } = useCreateOfferFromTemplate();
   const [selectedPack, setSelectedPack] = useState<StarterPack | null>(null);
 
@@ -151,10 +152,7 @@ export function IndustryTemplateSheet({ open, onOpenChange }: IndustryTemplateSh
                 <div>
                   <p className="text-[11px] text-muted-foreground">
                     {t('industryTemplates.estimatedTotal', {
-                      value: new Intl.NumberFormat('pl-PL', {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      }).format(estimatedTotal),
+                      value: formatNumberCompact(estimatedTotal, i18n.language),
                     })}
                   </p>
                 </div>

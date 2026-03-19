@@ -5059,7 +5059,13 @@
         "m2": "m²",
         "m3": "m³",
         "pcs": "pcs",
-        "mb": "mb"
+        "mb": "mb",
+        "kg": "kg",
+        "l": "l",
+        "bag": "bag",
+        "set": "set",
+        "hrs": "hrs",
+        "days": "days"
       }
     }
   },

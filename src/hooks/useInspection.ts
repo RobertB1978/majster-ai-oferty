@@ -135,7 +135,7 @@ export function useProjectInspections(projectId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('project_inspections_with_status')
-        .select('*')
+        .select('id, user_id, project_id, inspection_type, object_address, due_date, completed_at, status, protocol_pdf_path, reminder_30_sent_at, reminder_7_sent_at, notes, created_at, updated_at')
         .order('due_date', { ascending: true });
 
       if (projectId) {

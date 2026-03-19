@@ -38,7 +38,7 @@ export function usePurchaseCosts(projectId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('purchase_costs')
-        .select('*')
+        .select('id, project_id, user_id, supplier_name, invoice_number, invoice_date, items, net_amount, vat_amount, gross_amount, document_url, ocr_status, created_at')
         .eq('project_id', projectId)
         .order('created_at', { ascending: false });
 
@@ -60,7 +60,7 @@ export function useAllPurchaseCosts() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('purchase_costs')
-        .select('*')
+        .select('id, project_id, user_id, supplier_name, invoice_number, invoice_date, items, net_amount, vat_amount, gross_amount, document_url, ocr_status, created_at')
         .eq('user_id', user!.id)
         .order('created_at', { ascending: false });
 

@@ -10,6 +10,7 @@
  */
 import type { AnalyticsEventName } from "./events";
 import type { AnalyticsPayload } from "./event-schema";
+import { logger } from '@/lib/logger';
 
 /** Sink interface that concrete providers will implement later. */
 export interface AnalyticsSink {
@@ -49,8 +50,7 @@ export function trackEvent(
 ): void {
   try {
     if (isDev) {
-      // eslint-disable-next-line no-console
-      console.debug("[analytics]", event, payload ?? {});
+      logger.debug("[analytics]", event, payload ?? {});
     }
 
     if (currentSink) {

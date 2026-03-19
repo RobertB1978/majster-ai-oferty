@@ -27,7 +27,7 @@ export function useWorkTasks(projectId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('work_tasks')
-        .select('*, team_members(*)')
+        .select('id, project_id, user_id, title, description, assigned_team_member_id, task_type, status, start_date, end_date, color, created_at, team_members(*)')
         .eq('user_id', user!.id)
         .order('start_date', { ascending: true });
 
@@ -123,7 +123,7 @@ export function useTeamCapacity(startDate: string, endDate: string) {
     queryFn: async () => {
       const { data: tasks, error } = await supabase
         .from('work_tasks')
-        .select('*, team_members(*)')
+        .select('id, project_id, user_id, title, description, assigned_team_member_id, task_type, status, start_date, end_date, color, created_at, team_members(*)')
         .eq('user_id', user!.id)
         .gte('start_date', startDate)
         .lte('end_date', endDate);
@@ -132,7 +132,7 @@ export function useTeamCapacity(startDate: string, endDate: string) {
 
       const { data: members } = await supabase
         .from('team_members')
-        .select('*')
+        .select('id, owner_user_id, name, role, phone, email, is_active, created_at')
         .eq('owner_user_id', user!.id)
         .eq('is_active', true);
 

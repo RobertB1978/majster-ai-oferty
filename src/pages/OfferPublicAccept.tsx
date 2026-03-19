@@ -42,6 +42,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { formatNumber, formatDate } from '@/lib/formatters';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -126,15 +127,12 @@ async function fetchPublicOffer(token: string): Promise<{ data: PublicOfferData 
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function fmt(val: number, currency = 'PLN'): string {
-  return (
-    new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val) +
-    ` ${currency}`
-  );
+function fmt(val: number, currency = 'PLN', locale?: string): string {
+  return formatNumber(val, 2, locale) + ` ${currency}`;
 }
 
-function fmtDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('pl-PL');
+function fmtDate(iso: string, locale?: string): string {
+  return formatDate(iso, locale);
 }
 
 function docId(offerId: string, issuedIso: string): string {
@@ -162,9 +160,10 @@ interface ItemsTableProps {
   items: OfferItem[];
   currency: string;
   t: (key: string) => string;
+  locale?: string;
 }
 
-function ItemsTable({ items, currency, t }: ItemsTableProps) {
+function ItemsTable({ items, currency, t, locale }: ItemsTableProps) {
   if (items.length === 0) {
     return <p className="text-muted-foreground text-xs">{t('publicOffer.noItems')}</p>;
   }
@@ -200,13 +199,13 @@ function ItemsTable({ items, currency, t }: ItemsTableProps) {
               <td className="border border-border px-2 py-1.5 text-right">{Number(item.qty)}</td>
               <td className="border border-border px-2 py-1.5 text-center">{item.unit || '—'}</td>
               <td className="border border-border px-2 py-1.5 text-right">
-                {fmt(Number(item.unit_price_net), currency)}
+                {fmt(Number(item.unit_price_net), currency, locale)}
               </td>
               <td className="border border-border px-2 py-1.5 text-right">
                 {item.vat_rate !== null ? `${item.vat_rate}%` : '—'}
               </td>
               <td className="border border-border px-2 py-1.5 text-right font-medium">
-                {fmt(Number(item.line_total_net), currency)}
+                {fmt(Number(item.line_total_net), currency, locale)}
               </td>
             </tr>
           ))}
@@ -219,7 +218,7 @@ function ItemsTable({ items, currency, t }: ItemsTableProps) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function OfferPublicAccept() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { token } = useParams<{ token: string }>();
 
   const [comment, setComment] = useState('');
@@ -387,7 +386,7 @@ export default function OfferPublicAccept() {
             <p className="text-xs text-muted-foreground">
               {t('publicOffer.offerNumber')}: {docId(data.offer.id, data.offer.created_at)}
               {' · '}
-              {t('publicOffer.issuedAt')}: {fmtDate(data.offer.created_at)}
+              {t('publicOffer.issuedAt')}: {fmtDate(data.offer.created_at, i18n.language)}
             </p>
             {daysLeft > 0 && isSent && (
               <Badge
@@ -436,10 +435,10 @@ export default function OfferPublicAccept() {
                   {isAlreadyAccepted ? t('publicOffer.alreadyAccepted') : t('publicOffer.alreadyRejected')}
                 </p>
                 {isAlreadyAccepted && data.offer.accepted_at && (
-                  <p className="text-sm text-green-600">{fmtDate(data.offer.accepted_at)}</p>
+                  <p className="text-sm text-green-600">{fmtDate(data.offer.accepted_at, i18n.language)}</p>
                 )}
                 {isAlreadyRejected && data.offer.rejected_at && (
-                  <p className="text-sm text-red-600">{fmtDate(data.offer.rejected_at)}</p>
+                  <p className="text-sm text-red-600">{fmtDate(data.offer.rejected_at, i18n.language)}</p>
                 )}
               </div>
             </div>
@@ -560,7 +559,7 @@ export default function OfferPublicAccept() {
               {!hasVariants && (
                 <p className="font-semibold mb-3">{t('publicOffer.items')}</p>
               )}
-              <ItemsTable items={displayedItems} currency={data.offer.currency} t={t} />
+              <ItemsTable items={displayedItems} currency={data.offer.currency} t={t} locale={i18n.language} />
             </div>
 
             {/* Totals */}
@@ -569,38 +568,38 @@ export default function OfferPublicAccept() {
                 <>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">{t('publicOffer.totalsNet')}</span>
-                    <span className="font-medium">{fmt(variantTotals.net, data.offer.currency)}</span>
+                    <span className="font-medium">{fmt(variantTotals.net, data.offer.currency, i18n.language)}</span>
                   </div>
                   {variantTotals.vat > 0 ? (
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t('publicOffer.totalsVat')}</span>
-                      <span>{fmt(variantTotals.vat, data.offer.currency)}</span>
+                      <span>{fmt(variantTotals.vat, data.offer.currency, i18n.language)}</span>
                     </div>
                   ) : (
                     <p className="text-xs text-muted-foreground italic">{t('publicOffer.vatExempt')}</p>
                   )}
                   <div className="flex justify-between border-t border-border pt-2 font-bold text-base">
                     <span>{t('publicOffer.totalsGross')}</span>
-                    <span>{fmt(variantTotals.gross, data.offer.currency)}</span>
+                    <span>{fmt(variantTotals.gross, data.offer.currency, i18n.language)}</span>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">{t('publicOffer.totalsNet')}</span>
-                    <span className="font-medium">{fmt(data.offer.total_net ?? 0, data.offer.currency)}</span>
+                    <span className="font-medium">{fmt(data.offer.total_net ?? 0, data.offer.currency, i18n.language)}</span>
                   </div>
                   {data.offer.total_vat !== null && data.offer.total_vat !== 0 ? (
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t('publicOffer.totalsVat')}</span>
-                      <span>{fmt(data.offer.total_vat, data.offer.currency)}</span>
+                      <span>{fmt(data.offer.total_vat, data.offer.currency, i18n.language)}</span>
                     </div>
                   ) : (
                     <p className="text-xs text-muted-foreground italic">{t('publicOffer.vatExempt')}</p>
                   )}
                   <div className="flex justify-between border-t border-border pt-2 font-bold text-base">
                     <span>{t('publicOffer.totalsGross')}</span>
-                    <span>{fmt(data.offer.total_gross ?? data.offer.total_net ?? 0, data.offer.currency)}</span>
+                    <span>{fmt(data.offer.total_gross ?? data.offer.total_net ?? 0, data.offer.currency, i18n.language)}</span>
                   </div>
                 </>
               )}

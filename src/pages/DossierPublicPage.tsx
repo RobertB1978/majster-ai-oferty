@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/formatters';
 import { DOSSIER_BUCKET, type DossierCategory } from '@/hooks/useDossier';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -80,7 +81,7 @@ function formatBytes(bytes: number | null): string {
 
 export default function DossierPublicPage() {
   const { token } = useParams<{ token: string }>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [load, setLoad] = useState<LoadState>({ state: 'loading' });
 
   useEffect(() => {
@@ -241,7 +242,7 @@ export default function DossierPublicPage() {
                         <p className="text-xs text-muted-foreground">
                           {[
                             formatBytes(item.size_bytes),
-                            new Date(item.created_at).toLocaleDateString('pl-PL'),
+                            formatDate(item.created_at, i18n.language),
                           ].filter(Boolean).join(' · ')}
                         </p>
                       </div>

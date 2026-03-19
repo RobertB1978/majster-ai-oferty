@@ -15,6 +15,7 @@ import {
   Loader2, AlertCircle, Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
@@ -110,7 +111,7 @@ export function CompanyDocuments() {
     },
     onError: (error) => {
       toast.error(t('documents.toast.addError'));
-      console.error(error);
+      logger.error(error);
     },
     onSettled: () => {
       setIsUploading(false);

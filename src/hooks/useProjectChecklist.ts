@@ -107,7 +107,7 @@ export function useProjectChecklist(projectId: string | undefined) {
 
       const { data, error } = await supabase
         .from('project_checklists')
-        .select('*')
+        .select('id, user_id, project_id, template_key, items_json, updated_at, created_at')
         .eq('project_id', projectId)
         .maybeSingle();
 
@@ -148,7 +148,7 @@ export function useUpsertProjectChecklist() {
           },
           { onConflict: 'project_id,template_key' }
         )
-        .select('*')
+        .select('id, user_id, project_id, template_key, items_json, updated_at, created_at')
         .single();
 
       if (error) throw error;

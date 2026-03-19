@@ -32,6 +32,7 @@ import { toast } from 'sonner';
 import { useAiChatHistory, useAiChatSessions, useSaveAiMessage, useDeleteChatSession } from '@/hooks/useAiChatHistory';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePlanGate } from '@/hooks/usePlanGate';
+import { logger } from '@/lib/logger';
 
 interface Message {
   id: string;
@@ -162,7 +163,7 @@ export function AiChatAgent() {
         saveMessage.mutate({ sessionId, role: 'assistant', content: assistantContent });
       }
     } catch (error: unknown) {
-      console.error('AI Chat error:', error);
+      logger.error('AI Chat error:', error);
 
       const isNotConfigured =
         error instanceof Error && error.message === 'AI_NOT_CONFIGURED';

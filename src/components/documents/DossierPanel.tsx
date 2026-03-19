@@ -36,6 +36,7 @@ import { Badge } from '@/components/ui/badge';
 import { SkeletonList } from '@/components/ui/skeleton';
 import { ErrorState } from '@/components/ui/error-state';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/formatters';
 
 // ── Category metadata ─────────────────────────────────────────────────────────
 
@@ -169,7 +170,7 @@ interface FileRowProps {
 }
 
 function FileRow({ item, onDelete }: FileRowProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -179,7 +180,7 @@ function FileRow({ item, onDelete }: FileRowProps) {
       : `${(item.size_bytes / (1024 * 1024)).toFixed(1)} MB`
     : null;
 
-  const dateLabel = new Date(item.created_at).toLocaleDateString('pl-PL');
+  const dateLabel = formatDate(item.created_at, i18n.language);
 
   const handleDelete = async () => {
     if (!confirmDelete) {

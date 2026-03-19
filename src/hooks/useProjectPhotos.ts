@@ -49,7 +49,7 @@ export function useProjectPhotos(_projectId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('project_photos')
-        .select('*')
+        .select('id, project_id, user_id, photo_url, file_name, analysis_status, analysis_result, created_at')
         .eq('project_id', projectId)
         .order('created_at', { ascending: false });
 

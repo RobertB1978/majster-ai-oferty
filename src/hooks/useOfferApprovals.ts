@@ -32,7 +32,7 @@ export function useOfferApprovals(projectId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('offer_approvals')
-        .select('*')
+        .select('id, project_id, user_id, public_token, client_name, client_email, status, signature_data, client_comment, created_at, expires_at, viewed_at, approved_at, accepted_at, accepted_via, withdrawn_at, valid_until')
         .eq('project_id', projectId)
         .order('created_at', { ascending: false });
 

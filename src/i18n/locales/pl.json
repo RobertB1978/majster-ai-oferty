@@ -5059,7 +5059,13 @@
         "m2": "m²",
         "m3": "m³",
         "pcs": "szt.",
-        "mb": "mb"
+        "mb": "mb",
+        "kg": "kg",
+        "l": "l",
+        "bag": "worek",
+        "set": "kpl.",
+        "hrs": "godz.",
+        "days": "dni"
       }
     }
   },

@@ -30,17 +30,7 @@ import {
 } from '@/hooks/useProjectCosts';
 import type { ProjectV2 } from '@/hooks/useProjectsV2';
 import { AddCostSheet } from '@/components/costs/AddCostSheet';
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pl-PL', {
-    style: 'currency',
-    currency: 'PLN',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
+import { formatCurrency as fmtCurrency, formatDate as fmtDate } from '@/lib/formatters';
 
 function calcPercent(spent: number, budget: number): number {
   if (budget <= 0) return 0;
@@ -63,7 +53,7 @@ interface BudgetEditorProps {
 }
 
 function BudgetEditor({ projectId, currentBudget, budgetSource }: BudgetEditorProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const updateBudget = useUpdateProjectBudget();
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(currentBudget != null ? String(currentBudget) : '');
@@ -135,7 +125,7 @@ function BudgetEditor({ projectId, currentBudget, budgetSource }: BudgetEditorPr
   return (
     <div className="flex items-center gap-1.5 flex-wrap">
       <span className="text-sm font-medium">
-        {currentBudget != null ? formatCurrency(currentBudget) : t('burnBar.noBudget')}
+        {currentBudget != null ? fmtCurrency(currentBudget, i18n.language) : t('burnBar.noBudget')}
       </span>
       {budgetSource === 'OFFER_NET' && (
         <Badge variant="outline" className="text-[10px] px-1.5 py-0">
@@ -166,7 +156,7 @@ interface CostRowProps {
 }
 
 function CostRow({ cost, projectId }: CostRowProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const deleteCost = useDeleteProjectCost(projectId);
 
   const handleDelete = async () => {
@@ -200,10 +190,10 @@ function CostRow({ cost, projectId }: CostRowProps) {
           <p className="truncate text-xs text-foreground">{cost.note}</p>
         )}
         <p className="text-xs text-muted-foreground">
-          {new Date(cost.incurred_at).toLocaleDateString('pl-PL')}
+          {fmtDate(cost.incurred_at, i18n.language)}
         </p>
       </div>
-      <span className="font-semibold shrink-0 text-sm">{formatCurrency(cost.amount_net)}</span>
+      <span className="font-semibold shrink-0 text-sm">{fmtCurrency(cost.amount_net, i18n.language)}</span>
       <button
         className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
         onClick={handleDelete}
@@ -226,7 +216,7 @@ interface BurnBarSectionProps {
 }
 
 export function BurnBarSection({ project }: BurnBarSectionProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [addSheetOpen, setAddSheetOpen] = useState(false);
 
   const { data: costs = [], isLoading } = useProjectCosts(project.id);
@@ -279,7 +269,7 @@ export function BurnBarSection({ project }: BurnBarSectionProps) {
           <div className="grid grid-cols-3 gap-2 text-center">
             <div className="rounded-md bg-muted/40 px-2 py-2">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{t('burnBar.spent')}</p>
-              <p className="text-sm font-bold mt-0.5 truncate">{formatCurrency(spent)}</p>
+              <p className="text-sm font-bold mt-0.5 truncate">{fmtCurrency(spent, i18n.language)}</p>
             </div>
             <div className="rounded-md bg-muted/40 px-2 py-2">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{t('burnBar.spentPct')}</p>
@@ -290,7 +280,7 @@ export function BurnBarSection({ project }: BurnBarSectionProps) {
             <div className="rounded-md bg-muted/40 px-2 py-2">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{t('burnBar.remaining')}</p>
               <p className={cn('text-sm font-bold mt-0.5 truncate', remaining < 0 ? 'text-destructive' : '')}>
-                {formatCurrency(remaining)}
+                {fmtCurrency(remaining, i18n.language)}
               </p>
             </div>
           </div>

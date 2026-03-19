@@ -8,6 +8,7 @@ import { pl, enUS, uk } from 'date-fns/locale';
 import { ACTIVITY_CONFIG } from '@/data/activityConfig';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
 import type { Activity } from '@/data/demoActivities';
+import { formatNumberCompact } from '@/lib/formatters';
 
 const dateLocaleMap: Record<string, Locale> = { pl, en: enUS, uk };
 
@@ -53,7 +54,7 @@ const ActivityItem = React.memo(function ActivityItem({ activity, index }: Activ
           <div className="shrink-0 text-right">
             {activity.amount !== undefined && (
               <p className="text-sm font-semibold text-success font-mono">
-                {`+${activity.amount.toLocaleString('pl-PL')} z\u0142`}
+                {`+${formatNumberCompact(activity.amount, i18n.language)} z\u0142`}
               </p>
             )}
             <p className="text-xs text-muted-foreground mt-0.5">

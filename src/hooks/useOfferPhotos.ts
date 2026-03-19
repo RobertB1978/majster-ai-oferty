@@ -51,7 +51,7 @@ export function useOfferPhotos(offerId: string | null) {
       if (!offerId) return [];
       const { data, error } = await supabase
         .from('offer_photos')
-        .select('*')
+        .select('id, offer_id, user_id, storage_path, show_in_pdf, show_in_public, caption, sort_order, created_at')
         .eq('offer_id', offerId)
         .order('sort_order', { ascending: true });
       if (error) throw error;
@@ -136,7 +136,7 @@ export function useUploadOfferPhoto() {
           caption: caption?.trim() || null,
           sort_order: nextOrder,
         })
-        .select('*')
+        .select('id, offer_id, user_id, storage_path, show_in_pdf, show_in_public, caption, sort_order, created_at')
         .single();
       if (dbErr) throw dbErr;
 

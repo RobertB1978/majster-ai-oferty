@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 interface CreateCheckoutSessionParams {
   priceId: string;
@@ -51,7 +52,7 @@ export function useCreateCheckoutSession() {
       });
 
       if (error) {
-        console.error('Failed to create checkout session:', error);
+        logger.error('Failed to create checkout session:', error);
         throw new Error(error.message || 'Failed to create checkout session');
       }
 
@@ -66,7 +67,7 @@ export function useCreateCheckoutSession() {
       window.location.href = data.url;
     },
     onError: (error) => {
-      console.error('Checkout session error:', error);
+      logger.error('Checkout session error:', error);
     },
   });
 }
@@ -93,7 +94,7 @@ export function useCustomerPortal() {
       });
 
       if (error) {
-        console.error('Failed to open billing portal:', error);
+        logger.error('Failed to open billing portal:', error);
         throw new Error(error.message || 'Failed to open billing portal');
       }
 
@@ -108,7 +109,7 @@ export function useCustomerPortal() {
       window.location.href = data.url;
     },
     onError: (error) => {
-      console.error('Customer portal error:', error);
+      logger.error('Customer portal error:', error);
     },
   });
 }

@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { History, RotateCcw } from 'lucide-react';
 import { useConfig } from '@/contexts/ConfigContext';
+import { formatDateTime } from '@/lib/formatters';
 
 export default function AdminAuditPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { versions, rollback } = useConfig();
 
   return (
@@ -43,7 +44,7 @@ export default function AdminAuditPage() {
                         {i === 0 && <Badge variant="default" className="text-xs">{t('adminAudit.current')}</Badge>}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(v.timestamp).toLocaleString('pl-PL')} · v{v.config.version}
+                        {formatDateTime(v.timestamp, i18n.language)} · v{v.config.version}
                       </p>
                     </div>
                     {i > 0 && (

@@ -23,6 +23,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
+import { formatDate } from '@/lib/formatters';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -171,7 +172,7 @@ export function useUploadDossierItem() {
           size_bytes: file.size,
           source: 'MANUAL',
         })
-        .select('*')
+        .select('id, user_id, project_id, category, file_path, file_name, mime_type, size_bytes, source, created_at')
         .single();
 
       if (insertError) {
@@ -262,7 +263,7 @@ export function useCreateDossierToken() {
           label: input.label ?? null,
           expires_at: expiresAt.toISOString(),
         })
-        .select('*')
+        .select('id, user_id, project_id, token, expires_at, allowed_categories, label, created_at')
         .single();
 
       if (error) throw error;
@@ -303,7 +304,7 @@ export function useDeleteDossierToken() {
 // - No file merging — reliable on mobile
 
 export function useExportDossierPdf() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return useMutation({
     mutationFn: async ({
@@ -331,7 +332,7 @@ export function useExportDossierPdf() {
 
       doc.setFontSize(10);
       doc.setTextColor(120, 120, 120);
-      doc.text(`Wygenerowano: ${new Date().toLocaleDateString('pl-PL')}`, 20, 58);
+      doc.text(`Wygenerowano: ${formatDate(new Date(), i18n.language)}`, 20, 58);
       doc.text(`Dokumentów: ${items.length}`, 20, 64);
       doc.setTextColor(0, 0, 0);
 
@@ -352,7 +353,7 @@ export function useExportDossierPdf() {
         CATEGORY_LABELS[item.category] ?? item.category,
         item.file_name,
         item.size_bytes ? `${Math.ceil(item.size_bytes / 1024)} KB` : '—',
-        new Date(item.created_at).toLocaleDateString('pl-PL'),
+        formatDate(item.created_at, i18n.language),
         item.signed_url ? 'Dostępny' : 'Brak linku',
       ]);
 

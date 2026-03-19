@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { useVoiceToText } from '@/hooks/useVoiceToText';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 interface QuoteItem {
   name: string;
@@ -110,7 +111,7 @@ export function VoiceQuoteCreator({ onQuoteCreated }: VoiceQuoteCreatorProps) {
       setResult(data);
       setMode('editing');
     } catch (error: unknown) {
-      console.error('Voice processing error:', error);
+      logger.error('Voice processing error:', error);
       toast.error(t('voiceQuote.processingError'));
       setMode('idle');
     }

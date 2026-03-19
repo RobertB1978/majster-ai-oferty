@@ -3,6 +3,8 @@
  * Utility functions dla normalizacji tracking_status w offer_sends
  */
 
+import { logger } from '@/lib/logger';
+
 /**
  * Dozwolone wartości tracking_status dla offer_sends
  */
@@ -35,6 +37,6 @@ export function normalizeTrackingStatus(input: string | undefined | null): Track
   }
 
   // Fallback dla niepoprawnych wartości
-  console.warn(`Invalid tracking_status received: "${input}", falling back to 'sent'`);
+  logger.warn(`Invalid tracking_status received: "${input}", falling back to 'sent'`);
   return 'sent';
 }

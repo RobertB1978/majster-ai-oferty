@@ -53,7 +53,7 @@ export function useBiometricCredentials() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('biometric_credentials')
-        .select('*')
+        .select('id, user_id, credential_id, public_key, counter, device_name, created_at, last_used_at')
         .eq('user_id', user?.id)
         .order('created_at', { ascending: false });
 

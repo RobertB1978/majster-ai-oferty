@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { Building2, FileText, Phone, Upload, CheckCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
+import { logger } from '@/lib/logger';
 
 const STEPS = {
   COMPANY_NAME: 0,
@@ -98,7 +99,7 @@ export function OnboardingModal({ enabled = true }: OnboardingModalProps) {
         toast.success(t('onboarding.profileConfigured'));
       }
     } catch (error) {
-      console.error('Onboarding error:', error);
+      logger.error('Onboarding error:', error);
     }
   };
 

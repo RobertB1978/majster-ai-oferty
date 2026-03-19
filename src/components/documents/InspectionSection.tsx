@@ -40,6 +40,7 @@ import { SkeletonList } from '@/components/ui/skeleton';
 import { RemindersPanel } from './RemindersPanel';
 import { NotificationPermissionPrompt } from '@/components/notifications/NotificationPermissionPrompt';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/formatters';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -208,7 +209,7 @@ function InspectionCard({
   projectId: string;
   projectTitle: string;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const markDone = useMarkInspectionDone(projectId);
   const deleteInsp = useDeleteInspection(projectId);
   const markPdf = useMarkInspectionPdfPath(projectId);
@@ -245,7 +246,7 @@ function InspectionCard({
         inspection.object_address ? `${t('inspection.protocol.address')}: ${inspection.object_address}\n` : '',
         `${t('inspection.protocol.status')}: ${t(`inspection.status.${inspection.status.toLowerCase()}`)}\n`,
         inspection.notes ? `${t('inspection.protocol.notes')}: ${inspection.notes}\n` : '',
-        `\n${t('inspection.protocol.generated')}: Majster.AI | ${new Date().toLocaleDateString('pl-PL')}\n`,
+        `\n${t('inspection.protocol.generated')}: Majster.AI | ${formatDate(new Date(), i18n.language)}\n`,
       ].join('');
 
       const blob = new Blob([blobLines], { type: 'application/pdf' });
@@ -306,7 +307,7 @@ function InspectionCard({
       <div className="text-xs text-muted-foreground space-y-0.5">
         <div>
           {t('inspection.fields.dueDate')}: <b className="text-foreground">
-            {new Date(inspection.due_date).toLocaleDateString('pl-PL')}
+            {formatDate(inspection.due_date, i18n.language)}
           </b>
         </div>
         {inspection.object_address && (
@@ -317,7 +318,7 @@ function InspectionCard({
         )}
         {inspection.completed_at && (
           <div>
-            {t('inspection.completedAt')}: {new Date(inspection.completed_at).toLocaleDateString('pl-PL')}
+            {t('inspection.completedAt')}: {formatDate(inspection.completed_at, i18n.language)}
           </div>
         )}
       </div>

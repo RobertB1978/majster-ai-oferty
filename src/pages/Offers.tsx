@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { formatDate, formatNumberCompact } from '@/lib/formatters';
 
 // ── Status config ──────────────────────────────────────────────────────────────
 
@@ -66,18 +67,14 @@ function formatRelativeDays(dateStr: string): string {
   return `${diff} d`;
 }
 
-function formatShortDate(dateStr: string | null): string | null {
+function formatShortDate(dateStr: string | null, locale?: string): string | null {
   if (!dateStr) return null;
-  return new Intl.DateTimeFormat('pl-PL').format(new Date(dateStr));
+  return formatDate(dateStr, locale);
 }
 
-function formatAmount(value: number | null, currency: string): string | null {
+function formatAmount(value: number | null, currency: string, locale?: string): string | null {
   if (value === null) return null;
-  return (
-    new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value) +
-    ' ' +
-    currency
-  );
+  return formatNumberCompact(value, locale) + ' ' + currency;
 }
 
 function noResponseDays(sentAt: string | null): number | null {
@@ -98,13 +95,13 @@ interface OfferRowProps {
 }
 
 function OfferRow({ offer, onOpen, onCreateProject, onArchive, onScheduleFollowup, isCreatingProject }: OfferRowProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const noResp = offer.status === 'SENT' ? noResponseDays(offer.sent_at) : null;
-  const amount = formatAmount(offer.total_net, offer.currency);
+  const amount = formatAmount(offer.total_net, offer.currency, i18n.language);
   const updatedAgo = formatRelativeDays(offer.last_activity_at);
   const status = offer.status as OfferStatus;
   const isAccepted = status === 'ACCEPTED';
-  const visibleDate = formatShortDate(offer.sent_at ?? offer.created_at);
+  const visibleDate = formatShortDate(offer.sent_at ?? offer.created_at, i18n.language);
   // Sprint E: resolve template pack for list badge (gracefully undefined for non-template offers)
   const templatePack = offer.source_template_id ? getStarterPack(offer.source_template_id) : undefined;
 

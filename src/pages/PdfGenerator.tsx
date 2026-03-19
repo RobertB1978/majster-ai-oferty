@@ -8,6 +8,7 @@ import { useQuote } from '@/hooks/useQuotes';
 import { usePdfData, useSavePdfData } from '@/hooks/usePdfData';
 import { useProfile } from '@/hooks/useProfile';
 import { generateDocumentId } from '@/lib/offerDataBuilder';
+import { formatDate } from '@/lib/formatters';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,7 +30,7 @@ interface PdfProjectData {
 }
 
 export default function PdfGenerator() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
 
   // ── Project reads: try v2 first, fall back to legacy ──────────────────────
@@ -168,46 +169,70 @@ export default function PdfGenerator() {
       return;
     }
 
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>${title}</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #1a1a1a; }
-            .header { ${version === 'premium' ? 'background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px;' : 'margin-bottom: 30px; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px;'} }
-            .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-            .logo img { width: 60px; height: 60px; object-fit: contain; border-radius: 8px; }
-            .logo-icon { width: 40px; height: 40px; background: ${version === 'premium' ? 'white' : '#2563eb'}; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: ${version === 'premium' ? '#2563eb' : 'white'}; font-weight: bold; }
-            .logo-text { font-size: 24px; font-weight: bold; }
-            .company-info { font-size: 12px; opacity: 0.9; margin-top: 8px; }
-            h1 { font-size: 28px; margin-bottom: 8px; }
-            .date { font-size: 14px; opacity: 0.8; }
-            .client-info { margin-bottom: 30px; padding: 20px; background: #f9fafb; border-radius: 8px; }
-            .client-info h3 { font-size: 14px; color: #6b7280; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
-            .client-info p { margin: 4px 0; }
-            .offer-text { margin-bottom: 30px; line-height: 1.6; white-space: pre-wrap; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-            th { background: ${version === 'premium' ? '#2563eb' : '#f3f4f6'}; color: ${version === 'premium' ? 'white' : '#1a1a1a'}; text-align: left; padding: 12px; font-weight: 600; }
-            td { padding: 12px; border-bottom: 1px solid #e5e7eb; }
-            .summary { background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-            .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-            .summary-total { font-size: 20px; font-weight: bold; color: #2563eb; border-top: 2px solid #e5e7eb; padding-top: 12px; margin-top: 12px; }
-            .terms { margin-bottom: 30px; }
-            .terms h3 { font-size: 16px; margin-bottom: 12px; }
-            .terms p { line-height: 1.6; white-space: pre-wrap; color: #4b5563; }
-            .footer { text-align: center; color: #9ca3af; font-size: 12px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; }
-            .bank-info { margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px; font-size: 13px; }
-            @media print { body { padding: 20px; } }
-          </style>
-        </head>
-        <body>
-          ${printContent.innerHTML}
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
+    // Build print document safely using DOM APIs instead of innerHTML/document.write to prevent XSS
+    const doc = printWindow.document;
+    doc.open();
+
+    const isPremium = version === 'premium';
+    const headerStyle = isPremium
+      ? 'background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px;'
+      : 'margin-bottom: 30px; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px;';
+    const logoIconBg = isPremium ? 'white' : '#2563eb';
+    const logoIconColor = isPremium ? '#2563eb' : 'white';
+    const thBg = isPremium ? '#2563eb' : '#f3f4f6';
+    const thColor = isPremium ? 'white' : '#1a1a1a';
+
+    const styleContent = `
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #1a1a1a; }
+      .header { ${headerStyle} }
+      .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+      .logo img { width: 60px; height: 60px; object-fit: contain; border-radius: 8px; }
+      .logo-icon { width: 40px; height: 40px; background: ${logoIconBg}; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: ${logoIconColor}; font-weight: bold; }
+      .logo-text { font-size: 24px; font-weight: bold; }
+      .company-info { font-size: 12px; opacity: 0.9; margin-top: 8px; }
+      h1 { font-size: 28px; margin-bottom: 8px; }
+      .date { font-size: 14px; opacity: 0.8; }
+      .client-info { margin-bottom: 30px; padding: 20px; background: #f9fafb; border-radius: 8px; }
+      .client-info h3 { font-size: 14px; color: #6b7280; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+      .client-info p { margin: 4px 0; }
+      .offer-text { margin-bottom: 30px; line-height: 1.6; white-space: pre-wrap; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+      th { background: ${thBg}; color: ${thColor}; text-align: left; padding: 12px; font-weight: 600; }
+      td { padding: 12px; border-bottom: 1px solid #e5e7eb; }
+      .summary { background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+      .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+      .summary-total { font-size: 20px; font-weight: bold; color: #2563eb; border-top: 2px solid #e5e7eb; padding-top: 12px; margin-top: 12px; }
+      .terms { margin-bottom: 30px; }
+      .terms h3 { font-size: 16px; margin-bottom: 12px; }
+      .terms p { line-height: 1.6; white-space: pre-wrap; color: #4b5563; }
+      .footer { text-align: center; color: #9ca3af; font-size: 12px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; }
+      .bank-info { margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px; font-size: 13px; }
+      @media print { body { padding: 20px; } }
+    `;
+
+    // Clone the preview content instead of using innerHTML injection
+    const clonedContent = printContent.cloneNode(true) as HTMLElement;
+    const body = doc.createElement('body');
+    body.appendChild(clonedContent);
+
+    const head = doc.createElement('head');
+    const titleEl = doc.createElement('title');
+    titleEl.textContent = title;
+    head.appendChild(titleEl);
+    const styleEl = doc.createElement('style');
+    styleEl.textContent = styleContent;
+    head.appendChild(styleEl);
+
+    const html = doc.createElement('html');
+    html.appendChild(head);
+    html.appendChild(body);
+
+    doc.open();
+    doc.write('<!DOCTYPE html>');
+    doc.close();
+    doc.documentElement.replaceWith(html);
+
     printWindow.print();
     toast.success(t('pdfGenerator.pdfGenerated'));
   };
@@ -319,7 +344,7 @@ export default function PdfGenerator() {
               <div className={version === 'premium' ? 'mb-6 rounded-lg bg-primary p-6 text-primary-foreground' : 'mb-6 border-b pb-4'}>
                 <div className="mb-3 flex items-center gap-3">
                   {logoUrl ? (
-                    <img src={logoUrl} alt="Logo" className="h-12 w-12 rounded-lg object-contain" />
+                    <img src={logoUrl} alt="Logo" loading="lazy" className="h-12 w-12 rounded-lg object-contain" />
                   ) : (
                     <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${version === 'premium' ? 'bg-primary-foreground text-primary' : 'bg-primary text-primary-foreground'}`}>
                       <Wrench className="h-5 w-5" />
@@ -337,8 +362,8 @@ export default function PdfGenerator() {
                 )}
                 <h1 className="mt-4 text-2xl font-bold">{title || t('pdfGenerator.offerFallbackTitle')}</h1>
                 <p className="mt-1 opacity-80">Nr: {documentId}</p>
-                <p className="mt-1 opacity-80">{t('pdfGenerator.issuedLabel')} {issuedAt.toLocaleDateString('pl-PL')}</p>
-                <p className="mt-1 opacity-80">{t('pdfGenerator.validUntilLabel')} {validUntil.toLocaleDateString('pl-PL')}</p>
+                <p className="mt-1 opacity-80">{t('pdfGenerator.issuedLabel')} {formatDate(issuedAt, i18n.language)}</p>
+                <p className="mt-1 opacity-80">{t('pdfGenerator.validUntilLabel')} {formatDate(validUntil, i18n.language)}</p>
               </div>
 
               {/* Client info */}

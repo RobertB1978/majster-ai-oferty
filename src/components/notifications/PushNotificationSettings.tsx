@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export function PushNotificationSettings() {
   const { t } = useTranslation();
@@ -62,7 +63,7 @@ export function PushNotificationSettings() {
         toast.error(t('pushNotifications.toast.blocked'));
       }
     } catch (error) {
-      console.error('Error requesting notification permission:', error);
+      logger.error('Error requesting notification permission:', error);
       toast.error(t('pushNotifications.toast.enableError'));
     } finally {
       setIsLoading(false);

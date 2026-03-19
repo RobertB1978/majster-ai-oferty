@@ -41,6 +41,7 @@ import { Slider } from '@/components/ui/slider';
 import { SkeletonList } from '@/components/ui/skeleton';
 import { ErrorState } from '@/components/ui/error-state';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/formatters';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -81,7 +82,7 @@ interface StagesPanelProps {
 }
 
 function StagesPanel({ stages, progress, projectId }: StagesPanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const updateProject = useUpdateProjectV2();
   const [localProgress, setLocalProgress] = useState(progress);
   const [newStageName, setNewStageName] = useState('');
@@ -184,7 +185,7 @@ function StagesPanel({ stages, progress, projectId }: StagesPanelProps) {
               </span>
               {stage.due_date && (
                 <span className="text-xs text-muted-foreground shrink-0">
-                  {new Date(stage.due_date).toLocaleDateString('pl-PL')}
+                  {formatDate(stage.due_date, i18n.language)}
                 </span>
               )}
               <button
@@ -262,7 +263,7 @@ interface SourceOfferBannerProps {
 }
 
 function SourceOfferBanner({ sourceOfferId }: SourceOfferBannerProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { data: offer, isLoading } = useSourceOffer(sourceOfferId);
 
@@ -270,7 +271,7 @@ function SourceOfferBanner({ sourceOfferId }: SourceOfferBannerProps) {
   if (isLoading || !offer) return null;
 
   const acceptedDate = offer.accepted_at
-    ? new Date(offer.accepted_at).toLocaleDateString('pl-PL')
+    ? formatDate(offer.accepted_at, i18n.language)
     : null;
 
   const title = offer.title?.trim() || t('projectsV2.hub.sourceOfferFallbackTitle');
@@ -377,7 +378,7 @@ function QrTokenPanel({ projectId }: { projectId: string }) {
 
 export default function ProjectHub() {
   const { id } = useParams<{ id: string }>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [openSection, setOpenSection] = useState<SectionId>('stages');
 
@@ -429,12 +430,12 @@ export default function ProjectHub() {
             </Badge>
             {project.start_date && (
               <span className="text-xs text-muted-foreground">
-                {t('projectsV2.startDate')}: {new Date(project.start_date).toLocaleDateString('pl-PL')}
+                {t('projectsV2.startDate')}: {formatDate(project.start_date, i18n.language)}
               </span>
             )}
             {project.end_date && (
               <span className="text-xs text-muted-foreground">
-                {t('projectsV2.hub.endDate')}: {new Date(project.end_date).toLocaleDateString('pl-PL')}
+                {t('projectsV2.hub.endDate')}: {formatDate(project.end_date, i18n.language)}
               </span>
             )}
           </div>
