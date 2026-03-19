@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { CreditCard, ArrowUpRight } from 'lucide-react';
 import { PricingPlans } from './PricingPlans';
 import { useUserSubscription } from '@/hooks/useSubscription';
-import { useCreateCheckoutSession } from '@/hooks/useStripe';
+import { useCreateCheckoutSession, isRealStripePriceId } from '@/hooks/useStripe';
 import { toast } from 'sonner';
 import { formatDate } from '@/lib/formatters';
 
@@ -25,8 +25,20 @@ export function BillingDashboard() {
       navigate('/app/plan');
       return;
     }
+    // Guard: validate before network call — consistent with Plan.tsx behaviour.
+    // Placeholders (price_pro_monthly) return false and are caught here rather
+    // than waiting for the Edge Function to reject them.
+    if (!isRealStripePriceId(priceId)) {
+      toast.info(t('billing.stripeSetupRequired'));
+      navigate('/app/plan');
+      return;
+    }
     createCheckout(
-      { priceId },
+      {
+        priceId,
+        successUrl: `${window.location.origin}/app/plan?success=true`,
+        cancelUrl: `${window.location.origin}/app/plan?canceled=true`,
+      },
       {
         onError: () => {
           toast.info(t('billing.stripeSetupRequired'));
