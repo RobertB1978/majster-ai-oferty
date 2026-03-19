@@ -23,6 +23,16 @@ describe('generateOfferEmailHtml', () => {
     expect(html).toContain('<!DOCTYPE html>');
   });
 
+  it('should build offer link using /a/:token (new acceptance system)', () => {
+    const html = generateOfferEmailHtml('Projekt', 'Wiadomość', {
+      publicToken: 'abc-token-123',
+      frontendUrl: 'https://app.majster.ai',
+    });
+
+    expect(html).toContain('https://app.majster.ai/a/abc-token-123');
+    expect(html).not.toContain('/offer/abc-token-123');
+  });
+
   it('should sanitize dangerous HTML characters in project name', () => {
     const html = generateOfferEmailHtml('<script>alert("xss")</script>', 'Message');
 
