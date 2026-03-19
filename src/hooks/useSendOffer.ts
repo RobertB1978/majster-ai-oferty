@@ -106,6 +106,32 @@ export function useSendOffer() {
         logger.error('[useSendOffer] PDF generation failed (non-fatal):', pdfErr);
       }
 
+      // ── 3.5. Create acceptance link BEFORE email (non-fatal) ──────────
+      // Link must exist before email so the token can be included in the message.
+      let acceptanceLinkToken: string | undefined;
+      try {
+        // Fetch existing link first (upsert with ignoreDuplicates=true returns nothing on conflict)
+        const { data: existingLink } = await supabase
+          .from('acceptance_links')
+          .select('token')
+          .eq('offer_id', offerId)
+          .maybeSingle();
+
+        if (existingLink) {
+          acceptanceLinkToken = (existingLink as { token: string }).token;
+        } else {
+          const { data: newLink } = await supabase
+            .from('acceptance_links')
+            .insert({ user_id: user.id, offer_id: offerId })
+            .select('token')
+            .single();
+          acceptanceLinkToken = (newLink as { token: string } | null)?.token;
+        }
+      } catch (linkErr) {
+        // Non-fatal: email sends without action button
+        logger.error('[useSendOffer] Acceptance link creation failed (non-fatal):', linkErr);
+      }
+
       // ── 4. Send email (non-fatal) ─────────────────────────────────────
       let emailSent = false;
       if (clientEmail) {
@@ -123,6 +149,7 @@ export function useSendOffer() {
               message: `Przesyłamy ofertę. Wartość: ${amount} ${currency}.`,
               projectName: title ?? 'Oferta',
               pdfUrl: pdfUrl ?? undefined,
+              publicToken: acceptanceLinkToken,
             },
           });
           if (!emailErr) emailSent = true;
@@ -144,6 +171,8 @@ export function useSendOffer() {
       queryClient.invalidateQueries({ queryKey: offerWizardKeys.detail(offerId) });
       // Refresh quota indicator
       queryClient.invalidateQueries({ queryKey: ['monthly-offer-quota'] });
+      // Refresh acceptance link so share panel shows immediately after send
+      queryClient.invalidateQueries({ queryKey: ['acceptanceLink', offerId] });
     },
   });
 }

@@ -139,10 +139,10 @@ export function generateOfferEmailHtml(
   const baseUrl = opts?.frontendUrl ?? '';
 
   const viewUrl = opts?.publicToken
-    ? `${baseUrl}/offer/${opts.publicToken}`
+    ? `${baseUrl}/a/${opts.publicToken}`
     : null;
   const acceptUrl = opts?.publicToken && opts?.acceptToken
-    ? `${baseUrl}/offer/${opts.publicToken}?t=${opts.acceptToken}`
+    ? `${baseUrl}/a/${opts.publicToken}?t=${opts.acceptToken}`
     : null;
 
   const actionButtons = viewUrl && acceptUrl ? `
