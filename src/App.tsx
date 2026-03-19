@@ -71,6 +71,10 @@ const Plan = lazy(() => import("./pages/Plan"));
 // const HomeLobby = lazy(() => import("./pages/HomeLobby"));
 const MoreScreen = lazy(() => import("./pages/MoreScreen"));
 
+// === ZONE 2g: ACTIVATED FEATURES (previously hidden behind redirects) ===
+const Marketplace = lazy(() => import("./pages/Marketplace"));
+const Team = lazy(() => import("./pages/Team"));
+
 // === ZONE 2c: OFFERS PR-09 ===
 const OffersPage = lazy(() => import("./pages/Offers"));
 const OfferDetail = lazy(() => import("./pages/OfferDetail"));
@@ -270,9 +274,9 @@ const App = () => (
                     <Route path="quick-mode" element={<QuickMode />} />
                     <Route path="photos" element={<Photos />} />
                     <Route path="calendar" element={<Calendar />} />
-                    <Route path="team" element={<Navigate to="/app/dashboard" replace />} />
+                    <Route path="team" element={<Team />} />
                     <Route path="finance" element={<Finance />} />
-                    <Route path="marketplace" element={<Navigate to="/app/dashboard" replace />} />
+                    <Route path="marketplace" element={<Marketplace />} />
                     <Route path="analytics" element={<Analytics />} />
                     <Route path="templates" element={<ItemTemplates />} />
                     <Route path="plan" element={<Plan />} />

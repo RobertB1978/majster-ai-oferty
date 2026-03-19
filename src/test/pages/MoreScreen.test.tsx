@@ -58,7 +58,7 @@ describe('MoreScreen — struktura informacyjna', () => {
     expect(sections.length).toBe(2);
   });
 
-  it('pierwsza grupa to "Narzędzia" z 4 elementami', () => {
+  it('pierwsza grupa to "Narzędzia" z 7 elementami', () => {
     render(<MoreScreen />, { wrapper: Wrapper });
     const sections = screen.getAllByRole('region');
     const toolsSection = sections[0];
@@ -67,9 +67,9 @@ describe('MoreScreen — struktura informacyjna', () => {
     const heading = toolsSection.querySelector('h2');
     expect(heading).not.toBeNull();
 
-    // 5 przycisków: Kalendarz, Wzory dokumentów, Finanse, Zdjęcia, Klienci
+    // 7 przycisków: Kalendarz, Wzory dokumentów, Finanse, Zdjęcia, Klienci, Zespół, Marketplace
     const buttons = toolsSection.querySelectorAll('button');
-    expect(buttons.length).toBe(5);
+    expect(buttons.length).toBe(7);
   });
 
   it('druga grupa to "Firma i konto" z 2 elementami', () => {
@@ -82,11 +82,11 @@ describe('MoreScreen — struktura informacyjna', () => {
     expect(buttons.length).toBe(2);
   });
 
-  it('łącznie 7 przycisków nawigacyjnych (5 narzędzia + 2 firmowe)', () => {
+  it('łącznie 9 przycisków nawigacyjnych (7 narzędzia + 2 firmowe)', () => {
     render(<MoreScreen />, { wrapper: Wrapper });
     // Wszystkie przyciski w grupach (nie liczymy headerów)
     const buttons = screen.getAllByRole('button');
-    expect(buttons.length).toBe(7);
+    expect(buttons.length).toBe(9);
   });
 
   it('Ustawienia są w drugiej grupie ("Firma i konto"), nie w pierwszej', () => {
