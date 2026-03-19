@@ -95,10 +95,6 @@ export function AdminDatabaseManager() {
 
   const totalRecords = tableStats?.reduce((sum, t) => sum + t.count, 0) || 0;
 
-  // Mock storage usage
-  const storageUsed = 256; // MB
-  const storageTotal = 1024; // MB
-  const storagePercent = (storageUsed / storageTotal) * 100;
 
   return (
     <Card>
@@ -146,14 +142,15 @@ export function AdminDatabaseManager() {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="opacity-60">
             <CardContent className="pt-6">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">Storage</p>
-                  <span className="text-sm font-medium">{storageUsed} / {storageTotal} MB</span>
+                  <span className="text-sm font-medium text-muted-foreground">{t('admin.db.storageUnavailable')}</span>
                 </div>
-                <Progress value={storagePercent} className="h-2" />
+                <Progress value={0} className="h-2" />
+                <p className="text-xs text-muted-foreground">{t('admin.db.storageUnavailableDesc')}</p>
               </div>
             </CardContent>
           </Card>

@@ -14,7 +14,8 @@ import {
   Eye,
   RotateCcw,
   Type,
-  Link2
+  Link2,
+  AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -111,6 +112,13 @@ export function AdminContentEditor() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Honest notice: data stored in localStorage only, not synced to backend */}
+        <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 p-3">
+          <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+          <p className="text-sm text-amber-700 dark:text-amber-400">
+            {t('admin.contentEditorLocalOnly')}
+          </p>
+        </div>
         <Tabs defaultValue="landing">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="landing" className="flex items-center gap-1">
