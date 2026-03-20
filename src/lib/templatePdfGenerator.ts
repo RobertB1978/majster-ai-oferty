@@ -91,7 +91,6 @@ function formatFieldValue(key: string, value: string, t: (k: string) => string):
 
 export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob> {
   const { jsPDF } = await import('jspdf');
-  // @ts-expect-error — jspdf-autotable augments jsPDF prototype
   await import('jspdf-autotable');
 
   const { template, data, autofillContext, t, documentNumber } = input;
@@ -293,8 +292,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   }
 
   // ── Page footers ────────────────────────────────────────────────────────────
-  const pageCount = (doc as unknown as { internal: { getNumberOfPages: () => number } })
-    .internal.getNumberOfPages();
+  const pageCount = doc.getNumberOfPages();
 
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);

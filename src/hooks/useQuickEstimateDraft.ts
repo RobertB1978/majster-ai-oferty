@@ -23,6 +23,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { itemUnitPrice, itemLineTotal, calcTotals } from '@/lib/estimateCalc';
 import type { LineItem } from '@/components/quickEstimate/WorkspaceLineItems';
+import { parseJsonColumn, withExtraColumns, typedResult, typedMutationResult } from '@/lib/supabaseTypeUtils';
 
 /* ── Types ────────────────────────────────────────────────────── */
 
@@ -75,23 +76,24 @@ export function useQuickEstimateDraft() {
     if (!user) return null;
 
     // Fetch latest quick-estimate draft for this user
-    const { data: offer, error: offerErr } = await (supabase
-      .from('offers')
-      .select('id, title, client_id, vat_enabled')
-      .eq('status', 'DRAFT')
-      .eq('source' as never, DRAFT_SOURCE)
-      .eq('user_id', user.id)
-      .order('updated_at', { ascending: false })
-      .limit(1)
-      .maybeSingle() as unknown as Promise<{
-        data: {
-          id: string;
-          title: string | null;
-          client_id: string | null;
-          vat_enabled: boolean | null;
-        } | null;
-        error: unknown;
-      }>);
+    // Note: `source` and `vat_enabled` columns exist in DB but are missing from
+    // generated Supabase types. typedResult + `as never` on .eq bridge the gap.
+    const { data: offer, error: offerErr } = await typedResult<{
+      id: string;
+      title: string | null;
+      client_id: string | null;
+      vat_enabled: boolean | null;
+    } | null>(
+      supabase
+        .from('offers')
+        .select('id, title, client_id, vat_enabled')
+        .eq('status', 'DRAFT')
+        .eq('source' as never, DRAFT_SOURCE)
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    );
 
     if (offerErr || !offer) return null;
 
@@ -107,7 +109,9 @@ export function useQuickEstimateDraft() {
     setDraftOfferId(offer.id);
 
     const items: LineItem[] = (rawItems ?? []).map((row) => {
-      const meta = (row.metadata as LineItemMetadata | null) ?? null;
+      // `metadata` is a JSONB column that exists in DB but not in generated types
+      const rawRow = row as typeof row & { metadata?: unknown };
+      const meta = parseJsonColumn<LineItemMetadata | null>(rawRow.metadata as import('@/integrations/supabase/types').Json | undefined, null);
       return {
         id: row.id,
         name: row.name,
@@ -153,38 +157,41 @@ export function useQuickEstimateDraft() {
 
       if (!currentId) {
         // First save — create the DRAFT offer record
-        const { data: offer, error: insertErr } = await (supabase
-          .from('offers')
-          .insert({
-            user_id: user.id,
-            status: 'DRAFT',
-            source: DRAFT_SOURCE,
-            title: data.projectName.trim() || null,
-            client_id: data.clientId || null,
-            vat_enabled: data.vatEnabled,
-            total_net: netTotal,
-            total_gross: grossTotal,
-            total_vat: vatAmount,
-          } as never)
-          .select('id')
-          .single() as unknown as Promise<{ data: { id: string } | null; error: unknown }>);
+        // `source` and `vat_enabled` exist in DB but not in generated types
+        const { data: offer, error: insertErr } = await typedResult<{ id: string } | null>(
+          supabase
+            .from('offers')
+            .insert(withExtraColumns({
+              user_id: user.id,
+              status: 'DRAFT',
+              title: data.projectName.trim() || null,
+              client_id: data.clientId || null,
+              total_net: netTotal,
+              total_gross: grossTotal,
+              total_vat: vatAmount,
+            }, { source: DRAFT_SOURCE, vat_enabled: data.vatEnabled }))
+            .select('id')
+            .single(),
+        );
 
         if (insertErr || !offer) throw insertErr ?? new Error('Insert returned no data');
         currentId = offer.id;
         setDraftOfferId(offer.id);
       } else {
         // Subsequent save — update existing DRAFT offer
-        const { error: updateErr } = await (supabase
-          .from('offers')
-          .update({
-            title: data.projectName.trim() || null,
-            client_id: data.clientId || null,
-            vat_enabled: data.vatEnabled,
-            total_net: netTotal,
-            total_gross: grossTotal,
-            total_vat: vatAmount,
-          } as never)
-          .eq('id', currentId) as unknown as Promise<{ error: unknown }>);
+        // `vat_enabled` exists in DB but not in generated types
+        const { error: updateErr } = await typedMutationResult(
+          supabase
+            .from('offers')
+            .update(withExtraColumns({
+              title: data.projectName.trim() || null,
+              client_id: data.clientId || null,
+              total_net: netTotal,
+              total_gross: grossTotal,
+              total_vat: vatAmount,
+            }, { vat_enabled: data.vatEnabled }))
+            .eq('id', currentId),
+        );
 
         if (updateErr) throw updateErr;
       }
@@ -194,27 +201,31 @@ export function useQuickEstimateDraft() {
 
       const validItems = data.items.filter((i) => i.name.trim());
       if (validItems.length > 0) {
-        const { error: itemsErr } = await (supabase.from('offer_items').insert(
-          validItems.map((item) => ({
-            user_id: user.id,
-            offer_id: currentId,
-            name: item.name,
-            unit: item.unit,
-            qty: item.qty,
-            item_type: item.itemType,
-            unit_price_net: itemUnitPrice(item),
-            line_total_net: itemLineTotal(item),
-            vat_rate: data.vatEnabled ? 23 : null,
-            metadata: {
-              priceMode: item.priceMode,
-              price: item.price,
-              laborCost: item.laborCost,
-              materialCost: item.materialCost,
-              marginPct: item.marginPct,
-              showMargin: item.showMargin,
-            } satisfies LineItemMetadata,
-          })),
-        ) as unknown as Promise<{ error: unknown }>);
+        // `metadata` column exists in DB but not in generated types
+        const { error: itemsErr } = await typedMutationResult(
+          supabase.from('offer_items').insert(
+            validItems.map((item) => withExtraColumns({
+              user_id: user.id,
+              offer_id: currentId!,
+              name: item.name,
+              unit: item.unit,
+              qty: item.qty,
+              item_type: item.itemType,
+              unit_price_net: itemUnitPrice(item),
+              line_total_net: itemLineTotal(item),
+              vat_rate: data.vatEnabled ? 23 : null,
+            }, {
+              metadata: {
+                priceMode: item.priceMode,
+                price: item.price,
+                laborCost: item.laborCost,
+                materialCost: item.materialCost,
+                marginPct: item.marginPct,
+                showMargin: item.showMargin,
+              } satisfies LineItemMetadata,
+            })),
+          ),
+        );
 
         if (itemsErr) throw itemsErr;
       }
@@ -289,36 +300,39 @@ export function useQuickEstimateDraft() {
 
     if (offerId) {
       // Promote existing DRAFT offer to SENT with final values
-      const { error: updateErr } = await (supabase
-        .from('offers')
-        .update({
-          status: 'SENT',
-          title: data.projectName.trim() || null,
-          client_id: data.clientId || null,
-          vat_enabled: data.vatEnabled,
-          total_net: netTotal,
-          total_gross: grossTotal,
-          total_vat: vatAmount,
-        } as never)
-        .eq('id', offerId) as unknown as Promise<{ error: unknown }>);
+      // `vat_enabled` exists in DB but not in generated types
+      const { error: updateErr } = await typedMutationResult(
+        supabase
+          .from('offers')
+          .update(withExtraColumns({
+            status: 'SENT',
+            title: data.projectName.trim() || null,
+            client_id: data.clientId || null,
+            total_net: netTotal,
+            total_gross: grossTotal,
+            total_vat: vatAmount,
+          }, { vat_enabled: data.vatEnabled }))
+          .eq('id', offerId),
+      );
       if (updateErr) throw updateErr;
     } else {
       // No draft yet — create a new SENT offer directly
-      const { data: offer, error: insertErr } = await (supabase
-        .from('offers')
-        .insert({
-          user_id: user.id,
-          status: 'SENT',
-          source: DRAFT_SOURCE,
-          title: data.projectName.trim() || null,
-          client_id: data.clientId || null,
-          vat_enabled: data.vatEnabled,
-          total_net: netTotal,
-          total_gross: grossTotal,
-          total_vat: vatAmount,
-        } as never)
-        .select('id')
-        .single() as unknown as Promise<{ data: { id: string } | null; error: unknown }>);
+      // `source` and `vat_enabled` exist in DB but not in generated types
+      const { data: offer, error: insertErr } = await typedResult<{ id: string } | null>(
+        supabase
+          .from('offers')
+          .insert(withExtraColumns({
+            user_id: user.id,
+            status: 'SENT',
+            title: data.projectName.trim() || null,
+            client_id: data.clientId || null,
+            total_net: netTotal,
+            total_gross: grossTotal,
+            total_vat: vatAmount,
+          }, { source: DRAFT_SOURCE, vat_enabled: data.vatEnabled }))
+          .select('id')
+          .single(),
+      );
 
       if (insertErr || !offer) throw insertErr ?? new Error('Insert returned no data');
       offerId = offer.id;
@@ -329,27 +343,31 @@ export function useQuickEstimateDraft() {
 
     const validItems = data.items.filter((i) => i.name.trim());
     if (validItems.length > 0) {
-      const { error: itemsErr } = await (supabase.from('offer_items').insert(
-        validItems.map((item) => ({
-          user_id: user.id,
-          offer_id: offerId,
-          name: item.name,
-          unit: item.unit,
-          qty: item.qty,
-          item_type: item.itemType,
-          unit_price_net: itemUnitPrice(item),
-          line_total_net: itemLineTotal(item),
-          vat_rate: data.vatEnabled ? 23 : null,
-          metadata: {
-            priceMode: item.priceMode,
-            price: item.price,
-            laborCost: item.laborCost,
-            materialCost: item.materialCost,
-            marginPct: item.marginPct,
-            showMargin: item.showMargin,
-          } satisfies LineItemMetadata,
-        })),
-      ) as unknown as Promise<{ error: unknown }>);
+      // `metadata` column exists in DB but not in generated types
+      const { error: itemsErr } = await typedMutationResult(
+        supabase.from('offer_items').insert(
+          validItems.map((item) => withExtraColumns({
+            user_id: user.id,
+            offer_id: offerId!,
+            name: item.name,
+            unit: item.unit,
+            qty: item.qty,
+            item_type: item.itemType,
+            unit_price_net: itemUnitPrice(item),
+            line_total_net: itemLineTotal(item),
+            vat_rate: data.vatEnabled ? 23 : null,
+          }, {
+            metadata: {
+              priceMode: item.priceMode,
+              price: item.price,
+              laborCost: item.laborCost,
+              materialCost: item.materialCost,
+              marginPct: item.marginPct,
+              showMargin: item.showMargin,
+            } satisfies LineItemMetadata,
+          })),
+        ),
+      );
       if (itemsErr) throw itemsErr;
     }
 

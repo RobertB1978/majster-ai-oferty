@@ -7,10 +7,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { logMessageToSentry, logErrorToSentry } from "../_shared/sentry.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
 
 interface CleanupResult {
   success: boolean;
@@ -27,8 +24,9 @@ interface CleanupResult {
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsPreflightHeaders(req) });
   }
+  const corsHeaders = getCorsHeaders(req);
 
   const result: CleanupResult = {
     success: true,
@@ -43,12 +41,11 @@ serve(async (req) => {
   };
 
   try {
-    // Weryfikacja autoryzacji - tylko dla cron jobów lub autoryzowanych requestów
+    // Weryfikacja autoryzacji - fail-closed: brak CRON_SECRET = brak dostępu
     const authHeader = req.headers.get('authorization');
     const cronSecret = Deno.env.get('CRON_SECRET');
 
-    // Pozwól na wywołanie przez cron job (z secretem) lub przez service role
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
       console.warn('Unauthorized cleanup attempt');
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),

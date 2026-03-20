@@ -3,6 +3,47 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
+// Web Speech API type declarations
+interface SpeechRecognitionEvent {
+  resultIndex: number;
+  results: {
+    length: number;
+    [index: number]: {
+      isFinal: boolean;
+      [index: number]: { transcript: string };
+    };
+  };
+}
+
+interface SpeechRecognitionErrorEvent {
+  error: string;
+}
+
+interface SpeechRecognitionInstance {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onstart: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognitionInstance;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
+}
+
 interface UseVoiceToTextOptions {
   language?: string;
   continuous?: boolean;
@@ -38,11 +79,11 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
   const [isSupported, setIsSupported] = useState(false);
   const [browserSupport, setBrowserSupport] = useState<'full' | 'partial' | 'none'>('none');
   
-  const recognitionRef = useRef<unknown>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const isListeningRef = useRef(false);
 
   useEffect(() => {
-    const SpeechRecognition = (window as unknown).SpeechRecognition || (window as unknown).webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const supported = !!SpeechRecognition;
     setIsSupported(supported);
 
@@ -71,7 +112,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
         isListeningRef.current = true;
       };
 
-      recognition.onresult = (event: unknown) => {
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
         let finalTranscript = '';
         let currentInterim = '';
 
@@ -95,7 +136,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
         }
       };
 
-      recognition.onerror = (event: unknown) => {
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
         logger.error('Speech recognition error:', event.error);
         setIsListening(false);
         isListeningRef.current = false;

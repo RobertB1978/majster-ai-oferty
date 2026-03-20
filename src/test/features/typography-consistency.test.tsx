@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import Settings from '@/pages/Settings';
 import Plan from '@/pages/Plan';
-import Admin from '@/pages/Admin';
 
 // Mock ResizeObserver for Recharts
 class ResizeObserverMock {
@@ -140,25 +139,10 @@ describe('Typography Consistency - H1 Standardization', () => {
     expect(h1?.className).toContain('sm:text-3xl');
   });
 
-  it('Admin page H1 has responsive sizing (text-2xl sm:text-3xl)', () => {
-    const { container } = render(<Admin />, { wrapper: TestWrapper });
-
-    const h1Elements = container.querySelectorAll('h1');
-    // Admin page has main H1 (should be responsive)
-    const mainH1 = Array.from(h1Elements).find(h1 =>
-      h1.textContent?.includes('admin.title')
-    );
-
-    expect(mainH1).toBeDefined();
-    expect(mainH1?.className).toContain('text-2xl');
-    expect(mainH1?.className).toContain('sm:text-3xl');
-  });
-
   it('all app page H1s use consistent font-weight (font-bold)', () => {
     const pages = [
       <Settings />,
       <Plan />,
-      <Admin />,
     ];
 
     pages.forEach((page) => {

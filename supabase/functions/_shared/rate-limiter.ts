@@ -48,8 +48,12 @@ export async function checkRateLimit(
   identifier: string,
   endpoint: string,
   supabaseClient?: RateLimitDbClient,
+  customConfig?: { maxRequests: number; windowMs: number },
 ): Promise<RateLimitResult> {
-  const config = RATE_LIMIT_CONFIGS[endpoint] || DEFAULT_CONFIG;
+  const baseConfig = RATE_LIMIT_CONFIGS[endpoint] || DEFAULT_CONFIG;
+  const config = customConfig
+    ? { ...baseConfig, maxRequests: customConfig.maxRequests, windowMs: customConfig.windowMs }
+    : baseConfig;
 
   if (!supabaseClient) {
     console.error(

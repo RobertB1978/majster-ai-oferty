@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
   const authHeader = req.headers.get('authorization');
   const cronSecret = Deno.env.get('CRON_SECRET');
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     console.warn('Unauthorized reminder attempt');
     return new Response(
       JSON.stringify({ error: 'Unauthorized' }),

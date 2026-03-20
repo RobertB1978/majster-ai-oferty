@@ -66,9 +66,12 @@ export function useProjectsPaginated(params: ProjectsQueryParams = {}) {
           { count: 'exact' }
         );
 
-      // Server-side search filter
+      // Server-side search filter (sanitize to prevent PostgREST filter injection)
       if (search?.trim()) {
-        query = query.or(`project_name.ilike.%${search}%,clients.name.ilike.%${search}%`);
+        const s = search.replace(/[%_.,()]/g, '');
+        if (s) {
+          query = query.or(`project_name.ilike.%${s}%,clients.name.ilike.%${s}%`);
+        }
       }
 
       // Server-side status filter
@@ -186,7 +189,7 @@ export function useAddProject() {
       const previousProjects = queryClient.getQueryData(['projects', user!.id]);
 
       // Get client name for optimistic update (if available in cache)
-      const clientData = queryClient.getQueryData(['clients', user!.id]) as unknown[] | undefined;
+      const clientData = queryClient.getQueryData<Array<{ id: string; name: string }>>(['clients', user!.id]);
       const client = clientData?.find(c => c.id === newProject.client_id);
 
       // Optimistically add new project

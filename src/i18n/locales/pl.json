@@ -1899,6 +1899,7 @@
       "positionNameRequired": "Nazwa pozycji jest wymagana",
       "quantityMin": "Ilość musi być większa od {{min}}",
       "priceNonNegative": "Cena nie może być ujemna",
+      "unitRequired": "Jednostka jest wymagana",
       "categoryRequired": "Kategoria jest wymagana",
       "categoryMaterial": "Materiał",
       "categoryLabor": "Robocizna",

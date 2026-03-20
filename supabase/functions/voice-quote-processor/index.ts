@@ -61,6 +61,23 @@ serve(async (req) => {
     : null;
 
   try {
+    // JWT authentication required
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader || !supabase) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Parse request body
     let body: { text?: unknown };
     try {

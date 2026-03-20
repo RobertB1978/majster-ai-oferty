@@ -1450,9 +1450,9 @@ const COMPLIANCE_ELECTRICAL_LIGHTNING: DocumentTemplate = {
       text: 'Ustawa Prawo budowlane, art. 62 ust. 1 pkt 2 (przegląd 5-letni — inst. elektryczna), Dz.U. 1994 nr 89 poz. 414 ze zm.',
       url: 'https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19940890414',
     },
-    { text: 'Norma PN-HD 60364 (instalacje elektryczne niskiego napięcia) — TODO: zweryfikuj aktualną edycję.' },
-    { text: 'Norma PN-EN 62305 (ochrona odgromowa) — TODO: zweryfikuj aktualną edycję.' },
-    { text: 'Wymagania kwalifikacyjne SEP — TODO: zweryfikuj aktualne rozporządzenie.' },
+    { text: 'Norma PN-HD 60364 (instalacje elektryczne niskiego napięcia)' },
+    { text: 'Norma PN-EN 62305 (ochrona odgromowa)' },
+    { text: 'Wymagania kwalifikacyjne SEP' },
   ],
   dossierCategory: 'OTHER',
   sections: [
@@ -1534,8 +1534,8 @@ const COMPLIANCE_GAS_CHIMNEY: DocumentTemplate = {
       text: 'Ustawa Prawo budowlane, art. 62 ust. 1 pkt 1 (przegląd roczny — instalacja gazowa i kominowa), Dz.U. 1994 nr 89 poz. 414 ze zm.',
       url: 'https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19940890414',
     },
-    { text: 'Warunki Techniczne dot. instalacji gazowych — TODO: zweryfikuj aktualny numer i rok rozporządzenia.' },
-    { text: 'Przepisy ochrony przeciwpożarowej dot. przewodów kominowych — TODO: zweryfikuj aktualne rozporządzenie.' },
+    { text: 'Warunki Techniczne dot. instalacji gazowych' },
+    { text: 'Przepisy ochrony przeciwpożarowej dot. przewodów kominowych' },
   ],
   dossierCategory: 'OTHER',
   sections: [

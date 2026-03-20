@@ -149,6 +149,21 @@ export default defineConfig(({ mode }) => {
             'framer-motion-vendor': ['framer-motion'],
             'leaflet-vendor': ['leaflet'],
             'pdf-vendor': ['jspdf', 'jspdf-autotable'],
+            // i18n vendor — isolate translation runtime from main bundle
+            'i18n-vendor': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
+            // Helmet + query vendor — reduce main chunk size
+            'query-vendor': ['@tanstack/react-query'],
+            'helmet-vendor': ['react-helmet-async'],
+            // Lucide icons — used everywhere, isolate from main bundle
+            'icons-vendor': ['lucide-react'],
+            // Date utilities
+            'date-vendor': ['date-fns'],
+            // DOMPurify — isolate sanitization lib
+            'purify-vendor': ['dompurify'],
+            // Sonner toast — isolate notification lib
+            'sonner-vendor': ['sonner'],
+            // Sentry — isolate error tracking
+            'sentry-vendor': ['@sentry/react'],
           },
           // Optimize chunk file naming for better caching
           chunkFileNames: 'assets/js/[name]-[hash].js',

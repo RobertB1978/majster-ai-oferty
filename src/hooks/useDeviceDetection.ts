@@ -114,10 +114,10 @@ function detectDevice(): DeviceInfo {
   }
 
   // Detect touch screen
+  const nav = navigator as Navigator & { msMaxTouchPoints?: number };
   const hasTouchScreen = 'ontouchstart' in window ||
     navigator.maxTouchPoints > 0 ||
-    // @ts-expect-error - msMaxTouchPoints is IE-specific property
-    (navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 0);
+    (nav.msMaxTouchPoints != null && nav.msMaxTouchPoints > 0);
 
   // Detect biometric type
   let biometricType: 'fingerprint' | 'face' | 'both' | 'unknown' = 'unknown';

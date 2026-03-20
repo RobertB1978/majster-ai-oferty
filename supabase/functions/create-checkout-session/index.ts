@@ -67,7 +67,15 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // 4. Parse request body
-    const body: CreateCheckoutRequest = await req.json();
+    let body: CreateCheckoutRequest;
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON in request body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
     const { priceId, successUrl, cancelUrl } = body;
 
     if (!priceId) {
@@ -179,7 +187,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.error("[create-checkout-session] Error:", error);
     return new Response(
       JSON.stringify({
-        error: error instanceof Error ? error.message : "Internal server error",
+        error: "Internal server error",
       }),
       {
         status: 500,

@@ -316,7 +316,6 @@ export function useExportDossierPdf() {
     }) => {
       // Dynamic import to avoid including jspdf in initial bundle
       const { jsPDF } = await import('jspdf');
-      // @ts-expect-error — jspdf-autotable augments jsPDF prototype
       await import('jspdf-autotable');
 
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -357,7 +356,6 @@ export function useExportDossierPdf() {
         item.signed_url ? 'Dostępny' : 'Brak linku',
       ]);
 
-      // @ts-expect-error — autoTable added by jspdf-autotable
       doc.autoTable({
         startY: 78,
         head: [['Kategoria', 'Plik', 'Rozmiar', 'Data', 'Status']],
@@ -369,8 +367,7 @@ export function useExportDossierPdf() {
       });
 
       // ── Footer ────────────────────────────────────────────────────────────
-      const pageCount = (doc as unknown as { internal: { getNumberOfPages: () => number } })
-        .internal.getNumberOfPages();
+      const pageCount = doc.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
         doc.setFontSize(8);
