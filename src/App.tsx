@@ -16,6 +16,7 @@ import { useOfflineSync } from "@/hooks/useOfflineSync";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { NewShellLayout } from "@/components/layout/NewShellLayout";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { FF_NEW_SHELL } from "@/config/featureFlags";
 import { PageLoader } from "@/components/layout/PageLoader";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
@@ -244,7 +245,14 @@ const App = () => (
                       FF_NEW_SHELL=true  → NewShellLayout (Home / Offers / Projects / More)
                       FF_NEW_SHELL=false → AppLayout (stary shell — bez zmian)
                       ============================================ */}
-                  <Route path="/app" element={FF_NEW_SHELL ? <NewShellLayout /> : <AppLayout />}>
+                  <Route
+                    path="/app"
+                    element={
+                      <ProtectedRoute>
+                        {FF_NEW_SHELL ? <NewShellLayout /> : <AppLayout />}
+                      </ProtectedRoute>
+                    }
+                  >
                     <Route index element={<Navigate to="/app/dashboard" replace />} />
                     {/* HomeLobby placeholder — redirect do dashboardu aż „Kontynuuj" będzie zaimplementowane */}
                     <Route path="home" element={<Navigate to="/app/dashboard" replace />} />

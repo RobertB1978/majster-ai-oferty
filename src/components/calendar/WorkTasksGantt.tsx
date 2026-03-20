@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, ChevronRight, Users, Calendar, Loader2 } from 'lucide-react';
 import { useWorkTasks } from '@/hooks/useWorkTasks';
 import { useTeamMembers } from '@/hooks/useTeamMembers';
-import { useProjects } from '@/hooks/useProjects';
+import { useProjectsV2List } from '@/hooks/useProjectsV2';
 import { cn } from '@/lib/utils';
 
 const statusColors: Record<string, string> = {
@@ -27,7 +27,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const { data: tasks = [], isLoading: tasksLoading } = useWorkTasks(projectId);
   const { data: teamMembers = [] } = useTeamMembers();
-  const { data: projects = [] } = useProjects();
+  const { data: projects = [] } = useProjectsV2List('ALL', '', 0, 200);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -85,7 +85,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
       
       return {
         ...task,
-        projectName: project?.project_name || t('workTasks.unknownProject'),
+        projectName: project?.title || t('workTasks.unknownProject'),
         memberName: member?.name,
         leftPercent,
         widthPercent,

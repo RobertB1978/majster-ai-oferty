@@ -24,11 +24,11 @@ export default function ProtectedRoute({
   children,
   redirectTo = '/login',
 }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const location = useLocation();
 
   // While auth state is being resolved, render nothing (AuthContext handles loading UI)
-  if (loading) return null;
+  if (isLoading) return null;
 
   if (!user) {
     // Preserve the intended URL for post-login redirect

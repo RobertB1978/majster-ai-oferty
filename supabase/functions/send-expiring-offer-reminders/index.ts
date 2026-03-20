@@ -1,10 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { htmlEscape } from '../_shared/sanitization.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders, getCorsPreflightHeaders } from '../_shared/cors.ts';
 
 // interface ExpiringOffer {
 //   id: string;
@@ -20,8 +16,10 @@ const corsHeaders = {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsPreflightHeaders(req) });
   }
+
+  const corsHeaders = getCorsHeaders(req);
 
   // Verify cron job authorization (same pattern as cleanup-expired-data)
   const authHeader = req.headers.get('authorization');

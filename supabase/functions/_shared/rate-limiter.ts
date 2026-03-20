@@ -52,7 +52,10 @@ export async function checkRateLimit(
   const config = RATE_LIMIT_CONFIGS[endpoint] || DEFAULT_CONFIG;
 
   if (!supabaseClient) {
-    return { allowed: true, remaining: config.maxRequests, resetAt: new Date(Date.now() + config.windowMs) };
+    console.error(
+      `[rate-limiter] WARN: supabaseClient unavailable for endpoint "${endpoint}" — blocking request as safety fallback.`
+    );
+    return { allowed: false, remaining: 0, resetAt: new Date(Date.now() + config.windowMs) };
   }
   
   try {
