@@ -10,7 +10,7 @@
 //   TODO(PR-09-fix): Add offer_id FK to offer_approvals table, then use actual offers.id.
 //   Idempotencja: offer_approvals.v2_project_id śledzi utworzony projekt.
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   validateUUID,
