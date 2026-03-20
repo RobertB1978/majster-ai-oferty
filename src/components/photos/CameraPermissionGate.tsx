@@ -76,8 +76,7 @@ export function CameraPermissionGate({ onRequestFile, children }: CameraPermissi
     // On iOS/Android via Capacitor, the native settings app can be opened.
     try {
       if (window.__CAPACITOR__) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).Capacitor?.Plugins?.App?.openUrl?.({ url: 'app-settings:' });
+        window.Capacitor?.Plugins?.App?.openUrl?.({ url: 'app-settings:' });
       } else {
         // Web: can only guide user
         window.open('about:preferences#privacy', '_blank');
@@ -106,5 +105,12 @@ export function CameraPermissionGate({ onRequestFile, children }: CameraPermissi
 declare global {
   interface Window {
     __CAPACITOR__?: boolean;
+    Capacitor?: {
+      Plugins?: {
+        App?: {
+          openUrl?: (opts: { url: string }) => Promise<unknown>;
+        };
+      };
+    };
   }
 }

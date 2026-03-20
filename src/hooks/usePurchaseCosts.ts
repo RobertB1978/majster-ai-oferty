@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
+import { parseJsonColumn } from '@/lib/supabaseTypeUtils';
 
 export interface PurchaseCostItem {
   name: string;
@@ -45,7 +46,7 @@ export function usePurchaseCosts(projectId: string) {
       if (error) throw error;
       return (data || []).map(d => ({
         ...d,
-        items: (d.items || []) as unknown as PurchaseCostItem[]
+        items: parseJsonColumn<PurchaseCostItem[]>(d.items, [])
       })) as PurchaseCost[];
     },
     enabled: !!user && !!projectId,
@@ -67,7 +68,7 @@ export function useAllPurchaseCosts() {
       if (error) throw error;
       return (data || []).map(d => ({
         ...d,
-        items: (d.items || []) as unknown as PurchaseCostItem[]
+        items: parseJsonColumn<PurchaseCostItem[]>(d.items, [])
       })) as PurchaseCost[];
     },
     enabled: !!user,

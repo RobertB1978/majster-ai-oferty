@@ -11,7 +11,7 @@ interface ExportQuoteData {
   total: number;
 }
 
-export async function exportQuoteToExcel(data: ExportQuoteData) {
+export async function exportQuoteToExcel(data: ExportQuoteData): Promise<void> {
   const { projectName, positions, summaryMaterials, summaryLabor, marginPercent, total } = data;
 
   // Truly lazy import — the 937 kB ExcelJS chunk is loaded only when the user
@@ -78,7 +78,7 @@ export async function exportQuoteToExcel(data: ExportQuoteData) {
   URL.revokeObjectURL(url);
 }
 
-export function exportQuoteToCSV(data: ExportQuoteData) {
+export function exportQuoteToCSV(data: ExportQuoteData): void {
   const { projectName, positions, summaryMaterials, summaryLabor, marginPercent, total } = data;
 
   const rows = [
@@ -136,7 +136,7 @@ export function exportProjectsToCSV(
   projects: ProjectForExport[],
   maxLimit: number = 500,
   locale?: string,
-) {
+): void {
   if (projects.length > maxLimit) {
     const isUnlimited = maxLimit === Infinity;
 

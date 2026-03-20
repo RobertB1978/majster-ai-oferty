@@ -1899,6 +1899,7 @@
       "positionNameRequired": "Position name is required",
       "quantityMin": "Quantity must be greater than {{min}}",
       "priceNonNegative": "Price cannot be negative",
+      "unitRequired": "Unit is required",
       "categoryRequired": "Category is required",
       "categoryMaterial": "Material",
       "categoryLabor": "Labor",

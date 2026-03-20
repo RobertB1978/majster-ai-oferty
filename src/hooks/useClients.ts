@@ -55,9 +55,12 @@ export function useClientsPaginated(params: ClientsQueryParams = {}) {
         // Only select columns needed for list view (not SELECT *)
         .select('id, name, email, phone, created_at', { count: 'exact' });
 
-      // Server-side search filter
+      // Server-side search filter (sanitize to prevent PostgREST filter injection)
       if (search?.trim()) {
-        query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
+        const s = search.replace(/[%_.,()]/g, '');
+        if (s) {
+          query = query.or(`name.ilike.%${s}%,email.ilike.%${s}%,phone.ilike.%${s}%`);
+        }
       }
 
       // Pagination using range

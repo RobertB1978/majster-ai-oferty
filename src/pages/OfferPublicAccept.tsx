@@ -129,7 +129,7 @@ async function fetchPublicOffer(token: string): Promise<{ data: PublicOfferData 
     return { data: null, fetchError: result.error as FetchError };
   }
 
-  return { data: result as unknown as PublicOfferData, fetchError: null };
+  return { data: result as PublicOfferData, fetchError: null };
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

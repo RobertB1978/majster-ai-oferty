@@ -57,9 +57,12 @@ export function useItemTemplatesPaginated(params: ItemTemplatesQueryParams = {})
         // Only select columns needed for list view (not SELECT *)
         .select('id, name, unit, default_qty, default_price, category, description, created_at', { count: 'exact' });
 
-      // Server-side search filter
+      // Server-side search filter (sanitize to prevent PostgREST filter injection)
       if (search?.trim()) {
-        query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+        const s = search.replace(/[%_.,()]/g, '');
+        if (s) {
+          query = query.or(`name.ilike.%${s}%,description.ilike.%${s}%`);
+        }
       }
 
       // Server-side category filter

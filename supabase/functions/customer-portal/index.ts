@@ -101,7 +101,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.error("[customer-portal] Error:", error instanceof Error ? error.message : "Unknown error");
     return new Response(
       JSON.stringify({
-        error: error instanceof Error ? error.message : "Internal server error",
+        error: "Internal server error",
       }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

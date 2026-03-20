@@ -42,7 +42,7 @@ export const quotePositionSchema = z.object({
   qty: z.number()
     .min(0.01, i18n.t('validations.quote.quantityMin', { min: 0 })),
   unit: z.string()
-    .min(1, 'Unit is required'),
+    .min(1, i18n.t('validations.quote.unitRequired')),
   price: z.number()
     .min(0, i18n.t('validations.quote.priceNonNegative')),
   category: z.enum(['Materiał', 'Robocizna'], {

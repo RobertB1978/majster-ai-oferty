@@ -42,14 +42,15 @@ export function useOrganizationAdmin() {
 
       const adminOrgs = memberships
         ?.filter(m => m.organizations)
-        .map(m => ({
-          id: m.organization_id,
-          role: m.role,
-          // @ts-expect-error - organizations is a joined object
-          name: m.organizations.name,
-          // @ts-expect-error - organizations is a joined object
-          slug: m.organizations.slug,
-        })) || [];
+        .map(m => {
+          const org = m.organizations as unknown as { name: string; slug: string } | null;
+          return {
+            id: m.organization_id,
+            role: m.role,
+            name: org?.name ?? '',
+            slug: org?.slug ?? '',
+          };
+        }) || [];
 
       return {
         isAdmin: adminOrgs.length > 0,

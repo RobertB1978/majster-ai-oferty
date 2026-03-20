@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCreateNotification } from '@/hooks/useNotifications';
@@ -28,7 +28,6 @@ interface ExpiringSubscription {
 export function useExpirationMonitor() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const _queryClient = useQueryClient();
   const createNotification = useCreateNotification();
 
   // Fetch offers expiring within 7 days
@@ -122,7 +121,7 @@ export function useExpirationMonitor() {
             title,
             message,
             type,
-            action_url: `/projects/${offer.project_id}`,
+            action_url: `/app/projects/${offer.project_id}`,
           });
         }
       }
@@ -141,7 +140,7 @@ export function useExpirationMonitor() {
             title,
             message: t('expirationMonitor.planExpiredMsg', { plan: subscription.plan_id }),
             type: 'error',
-            action_url: '/billing',
+            action_url: '/app/billing',
           });
         }
       } else if (daysLeft <= 3) {
@@ -151,7 +150,7 @@ export function useExpirationMonitor() {
             title,
             message: t('expirationMonitor.planExpiresSoonMsg', { plan: subscription.plan_id, days: daysLeft }),
             type: 'warning',
-            action_url: '/billing',
+            action_url: '/app/billing',
           });
         }
       } else if (daysLeft <= 7) {
@@ -161,7 +160,7 @@ export function useExpirationMonitor() {
             title,
             message: t('expirationMonitor.planExpiryReminderMsg', { plan: subscription.plan_id, days: daysLeft }),
             type: 'info',
-            action_url: '/billing',
+            action_url: '/app/billing',
           });
         }
       }

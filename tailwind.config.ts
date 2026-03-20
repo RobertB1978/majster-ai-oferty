@@ -3,7 +3,7 @@ import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: ["./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
     container: {
@@ -129,6 +129,11 @@ export default {
         sm: "calc(var(--radius) - 4px)",
         xl: "calc(var(--radius) + 4px)",
         "2xl": "calc(var(--radius) + 8px)",
+        'token-sm':   'var(--radius-sm)',
+        'token-md':   'var(--radius-md)',
+        'token-lg':   'var(--radius-lg)',
+        'token-xl':   'var(--radius-xl)',
+        'token-full': 'var(--radius-full)',
       },
       boxShadow: {
         'sm': 'var(--shadow-sm)',
@@ -139,18 +144,9 @@ export default {
         'vibrant': 'var(--shadow-vibrant)',
         'card': 'var(--shadow-card)',
         'card-hover': 'var(--shadow-card-hover)',
-        /* Roadmap section 3.3 */
         'xs': 'var(--shadow-xs)',
         'amber': 'var(--shadow-amber)',
         'amber-lg': 'var(--shadow-amber-lg)',
-      },
-      borderRadius: {
-        /* Roadmap section 3.4 — named radius tokens */
-        'token-sm':   'var(--radius-sm)',
-        'token-md':   'var(--radius-md)',
-        'token-lg':   'var(--radius-lg)',
-        'token-xl':   'var(--radius-xl)',
-        'token-full': 'var(--radius-full)',
       },
       // Premium gradient images — real amber gradients using CSS vars
       backgroundImage: {

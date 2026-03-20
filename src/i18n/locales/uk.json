@@ -1881,6 +1881,7 @@
       "positionNameRequired": "Назва позиції обов'язкова",
       "quantityMin": "Кількість має бути більше {{min}}",
       "priceNonNegative": "Ціна не може бути від'ємною",
+      "unitRequired": "Одиниця виміру обов'язкова",
       "categoryRequired": "Категорія обов'язкова",
       "categoryMaterial": "Матеріал",
       "categoryLabor": "Робота",

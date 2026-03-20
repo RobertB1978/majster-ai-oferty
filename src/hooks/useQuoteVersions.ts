@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { QuotePosition } from './useQuotes';
-import { Json } from '@/integrations/supabase/types';
+import { parseJsonColumn, toJsonColumn } from '@/lib/supabaseTypeUtils';
 
 export interface QuoteSnapshot {
   positions: QuotePosition[];
@@ -39,7 +39,7 @@ export function useQuoteVersions(projectId: string) {
       if (error) throw error;
       return data.map(v => ({
         ...v,
-        quote_snapshot: v.quote_snapshot as unknown as QuoteSnapshot,
+        quote_snapshot: parseJsonColumn<QuoteSnapshot>(v.quote_snapshot, { positions: [], summary_materials: 0, summary_labor: 0, margin_percent: 0, total: 0 }),
       })) as QuoteVersion[];
     },
     enabled: !!user && !!projectId,
@@ -64,7 +64,7 @@ export function useActiveQuoteVersion(projectId: string) {
 
       return {
         ...data,
-        quote_snapshot: data.quote_snapshot as unknown as QuoteSnapshot,
+        quote_snapshot: parseJsonColumn<QuoteSnapshot>(data.quote_snapshot, { positions: [], summary_materials: 0, summary_labor: 0, margin_percent: 0, total: 0 }),
       } as QuoteVersion;
     },
     enabled: !!user && !!projectId,
@@ -102,7 +102,7 @@ export function useCreateQuoteVersion() {
           project_id: projectId,
           user_id: user!.id,
           version_name: versionName,
-          quote_snapshot: snapshot as unknown as Json,
+          quote_snapshot: toJsonColumn(snapshot),
           is_active: setActive,
         })
         .select()

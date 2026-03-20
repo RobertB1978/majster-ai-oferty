@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { Json } from '@/integrations/supabase/types';
 import { normalizeQuantity, normalizePrice, normalizeString, normalizePercentage } from '@/lib/dataValidation';
+import { parseJsonColumn } from '@/lib/supabaseTypeUtils';
 
 export interface QuotePosition {
   id: string;
@@ -46,7 +47,7 @@ export function useQuote(projectId: string) {
       if (data) {
         return {
           ...data,
-          positions: (data.positions as unknown as QuotePosition[]) || [],
+          positions: parseJsonColumn<QuotePosition[]>(data.positions, []),
         } as Quote;
       }
       return null;
