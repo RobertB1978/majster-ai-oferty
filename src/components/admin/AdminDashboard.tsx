@@ -10,7 +10,6 @@ import {
   Database,
   Activity,
   Clock,
-  DollarSign,
   BarChart3,
   Timer,
   TrendingUp,
