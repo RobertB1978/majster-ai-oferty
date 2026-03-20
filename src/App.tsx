@@ -218,8 +218,10 @@ const App = () => (
                   {/* PR-16: Public dossier share page (token-scoped, no login, no prices) */}
                   <Route path="/d/:token" element={<DossierPublicPage />} />
 
-                  {/* Environment diagnostic */}
-                  <Route path="/env-check" element={<EnvCheck />} />
+                  {/* Environment diagnostic — DEV only */}
+                  {import.meta.env.DEV && (
+                    <Route path="/env-check" element={<EnvCheck />} />
+                  )}
 
                   {/* Legal pages */}
                   <Route path="/legal" element={<Navigate to="/legal/privacy" replace />} />
