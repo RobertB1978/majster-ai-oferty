@@ -1,419 +1,497 @@
 # DATABASE_STRUCTURE.md
 
+Reference documentation for the Majster.AI PostgreSQL schema, derived from
+all 55 migration files in `supabase/migrations/`.
+
 > **Last updated:** 2026-03-20
-> **Total tables:** 53 (public schema)
-> **Migrations:** 51 files in `supabase/migrations/` (chronological, immutable)
-> **RLS:** Enabled on ALL tables — never disable without explicit approval
+> **RLS:** Enabled on ALL tables — never disable without explicit approval.
+> **Migrations:** Immutable once applied — create a new file for any schema change.
 
 ---
 
-## Table Count by Domain
+## Table Count Summary
 
 | Domain | Tables |
 |--------|--------|
-| Core / Auth | 4 |
-| Client & Project Management | 5 |
-| Offers & Quotes | 9 |
+| Core / Auth | 5 |
+| Legacy Offers & Quotes | 7 |
+| New Offer System (v2) | 6 |
 | Projects V2 | 9 |
-| Finance & Billing | 7 |
+| Compliance (Warranties / Inspections) | 3 |
+| Finance & Billing | 5 |
 | Team & Subcontractors | 5 |
-| AI & Integrations | 4 |
-| Notifications & Push | 2 |
-| Admin & Security | 5 |
-| Misc / Onboarding | 3 |
-| **TOTAL** | **53** |
+| AI & Integrations | 3 |
+| Users & Organisation | 5 |
+| Admin | 3 |
+| Misc / System | 5 |
+| **Total** | **56** |
 
 ---
 
-## Domain: Core / Auth
+## Tables by Domain
+
+### Core / Auth
+
+| Table | Description |
+|-------|-------------|
+| `profiles` | Company identity, contact info, email templates. One row per user — auto-created on signup. |
+| `user_roles` | RBAC roles (`admin` / `moderator` / `user`) per user |
+| `user_consents` | GDPR consent records (cookies, privacy policy, newsletter, etc.) |
+| `push_tokens` | Web / iOS / Android push notification tokens |
+| `onboarding_progress` | Onboarding wizard step completion state |
+
+### Legacy Offers & Quotes (original flow, still in active use)
+
+| Table | Description |
+|-------|-------------|
+| `clients` | Client contact book — name, phone, email, address |
+| `projects` | Legacy project records linked to clients |
+| `quotes` | Quote positions JSONB per project (1:1 per project) |
+| `pdf_data` | PDF metadata per legacy project (1:1 per project) |
+| `offer_approvals` | E-signature / approval workflow with full lifecycle status |
+| `offer_sends` | Email send history with Resend delivery-status tracking |
+| `purchase_costs` | OCR-scanned purchase invoices linked to legacy projects |
+
+### New Offer System (Wizard / v2 flow)
+
+| Table | Description |
+|-------|-------------|
+| `offers` | Standalone offers with full lifecycle status |
+| `offer_items` | Line items for offers (labor, material, service, travel, lump_sum) |
+| `offer_variants` | Named price variants per offer (max 3) |
+| `offer_photos` | Photos attached to offers with PDF / public-page visibility flags |
+| `acceptance_links` | Tokenized public acceptance URLs (30-day TTL, 1:1 per offer) |
+| `offer_public_actions` | Audit log of client ACCEPT / REJECT events |
+
+### Projects V2
+
+| Table | Description |
+|-------|-------------|
+| `v2_projects` | Projects hub linked to offers and clients, with stages JSONB |
+| `project_public_status_tokens` | QR tokens for public project status page (30-day TTL) |
+| `project_costs` | Cost entries per project (MATERIAL / LABOR / TRAVEL / OTHER) |
+| `project_photos` | Photos per project with phase tagging (BEFORE / DURING / AFTER / ISSUE) |
+| `project_checklists` | Acceptance checklists with template key and items JSONB |
+| `project_acceptance` | Client acceptance record with optional signature storage path |
+| `project_dossier_items` | Dossier files per project grouped by category |
+| `project_dossier_share_tokens` | Share tokens for dossier access scoped to allowed categories |
+| `document_instances` | Filled document template instances (contracts, protocols, etc.) |
+
+### Compliance
+
+| Table | Description |
+|-------|-------------|
+| `project_warranties` | Warranty card per project (1:1) with reminder timestamps |
+| `project_inspections` | Periodic inspection records (Polish building law types) |
+| `project_reminders` | In-app reminder records for warranties and inspections |
+
+### Finance & Billing
+
+| Table | Description |
+|-------|-------------|
+| `user_subscriptions` | Stripe subscription state (1:1 per user) |
+| `user_addons` | Purchasable add-on packs per user |
+| `subscription_events` | Stripe webhook event audit log (idempotency store) |
+| `plan_limits` | Authoritative per-plan resource quotas (seeded reference table) |
+| `financial_reports` | Cached monthly financial report snapshots |
+
+### Team & Subcontractors
+
+| Table | Description |
+|-------|-------------|
+| `team_members` | Team members managed by a contractor |
+| `team_locations` | GPS location records per team member |
+| `subcontractors` | Subcontractor marketplace profiles (public when `is_public = true`) |
+| `subcontractor_services` | Services offered by each subcontractor |
+| `subcontractor_reviews` | Ratings and reviews for subcontractors |
+
+### AI & Integrations
+
+| Table | Description |
+|-------|-------------|
+| `ai_chat_history` | AI chat sessions per user |
+| `company_documents` | Company credential files (licences, references, certificates) |
+| `api_keys` | User-generated API keys for the public API |
+
+### Users & Organisation (multi-tenant)
+
+| Table | Description |
+|-------|-------------|
+| `organizations` | Multi-tenant organisation records |
+| `organization_members` | Organisation membership with role (owner / admin / manager / member) |
+| `biometric_credentials` | WebAuthn / passkey credential storage |
+| `notifications` | In-app notification records |
+| `api_rate_limits` | Request-count windows for Edge Function rate limiting |
+
+### Admin
+
+| Table | Description |
+|-------|-------------|
+| `admin_system_settings` | Per-org system config (email, feature flags, resource limits) |
+| `admin_theme_config` | Per-org UI theme settings |
+| `admin_audit_log` | Immutable audit trail for admin setting changes |
+
+### Misc / System
+
+| Table | Description |
+|-------|-------------|
+| `item_templates` | Reusable line-item templates (contractor's price book) |
+| `quote_versions` | Snapshot versions of legacy quotes |
+| `work_tasks` | Scheduled work tasks assigned to team members |
+| `calendar_events` | Calendar events and deadlines |
+| `user_roles` | *(also listed in Core)* |
+
+---
+
+## Major Table Schemas
 
 ### `profiles`
-User profile and company information.
-| Column | Type | Notes |
-|--------|------|-------|
-| user_id | uuid | FK → auth.users, PK |
-| company_name | text | |
-| owner_name | text | |
-| phone | text | |
-| contact_email | text | |
-| email_for_offers | text | |
-| street, city, postal_code | text | Address |
-| logo_url | text | Supabase Storage URL |
-| plan_slug | text | `'free'`, `'starter'`, `'pro'`, `'business'` |
-| nip | text | Polish tax ID |
-| bank_account | text | |
-| signature_url | text | |
 
-### `user_roles`
-RBAC roles per user.
 | Column | Type | Notes |
 |--------|------|-------|
-| user_id | uuid | FK → auth.users |
-| role | text | `'admin'`, `'owner'`, `'member'` |
+| `id` | uuid PK | |
+| `user_id` | uuid UNIQUE FK→auth.users | One per user |
+| `company_name` | text | Default '' |
+| `owner_name` | text | |
+| `nip` | text | Polish tax identifier (NIP) |
+| `street` | text | |
+| `address_line2` | text | Optional second address line (added PR-05) |
+| `city` | text | |
+| `postal_code` | text | |
+| `country` | text | Default 'PL' |
+| `phone` | text | |
+| `email_for_offers` | text | Contact email shown on legacy offers |
+| `contact_email` | text | Reply-To on v2 offers; must be verified |
+| `contact_email_verified` | boolean | Default false |
+| `contact_email_verified_at` | timestamptz | |
+| `contact_email_verification_token` | uuid | One-time verification token |
+| `contact_email_verification_sent_at` | timestamptz | |
+| `bank_account` | text | |
+| `logo_url` | text | Supabase Storage URL |
+| `website` | text | Added PR-05 |
+| `email_subject_template` | text | Default 'Oferta od {company_name}' |
+| `email_greeting` | text | |
+| `email_signature` | text | |
+| `created_at` / `updated_at` | timestamptz | Auto-managed via trigger |
 
-### `user_consents`
-GDPR consent tracking.
-| Column | Type | Notes |
-|--------|------|-------|
-| user_id | uuid | FK → auth.users |
-| consent_type | text | |
-| consented_at | timestamptz | |
-| revoked_at | timestamptz | |
-
-### `biometric_credentials`
-WebAuthn / passkey credentials.
-| Column | Type | Notes |
-|--------|------|-------|
-| user_id | uuid | FK → auth.users |
-| credential_id | text | WebAuthn credential |
-| public_key | text | |
-| counter | int | Replay protection |
+RLS: `auth.uid() = user_id`. Row auto-created on user signup via `handle_new_user()` trigger.
 
 ---
-
-## Domain: Client & Project Management
 
 ### `clients`
-Client contact book.
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | PK |
-| user_id | uuid | FK → auth.users (owner) |
-| name | text | Required |
-| email | text | |
-| phone | text | |
-| address | text | |
 
-### `projects` *(legacy — use v2_projects for new features)*
-Legacy project table. Still updated for backward compatibility.
 | Column | Type | Notes |
 |--------|------|-------|
-| id | uuid | PK |
-| user_id | uuid | FK → auth.users |
-| client_id | uuid | FK → clients |
-| project_name | text | |
-| status | text | `'PENDING'`, `'ACTIVE'`, `'DONE'` |
-| start_date, end_date | date | |
+| `id` | uuid PK | |
+| `user_id` | uuid FK→auth.users | |
+| `name` | text NOT NULL | |
+| `phone` | text | Default '' |
+| `email` | text | Default '' |
+| `address` | text | Default '' |
+| `created_at` | timestamptz | |
 
-### `calendar_events`
-Scheduling and deadlines.
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | PK |
-| user_id | uuid | FK → auth.users |
-| project_id | uuid | FK → projects (nullable) |
-| title | text | |
-| start_at, end_at | timestamptz | |
-| event_type | text | |
-
-### `item_templates`
-Reusable line items for quick offer/quote entry.
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | PK |
-| user_id | uuid | FK → auth.users |
-| name | text | |
-| unit | text | |
-| unit_price_net | numeric | |
-| vat_rate | numeric | |
-| item_type | text | `'labor'`, `'material'`, `'service'`, etc. |
-
-### `work_tasks`
-Task management within projects.
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | PK |
-| user_id | uuid | FK → auth.users |
-| project_id | uuid | FK → projects |
-| title | text | |
-| status | text | |
-| due_date | date | |
+RLS: `auth.uid() = user_id`. Insert blocked by `trg_enforce_client_limit` when plan quota reached.
 
 ---
-
-## Domain: Offers & Quotes
 
 ### `offers`
-Main offer records (PR-09).
+
 | Column | Type | Notes |
 |--------|------|-------|
-| id | uuid | PK |
-| user_id | uuid | FK → auth.users |
-| client_id | uuid | FK → clients (nullable) |
-| title | text | |
-| status | text | `'DRAFT'`, `'SENT'`, `'ACCEPTED'`, `'REJECTED'`, `'EXPIRED'` |
-| total_net, total_vat, total_gross | numeric | Calculated totals |
-| currency | text | Default `'PLN'` |
-| valid_until | date | Offer validity |
+| `id` | uuid PK | |
+| `user_id` | uuid FK→auth.users | |
+| `client_id` | uuid FK→clients ON DELETE SET NULL | Nullable |
+| `status` | text | `DRAFT \| SENT \| ACCEPTED \| REJECTED \| ARCHIVED` |
+| `title` | text | |
+| `total_net` | numeric(14,2) | |
+| `total_vat` | numeric(14,2) | |
+| `total_gross` | numeric(14,2) | |
+| `currency` | text | Default 'PLN' |
+| `source` | text | `'quick_estimate'` or NULL |
+| `vat_enabled` | boolean | VAT toggle state for quick estimate |
+| `sent_at` | timestamptz | |
+| `accepted_at` | timestamptz | |
+| `rejected_at` | timestamptz | |
+| `last_activity_at` | timestamptz | Updated on any change |
+| `created_at` / `updated_at` | timestamptz | Auto-managed via trigger |
+
+RLS: `auth.uid() = user_id`. BEFORE UPDATE trigger `trg_enforce_monthly_offer_send_limit` blocks free-plan users when 3/month quota is exhausted.
+
+---
 
 ### `offer_items`
-Line items for an offer (PR-10).
+
 | Column | Type | Notes |
 |--------|------|-------|
-| id | uuid | PK |
-| offer_id | uuid | FK → offers |
-| variant_id | uuid | FK → offer_variants (nullable — null = no-variant mode) |
-| user_id | uuid | FK → auth.users |
-| item_type | text | `'labor'`, `'material'`, `'service'`, `'travel'`, `'lump_sum'` |
-| name | text | |
-| unit | text | |
-| qty | numeric | |
-| unit_price_net | numeric | |
-| vat_rate | numeric | |
-| line_total_net | numeric | `qty * unit_price_net` |
+| `id` | uuid PK | |
+| `user_id` | uuid FK→auth.users | |
+| `offer_id` | uuid FK→offers ON DELETE CASCADE | |
+| `variant_id` | uuid FK→offer_variants ON DELETE CASCADE | NULL = no-variant mode |
+| `item_type` | text | `labor \| material \| service \| travel \| lump_sum` |
+| `name` | text NOT NULL | |
+| `unit` | text | |
+| `qty` | numeric | Default 1 |
+| `unit_price_net` | numeric | Default 0 |
+| `vat_rate` | numeric | |
+| `line_total_net` | numeric | Stored computed: `qty × unit_price_net` |
+| `metadata` | jsonb | Quick estimate extended fields (`priceMode`, `laborCost`, etc.) |
+| `created_at` / `updated_at` | timestamptz | |
+
+RLS: `auth.uid() = user_id`.
+
+---
 
 ### `offer_variants`
-Named price variants for an offer (sprint offer-versioning-7RcU5).
+
 | Column | Type | Notes |
 |--------|------|-------|
-| id | uuid | PK |
-| offer_id | uuid | FK → offers |
-| user_id | uuid | FK → auth.users |
-| label | text | Variant name, e.g. "Wariant A" |
-| sort_order | int | Display order |
+| `id` | uuid PK | |
+| `offer_id` | uuid FK→offers ON DELETE CASCADE | |
+| `user_id` | uuid FK→auth.users | |
+| `label` | text | 1–100 chars |
+| `sort_order` | int | 0 = first/default |
+| `created_at` / `updated_at` | timestamptz | |
+
+Maximum 3 variants per offer (enforced in application layer, not DB). RLS: `auth.uid() = user_id`.
+
+---
 
 ### `offer_photos`
-Photos attached to offers (show_in_public for client-facing display).
+
 | Column | Type | Notes |
 |--------|------|-------|
-| id | uuid | PK |
-| offer_id | uuid | FK → offers |
-| user_id | uuid | FK → auth.users |
-| storage_path | text | Supabase Storage path |
-| show_in_public | boolean | Visible to client in public accept page |
-| caption | text | |
+| `id` | uuid PK | |
+| `offer_id` | uuid FK→offers ON DELETE CASCADE | |
+| `user_id` | uuid FK→auth.users | |
+| `storage_path` | text NOT NULL | Path in `project-photos` bucket |
+| `show_in_pdf` | boolean | Default false — embed in generated PDF |
+| `show_in_public` | boolean | Default false — show on public accept page |
+| `caption` | text | Max 200 chars |
+| `sort_order` | int | |
+| `created_at` | timestamptz | |
 
-### `offer_sends`
-Track each email send of an offer (for analytics and tracking).
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | PK |
-| offer_id | uuid | FK → offers |
-| user_id | uuid | FK → auth.users |
-| sent_to_email | text | |
-| tracking_status | text | `'sent'`, `'viewed'`, `'accepted'`, `'rejected'` |
-| sent_at | timestamptz | |
-
-### `offer_approvals`
-Public acceptance link + lifecycle state (PR-12).
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | PK |
-| project_id | uuid | FK → projects |
-| user_id | uuid | FK → auth.users |
-| public_token | uuid | URL-safe share token (122-bit entropy) |
-| accept_token | uuid | 1-click email accept token |
-| status | text | `'pending'`, `'sent'`, `'viewed'`, `'accepted'`, `'rejected'`, `'expired'`, `'withdrawn'` |
-| expires_at | timestamptz | Link expiry |
-| valid_until | timestamptz | Offer validity |
-| approved_at, accepted_at, rejected_at | timestamptz | |
-| v2_project_id | uuid | FK → v2_projects (Acceptance Bridge, idempotency) |
-| comment | text | Client rejection reason |
-
-> **TODO(PR-09-fix):** Add `offer_id` FK to link directly to `offers` table for proper analytics.
-
-### `offer_public_actions`
-Audit log of all public actions (view, accept, reject).
-| Column | Type | Notes |
-|--------|------|-------|
-| approval_id | uuid | FK → offer_approvals |
-| action | text | |
-| performed_at | timestamptz | |
-| ip_address | text | |
-
-### `acceptance_links` *(legacy, superseded by offer_approvals)*
-Old acceptance link table. Kept for backward compatibility.
-
-### `quotes`
-Legacy quote/estimate records (attached to projects).
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | PK |
-| project_id | uuid | FK → projects |
-| user_id | uuid | FK → auth.users |
-| total | numeric | |
-| positions | jsonb | Line items (legacy format) |
-| summary_labor, summary_materials | numeric | |
+RLS: `auth.uid() = user_id`.
 
 ---
 
-## Domain: Projects V2
+### `acceptance_links`
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid PK | |
+| `user_id` | uuid FK→auth.users | |
+| `offer_id` | uuid FK→offers ON DELETE CASCADE UNIQUE | One link per offer |
+| `token` | uuid UNIQUE | UUID v4 (122-bit entropy) |
+| `expires_at` | timestamptz | Default now() + 30 days |
+| `created_at` | timestamptz | |
+
+RLS: owner can CRUD own links. Public access through `resolve_offer_acceptance_link(token)` SECURITY DEFINER function only.
+
+---
+
+### `offer_approvals` (legacy flow)
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid PK | |
+| `project_id` | uuid FK→projects ON DELETE CASCADE | Legacy project FK |
+| `user_id` | uuid NOT NULL | |
+| `public_token` | uuid UNIQUE | View-only share token |
+| `accept_token` | uuid UNIQUE | 1-click email accept token (added sprint 1 v2) |
+| `client_name` / `client_email` | text | |
+| `status` | text | `pending \| approved \| rejected \| draft \| sent \| viewed \| accepted \| expired \| withdrawn` |
+| `signature_data` | text | Base64 signature |
+| `client_comment` | text | |
+| `accepted_via` | text | `email_1click \| web_button` |
+| `viewed_at` | timestamptz | First public URL open |
+| `withdrawn_at` | timestamptz | |
+| `rejected_reason` | text | |
+| `valid_until` | timestamptz | Offer validity deadline |
+| `approved_at` | timestamptz | |
+| `created_at` | timestamptz | |
+
+RLS: owner SELECT/INSERT/UPDATE/DELETE. BEFORE INSERT trigger `trg_enforce_offer_limit` blocks when plan quota reached.
+
+---
 
 ### `v2_projects`
-New project hub (PR-13). Replaces most of `projects` for new UI.
+
 | Column | Type | Notes |
 |--------|------|-------|
-| id | uuid | PK |
-| user_id | uuid | FK → auth.users |
-| title | text | |
-| status | text | `'ACTIVE'`, `'COMPLETED'`, `'ON_HOLD'`, `'CANCELLED'` |
-| source_offer_id | uuid | Reference to creating offer (via offer_approvals.id currently) |
-| progress_percent | int | 0–100 |
-| stages_json | jsonb | `ProjectStage[]` |
-| budget_net | numeric | |
-| budget_source | text | `'OFFER_NET'`, `'MANUAL'` |
-| budget_updated_at | timestamptz | |
+| `id` | uuid PK | |
+| `user_id` | uuid FK→auth.users | |
+| `client_id` | uuid FK→clients ON DELETE SET NULL | Nullable |
+| `source_offer_id` | uuid FK→offers ON DELETE SET NULL | Nullable |
+| `title` | text NOT NULL | |
+| `status` | text | `ACTIVE \| COMPLETED \| ON_HOLD` |
+| `start_date` / `end_date` | date | |
+| `progress_percent` | integer | 0–100 |
+| `stages_json` | jsonb | Array of `{name, due_date, is_done, sort_order}` |
+| `total_from_offer` | numeric(14,2) | Stored at creation — NOT exposed in QR view |
+| `budget_net` | numeric(14,2) | Editable budget |
+| `budget_source` | text | `OFFER_NET \| MANUAL` |
+| `budget_updated_at` | timestamptz | |
+| `created_at` / `updated_at` | timestamptz | |
 
-### `project_public_status_tokens`
-QR-code tokens for public project status page.
+RLS: `auth.uid() = user_id`.
 
-### `project_photos`
-Photos associated with a project.
+---
 
-### `project_acceptance`
-Client acceptance records (checklist + signature).
+### `project_costs`
 
-### `project_checklists`
-Acceptance checklist items per project.
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid PK | |
+| `user_id` | uuid FK→auth.users | |
+| `project_id` | uuid FK→v2_projects ON DELETE CASCADE | |
+| `cost_type` | text | `MATERIAL \| LABOR \| TRAVEL \| OTHER` |
+| `amount_net` | numeric(14,2) | >= 0 |
+| `note` | text | |
+| `incurred_at` | date | |
+| `created_at` / `updated_at` | timestamptz | |
+
+RLS: `auth.uid() = user_id`.
+
+---
 
 ### `project_dossier_items`
-Document folder items per project (PR-16).
 
-### `project_dossier_share_tokens`
-Secure share tokens for dossier export.
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid PK | |
+| `user_id` | uuid FK→auth.users | |
+| `project_id` | uuid FK→v2_projects ON DELETE CASCADE | |
+| `category` | text | `CONTRACT \| PROTOCOL \| RECEIPT \| PHOTO \| GUARANTEE \| OTHER` |
+| `file_path` | text NOT NULL | Path in `dossier` bucket (private) |
+| `file_name` | text NOT NULL | |
+| `mime_type` | text | |
+| `size_bytes` | integer | |
+| `source` | text | `MANUAL \| PHOTO_REPORT \| OFFER_PDF \| SIGNATURE` |
+| `created_at` | timestamptz | |
 
-### `project_warranties`
-Warranty card management (PR-18).
-
-### `project_inspections`
-Periodic technical inspection records (PR-18).
+RLS: `auth.uid() = user_id`.
 
 ---
-
-## Domain: Finance & Billing
-
-### `purchase_costs`
-Material and labor cost tracking.
-
-### `financial_reports`
-Periodic financial summary reports.
-
-### `pdf_data`
-Generated PDF metadata (quotes, offers, invoices).
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | PK |
-| project_id | uuid | FK → projects (nullable since PR: relax FK) |
-| user_id | uuid | FK → auth.users |
-| pdf_type | text | `'quote'`, `'offer'`, `'invoice'` |
-| pdf_url | text | Supabase Storage URL |
-| pdf_generated_at | timestamptz | |
-| vat_rate | numeric | VAT snapshot at generation time |
-
-### `user_subscriptions`
-Subscription plan records.
-| Column | Type | Notes |
-|--------|------|-------|
-| user_id | uuid | FK → auth.users |
-| plan_slug | text | `'free'`, `'starter'`, `'pro'`, `'business'` |
-| stripe_subscription_id | text | |
-| status | text | `'active'`, `'trialing'`, `'canceled'`, `'past_due'` |
-| current_period_end | timestamptz | |
-
-### `user_addons`
-Purchasable feature add-ons (e.g. extra PDF credits).
-
-### `plan_limits`
-Server-side plan limit configuration table.
-| Column | Type | Notes |
-|--------|------|-------|
-| plan_slug | text | PK |
-| max_offers_per_month | int | |
-| max_projects | int | |
-| max_clients | int | |
-
-### `stripe_events`
-Idempotency store for Stripe webhook events (PR-20).
-
----
-
-## Domain: Team & Subcontractors
-
-### `team_members`
-Team members associated with a contractor.
-
-### `team_locations`
-GPS/location check-ins for team members.
-
-### `subcontractors`
-Subcontractor contact book.
-
-### `subcontractor_services`
-Services offered by each subcontractor.
-
-### `subcontractor_reviews`
-Reviews/ratings for subcontractors.
-
----
-
-## Domain: AI & Integrations
-
-### `ai_chat_history`
-Conversation history for AI chat agent.
-
-### `api_keys`
-API keys for public API access (public-api Edge Function).
-
-### `api_rate_limits`
-Rate limiting counters for Edge Functions.
-| Column | Type | Notes |
-|--------|------|-------|
-| identifier | text | `user:<uuid>` or `ip:<ip>` |
-| endpoint | text | Edge Function name |
-| request_count | int | Atomic via `check_and_increment_rate_limit()` RPC |
-| window_start | timestamptz | |
 
 ### `document_instances`
-Document template instances (PR-17).
 
----
-
-## Domain: Notifications & Push
-
-### `notifications`
-In-app notifications.
 | Column | Type | Notes |
 |--------|------|-------|
-| id | uuid | PK |
-| user_id | uuid | FK → auth.users |
-| title | text | |
-| message | text | |
-| type | text | `'info'`, `'success'`, `'warning'`, `'error'` |
-| read | boolean | |
-| action_url | text | |
+| `id` | uuid PK | |
+| `user_id` | uuid FK→auth.users | |
+| `project_id` | uuid FK→v2_projects ON DELETE SET NULL | Nullable |
+| `client_id` | uuid | Soft FK (no constraint) |
+| `offer_id` | uuid | Soft FK (no constraint) |
+| `template_key` | text NOT NULL | e.g. `contract_fixed_price` |
+| `template_version` | text | Default '1.0' |
+| `locale` | text | `pl \| en \| uk` |
+| `title` | text | User-set custom title |
+| `data_json` | jsonb | Filled form field values |
+| `references_json` | jsonb | Snapshot of legal references at fill time |
+| `pdf_path` | text | Path in dossier bucket after generation; NULL until generated |
+| `dossier_item_id` | uuid | Set after save-to-dossier (soft FK) |
+| `created_at` / `updated_at` | timestamptz | |
 
-### `push_tokens`
-FCM/APNS push notification tokens for mobile (Capacitor).
-
----
-
-## Domain: Admin & Security
-
-### `user_roles` *(see Core section)*
-
-### `admin_system_settings`
-Global admin configuration.
-
-### `admin_theme_config`
-Admin-configurable UI theme.
-
-### `admin_audit_log`
-Audit trail for admin actions.
-
-### `biometric_credentials` *(see Core section)*
+RLS: `auth.uid() = user_id`.
 
 ---
 
-## Domain: Misc / Onboarding
+### `project_warranties`
 
-### `onboarding_progress`
-User onboarding step completion tracking.
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid PK | |
+| `user_id` | uuid FK→auth.users | |
+| `project_id` | uuid FK→v2_projects ON DELETE CASCADE UNIQUE | One warranty per project |
+| `client_email` / `client_name` / `contact_phone` | text | |
+| `warranty_months` | integer | 1–120; default 24 |
+| `start_date` | date | Default CURRENT_DATE |
+| `scope_of_work` / `exclusions` | text | |
+| `pdf_storage_path` | text | Path in dossier bucket |
+| `reminder_30_sent_at` / `reminder_7_sent_at` | timestamptz | |
+| `created_at` / `updated_at` | timestamptz | |
 
-### `project_reminders`
-In-app reminders for warranties and inspections (PR-18).
+RLS: `auth.uid() = user_id`. View `project_warranties_with_end` exposes computed `end_date`.
 
-### `subscription_events`
-Stripe subscription lifecycle event log.
+---
+
+### `project_inspections`
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid PK | |
+| `user_id` | uuid FK→auth.users | |
+| `project_id` | uuid FK→v2_projects ON DELETE SET NULL | Nullable |
+| `inspection_type` | text | `ANNUAL_BUILDING \| FIVE_YEAR_BUILDING \| FIVE_YEAR_ELECTRICAL \| ANNUAL_GAS_CHIMNEY \| LARGE_AREA_SEMIANNUAL \| OTHER` |
+| `object_address` | text | Used when no project_id |
+| `due_date` | date NOT NULL | |
+| `completed_at` | timestamptz | |
+| `status` | text | `PLANNED \| DONE \| OVERDUE` |
+| `protocol_pdf_path` | text | |
+| `reminder_30_sent_at` / `reminder_7_sent_at` | timestamptz | |
+| `notes` | text | |
+| `created_at` / `updated_at` | timestamptz | |
+
+RLS: `auth.uid() = user_id`. View `project_inspections_with_status` computes real-time status.
+
+---
+
+### `user_subscriptions`
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid PK | |
+| `user_id` | uuid UNIQUE | One row per user |
+| `plan_id` | text | `free \| pro \| starter \| business \| enterprise` |
+| `status` | text | `active \| cancelled \| expired \| trial` |
+| `stripe_customer_id` | text | |
+| `stripe_subscription_id` | text | |
+| `current_period_start` / `current_period_end` | timestamptz | |
+| `cancel_at_period_end` | boolean | |
+| `trial_end` | timestamptz | |
+| `created_at` / `updated_at` | timestamptz | |
+
+RLS: authenticated users SELECT only. INSERT/UPDATE by service_role only — direct user writes are blocked to prevent self-upgrade.
+
+---
+
+### `plan_limits`
+
+Authoritative per-plan resource quotas. Mirrors `src/hooks/usePlanGate.ts`. Change here first, then update the frontend constant.
+
+| plan_id | max_projects | max_clients | max_offers |
+|---------|-------------|-------------|-----------|
+| `free` | 3 | 5 | 3 |
+| `pro` / `starter` | 15 | 30 | 15 |
+| `business` | 100 | 200 | 100 |
+| `enterprise` | unlimited | unlimited | unlimited |
+
+RLS: SELECT open to all (not sensitive). Writes via migrations only.
+
+---
+
+## RLS Status
+
+All tables have Row Level Security enabled. The standard policy pattern across all user-owned tables:
+
+```sql
+-- User sees and modifies only their own rows
+USING (auth.uid() = user_id)
+WITH CHECK (auth.uid() = user_id)
+```
+
+Notable exceptions:
+
+| Table | Special access |
+|-------|---------------|
+| `plan_limits` | SELECT open to all (config data) |
+| `subcontractors` | Public SELECT when `is_public = true` |
+| `subcontractor_services` / `subcontractor_reviews` | Public SELECT |
+| `user_subscriptions` | Authenticated SELECT only; writes blocked for users |
+| `offer_approvals` | Public SELECT/UPDATE via token-validated policies |
+| `acceptance_links` + `offer_public_actions` | Public write via SECURITY DEFINER functions only |
+| `api_rate_limits` | Service_role manages; no user policies |
+| `admin_*` tables | Admin/owner role within `organization_members` |
 
 ---
 
@@ -421,48 +499,84 @@ Stripe subscription lifecycle event log.
 
 ```
 auth.users
-├── profiles (1:1)
-├── clients (1:N)
-│   └── offers (N:1)
-│       ├── offer_items (1:N)
-│       ├── offer_variants (1:N) → offer_items
-│       ├── offer_photos (1:N)
-│       ├── offer_sends (1:N)
-│       └── offer_approvals (1:N)
-│           └── v2_projects (created on acceptance)
-├── projects (1:N, legacy)
-│   ├── quotes (1:1 per project)
-│   └── pdf_data (1:N)
-├── v2_projects (1:N, new)
-│   ├── project_photos
-│   ├── project_warranties
-│   ├── project_inspections
-│   ├── project_dossier_items
-│   └── project_acceptance
-└── user_subscriptions (1:1)
+├── profiles                (1:1 — auto-created on signup)
+├── user_subscriptions      (1:1)
+├── clients                 (1:N)
+│     └── offers (v2)  ←── via offers.client_id
+│     └── v2_projects  ←── via v2_projects.client_id
+├── projects (legacy, 1:N)
+│     ├── quotes             (1:1 per project)
+│     ├── pdf_data           (1:1 per project)
+│     ├── offer_approvals    (1:N — legacy offer flow)
+│     └── calendar_events    (1:N)
+├── offers (v2, 1:N)
+│     ├── offer_items        (1:N) → optional offer_variants grouping
+│     ├── offer_variants     (1:N, max 3)
+│     ├── offer_photos       (1:N)
+│     └── acceptance_links   (1:1 per offer)
+│           └── offer_public_actions (1:N — client ACCEPT/REJECT log)
+└── v2_projects (1:N)
+      ├── source_offer_id  → offers (optional)
+      ├── client_id        → clients (optional)
+      ├── project_costs              (1:N)
+      ├── project_photos             (1:N — extended with phase metadata)
+      ├── project_checklists         (1:N per template_key)
+      ├── project_acceptance         (1:1)
+      ├── project_dossier_items      (1:N)
+      ├── project_dossier_share_tokens (1:N)
+      ├── project_public_status_tokens (1:1)
+      ├── project_warranties         (1:1)
+      ├── project_inspections        (1:N)
+      └── document_instances         (1:N)
 ```
 
 ---
 
-## RLS Policies — Naming Convention
+## SECURITY DEFINER Functions (public-facing)
 
-All tables have RLS enabled. Policy naming format:
-```sql
--- <table>_<action>_<scope>
--- Example: projects_select_own_organization
-```
+These functions are callable with the anon key and bypass RLS in a controlled, read-only or audited way:
 
-Enforcement rule: users can only access rows where `user_id = auth.uid()`.
-Organization members can additionally access shared org data.
+| Function | Caller | Purpose |
+|----------|--------|---------|
+| `resolve_offer_acceptance_link(token)` | Browser (anon) | Returns safe offer + items for public acceptance page |
+| `process_offer_acceptance_action(token, action, comment)` | Browser (anon) | Records ACCEPT/REJECT and updates offer status |
+| `resolve_project_public_token(token)` | Browser (anon) | Returns project status for QR page — no prices |
+| `resolve_dossier_share_token(token)` | Browser (anon) | Returns dossier file list scoped to `allowed_categories` |
+| `count_monthly_finalized_offers(user_id)` | Trigger / RPC | Monthly sent-offer count for quota enforcement |
+| `enforce_monthly_offer_send_limit()` | BEFORE UPDATE trigger on `offers` | Free-plan monthly send gate |
+| `enforce_project_limit()` | BEFORE INSERT trigger on `projects` | Project quota gate |
+| `enforce_client_limit()` | BEFORE INSERT trigger on `clients` | Client quota gate |
+| `enforce_offer_limit()` | BEFORE INSERT trigger on `offer_approvals` | Offer quota gate (legacy) |
+| `get_user_plan_limits(user_id)` | Trigger internals | Returns the active `plan_limits` row for a user |
+| `save_offer_items(offer_id, user_id, variants, items)` | RPC | Atomic offer save with variant + items replacement |
+| `check_and_increment_rate_limit(...)` | Edge Functions | Atomic rate-limit window counter |
 
 ---
 
-## Migration Rules (CRITICAL)
+## Database Views
 
-1. **NEVER modify** existing migration files — they are immutable once applied
-2. **Always create NEW** migration files for schema changes
-3. **Filename format:** `YYYYMMDDHHMMSS_<description>.sql`
-4. **Run migrations BEFORE** deploying code changes that depend on them
-5. **Recent custom functions:**
-   - `save_offer_items(p_offer_id, p_user_id, p_variants, p_items)` — atomic offer save (2026-03-20)
-   - `check_and_increment_rate_limit(p_identifier, p_endpoint, p_max_requests, p_window_ms)` — atomic rate limiting (2026-03-20)
+| View | Source | Purpose |
+|------|--------|---------|
+| `project_warranties_with_end` | `project_warranties` | Adds computed `end_date` column |
+| `project_inspections_with_status` | `project_inspections` | Computes real-time PLANNED / DONE / OVERDUE status |
+
+---
+
+## Storage Buckets
+
+| Bucket | Access | Usage |
+|--------|--------|-------|
+| `logos` | Public | Company logo images |
+| `project-photos` | Private (signed URLs) | Project photos, offer photos, client signatures |
+| `company-documents` | Private | Contractor licence / credential files |
+| `dossier` | Private | Dossier items, warranty PDFs, document instance PDFs |
+
+---
+
+## Migration Notes
+
+- **55 migration files** in `supabase/migrations/`, ordered by timestamp
+- **Migrations are immutable** — never edit an applied file; always create a new one
+- **Filename format:** `YYYYMMDDHHMMSS_description.sql` (early files used UUID names)
+- Schema evolved from a simple quote builder (Dec 2025) through a full construction management platform with compliance features (Mar 2026)
+- Run migrations **before** deploying code changes that depend on new schema

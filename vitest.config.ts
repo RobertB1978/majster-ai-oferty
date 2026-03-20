@@ -29,9 +29,23 @@ export default defineConfig({
         '**/*.d.ts',
         'src/integrations/supabase/types.ts',
       ],
-      // Conservative thresholds based on measured baseline (2026-03-19):
-      // lines 45.96%, branches 39.75%, functions 38.99%, statements 44.56%
-      // Set 5pp below baseline so green day-1, but regressions are caught.
+      // MINIMUM FLOOR THRESHOLDS — do not lower these values.
+      //
+      // Purpose: Prevent coverage regression. A CI run that drops below any of
+      // these values fails, signalling that tests were removed or code was added
+      // without corresponding tests.
+      //
+      // Baseline established 2026-03-19 (actual coverage at that date):
+      //   lines 45.96%  →  floor set at 40  (5pp headroom)
+      //   branches 39.75% → floor set at 34
+      //   functions 38.99% → floor set at 33
+      //   statements 44.56% → floor set at 39
+      //
+      // These are the current actual coverage levels — not aspirational targets.
+      // Raising a threshold before the tests actually reach that level will break CI.
+      //
+      // Target for next quarter (Q2 2026): lines 60%, branches 55%, functions 55%
+      // When actual coverage consistently meets a target, raise the floor to match.
       thresholds: {
         lines: 40,
         branches: 34,
