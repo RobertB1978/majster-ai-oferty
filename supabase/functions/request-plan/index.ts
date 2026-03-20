@@ -17,20 +17,16 @@ import {
   createRateLimitResponse,
   getIdentifier,
 } from "../_shared/rate-limiter.ts";
+import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
 
 // ── Plan slugs that users can request ──────────────────────
 const ALLOWED_PLAN_SLUGS = ["starter", "pro", "business", "enterprise"] as const;
 
-const corsHeaders: Record<string, string> = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsPreflightHeaders(req) });
   }
+  const corsHeaders = getCorsHeaders(req);
 
   if (req.method !== "POST") {
     return new Response(

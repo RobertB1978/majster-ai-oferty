@@ -13,11 +13,7 @@ import {
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
 import { handleSendOfferEmail, checkEmailDeliveryConfig, type EmailDeps, type SendOfferPayload } from "./emailHandler.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
 
 interface SendOfferRequest {
   offerSendId?: string;
@@ -36,8 +32,9 @@ interface SendOfferRequest {
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsPreflightHeaders(req) });
   }
+  const corsHeaders = getCorsHeaders(req);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");

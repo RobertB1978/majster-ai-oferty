@@ -3,7 +3,7 @@
 // Security Pack Δ1
 // ============================================
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
 import {
@@ -15,11 +15,7 @@ import {
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
 import { sanitizeAiOutput } from "../_shared/sanitization.ts";
 import { moderateAiOutput, MODERATION_BLOCKED_MESSAGE } from "../_shared/moderation.ts";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
 
 const systemPrompt = `Jesteś Majster.AI - profesjonalnym asystentem dla firm budowlanych i remontowych w Polsce.
 
@@ -72,8 +68,9 @@ Gdy użytkownik pyta o wycenę konkretnego projektu:
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsPreflightHeaders(req) });
   }
+  const corsHeaders = getCorsHeaders(req);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");

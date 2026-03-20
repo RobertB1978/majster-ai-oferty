@@ -60,3 +60,20 @@ export const FF_NEW_SHELL: boolean = resolveFlag(ENV_FLAG, 'FF_NEW_SHELL', true)
  * Dzięki temu istnieje JEDEN punkt prawdy dla trasy domowej.
  */
 export const CANONICAL_HOME = '/app/dashboard';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECURITY NOTE: localStorage flags are ONLY for UI/UX experimentation.
+//
+// ⚠️  NEVER use localStorage-backed flags for:
+//   - Feature gating by subscription plan (Pro/Business)
+//   - Permission checks (admin, owner, etc.)
+//   - Hiding/showing paid features
+//
+// For plan-gated features, read the plan from the database (profiles.plan_slug)
+// or from the AuthContext — never from localStorage.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Audit of existing flags:
+//   FF_NEW_SHELL — controls UI shell layout (AppLayout vs NewShellLayout).
+//                  Pure UI/UX flag. Safe to gate via localStorage.
+//                  No billing, permission, or plan implications.

@@ -259,12 +259,40 @@ export function useSaveDraft() {
         offerId = data.id;
       }
 
-      // 3. Save variants and items
-      if (form.variants.length > 0) {
-        await saveWithVariants(offerId, user.id, form.variants);
-      } else {
-        await saveNoVariant(offerId, user.id, form.items);
-      }
+      // 3. Save variants and items — atomic via DB function (BUG-02 fix: prevents partial state)
+      const variantsPayload = form.variants.length > 0
+        ? form.variants.map((v, i) => ({
+            label: v.label.trim() || `Wariant ${i + 1}`,
+            sort_order: i,
+            items: v.items.map((it) => ({
+              item_type: it.item_type,
+              name: it.name,
+              unit: it.unit || '',
+              qty: it.qty,
+              unit_price_net: it.unit_price_net,
+              vat_rate: it.vat_rate,
+            })),
+          }))
+        : [];
+
+      const itemsPayload = form.variants.length === 0
+        ? form.items.map((it) => ({
+            item_type: it.item_type,
+            name: it.name,
+            unit: it.unit || '',
+            qty: it.qty,
+            unit_price_net: it.unit_price_net,
+            vat_rate: it.vat_rate,
+          }))
+        : [];
+
+      const { error: saveErr } = await supabase.rpc('save_offer_items', {
+        p_offer_id: offerId,
+        p_user_id: user.id,
+        p_variants: variantsPayload,
+        p_items: itemsPayload,
+      });
+      if (saveErr) throw saveErr;
 
       return offerId;
     },
@@ -272,74 +300,4 @@ export function useSaveDraft() {
       queryClient.invalidateQueries({ queryKey: offersKeys.all });
     },
   });
-}
-
-// ── Internal save helpers ─────────────────────────────────────────────────────
-
-async function saveNoVariant(offerId: string, userId: string, items: WizardItem[]) {
-  // Delete all existing variants (cascades to variant items)
-  await supabase.from('offer_variants').delete().eq('offer_id', offerId);
-
-  // Delete remaining items (no-variant ones)
-  await supabase.from('offer_items').delete().eq('offer_id', offerId);
-
-  if (items.length > 0) {
-    const rows = items.map((it) => ({
-      user_id: userId,
-      offer_id: offerId,
-      item_type: it.item_type,
-      name: it.name,
-      unit: it.unit || null,
-      qty: it.qty,
-      unit_price_net: it.unit_price_net,
-      vat_rate: it.vat_rate,
-      line_total_net: Math.round(it.qty * it.unit_price_net * 100) / 100,
-      variant_id: null,
-    }));
-    const { error } = await supabase.from('offer_items').insert(rows);
-    if (error) throw error;
-  }
-}
-
-async function saveWithVariants(offerId: string, userId: string, variants: WizardVariant[]) {
-  // Clear all existing variants (cascades to their items via ON DELETE CASCADE)
-  await supabase.from('offer_variants').delete().eq('offer_id', offerId);
-  // Clear any remaining no-variant items
-  await supabase.from('offer_items').delete().eq('offer_id', offerId);
-
-  for (let i = 0; i < variants.length; i++) {
-    const v = variants[i];
-
-    // Insert variant
-    const { data: inserted, error: vErr } = await supabase
-      .from('offer_variants')
-      .insert({
-        offer_id: offerId,
-        user_id: userId,
-        label: v.label.trim() || `Wariant ${i + 1}`,
-        sort_order: i,
-      })
-      .select('id')
-      .single();
-    if (vErr) throw vErr;
-
-    const variantDbId = inserted.id;
-
-    if (v.items.length > 0) {
-      const rows = v.items.map((it) => ({
-        user_id: userId,
-        offer_id: offerId,
-        item_type: it.item_type,
-        name: it.name,
-        unit: it.unit || null,
-        qty: it.qty,
-        unit_price_net: it.unit_price_net,
-        vat_rate: it.vat_rate,
-        line_total_net: Math.round(it.qty * it.unit_price_net * 100) / 100,
-        variant_id: variantDbId,
-      }));
-      const { error: iErr } = await supabase.from('offer_items').insert(rows);
-      if (iErr) throw iErr;
-    }
-  }
 }

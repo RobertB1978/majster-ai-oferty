@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
@@ -67,8 +68,7 @@ export function useAdminSettings(organizationId: string | null): UseAdminSetting
   const [settings, setSettings] = useState<Partial<AdminSystemSettings> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const subscriptionRef = useRef<any>(null);
+  const subscriptionRef = useRef<RealtimeChannel | null>(null);
 
   // Fetch settings from database
   const fetchSettings = useCallback(async () => {

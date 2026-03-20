@@ -60,7 +60,7 @@ export function useAddTeamMember() {
           user_id: user!.id,
           owner_user_id: user!.id,
         })
-        .select()
+        .select('id, user_id, owner_user_id, name, phone, email, role, is_active, created_at')
         .single();
 
       if (error) throw error;
@@ -86,7 +86,7 @@ export function useUpdateTeamMember() {
         .from('team_members')
         .update(updates)
         .eq('id', id)
-        .select()
+        .select('id, user_id, owner_user_id, name, phone, email, role, is_active, created_at')
         .single();
 
       if (error) throw error;
@@ -127,7 +127,7 @@ export function useTeamLocations(projectId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('team_locations')
-        .select('*, team_members(*)')
+        .select('id, team_member_id, project_id, user_id, latitude, longitude, status, recorded_at, team_members(name)')
         .eq('user_id', user!.id)
         .order('recorded_at', { ascending: false });
 
@@ -165,7 +165,7 @@ export function useRecordLocation() {
           longitude,
           status,
         })
-        .select()
+        .select('id, team_member_id, project_id, user_id, latitude, longitude, status, recorded_at')
         .single();
 
       if (error) throw error;
