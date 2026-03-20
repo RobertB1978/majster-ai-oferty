@@ -36,6 +36,15 @@ import type { ItemSuggestion } from '@/hooks/useItemNameSuggestions';
 
 const PAGE_SIZE = 50;
 
+// ⚠️ REFACTOR PLAN (Audyt V3, W-5):
+// Ten plik ma >1100 linii. Kandydaci do wydzielenia w osobnych PR:
+//   1. ItemRow → ./ItemRow.tsx (~380 linii)
+//   2. PriceBookPanel → ./PriceBookPanel.tsx (~75 linii)
+//   3. NameFieldWithAutocomplete → ./NameFieldWithAutocomplete.tsx (~100 linii)
+//   4. DesktopColHeaders → ./DesktopColHeaders.tsx (~50 linii)
+//   5. Typy (LineItem, ColsVisible, etc.) → ./types.ts
+// Nie ruszać w jednym PR — każde wydzielenie to osobny PR ≤200 LOC.
+
 /* ── Types ─────────────────────────────────────────────────────── */
 
 export type ItemType = 'labor' | 'material' | 'service' | 'travel' | 'lump_sum';

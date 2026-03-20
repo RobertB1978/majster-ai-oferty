@@ -1,4 +1,4 @@
-import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { useEffect, useState, lazy, Suspense } from 'react';
@@ -32,7 +32,6 @@ const OnboardingModal = lazy(
  */
 export function NewShellLayout() {
   const { user, isLoading } = useAuth();
-  const location = useLocation();
   const [showContent, setShowContent] = useState(false);
   const { t } = useTranslation();
 
@@ -40,12 +39,10 @@ export function NewShellLayout() {
     setShowContent(!isLoading && !!user);
   }, [isLoading, user]);
 
+  // Auth guard is handled by ProtectedRoute (single source of truth).
+  // This loading state is only for the fade-in animation.
   if (isLoading) {
     return <LoadingScreen message={t('app.loading')} variant="fullscreen" />;
-  }
-
-  if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return (

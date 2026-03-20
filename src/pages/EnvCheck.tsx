@@ -10,6 +10,22 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 
 export default function EnvCheck() {
+  // W produkcji nie wyświetlaj diagnostyki zmiennych środowiskowych
+  if (import.meta.env.PROD) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-8">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle>Strona niedostępna</CardTitle>
+            <CardDescription>
+              Diagnostyka zmiennych środowiskowych jest dostępna tylko w trybie deweloperskim.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
   const checks = [
     {
       name: 'VITE_SUPABASE_URL',

@@ -108,13 +108,13 @@ export default function PlanyDetail() {
             ) : (
               <>
                 <Button size="lg" className="flex-1" asChild>
-                  {/* TODO: Replace with Stripe checkout when configured */}
-                  <Link to="/register">
+                  {/* Rejestracja z parametrem planu — po zalogowaniu przekieruje do /app/plan */}
+                  <Link to={`/register?plan=${plan.id}`}>
                     {t('planyDetail.buyNow', { price: formatDualCurrency(plan.pricePLN, i18n.language) })}
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <Link to="/register">{t('billing.try30days')}</Link>
+                  <Link to={`/register?plan=${plan.id}&trial=1`}>{t('billing.try30days')}</Link>
                 </Button>
               </>
             )}

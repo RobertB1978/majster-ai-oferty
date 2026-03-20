@@ -421,6 +421,8 @@
     "addressPlaceholder": "вул. Хрещатик 1, 01001 Київ",
     "clearSearch": "Очистити пошук",
     "saveChanges": "Зберегти зміни",
+    "offers": "Пропозиції",
+    "projects": "Проєкти",
     "toast": {
       "added": "Клієнта додано",
       "addError": "Помилка додавання клієнта",

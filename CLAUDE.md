@@ -1,5 +1,14 @@
 # CLAUDE.md
 
+## Język komunikacji / Communication Language
+
+**OBOWIĄZKOWE:** Cała komunikacja z właścicielem projektu MUSI być prowadzona w języku polskim.
+Dotyczy to: odpowiedzi na pytania, opisów commitów, komentarzy w PR, wyjaśnień technicznych,
+raportów i wszelkiej innej komunikacji. Komentarze w kodzie mogą być po angielsku (standard branżowy),
+ale komunikacja z użytkownikiem — zawsze po polsku.
+
+---
+
 ## Project Overview
 
 **Majster.AI** is a SaaS platform designed for construction and renovation professionals in Poland. It helps contractors, builders, and renovation specialists manage their business operations efficiently through AI-powered tools.

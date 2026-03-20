@@ -27,8 +27,8 @@ export function useAdminRole() {
       return data?.map(r => r.role as AppRole) || [];
     },
     enabled: !!userId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: 1000 * 60, // 1 minuta — szybkie propagowanie zmian roli
+    gcTime: 1000 * 60 * 3, // 3 minuty
   });
 
   const isAdmin = roles?.includes('admin') || false;

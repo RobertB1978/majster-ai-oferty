@@ -1,4 +1,4 @@
-import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { TopBar } from './TopBar';
 import { Navigation } from './Navigation';
 import { MobileBottomNav } from './MobileBottomNav';
@@ -17,7 +17,6 @@ const TradeOnboardingModal = lazy(() => import('@/components/onboarding/TradeOnb
 
 export function AppLayout() {
   const { user, isLoading } = useAuth();
-  const location = useLocation();
   const [showContent, setShowContent] = useState(false);
   const { t } = useTranslation();
 
@@ -34,12 +33,10 @@ export function AppLayout() {
     setShowContent(!isLoading && !!user);
   }, [isLoading, user]);
 
+  // Auth guard is handled by ProtectedRoute (single source of truth).
+  // This loading state is only for the fade-in animation.
   if (isLoading) {
     return <LoadingScreen message={t('app.loading')} variant="fullscreen" />;
-  }
-
-  if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return (

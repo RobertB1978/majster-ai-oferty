@@ -404,10 +404,11 @@ export async function completeAI(options: AIRequestOptions): Promise<AIResponse>
 }
 
 /**
- * Helper to handle common AI error codes
+ * Helper to handle common AI error codes.
+ * Accepts CORS headers from the caller (use getCorsHeaders(req) from cors.ts).
  */
-export function handleAIError(error: Error): Response {
-  const corsHeaders = {
+export function handleAIError(error: Error, corsHeaders?: Record<string, string>): Response {
+  const headers = corsHeaders ?? {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   };
@@ -415,14 +416,14 @@ export function handleAIError(error: Error): Response {
   if (error.message === 'RATE_LIMIT_EXCEEDED') {
     return new Response(
       JSON.stringify({ error: 'Zbyt wiele zapytań. Poczekaj chwilę i spróbuj ponownie.' }),
-      { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 429, headers: { ...headers, 'Content-Type': 'application/json' } }
     );
   }
 
   if (error.message === 'PAYMENT_REQUIRED') {
     return new Response(
       JSON.stringify({ error: 'Limit zapytań AI wyczerpany. Skontaktuj się z administratorem.' }),
-      { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 402, headers: { ...headers, 'Content-Type': 'application/json' } }
     );
   }
 
@@ -433,13 +434,13 @@ export function handleAIError(error: Error): Response {
         error: 'AI_NOT_CONFIGURED',
         message: 'Asystent AI nie jest jeszcze skonfigurowany. Administrator musi ustawić klucz API (OPENAI_API_KEY, ANTHROPIC_API_KEY lub GEMINI_API_KEY) w ustawieniach Supabase Edge Functions.',
       }),
-      { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 503, headers: { ...headers, 'Content-Type': 'application/json' } }
     );
   }
 
   console.error('AI error:', error);
   return new Response(
     JSON.stringify({ error: `Błąd AI: ${error.message}` }),
-    { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    { status: 500, headers: { ...headers, 'Content-Type': 'application/json' } }
   );
 }

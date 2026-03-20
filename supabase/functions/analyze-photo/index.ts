@@ -160,7 +160,7 @@ Odpowiedz w formacie JSON:
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      return handleAIError(error);
+      return handleAIError(error, corsHeaders);
     }
     console.error("Error in analyze-photo:", error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {

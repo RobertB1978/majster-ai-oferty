@@ -421,6 +421,8 @@
     "addressPlaceholder": "ul. Przykładowa 1, 00-001 Warszawa",
     "clearSearch": "Wyczyść wyszukiwanie",
     "saveChanges": "Zapisz zmiany",
+    "offers": "Oferty",
+    "projects": "Projekty",
     "toast": {
       "added": "Klient dodany",
       "addError": "Błąd przy dodawaniu klienta",

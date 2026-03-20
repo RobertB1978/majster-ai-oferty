@@ -4,6 +4,13 @@
  * Public acceptance page for offers. Accessible at /a/:token without login.
  * Client can review the offer summary and ACCEPT or REJECT.
  *
+ * ⚠️ REFACTOR PLAN (Audyt V3, W-6):
+ * Ten plik ma >700 linii. Kandydaci do wydzielenia w osobnych PR:
+ *   1. ItemsTable → ./components/offers/ItemsTable.tsx (~60 linii)
+ *   2. Typy i helpery → ./lib/offerPublicTypes.ts (~140 linii)
+ *   3. VariantSelector → ./components/offers/VariantSelector.tsx (~80 linii)
+ *   4. AcceptRejectButtons → ./components/offers/AcceptRejectButtons.tsx (~60 linii)
+ *
  * offer-versioning-7RcU5:
  *   - Renders variants when offer has multiple options
  *   - Client can view each variant and compare totals

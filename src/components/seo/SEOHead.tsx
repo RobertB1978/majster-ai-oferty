@@ -78,6 +78,7 @@ export function SEOHead({
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={canonical} />
       <meta property="og:image" content={`${siteUrl}${ogImage}`} />
+      <meta property="og:image:alt" content={description} />
       <meta property="og:site_name" content="Majster.AI" />
       <meta property="og:locale" content={lang === 'en' ? 'en_US' : lang === 'uk' ? 'uk_UA' : 'pl_PL'} />
       

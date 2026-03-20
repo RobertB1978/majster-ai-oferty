@@ -25,7 +25,7 @@ interface Quote {
 interface V2ProjectPayload {
   user_id: string;
   title: string;
-  source_offer_id: null;
+  source_offer_id: string | null;
   total_from_offer: number | null;
   status: 'ACTIVE';
   progress_percent: 0;
@@ -40,6 +40,7 @@ function buildV2ProjectPayload(
   legacyProject: LegacyProject | null,
   quoteData: Quote | null,
   now: string,
+  offerId: string | null = null,
 ): V2ProjectPayload {
   const projectTitle = legacyProject?.project_name ?? 'Projekt z oferty';
   const totalFromOffer = quoteData?.total ?? null;
@@ -47,7 +48,7 @@ function buildV2ProjectPayload(
   return {
     user_id: userId,
     title: projectTitle,
-    source_offer_id: null, // luka schematu: offer_approvals nie ma FK do offers (PR-09)
+    source_offer_id: offerId, // PR-09-fix: teraz przekazujemy prawdziwe offers.id
     total_from_offer: totalFromOffer,
     status: 'ACTIVE',
     progress_percent: 0,
@@ -84,15 +85,26 @@ describe('Acceptance Bridge — buildV2ProjectPayload', () => {
     expect(result.title).toBe('Projekt z oferty');
   });
 
-  it('ustawia source_offer_id na null (luka schematu)', () => {
+  it('ustawia source_offer_id na offer_id gdy podane (PR-09-fix)', () => {
+    const OFFER_ID = 'offer-abc-123';
+    const result = buildV2ProjectPayload(
+      USER_ID,
+      { project_name: 'Projekt X' },
+      { total: 5000 },
+      NOW,
+      OFFER_ID,
+    );
+    // PR-09-fix: source_offer_id = offer_id z offer_approvals (FK do offers)
+    expect(result.source_offer_id).toBe(OFFER_ID);
+  });
+
+  it('ustawia source_offer_id na null gdy offer_id nie jest dostępne', () => {
     const result = buildV2ProjectPayload(
       USER_ID,
       { project_name: 'Projekt X' },
       { total: 5000 },
       NOW,
     );
-    // KLUCZOWE: offer_approvals nie ma FK do offers (PR-09)
-    // dlatego source_offer_id musi być null
     expect(result.source_offer_id).toBeNull();
   });
 

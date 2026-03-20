@@ -11,7 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { SearchInput } from '@/components/ui/search-input';
 import { PaginationControls } from '@/components/ui/pagination-controls';
-import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Users, Loader2 } from 'lucide-react';
+import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Users, Loader2, FileText, FolderKanban } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { ClientsGridSkeleton } from '@/components/ui/skeleton-screens';
 import { toast } from 'sonner';
 
@@ -314,6 +315,21 @@ export default function Clients() {
                       <span className="line-clamp-2">{client.address}</span>
                     </div>
                   )}
+                  {/* Nawigacja relacyjna: oferty i projekty tego klienta */}
+                  <div className="flex gap-2 pt-2 mt-2 border-t">
+                    <Button variant="ghost" size="sm" className="h-7 text-xs px-2" asChild>
+                      <Link to={`/app/offers?client=${encodeURIComponent(client.name)}`}>
+                        <FileText className="h-3 w-3 mr-1" />
+                        {t('clients.offers')}
+                      </Link>
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-7 text-xs px-2" asChild>
+                      <Link to={`/app/projects?client=${encodeURIComponent(client.name)}`}>
+                        <FolderKanban className="h-3 w-3 mr-1" />
+                        {t('clients.projects')}
+                      </Link>
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
