@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,65 +9,111 @@ import {
   Users,
   Database,
   Activity,
-  Server,
   Clock,
-  DollarSign,
   BarChart3,
   Timer,
-  TrendingUp
+  TrendingUp,
+  AlertCircle,
+  HelpCircle,
+  Loader2,
 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { AdminCronManager } from './AdminCronManager';
+import { supabase } from '@/integrations/supabase/client';
 
-interface AdminStats {
-  totalUsers: number;
-  activeProjects: number;
-  totalRevenue: number;
-  apiCalls: number;
-}
-
-// Mock data for admin dashboard
-const mockStats: AdminStats = {
-  totalUsers: 156,
-  activeProjects: 432,
-  totalRevenue: 125430,
-  apiCalls: 15678,
+// Plan colours for pie chart
+const PLAN_COLORS: Record<string, string> = {
+  free: '#94a3b8',
+  starter: '#3b82f6',
+  business: '#8b5cf6',
+  enterprise: '#f59e0b',
 };
 
-const mockUsageDataKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
-const mockUsageValues = [
-  { users: 45, projects: 12 },
-  { users: 52, projects: 18 },
-  { users: 48, projects: 15 },
-  { users: 61, projects: 22 },
-  { users: 55, projects: 20 },
-  { users: 32, projects: 8 },
-  { users: 28, projects: 5 },
-];
-
-const mockPlanDistribution = [
-  { name: 'Free', value: 85, color: '#94a3b8' },
-  { name: 'Starter', value: 42, color: '#3b82f6' },
-  { name: 'Business', value: 22, color: '#8b5cf6' },
-  { name: 'Enterprise', value: 7, color: '#f59e0b' },
-];
+function UnavailableCard({ label, reason }: { label: string; reason: string }) {
+  return (
+    <Card className="opacity-60">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground">{label}</p>
+            <p className="text-2xl font-bold text-muted-foreground">—</p>
+            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+              <HelpCircle className="h-3 w-3" />
+              {reason}
+            </p>
+          </div>
+          <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+            <AlertCircle className="h-6 w-6 text-muted-foreground" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export function AdminDashboard() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
 
-  const mockUsageData = mockUsageDataKeys.map((key, i) => ({
-    date: t(`admin.dashboard.${key}`),
-    ...mockUsageValues[i],
-  }));
+  // --- Real query: total users ---
+  const { data: usersCount, isLoading: usersLoading } = useQuery({
+    queryKey: ['admin-stats-users'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
 
-  const mockActivityData = [
-    { action: t('admin.dashboard.newUser'), user: 'jan.kowalski@example.com', time: t('admin.dashboard.minutesAgo', { count: 2 }) },
-    { action: t('admin.dashboard.newProject'), user: 'anna.nowak@example.com', time: t('admin.dashboard.minutesAgo', { count: 15 }) },
-    { action: t('admin.dashboard.upgradeToBusiness'), user: 'firma.xyz@example.com', time: t('admin.dashboard.hoursAgo', { count: 1 }) },
-    { action: t('admin.dashboard.apiCallAction'), user: 'api-key-xxx', time: t('admin.dashboard.hoursAgo', { count: 2 }) },
-    { action: t('admin.dashboard.offerAccepted'), user: 'klient@example.com', time: t('admin.dashboard.hoursAgo', { count: 3 }) },
-  ];
+  // --- Real query: total projects ---
+  const { data: projectsCount, isLoading: projectsLoading } = useQuery({
+    queryKey: ['admin-stats-projects'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('projects')
+        .select('*', { count: 'exact', head: true });
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  // --- Real query: plan distribution from user_subscriptions ---
+  const { data: planDistribution, isLoading: plansLoading } = useQuery({
+    queryKey: ['admin-stats-plans'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_subscriptions')
+        .select('plan_id')
+        .eq('status', 'active');
+      if (error) throw error;
+      const counts: Record<string, number> = {};
+      for (const row of data ?? []) {
+        const key = row.plan_id ?? 'free';
+        counts[key] = (counts[key] ?? 0) + 1;
+      }
+      return Object.entries(counts).map(([name, value]) => ({
+        name,
+        value,
+        color: PLAN_COLORS[name] ?? '#64748b',
+      }));
+    },
+  });
+
+  // --- Real query: recent activity from notifications ---
+  const { data: recentActivity, isLoading: activityLoading } = useQuery({
+    queryKey: ['admin-recent-activity'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('title, message, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
 
   return (
     <div className="space-y-6">
@@ -87,13 +134,18 @@ export function AdminDashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* REAL: total users */}
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">{t('admin.dashboard.users')}</p>
-                <p className="text-2xl font-bold">{mockStats.totalUsers}</p>
-                <p className="text-xs text-green-500">{t('admin.dashboard.thisWeek', { count: 12 })}</p>
+                {usersLoading ? (
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground mt-1" />
+                ) : (
+                  <p className="text-2xl font-bold">{usersCount?.toLocaleString() ?? '—'}</p>
+                )}
+                <p className="text-xs text-muted-foreground mt-1">{t('admin.dashboard.totalRegistered')}</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <Users className="h-6 w-6 text-primary" />
@@ -102,13 +154,18 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
 
+        {/* REAL: total projects */}
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">{t('admin.dashboard.activeProjects')}</p>
-                <p className="text-2xl font-bold">{mockStats.activeProjects}</p>
-                <p className="text-xs text-green-500">{t('admin.dashboard.thisMonth', { count: 45 })}</p>
+                {projectsLoading ? (
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground mt-1" />
+                ) : (
+                  <p className="text-2xl font-bold">{projectsCount?.toLocaleString() ?? '—'}</p>
+                )}
+                <p className="text-xs text-muted-foreground mt-1">{t('admin.dashboard.totalInDb')}</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                 <Database className="h-6 w-6 text-blue-600" />
@@ -117,35 +174,17 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{t('admin.dashboard.revenue')}</p>
-                <p className="text-2xl font-bold">{mockStats.totalRevenue.toLocaleString()} zł</p>
-                <p className="text-xs text-green-500">{t('admin.dashboard.vsPrevMonth', { percent: 8 })}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* HONEST: revenue not available */}
+        <UnavailableCard
+          label={t('admin.dashboard.revenue')}
+          reason={t('admin.dashboard.noBillingModule')}
+        />
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{t('admin.dashboard.apiCalls')}</p>
-                <p className="text-2xl font-bold">{mockStats.apiCalls.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">{t('admin.dashboard.today')}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                <Server className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* HONEST: api calls not available */}
+        <UnavailableCard
+          label={t('admin.dashboard.apiCalls')}
+          reason={t('admin.dashboard.noApiTracking')}
+        />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -162,8 +201,8 @@ export function AdminDashboard() {
 
         <TabsContent value="overview" className="space-y-6 mt-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Usage Chart */}
-            <Card>
+            {/* HONEST: weekly chart not available */}
+            <Card className="opacity-60">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
@@ -171,32 +210,15 @@ export function AdminDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <AreaChart data={mockUsageData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Area 
-                      type="monotone" 
-                      dataKey="users" 
-                      stroke="hsl(var(--primary))" 
-                      fill="hsl(var(--primary)/0.3)" 
-                      name={t('admin.dashboard.chartUsers')}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="projects" 
-                      stroke="hsl(var(--chart-2))" 
-                      fill="hsl(var(--chart-2)/0.3)" 
-                      name={t('admin.dashboard.chartProjects')}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <div className="flex flex-col items-center justify-center h-[250px] text-muted-foreground gap-2">
+                  <AlertCircle className="h-8 w-8" />
+                  <p className="text-sm font-medium">{t('admin.dashboard.noHistoricalData')}</p>
+                  <p className="text-xs text-center">{t('admin.dashboard.noHistoricalDataDesc')}</p>
+                </div>
               </CardContent>
             </Card>
 
-            {/* Plan Distribution */}
+            {/* REAL: plan distribution */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -205,38 +227,50 @@ export function AdminDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
-                    <Pie
-                      data={mockPlanDistribution}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {mockPlanDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                {plansLoading ? (
+                  <div className="flex items-center justify-center h-[250px]">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : !planDistribution || planDistribution.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-[250px] text-muted-foreground gap-2">
+                    <AlertCircle className="h-8 w-8" />
+                    <p className="text-sm">{t('admin.dashboard.noActiveSubscriptions')}</p>
+                  </div>
+                ) : (
+                  <>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <PieChart>
+                        <Pie
+                          data={planDistribution}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={80}
+                          dataKey="value"
+                        >
+                          {planDistribution.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="flex flex-wrap justify-center gap-4 mt-2">
+                      {planDistribution.map((plan) => (
+                        <div key={plan.name} className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: plan.color }} />
+                          <span className="text-sm">{plan.name}: {plan.value}</span>
+                        </div>
                       ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="flex flex-wrap justify-center gap-4 mt-4">
-                  {mockPlanDistribution.map((plan) => (
-                    <div key={plan.name} className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: plan.color }} />
-                      <span className="text-sm">{plan.name}: {plan.value}</span>
                     </div>
-                  ))}
-                </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
 
-          {/* Recent Activity */}
+          {/* REAL: recent activity from notifications */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -245,17 +279,35 @@ export function AdminDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {mockActivityData.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between py-2 border-b last:border-0">
-                    <div>
-                      <p className="font-medium">{item.action}</p>
-                      <p className="text-sm text-muted-foreground">{item.user}</p>
+              {activityLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : !recentActivity || recentActivity.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground gap-2">
+                  <Clock className="h-8 w-8 opacity-40" />
+                  <p className="text-sm">{t('admin.dashboard.noActivity')}</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentActivity.map((item, i) => (
+                    <div key={i} className="flex items-center justify-between py-2 border-b last:border-0">
+                      <div>
+                        <p className="font-medium">{item.title}</p>
+                        <p className="text-sm text-muted-foreground">{item.message}</p>
+                      </div>
+                      <span className="text-sm text-muted-foreground whitespace-nowrap">
+                        {new Date(item.created_at).toLocaleString('pl-PL', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
                     </div>
-                    <span className="text-sm text-muted-foreground">{item.time}</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -280,6 +332,7 @@ export function AdminDashboard() {
           </Card>
         </TabsContent>
 
+        {/* HONEST: system status unknown — no real health API */}
         <TabsContent value="system" className="mt-4">
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
@@ -287,17 +340,24 @@ export function AdminDashboard() {
                 <CardTitle>{t('admin.dashboard.systemStatus')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 p-3 flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                  <p className="text-sm text-amber-700 dark:text-amber-400">
+                    {t('admin.dashboard.statusUnknownNote')}
+                  </p>
+                </div>
                 {[
-                  { name: 'API Gateway', status: 'operational' },
-                  { name: t('admin.dashboard.database'), status: 'operational' },
-                  { name: t('admin.dashboard.edgeFunctions'), status: 'operational' },
-                  { name: 'Storage', status: 'operational' },
-                  { name: 'AI Services', status: 'operational' },
+                  { name: 'API Gateway' },
+                  { name: t('admin.dashboard.database') },
+                  { name: t('admin.dashboard.edgeFunctions') },
+                  { name: 'Storage' },
+                  { name: 'AI Services' },
                 ].map((service) => (
                   <div key={service.name} className="flex items-center justify-between">
                     <span>{service.name}</span>
-                    <Badge variant={service.status === 'operational' ? 'default' : 'destructive'}>
-                      {service.status === 'operational' ? t('admin.dashboard.operational') : t('admin.dashboard.problem')}
+                    <Badge variant="outline" className="text-muted-foreground">
+                      <HelpCircle className="h-3 w-3 mr-1" />
+                      {t('admin.dashboard.statusUnknown')}
                     </Badge>
                   </div>
                 ))}
@@ -309,11 +369,11 @@ export function AdminDashboard() {
                 <CardTitle>{t('admin.dashboard.alerts')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-950/30 rounded-lg">
-                  <Activity className="h-5 w-5 text-green-600" />
+                <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
+                  <HelpCircle className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="font-medium text-green-700 dark:text-green-400">{t('admin.dashboard.systemHealthy')}</p>
-                    <p className="text-sm text-green-600">{t('admin.dashboard.noActiveAlerts')}</p>
+                    <p className="font-medium text-muted-foreground">{t('admin.dashboard.alertsUnavailable')}</p>
+                    <p className="text-sm text-muted-foreground">{t('admin.dashboard.alertsUnavailableDesc')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -321,31 +381,17 @@ export function AdminDashboard() {
           </div>
         </TabsContent>
 
+        {/* HONEST: logs not available in frontend */}
         <TabsContent value="logs" className="mt-4">
           <Card>
             <CardHeader>
               <CardTitle>{t('admin.dashboard.systemLogs')}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="font-mono text-sm bg-muted rounded-lg p-4 max-h-96 overflow-auto">
-                {[
-                  { time: '12:45:23', level: 'INFO', message: 'User login successful: jan@example.com' },
-                  { time: '12:44:18', level: 'INFO', message: 'Project created: Remont łazienki' },
-                  { time: '12:43:55', level: 'INFO', message: 'Quote saved: 15,450 PLN' },
-                  { time: '12:42:30', level: 'WARN', message: 'Rate limit approaching for API key xxx' },
-                  { time: '12:41:12', level: 'INFO', message: 'Email sent: offer notification' },
-                  { time: '12:40:45', level: 'INFO', message: 'AI analysis completed for photo' },
-                  { time: '12:39:22', level: 'INFO', message: 'OCR invoice processed' },
-                  { time: '12:38:10', level: 'INFO', message: 'Offer approved by client' },
-                ].map((log, i) => (
-                  <div key={i} className="py-1 border-b border-border/50 last:border-0">
-                    <span className="text-muted-foreground">[{log.time}]</span>
-                    <span className={`ml-2 ${log.level === 'WARN' ? 'text-[hsl(var(--warning))]' : log.level === 'ERROR' ? 'text-red-500' : 'text-green-500'}`}>
-                      [{log.level}]
-                    </span>
-                    <span className="ml-2">{log.message}</span>
-                  </div>
-                ))}
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-3">
+                <AlertCircle className="h-10 w-10 opacity-40" />
+                <p className="font-medium">{t('admin.dashboard.logsUnavailable')}</p>
+                <p className="text-sm text-center max-w-sm">{t('admin.dashboard.logsUnavailableDesc')}</p>
               </div>
             </CardContent>
           </Card>

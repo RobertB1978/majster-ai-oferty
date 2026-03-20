@@ -44,7 +44,7 @@ export default function AdminAuditPage() {
                         {i === 0 && <Badge variant="default" className="text-xs">{t('adminAudit.current')}</Badge>}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {formatDateTime(v.timestamp, i18n.language)} · v{v.config.version}
+                        {t('adminAudit.versionLabel', { date: formatDateTime(v.timestamp, i18n.language), version: v.config.version })}
                       </p>
                     </div>
                     {i > 0 && (

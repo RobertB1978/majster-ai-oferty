@@ -1207,7 +1207,21 @@
       "sat": "Sb",
       "sun": "Nd",
       "database": "Baza danych",
-      "edgeFunctions": "Funkcje Edge"
+      "edgeFunctions": "Funkcje Edge",
+      "totalRegistered": "Łącznie zarejestrowanych",
+      "totalInDb": "Łącznie w bazie",
+      "noBillingModule": "Brak modułu płatności",
+      "noApiTracking": "Brak śledzenia wywołań",
+      "noHistoricalData": "Brak danych historycznych",
+      "noHistoricalDataDesc": "Śledzenie aktywności tygodniowej wymaga zdarzeń po stronie serwera",
+      "noActiveSubscriptions": "Brak aktywnych subskrypcji",
+      "statusUnknownNote": "Status usług jest nieznany — aplikacja nie ma dostępu do API monitorowania. Sprawdź status w panelu Supabase.",
+      "statusUnknown": "Nieznany",
+      "alertsUnavailable": "Alerty niedostępne",
+      "alertsUnavailableDesc": "Brak systemu monitorowania alertów w tej wersji",
+      "logsUnavailable": "Logi systemowe niedostępne",
+      "logsUnavailableDesc": "Logi serwera dostępne wyłącznie w panelu Supabase. Frontend nie ma dostępu do logów systemowych.",
+      "noActivity": "Brak aktywności w systemie powiadomień"
     },
     "users": "Użytkownicy",
     "theme": "Motyw",
@@ -1274,6 +1288,7 @@
     "baseSpacing": "Bazowy spacing",
     "contentEditor": "Edytor treści",
     "contentEditorDesc": "Edytuj teksty, opisy i treści wyświetlane w aplikacji",
+    "contentEditorLocalOnly": "Uwaga: treści zapisywane tylko lokalnie w tej przeglądarce (localStorage). Nie synchronizują się z innymi urządzeniami ani użytkownikami. Brak persystencji po stronie serwera.",
     "landingPage": "Landing",
     "heroTitle": "Tytuł główny (Hero)",
     "heroSubtitle": "Podtytuł",
@@ -1429,6 +1444,8 @@
       "exportAll": "Eksportuj wszystko (CSV)",
       "backup": "Backup bazy",
       "clearOld": "Wyczyść stare dane",
+      "storageUnavailable": "N/D",
+      "storageUnavailableDesc": "Dane storage niedostępne bez Supabase Management API",
       "tables": {
         "profiles": "Profile",
         "profilesDesc": "Profile użytkowników",
@@ -1514,7 +1531,8 @@
     "configHistoryDesc": "Wersje konfiguracji z możliwością przywrócenia (max 10)",
     "noHistory": "Brak historii zmian",
     "current": "Aktualna",
-    "restore": "Przywróć"
+    "restore": "Przywróć",
+    "versionLabel": "{{date}} · v{{version}}"
   },
   "configContext": {
     "invalidConfig": "Nieprawidłowa konfiguracja — przywrócono domyślną",

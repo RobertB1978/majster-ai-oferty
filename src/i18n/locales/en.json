@@ -1207,7 +1207,21 @@
       "sat": "Sat",
       "sun": "Sun",
       "database": "Database",
-      "edgeFunctions": "Edge Functions"
+      "edgeFunctions": "Edge Functions",
+      "totalRegistered": "Total registered",
+      "totalInDb": "Total in database",
+      "noBillingModule": "No billing module",
+      "noApiTracking": "No API tracking",
+      "noHistoricalData": "No historical data",
+      "noHistoricalDataDesc": "Weekly activity tracking requires server-side events",
+      "noActiveSubscriptions": "No active subscriptions",
+      "statusUnknownNote": "Service status is unknown — the app has no access to a monitoring API. Check status in the Supabase dashboard.",
+      "statusUnknown": "Unknown",
+      "alertsUnavailable": "Alerts unavailable",
+      "alertsUnavailableDesc": "No alerting system available in this version",
+      "logsUnavailable": "System logs unavailable",
+      "logsUnavailableDesc": "Server logs are only accessible in the Supabase dashboard. The frontend has no access to system logs.",
+      "noActivity": "No activity in the notification system"
     },
     "users": "Users",
     "theme": "Theme",
@@ -1272,6 +1286,7 @@
     "baseSpacing": "Base Spacing",
     "contentEditor": "Content Editor",
     "contentEditorDesc": "Edit texts, descriptions and content displayed in application",
+    "contentEditorLocalOnly": "Note: content is saved only locally in this browser (localStorage). It does not sync across devices or users. There is no server-side persistence.",
     "landingPage": "Landing",
     "heroTitle": "Hero Title",
     "heroSubtitle": "Subtitle",
@@ -1429,6 +1444,8 @@
       "exportAll": "Export all (CSV)",
       "backup": "Database backup",
       "clearOld": "Clear old data",
+      "storageUnavailable": "N/A",
+      "storageUnavailableDesc": "Storage data unavailable without Supabase Management API",
       "tables": {
         "profiles": "Profiles",
         "profilesDesc": "User profiles",
@@ -1514,7 +1531,8 @@
     "configHistoryDesc": "Config versions with rollback capability (max 10)",
     "noHistory": "No change history",
     "current": "Current",
-    "restore": "Restore"
+    "restore": "Restore",
+    "versionLabel": "{{date}} · v{{version}}"
   },
   "configContext": {
     "invalidConfig": "Invalid configuration — defaults restored",
