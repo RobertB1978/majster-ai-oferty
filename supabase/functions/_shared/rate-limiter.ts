@@ -36,11 +36,18 @@ const DEFAULT_CONFIG: RateLimitConfig = {
   windowMs: 60 * 1000,
 };
 
-// deno-lint-ignore no-explicit-any
+/** Minimal interface for the Supabase client methods used by the rate limiter. */
+interface RateLimitDbClient {
+  rpc(
+    fn: string,
+    args: Record<string, unknown>,
+  ): { single(): Promise<{ data: { allowed: boolean; current_count: number; reset_at: string } | null; error: { message: string } | null }> };
+}
+
 export async function checkRateLimit(
   identifier: string,
   endpoint: string,
-  supabaseClient?: unknown
+  supabaseClient?: RateLimitDbClient,
 ): Promise<RateLimitResult> {
   const config = RATE_LIMIT_CONFIGS[endpoint] || DEFAULT_CONFIG;
 
@@ -49,7 +56,7 @@ export async function checkRateLimit(
   }
   
   try {
-    const { data: result, error: rpcError } = await (supabaseClient as any)
+    const { data: result, error: rpcError } = await supabaseClient
       .rpc('check_and_increment_rate_limit', {
         p_identifier: identifier,
         p_endpoint: endpoint,
