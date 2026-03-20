@@ -65,6 +65,8 @@ jobs:
         run: npm ci
 
       - name: Run tests with coverage
+        # Coverage thresholds are enforced by vitest.config.ts (lines≥40%, branches≥34%, functions≥33%).
+        # If any threshold is breached this step fails and blocks merge. Do NOT add continue-on-error here.
         run: npm test -- --coverage
         timeout-minutes: 10
         env:
@@ -88,6 +90,14 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lcov-file: ./coverage/lcov.info
           delete-old-comments: true
+
+      - name: Upload coverage report artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
 
   # ========================================
   # JOB 3: Build

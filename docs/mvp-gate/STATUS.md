@@ -1,9 +1,34 @@
 # MVP Gate Status — PASS/FAIL/UNKNOWN
 
-**Last Updated**: 2026-02-20 (360° Enterprise Audit; session `claude/add-app-testing-audit-dSKf8`)
-**Evidence Date**: 2026-02-20
-**Latest Audit**: `docs/audit/AUDIT_REPORT_2026-02-20.md`
-**Latest Fix Commits**: `2f7d9ec` (HEAD) · `5099064` (P1-AI-LLM) · `bd14e62` (P0-CALENDAR-SELECT) · `ad2a555` (i18n) · `14ac892` (sitemap/i18n/id!) · `8aa30fb` (P0-CALENDAR hook) · `447f044` (P0-LOGOUT) · `d602a76` (P0-QUOTE)
+**Last Updated**: 2026-03-19 (Release discipline hardening; session `claude/setup-release-workflow-mBxfA`)
+**Evidence Date**: 2026-03-19
+**Previous Audit**: `docs/audit/AUDIT_REPORT_2026-02-20.md`
+**Latest Fix Commits**: `7c86e48` (offer delivery loop) · `da72c68` (billing validation) · `c1a1ef1` (sitemap env-driven) · `b9fa416` (i18n formatting utils) · `d3e90e6` (Reality Check phase 2) · `3fc745e` (retention 90d) · `49dbaeb` (Reality Check phase 1) · `1b952ad` (dark mode CSS vars)
+
+---
+
+## Release Discipline Update (2026-03-19)
+
+QA gates run on HEAD `7c86e48` (branch `claude/setup-release-workflow-mBxfA`):
+
+- `tsc --noEmit`: EXIT 0, 0 errors ✅
+- `npm run lint`: EXIT 0, 0 errors, 645 warnings (all `react-refresh/only-export-components`) ✅
+- `npm test -- --run --coverage`: **1380 passed, 5 skipped** (93 test files) ✅
+- Coverage baseline: lines 45.96%, branches 39.75%, functions 38.99%, statements 44.56%
+- Coverage thresholds: **dodane** (lines≥40%, branches≥34%, functions≥33%, statements≥39%) — thresholds PASS ✅
+- `npm run build`: Not run locally (CI verifies on every PR) ✅
+
+**Changes in this session:**
+1. `vitest.config.ts` — dodano thresholdy coverage + reporter lcov (PR comment)
+2. `docs/LAUNCH_CHECKLIST.md` — nowy autorytatywny launch gate (A/B/C/D/E sections)
+3. `docs/runbooks/RELEASE_RUNBOOK.md` — nowy runbook: release, hotfix, rollback, monitoring
+4. `docs/mvp-gate/STATUS.md` — zaktualizowane dane (ten dokument)
+
+**Owner Blockers nadal otwarte (bez zmian od 2026-02-20)**:
+- ⚠️ AI Provider Key (Supabase Secret) — wymagany przed launch
+- ⚠️ RESEND_API_KEY (Supabase Secret) — wymagany przed launch
+- ⚠️ GitHub Secrets dla CI/CD deploy
+- ⚠️ user_roles RLS — UNKNOWN, wymaga weryfikacji w Dashboard
 
 ---
 
