@@ -27,7 +27,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const { data: tasks = [], isLoading: tasksLoading } = useWorkTasks(projectId);
   const { data: teamMembers = [] } = useTeamMembers();
-  const { data: projects = [] } = useProjectsV2List('ALL', '', 0, 200);
+  const { data: projects = [] } = useProjectsV2List('ALL', '', 0, 50);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);

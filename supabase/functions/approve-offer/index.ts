@@ -6,8 +6,8 @@
 // Acceptance Bridge (PR-Ex2zp):
 //   Przy akceptacji oferty tworzy wpis w v2_projects (nowy UI).
 //   Legacy projects.status nadal aktualizowany (backward compat).
-//   source_offer_id = approval.id (offer_approvals.id) — stored as bridge reference.
-//   TODO(PR-09-fix): Add offer_id FK to offer_approvals table, then use actual offers.id.
+//   source_offer_id = approval.offer_id (offers.id) — poprawne FK do tabeli offers.
+//   Kolumna offer_id dodana w migracji 20260320100000_add_offer_id_to_offer_approvals.
 //   Idempotencja: offer_approvals.v2_project_id śledzi utworzony projekt.
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
@@ -26,7 +26,7 @@ import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
 // Wywołanie bezpieczne wielokrotnie — sprawdza v2_project_id przed tworzeniem.
 async function createAndLinkV2Project(
   supabase: ReturnType<typeof createClient>,
-  approval: { id: string; project_id: string; user_id: string; v2_project_id?: string | null },
+  approval: { id: string; project_id: string; user_id: string; offer_id?: string | null; v2_project_id?: string | null },
   now: string,
 ): Promise<string | null> {
   // Idempotencja: v2_project już istnieje
@@ -52,13 +52,14 @@ async function createAndLinkV2Project(
   const totalFromOffer = (quoteData as { total?: number } | null)?.total ?? null;
 
   // Wstaw do v2_projects
-  // source_offer_id = approval.id — offer_approvals.id używane jako identyfikator oferty
+  // source_offer_id = approval.offer_id — prawidłowe FK do offers(id)
+  // Gdy offer_id jest null (stare rekordy sprzed migracji), ustawiamy null (nullable FK)
   const { data: v2Project, error: v2InsertError } = await supabase
     .from('v2_projects')
     .insert({
       user_id: approval.user_id,
       title: projectTitle,
-      source_offer_id: approval.id,
+      source_offer_id: approval.offer_id ?? null,
       total_from_offer: totalFromOffer,
       status: 'ACTIVE',
       progress_percent: 0,
@@ -144,7 +145,7 @@ serve(async (req) => {
     // v2_project_id dodany przez Acceptance Bridge (PR-Ex2zp)
     const { data: approval, error: fetchError } = await supabase
       .from('offer_approvals')
-      .select('id, project_id, user_id, status, public_token, accept_token, expires_at, valid_until, approved_at, accepted_at, accepted_via, v2_project_id')
+      .select('id, project_id, user_id, offer_id, status, public_token, accept_token, expires_at, valid_until, approved_at, accepted_at, accepted_via, v2_project_id')
       .eq('public_token', token)
       .single();
 

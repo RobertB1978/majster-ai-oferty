@@ -7,11 +7,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { validateString } from "../_shared/validation.ts";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
 
 interface HealthCheckResult {
   status: 'healthy' | 'degraded' | 'unhealthy';
@@ -48,8 +44,10 @@ interface HealthCheckResult {
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsPreflightHeaders(req) });
   }
+
+  const corsHeaders = getCorsHeaders(req);
 
   // Parse query parameters (for future extensions like ?verbose=true)
   const url = new URL(req.url);
