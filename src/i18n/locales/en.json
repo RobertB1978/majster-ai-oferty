@@ -421,6 +421,8 @@
     "addressPlaceholder": "123 Main St, 00-001 Warsaw",
     "clearSearch": "Clear search",
     "saveChanges": "Save Changes",
+    "offers": "Offers",
+    "projects": "Projects",
     "toast": {
       "added": "Client added",
       "addError": "Error adding client",
