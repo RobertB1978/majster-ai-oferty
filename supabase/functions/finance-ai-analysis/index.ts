@@ -169,7 +169,7 @@ Wygeneruj szczegółową analizę i rekomendacje.`
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      return handleAIError(error);
+      return handleAIError(error, corsHeaders);
     }
     console.error("Error in finance-ai-analysis:", error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {

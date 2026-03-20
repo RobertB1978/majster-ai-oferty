@@ -186,7 +186,7 @@ Zasugeruj 5-8 dodatkowych pozycji do wyceny. Dla każdej podaj:
 
   } catch (error: unknown) {
     if (error instanceof Error) {
-      return handleAIError(error);
+      return handleAIError(error, corsHeaders);
     }
     console.error("Error in ai-quote-suggestions:", error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {

@@ -168,7 +168,7 @@ serve(async (req) => {
 
   } catch (error: unknown) {
     if (error instanceof Error) {
-      return handleAIError(error);
+      return handleAIError(error, corsHeaders);
     }
     console.error('Error in voice-quote-processor:', error);
     return new Response(

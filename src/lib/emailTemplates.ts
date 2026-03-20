@@ -65,8 +65,8 @@ export function generateOfferEmailBody(
 }
 
 /**
- * Generate email body with PDF link (for Phase 5C)
- * TODO: Add PDF link when Storage integration is ready
+ * Generate email body with PDF link.
+ * Gotowa do użycia — wymaga jedynie wywołania z URL z Supabase Storage.
  */
 export function generateOfferEmailBodyWithPdf(
   projectName: string,
