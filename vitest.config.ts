@@ -29,14 +29,14 @@ export default defineConfig({
         '**/*.d.ts',
         'src/integrations/supabase/types.ts',
       ],
-      // Conservative thresholds based on measured baseline (2026-03-19):
+      // Thresholds zbliżone do baseline (2026-03-19):
       // lines 45.96%, branches 39.75%, functions 38.99%, statements 44.56%
-      // Set 5pp below baseline so green day-1, but regressions are caught.
+      // Ustawione 2pp poniżej baseline — regresje łapane szybciej.
       thresholds: {
-        lines: 40,
-        branches: 34,
-        functions: 33,
-        statements: 39,
+        lines: 44,
+        branches: 37,
+        functions: 37,
+        statements: 42,
       },
     },
   },

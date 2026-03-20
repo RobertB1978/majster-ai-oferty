@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import Settings from '@/pages/Settings';
-import Billing from '@/pages/Billing';
+import Plan from '@/pages/Plan';
 import Admin from '@/pages/Admin';
 
 // Mock ResizeObserver for Recharts
@@ -74,6 +74,36 @@ vi.mock('@/hooks/useOrganizationAdmin', () => ({
   }),
 }));
 
+// Mock hooks used by Plan.tsx
+vi.mock('@/hooks/useSubscription', () => ({
+  useUserSubscription: () => ({
+    data: null,
+    isLoading: false,
+  }),
+}));
+
+vi.mock('@/hooks/useStripe', () => ({
+  useCreateCheckoutSession: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useCustomerPortal: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  STRIPE_PRICE_IDS: {},
+  isRealStripePriceId: () => false,
+  isStripeConfigured: () => false,
+}));
+
+vi.mock('@/contexts/ConfigContext', () => ({
+  useConfig: () => ({
+    config: {
+      plans: {
+        tiers: [
+          { id: 'free', name: 'billing.plans.free.name', price: 0, features: [], limits: { maxProjects: 3, maxClients: 5, maxTeamMembers: 0, maxStorageMB: 100 } },
+        ],
+      },
+    },
+    isLoading: false,
+  }),
+  ConfigProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: false },
@@ -101,8 +131,8 @@ describe('Typography Consistency - H1 Standardization', () => {
     expect(h1?.className).toContain('sm:text-3xl');
   });
 
-  it('Billing page H1 has responsive sizing (text-2xl sm:text-3xl)', () => {
-    const { container } = render(<Billing />, { wrapper: TestWrapper });
+  it('Plan page H1 has responsive sizing (text-2xl sm:text-3xl)', () => {
+    const { container } = render(<Plan />, { wrapper: TestWrapper });
 
     const h1 = container.querySelector('h1');
     expect(h1).toBeDefined();
@@ -127,7 +157,7 @@ describe('Typography Consistency - H1 Standardization', () => {
   it('all app page H1s use consistent font-weight (font-bold)', () => {
     const pages = [
       <Settings />,
-      <Billing />,
+      <Plan />,
       <Admin />,
     ];
 
