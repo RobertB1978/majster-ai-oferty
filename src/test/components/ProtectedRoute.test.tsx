@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
+import type { User } from '@supabase/supabase-js';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 // Mock AuthContext
@@ -10,12 +11,14 @@ vi.mock('@/contexts/AuthContext', () => ({
 
 import { useAuth } from '@/contexts/AuthContext';
 
+type AuthMock = ReturnType<typeof useAuth>;
+
 describe('ProtectedRoute', () => {
   it('renders children when user is authenticated', () => {
     vi.mocked(useAuth).mockReturnValue({
-      user: { id: 'user-1' } as any,
+      user: { id: 'user-1' } as User,
       isLoading: false,
-    } as any);
+    } as AuthMock);
 
     const { getByText } = render(
       <MemoryRouter initialEntries={['/app/dashboard']}>
@@ -34,7 +37,7 @@ describe('ProtectedRoute', () => {
     vi.mocked(useAuth).mockReturnValue({
       user: null,
       isLoading: false,
-    } as any);
+    } as AuthMock);
 
     const { container } = render(
       <MemoryRouter initialEntries={['/app/dashboard']}>
@@ -54,7 +57,7 @@ describe('ProtectedRoute', () => {
     vi.mocked(useAuth).mockReturnValue({
       user: null,
       isLoading: true,
-    } as any);
+    } as AuthMock);
 
     const { container } = render(
       <MemoryRouter initialEntries={['/app/dashboard']}>
