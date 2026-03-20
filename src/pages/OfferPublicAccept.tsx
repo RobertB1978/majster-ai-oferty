@@ -314,7 +314,7 @@ export default function OfferPublicAccept() {
   const daysLeft = differenceInDays(new Date(data.expires_at), new Date());
 
   // ── Variant logic ───────────────────────────────────────────────────────────
-  const hasVariants = data.variants.length > 1;
+  const hasVariants = data.variants.length > 0;
   const displayedVariantId = activeVariantId ?? (hasVariants ? data.variants[0]?.id : null);
 
   const displayedItems: OfferItem[] = hasVariants && displayedVariantId

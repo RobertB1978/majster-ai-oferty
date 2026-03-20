@@ -88,24 +88,25 @@ export interface UpdateProjectInput {
 
 export const projectsV2Keys = {
   all: ['v2_projects'] as const,
-  list: (status?: ProjectStatus | 'ALL', search?: string) =>
-    [...projectsV2Keys.all, 'list', status, search] as const,
+  list: (status?: ProjectStatus | 'ALL', search?: string, page?: number, pageSize?: number) =>
+    [...projectsV2Keys.all, 'list', status, search, page, pageSize] as const,
   detail: (id: string) => [...projectsV2Keys.all, 'detail', id] as const,
   token: (projectId: string) => [...projectsV2Keys.all, 'token', projectId] as const,
 };
 
 // ── List ──────────────────────────────────────────────────────────────────────
 
-export function useProjectsV2List(status: ProjectStatus | 'ALL' = 'ALL', search = '') {
+export function useProjectsV2List(status: ProjectStatus | 'ALL' = 'ALL', search = '', page = 0, pageSize = 50) {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: projectsV2Keys.list(status, search),
+    queryKey: projectsV2Keys.list(status, search, page, pageSize),
     queryFn: async (): Promise<ProjectV2[]> => {
       let query = supabase
         .from('v2_projects')
         .select('id, user_id, client_id, source_offer_id, title, status, start_date, end_date, progress_percent, stages_json, total_from_offer, budget_net, budget_source, budget_updated_at, created_at, updated_at')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(page * pageSize, (page + 1) * pageSize - 1);
 
       if (status !== 'ALL') {
         query = query.eq('status', status);

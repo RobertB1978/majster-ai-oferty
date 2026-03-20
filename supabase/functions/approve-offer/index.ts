@@ -6,7 +6,8 @@
 // Acceptance Bridge (PR-Ex2zp):
 //   Przy akceptacji oferty tworzy wpis w v2_projects (nowy UI).
 //   Legacy projects.status nadal aktualizowany (backward compat).
-//   source_offer_id = NULL — offer_approvals nie ma FK do tabeli offers (PR-09).
+//   source_offer_id = approval.id (offer_approvals.id) — stored as bridge reference.
+//   TODO(PR-09-fix): Add offer_id FK to offer_approvals table, then use actual offers.id.
 //   Idempotencja: offer_approvals.v2_project_id śledzi utworzony projekt.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -18,11 +19,7 @@ import {
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
 import { sanitizeUserInput } from "../_shared/sanitization.ts";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
 
 // ── Acceptance Bridge helper ─────────────────────────────────────────────────
 // Tworzy wpis w v2_projects z danych legacy projektu i zapisuje ID w offer_approvals.
@@ -55,13 +52,13 @@ async function createAndLinkV2Project(
   const totalFromOffer = (quoteData as { total?: number } | null)?.total ?? null;
 
   // Wstaw do v2_projects
-  // source_offer_id = NULL — luka schematu: offer_approvals nie ma FK do offers (PR-09)
+  // source_offer_id = approval.id — offer_approvals.id używane jako identyfikator oferty
   const { data: v2Project, error: v2InsertError } = await supabase
     .from('v2_projects')
     .insert({
       user_id: approval.user_id,
       title: projectTitle,
-      source_offer_id: null,
+      source_offer_id: approval.id,
       total_from_offer: totalFromOffer,
       status: 'ACTIVE',
       progress_percent: 0,
@@ -97,8 +94,9 @@ async function createAndLinkV2Project(
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: getCorsPreflightHeaders(req) });
   }
+  const corsHeaders = getCorsHeaders(req);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;

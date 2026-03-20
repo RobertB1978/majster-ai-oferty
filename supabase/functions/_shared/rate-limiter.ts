@@ -43,56 +43,38 @@ export async function checkRateLimit(
   supabaseClient?: unknown
 ): Promise<RateLimitResult> {
   const config = RATE_LIMIT_CONFIGS[endpoint] || DEFAULT_CONFIG;
-  const windowStart = new Date(Date.now() - config.windowMs);
-  
+
   if (!supabaseClient) {
     return { allowed: true, remaining: config.maxRequests, resetAt: new Date(Date.now() + config.windowMs) };
   }
   
   try {
-    // Clean old entries
-    await supabaseClient
-      .from('api_rate_limits')
-      .delete()
-      .lt('window_start', windowStart.toISOString());
-    
-    // Check current count
-    const { data: existing } = await supabaseClient
-      .from('api_rate_limits')
-      .select('request_count, window_start')
-      .eq('identifier', identifier)
-      .eq('endpoint', endpoint)
-      .gte('window_start', windowStart.toISOString())
+    const { data: result, error: rpcError } = await (supabaseClient as any)
+      .rpc('check_and_increment_rate_limit', {
+        p_identifier: identifier,
+        p_endpoint: endpoint,
+        p_max_requests: config.maxRequests,
+        p_window_ms: config.windowMs,
+      })
       .single();
-    
-    const currentCount = existing?.request_count || 0;
-    const resetAt = existing?.window_start 
-      ? new Date(new Date(existing.window_start).getTime() + config.windowMs)
-      : new Date(Date.now() + config.windowMs);
-    
-    if (currentCount >= config.maxRequests) {
-      console.warn(`Rate limit exceeded: ${identifier} on ${endpoint}`);
+
+    if (rpcError) throw rpcError;
+
+    const resetAt = result?.reset_at ? new Date(result.reset_at) : new Date(Date.now() + config.windowMs);
+    const currentCount = result?.current_count ?? 0;
+
+    if (!result?.allowed) {
+      console.warn(`Rate limit exceeded: ${identifier} on ${endpoint} (count: ${currentCount}/${config.maxRequests})`);
       return { allowed: false, remaining: 0, resetAt };
     }
-    
-    // Increment counter
-    if (existing) {
-      await supabaseClient
-        .from('api_rate_limits')
-        .update({ request_count: currentCount + 1 })
-        .eq('identifier', identifier)
-        .eq('endpoint', endpoint);
-    } else {
-      await supabaseClient
-        .from('api_rate_limits')
-        .insert({ identifier, endpoint, request_count: 1, window_start: new Date().toISOString() });
-    }
-    
-    return { allowed: true, remaining: config.maxRequests - currentCount - 1, resetAt };
+
+    return {
+      allowed: true,
+      remaining: Math.max(0, config.maxRequests - currentCount),
+      resetAt,
+    };
   } catch (error) {
     console.error('Rate limit error (DB unavailable) — failing closed for endpoint:', endpoint, error);
-    // Fail-closed: when the database is unavailable we cannot verify rate limits,
-    // so we deny the request to prevent abuse during outages.
     return { allowed: false, remaining: 0, resetAt: new Date(Date.now() + config.windowMs) };
   }
 }

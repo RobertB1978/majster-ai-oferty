@@ -164,10 +164,7 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-      // Increase chunk size warning limit for complex SPA (default is 500kb)
-      // After code splitting optimization, main bundle is ~1.5MB (458kb gzipped)
-      // This is acceptable for a feature-rich construction management SaaS
-      chunkSizeWarningLimit: 1500,
+      chunkSizeWarningLimit: 500,
     },
   };
 });
