@@ -102,11 +102,11 @@
     --gradient-primary-from: 38 92% 50%;
     --gradient-primary-to: 33 95% 44%;
 
-    /* Premium layered shadows — ambient + directional */
-    --shadow-sm: 0 1px 2px 0 hsl(220 13% 11% / 0.06);
-    --shadow-md: 0 2px 8px -1px hsl(220 13% 11% / 0.10), 0 1px 2px 0 hsl(220 13% 11% / 0.04);
-    --shadow-lg: 0 4px 16px -2px hsl(220 13% 11% / 0.12), 0 2px 4px -1px hsl(220 13% 11% / 0.06);
-    --shadow-xl: 0 8px 32px -4px hsl(220 13% 11% / 0.15), 0 4px 8px -2px hsl(220 13% 11% / 0.08);
+    /* Roadmap 3.3 — Shadow tokens (source of truth) */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04);
+    --shadow-xl: 0 20px 25px rgba(0,0,0,0.10), 0 10px 10px rgba(0,0,0,0.04);
     --shadow-glow: 0 1px 3px 0 hsl(30 90% 32% / 0.15), 0 0 0 1px hsl(30 90% 32% / 0.08);
     --shadow-vibrant: 0 2px 8px -1px hsl(30 90% 32% / 0.20), 0 1px 2px 0 hsl(30 90% 32% / 0.10);
     --shadow-card: 0 1px 3px 0 hsl(220 13% 11% / 0.08), 0 1px 2px -1px hsl(220 13% 11% / 0.05);
@@ -242,11 +242,11 @@
     --gradient-primary-from: 38 92% 50%;
     --gradient-primary-to: 33 95% 44%;
 
-    /* Dark mode shadows — richer depth */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 2px 8px -1px hsl(0 0% 0% / 0.40), 0 1px 2px 0 hsl(0 0% 0% / 0.20);
-    --shadow-lg: 0 4px 16px -2px hsl(0 0% 0% / 0.50), 0 2px 4px -1px hsl(0 0% 0% / 0.25);
-    --shadow-xl: 0 8px 32px -4px hsl(0 0% 0% / 0.60), 0 4px 8px -2px hsl(0 0% 0% / 0.30);
+    /* Roadmap 3.3 — Dark mode shadows (deeper for dark backgrounds) */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.24), 0 1px 2px rgba(0,0,0,0.16);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.22), 0 2px 4px rgba(0,0,0,0.16);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.25), 0 4px 6px rgba(0,0,0,0.16);
+    --shadow-xl: 0 20px 25px rgba(0,0,0,0.30), 0 10px 10px rgba(0,0,0,0.16);
     --shadow-glow: 0 1px 3px 0 hsl(38 92% 50% / 0.20), 0 0 0 1px hsl(38 92% 50% / 0.10);
     --shadow-vibrant: 0 2px 8px -1px hsl(38 92% 50% / 0.25), 0 1px 2px 0 hsl(38 92% 50% / 0.12);
     --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.30), 0 1px 2px -1px hsl(0 0% 0% / 0.20);
