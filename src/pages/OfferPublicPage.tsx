@@ -25,6 +25,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/formatters';
+import { trackEvent } from '@/lib/analytics/track';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import {
   fetchPublicOffer,
   acceptPublicOffer,
@@ -73,6 +75,7 @@ export default function OfferPublicPage() {
     if (offerQuery.data.client_name) setClientName(offerQuery.data.client_name);
     if (['accepted', 'approved'].includes(offerQuery.data.status)) setAccepted(true);
     void recordOfferViewed(token);
+    trackEvent(ANALYTICS_EVENTS.PUBLIC_OFFER_OPENED, { offerId: offerQuery.data.id });
   }, [offerQuery.data, token]);
 
   useEffect(() => {
@@ -233,7 +236,7 @@ export default function OfferPublicPage() {
             <Button
               variant="outline"
               size="sm"
-              className="mt-3 gap-2 print:hidden"
+              className="mt-3 gap-2 print:hidden min-h-[44px] min-w-[44px]"
               onClick={() => window.print()}
               aria-label={t('offerPublicPage.printAriaLabel')}
             >
@@ -442,6 +445,7 @@ export default function OfferPublicPage() {
                         variant="outline"
                         onClick={handleSendQuestion}
                         disabled={isSendingQuestion || questionText.trim().length < 3}
+                        className="min-h-[44px]"
                       >
                         {isSendingQuestion && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                         {t('offerPublicPage.sendQuestion')}
@@ -454,7 +458,7 @@ export default function OfferPublicPage() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setQuestionSent(false)}
-                    className="text-muted-foreground"
+                    className="text-muted-foreground min-h-[44px]"
                   >
                     {t('offerPublicPage.anotherQuestion')}
                   </Button>
