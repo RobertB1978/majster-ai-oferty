@@ -8,7 +8,7 @@
  * Sprint E: Add TemplateRecoveryCard + TemplateDetailSheet for full template continuity.
  */
 import { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Loader2, FileText, Sparkles, Eye } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -225,8 +225,17 @@ export default function OfferDetail() {
   // Sprint E: sheet state must be declared unconditionally (hooks rule)
   const [templateSheetOpen, setTemplateSheetOpen] = useState(false);
 
+  const [searchParams] = useSearchParams();
+  const draftId = searchParams.get('draft_id');
+
   const isNew = !id;
   const { data: meta, isLoading: metaLoading, isError: metaError } = useOfferMeta(id);
+
+  // §19.4 proof: log draft_id received from Quick Mode transition
+  if (isNew && draftId) {
+    // eslint-disable-next-line no-console
+    console.info('[Full Mode] received draft_id=%s from Quick Mode transition', draftId);
+  }
 
   if (isNew) {
     return (
