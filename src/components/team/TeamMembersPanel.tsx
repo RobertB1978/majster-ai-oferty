@@ -33,27 +33,30 @@ export function TeamMembersPanel() {
   };
 
   const handleSubmit = async () => {
-    if (!formData.name) return;
+    if (!formData.name.trim()) return;
 
-    if (editingId) {
-      await updateMember.mutateAsync({ id: editingId, ...formData });
-    } else {
-      await addMember.mutateAsync(formData);
+    try {
+      if (editingId) {
+        await updateMember.mutateAsync({ id: editingId, ...formData });
+      } else {
+        await addMember.mutateAsync(formData);
+      }
+      setIsOpen(false);
+      resetForm();
+    } catch {
+      // Error toast is handled by mutation hook
     }
-
-    setIsOpen(false);
-    resetForm();
   };
 
-  const handleEdit = (member: unknown) => {
+  const handleEdit = (member: Record<string, unknown>) => {
     setFormData({
-      name: member.name,
-      phone: member.phone || '',
-      email: member.email || '',
-      role: member.role,
-      is_active: member.is_active
+      name: String(member.name ?? ''),
+      phone: String(member.phone ?? ''),
+      email: String(member.email ?? ''),
+      role: String(member.role ?? 'worker'),
+      is_active: Boolean(member.is_active ?? true),
     });
-    setEditingId(member.id);
+    setEditingId(String(member.id));
     setIsOpen(true);
   };
 
@@ -146,7 +149,7 @@ export function TeamMembersPanel() {
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                       <span className="font-medium text-primary">
-                        {member.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        {member.name.split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase() || '?'}
                       </span>
                     </div>
                     <div>

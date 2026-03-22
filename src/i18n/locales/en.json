@@ -816,6 +816,7 @@
       "title": "Reply-to email",
       "unverified": "Unverified",
       "verified": "Verified",
+      "invalidEmail": "Invalid email address",
       "verifyPrompt": "Verify your email address so clients can reply to your offers.",
       "toast": {
         "saved": "Reply email saved. Check your inbox to verify it.",

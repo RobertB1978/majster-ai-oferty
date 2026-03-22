@@ -134,6 +134,16 @@ export default function QuickMode() {
   // Preview photos (previewUrl is local only — not stored in DraftPhoto)
   const [displayPhotos, setDisplayPhotos] = useState<PhotoCapturePhoto[]>([]);
 
+  // Cleanup blob URLs on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      setDisplayPhotos((prev) => {
+        prev.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+        return [];
+      });
+    };
+  }, []);
+
   // Text note — drives updateFieldCapture
   const [note, setNote] = useState('');
 

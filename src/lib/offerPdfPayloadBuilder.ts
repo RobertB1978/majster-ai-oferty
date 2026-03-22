@@ -174,11 +174,11 @@ export async function buildOfferPdfPayloadFromOffer(
     const vatRate = vatRates.length > 0 ? vatRates[0] : null;
     const isVatExempt = vatRate === null;
     const netTotal = overrideTotals?.net ?? items.reduce((s, it) => s + it.line_total_net, 0);
-    const vatAmount = overrideTotals?.vat ?? (isVatExempt ? 0 : items.reduce((s, it) => {
+    const vatAmount = overrideTotals?.vat ?? (isVatExempt ? 0 : Math.round(items.reduce((s, it) => {
       const r = it.vat_rate ?? 0;
       return s + Number(it.qty) * Number(it.unit_price_net) * (r / 100);
-    }, 0));
-    const grossTotal = overrideTotals?.gross ?? netTotal + vatAmount;
+    }, 0) * 100) / 100);
+    const grossTotal = overrideTotals?.gross ?? Math.round((netTotal + vatAmount) * 100) / 100;
 
     return {
       positions: items.map((it) => ({
@@ -189,8 +189,8 @@ export async function buildOfferPdfPayloadFromOffer(
         price: Number(it.unit_price_net),
         category: it.item_type === 'material' ? 'Materiał' : 'Robocizna',
       })),
-      summaryMaterials: items.filter((it) => it.item_type === 'material').reduce((s, it) => s + it.line_total_net, 0),
-      summaryLabor: items.filter((it) => it.item_type !== 'material').reduce((s, it) => s + it.line_total_net, 0),
+      summaryMaterials: Math.round(items.filter((it) => it.item_type === 'material').reduce((s, it) => s + it.line_total_net, 0) * 100) / 100,
+      summaryLabor: Math.round(items.filter((it) => it.item_type !== 'material').reduce((s, it) => s + it.line_total_net, 0) * 100) / 100,
       marginPercent: 0,
       total: netTotal,
       vatRate,
@@ -241,7 +241,7 @@ export async function buildOfferPdfPayloadFromOffer(
     quoteData = buildQuoteData(allItems, {
       net: rawOffer.total_net ?? allItems.reduce((s, it) => s + it.line_total_net, 0),
       vat: rawOffer.total_vat ?? 0,
-      gross: rawOffer.total_gross ?? rawOffer.total_net ?? 0,
+      gross: rawOffer.total_gross ?? ((rawOffer.total_net ?? 0) + (rawOffer.total_vat ?? 0)),
     });
   }
 

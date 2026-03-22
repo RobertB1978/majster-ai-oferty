@@ -112,7 +112,10 @@ export function useProjectsV2List(status: ProjectStatus | 'ALL' = 'ALL', search 
         query = query.eq('status', status);
       }
       if (search.trim()) {
-        query = query.ilike('title', `%${search.trim()}%`);
+        const sanitized = search.replace(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s-]/g, '').trim();
+        if (sanitized) {
+          query = query.ilike('title', `%${sanitized}%`);
+        }
       }
 
       const { data, error } = await query;

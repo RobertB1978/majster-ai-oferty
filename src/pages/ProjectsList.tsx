@@ -239,10 +239,13 @@ export default function ProjectsList() {
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteProject.isPending}
               onClick={() => {
                 if (archiveConfirmId) {
-                  deleteProject.mutate(archiveConfirmId);
-                  setArchiveConfirmId(null);
+                  deleteProject.mutate(archiveConfirmId, {
+                    onSuccess: () => setArchiveConfirmId(null),
+                    onError: () => setArchiveConfirmId(null),
+                  });
                 }
               }}
             >
