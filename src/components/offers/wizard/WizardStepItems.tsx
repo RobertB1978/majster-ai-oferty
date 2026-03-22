@@ -115,7 +115,7 @@ function ItemList({ items, onUpdate, onRemove }: ItemListProps) {
           </div>
           <div className="flex items-center justify-between">
             <p className="text-xs text-muted-foreground">
-              {t('offerWizard.itemsStep.lineTotal')}: <strong>{formatMoney(item.qty * item.unit_price_net, i18n.language)} zł</strong>
+              {t('offerWizard.itemsStep.lineTotal')}: <strong>{formatMoney(item.qty * item.unit_price_net, i18n.language)} {t('common.currencySymbol')}</strong>
             </p>
             <SaveToPriceBookButton
               name={item.name}
@@ -476,15 +476,15 @@ export function WizardStepItems({ form, onChange, errors }: Props) {
           )}
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t('common.net')}</span>
-            <span className="font-medium">{formatMoney(totals.total_net, i18n.language)} zł</span>
+            <span className="font-medium">{formatMoney(totals.total_net, i18n.language)} {t('common.currencySymbol')}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">VAT</span>
-            <span>{formatMoney(totals.total_vat, i18n.language)} zł</span>
+            <span>{formatMoney(totals.total_vat, i18n.language)} {t('common.currencySymbol')}</span>
           </div>
           <div className="flex justify-between border-t border-border pt-1 font-semibold">
             <span>{t('common.gross')}</span>
-            <span>{formatMoney(totals.total_gross, i18n.language)} zł</span>
+            <span>{formatMoney(totals.total_gross, i18n.language)} {t('common.currencySymbol')}</span>
           </div>
         </div>
       )}

@@ -180,29 +180,29 @@ export function CompanyDocuments() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Dokumenty firmowe
+              {t('documents.title')}
             </CardTitle>
             <CardDescription>
-              Uprawnienia, referencje, certyfikaty i polisy do załączenia do ofert
+              {t('documents.subtitle')}
             </CardDescription>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Dodaj dokument
+                {t('documents.add')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Dodaj nowy dokument</DialogTitle>
+                <DialogTitle>{t('documents.addNewDocument')}</DialogTitle>
                 <DialogDescription>
-                  Prześlij dokument, który będzie można załączać do ofert
+                  {t('documents.addDescription')}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div className="space-y-2">
-                  <Label>Typ dokumentu</Label>
+                  <Label>{t('documents.documentType')}</Label>
                   <Select
                     value={newDoc.document_type}
                     onValueChange={(val: string) => setNewDoc({ ...newDoc, document_type: val })}
@@ -224,7 +224,7 @@ export function CompanyDocuments() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Nazwa dokumentu</Label>
+                  <Label>{t('documents.documentName')}</Label>
                   <Input
                     value={newDoc.name}
                     onChange={(e) => setNewDoc({ ...newDoc, name: e.target.value })}
@@ -233,7 +233,7 @@ export function CompanyDocuments() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Opis (opcjonalnie)</Label>
+                  <Label>{t('documents.descriptionOptional')}</Label>
                   <Input
                     value={newDoc.description}
                     onChange={(e) => setNewDoc({ ...newDoc, description: e.target.value })}
@@ -257,17 +257,17 @@ export function CompanyDocuments() {
                   {isUploading ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Przesyłanie...
+                      {t('documents.uploading')}
                     </>
                   ) : (
                     <>
                       <Upload className="h-4 w-4 mr-2" />
-                      Wybierz plik i prześlij
+                      {t('documents.upload')}
                     </>
                   )}
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">
-                  Akceptowane formaty: PDF, JPG, PNG, DOC. Max 10MB
+                  {t('documents.acceptedFormats')}
                 </p>
               </div>
             </DialogContent>
@@ -278,9 +278,9 @@ export function CompanyDocuments() {
         {documents.length === 0 ? (
           <div className="text-center py-12">
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground mb-2">Brak dokumentów</p>
+            <p className="text-muted-foreground mb-2">{t('documents.noDocuments')}</p>
             <p className="text-sm text-muted-foreground">
-              Dodaj uprawnienia, referencje lub certyfikaty
+              {t('documents.noDocumentsHint')}
             </p>
           </div>
         ) : (

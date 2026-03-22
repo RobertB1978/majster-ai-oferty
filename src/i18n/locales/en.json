@@ -56,7 +56,14 @@
     "errorGeneric": "An error occurred. Please try again.",
     "offline": "Offline",
     "online": "Online",
-    "unknownError": "Unknown error"
+    "unknownError": "Unknown error",
+    "currencySymbol": "PLN",
+    "currencyCode": "PLN",
+    "material": "Material",
+    "labor": "Labor",
+    "service": "Service",
+    "vatLabel": "VAT 23%",
+    "month": "mo."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -3765,7 +3772,9 @@
     "statusBadgeDraft": "Draft",
     "shareLinkHint": "Copy and send to client — no login required",
     "noAcceptanceLinkNote": "Generate an acceptance link from the offer details (Send tab) to share with your client.",
-    "missingCompanyAlert": "Company profile is incomplete — the PDF will not contain company information. Complete it in Settings → Company Profile."
+    "missingCompanyAlert": "Company profile is incomplete — the PDF will not contain company information. Complete it in Settings → Company Profile.",
+    "nip": "Tax ID",
+    "tel": "Phone"
   },
   "acceptanceLink": {
     "panelTitle": "Client Acceptance Link",
@@ -4682,7 +4691,9 @@
   "offline": {
     "banner": "Offline mode — showing last cached data",
     "actionBlocked": "This action requires an internet connection",
-    "readOnlyNote": "You are viewing locally cached data. Go online to make changes."
+    "readOnlyNote": "You are viewing locally cached data. Go online to make changes.",
+    "title": "You are offline",
+    "description": "Some Majster.AI features are unavailable without an internet connection. Check your connection and try again."
   },
   "app": {
     "loading": "Starting application"
@@ -4780,7 +4791,20 @@
       "addError": "Error adding document",
       "deleted": "Document deleted",
       "deleteError": "Error deleting document"
-    }
+    },
+    "noDocuments": "No documents",
+    "addNewDocument": "Add new document",
+    "addDescription": "Upload a document that can be attached to offers",
+    "title": "Company documents",
+    "subtitle": "Credentials, references, certificates and policies to attach to offers",
+    "add": "Add",
+    "documentType": "Document type",
+    "documentName": "Document name",
+    "descriptionOptional": "Description (optional)",
+    "uploading": "Uploading...",
+    "upload": "Upload document",
+    "acceptedFormats": "Accepted formats: PDF, JPG, PNG (max 10 MB)",
+    "noDocumentsHint": "Add credentials, references or certificates"
   },
   "pushNotifications": {
     "title": "Push Notifications",
@@ -4894,7 +4918,8 @@
     "faq3a": "Yes, Majster.AI allows you to generate professional PDF offers with your company logo, cost items, and payment terms."
   },
   "notifications": {
-    "deleteNotification": "Delete notification"
+    "deleteNotification": "Delete notification",
+    "noNotifications": "No notifications"
   },
   "workTasks": {
     "unknownProject": "Unknown project",

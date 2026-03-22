@@ -247,7 +247,7 @@ export function BulkAddModal({ open, onClose, onAdd }: BulkAddModalProps) {
                             aria-invalid={row.priceError}
                           />
                           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                            zł
+                            {t('common.currencySymbol')}
                           </span>
                         </div>
                       </div>
