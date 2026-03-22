@@ -162,6 +162,18 @@ export function useUploadPhotoReport() {
 
       if (uploadError) throw uploadError;
 
+      // Extract image dimensions before inserting DB record
+      let imgWidth: number | null = null;
+      let imgHeight: number | null = null;
+      try {
+        const bmp = await createImageBitmap(compressed);
+        imgWidth = bmp.width;
+        imgHeight = bmp.height;
+        bmp.close();
+      } catch (_e) {
+        // Non-critical — dimensions remain null
+      }
+
       // Insert DB record with storage path (NOT a public URL)
       const { data, error } = await supabase
         .from('project_photos')
@@ -173,6 +185,8 @@ export function useUploadPhotoReport() {
           file_name: file.name,
           mime_type: compressed.type,
           size_bytes: compressedSize,
+          width: imgWidth,
+          height: imgHeight,
         })
         .select('id, project_id, user_id, phase, photo_url, file_name, mime_type, size_bytes, width, height, created_at')
         .single();

@@ -103,7 +103,7 @@ export function AiChatAgent() {
 
   useEffect(() => {
     if (transcript && !isListening) {
-      setInput(prev => prev + ' ' + transcript);
+      setInput(prev => (prev ? prev + ' ' : '') + transcript);
       resetTranscript();
     }
   }, [transcript, isListening, resetTranscript]);

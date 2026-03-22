@@ -46,6 +46,9 @@ export function checkEmailDeliveryConfig(config: {
   if (!frontendUrl) {
     return { valid: false, error: 'FRONTEND_URL is not set — offer links in emails would be broken' };
   }
+  if (!frontendUrl.startsWith('http://') && !frontendUrl.startsWith('https://')) {
+    return { valid: false, error: 'FRONTEND_URL must start with http:// or https://' };
+  }
 
   // Resend sandbox address — only delivers to the account owner's inbox
   if (senderEmail.endsWith('@resend.dev')) {
