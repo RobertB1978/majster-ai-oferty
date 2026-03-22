@@ -117,7 +117,7 @@ export async function buildOfferPdfPayloadFromOffer(
     .eq('offer_id', offerId)
     .maybeSingle();
   const acceptanceUrl = linkData?.token
-    ? `${window.location.origin}/a/${linkData.token}`
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/a/${linkData.token}`
     : undefined;
 
   const rawVariants: RawVariant[] = (variantsData ?? []) as RawVariant[];

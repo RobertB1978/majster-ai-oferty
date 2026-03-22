@@ -41,8 +41,12 @@ export function FinanceDashboard() {
   const canUseAiAnalysis = canUseFeature('ai');
 
   const handleRunAnalysis = async () => {
-    const result = await aiAnalysis.mutateAsync();
-    setAnalysisResult(result);
+    try {
+      const result = await aiAnalysis.mutateAsync();
+      setAnalysisResult(result);
+    } catch (_error) {
+      // Error handled by hook's onError
+    }
   };
 
   if (isLoading || !summary) {

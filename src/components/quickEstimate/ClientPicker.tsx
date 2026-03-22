@@ -43,15 +43,19 @@ export function ClientPicker({ value, onChange, hasError = false }: ClientPicker
 
   const handleAdd = async () => {
     if (!form.name.trim()) return;
-    const newClient = await addClient.mutateAsync({
-      name: form.name.trim(),
-      phone: form.phone.trim() || null,
-      email: form.email.trim() || null,
-      address: null,
-    });
-    onChange(newClient.id);
-    setShowAddDialog(false);
-    setForm({ name: '', phone: '', email: '' });
+    try {
+      const newClient = await addClient.mutateAsync({
+        name: form.name.trim(),
+        phone: form.phone.trim() || null,
+        email: form.email.trim() || null,
+        address: null,
+      });
+      onChange(newClient.id);
+      setShowAddDialog(false);
+      setForm({ name: '', phone: '', email: '' });
+    } catch (_error) {
+      // Error handled by hook's onError
+    }
   };
 
   const handleDialogClose = (open: boolean) => {

@@ -196,8 +196,12 @@ export default function ItemTemplates() {
 
   const handleDelete = async () => {
     if (deleteConfirmId) {
-      await deleteTemplate.mutateAsync(deleteConfirmId);
-      setDeleteConfirmId(null);
+      try {
+        await deleteTemplate.mutateAsync(deleteConfirmId);
+        setDeleteConfirmId(null);
+      } catch (_error) {
+        // Error handled by hook's onError
+      }
     }
   };
 
@@ -290,7 +294,7 @@ export default function ItemTemplates() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1 text-sm text-muted-foreground">
-                  <p>{template.default_qty} {template.unit} × {Number(template.default_price).toFixed(0)} zł</p>
+                  <p>{template.default_qty} {template.unit} × {Number(template.default_price).toFixed(2)} zł</p>
                   {template.description && (
                     <p className="text-xs line-clamp-2">{template.description}</p>
                   )}

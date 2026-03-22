@@ -150,16 +150,21 @@ export default function PdfGenerator() {
       return;
     }
 
-    await savePdfData.mutateAsync({
-      projectId: id!,
-      version,
-      title,
-      offer_text: offerText,
-      terms,
-      deadline_text: deadlineText,
-      vat_rate: vatRate,
-    });
-    
+    try {
+      await savePdfData.mutateAsync({
+        projectId: id!,
+        version,
+        title,
+        offer_text: offerText,
+        terms,
+        deadline_text: deadlineText,
+        vat_rate: vatRate,
+      });
+    } catch (_error) {
+      // Error handled by hook's onError
+      return;
+    }
+
     const printContent = printRef.current;
     if (!printContent) return;
 

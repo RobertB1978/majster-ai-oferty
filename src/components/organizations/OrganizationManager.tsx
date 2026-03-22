@@ -44,14 +44,17 @@ export function OrganizationManager() {
   const handleCreateOrg = async () => {
     if (!newOrgName.trim()) return;
     
-    await createOrg.mutateAsync({
-      name: newOrgName,
-      slug: newOrgSlug || newOrgName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-    });
-    
-    setIsCreateDialogOpen(false);
-    setNewOrgName('');
-    setNewOrgSlug('');
+    try {
+      await createOrg.mutateAsync({
+        name: newOrgName,
+        slug: newOrgSlug || newOrgName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+      });
+      setIsCreateDialogOpen(false);
+      setNewOrgName('');
+      setNewOrgSlug('');
+    } catch (_error) {
+      // Error handled by hook's onError
+    }
   };
 
   const getRoleIcon = (role: string) => {

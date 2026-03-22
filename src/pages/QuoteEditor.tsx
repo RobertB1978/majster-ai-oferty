@@ -135,14 +135,18 @@ export default function QuoteEditor() {
       return;
     }
 
-    await createTemplate.mutateAsync({
-      name: position.name,
-      unit: position.unit,
-      default_qty: position.qty,
-      default_price: position.price,
-      category: position.category,
-      description: '',
-    });
+    try {
+      await createTemplate.mutateAsync({
+        name: position.name,
+        unit: position.unit,
+        default_qty: position.qty,
+        default_price: position.price,
+        category: position.category,
+        description: '',
+      });
+    } catch (_error) {
+      // Error handled by hook's onError
+    }
   };
 
   const updatePosition = (positionId: string, field: keyof QuotePosition, value: unknown) => {

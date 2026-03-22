@@ -82,6 +82,12 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const isListeningRef = useRef(false);
 
+  // Keep callbacks in refs to avoid recreating recognition on every render
+  const onResultRef = useRef(onResult);
+  const onErrorRef = useRef(onError);
+  useEffect(() => { onResultRef.current = onResult; }, [onResult]);
+  useEffect(() => { onErrorRef.current = onError; }, [onError]);
+
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const supported = !!SpeechRecognition;
@@ -127,12 +133,12 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
 
         if (finalTranscript) {
           setTranscript(prev => (prev + ' ' + finalTranscript).trim());
-          onResult?.(finalTranscript, true);
+          onResultRef.current?.(finalTranscript, true);
         }
         
         setInterimTranscript(currentInterim);
         if (currentInterim) {
-          onResult?.(currentInterim, false);
+          onResultRef.current?.(currentInterim, false);
         }
       };
 
@@ -161,7 +167,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
         }
         
         toast.error(errorMessage);
-        onError?.(errorMessage);
+        onErrorRef.current?.(errorMessage);
       };
 
       recognition.onend = () => {
@@ -195,13 +201,13 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
         }
       }
     };
-  }, [language, continuous, interimResults, onResult, onError, t]);
+  }, [language, continuous, interimResults, t]);
 
   const startListening = useCallback(() => {
     if (!recognitionRef.current) {
       const errorMsg = t('voice.toast.notSupported');
       toast.error(errorMsg);
-      onError?.(errorMsg);
+      onErrorRef.current?.(errorMsg);
       return;
     }
 
@@ -212,7 +218,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
 
     try {
       recognitionRef.current.start();
-      
+
       if (browserSupport === 'partial') {
         toast.info(t('voice.toast.limitedMode'), {
           description: t('voice.toast.limitedModeDescription'),
@@ -223,7 +229,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
       setIsListening(false);
       isListeningRef.current = false;
     }
-  }, [browserSupport, onError, t]);
+  }, [browserSupport, t]);
 
   const stopListening = useCallback(() => {
     isListeningRef.current = false;

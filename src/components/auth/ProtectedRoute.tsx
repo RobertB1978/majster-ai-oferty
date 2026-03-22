@@ -27,8 +27,14 @@ export default function ProtectedRoute({
   const { user, isLoading } = useAuth();
   const location = useLocation();
 
-  // While auth state is being resolved, render nothing (AuthContext handles loading UI)
-  if (isLoading) return null;
+  // While auth state is being resolved, show minimal loading indicator
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   if (!user) {
     // Preserve the intended URL for post-login redirect

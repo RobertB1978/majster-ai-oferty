@@ -409,11 +409,8 @@ export async function completeAI(options: AIRequestOptions): Promise<AIResponse>
  * Helper to handle common AI error codes.
  * Accepts CORS headers from the caller (use getCorsHeaders(req) from cors.ts).
  */
-export function handleAIError(error: Error, corsHeaders?: Record<string, string>): Response {
-  const headers = corsHeaders ?? {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  };
+export function handleAIError(error: Error, corsHeaders: Record<string, string>): Response {
+  const headers = corsHeaders;
 
   if (error.message === 'RATE_LIMIT_EXCEEDED') {
     return new Response(

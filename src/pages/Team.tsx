@@ -82,17 +82,21 @@ export default function Team() {
       toast.error(t('errors.required'));
       return;
     }
-    
-    await addMember.mutateAsync({
-      name: newMember.name,
-      phone: newMember.phone || null,
-      email: newMember.email || null,
-      role: newMember.role,
-      is_active: true,
-    });
-    
-    setNewMember({ name: '', phone: '', email: '', role: 'worker' });
-    setIsDialogOpen(false);
+
+    try {
+      await addMember.mutateAsync({
+        name: newMember.name,
+        phone: newMember.phone || null,
+        email: newMember.email || null,
+        role: newMember.role,
+        is_active: true,
+      });
+
+      setNewMember({ name: '', phone: '', email: '', role: 'worker' });
+      setIsDialogOpen(false);
+    } catch (_error) {
+      // Error handled by hook's onError
+    }
   };
 
   const handleStartWork = (memberId: string, status: 'working' | 'traveling' | 'break' | 'idle') => {
@@ -105,14 +109,14 @@ export default function Team() {
             longitude: position.coords.longitude,
             status,
           });
-          toast.success(`${t('common.status')}: ${statusLabels[status]}`);
+          toast.success(t('team.statusChanged', { status: statusLabels[status] }));
         },
         (_error) => {
-          toast.error(t('errors.networkError'));
+          toast.error(t('team.geolocationError', 'Nie udało się pobrać lokalizacji'));
         }
       );
     } else {
-      toast.error(t('errors.networkError'));
+      toast.error(t('team.geolocationNotSupported', 'Geolokalizacja nie jest dostępna'));
     }
   };
 

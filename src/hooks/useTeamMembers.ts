@@ -96,6 +96,9 @@ export function useUpdateTeamMember() {
       queryClient.invalidateQueries({ queryKey: ['team_members'] });
       toast.success(t('team.toast.updated'));
     },
+    onError: () => {
+      toast.error(t('team.toast.updateError', 'Nie udało się zaktualizować członka zespołu'));
+    },
   });
 }
 
@@ -115,6 +118,9 @@ export function useDeleteTeamMember() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team_members'] });
       toast.success(t('team.toast.deleted'));
+    },
+    onError: () => {
+      toast.error(t('team.toast.deleteError', 'Nie udało się usunąć członka zespołu'));
     },
   });
 }

@@ -127,7 +127,11 @@ export default function CompanyProfile() {
       return;
     }
 
-    await uploadLogo.mutateAsync(file);
+    try {
+      await uploadLogo.mutateAsync(file);
+    } catch (_error) {
+      // Error handled by hook's onError
+    }
   };
 
   if (isLoading) {
