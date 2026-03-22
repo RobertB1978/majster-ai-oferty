@@ -304,7 +304,7 @@ export default function CompanyProfile() {
                           id="nip"
                           value={formData.nip}
                           onChange={(e) => setFormData({ ...formData, nip: e.target.value })}
-                          placeholder="1234567890"
+                          placeholder={t('companyProfile.nipPlaceholder')}
                           className={errors.nip ? 'border-destructive' : ''}
                         />
                         {errors.nip && (
@@ -352,7 +352,7 @@ export default function CompanyProfile() {
                           id="street"
                           value={formData.street}
                           onChange={(e) => setFormData({ ...formData, street: e.target.value })}
-                          placeholder="ul. Przykładowa 1"
+                          placeholder={t('companyProfile.streetPlaceholder')}
                           className={errors.street ? 'border-destructive' : ''}
                         />
                         {errors.street && (
@@ -378,7 +378,7 @@ export default function CompanyProfile() {
                           id="city"
                           value={formData.city}
                           onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                          placeholder="Warszawa"
+                          placeholder={t('companyProfile.cityPlaceholder')}
                           className={errors.city ? 'border-destructive' : ''}
                         />
                         {errors.city && (
@@ -392,7 +392,7 @@ export default function CompanyProfile() {
                           id="postal_code"
                           value={formData.postal_code}
                           onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
-                          placeholder="00-001"
+                          placeholder={t('companyProfile.postalCodePlaceholder')}
                           className={errors.postal_code ? 'border-destructive' : ''}
                         />
                         {errors.postal_code && (
@@ -450,7 +450,7 @@ export default function CompanyProfile() {
                           id="phone"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          placeholder="+48 123 456 789"
+                          placeholder={t('companyProfile.phonePlaceholder')}
                           className={errors.phone ? 'border-destructive' : ''}
                         />
                         {errors.phone && (

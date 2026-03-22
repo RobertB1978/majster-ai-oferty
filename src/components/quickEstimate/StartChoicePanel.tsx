@@ -73,6 +73,7 @@ export function StartChoicePanel({
                 size="icon"
                 className="h-6 w-6 -ml-1"
                 onClick={() => setStep('choice')}
+                aria-label={t('common.back')}
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>

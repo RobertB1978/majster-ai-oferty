@@ -196,7 +196,7 @@ export function AdminDatabaseManager() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" title={t('admin.db.export')}>
+                        <Button variant="ghost" size="icon" title={t('admin.db.export')} aria-label={t('admin.db.export')}>
                           <Download className="h-4 w-4" />
                         </Button>
                       </div>
