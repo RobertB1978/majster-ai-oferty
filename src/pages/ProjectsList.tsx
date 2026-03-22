@@ -184,7 +184,7 @@ export default function ProjectsList() {
                     {project.stages_json.length > 0 && (
                       <Badge className="shrink-0 bg-muted text-muted-foreground text-[11px] px-2 py-0.5 gap-1">
                         <LayoutList className="h-3 w-3" />
-                        {project.stages_json.length} etapów
+                        {t('projectsV2.stagesCount', { count: project.stages_json.length })}
                       </Badge>
                     )}
                   </div>

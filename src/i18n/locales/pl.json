@@ -3874,6 +3874,9 @@
     "statusActive": "Aktywny",
     "statusCompleted": "Zakończony",
     "statusOnHold": "Wstrzymany",
+    "stagesCount": "{{count}} etapów",
+    "starterPlanLabel": "Plan startowy · {{count}} etapów",
+    "templatePlanLabel": "{{trade}} · {{count}} etapów",
     "startDate": "Rozpoczęcie",
     "emptyTitle": "Brak projektów",
     "emptyDesc": "Utwórz projekt z zaakceptowanej oferty.",
@@ -4660,7 +4663,10 @@
       "complexity": "Złożoność",
       "starterNotes": "Notatki startowe",
       "materials": "Materiały",
-      "labor": "Robocizna"
+      "labor": "Robocizna",
+      "previewButton": "Podgląd szablonu",
+      "previewAriaLabel": "Podgląd szablonu {{name}}",
+      "itemsSummary": "{{materials}} materiałów · {{labor}} poz. robocizny"
     }
   },
   "offline": {

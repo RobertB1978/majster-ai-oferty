@@ -17,6 +17,7 @@ import { defaultTemplates, trades } from '@/data/defaultTemplates';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
+import { formatCurrency } from '@/lib/formatters';
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
 
@@ -41,7 +42,7 @@ const initialFormData: TemplateFormData = {
 const PAGE_SIZE = 20;
 
 export default function ItemTemplates() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'Materiał' | 'Robocizna'>('all');
@@ -294,7 +295,7 @@ export default function ItemTemplates() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1 text-sm text-muted-foreground">
-                  <p>{template.default_qty} {template.unit} × {Number(template.default_price).toFixed(2)} zł</p>
+                  <p>{template.default_qty} {template.unit} × {formatCurrency(Number(template.default_price), i18n.language)}</p>
                   {template.description && (
                     <p className="text-xs line-clamp-2">{template.description}</p>
                   )}
@@ -469,7 +470,7 @@ export default function ItemTemplates() {
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {template.default_qty} {template.unit} × {template.default_price} zł
+                        {template.default_qty} {template.unit} × {formatCurrency(Number(template.default_price), i18n.language)}
                         {template.description && ` • ${template.description}`}
                       </p>
                     </div>

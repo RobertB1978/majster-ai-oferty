@@ -3874,6 +3874,9 @@
     "statusActive": "Активний",
     "statusCompleted": "Завершений",
     "statusOnHold": "Призупинений",
+    "stagesCount": "{{count}} етапів",
+    "starterPlanLabel": "Стартовий план · {{count}} етапів",
+    "templatePlanLabel": "{{trade}} · {{count}} етапів",
     "startDate": "Початок",
     "emptyTitle": "Немає проєктів",
     "emptyDesc": "Створіть проєкт із прийнятої пропозиції.",
@@ -4660,7 +4663,10 @@
       "complexity": "Складність",
       "starterNotes": "Початкові нотатки",
       "materials": "Матеріали",
-      "labor": "Праця"
+      "labor": "Праця",
+      "previewButton": "Попередній перегляд шаблону",
+      "previewAriaLabel": "Попередній перегляд шаблону {{name}}",
+      "itemsSummary": "{{materials}} матеріалів · {{labor}} поз. праці"
     }
   },
   "offline": {

@@ -230,6 +230,7 @@ interface TemplateStagesNoteProps {
 }
 
 function TemplateStagesNote({ sourceOfferId, stagesCount }: TemplateStagesNoteProps) {
+  const { t } = useTranslation();
   // Hook must be called unconditionally (React hooks rule)
   const { data: sourceOffer } = useSourceOffer(sourceOfferId);
 
@@ -249,8 +250,8 @@ function TemplateStagesNote({ sourceOfferId, stagesCount }: TemplateStagesNotePr
       <LayoutList className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
       <span>
         {templatePack
-          ? `${templatePack.tradeName} · ${stagesCount} etapów`
-          : `Plan startowy · ${stagesCount} etapów`}
+          ? t('projectsV2.templatePlanLabel', { trade: templatePack.tradeName, count: stagesCount })
+          : t('projectsV2.starterPlanLabel', { count: stagesCount })}
       </span>
     </div>
   );

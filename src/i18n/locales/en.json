@@ -3874,6 +3874,9 @@
     "statusActive": "Active",
     "statusCompleted": "Completed",
     "statusOnHold": "On hold",
+    "stagesCount": "{{count}} stages",
+    "starterPlanLabel": "Starter plan · {{count}} stages",
+    "templatePlanLabel": "{{trade}} · {{count}} stages",
     "startDate": "Start",
     "emptyTitle": "No projects",
     "emptyDesc": "Create a project from an accepted offer.",
@@ -4660,7 +4663,10 @@
       "complexity": "Complexity",
       "starterNotes": "Starter notes",
       "materials": "Materials",
-      "labor": "Labour"
+      "labor": "Labour",
+      "previewButton": "Preview template",
+      "previewAriaLabel": "Preview template {{name}}",
+      "itemsSummary": "{{materials}} materials · {{labor}} labour items"
     }
   },
   "offline": {
