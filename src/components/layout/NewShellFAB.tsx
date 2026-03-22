@@ -8,6 +8,7 @@ import {
   DollarSign,
   CalendarPlus,
   X,
+  Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -19,6 +20,7 @@ interface FabAction {
 }
 
 const FAB_ACTIONS: FabAction[] = [
+  { id: 'quick-mode', labelKey: 'newShell.fab.quickMode', icon: Zap,         route: '/app/quick' },
   { id: 'new-offer',  labelKey: 'newShell.fab.newOffer',  icon: FileText,    route: '/app/offers/new' },
   { id: 'add-client', labelKey: 'newShell.fab.addClient', icon: Users,       route: '/app/customers' },
   { id: 'add-cost',   labelKey: 'newShell.fab.addCost',   icon: DollarSign,  route: '/app/finance' },

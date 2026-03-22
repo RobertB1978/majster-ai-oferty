@@ -282,13 +282,24 @@ export default function QuickMode() {
     if (!canTransitionToFull || transitioning) return;
     setTransitioning(true);
 
+    if (!draft) return;
+    const draftIdBefore = draft.id;
+
     const ok = transitionToFull();
     if (ok) {
+      // §19.4 proof: draft_id must be identical before and after transition
+      // eslint-disable-next-line no-console
+      console.info(
+        '[Quick→Full] draft_id before=%s after=%s identical=%s',
+        draftIdBefore,
+        draft.id,
+        draftIdBefore === draft.id,
+      );
+
       // Clear session storage after successful transition to avoid stale data
       clearSession();
-      // Navigate to the existing estimate workspace as Full Mode entry point.
-      // Full Mode UI expansion is a separate Gate deliverable.
-      navigate('/app/szybka-wycena', { replace: false });
+      // Navigate to Full Mode with draft_id as canonical identifier
+      navigate(`/app/offers/new?draft_id=${encodeURIComponent(draftIdBefore)}`, { replace: false });
     } else {
       setTransitioning(false);
     }
@@ -308,7 +319,7 @@ export default function QuickMode() {
   if (isHydrating || !draft) {
     return (
       <div className="flex items-center justify-center min-h-[200px]">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden />
+        <Loader2 className="h-6 w-6 animate-spin text-[var(--text-muted)]" aria-hidden />
       </div>
     );
   }
@@ -340,9 +351,9 @@ export default function QuickMode() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
 
-          <h1 className="flex items-center gap-2 text-lg font-bold leading-tight">
-            <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary">
-              <Zap className="h-3.5 w-3.5 text-primary-foreground" aria-hidden />
+          <h1 className="flex items-center gap-2 text-lg font-bold leading-tight text-[var(--text-primary)]">
+            <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-amber)]">
+              <Zap className="h-3.5 w-3.5 text-white" aria-hidden />
             </span>
             {t('quickMode.pageTitle')}
           </h1>
@@ -379,10 +390,10 @@ export default function QuickMode() {
           touch targets: min-h-[48px] on each input.
         */}
         <section
-          className="rounded-lg border border-border bg-card p-3 space-y-3"
+          className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-surface)] p-3 space-y-3"
           aria-label={t('quickMode.client.title')}
         >
-          <p className="text-sm font-semibold text-foreground">
+          <p className="text-sm font-semibold text-[var(--text-primary)]">
             {t('quickMode.client.title')}
           </p>
 
@@ -425,7 +436,7 @@ export default function QuickMode() {
           ── 4. CHECKLIST — dokumentacja klienta §0.4 ─────────────────────
           Uses ChecklistPanel from E1-C (read-only import — internals untouched).
         */}
-        <section className="rounded-lg border border-border bg-card p-3">
+        <section className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-surface)] p-3">
           <ChecklistPanel
             checklist={draft.checklist}
             onChange={handleChecklistChange}
@@ -440,14 +451,14 @@ export default function QuickMode() {
         Tooltip + inline hint explain what's still missing.
       */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 px-4 py-3 shadow-lg"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border-default)] bg-[var(--bg-base)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--bg-base)]/80 px-4 py-3 shadow-[var(--shadow-lg)]"
         data-testid="qm-cta-bar"
       >
         {/* Inline disabled hint — always visible, no tooltip required on mobile */}
         {!canTransitionToFull && ctaHint && (
           <p
             id="qm-cta-hint"
-            className="mb-2 flex items-start gap-1.5 text-xs text-muted-foreground"
+            className="mb-2 flex items-start gap-1.5 text-xs text-[var(--text-secondary)]"
             role="status"
             aria-live="polite"
             data-testid="qm-cta-hint"

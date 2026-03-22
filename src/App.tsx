@@ -282,6 +282,7 @@ const App = () => (
                     <Route path="szybka-wycena" element={<QuickEstimateWorkspace />} />
                     {/* Gate 1 Condition 1: Quick Mode — field data capture one-handed on mobile */}
                     <Route path="quick-mode" element={<QuickMode />} />
+                    <Route path="quick" element={<QuickMode />} />
                     <Route path="photos" element={<Photos />} />
                     <Route path="calendar" element={<Calendar />} />
                     <Route path="team" element={<Team />} />

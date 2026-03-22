@@ -100,13 +100,13 @@ describe('NewShellFAB — akcje w bottom sheet', () => {
     const dialog = screen.getByRole('dialog');
     expect(dialog).toBeDefined();
 
-    // Wewnątrz dialogu: 4 przyciski akcji + 1 przycisk zamknięcia = 5 przycisków łącznie
+    // Wewnątrz dialogu: 5 przycisków akcji + 1 przycisk zamknięcia = 6 przycisków łącznie
     const allButtons = screen.getAllByRole('button');
     // Odfiltruj FAB trigger (aria-expanded=true) i przycisk zamknięcia (aria-label zawiera "Zamknij")
     const actionButtons = allButtons.filter(
       btn => !btn.hasAttribute('aria-expanded') && btn.getAttribute('aria-label') !== 'Zamknij'
     );
-    expect(actionButtons.length).toBe(4);
+    expect(actionButtons.length).toBe(5);
   });
 });
 

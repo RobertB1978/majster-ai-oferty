@@ -3523,6 +3523,7 @@
     "fab": {
       "open": "Create",
       "sheetTitle": "Quick actions",
+      "quickMode": "Quick mode",
       "newOffer": "New offer",
       "voiceNote": "Voice note",
       "addClient": "Add client",
