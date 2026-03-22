@@ -114,9 +114,10 @@ export function PluginsPanel() {
 
     const plugin = plugins.find(p => p.id === pluginId);
     if (plugin) {
-      toast.success(plugin.enabled
-        ? t('plugins.toast.disabled', { name: t(plugin.nameKey) })
-        : t('plugins.toast.enabled', { name: t(plugin.nameKey) })
+      // After toggle, plugin.enabled reflects the OLD state
+      toast.success(!plugin.enabled
+        ? t('plugins.toast.enabled', { name: t(plugin.nameKey) })
+        : t('plugins.toast.disabled', { name: t(plugin.nameKey) })
       );
     }
 

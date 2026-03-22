@@ -68,24 +68,29 @@ export function initSentry() {
 
       // Filtruj wrażliwe dane
       beforeSend(event) {
-        // Usuń wrażliwe dane z breadcrumbs
-        if (event.breadcrumbs) {
-          event.breadcrumbs = event.breadcrumbs.map(breadcrumb => {
-            if (breadcrumb.data) {
-              // Usuń potencjalnie wrażliwe dane
-              delete breadcrumb.data.email;
-              delete breadcrumb.data.password;
-              delete breadcrumb.data.token;
-              delete breadcrumb.data.apiKey;
-            }
-            return breadcrumb;
-          });
-        }
+        try {
+          // Usuń wrażliwe dane z breadcrumbs
+          if (event.breadcrumbs) {
+            event.breadcrumbs = event.breadcrumbs.map(breadcrumb => {
+              if (breadcrumb.data) {
+                const data = { ...breadcrumb.data };
+                delete data.email;
+                delete data.password;
+                delete data.token;
+                delete data.apiKey;
+                return { ...breadcrumb, data };
+              }
+              return breadcrumb;
+            });
+          }
 
-        // Usuń wrażliwe dane z contextu
-        if (event.request?.headers) {
-          delete event.request.headers['Authorization'];
-          delete event.request.headers['Cookie'];
+          // Usuń wrażliwe dane z contextu
+          if (event.request?.headers) {
+            delete event.request.headers['Authorization'];
+            delete event.request.headers['Cookie'];
+          }
+        } catch {
+          // Return event unmodified if filtering fails
         }
 
         return event;

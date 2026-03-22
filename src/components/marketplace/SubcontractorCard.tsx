@@ -28,7 +28,7 @@ export function SubcontractorCard({ subcontractor, onViewDetails, onInvite }: Su
             ) : (
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="font-bold text-primary">
-                  {subcontractor.company_name[0].toUpperCase()}
+                  {(subcontractor.company_name || '?')[0].toUpperCase()}
                 </span>
               </div>
             )}

@@ -198,7 +198,8 @@ async function callOpenAICompatible(
     if (response.status === 402) {
       throw new Error('PAYMENT_REQUIRED');
     }
-    throw new Error(`${config.provider} API error: ${response.status} - ${errorText}`);
+    const sanitizedError = errorText.substring(0, 200).replace(/[a-zA-Z0-9_-]{20,}/g, '[REDACTED]');
+    throw new Error(`${config.provider} API error: ${response.status} - ${sanitizedError}`);
   }
 
   const data = await response.json();
@@ -306,7 +307,7 @@ async function callGemini(
   const model = config.model || DEFAULT_MODELS.gemini;
   const { contents, systemInstruction } = convertToGeminiFormat(options.messages);
 
-  const endpoint = `${API_ENDPOINTS.gemini}/${model}:generateContent?key=${config.apiKey}`;
+  const endpoint = `${API_ENDPOINTS.gemini}/${model}:generateContent`;
 
   const generationConfig: Record<string, unknown> = {
     maxOutputTokens: options.maxTokens || 2048,
@@ -338,6 +339,7 @@ async function callGemini(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'x-goog-api-key': config.apiKey,
     },
     body: JSON.stringify(body),
   });
