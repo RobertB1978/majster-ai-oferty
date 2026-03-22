@@ -145,10 +145,10 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
           {t('projectTimeline.title', { month: format(currentMonth, 'LLLL yyyy', { locale: dateLocale }) })}
         </CardTitle>
         <div className="flex gap-1">
-          <Button variant="outline" size="icon" onClick={() => onMonthChange(subMonths(currentMonth, 1))}>
+          <Button variant="outline" size="icon" onClick={() => onMonthChange(subMonths(currentMonth, 1))} aria-label={t('calendar.previousMonth')}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="icon" onClick={() => onMonthChange(addMonths(currentMonth, 1))}>
+          <Button variant="outline" size="icon" onClick={() => onMonthChange(addMonths(currentMonth, 1))} aria-label={t('calendar.nextMonth')}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

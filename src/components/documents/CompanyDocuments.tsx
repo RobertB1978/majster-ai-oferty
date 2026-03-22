@@ -322,6 +322,7 @@ export function CompanyDocuments() {
                       size="icon"
                       className="h-8 w-8"
                       onClick={() => window.open(doc.file_url, '_blank')}
+                      aria-label={t('common.view')}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -329,6 +330,7 @@ export function CompanyDocuments() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
+                      aria-label={t('common.download')}
                       onClick={() => {
                         const a = document.createElement('a');
                         a.href = doc.file_url;
@@ -342,6 +344,7 @@ export function CompanyDocuments() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive hover:text-destructive"
+                      aria-label={t('common.delete')}
                       onClick={() => deleteMutation.mutate(doc)}
                     >
                       <Trash2 className="h-4 w-4" />

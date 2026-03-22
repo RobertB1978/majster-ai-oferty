@@ -14,6 +14,7 @@ import type { ItemTemplate } from '@/hooks/useItemTemplates';
 import { ArrowLeft, BookOpen, FileText, Loader2, Package, Plus } from 'lucide-react';
 import { TradeCatalogPicker } from './TradeCatalogPicker';
 import type { StarterPack } from '@/data/starterPacks';
+import { formatCurrency } from '@/lib/formatters';
 
 type Step = 'choice' | 'templates' | 'catalog';
 
@@ -30,7 +31,7 @@ export function StartChoicePanel({
   onSelectPack,
   onEmptyStart,
 }: StartChoicePanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [step, setStep] = useState<Step>('choice');
   const [search, setSearch] = useState('');
   const { data: templates, isLoading } = useItemTemplates();
@@ -72,6 +73,7 @@ export function StartChoicePanel({
                 size="icon"
                 className="h-6 w-6 -ml-1"
                 onClick={() => setStep('choice')}
+                aria-label={t('common.back')}
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -176,7 +178,7 @@ export function StartChoicePanel({
                         <p className="font-medium text-sm">{template.name}</p>
                         <p className="text-xs text-muted-foreground">
                           {template.default_qty} {template.unit} ×{' '}
-                          {Number(template.default_price).toFixed(2)} zł
+                          {formatCurrency(Number(template.default_price), i18n.language)}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">

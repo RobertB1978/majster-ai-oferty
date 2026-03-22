@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { History, Plus, Check, Eye, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatCurrency } from '@/lib/formatters';
 
 interface QuoteVersionsPanelProps {
   projectId: string;
@@ -118,20 +119,20 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
                   <div>
                     <p className="text-sm font-medium">{version.version_name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(version.created_at).toLocaleString(i18n.language)} • {Number(version.quote_snapshot.total).toFixed(2)} zł
+                      {new Date(version.created_at).toLocaleString(i18n.language)} • {formatCurrency(Number(version.quote_snapshot.total), i18n.language)}
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handlePreview(version.quote_snapshot)}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handlePreview(version.quote_snapshot)} aria-label={t('quotes.previewVersion')}>
                     <Eye className="h-4 w-4" />
                   </Button>
                   {!version.is_active && (
                     <>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleSetActive(version.id)}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleSetActive(version.id)} aria-label={t('quotes.setActiveVersion')}>
                         <Check className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => setDeleteConfirmId(version.id)}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => setDeleteConfirmId(version.id)} aria-label={t('quotes.deleteVersion')}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </>
@@ -179,26 +180,26 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
                 {previewSnapshot.positions.map((pos, idx) => (
                   <div key={idx} className="flex justify-between rounded border p-2 text-sm">
                     <span>{pos.name}</span>
-                    <span>{pos.qty} {pos.unit} × {pos.price} zł = {(pos.qty * pos.price).toFixed(2)} zł</span>
+                    <span>{pos.qty} {pos.unit} × {formatCurrency(pos.price, i18n.language)} = {formatCurrency(pos.qty * pos.price, i18n.language)}</span>
                   </div>
                 ))}
               </div>
               <div className="border-t pt-4">
                 <div className="flex justify-between text-sm">
                   <span>{t('quotes.materials')}:</span>
-                  <span>{Number(previewSnapshot.summary_materials).toFixed(2)} zł</span>
+                  <span>{formatCurrency(Number(previewSnapshot.summary_materials), i18n.language)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>{t('quotes.labor')}:</span>
-                  <span>{Number(previewSnapshot.summary_labor).toFixed(2)} zł</span>
+                  <span>{formatCurrency(Number(previewSnapshot.summary_labor), i18n.language)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>{t('quotes.margin')} ({previewSnapshot.margin_percent}%):</span>
-                  <span>{((previewSnapshot.summary_materials + previewSnapshot.summary_labor) * previewSnapshot.margin_percent / 100).toFixed(2)} zł</span>
+                  <span>{formatCurrency((previewSnapshot.summary_materials + previewSnapshot.summary_labor) * previewSnapshot.margin_percent / 100, i18n.language)}</span>
                 </div>
                 <div className="mt-2 flex justify-between font-bold">
                   <span>{t('quotes.grandTotal')}:</span>
-                  <span>{Number(previewSnapshot.total).toFixed(2)} zł</span>
+                  <span>{formatCurrency(Number(previewSnapshot.total), i18n.language)}</span>
                 </div>
               </div>
             </div>

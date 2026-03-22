@@ -14,7 +14,8 @@
  * - Persists form fields to sessionStorage for within-session navigation.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { logger } from '@/lib/logger';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
@@ -213,7 +214,7 @@ export default function QuickMode() {
   // ── Photo handlers ──────────────────────────────────────────────────────
 
   // Null-safe photos array — draft is null during IDB hydration.
-  const currentPhotos = draft?.fieldCapture.photos ?? [];
+  const currentPhotos = useMemo(() => draft?.fieldCapture.photos ?? [], [draft?.fieldCapture.photos]);
 
   const handlePhotoAdd = useCallback(
     (file: File) => {
@@ -298,8 +299,7 @@ export default function QuickMode() {
     const ok = transitionToFull();
     if (ok) {
       // §19.4 proof: draft_id must be identical before and after transition
-      // eslint-disable-next-line no-console
-      console.info(
+      logger.info(
         '[Quick→Full] draft_id before=%s after=%s identical=%s',
         draftIdBefore,
         draft.id,
@@ -313,7 +313,7 @@ export default function QuickMode() {
     } else {
       setTransitioning(false);
     }
-  }, [canTransitionToFull, transitioning, transitionToFull, navigate]);
+  }, [canTransitionToFull, transitioning, transitionToFull, navigate, draft, clearSession]);
 
   // ── Derive CTA hint text ────────────────────────────────────────────────
 

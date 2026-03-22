@@ -110,7 +110,6 @@ export default function Landing() {
         <meta property="og:description" content={t('seo.landing.ogDescription')} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={SITE_URL} />
-        {/* TODO: Zamień na dedykowany plik og-image.png (1200x630) gdy będzie gotowy */}
         <meta property="og:image" content={`${SITE_URL}/icon-512.png`} />
         <meta property="og:image:width" content="512" />
         <meta property="og:image:height" content="512" />

@@ -8,7 +8,7 @@ import { useQuote } from '@/hooks/useQuotes';
 import { usePdfData, useSavePdfData } from '@/hooks/usePdfData';
 import { useProfile } from '@/hooks/useProfile';
 import { generateDocumentId } from '@/lib/offerDataBuilder';
-import { formatDate } from '@/lib/formatters';
+import { formatDate, formatCurrency } from '@/lib/formatters';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -403,8 +403,8 @@ export default function PdfGenerator() {
                       <tr key={pos.id} className="border-b border-border">
                         <td className="p-3">{pos.name}</td>
                         <td className="p-3">{pos.qty} {pos.unit}</td>
-                        <td className="p-3">{pos.price.toFixed(2)} zł</td>
-                        <td className="p-3 text-right">{(pos.qty * pos.price).toFixed(2)} zł</td>
+                        <td className="p-3">{formatCurrency(pos.price, i18n.language)}</td>
+                        <td className="p-3 text-right">{formatCurrency(pos.qty * pos.price, i18n.language)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -420,35 +420,35 @@ export default function PdfGenerator() {
                 <div className="mb-6 rounded-lg bg-muted p-4">
                   <div className="mb-2 flex justify-between">
                     <span>{t('pdfGenerator.materialsLabel')}</span>
-                    <span>{Number(quote.summary_materials || 0).toFixed(2)} zł</span>
+                    <span>{formatCurrency(Number(quote.summary_materials || 0), i18n.language)}</span>
                   </div>
                   <div className="mb-2 flex justify-between">
                     <span>{t('pdfGenerator.laborLabel')}</span>
-                    <span>{Number(quote.summary_labor || 0).toFixed(2)} zł</span>
+                    <span>{formatCurrency(Number(quote.summary_labor || 0), i18n.language)}</span>
                   </div>
                   <div className="mb-2 flex justify-between">
                     <span>{t('pdfGenerator.marginLabel', { percent: quote.margin_percent || 0 })}</span>
-                    <span>{((Number(quote.summary_materials || 0) + Number(quote.summary_labor || 0)) * Number(quote.margin_percent || 0) / 100).toFixed(2)} zł</span>
+                    <span>{formatCurrency((Number(quote.summary_materials || 0) + Number(quote.summary_labor || 0)) * Number(quote.margin_percent || 0) / 100, i18n.language)}</span>
                   </div>
                   {vatRate === null ? (
                     <div className="mt-3 flex justify-between border-t border-border pt-3 text-lg font-bold">
                       <span>{t('pdfGenerator.totalLabel')}</span>
-                      <span className="text-primary">{Number(quote.total || 0).toFixed(2)} zł</span>
+                      <span className="text-primary">{formatCurrency(Number(quote.total || 0), i18n.language)}</span>
                     </div>
                   ) : (
                     <>
                       <div className="mt-3 border-t border-border pt-3 space-y-1 text-sm">
                         <div className="flex justify-between">
                           <span>{t('pdfGenerator.netLabel')}</span>
-                          <span>{Number(quote.total || 0).toFixed(2)} zł</span>
+                          <span>{formatCurrency(Number(quote.total || 0), i18n.language)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>{t('pdfGenerator.vatAmountLabel', { percent: vatRate })}</span>
-                          <span>{(Number(quote.total || 0) * vatRate / 100).toFixed(2)} zł</span>
+                          <span>{formatCurrency(Number(quote.total || 0) * vatRate / 100, i18n.language)}</span>
                         </div>
                         <div className="flex justify-between font-bold text-lg">
                           <span>{t('pdfGenerator.grossLabel')}</span>
-                          <span className="text-primary">{(Number(quote.total || 0) * (1 + vatRate / 100)).toFixed(2)} zł</span>
+                          <span className="text-primary">{formatCurrency(Number(quote.total || 0) * (1 + vatRate / 100), i18n.language)}</span>
                         </div>
                       </div>
                     </>
