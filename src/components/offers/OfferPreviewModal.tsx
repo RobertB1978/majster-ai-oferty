@@ -509,7 +509,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                           <Button
                             variant="outline"
                             size="sm"
-                            className="flex-1"
+                            className="flex-1 min-h-[44px]"
                             onClick={handleCopyLink}
                           >
                             {linkCopied ? (
@@ -549,11 +549,12 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
           </div>
 
           {/* Sticky footer actions */}
-          <div className="sticky bottom-0 bg-background border-t px-6 py-4 flex justify-between gap-3">
+          <div className="sticky bottom-0 bg-background border-t px-4 sm:px-6 py-4 flex flex-wrap justify-between gap-2 sm:gap-3">
             <Button
               variant="outline"
               onClick={onClose}
               disabled={sendOffer.isPending}
+              className="min-h-[44px]"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               {t('offerPreview.backToEdit')}
@@ -564,6 +565,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                 variant="outline"
                 onClick={handleDownloadPdf}
                 disabled={isPdfGenerating || isLoading || !data}
+                className="min-h-[44px]"
               >
                 {isPdfGenerating ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -577,6 +579,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                 <Button
                   onClick={handleSend}
                   disabled={sendOffer.isPending || isLoading || !data}
+                  className="min-h-[44px]"
                 >
                   {sendOffer.isPending ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
