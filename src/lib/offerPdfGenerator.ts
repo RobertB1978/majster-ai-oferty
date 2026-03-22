@@ -150,8 +150,18 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   const monoFont = registerJetBrainsMono(doc);
 
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
   const margin = PDF_MARGIN;
+  const FOOTER_ZONE = 18; // mm reserved for footer (line + text + padding)
   let yPosition = margin;
+
+  /** Ensure at least `needed` mm of space before footer zone; adds new page if not. */
+  function ensureSpace(needed: number): void {
+    if (yPosition + needed > pageHeight - FOOTER_ZONE) {
+      doc.addPage();
+      yPosition = margin;
+    }
+  }
 
   // Resolve template theme
   const templateId = payload.pdfConfig.templateId ?? 'classic';
@@ -350,6 +360,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   // ========================================
 
   if (payload.client) {
+    ensureSpace(30); // client block needs ~30mm
     doc.setFontSize(FONT_SIZES.md);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
@@ -389,6 +400,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   // ========================================
 
   if (payload.pdfConfig.offerText) {
+    ensureSpace(15); // at least one line + padding
     doc.setFontSize(FONT_SIZES.base);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
@@ -421,6 +433,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     }
 
     // Section header (variant label or default "Pozycje wyceny")
+    ensureSpace(20); // heading + at least first table row
     doc.setFontSize(FONT_SIZES.lg);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
@@ -494,6 +507,10 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     });
 
     yPosition = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 6;
+
+    // Ensure summary box fits on current page (avoid splitting across pages)
+    const summaryEstimate = quote.isVatExempt ? 28 : 38;
+    ensureSpace(summaryEstimate);
 
     // Summary
     const summaryX = pageWidth - margin - 72;
@@ -606,6 +623,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   // ========================================
 
   if (payload.pdfConfig.terms) {
+    ensureSpace(20); // section heading + at least one line
     doc.setFontSize(FONT_SIZES.md);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
@@ -627,6 +645,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   // ========================================
 
   if (payload.pdfConfig.deadlineText) {
+    ensureSpace(12);
     doc.setFontSize(FONT_SIZES.base);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
@@ -639,12 +658,8 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   // SIGNATURE SECTION
   // ========================================
 
-  const pageHeight = doc.internal.pageSize.getHeight();
-  // If there's not enough space for the signature block (~55mm), start a new page
-  if (yPosition + 55 > pageHeight - 25) {
-    doc.addPage();
-    yPosition = margin;
-  }
+  // Ensure enough space for signature block (~55mm)
+  ensureSpace(55);
 
   yPosition += 12;
 
