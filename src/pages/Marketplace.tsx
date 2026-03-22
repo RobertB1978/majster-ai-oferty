@@ -55,7 +55,7 @@ export default function Marketplace() {
 
   const handleAddSubcontractor = async () => {
     if (!newSubcontractor.company_name.trim()) {
-      toast.error(t('marketplacePage.companyNameLabel'));
+      toast.error(t('marketplacePage.companyNameRequired', 'Nazwa firmy jest wymagana'));
       return;
     }
     
@@ -68,7 +68,7 @@ export default function Marketplace() {
       location_city: newSubcontractor.location_city || null,
       location_lat: null,
       location_lng: null,
-      hourly_rate: newSubcontractor.hourly_rate ? Number(newSubcontractor.hourly_rate) : null,
+      hourly_rate: newSubcontractor.hourly_rate !== '' ? Number(newSubcontractor.hourly_rate) : null,
       is_public: newSubcontractor.is_public,
       avatar_url: null,
       portfolio_images: [],

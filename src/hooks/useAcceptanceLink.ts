@@ -69,7 +69,7 @@ export function useCreateAcceptanceLink(offerId: string) {
             offer_id: offerId,
             // token and expires_at use DB defaults (gen_random_uuid, now+30d)
           },
-          { onConflict: 'offer_id', ignoreDuplicates: true }
+          { onConflict: 'offer_id', ignoreDuplicates: false }
         )
         .select('id, offer_id, token, expires_at, created_at')
         .single();
