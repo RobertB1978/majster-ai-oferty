@@ -223,9 +223,13 @@ export function AiChatAgent() {
 
   const handleDeleteSession = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    await deleteChatSession.mutateAsync(id);
-    if (id === sessionId) {
-      startNewSession();
+    try {
+      await deleteChatSession.mutateAsync(id);
+      if (id === sessionId) {
+        startNewSession();
+      }
+    } catch (_error) {
+      // Error handled by hook's onError
     }
   };
 

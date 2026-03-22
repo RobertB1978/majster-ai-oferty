@@ -88,8 +88,12 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
   );
 
   const handleSkip = async () => {
-    await skipOnboarding.mutateAsync();
-    onClose();
+    try {
+      await skipOnboarding.mutateAsync();
+      onClose();
+    } catch (_error) {
+      // Error handled by hook's onError
+    }
   };
 
   const handleGoToStep = (stepId: number) => {

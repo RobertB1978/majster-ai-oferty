@@ -17,7 +17,7 @@ interface QuoteVersionsPanelProps {
 }
 
 export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }: QuoteVersionsPanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: versions, isLoading } = useQuoteVersions(projectId);
   const createVersion = useCreateQuoteVersion();
   const setActive = useSetActiveVersion();
@@ -35,19 +35,26 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
       return;
     }
 
-    await createVersion.mutateAsync({
-      projectId,
-      versionName: versionName.trim(),
-      snapshot: currentSnapshot,
-      setActive: true,
-    });
-
-    setShowSaveDialog(false);
-    setVersionName('');
+    try {
+      await createVersion.mutateAsync({
+        projectId,
+        versionName: versionName.trim(),
+        snapshot: currentSnapshot,
+        setActive: true,
+      });
+      setShowSaveDialog(false);
+      setVersionName('');
+    } catch (_error) {
+      // Error handled by hook's onError
+    }
   };
 
   const handleSetActive = async (versionId: string) => {
-    await setActive.mutateAsync({ projectId, versionId });
+    try {
+      await setActive.mutateAsync({ projectId, versionId });
+    } catch (_error) {
+      // Error handled by hook's onError
+    }
   };
 
   const handlePreview = (snapshot: QuoteSnapshot) => {
@@ -57,8 +64,12 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
 
   const handleDelete = async () => {
     if (deleteConfirmId) {
-      await deleteVersion.mutateAsync({ projectId, versionId: deleteConfirmId });
-      setDeleteConfirmId(null);
+      try {
+        await deleteVersion.mutateAsync({ projectId, versionId: deleteConfirmId });
+        setDeleteConfirmId(null);
+      } catch (_error) {
+        // Error handled by hook's onError
+      }
     }
   };
 
@@ -107,7 +118,7 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
                   <div>
                     <p className="text-sm font-medium">{version.version_name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(version.created_at).toLocaleString()} • {Number(version.quote_snapshot.total).toFixed(2)} zł
+                      {new Date(version.created_at).toLocaleString(i18n.language)} • {Number(version.quote_snapshot.total).toFixed(2)} zł
                     </p>
                   </div>
                 </div>

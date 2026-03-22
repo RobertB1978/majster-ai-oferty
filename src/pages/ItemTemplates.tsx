@@ -196,8 +196,12 @@ export default function ItemTemplates() {
 
   const handleDelete = async () => {
     if (deleteConfirmId) {
-      await deleteTemplate.mutateAsync(deleteConfirmId);
-      setDeleteConfirmId(null);
+      try {
+        await deleteTemplate.mutateAsync(deleteConfirmId);
+        setDeleteConfirmId(null);
+      } catch (_error) {
+        // Error handled by hook's onError
+      }
     }
   };
 

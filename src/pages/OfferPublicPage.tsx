@@ -37,7 +37,7 @@ import {
 } from '@/lib/publicOfferApi';
 
 export default function OfferPublicPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { token } = useParams<{ token: string }>();
 
   const [offer, setOffer] = useState<PublicOfferData | null>(null);
@@ -168,7 +168,7 @@ export default function OfferPublicPage() {
             <h1 className="text-xl font-bold mb-2">{t('offerPublicPage.expiredTitle')}</h1>
             <p className="text-muted-foreground">
               {offer.valid_until
-                ? t('offerPublicPage.expiredDescDate', { date: new Date(offer.valid_until).toLocaleDateString() })
+                ? t('offerPublicPage.expiredDescDate', { date: new Date(offer.valid_until).toLocaleDateString(i18n.language) })
                 : t('offerPublicPage.expiredDescNoDate')}
               {' '}{t('offerPublicPage.expiredContactHint')}
             </p>
@@ -257,7 +257,7 @@ export default function OfferPublicPage() {
                     </p>
                     {(offer.accepted_at ?? offer.approved_at) && (
                       <p className="text-sm text-green-600 dark:text-green-500">
-                        {new Date(offer.accepted_at ?? offer.approved_at!).toLocaleString()}
+                        {new Date(offer.accepted_at ?? offer.approved_at!).toLocaleString(i18n.language)}
                       </p>
                     )}
                   </div>
@@ -287,7 +287,7 @@ export default function OfferPublicPage() {
                   <Calendar className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm text-muted-foreground">{t('offerPublicPage.issuedLabel')}</p>
-                    <p className="font-medium">{new Date(offer.created_at).toLocaleDateString()}</p>
+                    <p className="font-medium">{new Date(offer.created_at).toLocaleDateString(i18n.language)}</p>
                   </div>
                 </div>
                 {offer.valid_until && (() => {
@@ -302,7 +302,7 @@ export default function OfferPublicPage() {
                       <div>
                         <p className="text-sm text-muted-foreground">{t('offerPublicPage.validUntilLabel')}</p>
                         <p className={`font-medium ${isUrgent ? 'text-red-600' : isWarning ? 'text-amber-600' : ''}`}>
-                          {new Date(offer.valid_until).toLocaleDateString()}
+                          {new Date(offer.valid_until).toLocaleDateString(i18n.language)}
                         </p>
                       </div>
                     </div>

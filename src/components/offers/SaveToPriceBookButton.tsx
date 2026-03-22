@@ -37,14 +37,18 @@ export function SaveToPriceBookButton({
 
   const handleSave = async () => {
     if (!hasName || createTemplate.isPending) return;
-    await createTemplate.mutateAsync({
-      name: name.trim(),
-      unit: unit.trim() || 'szt.',
-      default_qty: 1,
-      default_price: price,
-      category,
-      description: '',
-    });
+    try {
+      await createTemplate.mutateAsync({
+        name: name.trim(),
+        unit: unit.trim() || 'szt.',
+        default_qty: 1,
+        default_price: price,
+        category,
+        description: '',
+      });
+    } catch (_error) {
+      // Error handled by hook's onError
+    }
   };
 
   return (

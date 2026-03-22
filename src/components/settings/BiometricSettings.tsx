@@ -82,8 +82,12 @@ export function BiometricSettings() {
 
   const handleDelete = async () => {
     if (deleteId) {
-      await deleteCredential.mutateAsync(deleteId);
-      setDeleteId(null);
+      try {
+        await deleteCredential.mutateAsync(deleteId);
+        setDeleteId(null);
+      } catch (_error) {
+        // Error handled by hook's onError
+      }
     }
   };
 

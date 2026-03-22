@@ -21,7 +21,7 @@ export function OfferStatusBanner({
   isSubmitting,
   onCancel,
 }: OfferStatusBannerProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <Card
@@ -46,7 +46,7 @@ export function OfferStatusBanner({
             </p>
             {acceptedAt && isAccepted && (
               <p className="text-sm text-green-600">
-                {new Date(acceptedAt).toLocaleString()}
+                {new Date(acceptedAt).toLocaleString(i18n.language)}
                 {acceptedVia === 'email_1click' && ' (1-klik email)'}
               </p>
             )}

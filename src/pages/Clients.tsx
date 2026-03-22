@@ -137,7 +137,11 @@ export default function Clients() {
 
   const handleDelete = async (id: string, name: string) => {
     if (confirm(`${t('clients.confirmDelete')} "${name}"?`)) {
-      await deleteClient.mutateAsync(id);
+      try {
+        await deleteClient.mutateAsync(id);
+      } catch (_error) {
+        // Error handled by hook's onError
+      }
     }
   };
 
