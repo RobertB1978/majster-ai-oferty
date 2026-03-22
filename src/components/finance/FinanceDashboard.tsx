@@ -138,7 +138,7 @@ export function FinanceDashboard() {
                   <p className="text-2xl sm:text-3xl font-bold tracking-tight">
                     {card.isPercent
                       ? `${card.value.toFixed(1)}%`
-                      : `${card.value.toLocaleString()} zł`
+                      : `${card.value.toLocaleString()} ${t('common.currencySymbol')}`
                     }
                   </p>
                   {card.trend !== undefined && (
@@ -149,7 +149,7 @@ export function FinanceDashboard() {
                         <ArrowDownRight className="h-4 w-4 text-rose-500" />
                       )}
                       <span className={`text-sm font-medium ${card.trend >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {Math.abs(card.trend).toLocaleString()} zł
+                        {Math.abs(card.trend).toLocaleString()} {t('common.currencySymbol')}
                       </span>
                     </div>
                   )}
@@ -200,7 +200,7 @@ export function FinanceDashboard() {
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <Tooltip
-                  formatter={(value: number) => [`${value.toLocaleString()} zł`]}
+                  formatter={(value: number) => [`${value.toLocaleString()} ${t('common.currencySymbol')}`]}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
                   itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                   contentStyle={{
@@ -262,7 +262,7 @@ export function FinanceDashboard() {
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <Tooltip
-                  formatter={(value: number) => [`${value.toLocaleString()} zł`]}
+                  formatter={(value: number) => [`${value.toLocaleString()} ${t('common.currencySymbol')}`]}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
                   itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                   contentStyle={{
@@ -344,10 +344,10 @@ export function FinanceDashboard() {
                       <span className="font-medium">{rec.category}</span>
                       <div className="flex items-center gap-2">
                         <span className="text-muted-foreground line-through">
-                          {rec.currentAvgPrice} zł
+                          {rec.currentAvgPrice} {t('common.currencySymbol')}
                         </span>
                         <span className="text-green-600 font-medium">
-                          → {rec.recommendedPrice} zł
+                          → {rec.recommendedPrice} {t('common.currencySymbol')}
                         </span>
                       </div>
                     </div>

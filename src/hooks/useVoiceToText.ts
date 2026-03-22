@@ -63,10 +63,16 @@ interface UseVoiceToTextReturn {
   browserSupport: 'full' | 'partial' | 'none';
 }
 
+const SPEECH_LOCALE_MAP: Record<string, string> = { pl: 'pl-PL', en: 'en-US', uk: 'uk-UA' };
+
+function getSpeechLocale(lang: string): string {
+  return SPEECH_LOCALE_MAP[lang.split('-')[0]] ?? 'pl-PL';
+}
+
 export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToTextReturn {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const {
-    language = 'pl-PL',
+    language = getSpeechLocale(i18n.language),
     continuous = false,
     interimResults = true,
     onResult,

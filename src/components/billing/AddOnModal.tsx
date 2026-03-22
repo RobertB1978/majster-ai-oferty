@@ -119,7 +119,7 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
                 </div>
 
                 <div className="text-right shrink-0">
-                  <span className="font-bold text-base">{addon.price} zł</span>
+                  <span className="font-bold text-base">{addon.price} {t('common.currencySymbol')}</span>
                   <p className="text-xs text-muted-foreground">{addon.unit}</p>
                 </div>
               </button>
@@ -142,7 +142,7 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
               <p className="text-sm text-muted-foreground">
                 {t('addons.selected')}: <span className="font-medium text-foreground">{selectedAddon.labelPl}</span>
                 {' — '}
-                <span className="font-bold">{selectedAddon.price} zł</span>
+                <span className="font-bold">{selectedAddon.price} {t('common.currencySymbol')}</span>
                 <span className="text-xs ml-1 text-muted-foreground">
                   ({t('addons.priceSoon')})
                 </span>

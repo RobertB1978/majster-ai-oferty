@@ -56,5 +56,63 @@ This is an ESM/CJS interop issue within the Supabase client library itself, not 
 
 ---
 
-**Last Updated:** 2024-12-16
-**Next Review:** When upgrading Supabase client or if production issues arise
+## 🟡 npm audit: devDependency Vulnerabilities (Accepted Risk)
+
+**Status:** Accepted — devDependencies only, not shipped to production
+**Date:** 2026-03-22
+**Severity:** 2 high, 1 moderate
+
+### Details
+
+| Package | Severity | Used by | Type |
+|---------|----------|---------|------|
+| minimatch ≤3.1.3 / 9.0.5 | High (ReDoS) | eslint, @capacitor/cli, exceljs (archiver) | devDep / build-only |
+| flatted ≤3.4.1 | High (DoS + Prototype Pollution) | eslint → flat-cache | devDep |
+| ajv <6.14.0 | Moderate (ReDoS) | eslint | devDep |
+
+### Why Accepted
+
+1. **eslint, @capacitor/cli** — build-time / dev tools only, never reach production bundle
+2. **exceljs** — imported dynamically only on "Export Excel" click; minimatch is used internally by archiver (zip compression), not for processing user-supplied glob patterns
+3. **No upstream fix available** as of 2026-03-22 (eslint 9.x still depends on vulnerable minimatch)
+
+### Mitigation
+
+- `npm audit --omit=dev` shows minimatch via exceljs only — ReDoS risk is theoretical (no user-controlled glob input reaches this code path)
+- Monitor for updates: `npm outdated eslint exceljs`
+
+---
+
+## 🟡 AI Prompts Hardcoded in Polish (Product Decision)
+
+**Status:** By design
+**Date:** 2026-03-22
+
+### Details
+
+All 6 Supabase Edge Functions (ai-chat-agent, ai-quote-suggestions, voice-quote-processor, analyze-photo, finance-ai-analysis, ocr-invoice) use hardcoded Polish system prompts.
+
+### Why This Is Intentional
+
+1. **Target market:** Majster.AI serves Polish construction professionals exclusively
+2. **Generated content:** AI outputs (quotes, estimates, analysis) must be in Polish with Polish pricing (PLN), units (m², mb, szt.), and categories (Materiał/Robocizna)
+3. **Accuracy:** Polish construction pricing data is embedded in prompts (2024/2025 Polish market rates)
+4. **Cost:** Maintaining parallel AI prompts in 3 languages is impractical without dedicated prompt engineering
+
+### Future Consideration
+
+If the product expands to other markets, prompts should accept a `lang` parameter and use language-specific prompt templates. Currently, EN/UK users see a Polish-language UI translated via i18n, but AI-generated content (quotes, analysis) is in Polish — matching the Polish business documents they generate.
+
+---
+
+## 🟡 Circular Chunk Warning (Rollup/Vite Build)
+
+**Status:** Benign warning
+**Date:** 2026-03-22
+
+Build produces: `Circular chunk: ui-vendor -> react-vendor -> ui-vendor`. This is a Rollup warning, not an error. It occurs because Radix UI components import React, and React Router imports some utilities also used by Radix. The build completes successfully and all chunks load correctly.
+
+---
+
+**Last Updated:** 2026-03-22
+**Next Review:** When upgrading dependencies or expanding to new markets

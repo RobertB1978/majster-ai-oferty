@@ -13,6 +13,7 @@ import { Plus, Edit, Trash2, Loader2, Package, Download, Filter } from 'lucide-r
 import { SearchInput } from '@/components/ui/search-input';
 import { PaginationControls } from '@/components/ui/pagination-controls';
 import { toast } from 'sonner';
+import { EmptyState } from '@/components/ui/empty-state';
 import { defaultTemplates, trades } from '@/data/defaultTemplates';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -261,20 +262,12 @@ export default function ItemTemplates() {
       </div>
 
       {templates.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-            <p className="text-muted-foreground mb-4">
-              {totalCount === 0 && !search && categoryFilter === 'all' ? t('templates.noTemplates') : t('templates.noResults')}
-            </p>
-            {totalCount === 0 && !search && categoryFilter === 'all' && (
-              <Button onClick={() => setIsImportDialogOpen(true)}>
-                <Download className="mr-2 h-4 w-4" />
-                {t('templates.importReady')}
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={Package}
+          title={totalCount === 0 && !search && categoryFilter === 'all' ? t('templates.noTemplates') : t('templates.noResults')}
+          ctaLabel={totalCount === 0 && !search && categoryFilter === 'all' ? t('templates.importReady') : undefined}
+          onCta={totalCount === 0 && !search && categoryFilter === 'all' ? () => setIsImportDialogOpen(true) : undefined}
+        />
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

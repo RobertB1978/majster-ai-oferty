@@ -10,24 +10,26 @@ const ReactQueryDevtools = import.meta.env.MODE === 'development'
   ? lazy(() => import('@tanstack/react-query-devtools').then(module => ({ default: module.ReactQueryDevtools })))
   : null;
 import { AuthProvider } from "@/contexts/AuthContext";
-import { ConfigProvider } from "@/contexts/ConfigContext";
-import { DraftProvider } from "@/contexts/DraftContext";
-import { useOfflineSync } from "@/hooks/useOfflineSync";
-import { AppLayout } from "@/components/layout/AppLayout";
-import { AdminLayout } from "@/components/layout/AdminLayout";
-import { NewShellLayout } from "@/components/layout/NewShellLayout";
+const ConfigProvider = lazy(() => import("@/contexts/ConfigContext").then(m => ({ default: m.ConfigProvider })));
+const DraftProvider = lazy(() => import("@/contexts/DraftContext").then(m => ({ default: m.DraftProvider })));
+// useOfflineSync is lazy-loaded to reduce main chunk — it pulls in offline-queue (~12KB source)
+// Lazy-load layout components — only one shell layout is used at runtime (gated by FF_NEW_SHELL)
+const AppLayout = lazy(() => import("@/components/layout/AppLayout").then(m => ({ default: m.AppLayout })));
+const AdminLayout = lazy(() => import("@/components/layout/AdminLayout").then(m => ({ default: m.AdminLayout })));
+const NewShellLayout = lazy(() => import("@/components/layout/NewShellLayout").then(m => ({ default: m.NewShellLayout })));
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { FF_NEW_SHELL } from "@/config/featureFlags";
 import { PageLoader } from "@/components/layout/PageLoader";
-import { InstallPrompt } from "@/components/pwa/InstallPrompt";
-import { OfflineBanner } from "@/components/pwa/OfflineBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { CookieConsent } from "@/components/legal/CookieConsent";
+// Lazy-load non-critical UI components to reduce initial bundle
+const InstallPrompt = lazy(() => import("@/components/pwa/InstallPrompt").then(m => ({ default: m.InstallPrompt })));
+const OfflineBanner = lazy(() => import("@/components/pwa/OfflineBanner").then(m => ({ default: m.OfflineBanner })));
+const CookieConsent = lazy(() => import("@/components/legal/CookieConsent").then(m => ({ default: m.CookieConsent })));
 
 // === ZONE 1: PUBLIC (loaded immediately - auth flow) ===
-import AuthCallback from "./pages/AuthCallback";
-import NotFound from "./pages/NotFound";
-import EnvCheck from "./pages/EnvCheck";
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const EnvCheck = lazy(() => import("./pages/EnvCheck"));
 
 // === ZONE 1: PUBLIC (lazy) ===
 const Login = lazy(() => import("./pages/Login"));
@@ -116,11 +118,12 @@ function JobsRedirect({ suffix = '' }: { suffix?: string }) {
   return <Navigate to={`/app/projects/${id}${suffix}`} replace />;
 }
 
-/** Wires offline queue sync into the app lifecycle (§3.9, §18.1). */
-function OfflineSyncWatcher() {
-  useOfflineSync();
-  return null;
-}
+/** Wires offline queue sync into the app lifecycle (§3.9, §18.1). Lazy-loaded to keep index chunk small. */
+const OfflineSyncWatcher = lazy(() => import("@/hooks/useOfflineSync").then(m => {
+  // Create a component wrapper for the hook
+  const Watcher = () => { m.useOfflineSync(); return null; };
+  return { default: Watcher };
+}));
 
 /** Initialize theme + lang from localStorage or system preference for all routes. */
 function ThemeInitializer() {

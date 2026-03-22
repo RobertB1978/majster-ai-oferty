@@ -141,19 +141,19 @@ export function HeroSection() {
                 <div className="space-y-2.5 mb-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 dark:text-neutral-400">{t('landing.hero.mock.labour')}</span>
-                    <span className="text-gray-900 dark:text-white font-medium">2 400 zł</span>
+                    <span className="text-gray-900 dark:text-white font-medium">2 400 {t('common.currencySymbol')}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 dark:text-neutral-400">{t('landing.hero.mock.materials')}</span>
-                    <span className="text-gray-900 dark:text-white font-medium">1 800 zł</span>
+                    <span className="text-gray-900 dark:text-white font-medium">1 800 {t('common.currencySymbol')}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 dark:text-neutral-400">{t('landing.hero.mock.extraLabour')}</span>
-                    <span className="text-gray-900 dark:text-white font-medium">600 zł</span>
+                    <span className="text-gray-900 dark:text-white font-medium">600 {t('common.currencySymbol')}</span>
                   </div>
                   <div className="border-t border-gray-200 dark:border-brand-border pt-2.5 flex justify-between font-semibold">
                     <span className="text-gray-600 dark:text-neutral-400">{t('landing.hero.mock.total')}</span>
-                    <span className="text-amber-500 text-lg">4 800 zł</span>
+                    <span className="text-amber-500 text-lg">4 800 {t('common.currencySymbol')}</span>
                   </div>
                 </div>
 

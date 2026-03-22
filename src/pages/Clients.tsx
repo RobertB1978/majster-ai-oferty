@@ -14,6 +14,7 @@ import { PaginationControls } from '@/components/ui/pagination-controls';
 import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Users, Loader2, FileText, FolderKanban } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ClientsGridSkeleton } from '@/components/ui/skeleton-screens';
+import { EmptyState } from '@/components/ui/empty-state';
 import { toast } from 'sonner';
 
 interface ClientFormData {
@@ -250,19 +251,13 @@ export default function Clients() {
       {isLoading ? (
         <ClientsGridSkeleton />
       ) : showEmptyState ? (
-        <Card className="border-dashed border-2">
-          <CardContent className="py-16 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <Users className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">{t('clients.noClients')}</h3>
-            <p className="text-muted-foreground mb-4">{t('clients.createFirst')}</p>
-            <Button onClick={() => handleOpenDialog()} className="bg-primary">
-              <Plus className="mr-2 h-4 w-4" />
-              {t('clients.addClient')}
-            </Button>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={Users}
+          title={t('clients.noClients')}
+          description={t('clients.createFirst')}
+          ctaLabel={t('clients.addClient')}
+          onCta={() => handleOpenDialog()}
+        />
       ) : showNoResults ? (
         <Card className="border-dashed">
           <CardContent className="py-12 text-center">

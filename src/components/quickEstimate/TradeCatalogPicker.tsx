@@ -193,7 +193,7 @@ export function TradeCatalogPicker({ onSelectPack, onBack }: TradeCatalogPickerP
                         </span>
                         {estimatedTotal !== null && (
                           <span className="text-xs text-muted-foreground">
-                            ~{formatNumberCompact(estimatedTotal, i18n.language)} zł
+                            ~{formatNumberCompact(estimatedTotal, i18n.language)} {t('common.currencySymbol')}
                           </span>
                         )}
                         {pack.estimatedDuration && (

@@ -52,10 +52,10 @@ function QuotesSample() {
         {t('landing.demo.quotes.header')}
       </div>
       {[
-        { name: t('landing.demo.quotes.item1'), qty: '25 m²', unit: '65 zł', total: '1 625 zł' },
-        { name: t('landing.demo.quotes.item2'), qty: '1 szt', unit: '320 zł', total: '320 zł' },
-        { name: t('landing.demo.quotes.item3'), qty: '8 h', unit: '90 zł', total: '720 zł' },
-        { name: t('landing.demo.quotes.item4'), qty: '—', unit: '—', total: '480 zł' },
+        { name: t('landing.demo.quotes.item1'), qty: '25 m²', unit: `65 ${t('common.currencySymbol')}`, total: `1 625 ${t('common.currencySymbol')}` },
+        { name: t('landing.demo.quotes.item2'), qty: '1 szt', unit: `320 ${t('common.currencySymbol')}`, total: `320 ${t('common.currencySymbol')}` },
+        { name: t('landing.demo.quotes.item3'), qty: '8 h', unit: `90 ${t('common.currencySymbol')}`, total: `720 ${t('common.currencySymbol')}` },
+        { name: t('landing.demo.quotes.item4'), qty: '—', unit: '—', total: `480 ${t('common.currencySymbol')}` },
       ].map((r) => (
         <div key={r.name} className="flex justify-between gap-2 border-b border-border pb-1">
           <span className="flex-1 text-foreground">{r.name}</span>
@@ -66,7 +66,7 @@ function QuotesSample() {
       ))}
       <div className="flex justify-between font-bold text-base pt-1">
         <span>{t('landing.demo.quotes.total')}</span>
-        <span className="text-primary">3 145 zł</span>
+        <span className="text-primary">3 145 {t('common.currencySymbol')}</span>
       </div>
     </div>
   );
@@ -90,7 +90,7 @@ function PdfSample() {
         <div className="flex justify-between"><span>{t('landing.demo.pdf.labelClient')}</span><span className="font-medium">Jan Nowak</span></div>
         <div className="flex justify-between"><span>{t('landing.demo.pdf.labelDeadline')}</span><span>15.03.2025</span></div>
         <div className="flex justify-between"><span>{t('landing.demo.pdf.labelValidity')}</span><span>{t('landing.demo.pdf.days30')}</span></div>
-        <div className="flex justify-between font-bold mt-2"><span>{t('landing.demo.pdf.labelTotal')}</span><span className="text-primary">3 145 zł</span></div>
+        <div className="flex justify-between font-bold mt-2"><span>{t('landing.demo.pdf.labelTotal')}</span><span className="text-primary">3 145 {t('common.currencySymbol')}</span></div>
       </div>
     </div>
   );
@@ -99,9 +99,9 @@ function PdfSample() {
 function ClientsSample() {
   const { t } = useTranslation();
   const clients = [
-    { name: 'Jan Nowak', tag: 'VIP', project: t('landing.demo.clients.project1'), value: '3 145 zł' },
-    { name: 'Anna Wiśniewska', tag: t('landing.demo.clients.tagActive'), project: t('landing.demo.clients.project2'), value: '1 200 zł' },
-    { name: 'Firma ABC sp. z o.o.', tag: t('landing.demo.clients.tagNew'), project: t('landing.demo.clients.project3'), value: '8 600 zł' },
+    { name: 'Jan Nowak', tag: 'VIP', project: t('landing.demo.clients.project1'), value: `3 145 ${t('common.currencySymbol')}` },
+    { name: 'Anna Wiśniewska', tag: t('landing.demo.clients.tagActive'), project: t('landing.demo.clients.project2'), value: `1 200 ${t('common.currencySymbol')}` },
+    { name: 'Firma ABC sp. z o.o.', tag: t('landing.demo.clients.tagNew'), project: t('landing.demo.clients.project3'), value: `8 600 ${t('common.currencySymbol')}` },
   ];
   return (
     <div className="rounded-xl border bg-card divide-y divide-border text-sm overflow-hidden">
@@ -173,9 +173,9 @@ function FinanceSample() {
     <div className="rounded-xl border bg-card p-4 space-y-3 text-sm">
       <div className="grid grid-cols-3 gap-2 text-center">
         {[
-          { label: t('landing.demo.finance.revenue'), value: '18 400 zł', color: 'text-green-600' },
-          { label: t('landing.demo.finance.costs'), value: '7 200 zł', color: 'text-red-500' },
-          { label: t('landing.demo.finance.profit'), value: '11 200 zł', color: 'text-primary' },
+          { label: t('landing.demo.finance.revenue'), value: `18 400 ${t('common.currencySymbol')}`, color: 'text-green-600' },
+          { label: t('landing.demo.finance.costs'), value: `7 200 ${t('common.currencySymbol')}`, color: 'text-red-500' },
+          { label: t('landing.demo.finance.profit'), value: `11 200 ${t('common.currencySymbol')}`, color: 'text-primary' },
         ].map((s) => (
           <div key={s.label} className="rounded-lg bg-muted/50 p-2">
             <div className={`font-bold text-base ${s.color}`}>{s.value}</div>
@@ -195,7 +195,7 @@ function AiSample() {
       <div className="rounded-lg bg-primary/5 border border-primary/20 p-3">
         <div className="text-xs font-medium text-primary mb-1">{t('landing.demo.ai.writing')}</div>
         <p className="text-sm text-foreground leading-relaxed">
-          {t('landing.demo.ai.quoteText', { amount: '3 145 zł' })}
+          {t('landing.demo.ai.quoteText', { amount: `3 145 ${t('common.currencySymbol')}` })}
         </p>
       </div>
       <div className="flex gap-2">
@@ -282,9 +282,9 @@ function BillingSample() {
   return (
     <div className="rounded-xl border bg-card divide-y divide-border text-sm overflow-hidden">
       {[
-        { name: 'Majster.AI Pro', amount: '49 zł/mies.', status: t('landing.demo.billing.statusActive'), color: 'text-green-600' },
-        { name: 'FV/2025/002', amount: '49 zł', status: t('landing.demo.billing.statusPaid'), color: 'text-muted-foreground' },
-        { name: 'FV/2025/001', amount: '49 zł', status: t('landing.demo.billing.statusPaid'), color: 'text-muted-foreground' },
+        { name: 'Majster.AI Pro', amount: `49 ${t('common.currencySymbol')}/${t('common.month')}`, status: t('landing.demo.billing.statusActive'), color: 'text-green-600' },
+        { name: 'FV/2025/002', amount: `49 ${t('common.currencySymbol')}`, status: t('landing.demo.billing.statusPaid'), color: 'text-muted-foreground' },
+        { name: 'FV/2025/001', amount: `49 ${t('common.currencySymbol')}`, status: t('landing.demo.billing.statusPaid'), color: 'text-muted-foreground' },
       ].map((b) => (
         <div key={b.name} className="flex justify-between items-center p-3">
           <div>
