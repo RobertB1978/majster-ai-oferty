@@ -22,7 +22,7 @@ export function useNotifications() {
       const { data, error } = await supabase
         .from('notifications')
         .select('id, user_id, title, message, type, is_read, action_url, created_at')
-        .eq('user_id', user!.id)
+        .eq('user_id', user?.id ?? '')
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -62,10 +62,11 @@ export function useMarkAllNotificationsRead() {
 
   return useMutation({
     mutationFn: async () => {
+      if (!user) throw new Error('Not authenticated');
       const { error } = await supabase
         .from('notifications')
         .update({ is_read: true })
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .eq('is_read', false);
 
       if (error) throw error;
@@ -104,7 +105,7 @@ export function useCreateNotification() {
         .from('notifications')
         .insert({
           ...notification,
-          user_id: user!.id,
+          user_id: user?.id ?? '',
           is_read: false,
         })
         .select()

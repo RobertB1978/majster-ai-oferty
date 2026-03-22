@@ -12,12 +12,12 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement;
 };
 
-const _ACTION_TYPES = {
-  ADD_TOAST: "ADD_TOAST",
-  UPDATE_TOAST: "UPDATE_TOAST",
-  DISMISS_TOAST: "DISMISS_TOAST",
-  REMOVE_TOAST: "REMOVE_TOAST",
-} as const;
+type ActionType = {
+  readonly ADD_TOAST: "ADD_TOAST";
+  readonly UPDATE_TOAST: "UPDATE_TOAST";
+  readonly DISMISS_TOAST: "DISMISS_TOAST";
+  readonly REMOVE_TOAST: "REMOVE_TOAST";
+};
 
 
 let count = 0;
@@ -26,8 +26,6 @@ function genId() {
   count = (count + 1) % Number.MAX_SAFE_INTEGER;
   return count.toString();
 }
-
-type ActionType = typeof actionTypes;
 
 type Action =
   | {
@@ -53,7 +51,7 @@ interface State {
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
-const addToRemoveQueue = (_toastId: string) => {
+const addToRemoveQueue = (toastId: string) => {
   if (toastTimeouts.has(toastId)) {
     return;
   }
@@ -173,7 +171,7 @@ function useToast() {
         listeners.splice(index, 1);
       }
     };
-  }, [state]);
+  }, []);
 
   return {
     ...state,

@@ -13,7 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-const emailSchema = z.string().email('Nieprawidłowy adres email');
+const emailSchema = z.string().email();
 
 export function ContactEmailSettings() {
   const { t } = useTranslation();
@@ -83,7 +83,7 @@ export function ContactEmailSettings() {
   const handleSave = () => {
     const result = emailSchema.safeParse(editEmail.trim());
     if (!result.success) {
-      setEmailError(result.error.errors[0].message);
+      setEmailError(t('settings.contactEmail.invalidEmail'));
       return;
     }
     setEmailError('');

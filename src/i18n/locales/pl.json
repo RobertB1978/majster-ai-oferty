@@ -816,6 +816,7 @@
       "title": "Email do odpowiedzi",
       "unverified": "Niezweryfikowany",
       "verified": "Zweryfikowany",
+      "invalidEmail": "Nieprawidłowy adres email",
       "verifyPrompt": "Zweryfikuj adres email, aby klienci mogli do Ciebie odpisywać na oferty.",
       "toast": {
         "saved": "Email do odpowiedzi zapisany. Sprawdź skrzynkę pocztową, by go zweryfikować.",
