@@ -43,38 +43,13 @@ function validateSupabaseConfig(): { isValid: boolean; errors: string[] } {
 
 const validation = validateSupabaseConfig();
 
-if (!validation.isValid && import.meta.env.MODE === 'production') {
-  logger.error('╔════════════════════════════════════════════════════════════╗');
-  logger.error('║  ❌ SUPABASE CONFIGURATION ERROR                          ║');
-  logger.error('╚════════════════════════════════════════════════════════════╝');
-  logger.error('');
-  logger.error('Your .env file contains placeholder/dummy values!');
-  logger.error('');
-  logger.error('Problems found:');
-  validation.errors.forEach(err => logger.error(`  • ${err}`));
-  logger.error('');
-  logger.error('📖 HOW TO FIX:');
-  logger.error('');
-  logger.error('1. Go to https://supabase.com/dashboard');
-  logger.error('2. Open your project (or create one if you don\'t have it)');
-  logger.error('3. Go to Settings → API');
-  logger.error('4. Copy the following values:');
-  logger.error('   • Project URL (starts with https://xxx.supabase.co)');
-  logger.error('   • anon/public key (long JWT token starting with eyJ...)');
-  logger.error('');
-  logger.error('5. Update your .env file with REAL values:');
-  logger.error('');
-  logger.error('   VITE_SUPABASE_URL=https://YOUR-ACTUAL-PROJECT-ID.supabase.co');
-  logger.error('   VITE_SUPABASE_ANON_KEY=eyJhbGci...YOUR-ACTUAL-KEY...');
-  logger.error('');
-  logger.error('6. Restart the dev server: npm run dev');
-  logger.error('');
-  logger.error('📚 For detailed setup instructions, see:');
-  logger.error('   docs/SUPABASE_SETUP_GUIDE.md');
-  logger.error('   docs/ENVIRONMENT_VARIABLES_CHECKLIST.md');
-  logger.error('');
-
-  throw new Error('Invalid Supabase configuration. See console for details.');
+if (!validation.isValid) {
+  // Log config issues (visible in browser console / Vercel logs)
+  logger.error('Supabase config invalid:', validation.errors.join('; '));
+  // NEVER throw at module level — it crashes the entire app before React mounts,
+  // leaving the user stuck on the splash screen with no feedback.
+  // Instead, fall through to the mock client so the app renders and shows
+  // a user-friendly "Supabase not configured" error on login attempt.
 }
 
 const mockSupabase = {
