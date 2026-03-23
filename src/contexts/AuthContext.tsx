@@ -45,7 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // that can silently break OAuth callbacks and cookie scope.
     if (typeof window !== 'undefined') {
       const host = window.location.host;
-      if (host.includes(CANONICAL_HOST) && host !== CANONICAL_HOST) {
+      const isWwwOrSubdomain = host.includes(CANONICAL_HOST) && host !== CANONICAL_HOST;
+      const isVercelDomain = host === 'majster-ai-oferty.vercel.app';
+      if (isWwwOrSubdomain || isVercelDomain) {
         logger.error(
           `Host mismatch: current="${host}", canonical="${CANONICAL_HOST}". ` +
           'OAuth callbacks and cookies may not work correctly. ' +

@@ -577,6 +577,43 @@ describe('Auth Access', () => {
 
       errorSpy.mockRestore();
     });
+
+    it('logs error when host is the default Vercel domain (majster-ai-oferty.vercel.app)', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      mockGetSession.mockResolvedValue({ data: { session: null }, error: null });
+
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: {
+          ...window.location,
+          host: 'majster-ai-oferty.vercel.app',
+          origin: 'https://majster-ai-oferty.vercel.app',
+          protocol: 'https:',
+          pathname: '/',
+          href: 'https://majster-ai-oferty.vercel.app/',
+          reload: vi.fn(),
+        },
+      });
+
+      render(
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthStateDisplay />
+          </AuthProvider>
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('loading').textContent).toBe('false');
+      });
+
+      const mismatchError = errorSpy.mock.calls.find(
+        (call) => typeof call[0] === 'string' && call[0].includes('Host mismatch')
+      );
+      expect(mismatchError).toBeDefined();
+
+      errorSpy.mockRestore();
+    });
   });
 
   describe('Public /login is not blocked by auth bootstrap', () => {

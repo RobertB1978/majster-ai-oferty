@@ -147,15 +147,23 @@ function ThemeInitializer() {
   return null;
 }
 
-/** Visible banner when user is on a non-canonical host (e.g. www.majsterai.com).
+/** Visible banner when user is on a non-canonical host (e.g. www.majsterai.com
+ *  or majster-ai-oferty.vercel.app).
  *  The Vercel redirect should catch most cases, but if it doesn't, this banner
  *  gives the user a clear way to reach the correct domain. */
 const CANONICAL_HOST = 'majsterai.com';
+const VERCEL_HOST = 'majster-ai-oferty.vercel.app';
 function HostMismatchBanner() {
   const host = typeof window !== 'undefined' ? window.location.host : '';
-  if (!host.includes(CANONICAL_HOST) || host === CANONICAL_HOST) return null;
 
-  const canonicalUrl = `${window.location.protocol}//${CANONICAL_HOST}${window.location.pathname}${window.location.search}`;
+  // Detect: www.majsterai.com, staging.majsterai.com, etc.
+  const isWwwOrSubdomain = host.includes(CANONICAL_HOST) && host !== CANONICAL_HOST;
+  // Detect: majster-ai-oferty.vercel.app (default Vercel domain)
+  const isVercelDomain = host === VERCEL_HOST;
+
+  if (!isWwwOrSubdomain && !isVercelDomain) return null;
+
+  const canonicalUrl = `https://${CANONICAL_HOST}${window.location.pathname}${window.location.search}`;
 
   /* eslint-disable i18next/no-literal-string -- diagnostic banner, always Polish */
   return (
