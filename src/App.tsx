@@ -157,7 +157,9 @@ function HostMismatchBanner() {
   const host = typeof window !== 'undefined' ? window.location.host : '';
 
   // Detect: www.majsterai.com, staging.majsterai.com, etc.
-  const isWwwOrSubdomain = host.includes(CANONICAL_HOST) && host !== CANONICAL_HOST;
+  // Use endsWith('.') to safely match only real subdomains — avoids matching
+  // attacker-controlled domains like "evil-majsterai.com" (CodeQL cwe-020).
+  const isWwwOrSubdomain = host.endsWith(`.${CANONICAL_HOST}`);
   // Detect: majster-ai-oferty.vercel.app (default Vercel domain)
   const isVercelDomain = host === VERCEL_HOST;
 

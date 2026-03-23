@@ -45,7 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // that can silently break OAuth callbacks and cookie scope.
     if (typeof window !== 'undefined') {
       const host = window.location.host;
-      const isWwwOrSubdomain = host.includes(CANONICAL_HOST) && host !== CANONICAL_HOST;
+      // Use endsWith('.') to safely match only real subdomains — avoids
+      // attacker-controlled domains like "evil-majsterai.com" (CodeQL cwe-020).
+      const isWwwOrSubdomain = host.endsWith(`.${CANONICAL_HOST}`);
       const isVercelDomain = host === 'majster-ai-oferty.vercel.app';
       if (isWwwOrSubdomain || isVercelDomain) {
         logger.error(
