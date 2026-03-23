@@ -8,6 +8,10 @@ import { supabase } from '@/integrations/supabase/client';
  *  Prevents the app from being stuck on the loading spinner forever (e.g. Supabase unreachable). */
 const AUTH_TIMEOUT_MS = 10_000;
 
+/** Canonical host for the production app. Used to detect www/subdomain mismatches that
+ *  can break OAuth callbacks, cookie scope, and Supabase redirect allowlists. */
+const CANONICAL_HOST = 'majsterai.com';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -30,6 +34,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let isMounted = true;
+
+    // Detect host mismatch early — helps diagnose www vs apex domain issues
+    // that can silently break OAuth callbacks and cookie scope.
+    if (typeof window !== 'undefined') {
+      const host = window.location.host;
+      if (host.includes(CANONICAL_HOST) && host !== CANONICAL_HOST) {
+        logger.error(
+          `Host mismatch: current="${host}", canonical="${CANONICAL_HOST}". ` +
+          'OAuth callbacks and cookies may not work correctly. ' +
+          'Consider redirecting to the canonical domain.'
+        );
+      }
+    }
 
     const markResolved = (s: Session | null) => {
       if (!isMounted || resolvedRef.current) return;

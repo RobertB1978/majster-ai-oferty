@@ -533,4 +533,75 @@ describe('Auth Access', () => {
       // verifies the state management is correct
     });
   });
+
+  describe('Host mismatch detection', () => {
+    it('logs error when host contains canonical domain but is not exact match (www)', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      mockGetSession.mockResolvedValue({ data: { session: null }, error: null });
+
+      // Simulate www subdomain
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: {
+          ...window.location,
+          host: 'www.majsterai.com',
+          origin: 'https://www.majsterai.com',
+          protocol: 'https:',
+          pathname: '/',
+          href: 'https://www.majsterai.com/',
+          reload: vi.fn(),
+        },
+      });
+
+      render(
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthStateDisplay />
+          </AuthProvider>
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('loading').textContent).toBe('false');
+      });
+
+      // Check that an error was logged about host mismatch
+      // logger.error always logs (even in production) — correct for a config issue
+      const mismatchError = errorSpy.mock.calls.find(
+        (call) => typeof call[0] === 'string' && call[0].includes('Host mismatch')
+      );
+      expect(mismatchError).toBeDefined();
+
+      errorSpy.mockRestore();
+    });
+  });
+
+  describe('Public /login is not blocked by auth bootstrap', () => {
+    it('/login route renders Login page without waiting for auth to resolve', async () => {
+      // getSession never resolves — simulates total Supabase outage
+      mockGetSession.mockReturnValue(new Promise(() => {}));
+
+      render(
+        <MemoryRouter initialEntries={['/login']}>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={<div data-testid="login-page">Login Page</div>} />
+              <Route
+                path="/app/*"
+                element={
+                  <ProtectedRoute>
+                    <div data-testid="app-page">App Page</div>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </AuthProvider>
+        </MemoryRouter>
+      );
+
+      // Login page should render immediately, even though auth is still loading
+      // (because /login is a public route, not wrapped in ProtectedRoute)
+      expect(screen.getByTestId('login-page')).toBeInTheDocument();
+    });
+  });
 });

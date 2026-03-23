@@ -84,6 +84,12 @@
   ],
   "redirects": [
     {
+      "source": "/:path(.*)",
+      "has": [{ "type": "host", "value": "www.majsterai.com" }],
+      "destination": "https://majsterai.com/:path",
+      "permanent": true
+    },
+    {
       "source": "/sw.js",
       "destination": "/",
       "permanent": true
