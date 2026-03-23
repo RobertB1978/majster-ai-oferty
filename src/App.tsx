@@ -10,8 +10,8 @@ const ReactQueryDevtools = import.meta.env.MODE === 'development'
   ? lazy(() => import('@tanstack/react-query-devtools').then(module => ({ default: module.ReactQueryDevtools })))
   : null;
 import { AuthProvider } from "@/contexts/AuthContext";
-const ConfigProvider = lazy(() => import("@/contexts/ConfigContext").then(m => ({ default: m.ConfigProvider })));
-const DraftProvider = lazy(() => import("@/contexts/DraftContext").then(m => ({ default: m.DraftProvider })));
+import { ConfigProvider } from "@/contexts/ConfigContext";
+import { DraftProvider } from "@/contexts/DraftContext";
 // useOfflineSync is lazy-loaded to reduce main chunk — it pulls in offline-queue (~12KB source)
 // Lazy-load layout components — only one shell layout is used at runtime (gated by FF_NEW_SHELL)
 const AppLayout = lazy(() => import("@/components/layout/AppLayout").then(m => ({ default: m.AppLayout })));
@@ -180,14 +180,18 @@ const App = () => (
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ConfigProvider>
             <AuthProvider>
-              <OfflineSyncWatcher />
+              <Suspense fallback={null}>
+                <OfflineSyncWatcher />
+              </Suspense>
               <ThemeInitializer />
               <ScrollRestoration />
               <Sonner />
               {/* PR-19: maly baner zamiast pelnoekranowego blokera — uzytkownik widzi dane z cache */}
-              <OfflineBanner />
-              <InstallPrompt />
-              <CookieConsent />
+              <Suspense fallback={null}>
+                <OfflineBanner />
+                <InstallPrompt />
+                <CookieConsent />
+              </Suspense>
               <DraftProvider>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
