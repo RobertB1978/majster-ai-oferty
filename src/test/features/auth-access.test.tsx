@@ -276,14 +276,17 @@ describe('Auth Access', () => {
       expect(screen.getByText(/Odśwież stronę/i)).toBeInTheDocument();
     });
 
-    it('redirects to /login when getSession fails (network error)', async () => {
+    it('shows auth error card (not silent redirect) when getSession fails (network error)', async () => {
       mockGetSession.mockRejectedValue(new Error('fetch failed'));
 
       renderWithAuth('/app/dashboard');
 
+      // With authInitError, ProtectedRoute shows an explicit error card
+      // instead of silently redirecting to /login
       await waitFor(() => {
-        expect(screen.getByTestId('login-page')).toBeInTheDocument();
+        expect(screen.getByText(/błąd połączenia/i)).toBeInTheDocument();
       });
+      expect(screen.getByText(/odśwież stronę/i)).toBeInTheDocument();
     });
   });
 
@@ -602,6 +605,136 @@ describe('Auth Access', () => {
       // Login page should render immediately, even though auth is still loading
       // (because /login is a public route, not wrapped in ProtectedRoute)
       expect(screen.getByTestId('login-page')).toBeInTheDocument();
+    });
+  });
+
+  describe('AuthContext — authInitError state', () => {
+    it('sets authInitError="network-error" when getSession rejects', async () => {
+      mockGetSession.mockRejectedValue(new Error('fetch failed'));
+
+      function ErrorDisplay() {
+        const { authInitError, isLoading } = useAuth();
+        return (
+          <div>
+            <span data-testid="loading">{String(isLoading)}</span>
+            <span data-testid="init-error">{String(authInitError)}</span>
+          </div>
+        );
+      }
+
+      render(
+        <MemoryRouter>
+          <AuthProvider>
+            <ErrorDisplay />
+          </AuthProvider>
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('loading').textContent).toBe('false');
+      });
+      expect(screen.getByTestId('init-error').textContent).toBe('network-error');
+    });
+
+    it('sets authInitError="timeout" when getSession hangs past AUTH_TIMEOUT_MS', async () => {
+      mockGetSession.mockReturnValue(new Promise(() => {}));
+
+      function ErrorDisplay() {
+        const { authInitError, isLoading } = useAuth();
+        return (
+          <div>
+            <span data-testid="loading">{String(isLoading)}</span>
+            <span data-testid="init-error">{String(authInitError)}</span>
+          </div>
+        );
+      }
+
+      render(
+        <MemoryRouter>
+          <AuthProvider>
+            <ErrorDisplay />
+          </AuthProvider>
+        </MemoryRouter>
+      );
+
+      expect(screen.getByTestId('init-error').textContent).toBe('null');
+
+      await act(async () => {
+        vi.advanceTimersByTime(11_000);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('loading').textContent).toBe('false');
+      });
+      expect(screen.getByTestId('init-error').textContent).toBe('timeout');
+    });
+  });
+
+  describe('ProtectedRoute — auth init error states', () => {
+    it('shows error card when auth timed out (not silent redirect)', async () => {
+      // Simulate: getSession hangs → timeout fires → authInitError='timeout'
+      mockGetSession.mockReturnValue(new Promise(() => {}));
+
+      render(
+        <MemoryRouter initialEntries={['/app/dashboard']}>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={<div data-testid="login-page">Login</div>} />
+              <Route
+                path="/app/*"
+                element={
+                  <ProtectedRoute>
+                    <div data-testid="app-page">App</div>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </AuthProvider>
+        </MemoryRouter>
+      );
+
+      // Advance past auth timeout (10s)
+      await act(async () => {
+        vi.advanceTimersByTime(11_000);
+      });
+
+      // Should show error card, NOT silent redirect to /login
+      await waitFor(() => {
+        expect(screen.getByText(/nie udało się połączyć/i)).toBeInTheDocument();
+      });
+      // Refresh button should be visible
+      expect(screen.getByText(/odśwież stronę/i)).toBeInTheDocument();
+      // Login link should be visible
+      expect(screen.getByText(/zaloguj się/i)).toBeInTheDocument();
+      // Should NOT have silently redirected to login
+      expect(screen.queryByTestId('login-page')).not.toBeInTheDocument();
+    });
+
+    it('shows network error card when getSession fails', async () => {
+      mockGetSession.mockRejectedValue(new Error('fetch failed'));
+
+      render(
+        <MemoryRouter initialEntries={['/app/dashboard']}>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={<div data-testid="login-page">Login</div>} />
+              <Route
+                path="/app/*"
+                element={
+                  <ProtectedRoute>
+                    <div data-testid="app-page">App</div>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </AuthProvider>
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/błąd połączenia/i)).toBeInTheDocument();
+      });
+      expect(screen.getByText(/odśwież stronę/i)).toBeInTheDocument();
     });
   });
 });

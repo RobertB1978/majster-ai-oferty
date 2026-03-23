@@ -147,6 +147,29 @@ function ThemeInitializer() {
   return null;
 }
 
+/** Visible banner when user is on a non-canonical host (e.g. www.majsterai.com).
+ *  The Vercel redirect should catch most cases, but if it doesn't, this banner
+ *  gives the user a clear way to reach the correct domain. */
+const CANONICAL_HOST = 'majsterai.com';
+function HostMismatchBanner() {
+  const host = typeof window !== 'undefined' ? window.location.host : '';
+  if (!host.includes(CANONICAL_HOST) || host === CANONICAL_HOST) return null;
+
+  const canonicalUrl = `${window.location.protocol}//${CANONICAL_HOST}${window.location.pathname}${window.location.search}`;
+
+  /* eslint-disable i18next/no-literal-string -- diagnostic banner, always Polish */
+  return (
+    <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800 px-4 py-2 text-center text-xs text-amber-800 dark:text-amber-300" role="alert" data-testid="host-mismatch-banner">
+      {'Używasz adresu '}
+      <span className="font-medium">{host}</span>
+      {'. Dla najlepszego działania przejdź na '}
+      <a href={canonicalUrl} className="font-semibold underline hover:no-underline">{CANONICAL_HOST}</a>
+      {'.'}
+    </div>
+  );
+  /* eslint-enable i18next/no-literal-string */
+}
+
 /** Scroll to top on PUSH/REPLACE navigation; let browser handle POP (back/forward). */
 function ScrollRestoration() {
   const { pathname } = useLocation();
@@ -185,6 +208,7 @@ const App = () => (
               </Suspense>
               <ThemeInitializer />
               <ScrollRestoration />
+              <HostMismatchBanner />
               <Sonner />
               {/* PR-19: maly baner zamiast pelnoekranowego blokera — uzytkownik widzi dane z cache */}
               <Suspense fallback={null}>

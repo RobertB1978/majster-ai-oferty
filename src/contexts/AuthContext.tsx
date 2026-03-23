@@ -12,10 +12,15 @@ const AUTH_TIMEOUT_MS = 10_000;
  *  can break OAuth callbacks, cookie scope, and Supabase redirect allowlists. */
 const CANONICAL_HOST = 'majsterai.com';
 
+/** Describes why the initial auth bootstrap failed (if it did). */
+export type AuthInitError = 'timeout' | 'network-error' | null;
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  /** Non-null when the initial auth bootstrap failed (timeout or network error). */
+  authInitError: AuthInitError;
   login: (email: string, password: string) => Promise<{ error: string | null; data?: { user: User | null; session: Session | null } }>;
   register: (email: string, password: string) => Promise<{ error: string | null }>;
   logout: () => Promise<void>;
@@ -30,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [authInitError, setAuthInitError] = useState<AuthInitError>(null);
   const resolvedRef = useRef(false);
 
   useEffect(() => {
@@ -75,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       markResolved(session);
     }).catch((err) => {
       logger.error('Failed to get session:', err);
+      setAuthInitError('network-error');
       markResolved(null);
     });
 
@@ -82,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const timeout = setTimeout(() => {
       if (!resolvedRef.current) {
         logger.error('Auth timeout: session not resolved within', AUTH_TIMEOUT_MS, 'ms');
+        setAuthInitError('timeout');
         markResolved(null);
       }
     }, AUTH_TIMEOUT_MS);
@@ -248,7 +256,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isLoading, login, register, logout, loginWithGoogle, loginWithApple, resendVerificationEmail }}>
+    <AuthContext.Provider value={{ user, session, isLoading, authInitError, login, register, logout, loginWithGoogle, loginWithApple, resendVerificationEmail }}>
       {children}
     </AuthContext.Provider>
   );
