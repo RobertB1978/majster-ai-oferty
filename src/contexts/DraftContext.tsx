@@ -175,23 +175,37 @@ export function DraftProvider({ children }: DraftProviderProps) {
   // ── IDB hydration on mount ──────────────────────────────────────────────────
 
   useEffect(() => {
-    get<OfferDraft>(ACTIVE_DRAFT_IDB_KEY)
-      .then((stored) => {
-        if (stored) setDraft(stored);
-      })
-      .catch(() => {
-        // IDB unavailable (e.g. private browsing in Safari) — start empty, continue normally.
-      })
-      .finally(() => setIsHydrating(false));
+    // idb-keyval's get() can throw synchronously (ReferenceError) when indexedDB
+    // is not available (e.g. some WebViews, strict privacy modes).  A .catch()
+    // handler only catches *rejected promises*, not synchronous throws.
+    // Wrapping in try/catch ensures we never crash the component tree.
+    try {
+      get<OfferDraft>(ACTIVE_DRAFT_IDB_KEY)
+        .then((stored) => {
+          if (stored) setDraft(stored);
+        })
+        .catch(() => {
+          // IDB unavailable (e.g. private browsing in Safari) — start empty, continue normally.
+        })
+        .finally(() => setIsHydrating(false));
+    } catch {
+      // indexedDB not defined or inaccessible — proceed without persisted draft.
+      setIsHydrating(false);
+    }
   }, []);
 
   // ── Dual persistence: IDB (active draft state) + offline queue (sync) ───────
 
   const persist = useCallback((d: OfferDraft): void => {
-    // Primary: IDB active-draft key — read back for page-reload hydration.
-    void set(ACTIVE_DRAFT_IDB_KEY, d).catch(() => {});
-    // Secondary: offline queue — for eventual server sync (§25.1).
-    void addEntry('OFFER_DRAFT_SAVE', { draftId: d.id, draft: d }).catch(() => {});
+    // idb-keyval can throw synchronously when indexedDB is unavailable.
+    try {
+      // Primary: IDB active-draft key — read back for page-reload hydration.
+      void set(ACTIVE_DRAFT_IDB_KEY, d).catch(() => {});
+    } catch { /* indexedDB unavailable */ }
+    try {
+      // Secondary: offline queue — for eventual server sync (§25.1).
+      void addEntry('OFFER_DRAFT_SAVE', { draftId: d.id, draft: d }).catch(() => {});
+    } catch { /* offline queue unavailable */ }
   }, []);
 
   // ── initDraft ───────────────────────────────────────────────────────────────
@@ -284,7 +298,9 @@ export function DraftProvider({ children }: DraftProviderProps) {
 
   const clearDraft = useCallback(async (): Promise<void> => {
     setDraft(null);
-    await del(ACTIVE_DRAFT_IDB_KEY).catch(() => {});
+    try {
+      await del(ACTIVE_DRAFT_IDB_KEY).catch(() => {});
+    } catch { /* indexedDB unavailable */ }
   }, []);
 
   // ── Derived state ───────────────────────────────────────────────────────────
