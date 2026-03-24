@@ -10,8 +10,13 @@ const ReactQueryDevtools = import.meta.env.MODE === 'development'
   ? lazy(() => import('@tanstack/react-query-devtools').then(module => ({ default: module.ReactQueryDevtools })))
   : null;
 import { AuthProvider } from "@/contexts/AuthContext";
-import { ConfigProvider } from "@/contexts/ConfigContext";
-import { DraftProvider } from "@/contexts/DraftContext";
+// ConfigProvider and DraftProvider must be lazy-loaded to keep their heavy
+// transitive deps (idb-keyval, offline-queue) out of the main chunk.
+// Eagerly importing them (PR #482) moved ~12KB of IDB code into the main
+// bundle, which broke app startup on some Android WebViews where the
+// esnext-only syntax was not supported or idb-keyval threw synchronously.
+const ConfigProvider = lazy(() => import("@/contexts/ConfigContext").then(m => ({ default: m.ConfigProvider })));
+const DraftProvider = lazy(() => import("@/contexts/DraftContext").then(m => ({ default: m.DraftProvider })));
 // useOfflineSync is lazy-loaded to reduce main chunk — it pulls in offline-queue (~12KB source)
 // Lazy-load layout components — only one shell layout is used at runtime (gated by FF_NEW_SHELL)
 const AppLayout = lazy(() => import("@/components/layout/AppLayout").then(m => ({ default: m.AppLayout })));
@@ -211,6 +216,7 @@ const App = () => (
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <Suspense fallback={<PageLoader />}>
             <ConfigProvider>
             <AuthProvider>
               <Suspense fallback={null}>
@@ -395,6 +401,7 @@ const App = () => (
               </DraftProvider>
             </AuthProvider>
             </ConfigProvider>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
         {/* React Query Devtools - ONLY in development */}
