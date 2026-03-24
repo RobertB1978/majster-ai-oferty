@@ -2,34 +2,41 @@
  * useUnsavedChanges — ochrona przed utratą niezapisanych zmian.
  *
  * Używa:
- *  - useBlocker (React Router v6.4+) — blokuje nawigację wewnątrz SPA
  *  - beforeunload — chroni przed zamknięciem karty / odświeżeniem strony
+ *
+ * UWAGA: useBlocker (blokada nawigacji wewnątrz SPA) celowo nie jest używany,
+ * ponieważ wymaga data routera (createBrowserRouter + RouterProvider).
+ * Aplikacja używa BrowserRouter, który nie dostarcza DataRouterContext.
+ * Wywołanie useBlocker z BrowserRouter rzuca Error("") w produkcji (invariant
+ * bez wiadomości w zminifikowanym bundlu), co powoduje crash ErrorBoundary.
  *
  * Użycie:
  *   const { isDirty, setDirty, blocker } = useUnsavedChanges(hasChanges);
- *   // renderuj <UnsavedChangesDialog blocker={blocker} /> jeśli blocker.state === 'blocked'
+ *   // blocker.state jest zawsze 'unblocked' — dialog nigdy nie pojawia się
  */
 import { useEffect, useCallback, useRef } from 'react';
-import { useBlocker, type Blocker } from 'react-router-dom';
+import type { Blocker } from 'react-router-dom';
+
+// Statyczny blocker zwracany gdy useBlocker nie jest dostępny (BrowserRouter)
+const IDLE_BLOCKER: Blocker = {
+  state: 'unblocked',
+  proceed: undefined,
+  reset: undefined,
+  location: undefined,
+};
 
 interface UseUnsavedChangesReturn {
   /** Czy są niezapisane zmiany */
   isDirty: boolean;
   /** Ustaw stan zmian (true = brudny) */
   setDirty: (dirty: boolean) => void;
-  /** Blocker z React Router – użyj do wyświetlenia dialogu */
+  /** Blocker – zawsze 'unblocked' (BrowserRouter nie wspiera useBlocker) */
   blocker: Blocker;
 }
 
 export function useUnsavedChanges(dirty: boolean): UseUnsavedChangesReturn {
   const dirtyRef = useRef(dirty);
   dirtyRef.current = dirty;
-
-  // Blokada nawigacji wewnątrz SPA
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      dirtyRef.current && currentLocation.pathname !== nextLocation.pathname,
-  );
 
   // Ochrona przed zamknięciem karty / odświeżeniem
   useEffect(() => {
@@ -47,5 +54,5 @@ export function useUnsavedChanges(dirty: boolean): UseUnsavedChangesReturn {
     dirtyRef.current = _dirty;
   }, []);
 
-  return { isDirty: dirty, setDirty, blocker };
+  return { isDirty: dirty, setDirty, blocker: IDLE_BLOCKER };
 }
