@@ -128,7 +128,7 @@ export default defineConfig(({ mode }) => {
       // append sourceMappingURL comments to JS files, so source code is not
       // publicly accessible via browser DevTools in production.
       sourcemap: mode === "production" ? "hidden" : false,
-      target: "es2020",
+      target: "esnext",
       minify: "esbuild",
       cssMinify: true,
       rollupOptions: {

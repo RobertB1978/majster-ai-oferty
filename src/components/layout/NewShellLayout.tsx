@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NewShellBottomNav } from './NewShellBottomNav';
@@ -30,15 +31,19 @@ const OnboardingModal = lazy(
  * Stary shell (AppLayout) pozostaje nienaruszony.
  */
 export function NewShellLayout() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const [showContent, setShowContent] = useState(false);
-  const { t: _t } = useTranslation();
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    setShowContent(!isLoading && !!user);
+  }, [isLoading, user]);
 
   // Auth guard is handled by ProtectedRoute (single source of truth).
-  // This effect drives the fade-in animation once the user is confirmed.
-  useEffect(() => {
-    setShowContent(!!user);
-  }, [user]);
+  // This loading state is only for the fade-in animation.
+  if (isLoading) {
+    return <LoadingScreen message={t('app.loading')} variant="fullscreen" />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background transition-colors duration-300">
