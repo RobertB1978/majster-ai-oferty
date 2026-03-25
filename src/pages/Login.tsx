@@ -130,11 +130,7 @@ export default function Login() {
         queryClient.prefetchQuery({ queryKey: ['dashboard-clients-count', data.user.id] });
       }
 
-      // Navigation is handled by the useEffect on `user` (line ~51).
-      // Calling navigate() here used to race with onAuthStateChange — the
-      // ProtectedRoute might not yet see the user and redirect back to /login.
-      // With the eager setUser fix in AuthContext.login() this should be safe,
-      // but we keep useEffect as the single navigation trigger for clarity.
+      navigate(CANONICAL_HOME);
     }
   };
 
