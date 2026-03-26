@@ -21,6 +21,7 @@ import {
   useSkipOnboarding,
   ONBOARDING_STEPS
 } from '@/hooks/useOnboarding';
+import OnboardingStep4 from '@/components/illustrations/OnboardingStep4';
 
 const stepIcons = [Building2, Users, FolderOpen, FileText, Download];
 
@@ -123,9 +124,9 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-success/10"
+              className="flex justify-center mb-4"
             >
-              <Sparkles className="h-10 w-10 text-success" />
+              <OnboardingStep4 size={140} />
             </motion.div>
             <h2 className="text-2xl font-bold mb-2">{t('onboarding.congratsTitle')}</h2>
             <p className="text-muted-foreground mb-6">
