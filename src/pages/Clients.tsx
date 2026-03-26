@@ -15,6 +15,7 @@ import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Users, Loader2, FileText, Fo
 import { Link } from 'react-router-dom';
 import { ClientsGridSkeleton } from '@/components/ui/skeleton-screens';
 import { toast } from 'sonner';
+import EmptyClients from '@/components/illustrations/EmptyClients';
 
 interface ClientFormData {
   name: string;
@@ -261,13 +262,11 @@ export default function Clients() {
         <ClientsGridSkeleton />
       ) : showEmptyState ? (
         <Card className="border-dashed border-2">
-          <CardContent className="py-16 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <Users className="h-8 w-8 text-primary" />
-            </div>
+          <CardContent className="py-8 text-center">
+            <EmptyClients size={160} className="mx-auto mb-2" />
             <h3 className="text-lg font-semibold mb-2">{t('clients.noClients')}</h3>
             <p className="text-muted-foreground mb-4">{t('clients.createFirst')}</p>
-            <Button onClick={() => handleOpenDialog()} className="bg-primary">
+            <Button onClick={() => handleOpenDialog()} className="bg-primary min-h-[44px]">
               <Plus className="mr-2 h-4 w-4" />
               {t('clients.addClient')}
             </Button>

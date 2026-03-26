@@ -1,11 +1,23 @@
-import { LucideIcon } from 'lucide-react';
+import type { ComponentType } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './button';
+
+interface IllustrationProps {
+  className?: string;
+  size?: number;
+  animated?: boolean;
+}
 
 interface EmptyStateProps {
   icon: LucideIcon;
   title: string;
   description?: string;
+  /**
+   * Optional SVG illustration component (roadmap §7 — Faza 4).
+   * When provided, replaces the icon circle with the illustration.
+   */
+  illustration?: ComponentType<IllustrationProps>;
   /**
    * Label for the call-to-action button.
    * Preferred API: pass `ctaLabel` + `onCta`.
@@ -27,12 +39,16 @@ interface EmptyStateProps {
 /**
  * Empty state placeholder used when a list or section has no content.
  *
+ * Pass `illustration` to show a branded SVG (from illustrations/) instead of
+ * the default icon circle. Falls back to icon when not provided.
+ *
  * Always include a CTA (`ctaLabel` + `onCta`) when the user can take an action
  * to resolve the empty state (e.g. "Create your first offer").
  *
  * @example
  * <EmptyState
  *   icon={FileText}
+ *   illustration={EmptyOffers}
  *   title={t('offers.empty.title')}
  *   description={t('offers.empty.desc')}
  *   ctaLabel={t('offers.empty.cta')}
@@ -41,6 +57,7 @@ interface EmptyStateProps {
  */
 export function EmptyState({
   icon: Icon,
+  illustration: Illustration,
   title,
   description,
   ctaLabel,
@@ -58,9 +75,13 @@ export function EmptyState({
       className={cn('flex flex-col items-center justify-center py-12 text-center', className)}
       role="status"
     >
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-        <Icon className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
-      </div>
+      {Illustration ? (
+        <Illustration size={160} className="mb-2 opacity-90" />
+      ) : (
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+          <Icon className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
+        </div>
+      )}
       <h3 className="mb-2 text-lg font-semibold">{title}</h3>
       {description && (
         <p className="mb-4 max-w-sm text-sm text-muted-foreground">{description}</p>

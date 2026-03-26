@@ -2,11 +2,17 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Home, Plus, MoreHorizontal, ArrowRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import OnboardingStep1 from '@/components/illustrations/OnboardingStep1';
+import OnboardingStep2 from '@/components/illustrations/OnboardingStep2';
+import OnboardingStep3 from '@/components/illustrations/OnboardingStep3';
 
 const LS_KEY = 'onboarding_new_shell_completed';
 
+type IllustrationComponent = typeof OnboardingStep1;
+
 interface OnboardingStep {
   icon: React.ComponentType<{ className?: string }>;
+  illustration: IllustrationComponent;
   titleKey: string;
   descKey: string;
 }
@@ -14,16 +20,19 @@ interface OnboardingStep {
 const STEPS: OnboardingStep[] = [
   {
     icon: Home,
+    illustration: OnboardingStep1,
     titleKey: 'newShell.onboarding.step1Title',
     descKey: 'newShell.onboarding.step1Desc',
   },
   {
     icon: Plus,
+    illustration: OnboardingStep2,
     titleKey: 'newShell.onboarding.step2Title',
     descKey: 'newShell.onboarding.step2Desc',
   },
   {
     icon: MoreHorizontal,
+    illustration: OnboardingStep3,
     titleKey: 'newShell.onboarding.step3Title',
     descKey: 'newShell.onboarding.step3Desc',
   },
@@ -92,17 +101,15 @@ export function NewShellOnboarding() {
         {/* Przycisk pomiń */}
         <button
           onClick={complete}
-          className="absolute top-4 right-4 p-1 rounded-md text-muted-foreground hover:text-foreground"
+          className="absolute top-4 right-4 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
           aria-label={t('newShell.onboarding.skip')}
         >
           <X className="h-5 w-5" />
         </button>
 
-        {/* Ikona kroku */}
-        <div className="flex justify-center mb-4">
-          <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <current.icon className="h-8 w-8 text-primary" />
-          </div>
+        {/* Ilustracja kroku (Faza 5) */}
+        <div className="flex justify-center mb-2">
+          <current.illustration size={112} />
         </div>
 
         {/* Treść */}
@@ -129,7 +136,7 @@ export function NewShellOnboarding() {
         {/* Przycisk Dalej / Zakończ */}
         <button
           onClick={next}
-          className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground font-medium rounded-xl py-3.5 transition-colors hover:bg-primary/90 active:bg-primary/80"
+          className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground font-medium rounded-xl py-3.5 min-h-[44px] transition-colors hover:bg-primary/90 active:bg-primary/80"
         >
           {step < STEPS.length - 1 ? (
             <>

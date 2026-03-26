@@ -17,6 +17,7 @@ import { defaultTemplates, trades } from '@/data/defaultTemplates';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
+import EmptyTemplates from '@/components/illustrations/EmptyTemplates';
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
 
@@ -257,13 +258,17 @@ export default function ItemTemplates() {
 
       {templates.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center">
-            <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+          <CardContent className="py-8 text-center">
+            {totalCount === 0 && !search && categoryFilter === 'all' ? (
+              <EmptyTemplates size={160} className="mx-auto mb-2" />
+            ) : (
+              <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+            )}
             <p className="text-muted-foreground mb-4">
               {totalCount === 0 && !search && categoryFilter === 'all' ? t('templates.noTemplates') : t('templates.noResults')}
             </p>
             {totalCount === 0 && !search && categoryFilter === 'all' && (
-              <Button onClick={() => setIsImportDialogOpen(true)}>
+              <Button onClick={() => setIsImportDialogOpen(true)} className="min-h-[44px]">
                 <Download className="mr-2 h-4 w-4" />
                 {t('templates.importReady')}
               </Button>
