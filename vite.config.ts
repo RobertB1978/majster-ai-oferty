@@ -133,37 +133,44 @@ export default defineConfig(({ mode }) => {
       cssMinify: true,
       rollupOptions: {
         output: {
-          manualChunks: {
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'ui-vendor': [
-              '@radix-ui/react-dialog',
-              '@radix-ui/react-dropdown-menu',
-              '@radix-ui/react-select',
-              '@radix-ui/react-tabs',
-              '@radix-ui/react-toast',
-            ],
-            'supabase-vendor': ['@supabase/supabase-js'],
-            'form-vendor': ['react-hook-form', 'zod', '@hookform/resolvers'],
-            'charts-vendor': ['recharts'],
-            // Performance pack: isolate heavy libs that are loaded on-demand
-            'framer-motion-vendor': ['framer-motion'],
-            'leaflet-vendor': ['leaflet'],
-            'pdf-vendor': ['jspdf', 'jspdf-autotable'],
-            // i18n vendor — isolate translation runtime from main bundle
-            'i18n-vendor': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
-            // Helmet + query vendor — reduce main chunk size
-            'query-vendor': ['@tanstack/react-query'],
-            'helmet-vendor': ['react-helmet-async'],
-            // Lucide icons — used everywhere, isolate from main bundle
-            'icons-vendor': ['lucide-react'],
-            // Date utilities
-            'date-vendor': ['date-fns'],
-            // DOMPurify — isolate sanitization lib
-            'purify-vendor': ['dompurify'],
-            // Sonner toast — isolate notification lib
-            'sonner-vendor': ['sonner'],
-            // Sentry — isolate error tracking
-            'sentry-vendor': ['@sentry/react'],
+          manualChunks(id) {
+            // ── Vendor chunks ──
+            if (id.includes('node_modules')) {
+              if (id.includes('react-dom') || id.includes('react-router-dom')) return 'react-vendor';
+              if (id.includes('@radix-ui')) return 'ui-vendor';
+              if (id.includes('@supabase')) return 'supabase-vendor';
+              if (id.includes('react-hook-form') || id.includes('zod') || id.includes('@hookform')) return 'form-vendor';
+              if (id.includes('recharts') || id.includes('d3-')) return 'charts-vendor';
+              if (id.includes('framer-motion')) return 'framer-motion-vendor';
+              if (id.includes('leaflet')) return 'leaflet-vendor';
+              if (id.includes('jspdf')) return 'pdf-vendor';
+              if (id.includes('html2canvas')) return 'html2canvas-vendor';
+              if (id.includes('i18next')) return 'i18n-vendor';
+              if (id.includes('@tanstack')) return 'query-vendor';
+              if (id.includes('react-helmet')) return 'helmet-vendor';
+              if (id.includes('lucide-react')) return 'icons-vendor';
+              if (id.includes('date-fns')) return 'date-vendor';
+              if (id.includes('dompurify')) return 'purify-vendor';
+              if (id.includes('sonner')) return 'sonner-vendor';
+              if (id.includes('@sentry')) return 'sentry-vendor';
+              if (id.includes('qrcode')) return 'qrcode-vendor';
+              if (id.includes('cmdk')) return 'cmdk-vendor';
+            }
+            // ── App code splitting — break up the main bundle ──
+            if (id.includes('/src/components/landing/')) return 'landing';
+            if (id.includes('/src/components/admin/')) return 'admin';
+            if (id.includes('/src/components/calendar/')) return 'calendar';
+            if (id.includes('/src/components/marketplace/')) return 'marketplace';
+            if (id.includes('/src/components/documents/')) return 'documents';
+            if (id.includes('/src/components/team/')) return 'team';
+            if (id.includes('/src/components/finance/')) return 'finance';
+            if (id.includes('/src/components/illustrations/')) return 'illustrations';
+            if (id.includes('/src/components/settings/')) return 'settings';
+            if (id.includes('/src/components/onboarding/')) return 'onboarding';
+            if (id.includes('/src/components/billing/')) return 'billing';
+            if (id.includes('/src/components/map/')) return 'map-components';
+            if (id.includes('/src/components/photos/')) return 'photos';
+            if (id.includes('/src/components/voice/')) return 'voice';
           },
           // Optimize chunk file naming for better caching
           chunkFileNames: 'assets/js/[name]-[hash].js',

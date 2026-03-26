@@ -34,8 +34,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useFreeTierOfferQuota } from '@/hooks/useFreeTierOfferQuota';
 import { FreeTierPaywallModal } from '@/components/billing/FreeTierPaywallModal';
 import { useSendOffer } from '@/hooks/useSendOffer';
-import { buildOfferPdfPayloadFromOffer } from '@/lib/offerPdfPayloadBuilder';
-import { generateOfferPdf } from '@/lib/offerPdfGenerator';
+import { generateOfferPdfWithServer } from '@/lib/generateServerPdf';
 import { useAcceptanceLink, useCreateAcceptanceLink, buildAcceptanceLinkUrl } from '@/hooks/useAcceptanceLink';
 import { formatNumber, formatDate as formatDateLocale } from '@/lib/formatters';
 
@@ -199,8 +198,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
     if (!user || !data) return;
     setIsPdfGenerating(true);
     try {
-      const payload = await buildOfferPdfPayloadFromOffer(offerId, user.id);
-      const pdfBlob = await generateOfferPdf(payload);
+      const pdfBlob = await generateOfferPdfWithServer(offerId, user.id);
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = url;
