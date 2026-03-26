@@ -14,6 +14,7 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useFieldSafety } from '@/hooks/useFieldSafety';
 import { FieldSafetyBanner } from './FieldSafetyBanner';
 import { GlobalSearch } from './GlobalSearch';
+import { TabletSidebar } from './TabletSidebar';
 
 // Lazy-load heavy layout components that are not needed for initial render
 const AiChatAgent = lazy(() => import('@/components/ai/AiChatAgent').then(m => ({ default: m.AiChatAgent })));
@@ -62,7 +63,21 @@ export function AppLayout() {
       <TopBar />
       <FieldSafetyBanner />
       <Navigation />
-      <main id="main-content" className={`flex-1 container py-6 px-4 md:px-6 pb-20 lg:pb-6 transition-opacity duration-150 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
+
+      {/* Tablet icon sidebar — visible only on 768–1023px (roadmap §17) */}
+      <TabletSidebar />
+
+      {/*
+        Main content area.
+        md:pl-16 — offset for TabletSidebar (64px) on 768-1023px.
+        lg:pl-0  — reset for desktop (Navigation is top bar, no sidebar).
+        pb-20    — bottom padding so MobileBottomNav never overlaps content.
+        lg:pb-6  — desktop has no bottom nav so reduce bottom padding.
+      */}
+      <main
+        id="main-content"
+        className={`flex-1 container py-6 px-4 md:px-6 md:pl-[calc(1rem+4rem)] lg:pl-6 pb-20 lg:pb-6 transition-opacity duration-150 ${showContent ? 'opacity-100' : 'opacity-0'}`}
+      >
         <PageTransition>
           <Outlet />
         </PageTransition>
@@ -71,7 +86,7 @@ export function AppLayout() {
       {/* Footer */}
       <Footer />
 
-      {/* Mobile bottom navigation */}
+      {/* Mobile bottom navigation — md:hidden (tablet uses TabletSidebar) */}
       <MobileBottomNav />
 
       {/* Global Search palette — always mounted, opens with / or Ctrl+K */}
