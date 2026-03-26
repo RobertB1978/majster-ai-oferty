@@ -1,100 +1,36 @@
+/**
+ * Navigation — top nav bar for mobile (<768px hamburger) and desktop (≥1024px full bar).
+ * On tablet (768–1023px) this component is hidden; TabletSidebar takes over.
+ *
+ * Breakpoint map:
+ *  < 768px  → hamburger menu button (shown via `md:hidden` div)
+ *  768–1023px → HIDDEN — TabletSidebar renders instead
+ *  ≥ 1024px → horizontal scroll nav bar (shown via `hidden lg:block`)
+ */
 import { useTranslation } from 'react-i18next';
 import { NavLink } from '@/components/NavLink';
 import {
-  LayoutDashboard,
-  Users,
-  FolderKanban,
   Menu,
   X,
-  Building2,
-  Package,
-  Calendar,
-  BarChart3,
-  UsersRound,
-  TrendingUp,
-  Store,
-  Settings,
-  CreditCard,
   ChevronDown,
-  Briefcase,
-  Wallet,
-  FileText,
-  UserPlus,
-  Zap,
-  type LucideIcon,
 } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { useConfig } from '@/contexts/ConfigContext';
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  LayoutDashboard, Users, FolderKanban, Building2, Package, Calendar,
-  BarChart3, UsersRound, TrendingUp, Store, Settings, CreditCard,
-  Briefcase, Wallet, FileText, UserPlus, Zap,
-};
-
-/** Map config item IDs to i18n translation keys so nav labels react to language changes. */
-const NAV_LABEL_KEYS: Record<string, string> = {
-  dashboard: 'nav.dashboard',
-  offers: 'nav.offers',
-  jobs: 'nav.projects',
-  clients: 'nav.clients',
-  calendar: 'nav.calendar',
-  finance: 'nav.finance',
-  templates: 'nav.templates',
-  team: 'nav.team',
-  marketplace: 'nav.marketplace',
-  analytics: 'nav.analytics',
-  plan: 'nav.plan',
-  quickEstimate: 'nav.quickEstimate',
-};
+import { useNavItems } from '@/hooks/useNavItems';
 
 export function Navigation() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const { config } = useConfig();
-
-  // Items that belong in admin panel only - never show in user navigation
-  // 'plan' is intentionally excluded — users should access their subscription page
-  // 'marketplace' and 'team' removed: both features activated in PR activation-framework
-  const ADMIN_ONLY_IDS = new Set(['analytics']);
-
-  const navItems = useMemo(() => {
-    const configItems = config.navigation.mainItems
-      .filter((item) => item.visible && !ADMIN_ONLY_IDS.has(item.id))
-      .sort((a, b) => a.order - b.order)
-      .map((item) => ({
-        to: item.path,
-        // Resolve label via i18n key when available; fall back to config label
-        label: NAV_LABEL_KEYS[item.id] ? t(NAV_LABEL_KEYS[item.id]) : item.label,
-        icon: ICON_MAP[item.icon] || LayoutDashboard,
-        comingSoon: item.comingSoon,
-      }));
-
-    // Always include offers + profile + settings if not in config
-    const paths = new Set(configItems.map((i) => i.to));
-    if (!paths.has('/app/offers')) {
-      configItems.splice(1, 0, { to: '/app/offers', label: t('nav.offers'), icon: FileText, comingSoon: false });
-    }
-    if (!paths.has('/app/profile')) {
-      configItems.push({ to: '/app/profile', label: t('nav.profile'), icon: Building2, comingSoon: false });
-    }
-    if (!paths.has('/app/settings')) {
-      configItems.push({ to: '/app/settings', label: t('nav.settings'), icon: Settings, comingSoon: false });
-    }
-    return configItems;
-  // i18n.language added explicitly: t reference is stable in react-i18next v16,
-  // so we depend on language directly to force recompute on language change.
-  }, [config.navigation.mainItems, t, i18n.language]);
+  const navItems = useNavItems();
 
   return (
     <nav className="border-b border-border bg-card sticky top-16 z-40">
       <div className="container">
-        {/* Mobile menu button */}
-        <div className="flex h-12 items-center justify-between sm:hidden">
+        {/* Mobile menu button — only on < 768px (tablet uses TabletSidebar) */}
+        <div className="flex h-12 items-center justify-between md:hidden">
           <Button
             variant="ghost"
             size="sm"
@@ -107,8 +43,8 @@ export function Navigation() {
           </Button>
         </div>
 
-        {/* Desktop navigation with horizontal scroll */}
-        <ScrollArea className="hidden sm:block w-full">
+        {/* Desktop navigation — only on ≥ 1024px (tablet uses TabletSidebar) */}
+        <ScrollArea className="hidden lg:block w-full">
           <div className="flex h-12 items-center gap-0.5 py-1">
             {navItems.map((item) => (
               <NavLink
@@ -123,7 +59,7 @@ export function Navigation() {
                 activeClassName="bg-primary/10 text-primary border border-primary/20"
               >
                 <item.icon className="h-4 w-4" />
-                <span className="hidden lg:inline">{item.label}</span>
+                <span>{item.label}</span>
                 {item.comingSoon && (
                   <Badge
                     variant="secondary"
@@ -138,9 +74,9 @@ export function Navigation() {
           <ScrollBar orientation="horizontal" className="invisible" />
         </ScrollArea>
 
-        {/* Mobile navigation grid */}
+        {/* Mobile navigation grid — dropdown on < 768px */}
         {isOpen && (
-          <div className="pb-4 sm:hidden animate-fade-in">
+          <div className="pb-4 md:hidden animate-fade-in">
             <div className="grid grid-cols-2 gap-2 pt-2">
               {navItems.map((item) => (
                 <NavLink
