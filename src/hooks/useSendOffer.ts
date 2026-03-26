@@ -20,8 +20,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { offersKeys } from '@/hooks/useOffers';
 import { offerWizardKeys } from '@/hooks/useOfferWizard';
-import { generateOfferPdf, uploadOfferPdf } from '@/lib/offerPdfGenerator';
-import { buildOfferPdfPayloadFromOffer } from '@/lib/offerPdfPayloadBuilder';
+import { uploadOfferPdf } from '@/lib/offerPdfGenerator';
+import { generateOfferPdfEdge } from '@/lib/generate-offer-pdf-edge';
 import { trackEvent } from '@/lib/analytics/track';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { logger } from '@/lib/logger';
@@ -92,8 +92,7 @@ export function useSendOffer() {
       // ── 3. Generate + upload PDF (non-fatal) ──────────────────────────
       let pdfUrl: string | null = null;
       try {
-        const payload = await buildOfferPdfPayloadFromOffer(offerId, user.id);
-        const pdfBlob = await generateOfferPdf(payload);
+        const pdfBlob = await generateOfferPdfEdge(offerId, user.id);
         const { publicUrl } = await uploadOfferPdf({
           projectId: offerId,
           pdfBlob,
