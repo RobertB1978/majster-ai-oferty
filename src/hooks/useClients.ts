@@ -9,6 +9,7 @@ export interface Client {
   id: string;
   user_id: string;
   name: string;
+  nip: string | null;
   phone: string | null;
   email: string | null;
   address: string | null;
@@ -53,7 +54,7 @@ export function useClientsPaginated(params: ClientsQueryParams = {}) {
       let query = supabase
         .from('clients')
         // Only select columns needed for list view (not SELECT *)
-        .select('id, name, email, phone, created_at', { count: 'exact' });
+        .select('id, name, nip, email, phone, created_at', { count: 'exact' });
 
       // Server-side search filter (sanitize to prevent PostgREST filter injection)
       if (search?.trim()) {
@@ -100,7 +101,7 @@ export function useClients() {
       const { data, error } = await supabase
         .from('clients')
         // Optimized: removed SELECT * - only necessary columns
-        .select('id, name, email, phone, created_at')
+        .select('id, name, nip, email, phone, created_at')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -119,7 +120,7 @@ export function useClient(id: string) {
       const { data, error } = await supabase
         .from('clients')
         // Detail view: fetch all columns including address
-        .select('id, name, phone, email, address, created_at')
+        .select('id, name, nip, phone, email, address, created_at')
         .eq('id', id)
         .maybeSingle();
 
@@ -140,7 +141,7 @@ export function useAddClient() {
       const { data, error } = await supabase
         .from('clients')
         .insert({ ...client, user_id: user!.id })
-        .select('id, name, email, phone, created_at')
+        .select('id, name, nip, email, phone, created_at')
         .single();
 
       if (error) throw error;
@@ -174,7 +175,7 @@ export function useUpdateClient() {
         .from('clients')
         .update(client)
         .eq('id', id)
-        .select('id, name, email, phone, created_at')
+        .select('id, name, nip, email, phone, created_at')
         .single();
 
       if (error) throw error;

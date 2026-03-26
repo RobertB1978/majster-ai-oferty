@@ -1,11 +1,25 @@
 import { z } from 'zod';
 import i18n from '@/i18n';
 
+// NIP checksum validation (Polish Tax ID — 10 digits, weighted sum mod 11)
+function validateNip(nip: string): boolean {
+  const digits = nip.replace(/[\s-]/g, '');
+  if (!/^\d{10}$/.test(digits)) return false;
+  const weights = [6, 5, 7, 2, 3, 4, 5, 6, 7];
+  const sum = weights.reduce((acc, w, i) => acc + w * Number(digits[i]), 0);
+  return sum % 11 === Number(digits[9]);
+}
+
 // Client validation
 export const clientSchema = z.object({
   name: z.string()
     .min(1, i18n.t('validations.client.nameRequired'))
     .max(100, i18n.t('validations.client.nameMaxLength', { max: 100 })),
+  nip: z.string()
+    .optional()
+    .refine(val => !val || validateNip(val), {
+      message: i18n.t('validations.client.nipInvalid'),
+    }),
   phone: z.string()
     .optional()
     .refine(val => !val || val.replace(/\D/g, '').length >= 9, {

@@ -430,7 +430,9 @@
       "updateError": "Błąd przy aktualizacji klienta",
       "deleted": "Klient usunięty",
       "deleteError": "Błąd przy usuwaniu klienta"
-    }
+    },
+    "nip": "NIP",
+    "nipPlaceholder": "1234567890"
   },
   "calendar": {
     "title": "Kalendarz",
@@ -1888,7 +1890,8 @@
       "nameMaxLength": "Nazwa max {{max}} znaków",
       "phoneMinDigits": "Numer telefonu musi mieć min. {{min}} cyfr",
       "emailInvalid": "Nieprawidłowy format email",
-      "addressMaxLength": "Adres max {{max}} znaków"
+      "addressMaxLength": "Adres max {{max}} znaków",
+      "nipInvalid": "Nieprawidłowy NIP (wymagane 10 cyfr z poprawną sumą kontrolną)"
     },
     "project": {
       "nameRequired": "Nazwa projektu jest wymagana",

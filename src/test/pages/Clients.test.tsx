@@ -244,6 +244,7 @@ describe('Clients', () => {
       await waitFor(() => {
         expect(mockAddClient.mutateAsync).toHaveBeenCalledWith({
           name: 'New Client',
+          nip: '',
           phone: '',
           email: '',
           address: '',
