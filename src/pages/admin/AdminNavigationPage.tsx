@@ -92,10 +92,10 @@ export default function AdminNavigationPage() {
                       <Switch checked={item.comingSoon} onCheckedChange={() => toggleField(i, 'comingSoon')} />
                     </div>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={i === 0} onClick={() => moveItem(i, -1)} aria-label={t('adminNav.moveUp')}>
+                      <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" disabled={i === 0} onClick={() => moveItem(i, -1)} aria-label={t('adminNav.moveUp')}>
                         <ArrowUp className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={i === items.length - 1} onClick={() => moveItem(i, 1)} aria-label={t('adminNav.moveDown')}>
+                      <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" disabled={i === items.length - 1} onClick={() => moveItem(i, 1)} aria-label={t('adminNav.moveDown')}>
                         <ArrowDown className="h-4 w-4" />
                       </Button>
                     </div>
