@@ -285,7 +285,7 @@ export default function Clients() {
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {clients.map((client, index) => (
-              <Card key={client.id} className="group hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300" style={{ animationDelay: `${index * 50}ms` }}>
+              <Card key={client.id} className="group hover:shadow-card-hover motion-safe:hover:-translate-y-1 transition-all duration-300" style={{ animationDelay: `${index * 50}ms` }}>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-start justify-between text-lg">
                     <span className="line-clamp-2">{client.name}</span>

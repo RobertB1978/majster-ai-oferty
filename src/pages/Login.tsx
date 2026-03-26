@@ -274,7 +274,7 @@ export default function Login() {
                     border: '1px solid rgba(255,255,255,0.15)',
                   }}
                 >
-                  <span style={{ color: 'hsl(38 92% 60%)' }} aria-hidden="true">{pill.icon}</span>
+                  <span style={{ color: 'var(--accent-amber)' }} aria-hidden="true">{pill.icon}</span>
                   {pill.text}
                 </div>
               ))}
