@@ -201,6 +201,8 @@ export default {
         // Landing page v3 animations
         float:    'float 4s ease-in-out infinite',
         'fade-up': 'fade-up 0.5s ease-out forwards',
+        // Roadmap §8: Button error shake — 200ms
+        shake: 'shake 0.2s ease-in-out',
       },
       transitionTimingFunction: {
         'smooth': 'cubic-bezier(0.16, 1, 0.3, 1)',

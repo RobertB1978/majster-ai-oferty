@@ -1,32 +1,21 @@
 /**
- * Button Component
+ * Button Component — §8 Micro-Interactions + §11.1 Core Components
  *
- * A versatile button component with multiple variants, sizes, and states.
+ * A versatile button with loading/success/error feedback states.
  * Built with Radix UI Slot for composition and CVA for variant management.
  *
  * @example
  * ```tsx
- * // Basic usage
  * <Button>Click me</Button>
- *
- * // With variants
+ * <Button isLoading>Saving…</Button>
+ * <Button feedbackState="success">Saved</Button>
  * <Button variant="destructive">Delete</Button>
- * <Button variant="outline" size="lg">Large Outline</Button>
- *
- * // Icon button
- * <Button variant="ghost" size="icon" aria-label="Close">
- *   <X className="h-4 w-4" />
- * </Button>
- *
- * // As child (render as link)
- * <Button asChild>
- *   <a href="/dashboard">Dashboard</a>
- * </Button>
  * ```
  */
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2, Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -72,27 +61,61 @@ const buttonVariants = cva(
 /**
  * Button component props.
  *
- * @property {ButtonVariant} variant - Visual style variant (default, destructive, outline, etc.)
- * @property {ButtonSize} size - Size variant (default, sm, lg, xl, icon, etc.)
- * @property {boolean} asChild - Render as child element (uses Radix Slot)
- *
- * @extends React.ButtonHTMLAttributes<HTMLButtonElement>
+ * Roadmap §8 feedback states:
+ * - isLoading: spinner replaces first child icon
+ * - feedbackState "success": green flash + check (1.5s auto-reset)
+ * - feedbackState "error": red + shake 200ms
  */
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-  /** When true, renders the child element instead of a button */
   asChild?: boolean;
+  /** Shows spinner and disables button. Roadmap §8: "Loading (spinner replaces icon)" */
+  isLoading?: boolean;
+  /** Transient feedback state. Roadmap §8: success = green flash + check, error = shake */
+  feedbackState?: 'idle' | 'success' | 'error';
 }
 
 /**
  * Button component with forward ref support.
- * Supports all standard button HTML attributes plus variant and size props.
+ * Supports loading spinner, success flash, and error shake per §8 micro-interactions.
  */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+  ({ className, variant, size, asChild = false, isLoading, feedbackState = 'idle', children, disabled, ...props }, ref) => {
+    if (asChild) {
+      return <Slot className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props}>{children}</Slot>;
+    }
+
+    const isDisabled = disabled || isLoading;
+
+    return (
+      <button
+        className={cn(
+          buttonVariants({ variant, size }),
+          feedbackState === 'success' && 'bg-[var(--state-success)] text-white shadow-none',
+          feedbackState === 'error' && 'animate-shake bg-[var(--state-error)] text-white',
+          className,
+        )}
+        ref={ref}
+        disabled={isDisabled}
+        aria-busy={isLoading || undefined}
+        {...props}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            {children}
+          </>
+        ) : feedbackState === 'success' ? (
+          <>
+            <Check className="size-4" aria-hidden="true" />
+            {children}
+          </>
+        ) : (
+          children
+        )}
+      </button>
+    );
   },
 );
 Button.displayName = "Button";
