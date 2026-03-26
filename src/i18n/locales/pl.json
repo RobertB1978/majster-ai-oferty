@@ -5137,5 +5137,14 @@
       "photos": "{{count}} zdjęć z terenu",
       "photos_plural": "{{count}} zdjęć z terenu"
     }
+  },
+  "globalSearch": {
+    "placeholder": "Szukaj ofert, klientów, projektów…",
+    "searching": "Szukam…",
+    "noResults": "Brak wyników",
+    "hint": "Wpisz co najmniej 2 znaki, aby wyszukać",
+    "offers": "Oferty",
+    "clients": "Klienci",
+    "projects": "Projekty"
   }
 }

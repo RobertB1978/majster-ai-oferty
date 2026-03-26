@@ -43,6 +43,7 @@ import { useDraftContext } from '@/contexts/DraftContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { trackEvent } from '@/lib/analytics/track';
+import { addEntry } from '@/lib/offline-queue';
 import type { TransitionCondition } from '@/types/offer-draft-helpers';
 import type { OfferDraftChecklist } from '@/types/offer-draft';
 
@@ -175,17 +176,43 @@ export default function QuickMode() {
   }, []);
 
   // ── Session save on field change ────────────────────────────────────────
+  // sessionStorage: fast in-session restore on navigation.
+  // Offline queue (IDB): crash-resilient persistence — survives browser crash,
+  //   app kill, and network loss (roadmap §25.1, action type OFFER_DRAFT_SAVE).
 
   useEffect(() => {
     if (!restoredRef.current || !draft) return;
-    writeSession({
+    const fields: PersistedFields = {
       clientName: tempName,
       clientPhone: tempPhone,
       note,
       checklist: draft.checklist,
-    });
+    };
+    // Fast path: sessionStorage for within-session navigation restore
+    writeSession(fields);
+    // Resilient path: IndexedDB offline queue for crash / app-kill recovery
+    void addEntry('OFFER_DRAFT_SAVE', { draftId: draft.id, fields });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tempName, tempPhone, note, draft?.checklist]);
+
+  // ── app:save — Ctrl+S from Dense Office Mode keyboard shortcut ──────────
+  // Listens to the CustomEvent dispatched by useKeyboardShortcuts.
+  // Triggers an immediate session write (data is already persisted reactively
+  // on field change, but this gives explicit user feedback via a forced flush).
+
+  useEffect(() => {
+    function handleAppSave() {
+      if (!restoredRef.current || !draft) return;
+      writeSession({
+        clientName: tempName,
+        clientPhone: tempPhone,
+        note,
+        checklist: draft.checklist,
+      });
+    }
+    window.addEventListener('app:save', handleAppSave);
+    return () => window.removeEventListener('app:save', handleAppSave);
+  }, [tempName, tempPhone, note, draft]);
 
   // ── Analytics: fire OFFER_QUICK_STARTED once a draft is available ───────
   // Depends on draft?.id so it re-evaluates when initDraft creates the draft.

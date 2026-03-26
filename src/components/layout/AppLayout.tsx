@@ -13,6 +13,7 @@ import { useDenseMode } from '@/hooks/useDenseMode';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useFieldSafety } from '@/hooks/useFieldSafety';
 import { FieldSafetyBanner } from './FieldSafetyBanner';
+import { GlobalSearch } from './GlobalSearch';
 
 // Lazy-load heavy layout components that are not needed for initial render
 const AiChatAgent = lazy(() => import('@/components/ai/AiChatAgent').then(m => ({ default: m.AiChatAgent })));
@@ -72,6 +73,9 @@ export function AppLayout() {
 
       {/* Mobile bottom navigation */}
       <MobileBottomNav />
+
+      {/* Global Search palette — always mounted, opens with / or Ctrl+K */}
+      <GlobalSearch />
 
       {/* AI Chat Agent - Lazy-loaded to avoid blocking route transitions */}
       <Suspense fallback={null}>
