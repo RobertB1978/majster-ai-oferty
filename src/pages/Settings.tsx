@@ -7,6 +7,8 @@ import { Settings as SettingsIcon, Bell, Globe, Calendar, FileText, Scale, Finge
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { useDenseMode } from '@/hooks/useDenseMode';
 import { LanguageSwitcher } from '@/components/settings/LanguageSwitcher';
 import { ContactEmailSettings } from '@/components/settings/ContactEmailSettings';
 import { DeleteAccountSection } from '@/components/settings/DeleteAccountSection';
@@ -52,6 +54,7 @@ const SETTINGS_SECTIONS: SettingsSection[] = [
 export default function Settings() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('company');
+  const { dense, toggleDense } = useDenseMode();
 
   return (
     <>
@@ -170,6 +173,31 @@ export default function Settings() {
                   </div>
                   <LanguageSwitcher />
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Dense Office Mode — P2, desktop only */}
+            <Card className="hidden md:block">
+              <CardHeader>
+                <CardTitle>{t('settings.denseMode')}</CardTitle>
+                <CardDescription>
+                  {t('settings.denseModeDesc')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="dense-mode-toggle">{t('settings.denseMode')}</Label>
+                  <Switch
+                    id="dense-mode-toggle"
+                    checked={dense}
+                    onCheckedChange={toggleDense}
+                  />
+                </div>
+                {dense && (
+                  <p className="text-xs text-muted-foreground">
+                    {t('settings.denseModeShortcuts')}
+                  </p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

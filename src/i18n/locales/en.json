@@ -805,6 +805,9 @@
       "light": "Light",
       "system": "System"
     },
+    "denseMode": "Dense Office Mode",
+    "denseModeDesc": "Compact spacing and reduced padding. Desktop only.",
+    "denseModeShortcuts": "Keyboard shortcuts: N — new offer, P — projects, K — clients, / — search, Ctrl+S — save",
     "contactEmailTab": "Email",
     "companyProfileTab": "Company",
     "accountTab": "Account",

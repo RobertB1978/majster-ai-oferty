@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { CheckCircle, ArrowDown, Shield, Smartphone, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import HeroComposition from '@/components/illustrations/HeroComposition';
+import { trackEvent, ANALYTICS_EVENTS } from '@/lib/analytics';
 
 const CTA_ROUTE = '/register';
 
@@ -97,6 +98,7 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Link
                 to={CTA_ROUTE}
+                onClick={() => trackEvent(ANALYTICS_EVENTS.LANDING_CTA_CLICK, { source: 'hero_primary' })}
                 className="inline-flex items-center justify-center bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold px-8 py-4 rounded-xl text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[48px] shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30"
               >
                 {t('landing.hero.cta_start')}

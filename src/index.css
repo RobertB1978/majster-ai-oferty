@@ -907,3 +907,88 @@ textarea[aria-invalid="true"]:focus-visible {
 .recharts-text {
   fill: hsl(var(--muted-foreground));
 }
+
+/* ============================================
+   DARK MODE LUXURY PASS — roadmap §18.3 / ETAP 6 (P2)
+   Premium polish for dark mode — deeper blacks, amber glow, elevated cards
+   ============================================ */
+
+/* Amber glow on focus rings in dark mode */
+.dark :focus-visible {
+  outline-color: hsl(38 92% 50% / 0.8);
+  box-shadow: 0 0 0 3px hsl(38 92% 50% / 0.20);
+}
+
+/* Cards: slightly elevated surface on hover in dark mode */
+.dark .card-hover-lift:hover {
+  background: hsl(var(--card));
+  box-shadow: 0 8px 24px hsl(0 0% 0% / 0.4), 0 0 0 1px hsl(38 92% 50% / 0.08);
+  transform: translateY(-1px);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* Sidebar: deeper black in dark mode */
+.dark [data-sidebar] {
+  background: #060B14;
+}
+
+/* Input fields: slightly lighter bg so they stand out from surface */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.dark textarea,
+.dark select {
+  background-color: hsl(215 28% 14%);
+}
+
+/* Amber gradient for primary buttons: warmer glow in dark */
+.dark .btn-primary-glow,
+.dark button[class*="bg-primary"],
+.dark a[class*="bg-primary"] {
+  box-shadow: 0 2px 8px hsl(38 92% 50% / 0.25), 0 1px 2px hsl(38 92% 50% / 0.15);
+}
+.dark .btn-primary-glow:hover,
+.dark button[class*="bg-primary"]:hover,
+.dark a[class*="bg-primary"]:hover {
+  box-shadow: 0 4px 16px hsl(38 92% 50% / 0.35), 0 2px 4px hsl(38 92% 50% / 0.20);
+}
+
+/* Table rows: slightly alternating in dark */
+.dark tbody tr:nth-child(even) {
+  background-color: hsl(215 28% 12%);
+}
+.dark tbody tr:hover {
+  background-color: hsl(215 28% 15%);
+}
+
+/* ============================================
+   DENSE OFFICE MODE — roadmap §9 / ETAP 6 (P2)
+   Activated via [data-dense="true"] on <html>.
+   DISABLED on mobile — only fires at md+ breakpoint.
+   ============================================ */
+@media (min-width: 768px) {
+  [data-dense="true"] .dense\:p-4 { padding: 1rem; }
+  [data-dense="true"] .dense\:p-3 { padding: 0.75rem; }
+  [data-dense="true"] .dense\:py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+  [data-dense="true"] .dense\:py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+  [data-dense="true"] .dense\:gap-2 { gap: 0.5rem; }
+  [data-dense="true"] .dense\:gap-3 { gap: 0.75rem; }
+  [data-dense="true"] .dense\:text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+  [data-dense="true"] .dense\:h-11 { height: 2.75rem; }
+  [data-dense="true"] .dense\:min-h-11 { min-height: 2.75rem; }
+  [data-dense="true"] .dense\:mb-2 { margin-bottom: 0.5rem; }
+  [data-dense="true"] .dense\:mb-4 { margin-bottom: 1rem; }
+
+  /* Table rows */
+  [data-dense="true"] tr td,
+  [data-dense="true"] tr th {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  /* Card padding reduction */
+  [data-dense="true"] [data-slot="card-content"] {
+    padding: 1rem;
+  }
+  [data-dense="true"] [data-slot="card-header"] {
+    padding: 1rem 1rem 0.5rem;
+  }
+}

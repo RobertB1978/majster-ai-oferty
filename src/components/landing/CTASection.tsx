@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { trackEvent, ANALYTICS_EVENTS } from '@/lib/analytics';
 
 const CTA_ROUTE = '/register';
 
@@ -63,6 +64,7 @@ export function CTASection() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             to={CTA_ROUTE}
+            onClick={() => trackEvent(ANALYTICS_EVENTS.LANDING_CTA_CLICK, { source: 'cta_section' })}
             className="inline-flex items-center justify-center bg-black hover:bg-brand-card text-white font-semibold px-10 py-4 rounded-xl text-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-amber-500 min-h-[56px] gap-2 shadow-lg shadow-black/20"
           >
             {t('landing.cta.cta_start')}

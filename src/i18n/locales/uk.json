@@ -805,6 +805,9 @@
       "dark": "Темна",
       "system": "Системна"
     },
+    "denseMode": "Офісний компактний режим",
+    "denseModeDesc": "Менші відступи та компактний вигляд. Лише на комп'ютері.",
+    "denseModeShortcuts": "Гарячі клавіші: N — нова пропозиція, P — проекти, K — клієнти, / — пошук, Ctrl+S — зберегти",
     "contactEmailTab": "E-mail",
     "companyProfileTab": "Компанія",
     "accountTab": "Акаунт",

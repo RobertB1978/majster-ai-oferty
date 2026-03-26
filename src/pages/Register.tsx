@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWidget';
 import { Helmet } from 'react-helmet-async';
 import { getSiteUrl } from '@/lib/siteUrl';
+import { trackEvent, ANALYTICS_EVENTS } from '@/lib/analytics';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -83,6 +84,7 @@ export default function Register() {
       return;
     }
 
+    trackEvent(ANALYTICS_EVENTS.SIGNUP_STARTED);
     setIsLoading(true);
     const { error } = await register(email, password);
 
@@ -100,6 +102,7 @@ export default function Register() {
       }
     }
 
+    trackEvent(ANALYTICS_EVENTS.SIGNUP_COMPLETED);
     setIsLoading(false);
     // Supabase wymaga potwierdzenia emaila — kierujemy użytkownika na ekran oczekiwania,
     // NIE do aplikacji. Konto nie jest w pełni aktywne przed kliknięciem w link.

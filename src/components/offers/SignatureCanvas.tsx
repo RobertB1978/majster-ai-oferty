@@ -99,7 +99,7 @@ export function SignatureCanvas({ onSignatureChange, width = 400, height = 150 }
 
   return (
     <div className="space-y-2">
-      <div className="border rounded-lg overflow-hidden bg-white">
+      <div className="border rounded-lg overflow-hidden bg-white dark:bg-zinc-900">
         <canvas
           ref={canvasRef}
           width={width}

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { X, Menu, Sun, Moon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
+import { trackEvent, ANALYTICS_EVENTS } from '@/lib/analytics';
 
 const CTA_ROUTE = '/register';
 
@@ -145,6 +146,7 @@ export function LandingHeader() {
 
             <Link
               to={CTA_ROUTE}
+              onClick={() => trackEvent(ANALYTICS_EVENTS.LANDING_CTA_CLICK, { source: 'header_nav' })}
               className="inline-flex items-center bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold px-4 py-2 rounded-xl text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[44px]"
             >
               {t('landing.nav.getStarted')}
@@ -259,7 +261,7 @@ export function LandingHeader() {
           </Link>
           <Link
             to={CTA_ROUTE}
-            onClick={closeDrawer}
+            onClick={() => { closeDrawer(); trackEvent(ANALYTICS_EVENTS.LANDING_CTA_CLICK, { source: 'header_mobile' }); }}
             className="block text-center py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           >
             {t('landing.nav.getStarted')}
