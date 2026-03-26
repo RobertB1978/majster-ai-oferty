@@ -1,4 +1,8 @@
 {
+  "fieldSafety": {
+    "batterySaverActive": "Battery saver mode — animations disabled",
+    "highGlareActive": "High contrast mode — better readability in sunlight"
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",

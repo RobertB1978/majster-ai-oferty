@@ -112,7 +112,7 @@ export function NotificationPermissionPrompt({
         <span className="text-xs text-muted-foreground flex-1">
           {t('reminders.enableNotificationsPrompt')}
         </span>
-        <Button size="sm" variant="outline" className="text-xs h-7" onClick={request}>
+        <Button size="sm" variant="outline" className="text-xs min-h-[44px] px-3" onClick={request}>
           {t('reminders.enableNotifications')}
         </Button>
       </div>

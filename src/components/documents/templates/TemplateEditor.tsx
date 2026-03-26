@@ -494,7 +494,7 @@ export function TemplateEditor({
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b bg-card sticky top-0 z-10">
-        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onBack} disabled={isBusy}>
+        <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px] shrink-0" onClick={onBack} disabled={isBusy}>
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div className="flex-1 min-w-0">

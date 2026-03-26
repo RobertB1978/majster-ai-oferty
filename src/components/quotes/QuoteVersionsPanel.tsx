@@ -112,12 +112,12 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
                   </div>
                 </div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handlePreview(version.quote_snapshot)}>
+                  <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" onClick={() => handlePreview(version.quote_snapshot)}>
                     <Eye className="h-4 w-4" />
                   </Button>
                   {!version.is_active && (
                     <>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleSetActive(version.id)}>
+                      <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" onClick={() => handleSetActive(version.id)}>
                         <Check className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => setDeleteConfirmId(version.id)}>

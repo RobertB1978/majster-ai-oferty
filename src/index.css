@@ -992,3 +992,117 @@ textarea[aria-invalid="true"]:focus-visible {
     padding: 1rem 1rem 0.5rem;
   }
 }
+
+/* ============================================================
+   FIELD SAFETY SYSTEM — Field-Safe variants for every rule
+   Activated via data attributes on <html> (set by useFieldSafety)
+   ============================================================ */
+
+/* ── HIGH-GLARE MODE [data-field-glare="true"] ──────────────
+   Triggered by: prefers-contrast: more (iOS/Android accessibility)
+   Goal: Make every text readable in direct sunlight (≥ 7:1 contrast ratio)
+   ─────────────────────────────────────────────────────────── */
+
+/* Boost secondary/muted text contrast — from 4.7:1 to 7:1+ */
+[data-field-glare="true"] {
+  --muted-foreground: 215 25% 30%; /* was 46% — darker for sunlight */
+}
+
+/* Light mode: push secondary text to near-black */
+[data-field-glare="true"]:not(.dark) {
+  --foreground: 220 26% 8%;
+  --muted-foreground: 215 25% 25%;
+}
+
+/* Dark mode: push text to full white */
+[data-field-glare="true"].dark {
+  --foreground: 0 0% 100%;
+  --muted-foreground: 220 14% 78%;
+}
+
+/* Amber accents: higher saturation for glare visibility */
+[data-field-glare="true"] {
+  --primary: 38 100% 42%; /* richer amber, darker for contrast */
+  --ring: 38 100% 42%;
+}
+
+/* Disable all blur in high-glare (GPU-safe fallback) */
+[data-field-glare="true"] .backdrop-blur-sm,
+[data-field-glare="true"] .backdrop-blur-md,
+[data-field-glare="true"] .backdrop-blur {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: hsl(var(--card)) !important;
+}
+
+/* ── BATTERY SAVER MODE [data-field-battery="true"] ──────────
+   Triggered by: battery ≤ 20% OR saveData=true OR CPU ≤ 2 cores
+   Goal: Zero GPU effects, zero animations, max battery life
+   ─────────────────────────────────────────────────────────── */
+
+/* Kill all animations and transitions */
+[data-field-battery="true"] *,
+[data-field-battery="true"] *::before,
+[data-field-battery="true"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0ms !important;
+}
+
+/* Kill all blur effects — most GPU-intensive */
+[data-field-battery="true"] [class*="backdrop-blur"],
+[data-field-battery="true"] [style*="backdrop-filter"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Solid backgrounds instead of transparent */
+[data-field-battery="true"] .bg-card\/95 { background-color: hsl(var(--card)) !important; }
+[data-field-battery="true"] .bg-background\/95 { background-color: hsl(var(--background)) !important; }
+[data-field-battery="true"] .bg-background\/80 { background-color: hsl(var(--background)) !important; }
+
+/* Disable box shadows (slight GPU reduction) */
+[data-field-battery="true"] * {
+  box-shadow: none !important;
+}
+
+/* Keep focus rings — accessibility must never be turned off */
+[data-field-battery="true"] :focus-visible {
+  outline: 2px solid hsl(var(--primary)) !important;
+  outline-offset: 2px !important;
+}
+
+/* ── TOUCH TARGET GUARANTEE — always minimum 44×44px ────────
+   Applies globally — never overridden by density/glare/battery
+   ─────────────────────────────────────────────────────────── */
+
+/* Minimum tap area on all interactive elements in mobile context */
+@media (max-width: 1023px) {
+  button:not([data-no-tap-expand]),
+  [role="button"]:not([data-no-tap-expand]),
+  a[href]:not([data-no-tap-expand]),
+  input[type="checkbox"],
+  input[type="radio"],
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  /* Inline links inside text — don't force 44px on prose */
+  p a[href], li a[href], span a[href] {
+    min-height: unset;
+    min-width: unset;
+  }
+}
+
+/* ── SUPPORTS FALLBACK — no backdrop-filter support ─────────
+   Older Android WebViews don't support backdrop-filter at all.
+   ─────────────────────────────────────────────────────────── */
+@supports not (backdrop-filter: blur(1px)) {
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur {
+    backdrop-filter: none;
+    background-color: hsl(var(--card)) !important;
+  }
+}

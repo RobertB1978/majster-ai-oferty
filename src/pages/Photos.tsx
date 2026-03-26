@@ -149,7 +149,7 @@ export default function Photos() {
                     <span className="text-xs text-muted-foreground">
                       {new Date(photo.created_at).toLocaleDateString()}
                     </span>
-                    <Button asChild variant="ghost" size="icon" className="h-7 w-7">
+                    <Button asChild variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]">
                       <Link to={`/app/projects/${photo.project_id}`}>
                         <ExternalLink className="h-3 w-3" />
                       </Link>
