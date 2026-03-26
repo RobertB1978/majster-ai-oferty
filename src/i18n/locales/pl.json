@@ -3652,7 +3652,9 @@
     "sentAt": "Wysłano",
     "createdAt": "Utworzono",
     "newOfferButton": "Nowa oferta",
-    "newOfferButtonShort": "Nowa"
+    "newOfferButtonShort": "Nowa",
+    "loadMore": "Załaduj więcej",
+    "loadingMore": "Ładowanie…"
   },
   "offerWizard": {
     "titleNew": "Nowa oferta",

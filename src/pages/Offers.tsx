@@ -1,16 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { differenceInDays, addDays, format } from 'date-fns';
-import { FileText, MoreHorizontal, ExternalLink, FolderPlus, Sparkles, Archive, Plus, CalendarDays } from 'lucide-react';
+import { FileText, MoreHorizontal, ExternalLink, FolderPlus, Sparkles, Archive, Plus, CalendarDays, Loader2 } from 'lucide-react';
 
 import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
 import { IndustryTemplateSheet } from '@/components/offers/IndustryTemplateSheet';
 import { getStarterPack } from '@/data/starterPacks';
 import { useAddCalendarEvent } from '@/hooks/useCalendarEvents';
 
-import { useOffers, useArchiveOffer, NO_RESPONSE_DAYS } from '@/hooks/useOffers';
+import { useOffersInfinite, useArchiveOffer, NO_RESPONSE_DAYS } from '@/hooks/useOffers';
 import type { Offer, OfferStatus, OfferSort } from '@/hooks/useOffers';
 import { useDebounce } from '@/hooks/useDebounce';
 
@@ -216,11 +216,25 @@ export default function Offers() {
   const archiveOffer = useArchiveOffer();
   const addCalendarEvent = useAddCalendarEvent();
 
-  const { data: offers = [], isLoading, isError, error, refetch } = useOffers({
-    status: statusFilter,
-    search,
-    sort,
-  });
+  const {
+    data: offersData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useOffersInfinite({ status: statusFilter, search, sort });
+
+  // Flatten infinite pages into a single array for rendering and lookups
+  const offers = useMemo(
+    () => offersData?.pages.flat() ?? [],
+    [offersData?.pages],
+  );
+
+  // Sentinel ref for future IntersectionObserver upgrade — Load More button for now
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const handleOpen = (id: string) => navigate(`/app/offers/${id}`);
   const handleCreateFirst = () => navigate('/app/offers/new');
@@ -413,6 +427,28 @@ export default function Offers() {
               isCreatingProject={creatingProjectId === offer.id}
             />
           ))}
+
+          {/* Load More sentinel + button */}
+          <div ref={loadMoreRef} className="flex justify-center pt-2 pb-4">
+            {hasNextPage && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                className="min-w-[160px]"
+              >
+                {isFetchingNextPage ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    {t('offersList.loadingMore')}
+                  </>
+                ) : (
+                  t('offersList.loadMore')
+                )}
+              </Button>
+            )}
+          </div>
         </div>
       )}
     </div>

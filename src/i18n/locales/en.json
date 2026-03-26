@@ -3652,7 +3652,9 @@
     "sentAt": "Sent",
     "createdAt": "Created",
     "newOfferButton": "New offer",
-    "newOfferButtonShort": "New"
+    "newOfferButtonShort": "New",
+    "loadMore": "Load more",
+    "loadingMore": "Loading…"
   },
   "offerWizard": {
     "titleNew": "New Offer",
