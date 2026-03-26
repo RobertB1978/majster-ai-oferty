@@ -430,7 +430,9 @@
       "updateError": "Error updating client",
       "deleted": "Client deleted",
       "deleteError": "Error deleting client"
-    }
+    },
+    "nip": "Tax ID (NIP)",
+    "nipPlaceholder": "1234567890"
   },
   "calendar": {
     "title": "Calendar",
@@ -1888,7 +1890,8 @@
       "nameMaxLength": "Name max {{max}} characters",
       "phoneMinDigits": "Phone number must have at least {{min}} digits",
       "emailInvalid": "Invalid email format",
-      "addressMaxLength": "Address max {{max}} characters"
+      "addressMaxLength": "Address max {{max}} characters",
+      "nipInvalid": "Invalid NIP (10 digits with valid checksum required)"
     },
     "project": {
       "nameRequired": "Project name is required",

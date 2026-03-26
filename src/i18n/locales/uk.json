@@ -430,7 +430,9 @@
       "updateError": "Помилка оновлення клієнта",
       "deleted": "Клієнта видалено",
       "deleteError": "Помилка видалення клієнта"
-    }
+    },
+    "nip": "ІПН (NIP)",
+    "nipPlaceholder": "1234567890"
   },
   "calendar": {
     "title": "Календар",
@@ -1870,7 +1872,8 @@
       "nameMaxLength": "Ім'я макс {{max}} символів",
       "phoneMinDigits": "Номер телефону повинен мати щонайменше {{min}} цифр",
       "emailInvalid": "Неправильний формат email",
-      "addressMaxLength": "Адреса макс {{max}} символів"
+      "addressMaxLength": "Адреса макс {{max}} символів",
+      "nipInvalid": "Невірний NIP (потрібно 10 цифр із правильною контрольною сумою)"
     },
     "project": {
       "nameRequired": "Назва проекту обов'язкова",

@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 
 interface ClientFormData {
   name: string;
+  nip: string;
   phone: string;
   email: string;
   address: string;
@@ -52,6 +53,7 @@ export default function Clients() {
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [formData, setFormData] = useState<ClientFormData>({
     name: '',
+    nip: '',
     phone: '',
     email: '',
     address: '',
@@ -78,7 +80,7 @@ export default function Clients() {
   };
 
   const resetForm = () => {
-    setFormData({ name: '', phone: '', email: '', address: '' });
+    setFormData({ name: '', nip: '', phone: '', email: '', address: '' });
     setEditingClient(null);
     setErrors({});
   };
@@ -88,6 +90,7 @@ export default function Clients() {
       setEditingClient(client);
       setFormData({
         name: client.name,
+        nip: client.nip || '',
         phone: client.phone || '',
         email: client.email || '',
         address: client.address || '',
@@ -181,6 +184,17 @@ export default function Clients() {
                   className={errors.name ? 'border-destructive' : ''}
                 />
                 {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="nip">{t('clients.nip')}</Label>
+                <Input
+                  id="nip"
+                  value={formData.nip}
+                  onChange={(e) => setFormData({ ...formData, nip: e.target.value })}
+                  placeholder={t('clients.nipPlaceholder')}
+                  className={errors.nip ? 'border-destructive' : ''}
+                />
+                {errors.nip && <p className="text-sm text-destructive">{errors.nip}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">{t('clients.phone')}</Label>
@@ -297,6 +311,12 @@ export default function Clients() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
+                  {client.nip && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span className="font-medium text-xs text-muted-foreground/70">NIP</span>
+                      <span>{client.nip}</span>
+                    </div>
+                  )}
                   {client.phone && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Phone className="h-4 w-4" />
