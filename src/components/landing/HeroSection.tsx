@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { FileText, CheckCircle, ArrowDown, Shield, Smartphone } from 'lucide-react';
+import { CheckCircle, ArrowDown, Shield, Smartphone, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import HeroComposition from '@/components/illustrations/HeroComposition';
 
 const CTA_ROUTE = '/register';
 
@@ -113,71 +114,9 @@ export function HeroSection() {
             </p>
           </div>
 
-          {/* Right: floating UI mock — enhanced */}
-          <div className="hidden lg:flex flex-col items-center shrink-0 w-80">
-            <div
-              className="animate-float w-full"
-              style={{ animationDuration: '4s' }}
-            >
-              {/* Main card with premium shadow */}
-              <div className="bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-5 shadow-xl shadow-gray-200/60 dark:shadow-black/50 ring-1 ring-gray-100 dark:ring-brand-border">
-                {/* Header with gradient accent */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shrink-0 shadow-md shadow-amber-500/20">
-                    <FileText className="w-5 h-5 text-white" aria-hidden="true" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-gray-900 dark:text-white text-sm font-semibold truncate">{t('landing.hero.mock.quoteTitle')}</div>
-                    <div className="text-gray-400 dark:text-neutral-600 text-xs">{t('landing.hero.mock.projectName')}</div>
-                  </div>
-                  <div className="ml-auto shrink-0">
-                    <span className="text-xs bg-gradient-to-r from-amber-500/20 to-amber-400/20 text-amber-600 dark:text-amber-400 rounded-full px-2.5 py-1 font-medium border border-amber-500/20">
-                      PDF
-                    </span>
-                  </div>
-                </div>
-
-                {/* Line items */}
-                <div className="space-y-2.5 mb-4">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600 dark:text-neutral-400">{t('landing.hero.mock.labour')}</span>
-                    <span className="text-gray-900 dark:text-white font-medium">2 400 zł</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600 dark:text-neutral-400">{t('landing.hero.mock.materials')}</span>
-                    <span className="text-gray-900 dark:text-white font-medium">1 800 zł</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600 dark:text-neutral-400">{t('landing.hero.mock.extraLabour')}</span>
-                    <span className="text-gray-900 dark:text-white font-medium">600 zł</span>
-                  </div>
-                  <div className="border-t border-gray-200 dark:border-brand-border pt-2.5 flex justify-between font-semibold">
-                    <span className="text-gray-600 dark:text-neutral-400">{t('landing.hero.mock.total')}</span>
-                    <span className="text-amber-500 text-lg">4 800 zł</span>
-                  </div>
-                </div>
-
-                {/* Status with gradient */}
-                <div className="bg-gradient-to-r from-amber-500/10 to-amber-400/5 border border-amber-500/20 rounded-xl p-3 text-center">
-                  <span className="text-xs text-amber-600 dark:text-amber-400 font-semibold">
-                    {t('landing.hero.mock.sentToClient')}
-                  </span>
-                </div>
-              </div>
-
-              {/* Second card — active projects */}
-              <div className="mt-3 bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-xl p-4 shadow-lg shadow-gray-200/40 dark:shadow-black/40">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-gray-400 dark:text-neutral-600 text-xs mb-1">{t('landing.hero.mock.activeProjects')}</div>
-                    <div className="text-gray-900 dark:text-white font-bold text-xl">12</div>
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-50 dark:from-brand-card dark:to-brand-dark flex items-center justify-center border border-gray-200 dark:border-brand-border">
-                    <div className="w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 shadow-sm shadow-amber-500/30" aria-hidden="true" />
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Right: HeroComposition — isometric SVG (Faza 5) */}
+          <div className="hidden lg:flex items-center justify-center shrink-0 w-[420px]">
+            <HeroComposition className="w-full max-w-[420px] drop-shadow-xl" />
           </div>
         </div>
       </div>
