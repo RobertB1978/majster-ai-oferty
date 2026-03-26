@@ -212,7 +212,7 @@ export default function ProjectsList() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    className="shrink-0 min-h-[44px] min-w-[44px] text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                     aria-label={t('projectsV2.archiveProject')}
                     onClick={(e) => {
                       e.stopPropagation();
