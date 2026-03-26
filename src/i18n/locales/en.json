@@ -597,6 +597,7 @@
       "updated": "Team member updated",
       "deleted": "Team member deleted"
     },
+    "memberOptions": "Options",
     "members": {
       "teamTitle": "Team ({{count}})",
       "add": "Add",

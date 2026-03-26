@@ -597,6 +597,7 @@
       "updated": "Pracownik zaktualizowany",
       "deleted": "Pracownik usunięty"
     },
+    "memberOptions": "Opcje",
     "members": {
       "teamTitle": "Zespół ({{count}})",
       "add": "Dodaj",

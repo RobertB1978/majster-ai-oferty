@@ -12,7 +12,6 @@ import {
   CheckCircle2,
   ArrowRight,
   X,
-  Sparkles,
   Clock
 } from 'lucide-react';
 import { motion } from 'framer-motion';
