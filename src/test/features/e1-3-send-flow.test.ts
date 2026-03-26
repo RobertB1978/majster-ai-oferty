@@ -242,8 +242,8 @@ describe('Horizontal scroll prevention on 390px', () => {
     expect(source).toContain('max-w-lg');
   });
 
-  it('OfferPublicPage uses max-w-2xl for content containment', async () => {
+  it('OfferPublicPage uses max-w-5xl for 2-column desktop layout (roadmap §5.1)', async () => {
     const source = readSrc('src/pages/OfferPublicPage.tsx');
-    expect(source).toContain('max-w-2xl');
+    expect(source).toContain('max-w-5xl');
   });
 });

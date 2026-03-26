@@ -1,4 +1,13 @@
-import { useState, useEffect } from 'react';
+/**
+ * OfferPublicPage — Public client-facing offer view.
+ *
+ * Layout (roadmap §5.1):
+ *  Desktop (≥ lg):   2-column grid — content 3fr / sticky summary sidebar 2fr
+ *  Mobile (< lg):    single column + sticky bottom bar with Total + CTA
+ *
+ * No auth required — accessed via public_token in URL.
+ */
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
@@ -22,6 +31,7 @@ import {
   MessageSquare,
   Printer,
   Shield,
+  Building2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/formatters';
@@ -39,6 +49,7 @@ import {
 export default function OfferPublicPage() {
   const { t } = useTranslation();
   const { token } = useParams<{ token: string }>();
+  const acceptFormRef = useRef<HTMLDivElement>(null);
 
   const [offer, setOffer] = useState<PublicOfferData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +94,10 @@ export default function OfferPublicPage() {
       setError(t('offerPublicPage.notFoundError'));
     }
   }, [offerQuery.isError, t]);
+
+  const scrollToAcceptForm = () => {
+    acceptFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const handleAccept = async () => {
     if (!token) return;
@@ -195,9 +210,7 @@ export default function OfferPublicPage() {
           <CardContent className="flex flex-col items-center py-12 text-center">
             <Ban className="h-16 w-16 text-muted-foreground mb-4" />
             <h1 className="text-xl font-bold mb-2">{t('offerPublicPage.withdrawnTitle')}</h1>
-            <p className="text-muted-foreground">
-              {t('offerPublicPage.withdrawnDesc')}
-            </p>
+            <p className="text-muted-foreground">{t('offerPublicPage.withdrawnDesc')}</p>
             {offer.company?.phone && (
               <a
                 href={`tel:${offer.company.phone}`}
@@ -226,260 +239,379 @@ export default function OfferPublicPage() {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="min-h-screen bg-background py-8 px-4">
-        <div className="max-w-2xl mx-auto space-y-6">
-
-          {/* ─── Header ─────────────────────────────────────────── */}
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-1">{t('offerPublicPage.offerHeading')}</h1>
-            <p className="text-muted-foreground text-sm">{t('offerPublicPage.offerSubtitle')}</p>
+      {/* Mobile sticky bottom bar — shown only when offer is actionable (roadmap §5.1) */}
+      {canAct && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border shadow-lg">
+          <div className="flex items-center gap-4 px-4 py-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-muted-foreground">{t('offerPublicPage.totalLabel')}</p>
+              <p className="text-xl font-bold text-amber-600 font-mono leading-tight">
+                {formatCurrency(total)}
+              </p>
+            </div>
             <Button
-              variant="outline"
-              size="sm"
-              className="mt-3 gap-2 print:hidden min-h-[44px] min-w-[44px]"
-              onClick={() => window.print()}
-              aria-label={t('offerPublicPage.printAriaLabel')}
+              onClick={scrollToAcceptForm}
+              className="bg-amber-500 hover:bg-amber-400 text-black font-semibold min-h-[48px] px-6 shadow-lg shadow-amber-500/25"
             >
-              <Printer className="h-4 w-4" />
-              {t('offerPublicPage.printButton')}
+              <CheckCircle className="h-5 w-5 mr-2" />
+              {t('offerPublicPage.acceptButton')}
             </Button>
           </div>
+        </div>
+      )}
 
-          {/* ─── Accepted banner with celebration ───────────────── */}
-          {isOfferAccepted && (
-            <Card className={`border-green-500 bg-green-50 dark:bg-green-950/20 ${accepted ? 'animate-[celebration_0.6s_ease-in-out]' : ''}`}>
-              <CardContent className="py-6">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className={`h-8 w-8 text-green-600 shrink-0 ${accepted ? 'animate-bounce' : ''}`} />
-                  <div>
-                    <p className="font-semibold text-green-700 dark:text-green-400 text-lg">
-                      {accepted ? t('offerPublicPage.justAccepted') : t('offerPublicPage.acceptedBanner')}
-                    </p>
-                    {(offer.accepted_at ?? offer.approved_at) && (
-                      <p className="text-sm text-green-600 dark:text-green-500">
-                        {new Date(offer.accepted_at ?? offer.approved_at!).toLocaleString()}
+      <div className="min-h-screen bg-background py-8 px-4 pb-safe">
+        {/* Desktop 2-column grid — roadmap §5.1: 3fr content / 2fr sticky sidebar */}
+        <div className="max-w-5xl mx-auto lg:grid lg:grid-cols-[3fr_2fr] lg:gap-8 lg:items-start">
+
+          {/* ── LEFT COLUMN: main content ───────────────────────── */}
+          <div className={`space-y-6 ${canAct ? 'pb-24 lg:pb-0' : ''}`}>
+
+            {/* ─── Header ─────────────────────────────────────── */}
+            <div className="text-center lg:text-left">
+              <h1 className="text-3xl font-bold mb-1">{t('offerPublicPage.offerHeading')}</h1>
+              <p className="text-muted-foreground text-sm">{t('offerPublicPage.offerSubtitle')}</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3 gap-2 print:hidden min-h-[44px] min-w-[44px]"
+                onClick={() => window.print()}
+                aria-label={t('offerPublicPage.printAriaLabel')}
+              >
+                <Printer className="h-4 w-4" />
+                {t('offerPublicPage.printButton')}
+              </Button>
+            </div>
+
+            {/* ─── Accepted banner ─────────────────────────────── */}
+            {isOfferAccepted && (
+              <Card className={`border-green-500 bg-green-50 dark:bg-green-950/20 ${accepted ? 'animate-[celebration_0.6s_ease-in-out]' : ''}`}>
+                <CardContent className="py-6">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className={`h-8 w-8 text-green-600 shrink-0 ${accepted ? 'animate-bounce' : ''}`} />
+                    <div>
+                      <p className="font-semibold text-green-700 dark:text-green-400 text-lg">
+                        {accepted ? t('offerPublicPage.justAccepted') : t('offerPublicPage.acceptedBanner')}
                       </p>
-                    )}
+                      {(offer.accepted_at ?? offer.approved_at) && (
+                        <p className="text-sm text-green-600 dark:text-green-500">
+                          {new Date(offer.accepted_at ?? offer.approved_at!).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
                   </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* ─── Offer details ───────────────────────────────── */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <FileText className="h-5 w-5" />
+                  {t('offerPublicPage.detailsTitle')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="flex items-start gap-3">
+                    <Building className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">{t('offerPublicPage.projectLabel')}</p>
+                      <p className="font-medium">{offer.project?.project_name ?? t('offerPublicPage.noProjectName')}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Calendar className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">{t('offerPublicPage.issuedLabel')}</p>
+                      <p className="font-medium">{new Date(offer.created_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  {offer.valid_until && (() => {
+                    const daysLeft = Math.ceil(
+                      (new Date(offer.valid_until).getTime() - Date.now()) / 86_400_000
+                    );
+                    const isUrgent = daysLeft >= 0 && daysLeft <= 3;
+                    const isWarning = daysLeft > 3 && daysLeft <= 7;
+                    return (
+                      <div className="flex items-start gap-3">
+                        <Clock className={`h-5 w-5 mt-0.5 shrink-0 ${isUrgent ? 'text-red-500' : isWarning ? 'text-amber-500' : 'text-muted-foreground'}`} />
+                        <div>
+                          <p className="text-sm text-muted-foreground">{t('offerPublicPage.validUntilLabel')}</p>
+                          <p className={`font-medium ${isUrgent ? 'text-red-600' : isWarning ? 'text-amber-600' : ''}`}>
+                            {new Date(offer.valid_until).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Positions table */}
+                {positions.length > 0 && (
+                  <div className="mt-4">
+                    <h3 className="font-medium mb-3 text-sm">{t('offerPublicPage.scopeTitle')}</h3>
+                    <div className="border rounded-lg overflow-hidden">
+                      <table className="w-full text-sm">
+                        <thead className="bg-muted">
+                          <tr>
+                            <th className="text-left p-3 font-medium">{t('offerPublicPage.colName')}</th>
+                            <th className="text-right p-3 font-medium">{t('offerPublicPage.colQty')}</th>
+                            <th className="text-right p-3 font-medium">{t('offerPublicPage.colPrice')}</th>
+                            <th className="text-right p-3 font-medium">{t('offerPublicPage.colTotal')}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {positions.map((pos: PublicOfferPosition, i: number) => (
+                            <tr key={i} className={i % 2 === 0 ? 'bg-background' : 'bg-muted/30'}>
+                              <td className="p-3">{pos.name}</td>
+                              <td className="text-right p-3 whitespace-nowrap">{pos.qty} {pos.unit}</td>
+                              <td className="text-right p-3 whitespace-nowrap">{formatCurrency(pos.price)}</td>
+                              <td className="text-right p-3 font-medium whitespace-nowrap">{formatCurrency(pos.qty * pos.price)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Total summary — shown in left column on mobile, hidden on desktop (shown in sidebar) */}
+                <div className="border-t pt-4 flex flex-col gap-1 items-end lg:hidden">
+                  <div className="flex justify-between w-full sm:w-auto sm:gap-12">
+                    <span className="text-sm text-muted-foreground">{t('offerPublicPage.totalLabel')}</span>
+                    <span className="text-2xl font-bold text-primary font-mono">{formatCurrency(total)}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{t('offerPublicPage.vatNote')}</p>
                 </div>
               </CardContent>
             </Card>
-          )}
 
-          {/* ─── Offer details ─────────────────────────────────── */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <FileText className="h-5 w-5" />
-                {t('offerPublicPage.detailsTitle')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="flex items-start gap-3">
-                  <Building className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t('offerPublicPage.projectLabel')}</p>
-                    <p className="font-medium">{offer.project?.project_name ?? t('offerPublicPage.noProjectName')}</p>
+            {/* ─── Acceptance form ─────────────────────────────── */}
+            {canAct && (
+              <Card ref={acceptFormRef} id="accept-form">
+                <CardHeader>
+                  <CardTitle>{t('offerPublicPage.decisionTitle')}</CardTitle>
+                  <CardDescription>
+                    {t('offerPublicPage.decisionDesc')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-5">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="clientName">{t('offerPublicPage.fullNameLabel')}</Label>
+                      <Input
+                        id="clientName"
+                        value={clientName}
+                        onChange={(e) => setClientName(e.target.value)}
+                        placeholder={t('offerPublicPage.fullNamePlaceholder')}
+                        aria-required="true"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="clientEmail">{t('offerPublicPage.emailLabel')}</Label>
+                      <Input
+                        id="clientEmail"
+                        type="email"
+                        value={clientEmail}
+                        onChange={(e) => setClientEmail(e.target.value)}
+                        placeholder="jan@example.com"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t('offerPublicPage.issuedLabel')}</p>
-                    <p className="font-medium">{new Date(offer.created_at).toLocaleDateString()}</p>
+
+                  <div className="space-y-1.5">
+                    <Label>{t('offerPublicPage.signatureLabel')}</Label>
+                    <p className="text-sm text-muted-foreground">{t('offerPublicPage.signatureHint')}</p>
+                    <SignatureCanvas onSignatureChange={setSignature} />
                   </div>
-                </div>
+
+                  <Button
+                    onClick={handleAccept}
+                    className="w-full min-h-[52px] text-base bg-amber-500 hover:bg-amber-400 text-black font-semibold shadow-lg shadow-amber-500/25"
+                    disabled={isAccepting}
+                  >
+                    {isAccepting ? (
+                      <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                    ) : (
+                      <CheckCircle className="h-5 w-5 mr-2" />
+                    )}
+                    {t('offerPublicPage.acceptButton')}
+                  </Button>
+
+                  <p className="text-xs text-center text-muted-foreground">
+                    {t('offerPublicPage.acceptTermsNote')}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* ─── Question form ───────────────────────────────── */}
+            {!isOfferAccepted && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <MessageSquare className="h-5 w-5" />
+                    {t('offerPublicPage.questionTitle')}
+                  </CardTitle>
+                  <CardDescription>
+                    {t('offerPublicPage.questionDesc')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {questionSent ? (
+                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400 py-2">
+                      <CheckCircle className="h-5 w-5 shrink-0" />
+                      <p className="text-sm font-medium">{t('offerPublicPage.questionSentConfirm')}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <Textarea
+                        value={questionText}
+                        onChange={(e) => setQuestionText(e.target.value)}
+                        placeholder={t('offerPublicPage.questionPlaceholder')}
+                        rows={4}
+                        maxLength={2000}
+                        aria-label={t('offerPublicPage.questionAriaLabel')}
+                      />
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">
+                          {questionText.length}/2000
+                        </span>
+                        <Button
+                          variant="outline"
+                          onClick={handleSendQuestion}
+                          disabled={isSendingQuestion || questionText.trim().length < 3}
+                          className="min-h-[44px]"
+                        >
+                          {isSendingQuestion && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                          {t('offerPublicPage.sendQuestion')}
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                  {questionSent && !isOfferAccepted && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setQuestionSent(false)}
+                      className="text-muted-foreground min-h-[44px]"
+                    >
+                      {t('offerPublicPage.anotherQuestion')}
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* ─── Footer ─────────────────────────────────────── */}
+            <div className="flex flex-col items-center gap-1.5 pb-4">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <Shield className="h-3 w-3 text-green-500" />
+                  {t('publicOffer.secureConnection')}
+                </span>
+                <span aria-hidden>·</span>
+                <span>
+                  Powered by <span className="font-medium">Majster.AI</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* ── RIGHT COLUMN: sticky summary sidebar — desktop only (roadmap §5.1) ── */}
+          <div className="hidden lg:block lg:sticky lg:top-6">
+            <Card className="shadow-lg border-border">
+              <CardContent className="p-6 space-y-5">
+                {/* Company info */}
+                {offer.company?.company_name && (
+                  <div className="flex items-center gap-2 pb-4 border-b border-border">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <Building2 className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">{t('offerPublicPage.companyLabel', 'Wykonawca')}</p>
+                      <p className="font-semibold text-sm truncate">{offer.company.company_name}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Project */}
+                {offer.project?.project_name && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-0.5">{t('offerPublicPage.projectLabel')}</p>
+                    <p className="font-medium text-sm">{offer.project.project_name}</p>
+                  </div>
+                )}
+
+                {/* Validity countdown */}
                 {offer.valid_until && (() => {
                   const daysLeft = Math.ceil(
                     (new Date(offer.valid_until).getTime() - Date.now()) / 86_400_000
                   );
                   const isUrgent = daysLeft >= 0 && daysLeft <= 3;
                   const isWarning = daysLeft > 3 && daysLeft <= 7;
+                  if (daysLeft < 0) return null;
                   return (
-                    <div className="flex items-start gap-3">
-                      <Clock className={`h-5 w-5 mt-0.5 shrink-0 ${isUrgent ? 'text-red-500' : isWarning ? 'text-amber-500' : 'text-muted-foreground'}`} />
-                      <div>
-                        <p className="text-sm text-muted-foreground">{t('offerPublicPage.validUntilLabel')}</p>
-                        <p className={`font-medium ${isUrgent ? 'text-red-600' : isWarning ? 'text-amber-600' : ''}`}>
-                          {new Date(offer.valid_until).toLocaleDateString()}
-                        </p>
-                      </div>
+                    <div className={`rounded-lg px-3 py-2 text-sm ${isUrgent ? 'bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400' : isWarning ? 'bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400' : 'bg-muted text-muted-foreground'}`}>
+                      <Clock className="h-3.5 w-3.5 inline mr-1.5 -mt-0.5" />
+                      {t('offerPublicPage.validUntilLabel')}: {new Date(offer.valid_until).toLocaleDateString()}
+                      {isUrgent && <span className="block text-xs font-medium mt-0.5">{t('offerPublicPage.expiresInDays', { count: daysLeft })}</span>}
                     </div>
                   );
                 })()}
-              </div>
 
-              {/* Positions table */}
-              {positions.length > 0 && (
-                <div className="mt-4">
-                  <h3 className="font-medium mb-3 text-sm">{t('offerPublicPage.scopeTitle')}</h3>
-                  <div className="border rounded-lg overflow-hidden">
-                    <table className="w-full text-sm">
-                      <thead className="bg-muted">
-                        <tr>
-                          <th className="text-left p-3 font-medium">{t('offerPublicPage.colName')}</th>
-                          <th className="text-right p-3 font-medium">{t('offerPublicPage.colQty')}</th>
-                          <th className="text-right p-3 font-medium">{t('offerPublicPage.colPrice')}</th>
-                          <th className="text-right p-3 font-medium">{t('offerPublicPage.colTotal')}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {positions.map((pos: PublicOfferPosition, idx: number) => (
-                          <tr key={idx} className="border-t">
-                            <td className="p-3">{pos.name}</td>
-                            <td className="text-right p-3 whitespace-nowrap">{pos.qty} {pos.unit}</td>
-                            <td className="text-right p-3 whitespace-nowrap">{formatCurrency(pos.price)}</td>
-                            <td className="text-right p-3 font-medium whitespace-nowrap">{formatCurrency(pos.qty * pos.price)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {/* Total summary */}
-              <div className="border-t pt-4 flex flex-col gap-1 items-end">
-                <div className="flex justify-between w-full sm:w-auto sm:gap-12">
-                  <span className="text-sm text-muted-foreground">{t('offerPublicPage.totalLabel')}</span>
-                  <span className="text-2xl font-bold text-primary">{formatCurrency(total)}</span>
-                </div>
-                <p className="text-xs text-muted-foreground">{t('offerPublicPage.vatNote')}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* ─── Acceptance form (only when actionable) ────────── */}
-          {canAct && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('offerPublicPage.decisionTitle')}</CardTitle>
-                <CardDescription>
-                  {t('offerPublicPage.decisionDesc')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-5">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="clientName">{t('offerPublicPage.fullNameLabel')}</Label>
-                    <Input
-                      id="clientName"
-                      value={clientName}
-                      onChange={(e) => setClientName(e.target.value)}
-                      placeholder={t('offerPublicPage.fullNamePlaceholder')}
-                      aria-required="true"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="clientEmail">{t('offerPublicPage.emailLabel')}</Label>
-                    <Input
-                      id="clientEmail"
-                      type="email"
-                      value={clientEmail}
-                      onChange={(e) => setClientEmail(e.target.value)}
-                      placeholder="jan@example.com"
-                    />
-                  </div>
+                {/* Total — amber, JetBrains Mono */}
+                <div className="border-t border-border pt-4">
+                  <p className="text-xs text-muted-foreground mb-1">{t('offerPublicPage.totalLabel')}</p>
+                  <p className="text-3xl font-bold text-amber-600 font-mono tracking-tight">
+                    {formatCurrency(total)}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">{t('offerPublicPage.vatNote')}</p>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label>{t('offerPublicPage.signatureLabel')}</Label>
-                  <p className="text-sm text-muted-foreground">{t('offerPublicPage.signatureHint')}</p>
-                  <SignatureCanvas onSignatureChange={setSignature} />
-                </div>
-
-                <Button
-                  onClick={handleAccept}
-                  className="w-full min-h-[48px] text-base"
-                  disabled={isAccepting}
-                >
-                  {isAccepting ? (
-                    <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                  ) : (
-                    <CheckCircle className="h-5 w-5 mr-2" />
-                  )}
-                  {t('offerPublicPage.acceptButton')}
-                </Button>
-
-                <p className="text-xs text-center text-muted-foreground">
-                  {t('offerPublicPage.acceptTermsNote')}
-                </p>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* ─── Question form ─────────────────────────────────── */}
-          {!isOfferAccepted && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <MessageSquare className="h-5 w-5" />
-                  {t('offerPublicPage.questionTitle')}
-                </CardTitle>
-                <CardDescription>
-                  {t('offerPublicPage.questionDesc')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {questionSent ? (
-                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400 py-2">
-                    <CheckCircle className="h-5 w-5 shrink-0" />
-                    <p className="text-sm font-medium">{t('offerPublicPage.questionSentConfirm')}</p>
-                  </div>
-                ) : (
-                  <>
-                    <Textarea
-                      value={questionText}
-                      onChange={(e) => setQuestionText(e.target.value)}
-                      placeholder={t('offerPublicPage.questionPlaceholder')}
-                      rows={4}
-                      maxLength={2000}
-                      aria-label={t('offerPublicPage.questionAriaLabel')}
-                    />
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">
-                        {questionText.length}/2000
-                      </span>
-                      <Button
-                        variant="outline"
-                        onClick={handleSendQuestion}
-                        disabled={isSendingQuestion || questionText.trim().length < 3}
-                        className="min-h-[44px]"
-                      >
-                        {isSendingQuestion && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                        {t('offerPublicPage.sendQuestion')}
-                      </Button>
-                    </div>
-                  </>
-                )}
-                {questionSent && !isOfferAccepted && (
+                {/* CTA — 52px, amber (roadmap §5.1) */}
+                {canAct && (
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setQuestionSent(false)}
-                    className="text-muted-foreground min-h-[44px]"
+                    onClick={scrollToAcceptForm}
+                    className="w-full min-h-[52px] text-base bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30"
                   >
-                    {t('offerPublicPage.anotherQuestion')}
+                    <CheckCircle className="h-5 w-5 mr-2" />
+                    {t('offerPublicPage.acceptButton')}
                   </Button>
                 )}
+
+                {isOfferAccepted && (
+                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                    <CheckCircle className="h-5 w-5 shrink-0" />
+                    <p className="text-sm font-medium">{t('offerPublicPage.acceptedBanner')}</p>
+                  </div>
+                )}
+
+                {/* Trust signals */}
+                <div className="border-t border-border pt-4 space-y-2">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Shield className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                    {t('publicOffer.secureConnection')}
+                  </div>
+                  {offer.company?.phone && (
+                    <a
+                      href={`tel:${offer.company.phone}`}
+                      className="flex items-center gap-2 text-xs text-primary hover:underline"
+                    >
+                      <Phone className="h-3.5 w-3.5 shrink-0" />
+                      {offer.company.phone}
+                    </a>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Powered by <span className="font-medium">Majster.AI</span>
+                  </p>
+                </div>
               </CardContent>
             </Card>
-          )}
-
-          {/* ─── Footer ───────────────────────────────────────── */}
-          <div className="flex flex-col items-center gap-1.5 pb-4">
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Shield className="h-3 w-3 text-green-500" />
-                {t('publicOffer.secureConnection')}
-              </span>
-              <span aria-hidden>·</span>
-              <span>
-                Powered by <span className="font-medium">Majster.AI</span>
-              </span>
-            </div>
           </div>
+
         </div>
       </div>
     </>
