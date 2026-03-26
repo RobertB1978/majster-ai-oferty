@@ -223,7 +223,7 @@ export function DossierShareModal({ projectId, projectTitle, onClose }: DossierS
             <h2 className="font-semibold text-base">{t('dossier.share.title')}</h2>
             <p className="text-xs text-muted-foreground truncate max-w-[250px]">{projectTitle}</p>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
+          <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" onClick={onClose}>
             <X className="w-4 h-4" />
           </Button>
         </div>

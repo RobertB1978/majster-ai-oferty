@@ -73,7 +73,7 @@ export function InstallPrompt() {
               Dodaj aplikację do ekranu głównego dla szybszego dostępu.
             </p>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleDismiss}>
+          <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" onClick={handleDismiss}>
             <X className="h-4 w-4" />
           </Button>
         </div>

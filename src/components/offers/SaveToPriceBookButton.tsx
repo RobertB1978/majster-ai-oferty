@@ -53,7 +53,7 @@ export function SaveToPriceBookButton({
       variant="ghost"
       size="icon"
       className={cn(
-        'h-7 w-7 shrink-0 text-muted-foreground hover:text-primary transition-colors',
+        'h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 text-muted-foreground hover:text-primary transition-colors',
         !hasName && 'opacity-30 cursor-not-allowed',
         className,
       )}

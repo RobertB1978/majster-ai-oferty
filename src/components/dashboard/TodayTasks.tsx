@@ -160,7 +160,7 @@ export const TodayTasks = React.memo(function TodayTasks() {
               <span className="text-sm text-foreground flex-1 min-w-0 truncate">
                 {task.label}
               </span>
-              <Button size="sm" variant="ghost" className="h-7 px-2 shrink-0 text-muted-foreground hover:text-foreground" asChild>
+              <Button size="sm" variant="ghost" className="h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 text-muted-foreground hover:text-foreground" asChild>
                 <Link to={task.href}>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>

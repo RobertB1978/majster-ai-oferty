@@ -1,4 +1,8 @@
 {
+  "fieldSafety": {
+    "batterySaverActive": "Tryb oszczędzania baterii — animacje wyłączone",
+    "highGlareActive": "Tryb wysokiego kontrastu — lepsza czytelność w słońcu"
+  },
   "common": {
     "save": "Zapisz",
     "cancel": "Anuluj",

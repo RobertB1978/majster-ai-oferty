@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { isTradeOnboardingDone } from '@/hooks/useTradeOnboarding';
 import { useDenseMode } from '@/hooks/useDenseMode';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useFieldSafety } from '@/hooks/useFieldSafety';
+import { FieldSafetyBanner } from './FieldSafetyBanner';
 
 // Lazy-load heavy layout components that are not needed for initial render
 const AiChatAgent = lazy(() => import('@/components/ai/AiChatAgent').then(m => ({ default: m.AiChatAgent })));
@@ -31,6 +33,10 @@ export function AppLayout() {
   const [tradeOnboardingDone, setTradeOnboardingDone] = useState(isTradeOnboardingDone);
   const { effectiveDense } = useDenseMode();
   useKeyboardShortcuts(effectiveDense);
+
+  // Field Safety — activates high-glare, battery-saver and reduced-motion modes.
+  // Sets data-field-* attributes on <html> that CSS reads for Field-Safe variants.
+  useFieldSafety();
 
   // Show content when auth is resolved; reset on logout or re-loading
   useEffect(() => {
@@ -53,6 +59,7 @@ export function AppLayout() {
         {t('nav.skipToContent')}
       </a>
       <TopBar />
+      <FieldSafetyBanner />
       <Navigation />
       <main id="main-content" className={`flex-1 container py-6 px-4 md:px-6 pb-20 lg:pb-6 transition-opacity duration-150 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
         <PageTransition>
