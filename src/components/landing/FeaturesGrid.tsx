@@ -24,10 +24,20 @@ import { FEATURES } from './features.data';
 import type { Feature } from './features.data';
 import { FeatureDemoModal } from './FeatureDemoModal';
 import type { DemoFeature } from './FeatureDemoModal';
+import type { ComponentType } from 'react';
+import FeatureOffers from '@/components/illustrations/FeatureOffers';
+import FeatureProjects from '@/components/illustrations/FeatureProjects';
+import FeatureClients from '@/components/illustrations/FeatureClients';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   FileText, FolderOpen, Users, Calendar, TrendingUp, BarChart2,
   Camera, Globe, Smartphone, Brain, Mic, Shield, WifiOff, Download, Code2,
+};
+
+const ILLUSTRATION_MAP: Record<string, ComponentType<{ size?: number; className?: string; animated?: boolean }>> = {
+  quotes:   FeatureOffers,
+  projects: FeatureProjects,
+  clients:  FeatureClients,
 };
 
 // Keys that have both i18n benefit data AND a FeatureDemoModal sample UI.
@@ -44,6 +54,7 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
   const { t } = useTranslation();
   const Icon = ICON_MAP[feature.icon] ?? FileText;
   const hasDemo = DEMO_CAPABLE.has(feature.key);
+  const Illustration = ILLUSTRATION_MAP[feature.key];
 
   const handleDemo = () => {
     if (!hasDemo) return;
@@ -78,6 +89,13 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
       }
       aria-label={hasDemo ? `${t('landing.features.demoTitle')}: ${t(`landing.features.${feature.key}.title`)}` : undefined}
     >
+      {/* Illustration (Faza 5 §7) — only for quotes/projects/clients */}
+      {Illustration && (
+        <div className="flex justify-center -mb-2">
+          <Illustration size={88} className="opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-400/5 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:from-amber-500/20 group-hover:to-amber-400/10 group-hover:shadow-sm group-hover:shadow-amber-500/10">
           <Icon className="w-5 h-5 text-amber-500" aria-hidden="true" />

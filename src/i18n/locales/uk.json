@@ -597,6 +597,7 @@
       "updated": "Працівника оновлено",
       "deleted": "Працівника видалено"
     },
+    "memberOptions": "Параметри",
     "members": {
       "teamTitle": "Команда ({{count}})",
       "add": "Додати",
