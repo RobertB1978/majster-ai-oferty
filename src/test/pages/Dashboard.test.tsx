@@ -77,6 +77,15 @@ vi.mock('@/components/dashboard/ActivityFeed', () => ({
 vi.mock('@/components/dashboard/TodayTasks', () => ({
   TodayTasks: () => <div data-testid="today-tasks" />,
 }));
+vi.mock('@/components/dashboard/DashboardRevenueChart', () => ({
+  DashboardRevenueChart: () => <div data-testid="dashboard-revenue-chart" />,
+}));
+vi.mock('@/components/dashboard/ProjectStatusDonut', () => ({
+  ProjectStatusDonut: () => <div data-testid="project-status-donut" />,
+}));
+vi.mock('@/components/dashboard/DashboardOffersChart', () => ({
+  DashboardOffersChart: () => <div data-testid="dashboard-offers-chart" />,
+}));
 
 import Dashboard from '@/pages/Dashboard';
 

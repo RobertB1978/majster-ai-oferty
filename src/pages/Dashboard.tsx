@@ -5,9 +5,12 @@ import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useOnboardingProgress, useCreateOnboardingProgress } from '@/hooks/useOnboarding';
 import { Button } from '@/components/ui/button';
 import { Plus, Sparkles, AlertTriangle, Clock } from 'lucide-react';
+// Clock retained for expiration alert icon above
 import { EmptyDashboard } from '@/components/dashboard/EmptyDashboard';
 import { DashboardStats } from '@/components/dashboard/DashboardStats';
-import { ProjectStatusBreakdown } from '@/components/dashboard/ProjectStatusBreakdown';
+import { ProjectStatusDonut } from '@/components/dashboard/ProjectStatusDonut';
+import { DashboardRevenueChart } from '@/components/dashboard/DashboardRevenueChart';
+import { DashboardOffersChart } from '@/components/dashboard/DashboardOffersChart';
 import { RecentProjects } from '@/components/dashboard/RecentProjects';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
@@ -196,14 +199,26 @@ export default function Dashboard() {
         recentCount={recentWeekCount}
       />
 
-      {/* Activity Feed — narrative, below summary stats */}
-      <ActivityFeed />
+      {/* Charts row — RevenueChart (2/3) + ProjectStatusDonut (1/3) per roadmap §4.1 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <DashboardRevenueChart />
+        </div>
+        <div className="lg:col-span-1">
+          <ProjectStatusDonut
+            newCount={newCount}
+            inProgressCount={inProgressCount}
+            sentCount={sentCount}
+            acceptedCount={acceptedCount}
+          />
+        </div>
+      </div>
 
-      {/* Status breakdown — with optional sidebar ad for Free users */}
+      {/* OffersBarChart (1/2) + ActivityFeed (1/2) per roadmap §4.1 */}
       {showAds ? (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-3">
-            <ProjectStatusBreakdown
+          <div className="lg:col-span-2">
+            <DashboardOffersChart
               newCount={newCount}
               inProgressCount={inProgressCount}
               sentCount={sentCount}
@@ -211,16 +226,22 @@ export default function Dashboard() {
             />
           </div>
           <div className="lg:col-span-1">
+            <ActivityFeed />
+          </div>
+          <div className="lg:col-span-1">
             <AdBanner variant="vertical" showClose={false} />
           </div>
         </div>
       ) : (
-        <ProjectStatusBreakdown
-          newCount={newCount}
-          inProgressCount={inProgressCount}
-          sentCount={sentCount}
-          acceptedCount={acceptedCount}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <DashboardOffersChart
+            newCount={newCount}
+            inProgressCount={inProgressCount}
+            sentCount={sentCount}
+            acceptedCount={acceptedCount}
+          />
+          <ActivityFeed />
+        </div>
       )}
 
       {/* Quote Creation Hub — secondary entry point for voice/AI/manual modes */}
