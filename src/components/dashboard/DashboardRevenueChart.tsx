@@ -22,7 +22,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface DayData {
   day: string;
@@ -31,12 +30,12 @@ interface DayData {
 }
 
 function useLast7DaysProjectActivity(): { data: DayData[]; isLoading: boolean } {
-  const { user } = useAuth();
-
   const { data, isLoading } = useQuery({
-    queryKey: ['dashboard-revenue-chart', user?.id],
+    queryKey: ['dashboard-revenue-chart'],
     queryFn: async (): Promise<DayData[]> => {
-      if (!user?.id) return [];
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      if (!userId) return [];
 
       // Build 7-day range
       const days: DayData[] = [];
@@ -57,7 +56,7 @@ function useLast7DaysProjectActivity(): { data: DayData[]; isLoading: boolean } 
       const { data: projects } = await supabase
         .from('v2_projects')
         .select('created_at, status')
-        .eq('owner_user_id', user.id)
+        .eq('owner_user_id', userId)
         .gte('created_at', from.toISOString());
 
       if (projects) {
@@ -80,7 +79,6 @@ function useLast7DaysProjectActivity(): { data: DayData[]; isLoading: boolean } 
       return days;
     },
     staleTime: 5 * 60 * 1000,
-    enabled: !!user?.id,
   });
 
   return { data: data ?? [], isLoading };
