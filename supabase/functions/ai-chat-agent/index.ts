@@ -132,14 +132,10 @@ serve(async (req) => {
       }
     }
 
-    // Build context-aware system prompt (whitelist allowed context values)
-    const ALLOWED_CONTEXTS = ['quote_creation', null, undefined, ''];
+    // Build context-aware system prompt
     let contextualPrompt = systemPrompt;
     if (context === 'quote_creation') {
       contextualPrompt += `\n\nKontekst: Użytkownik tworzy nowy projekt/wycenę. Pomagaj mu w określeniu zakresu prac i szacowaniu kosztów.`;
-    } else if (context && !ALLOWED_CONTEXTS.includes(context as string)) {
-      // Ignore unknown context values to prevent prompt injection
-      console.warn(`[ai-chat-agent] Unknown context value ignored: ${String(context).slice(0, 50)}`);
     }
 
     // Validate and sanitize history items

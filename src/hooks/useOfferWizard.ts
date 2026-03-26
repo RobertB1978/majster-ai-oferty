@@ -185,7 +185,7 @@ export function useLoadOfferDraft(offerId: string | null) {
 
       return {
         ...(offer as Omit<OfferWithItems, 'items' | 'total_vat' | 'variants'>),
-        total_vat: offer.total_vat ?? null,
+        total_vat: null,
         items: noVariantItems,
         variants,
       };

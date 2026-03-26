@@ -10,7 +10,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { logger } from '@/lib/logger';
 import { ArrowLeft, Loader2, FileText, Sparkles, Eye } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -178,7 +177,6 @@ interface TemplateRecoveryCardProps {
 }
 
 function TemplateRecoveryCard({ pack, onViewDetails }: TemplateRecoveryCardProps) {
-  const { t } = useTranslation();
   const materialCount = pack.items.filter(i => i.category === 'Materiał').length;
   const laborCount    = pack.items.filter(i => i.category === 'Robocizna').length;
 
@@ -197,10 +195,10 @@ function TemplateRecoveryCard({ pack, onViewDetails }: TemplateRecoveryCardProps
           variant="outline"
           className="shrink-0 h-7 text-xs gap-1.5"
           onClick={onViewDetails}
-          aria-label={t('offerDetail.template.previewAriaLabel', { name: pack.tradeName })}
+          aria-label={`Podgląd szablonu ${pack.tradeName}`}
         >
           <Eye className="h-3 w-3" />
-          {t('offerDetail.template.previewButton')}
+          Podgląd szablonu
         </Button>
       </div>
 
@@ -211,7 +209,7 @@ function TemplateRecoveryCard({ pack, onViewDetails }: TemplateRecoveryCardProps
       )}
 
       <p className="text-xs text-muted-foreground font-medium">
-        {t('offerDetail.template.itemsSummary', { materials: materialCount, labor: laborCount })}
+        {materialCount} materiałów · {laborCount} poz. robocizny
       </p>
     </div>
   );
@@ -235,7 +233,8 @@ export default function OfferDetail() {
 
   // §19.4 proof: log draft_id received from Quick Mode transition
   if (isNew && draftId) {
-    logger.info('[Full Mode] received draft_id=%s from Quick Mode transition', draftId);
+    // eslint-disable-next-line no-console
+    console.info('[Full Mode] received draft_id=%s from Quick Mode transition', draftId);
   }
 
   if (isNew) {

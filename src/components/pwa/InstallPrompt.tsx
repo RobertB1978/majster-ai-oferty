@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Download, X } from 'lucide-react';
@@ -10,7 +9,6 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function InstallPrompt() {
-  const { t } = useTranslation();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -75,7 +73,7 @@ export function InstallPrompt() {
               Dodaj aplikację do ekranu głównego dla szybszego dostępu.
             </p>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleDismiss} aria-label={t('common.close')}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleDismiss}>
             <X className="h-4 w-4" />
           </Button>
         </div>

@@ -53,22 +53,11 @@ function validateStep(
     }
   }
   if (step === 1) {
-    if (form.variants.length > 0) {
-      // Variant mode: check each variant has at least one item with a name
-      const allVariantItems = form.variants.flatMap((v) => v.items);
-      if (allVariantItems.length === 0) {
-        errs.items = t('offerWizard.errors.addItem');
-      }
-      const emptyName = allVariantItems.find((it) => !it.name.trim());
-      if (emptyName) errs.items = t('offerWizard.errors.itemNameRequired');
-    } else {
-      // No-variant mode
-      if (form.items.length === 0) {
-        errs.items = t('offerWizard.errors.addItem');
-      }
-      const emptyName = form.items.find((it) => !it.name.trim());
-      if (emptyName) errs.items = t('offerWizard.errors.itemNameRequired');
+    if (form.items.length === 0) {
+      errs.items = t('offerWizard.errors.addItem');
     }
+    const emptyName = form.items.find((it) => !it.name.trim());
+    if (emptyName) errs.items = t('offerWizard.errors.itemNameRequired');
   }
   return errs;
 }
@@ -82,7 +71,6 @@ function emptyForm(offerId: string | null): WizardFormData {
     newClient: null,
     title: '',
     items: [],
-    variants: [],
   };
 }
 
@@ -125,7 +113,6 @@ export function OfferWizard({ offerId }: Props) {
         newClient: null,
         title: existing.title ?? '',
         items: existing.items,
-        variants: existing.variants ?? [],
       });
     }
   }, [existing]);

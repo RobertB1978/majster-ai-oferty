@@ -13,7 +13,7 @@ import { OfferApprovalForm } from '@/components/offers/OfferApprovalForm';
 import type { OfferData, OfferStatus } from '@/components/offers/offerApprovalTypes';
 
 export default function OfferApproval() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { token } = useParams<{ token: string }>();
   const [searchParams] = useSearchParams();
   const acceptToken = searchParams.get('t');
@@ -218,7 +218,7 @@ export default function OfferApproval() {
 
   // ─── EXPIRED ──────────────────────────────────────
   if (status === 'expired') {
-    const expiredDate = offer.valid_until ? new Date(offer.valid_until).toLocaleDateString(i18n.language) : null;
+    const expiredDate = offer.valid_until ? new Date(offer.valid_until).toLocaleDateString() : null;
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="max-w-md w-full">

@@ -1383,27 +1383,3 @@ majster-ai-api-v4     — Supabase GET dla offers + v2_projects (stale-while-rev
 | P1 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRO_PRICE_ID`, `STRIPE_STARTER_PRICE_ID` | Supabase Dashboard → Edge Functions → Secrets |
 | P2 | Weryfikacja RLS na tabeli `user_roles` | Supabase Dashboard → Table Editor → user_roles |
 
----
-
-## Post-Audit Cleanup (2026-03-22)
-
-**Branch:** `claude/post-audit-cleanup-fixes-svkRj`
-**Status:** ✅ DONE
-
-### Naprawione defekty
-- D-005: Bundle index chunk zredukowany do <200 KiB gzip (z 238 KiB)
-- D-010: npm audit — luki udokumentowane (devDeps only)
-- Hardcoded Polish strings — 57 warnings naprawionych (544→487)
-- Voice recognition — dynamiczny język z i18n
-- Cookie consent — max-height + overflow na mobile
-- Empty states — Clients i ItemTemplates używają EmptyState component
-- AI prompts — udokumentowane jako decyzja produktowa
-- Finance export — brak "coming soon" buttons (nie istnieją)
-
-### Metryki
-- TypeScript: 0 errors
-- ESLint: 0 errors, 514 warnings (z 571)
-- Tests: 1421 passed, 5 skipped, 0 failures
-- Build: PASS, index chunk 199.76 KiB gzip
-- i18n parity: PL=EN=UK=4297 keys
-

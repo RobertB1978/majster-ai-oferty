@@ -71,15 +71,15 @@ export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isS
             </div>
             <div className="flex justify-between px-4 py-2.5">
               <span className="text-muted-foreground">{t('common.net')}</span>
-              <span className="font-medium">{formatMoney(totals.total_net, i18n.language)} {t('common.currencySymbol')}</span>
+              <span className="font-medium">{formatMoney(totals.total_net, i18n.language)} zł</span>
             </div>
             <div className="flex justify-between px-4 py-2.5">
               <span className="text-muted-foreground">VAT</span>
-              <span>{formatMoney(totals.total_vat, i18n.language)} {t('common.currencySymbol')}</span>
+              <span>{formatMoney(totals.total_vat, i18n.language)} zł</span>
             </div>
             <div className="flex justify-between px-4 py-2.5 bg-muted rounded-b-lg">
               <span className="font-semibold">{t('common.gross')}</span>
-              <span className="font-bold text-lg">{formatMoney(totals.total_gross, i18n.language)} {t('common.currencySymbol')}</span>
+              <span className="font-bold text-lg">{formatMoney(totals.total_gross, i18n.language)} zł</span>
             </div>
           </>
         )}
@@ -96,11 +96,11 @@ export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isS
               </div>
               <div className="flex justify-between text-xs text-muted-foreground pl-5">
                 <span>{t('common.net')}</span>
-                <span>{formatMoney(vTotals.total_net, i18n.language)} {t('common.currencySymbol')}</span>
+                <span>{formatMoney(vTotals.total_net, i18n.language)} zł</span>
               </div>
               <div className={`flex justify-between text-sm font-semibold pl-5 ${idx === form.variants.length - 1 ? '' : ''}`}>
                 <span>{t('common.gross')}</span>
-                <span>{formatMoney(vTotals.total_gross, i18n.language)} {t('common.currencySymbol')}</span>
+                <span>{formatMoney(vTotals.total_gross, i18n.language)} zł</span>
               </div>
             </div>
           );

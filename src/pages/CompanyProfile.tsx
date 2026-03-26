@@ -127,11 +127,7 @@ export default function CompanyProfile() {
       return;
     }
 
-    try {
-      await uploadLogo.mutateAsync(file);
-    } catch (_error) {
-      // Error handled by hook's onError
-    }
+    await uploadLogo.mutateAsync(file);
   };
 
   if (isLoading) {
@@ -304,7 +300,7 @@ export default function CompanyProfile() {
                           id="nip"
                           value={formData.nip}
                           onChange={(e) => setFormData({ ...formData, nip: e.target.value })}
-                          placeholder={t('companyProfile.nipPlaceholder')}
+                          placeholder="1234567890"
                           className={errors.nip ? 'border-destructive' : ''}
                         />
                         {errors.nip && (
@@ -352,7 +348,7 @@ export default function CompanyProfile() {
                           id="street"
                           value={formData.street}
                           onChange={(e) => setFormData({ ...formData, street: e.target.value })}
-                          placeholder={t('companyProfile.streetPlaceholder')}
+                          placeholder="ul. Przykładowa 1"
                           className={errors.street ? 'border-destructive' : ''}
                         />
                         {errors.street && (
@@ -378,7 +374,7 @@ export default function CompanyProfile() {
                           id="city"
                           value={formData.city}
                           onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                          placeholder={t('companyProfile.cityPlaceholder')}
+                          placeholder="Warszawa"
                           className={errors.city ? 'border-destructive' : ''}
                         />
                         {errors.city && (
@@ -392,7 +388,7 @@ export default function CompanyProfile() {
                           id="postal_code"
                           value={formData.postal_code}
                           onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
-                          placeholder={t('companyProfile.postalCodePlaceholder')}
+                          placeholder="00-001"
                           className={errors.postal_code ? 'border-destructive' : ''}
                         />
                         {errors.postal_code && (
@@ -450,7 +446,7 @@ export default function CompanyProfile() {
                           id="phone"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          placeholder={t('companyProfile.phonePlaceholder')}
+                          placeholder="+48 123 456 789"
                           className={errors.phone ? 'border-destructive' : ''}
                         />
                         {errors.phone && (

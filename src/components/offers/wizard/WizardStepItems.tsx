@@ -115,7 +115,7 @@ function ItemList({ items, onUpdate, onRemove }: ItemListProps) {
           </div>
           <div className="flex items-center justify-between">
             <p className="text-xs text-muted-foreground">
-              {t('offerWizard.itemsStep.lineTotal')}: <strong>{formatMoney(item.qty * item.unit_price_net, i18n.language)} {t('common.currencySymbol')}</strong>
+              {t('offerWizard.itemsStep.lineTotal')}: <strong>{formatMoney(item.qty * item.unit_price_net, i18n.language)} zł</strong>
             </p>
             <SaveToPriceBookButton
               name={item.name}
@@ -207,11 +207,17 @@ export function WizardStepItems({ form, onChange, errors }: Props) {
   const removeVariant = (localId: string) => {
     const next = form.variants.filter((v) => v.localId !== localId);
     if (next.length === 0) {
-      // Revert to no-variant mode — move removed variant's items back to flat list
-      const removedVariant = form.variants.find((v) => v.localId === localId);
-      const finalItems = removedVariant ? removedVariant.items : [];
+      // Revert to no-variant mode — move first variant's items back
+      const removed = form.variants.find((v) => v.localId !== localId);
+      const removedOther = form.variants.find((v) => v.localId === localId);
+      // Merge remaining variant's items into no-variant
+      const surviving = form.variants.filter((v) => v.localId !== localId);
+      const mergedItems = surviving.flatMap((v) => v.items);
+      // If we removed one of two, keep the other's items
+      const finalItems = removedOther ? surviving.flatMap((v) => v.items) : mergedItems;
       onChange({ variants: [], items: finalItems });
       setActiveVariantLocalId(null);
+      void removed;
     } else {
       onChange({ variants: next });
       if (activeVariantLocalId === localId) {
@@ -476,15 +482,15 @@ export function WizardStepItems({ form, onChange, errors }: Props) {
           )}
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t('common.net')}</span>
-            <span className="font-medium">{formatMoney(totals.total_net, i18n.language)} {t('common.currencySymbol')}</span>
+            <span className="font-medium">{formatMoney(totals.total_net, i18n.language)} zł</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">VAT</span>
-            <span>{formatMoney(totals.total_vat, i18n.language)} {t('common.currencySymbol')}</span>
+            <span>{formatMoney(totals.total_vat, i18n.language)} zł</span>
           </div>
           <div className="flex justify-between border-t border-border pt-1 font-semibold">
             <span>{t('common.gross')}</span>
-            <span>{formatMoney(totals.total_gross, i18n.language)} {t('common.currencySymbol')}</span>
+            <span>{formatMoney(totals.total_gross, i18n.language)} zł</span>
           </div>
         </div>
       )}

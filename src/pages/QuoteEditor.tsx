@@ -21,7 +21,6 @@ import { QuoteVersionsPanel } from '@/components/quotes/QuoteVersionsPanel';
 import { QuoteSnapshot } from '@/hooks/useQuoteVersions';
 import { VoiceInputButton } from '@/components/voice/VoiceInputButton';
 import { parseDecimal } from '@/lib/numberParsing';
-import { formatCurrency, unitToI18nKey } from '@/lib/formatters';
 
 /** Minimal project shape consumed by this component (V2 and legacy normalised). */
 interface QuoteProjectData {
@@ -35,11 +34,10 @@ interface PositionInputs {
 }
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
-const categories: Array<'Materiał' | 'Robocizna'> = ['Materiał', 'Robocizna'];
 
 export default function QuoteEditor() {
   const { id } = useParams<{ id: string }>();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   // ── Project reads: try V2 first, fall back to legacy ──────────────────────
   const { data: projectV2, isLoading: v2Loading } = useProjectV2(id);
@@ -137,18 +135,14 @@ export default function QuoteEditor() {
       return;
     }
 
-    try {
-      await createTemplate.mutateAsync({
-        name: position.name,
-        unit: position.unit,
-        default_qty: position.qty,
-        default_price: position.price,
-        category: position.category,
-        description: '',
-      });
-    } catch (_error) {
-      // Error handled by hook's onError
-    }
+    await createTemplate.mutateAsync({
+      name: position.name,
+      unit: position.unit,
+      default_qty: position.qty,
+      default_price: position.price,
+      category: position.category,
+      description: '',
+    });
   };
 
   const updatePosition = (positionId: string, field: keyof QuotePosition, value: unknown) => {
@@ -462,7 +456,7 @@ export default function QuoteEditor() {
                       </SelectTrigger>
                       <SelectContent>
                         {units.map((unit) => (
-                          <SelectItem key={unit} value={unit}>{t(`measurements.units.${unitToI18nKey(unit)}`)}</SelectItem>
+                          <SelectItem key={unit} value={unit}>{unit}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -495,7 +489,7 @@ export default function QuoteEditor() {
                   </div>
                 </div>
                 <div className="mt-3 text-right text-sm font-medium">
-                  {t('quotes.itemTotal')} <span className="text-primary">{formatCurrency(position.qty * position.price, i18n.language)}</span>
+                  {t('quotes.itemTotal')} <span className="text-primary">{(position.qty * position.price).toFixed(2)} zł</span>
                 </div>
               </CardContent>
             </Card>
@@ -511,11 +505,11 @@ export default function QuoteEditor() {
         <CardContent className="space-y-4">
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t('quotes.materialsTotal')}</span>
-            <span className="font-medium">{formatCurrency(summaryMaterials, i18n.language)}</span>
+            <span className="font-medium">{summaryMaterials.toFixed(2)} zł</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t('quotes.laborTotal')}</span>
-            <span className="font-medium">{formatCurrency(summaryLabor, i18n.language)}</span>
+            <span className="font-medium">{summaryLabor.toFixed(2)} zł</span>
           </div>
           <div className="flex items-center justify-between gap-4">
             <span className="text-muted-foreground">{t('quotes.marginPercent')}:</span>
@@ -536,7 +530,7 @@ export default function QuoteEditor() {
           <div className="border-t border-border pt-4">
             <div className="flex justify-between text-lg font-bold">
               <span>{t('quotes.totalAmount')}:</span>
-              <span className="text-primary">{formatCurrency(total, i18n.language)}</span>
+              <span className="text-primary">{total.toFixed(2)} zł</span>
             </div>
           </div>
         </CardContent>

@@ -56,14 +56,7 @@
     "errorGeneric": "Wystąpił błąd. Spróbuj ponownie.",
     "offline": "Offline",
     "online": "Online",
-    "unknownError": "Nieznany błąd",
-    "currencySymbol": "zł",
-    "currencyCode": "PLN",
-    "material": "Materiał",
-    "labor": "Robocizna",
-    "service": "Usługa",
-    "vatLabel": "VAT 23%",
-    "month": "mies."
+    "unknownError": "Nieznany błąd"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -462,10 +455,6 @@
     "noEventsHint": "Brak wydarzeń. Kliknij dwukrotnie w dzień, aby dodać pierwsze wydarzenie.",
     "noEventsForDay": "Brak wydarzeń — kliknij dowolny slot, aby dodać",
     "today": "Dzisiaj",
-    "previous": "Poprzedni",
-    "next": "Następny",
-    "previousMonth": "Poprzedni miesiąc",
-    "nextMonth": "Następny miesiąc",
     "month": "Miesiąc",
     "week": "Tydzień",
     "day": "Dzień",
@@ -742,7 +731,6 @@
     "versionNamePlaceholder": "np. V2 - po poprawkach",
     "saveVersionDialog": "Zapisz wersję wyceny",
     "previewVersion": "Podgląd wersji",
-    "setActiveVersion": "Ustaw jako aktywną wersję",
     "loadToEditor": "Załaduj do edytora",
     "deleteVersion": "Usunąć wersję?",
     "irreversible": "Ta operacja jest nieodwracalna.",
@@ -828,7 +816,6 @@
       "title": "Email do odpowiedzi",
       "unverified": "Niezweryfikowany",
       "verified": "Zweryfikowany",
-      "invalidEmail": "Nieprawidłowy adres email",
       "verifyPrompt": "Zweryfikuj adres email, aby klienci mogli do Ciebie odpisywać na oferty.",
       "toast": {
         "saved": "Email do odpowiedzi zapisany. Sprawdź skrzynkę pocztową, by go zweryfikować.",
@@ -2939,15 +2926,10 @@
     "ownerName": "Imię i nazwisko właściciela",
     "ownerNamePlaceholder": "Jan Kowalski",
     "nipLabel": "NIP",
-    "nipPlaceholder": "1234567890",
     "streetLabel": "Ulica i numer",
-    "streetPlaceholder": "ul. Przykładowa 1",
     "cityLabel": "Miasto",
-    "cityPlaceholder": "Warszawa",
     "postalCodeLabel": "Kod pocztowy",
-    "postalCodePlaceholder": "00-001",
     "phoneLabel": "Telefon",
-    "phonePlaceholder": "+48 123 456 789",
     "emailLabel": "Email do ofert",
     "bankAccountLabel": "Numer konta bankowego",
     "emailSettingsSection": "Ustawienia wiadomości e-mail",
@@ -3772,9 +3754,7 @@
     "statusBadgeDraft": "Szkic",
     "shareLinkHint": "Skopiuj i wyślij klientowi — nie wymaga logowania",
     "noAcceptanceLinkNote": "Wygeneruj link akceptacji w szczegółach oferty (zakładka Wyślij), aby udostępnić go klientowi.",
-    "missingCompanyAlert": "Profil firmy jest niekompletny — PDF nie będzie zawierał danych firmowych. Uzupełnij dane w Ustawieniach → Profil firmy.",
-    "nip": "NIP",
-    "tel": "Tel"
+    "missingCompanyAlert": "Profil firmy jest niekompletny — PDF nie będzie zawierał danych firmowych. Uzupełnij dane w Ustawieniach → Profil firmy."
   },
   "acceptanceLink": {
     "panelTitle": "Link akceptacji dla klienta",
@@ -3893,9 +3873,6 @@
     "statusActive": "Aktywny",
     "statusCompleted": "Zakończony",
     "statusOnHold": "Wstrzymany",
-    "stagesCount": "{{count}} etapów",
-    "starterPlanLabel": "Plan startowy · {{count}} etapów",
-    "templatePlanLabel": "{{trade}} · {{count}} etapów",
     "startDate": "Rozpoczęcie",
     "emptyTitle": "Brak projektów",
     "emptyDesc": "Utwórz projekt z zaakceptowanej oferty.",
@@ -4682,18 +4659,13 @@
       "complexity": "Złożoność",
       "starterNotes": "Notatki startowe",
       "materials": "Materiały",
-      "labor": "Robocizna",
-      "previewButton": "Podgląd szablonu",
-      "previewAriaLabel": "Podgląd szablonu {{name}}",
-      "itemsSummary": "{{materials}} materiałów · {{labor}} poz. robocizny"
+      "labor": "Robocizna"
     }
   },
   "offline": {
     "banner": "Tryb offline — widoczne dane z ostatniego pobrania",
     "actionBlocked": "Ta akcja wymaga polaczenia z internetem",
-    "readOnlyNote": "Przegladasz dane zapisane lokalnie. Wróc do sieci, aby wprowadzac zmiany.",
-    "title": "Jesteś offline",
-    "description": "Część funkcji Majster.AI jest niedostępna bez połączenia z internetem. Sprawdź połączenie i spróbuj ponownie."
+    "readOnlyNote": "Przegladasz dane zapisane lokalnie. Wróc do sieci, aby wprowadzac zmiany."
   },
   "app": {
     "loading": "Uruchamianie aplikacji"
@@ -4791,20 +4763,7 @@
       "addError": "Błąd przy dodawaniu dokumentu",
       "deleted": "Dokument usunięty",
       "deleteError": "Błąd przy usuwaniu dokumentu"
-    },
-    "noDocuments": "Brak dokumentów",
-    "addNewDocument": "Dodaj nowy dokument",
-    "addDescription": "Prześlij dokument, który będzie można załączać do ofert",
-    "title": "Dokumenty firmowe",
-    "subtitle": "Uprawnienia, referencje, certyfikaty i polisy do załączenia do ofert",
-    "add": "Dodaj",
-    "documentType": "Typ dokumentu",
-    "documentName": "Nazwa dokumentu",
-    "descriptionOptional": "Opis (opcjonalnie)",
-    "uploading": "Przesyłanie...",
-    "upload": "Prześlij dokument",
-    "acceptedFormats": "Akceptowane formaty: PDF, JPG, PNG (max 10 MB)",
-    "noDocumentsHint": "Dodaj uprawnienia, referencje lub certyfikaty"
+    }
   },
   "pushNotifications": {
     "title": "Powiadomienia Push",
@@ -4918,8 +4877,7 @@
     "faq3a": "Tak, Majster.AI umożliwia generowanie profesjonalnych ofert w formacie PDF z logo firmy, pozycjami kosztorysowymi i warunkami płatności."
   },
   "notifications": {
-    "deleteNotification": "Usuń powiadomienie",
-    "noNotifications": "Brak powiadomień"
+    "deleteNotification": "Usuń powiadomienie"
   },
   "workTasks": {
     "unknownProject": "Nieznany projekt",

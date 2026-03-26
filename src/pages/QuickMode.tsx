@@ -14,8 +14,7 @@
  * - Persists form fields to sessionStorage for within-session navigation.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { logger } from '@/lib/logger';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
@@ -135,16 +134,6 @@ export default function QuickMode() {
   // Preview photos (previewUrl is local only — not stored in DraftPhoto)
   const [displayPhotos, setDisplayPhotos] = useState<PhotoCapturePhoto[]>([]);
 
-  // Cleanup blob URLs on unmount to prevent memory leaks
-  useEffect(() => {
-    return () => {
-      setDisplayPhotos((prev) => {
-        prev.forEach((p) => URL.revokeObjectURL(p.previewUrl));
-        return [];
-      });
-    };
-  }, []);
-
   // Text note — drives updateFieldCapture
   const [note, setNote] = useState('');
 
@@ -214,7 +203,7 @@ export default function QuickMode() {
   // ── Photo handlers ──────────────────────────────────────────────────────
 
   // Null-safe photos array — draft is null during IDB hydration.
-  const currentPhotos = useMemo(() => draft?.fieldCapture.photos ?? [], [draft?.fieldCapture.photos]);
+  const currentPhotos = draft?.fieldCapture.photos ?? [];
 
   const handlePhotoAdd = useCallback(
     (file: File) => {
@@ -299,7 +288,8 @@ export default function QuickMode() {
     const ok = transitionToFull();
     if (ok) {
       // §19.4 proof: draft_id must be identical before and after transition
-      logger.info(
+      // eslint-disable-next-line no-console
+      console.info(
         '[Quick→Full] draft_id before=%s after=%s identical=%s',
         draftIdBefore,
         draft.id,
@@ -313,7 +303,7 @@ export default function QuickMode() {
     } else {
       setTransitioning(false);
     }
-  }, [canTransitionToFull, transitioning, transitionToFull, navigate, draft, clearSession]);
+  }, [canTransitionToFull, transitioning, transitionToFull, navigate]);
 
   // ── Derive CTA hint text ────────────────────────────────────────────────
 

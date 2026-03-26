@@ -44,17 +44,14 @@ export function OrganizationManager() {
   const handleCreateOrg = async () => {
     if (!newOrgName.trim()) return;
     
-    try {
-      await createOrg.mutateAsync({
-        name: newOrgName,
-        slug: newOrgSlug || newOrgName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-      });
-      setIsCreateDialogOpen(false);
-      setNewOrgName('');
-      setNewOrgSlug('');
-    } catch (_error) {
-      // Error handled by hook's onError
-    }
+    await createOrg.mutateAsync({
+      name: newOrgName,
+      slug: newOrgSlug || newOrgName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+    });
+    
+    setIsCreateDialogOpen(false);
+    setNewOrgName('');
+    setNewOrgSlug('');
   };
 
   const getRoleIcon = (role: string) => {
@@ -211,7 +208,6 @@ export function OrganizationManager() {
                               variant="ghost"
                               size="icon"
                               className="text-destructive"
-                              aria-label={t('organizations.removeMember')}
                               onClick={() => removeMember.mutate({
                                 memberId: member.id,
                                 organizationId: selectedOrg

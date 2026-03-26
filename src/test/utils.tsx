@@ -31,7 +31,7 @@ function AllProviders({ children }: WrapperProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <HelmetProvider>
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <BrowserRouter>
           {children}
           <Toaster />
         </BrowserRouter>

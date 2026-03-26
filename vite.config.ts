@@ -133,36 +133,37 @@ export default defineConfig(({ mode }) => {
       cssMinify: true,
       rollupOptions: {
         output: {
-          manualChunks(id) {
-            if (!id.includes('node_modules')) return undefined;
-
-            // Named vendor chunks for heavy/specific libraries
-            // react ecosystem — keep together to avoid circular chunks
-            if (/\/react\/|\/react-dom\/|react-router|@remix-run\/router|scheduler|react-is|prop-types|use-sync-external-store/.test(id)) return 'react-vendor';
-            // Radix UI and related deps (includes floating-ui, scroll-lock which depend on react)
-            if (/(@radix-ui|@floating-ui|react-remove-scroll|aria-hidden|react-style-singleton|use-callback-ref|use-sidecar|get-nonce)/.test(id)) return 'ui-vendor';
-            if (/tailwind-merge|class-variance-authority|clsx|next-themes/.test(id)) return 'styling-vendor';
-            if (id.includes('@supabase/')) return 'supabase-vendor';
-            if (/react-hook-form|@hookform|\/zod\//.test(id)) return 'form-vendor';
-            // Recharts and its d3/lodash/decimal deps
-            if (/recharts|react-smooth|react-fast-compare|decimal\.js|victory|d3-/.test(id)) return 'charts-vendor';
-            if (id.includes('lodash')) return 'charts-vendor';
-            if (/framer-motion|motion-dom|motion-utils/.test(id)) return 'framer-motion-vendor';
-            if (id.includes('leaflet')) return 'leaflet-vendor';
-            if (/jspdf|canvg|core-js|stackblur|svg-pathdata|rgbcolor|pako|fflate|fast-png|iobuffer|iceberg/.test(id)) return 'pdf-vendor';
-            if (/i18next|i18next-browser-languagedetector/.test(id)) return 'i18n-vendor';
-            if (id.includes('@tanstack/react-query')) return 'query-vendor';
-            if (id.includes('react-helmet-async')) return 'helmet-vendor';
-            if (id.includes('lucide-react')) return 'icons-vendor';
-            if (id.includes('date-fns')) return 'date-vendor';
-            if (id.includes('dompurify')) return 'purify-vendor';
-            if (id.includes('/sonner/')) return 'sonner-vendor';
-            if (id.includes('@sentry/')) return 'sentry-vendor';
-            if (id.includes('html2canvas')) return 'html2canvas-vendor';
-            if (id.includes('qrcode') || id.includes('dijkstrajs')) return 'qrcode-vendor';
-
-            // Catch-all: remaining node_modules go to misc-vendor
-            return 'misc-vendor';
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'ui-vendor': [
+              '@radix-ui/react-dialog',
+              '@radix-ui/react-dropdown-menu',
+              '@radix-ui/react-select',
+              '@radix-ui/react-tabs',
+              '@radix-ui/react-toast',
+            ],
+            'supabase-vendor': ['@supabase/supabase-js'],
+            'form-vendor': ['react-hook-form', 'zod', '@hookform/resolvers'],
+            'charts-vendor': ['recharts'],
+            // Performance pack: isolate heavy libs that are loaded on-demand
+            'framer-motion-vendor': ['framer-motion'],
+            'leaflet-vendor': ['leaflet'],
+            'pdf-vendor': ['jspdf', 'jspdf-autotable'],
+            // i18n vendor — isolate translation runtime from main bundle
+            'i18n-vendor': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
+            // Helmet + query vendor — reduce main chunk size
+            'query-vendor': ['@tanstack/react-query'],
+            'helmet-vendor': ['react-helmet-async'],
+            // Lucide icons — used everywhere, isolate from main bundle
+            'icons-vendor': ['lucide-react'],
+            // Date utilities
+            'date-vendor': ['date-fns'],
+            // DOMPurify — isolate sanitization lib
+            'purify-vendor': ['dompurify'],
+            // Sonner toast — isolate notification lib
+            'sonner-vendor': ['sonner'],
+            // Sentry — isolate error tracking
+            'sentry-vendor': ['@sentry/react'],
           },
           // Optimize chunk file naming for better caching
           chunkFileNames: 'assets/js/[name]-[hash].js',

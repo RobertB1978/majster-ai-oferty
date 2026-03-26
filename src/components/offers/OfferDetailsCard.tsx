@@ -10,7 +10,7 @@ interface OfferDetailsCardProps {
 }
 
 export function OfferDetailsCard({ offer }: OfferDetailsCardProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Card>
@@ -33,7 +33,7 @@ export function OfferDetailsCard({ offer }: OfferDetailsCardProps) {
             <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
             <div>
               <p className="text-sm text-muted-foreground">{t('offerApproval.details.date')}</p>
-              <p className="font-medium">{new Date(offer.created_at).toLocaleDateString(i18n.language)}</p>
+              <p className="font-medium">{new Date(offer.created_at).toLocaleDateString()}</p>
             </div>
           </div>
           {offer.valid_until && (
@@ -41,7 +41,7 @@ export function OfferDetailsCard({ offer }: OfferDetailsCardProps) {
               <Clock className="h-5 w-5 text-muted-foreground shrink-0" />
               <div>
                 <p className="text-sm text-muted-foreground">{t('offerApproval.details.validUntil')}</p>
-                <p className="font-medium">{new Date(offer.valid_until).toLocaleDateString(i18n.language)}</p>
+                <p className="font-medium">{new Date(offer.valid_until).toLocaleDateString()}</p>
               </div>
             </div>
           )}

@@ -56,14 +56,7 @@
     "errorGeneric": "An error occurred. Please try again.",
     "offline": "Offline",
     "online": "Online",
-    "unknownError": "Unknown error",
-    "currencySymbol": "PLN",
-    "currencyCode": "PLN",
-    "material": "Material",
-    "labor": "Labor",
-    "service": "Service",
-    "vatLabel": "VAT 23%",
-    "month": "mo."
+    "unknownError": "Unknown error"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -454,10 +447,6 @@
     "noEventsHint": "No events yet. Double-click a day to add your first event.",
     "noEventsForDay": "No events — click any slot to add one",
     "today": "Today",
-    "previous": "Previous",
-    "next": "Next",
-    "previousMonth": "Previous month",
-    "nextMonth": "Next month",
     "month": "Month",
     "week": "Week",
     "day": "Day",
@@ -742,7 +731,6 @@
     "versionNamePlaceholder": "e.g. V2 - after revisions",
     "saveVersionDialog": "Save quote version",
     "previewVersion": "Version preview",
-    "setActiveVersion": "Set as active version",
     "loadToEditor": "Load into editor",
     "deleteVersion": "Delete version?",
     "irreversible": "This operation is irreversible.",
@@ -828,7 +816,6 @@
       "title": "Reply-to email",
       "unverified": "Unverified",
       "verified": "Verified",
-      "invalidEmail": "Invalid email address",
       "verifyPrompt": "Verify your email address so clients can reply to your offers.",
       "toast": {
         "saved": "Reply email saved. Check your inbox to verify it.",
@@ -2939,15 +2926,10 @@
     "ownerName": "Owner name",
     "ownerNamePlaceholder": "John Smith",
     "nipLabel": "Tax ID",
-    "nipPlaceholder": "1234567890",
     "streetLabel": "Street and number",
-    "streetPlaceholder": "123 Main Street",
     "cityLabel": "City",
-    "cityPlaceholder": "Warsaw",
     "postalCodeLabel": "Postal code",
-    "postalCodePlaceholder": "00-001",
     "phoneLabel": "Phone",
-    "phonePlaceholder": "+48 123 456 789",
     "emailLabel": "Email for offers",
     "bankAccountLabel": "Bank account number",
     "emailSettingsSection": "Email message settings",
@@ -3772,9 +3754,7 @@
     "statusBadgeDraft": "Draft",
     "shareLinkHint": "Copy and send to client — no login required",
     "noAcceptanceLinkNote": "Generate an acceptance link from the offer details (Send tab) to share with your client.",
-    "missingCompanyAlert": "Company profile is incomplete — the PDF will not contain company information. Complete it in Settings → Company Profile.",
-    "nip": "Tax ID",
-    "tel": "Phone"
+    "missingCompanyAlert": "Company profile is incomplete — the PDF will not contain company information. Complete it in Settings → Company Profile."
   },
   "acceptanceLink": {
     "panelTitle": "Client Acceptance Link",
@@ -3893,9 +3873,6 @@
     "statusActive": "Active",
     "statusCompleted": "Completed",
     "statusOnHold": "On hold",
-    "stagesCount": "{{count}} stages",
-    "starterPlanLabel": "Starter plan · {{count}} stages",
-    "templatePlanLabel": "{{trade}} · {{count}} stages",
     "startDate": "Start",
     "emptyTitle": "No projects",
     "emptyDesc": "Create a project from an accepted offer.",
@@ -4682,18 +4659,13 @@
       "complexity": "Complexity",
       "starterNotes": "Starter notes",
       "materials": "Materials",
-      "labor": "Labour",
-      "previewButton": "Preview template",
-      "previewAriaLabel": "Preview template {{name}}",
-      "itemsSummary": "{{materials}} materials · {{labor}} labour items"
+      "labor": "Labour"
     }
   },
   "offline": {
     "banner": "Offline mode — showing last cached data",
     "actionBlocked": "This action requires an internet connection",
-    "readOnlyNote": "You are viewing locally cached data. Go online to make changes.",
-    "title": "You are offline",
-    "description": "Some Majster.AI features are unavailable without an internet connection. Check your connection and try again."
+    "readOnlyNote": "You are viewing locally cached data. Go online to make changes."
   },
   "app": {
     "loading": "Starting application"
@@ -4791,20 +4763,7 @@
       "addError": "Error adding document",
       "deleted": "Document deleted",
       "deleteError": "Error deleting document"
-    },
-    "noDocuments": "No documents",
-    "addNewDocument": "Add new document",
-    "addDescription": "Upload a document that can be attached to offers",
-    "title": "Company documents",
-    "subtitle": "Credentials, references, certificates and policies to attach to offers",
-    "add": "Add",
-    "documentType": "Document type",
-    "documentName": "Document name",
-    "descriptionOptional": "Description (optional)",
-    "uploading": "Uploading...",
-    "upload": "Upload document",
-    "acceptedFormats": "Accepted formats: PDF, JPG, PNG (max 10 MB)",
-    "noDocumentsHint": "Add credentials, references or certificates"
+    }
   },
   "pushNotifications": {
     "title": "Push Notifications",
@@ -4918,8 +4877,7 @@
     "faq3a": "Yes, Majster.AI allows you to generate professional PDF offers with your company logo, cost items, and payment terms."
   },
   "notifications": {
-    "deleteNotification": "Delete notification",
-    "noNotifications": "No notifications"
+    "deleteNotification": "Delete notification"
   },
   "workTasks": {
     "unknownProject": "Unknown project",

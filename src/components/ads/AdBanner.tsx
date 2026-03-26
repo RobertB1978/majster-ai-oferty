@@ -74,7 +74,6 @@ export function AdBanner({ variant = 'horizontal', className, onClose, showClose
             size="icon"
             className="absolute top-1 right-1 h-6 w-6 text-white/70 hover:text-white hover:bg-white/20"
             onClick={handleClose}
-            aria-label="Close"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -112,7 +111,6 @@ export function AdBanner({ variant = 'horizontal', className, onClose, showClose
             size="icon"
             className="h-6 w-6 text-white/70 hover:text-white hover:bg-white/20"
             onClick={handleClose}
-            aria-label="Close"
           >
             <X className="h-4 w-4" />
           </Button>

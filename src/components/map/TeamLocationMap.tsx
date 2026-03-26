@@ -90,10 +90,9 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     // Add markers for each team member
     const bounds: L.LatLngExpression[] = [];
     latestLocations.forEach((loc) => {
-      if (loc.latitude == null || loc.longitude == null) return;
       const lat = Number(loc.latitude);
       const lng = Number(loc.longitude);
-
+      
       if (isNaN(lat) || isNaN(lng)) return;
 
       const memberName = loc.team_members?.name || 'Nieznany pracownik';

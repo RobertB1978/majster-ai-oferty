@@ -14,13 +14,6 @@
  *   2 cols: name | price               (qty defaults to 1, unit to 'szt')
  */
 
-function generateId(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID();
-  }
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
-}
-
 import { parseDecimal } from './numberParsing';
 
 export interface ParsedRow {
@@ -120,7 +113,7 @@ export function parseBulkText(text: string): ParsedRow[] {
     const price = parseDecimal(priceRaw);
 
     return {
-      id: generateId(),
+      id: crypto.randomUUID(),
       name,
       qtyRaw: qtyRaw || '1',
       unit,
@@ -139,7 +132,7 @@ export function parsedRowsToLineItems(rows: ParsedRow[]): BulkLineItem[] {
   return rows
     .filter((r) => !r.nameError && !r.qtyError && !r.priceError)
     .map((r) => ({
-      id: generateId(),
+      id: crypto.randomUUID(),
       name: r.name,
       qty: r.qty ?? 1,
       unit: r.unit || 'szt',

@@ -103,7 +103,7 @@ export function AiChatAgent() {
 
   useEffect(() => {
     if (transcript && !isListening) {
-      setInput(prev => (prev ? prev + ' ' : '') + transcript);
+      setInput(prev => prev + ' ' + transcript);
       resetTranscript();
     }
   }, [transcript, isListening, resetTranscript]);
@@ -223,13 +223,9 @@ export function AiChatAgent() {
 
   const handleDeleteSession = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    try {
-      await deleteChatSession.mutateAsync(id);
-      if (id === sessionId) {
-        startNewSession();
-      }
-    } catch (_error) {
-      // Error handled by hook's onError
+    await deleteChatSession.mutateAsync(id);
+    if (id === sessionId) {
+      startNewSession();
     }
   };
 

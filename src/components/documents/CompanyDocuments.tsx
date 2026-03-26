@@ -180,29 +180,29 @@ export function CompanyDocuments() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              {t('documents.title')}
+              Dokumenty firmowe
             </CardTitle>
             <CardDescription>
-              {t('documents.subtitle')}
+              Uprawnienia, referencje, certyfikaty i polisy do załączenia do ofert
             </CardDescription>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                {t('documents.add')}
+                Dodaj dokument
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{t('documents.addNewDocument')}</DialogTitle>
+                <DialogTitle>Dodaj nowy dokument</DialogTitle>
                 <DialogDescription>
-                  {t('documents.addDescription')}
+                  Prześlij dokument, który będzie można załączać do ofert
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div className="space-y-2">
-                  <Label>{t('documents.documentType')}</Label>
+                  <Label>Typ dokumentu</Label>
                   <Select
                     value={newDoc.document_type}
                     onValueChange={(val: string) => setNewDoc({ ...newDoc, document_type: val })}
@@ -224,7 +224,7 @@ export function CompanyDocuments() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{t('documents.documentName')}</Label>
+                  <Label>Nazwa dokumentu</Label>
                   <Input
                     value={newDoc.name}
                     onChange={(e) => setNewDoc({ ...newDoc, name: e.target.value })}
@@ -233,7 +233,7 @@ export function CompanyDocuments() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{t('documents.descriptionOptional')}</Label>
+                  <Label>Opis (opcjonalnie)</Label>
                   <Input
                     value={newDoc.description}
                     onChange={(e) => setNewDoc({ ...newDoc, description: e.target.value })}
@@ -257,17 +257,17 @@ export function CompanyDocuments() {
                   {isUploading ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      {t('documents.uploading')}
+                      Przesyłanie...
                     </>
                   ) : (
                     <>
                       <Upload className="h-4 w-4 mr-2" />
-                      {t('documents.upload')}
+                      Wybierz plik i prześlij
                     </>
                   )}
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">
-                  {t('documents.acceptedFormats')}
+                  Akceptowane formaty: PDF, JPG, PNG, DOC. Max 10MB
                 </p>
               </div>
             </DialogContent>
@@ -278,9 +278,9 @@ export function CompanyDocuments() {
         {documents.length === 0 ? (
           <div className="text-center py-12">
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground mb-2">{t('documents.noDocuments')}</p>
+            <p className="text-muted-foreground mb-2">Brak dokumentów</p>
             <p className="text-sm text-muted-foreground">
-              {t('documents.noDocumentsHint')}
+              Dodaj uprawnienia, referencje lub certyfikaty
             </p>
           </div>
         ) : (
@@ -322,7 +322,6 @@ export function CompanyDocuments() {
                       size="icon"
                       className="h-8 w-8"
                       onClick={() => window.open(doc.file_url, '_blank')}
-                      aria-label={t('common.view')}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -330,7 +329,6 @@ export function CompanyDocuments() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      aria-label={t('common.download')}
                       onClick={() => {
                         const a = document.createElement('a');
                         a.href = doc.file_url;
@@ -344,7 +342,6 @@ export function CompanyDocuments() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive hover:text-destructive"
-                      aria-label={t('common.delete')}
                       onClick={() => deleteMutation.mutate(doc)}
                     >
                       <Trash2 className="h-4 w-4" />

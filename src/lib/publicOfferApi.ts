@@ -100,12 +100,7 @@ export async function acceptPublicOffer(
     }),
   });
 
-  let result: { error?: string } = {};
-  try {
-    result = await response.json() as { error?: string };
-  } catch {
-    // Response wasn't JSON
-  }
+  const result = await response.json() as { error?: string };
   if (!response.ok) {
     throw new Error(result.error ?? 'Nie udało się zaakceptować oferty');
   }

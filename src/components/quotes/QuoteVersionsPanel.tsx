@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { History, Plus, Check, Eye, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatCurrency } from '@/lib/formatters';
 
 interface QuoteVersionsPanelProps {
   projectId: string;
@@ -18,7 +17,7 @@ interface QuoteVersionsPanelProps {
 }
 
 export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }: QuoteVersionsPanelProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { data: versions, isLoading } = useQuoteVersions(projectId);
   const createVersion = useCreateQuoteVersion();
   const setActive = useSetActiveVersion();
@@ -36,26 +35,19 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
       return;
     }
 
-    try {
-      await createVersion.mutateAsync({
-        projectId,
-        versionName: versionName.trim(),
-        snapshot: currentSnapshot,
-        setActive: true,
-      });
-      setShowSaveDialog(false);
-      setVersionName('');
-    } catch (_error) {
-      // Error handled by hook's onError
-    }
+    await createVersion.mutateAsync({
+      projectId,
+      versionName: versionName.trim(),
+      snapshot: currentSnapshot,
+      setActive: true,
+    });
+
+    setShowSaveDialog(false);
+    setVersionName('');
   };
 
   const handleSetActive = async (versionId: string) => {
-    try {
-      await setActive.mutateAsync({ projectId, versionId });
-    } catch (_error) {
-      // Error handled by hook's onError
-    }
+    await setActive.mutateAsync({ projectId, versionId });
   };
 
   const handlePreview = (snapshot: QuoteSnapshot) => {
@@ -65,12 +57,8 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
 
   const handleDelete = async () => {
     if (deleteConfirmId) {
-      try {
-        await deleteVersion.mutateAsync({ projectId, versionId: deleteConfirmId });
-        setDeleteConfirmId(null);
-      } catch (_error) {
-        // Error handled by hook's onError
-      }
+      await deleteVersion.mutateAsync({ projectId, versionId: deleteConfirmId });
+      setDeleteConfirmId(null);
     }
   };
 
@@ -119,20 +107,20 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
                   <div>
                     <p className="text-sm font-medium">{version.version_name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(version.created_at).toLocaleString(i18n.language)} • {formatCurrency(Number(version.quote_snapshot.total), i18n.language)}
+                      {new Date(version.created_at).toLocaleString()} • {Number(version.quote_snapshot.total).toFixed(2)} zł
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handlePreview(version.quote_snapshot)} aria-label={t('quotes.previewVersion')}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handlePreview(version.quote_snapshot)}>
                     <Eye className="h-4 w-4" />
                   </Button>
                   {!version.is_active && (
                     <>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleSetActive(version.id)} aria-label={t('quotes.setActiveVersion')}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleSetActive(version.id)}>
                         <Check className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => setDeleteConfirmId(version.id)} aria-label={t('quotes.deleteVersion')}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => setDeleteConfirmId(version.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </>
@@ -180,26 +168,26 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
                 {previewSnapshot.positions.map((pos, idx) => (
                   <div key={idx} className="flex justify-between rounded border p-2 text-sm">
                     <span>{pos.name}</span>
-                    <span>{pos.qty} {pos.unit} × {formatCurrency(pos.price, i18n.language)} = {formatCurrency(pos.qty * pos.price, i18n.language)}</span>
+                    <span>{pos.qty} {pos.unit} × {pos.price} zł = {(pos.qty * pos.price).toFixed(2)} zł</span>
                   </div>
                 ))}
               </div>
               <div className="border-t pt-4">
                 <div className="flex justify-between text-sm">
                   <span>{t('quotes.materials')}:</span>
-                  <span>{formatCurrency(Number(previewSnapshot.summary_materials), i18n.language)}</span>
+                  <span>{Number(previewSnapshot.summary_materials).toFixed(2)} zł</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>{t('quotes.labor')}:</span>
-                  <span>{formatCurrency(Number(previewSnapshot.summary_labor), i18n.language)}</span>
+                  <span>{Number(previewSnapshot.summary_labor).toFixed(2)} zł</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>{t('quotes.margin')} ({previewSnapshot.margin_percent}%):</span>
-                  <span>{formatCurrency((previewSnapshot.summary_materials + previewSnapshot.summary_labor) * previewSnapshot.margin_percent / 100, i18n.language)}</span>
+                  <span>{((previewSnapshot.summary_materials + previewSnapshot.summary_labor) * previewSnapshot.margin_percent / 100).toFixed(2)} zł</span>
                 </div>
                 <div className="mt-2 flex justify-between font-bold">
                   <span>{t('quotes.grandTotal')}:</span>
-                  <span>{formatCurrency(Number(previewSnapshot.total), i18n.language)}</span>
+                  <span>{Number(previewSnapshot.total).toFixed(2)} zł</span>
                 </div>
               </div>
             </div>

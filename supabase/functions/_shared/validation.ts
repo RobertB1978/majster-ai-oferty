@@ -44,28 +44,8 @@ export function validateUrl(url: unknown, fieldName = 'URL'): ValidationResult {
     errors.push(`${fieldName} must be less than 2048 characters`);
   } else if (!URL_REGEX.test(url)) {
     errors.push(`Invalid ${fieldName} format - must start with http:// or https://`);
-  } else {
-    // SSRF protection: block private/internal IP ranges
-    try {
-      const parsed = new URL(url);
-      const host = parsed.hostname.toLowerCase();
-      if (
-        host === 'localhost' ||
-        host === '127.0.0.1' ||
-        host === '0.0.0.0' ||
-        host.startsWith('10.') ||
-        host.startsWith('192.168.') ||
-        /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
-        host.endsWith('.local') ||
-        host.endsWith('.internal')
-      ) {
-        errors.push(`${fieldName} cannot reference internal addresses`);
-      }
-    } catch {
-      errors.push(`${fieldName} is not a valid URL`);
-    }
   }
-
+  
   return { valid: errors.length === 0, errors };
 }
 

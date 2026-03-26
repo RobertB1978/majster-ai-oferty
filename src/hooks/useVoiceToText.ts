@@ -63,16 +63,10 @@ interface UseVoiceToTextReturn {
   browserSupport: 'full' | 'partial' | 'none';
 }
 
-const SPEECH_LOCALE_MAP: Record<string, string> = { pl: 'pl-PL', en: 'en-US', uk: 'uk-UA' };
-
-function getSpeechLocale(lang: string): string {
-  return SPEECH_LOCALE_MAP[lang.split('-')[0]] ?? 'pl-PL';
-}
-
 export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToTextReturn {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const {
-    language = getSpeechLocale(i18n.language),
+    language = 'pl-PL',
     continuous = false,
     interimResults = true,
     onResult,
@@ -87,12 +81,6 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
   
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const isListeningRef = useRef(false);
-
-  // Keep callbacks in refs to avoid recreating recognition on every render
-  const onResultRef = useRef(onResult);
-  const onErrorRef = useRef(onError);
-  useEffect(() => { onResultRef.current = onResult; }, [onResult]);
-  useEffect(() => { onErrorRef.current = onError; }, [onError]);
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -139,12 +127,12 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
 
         if (finalTranscript) {
           setTranscript(prev => (prev + ' ' + finalTranscript).trim());
-          onResultRef.current?.(finalTranscript, true);
+          onResult?.(finalTranscript, true);
         }
         
         setInterimTranscript(currentInterim);
         if (currentInterim) {
-          onResultRef.current?.(currentInterim, false);
+          onResult?.(currentInterim, false);
         }
       };
 
@@ -173,7 +161,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
         }
         
         toast.error(errorMessage);
-        onErrorRef.current?.(errorMessage);
+        onError?.(errorMessage);
       };
 
       recognition.onend = () => {
@@ -207,13 +195,13 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
         }
       }
     };
-  }, [language, continuous, interimResults, t]);
+  }, [language, continuous, interimResults, onResult, onError, t]);
 
   const startListening = useCallback(() => {
     if (!recognitionRef.current) {
       const errorMsg = t('voice.toast.notSupported');
       toast.error(errorMsg);
-      onErrorRef.current?.(errorMsg);
+      onError?.(errorMsg);
       return;
     }
 
@@ -224,7 +212,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
 
     try {
       recognitionRef.current.start();
-
+      
       if (browserSupport === 'partial') {
         toast.info(t('voice.toast.limitedMode'), {
           description: t('voice.toast.limitedModeDescription'),
@@ -235,7 +223,7 @@ export function useVoiceToText(options: UseVoiceToTextOptions = {}): UseVoiceToT
       setIsListening(false);
       isListeningRef.current = false;
     }
-  }, [browserSupport, t]);
+  }, [browserSupport, onError, t]);
 
   const stopListening = useCallback(() => {
     isListeningRef.current = false;

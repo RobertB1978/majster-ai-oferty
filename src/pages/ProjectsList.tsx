@@ -184,7 +184,7 @@ export default function ProjectsList() {
                     {project.stages_json.length > 0 && (
                       <Badge className="shrink-0 bg-muted text-muted-foreground text-[11px] px-2 py-0.5 gap-1">
                         <LayoutList className="h-3 w-3" />
-                        {t('projectsV2.stagesCount', { count: project.stages_json.length })}
+                        {project.stages_json.length} etapów
                       </Badge>
                     )}
                   </div>
@@ -239,13 +239,10 @@ export default function ProjectsList() {
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={deleteProject.isPending}
               onClick={() => {
                 if (archiveConfirmId) {
-                  deleteProject.mutate(archiveConfirmId, {
-                    onSuccess: () => setArchiveConfirmId(null),
-                    onError: () => setArchiveConfirmId(null),
-                  });
+                  deleteProject.mutate(archiveConfirmId);
+                  setArchiveConfirmId(null);
                 }
               }}
             >

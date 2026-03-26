@@ -55,40 +55,36 @@ export default function Marketplace() {
 
   const handleAddSubcontractor = async () => {
     if (!newSubcontractor.company_name.trim()) {
-      toast.error(t('marketplacePage.companyNameRequired', 'Nazwa firmy jest wymagana'));
+      toast.error(t('marketplacePage.companyNameLabel'));
       return;
     }
-
-    try {
-      await addSubcontractor.mutateAsync({
-        company_name: newSubcontractor.company_name,
-        contact_name: newSubcontractor.contact_name || null,
-        phone: newSubcontractor.phone || null,
-        email: newSubcontractor.email || null,
-        description: newSubcontractor.description || null,
-        location_city: newSubcontractor.location_city || null,
-        location_lat: null,
-        location_lng: null,
-        hourly_rate: newSubcontractor.hourly_rate !== '' ? Number(newSubcontractor.hourly_rate) : null,
-        is_public: newSubcontractor.is_public,
-        avatar_url: null,
-        portfolio_images: [],
-      });
-
-      setNewSubcontractor({
-        company_name: '',
-        contact_name: '',
-        phone: '',
-        email: '',
-        description: '',
-        location_city: '',
-        hourly_rate: '',
-        is_public: false,
-      });
-      setIsDialogOpen(false);
-    } catch (_error) {
-      // Error handled by hook's onError
-    }
+    
+    await addSubcontractor.mutateAsync({
+      company_name: newSubcontractor.company_name,
+      contact_name: newSubcontractor.contact_name || null,
+      phone: newSubcontractor.phone || null,
+      email: newSubcontractor.email || null,
+      description: newSubcontractor.description || null,
+      location_city: newSubcontractor.location_city || null,
+      location_lat: null,
+      location_lng: null,
+      hourly_rate: newSubcontractor.hourly_rate ? Number(newSubcontractor.hourly_rate) : null,
+      is_public: newSubcontractor.is_public,
+      avatar_url: null,
+      portfolio_images: [],
+    });
+    
+    setNewSubcontractor({
+      company_name: '',
+      contact_name: '',
+      phone: '',
+      email: '',
+      description: '',
+      location_city: '',
+      hourly_rate: '',
+      is_public: false,
+    });
+    setIsDialogOpen(false);
   };
 
   const filteredPublic = publicSubcontractors.filter((sub) => {

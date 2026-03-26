@@ -388,7 +388,7 @@ export function WorkspaceLineItems({
                   htmlFor="ws-vat-toggle"
                   className="text-xs text-muted-foreground cursor-pointer select-none"
                 >
-                  {t('common.vatLabel')}
+                  VAT 23%
                 </Label>
                 <Switch
                   id="ws-vat-toggle"
@@ -596,7 +596,7 @@ function SuggestionRow({ suggestion, onSelect }: SuggestionRowProps) {
       <Plus className="h-3.5 w-3.5 shrink-0 text-primary opacity-60 group-hover:opacity-100" />
       <span className="flex-1 truncate">{suggestion.name}</span>
       <span className="text-xs text-muted-foreground shrink-0">
-        {suggestion.price.toFixed(0)} {t('common.currencySymbol')} / {suggestion.unit}
+        {suggestion.price.toFixed(0)} zł / {suggestion.unit}
       </span>
       <span
         className={cn(
@@ -676,7 +676,7 @@ function NameFieldWithAutocomplete({
                 >
                   <span className="flex-1 truncate">{s.name}</span>
                   <span className="text-xs text-muted-foreground shrink-0">
-                    {s.price.toFixed(0)} {t('common.currencySymbol')} / {s.unit}
+                    {s.price.toFixed(0)} zł / {s.unit}
                   </span>
                   <span className="text-[10px] rounded-full px-1.5 py-0.5 bg-primary/10 text-primary shrink-0">
                     {t('priceBook.sourcePriceBook')}
@@ -704,7 +704,7 @@ function NameFieldWithAutocomplete({
                 >
                   <span className="flex-1 truncate">{s.name}</span>
                   <span className="text-xs text-muted-foreground shrink-0">
-                    {s.price.toFixed(0)} {t('common.currencySymbol')} / {s.unit}
+                    {s.price.toFixed(0)} zł / {s.unit}
                   </span>
                   <span className="text-[10px] rounded-full px-1.5 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 shrink-0">
                     {t('priceBook.sourceRecentlyUsed', { price: s.price.toFixed(0), unit: s.unit })}
@@ -862,7 +862,7 @@ function ItemRow({
                 title={laborInvalid ? t('szybkaWycena.invalidAmount') : t('szybkaWycena.labourPerUnit')}
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                {t('common.currencySymbol')}
+                zł
               </span>
             </div>
             {/* Material cost */}
@@ -880,7 +880,7 @@ function ItemRow({
                 title={materialInvalid ? t('szybkaWycena.invalidAmount') : t('szybkaWycena.materialsPerUnit')}
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                {t('common.currencySymbol')}
+                zł
               </span>
             </div>
           </>
@@ -900,7 +900,7 @@ function ItemRow({
               title={priceInvalid ? t('szybkaWycena.invalidPrice') : undefined}
             />
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-              {t('common.currencySymbol')}
+              zł
             </span>
           </div>
         )}
@@ -961,7 +961,7 @@ function ItemRow({
         {/* Row total */}
         {cols.rowTotal && (
           <div className="w-24 shrink-0 text-right text-sm font-medium">
-            {fmt(lineTotal)} {t('common.currencySymbol')}
+            {fmt(lineTotal)} zł
           </div>
         )}
 
@@ -971,7 +971,7 @@ function ItemRow({
             name={item.name}
             unit={item.unit}
             price={item.price}
-            category={item.itemType === 'material' ? t('common.material') : t('common.labor')}
+            category={item.itemType === 'material' ? 'Materiał' : 'Robocizna'}
           />
         )}
 
@@ -1050,7 +1050,7 @@ function ItemRow({
                   placeholder={t('szybkaWycena.labourAbbr')}
                 />
                 <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                  {t('common.currencySymbol')}
+                  zł
                 </span>
               </div>
               <div className="relative">
@@ -1063,7 +1063,7 @@ function ItemRow({
                   placeholder={t('szybkaWycena.materialAbbr')}
                 />
                 <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                  {t('common.currencySymbol')}
+                  zł
                 </span>
               </div>
             </>
@@ -1078,7 +1078,7 @@ function ItemRow({
                 placeholder={t('quickEstimate.price')}
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                {t('common.currencySymbol')}
+                zł
               </span>
             </div>
           )}
@@ -1129,7 +1129,7 @@ function ItemRow({
             )}
             {cols.rowTotal && (
               <div className="ml-auto text-sm font-medium text-right">
-                {fmt(lineTotal)} {t('common.currencySymbol')}
+                {fmt(lineTotal)} zł
               </div>
             )}
           </div>
@@ -1142,7 +1142,7 @@ function ItemRow({
               name={item.name}
               unit={item.unit}
               price={item.price}
-              category={item.itemType === 'material' ? t('common.material') : t('common.labor')}
+              category={item.itemType === 'material' ? 'Materiał' : 'Robocizna'}
             />
           </div>
         )}

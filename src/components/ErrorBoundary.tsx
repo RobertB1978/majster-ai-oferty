@@ -3,10 +3,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-// Dynamic import to keep sentry out of the main chunk
-const reportToSentry = (error: Error, context?: Record<string, unknown>) => {
-  import('@/lib/sentry').then(({ logError }) => logError(error, context)).catch(() => {});
-};
+import { logError } from '@/lib/sentry';
 import i18n from '@/i18n';
 
 interface Props {
@@ -32,7 +29,7 @@ export class PanelErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     logger.error('PanelErrorBoundary caught an error:', error, errorInfo);
-    reportToSentry(error, {
+    logError(error, {
       componentStack: errorInfo.componentStack,
       boundary: 'PanelErrorBoundary',
     });
@@ -60,7 +57,7 @@ export class ErrorBoundary extends Component<Props, State> {
     logger.error('ErrorBoundary caught an error:', error, errorInfo);
 
     // Report to Sentry with context
-    reportToSentry(error, {
+    logError(error, {
       componentStack: errorInfo.componentStack,
       boundary: 'RootErrorBoundary'
     });

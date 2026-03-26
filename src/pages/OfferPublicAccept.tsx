@@ -152,7 +152,7 @@ function computeVariantTotals(items: OfferItem[]) {
   const net = items.reduce((s, it) => s + Number(it.line_total_net), 0);
   const vat = items.reduce((s, it) => {
     const rate = it.vat_rate ?? 0;
-    return s + Math.round(Number(it.qty) * Number(it.unit_price_net) * (rate / 100) * 100) / 100;
+    return s + Number(it.qty) * Number(it.unit_price_net) * (rate / 100);
   }, 0);
   return {
     net: Math.round(net * 100) / 100,

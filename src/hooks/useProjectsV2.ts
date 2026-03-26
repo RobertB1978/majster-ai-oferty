@@ -110,15 +110,9 @@ export function useProjectsV2List(status: ProjectStatus | 'ALL' = 'ALL', search 
 
       if (status !== 'ALL') {
         query = query.eq('status', status);
-      } else {
-        // Hide soft-deleted (CANCELLED) projects from default ALL view
-        query = query.neq('status', 'CANCELLED');
       }
       if (search.trim()) {
-        const sanitized = search.replace(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s-]/g, '').trim();
-        if (sanitized) {
-          query = query.ilike('title', `%${sanitized}%`);
-        }
+        query = query.ilike('title', `%${search.trim()}%`);
       }
 
       const { data, error } = await query;

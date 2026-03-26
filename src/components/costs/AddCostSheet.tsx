@@ -41,7 +41,7 @@ const addCostSchema = z.object({
     .string()
     .min(1)
     .refine((v) => !isNaN(Number(v.replace(',', '.'))) && Number(v.replace(',', '.')) >= 0, {
-      message: 'Kwota musi być poprawną liczbą nieujemną',
+      message: 'invalid',
     }),
   note: z.string().optional(),
   incurred_at: z.string().optional(),

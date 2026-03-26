@@ -82,12 +82,8 @@ export function BiometricSettings() {
 
   const handleDelete = async () => {
     if (deleteId) {
-      try {
-        await deleteCredential.mutateAsync(deleteId);
-        setDeleteId(null);
-      } catch (_error) {
-        // Error handled by hook's onError
-      }
+      await deleteCredential.mutateAsync(deleteId);
+      setDeleteId(null);
     }
   };
 
@@ -232,7 +228,6 @@ export function BiometricSettings() {
                           size="icon"
                           className="text-destructive hover:text-destructive hover:bg-destructive/10"
                           onClick={() => setDeleteId(cred.id)}
-                          aria-label={t('settings.biometrics.deleteCredential')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

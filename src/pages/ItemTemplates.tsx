@@ -13,12 +13,10 @@ import { Plus, Edit, Trash2, Loader2, Package, Download, Filter } from 'lucide-r
 import { SearchInput } from '@/components/ui/search-input';
 import { PaginationControls } from '@/components/ui/pagination-controls';
 import { toast } from 'sonner';
-import { EmptyState } from '@/components/ui/empty-state';
 import { defaultTemplates, trades } from '@/data/defaultTemplates';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
-import { formatCurrency } from '@/lib/formatters';
 
 const units = ['szt.', 'm²', 'm', 'mb', 'kg', 'l', 'worek', 'kpl.', 'godz.', 'dni'];
 
@@ -43,7 +41,7 @@ const initialFormData: TemplateFormData = {
 const PAGE_SIZE = 20;
 
 export default function ItemTemplates() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'Materiał' | 'Robocizna'>('all');
@@ -198,12 +196,8 @@ export default function ItemTemplates() {
 
   const handleDelete = async () => {
     if (deleteConfirmId) {
-      try {
-        await deleteTemplate.mutateAsync(deleteConfirmId);
-        setDeleteConfirmId(null);
-      } catch (_error) {
-        // Error handled by hook's onError
-      }
+      await deleteTemplate.mutateAsync(deleteConfirmId);
+      setDeleteConfirmId(null);
     }
   };
 
@@ -262,12 +256,20 @@ export default function ItemTemplates() {
       </div>
 
       {templates.length === 0 ? (
-        <EmptyState
-          icon={Package}
-          title={totalCount === 0 && !search && categoryFilter === 'all' ? t('templates.noTemplates') : t('templates.noResults')}
-          ctaLabel={totalCount === 0 && !search && categoryFilter === 'all' ? t('templates.importReady') : undefined}
-          onCta={totalCount === 0 && !search && categoryFilter === 'all' ? () => setIsImportDialogOpen(true) : undefined}
-        />
+        <Card>
+          <CardContent className="py-12 text-center">
+            <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+            <p className="text-muted-foreground mb-4">
+              {totalCount === 0 && !search && categoryFilter === 'all' ? t('templates.noTemplates') : t('templates.noResults')}
+            </p>
+            {totalCount === 0 && !search && categoryFilter === 'all' && (
+              <Button onClick={() => setIsImportDialogOpen(true)}>
+                <Download className="mr-2 h-4 w-4" />
+                {t('templates.importReady')}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -288,7 +290,7 @@ export default function ItemTemplates() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1 text-sm text-muted-foreground">
-                  <p>{template.default_qty} {template.unit} × {formatCurrency(Number(template.default_price), i18n.language)}</p>
+                  <p>{template.default_qty} {template.unit} × {Number(template.default_price).toFixed(0)} zł</p>
                   {template.description && (
                     <p className="text-xs line-clamp-2">{template.description}</p>
                   )}
@@ -463,7 +465,7 @@ export default function ItemTemplates() {
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {template.default_qty} {template.unit} × {formatCurrency(Number(template.default_price), i18n.language)}
+                        {template.default_qty} {template.unit} × {template.default_price} zł
                         {template.description && ` • ${template.description}`}
                       </p>
                     </div>

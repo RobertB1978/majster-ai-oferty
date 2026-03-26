@@ -39,12 +39,12 @@ export function StickyTotalsCard({
         <div className="flex-1 flex gap-3 text-sm flex-wrap">
           <span className="text-muted-foreground">
             {t('common.net')}:{' '}
-            <span className="font-medium text-foreground">{fmt(netTotal)} {t('common.currencySymbol')}</span>
+            <span className="font-medium text-foreground">{fmt(netTotal)} zł</span>
           </span>
           {vatEnabled && (
             <span className="text-muted-foreground">
               {t('common.gross')}:{' '}
-              <span className="font-bold text-primary">{fmt(grossTotal)} {t('common.currencySymbol')}</span>
+              <span className="font-bold text-primary">{fmt(grossTotal)} zł</span>
             </span>
           )}
         </div>
@@ -71,17 +71,17 @@ export function StickyTotalsCard({
         <div className="space-y-2 text-sm">
           <div className="flex justify-between text-muted-foreground">
             <span>{t('common.net')}</span>
-            <span>{fmt(netTotal)} {t('common.currencySymbol')}</span>
+            <span>{fmt(netTotal)} zł</span>
           </div>
           {vatEnabled && (
             <div className="flex justify-between text-muted-foreground">
-              <span>{t('common.vatLabel')}</span>
-              <span>{fmt(vatAmount)} {t('common.currencySymbol')}</span>
+              <span>VAT 23%</span>
+              <span>{fmt(vatAmount)} zł</span>
             </div>
           )}
           <div className="flex justify-between font-bold text-base border-t pt-2">
             <span>{vatEnabled ? t('common.gross') : t('quickEstimate.total')}</span>
-            <span className="text-primary">{fmt(grossTotal)} {t('common.currencySymbol')}</span>
+            <span className="text-primary">{fmt(grossTotal)} zł</span>
           </div>
         </div>
 

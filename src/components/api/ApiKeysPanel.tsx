@@ -31,14 +31,10 @@ export function ApiKeysPanel() {
       return;
     }
 
-    try {
-      await createKey.mutateAsync({ keyName, permissions });
-      setIsOpen(false);
-      setKeyName('');
-      setPermissions(['read']);
-    } catch (_error) {
-      // Error handled by hook's onError
-    }
+    await createKey.mutateAsync({ keyName, permissions });
+    setIsOpen(false);
+    setKeyName('');
+    setPermissions(['read']);
   };
 
   const copyKey = (key: string) => {

@@ -46,7 +46,7 @@ function useAllPhotos() {
 }
 
 export default function Photos() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { data: photos, isLoading } = useAllPhotos();
 
   return (
@@ -147,7 +147,7 @@ export default function Photos() {
                   )}
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-xs text-muted-foreground">
-                      {new Date(photo.created_at).toLocaleDateString(i18n.language)}
+                      {new Date(photo.created_at).toLocaleDateString()}
                     </span>
                     <Button asChild variant="ghost" size="icon" className="h-7 w-7">
                       <Link to={`/app/projects/${photo.project_id}`}>

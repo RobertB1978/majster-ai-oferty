@@ -217,8 +217,8 @@ export function buildOfferData(params: {
         const vatRate = params.quote.vat_rate ?? null;
         const isVatExempt = vatRate === null;
         const netTotal = params.quote.total;
-        const vatAmount = isVatExempt ? 0 : Math.round(netTotal * (vatRate! / 100) * 100) / 100;
-        const grossTotal = Math.round((netTotal + vatAmount) * 100) / 100;
+        const vatAmount = isVatExempt ? 0 : netTotal * (vatRate! / 100);
+        const grossTotal = netTotal + vatAmount;
         return {
           positions: params.quote.positions.map((pos: unknown, index: number) => ({
             id: (pos as Record<string, unknown>).id || `pos-${index}`,

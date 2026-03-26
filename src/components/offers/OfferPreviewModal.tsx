@@ -355,7 +355,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                           {data.company?.company_name || '—'}
                         </h2>
                         {data.company?.nip && (
-                          <p className="text-sm text-gray-600">{t('offerPreview.nip')}: {data.company.nip}</p>
+                          <p className="text-sm text-gray-600">NIP: {data.company.nip}</p>
                         )}
                         {(data.company?.street || data.company?.city) && (
                           <p className="text-sm text-gray-600">
@@ -365,7 +365,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                           </p>
                         )}
                         {data.company?.phone && (
-                          <p className="text-sm text-gray-600">{t('offerPreview.tel')}: {data.company.phone}</p>
+                          <p className="text-sm text-gray-600">Tel: {data.company.phone}</p>
                         )}
                         {data.company?.email_for_offers && (
                           <p className="text-sm text-gray-600">{data.company.email_for_offers}</p>
@@ -398,7 +398,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                           <p className="text-sm text-gray-600">{data.client.address}</p>
                         )}
                         {data.client.phone && (
-                          <p className="text-sm text-gray-600">{t('offerPreview.tel')}: {data.client.phone}</p>
+                          <p className="text-sm text-gray-600">Tel: {data.client.phone}</p>
                         )}
                         {data.client.email && (
                           <p className="text-sm text-gray-600">{data.client.email}</p>

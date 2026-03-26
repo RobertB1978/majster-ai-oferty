@@ -41,7 +41,7 @@ function extractFilePath(photoUrl: string): string {
   return match ? match[1].split('?')[0] : '';
 }
 
-export function useProjectPhotos(projectId: string) {
+export function useProjectPhotos(_projectId: string) {
   const { user } = useAuth();
 
   return useQuery({
@@ -54,7 +54,7 @@ export function useProjectPhotos(projectId: string) {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-
+      
       // Get signed URLs for all photos
       const photosWithSignedUrls = await Promise.all(
         (data || []).map(async (photo) => {
@@ -66,7 +66,7 @@ export function useProjectPhotos(projectId: string) {
           };
         })
       );
-
+      
       return photosWithSignedUrls as ProjectPhoto[];
     },
     enabled: !!user && !!projectId,
@@ -153,14 +153,13 @@ export function useAnalyzePhoto() {
       });
 
       if (error) throw error;
-      if (!data?.analysis) throw new Error('Analysis returned empty result');
 
       // Save analysis result
       await supabase
         .from('project_photos')
-        .update({
+        .update({ 
           analysis_status: 'completed',
-          analysis_result: data.analysis
+          analysis_result: data.analysis 
         })
         .eq('id', photoId);
 

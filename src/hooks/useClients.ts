@@ -57,7 +57,7 @@ export function useClientsPaginated(params: ClientsQueryParams = {}) {
 
       // Server-side search filter (sanitize to prevent PostgREST filter injection)
       if (search?.trim()) {
-        const s = search.replace(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s\-@.]/g, '').trim();
+        const s = search.replace(/[%_.,()]/g, '');
         if (s) {
           query = query.or(`name.ilike.%${s}%,email.ilike.%${s}%,phone.ilike.%${s}%`);
         }

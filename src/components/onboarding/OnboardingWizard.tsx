@@ -88,12 +88,8 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
   );
 
   const handleSkip = async () => {
-    try {
-      await skipOnboarding.mutateAsync();
-      onClose();
-    } catch (_error) {
-      // Error handled by hook's onError
-    }
+    await skipOnboarding.mutateAsync();
+    onClose();
   };
 
   const handleGoToStep = (stepId: number) => {
@@ -170,7 +166,7 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
                     {t('onboarding.setupSubtitle')}
                   </p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleSkip} aria-label={t('onboarding.skip')}>
+                <Button variant="ghost" size="icon" onClick={handleSkip}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
