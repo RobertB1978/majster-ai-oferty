@@ -19,6 +19,7 @@ import { SearchInput } from '@/components/ui/search-input';
 import { SkeletonList } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
+import EmptyProjects from '@/components/illustrations/EmptyProjects';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -139,6 +140,7 @@ export default function ProjectsList() {
         <div className="space-y-3">
           <EmptyState
             icon={FolderKanban}
+            illustration={isFiltering ? undefined : EmptyProjects}
             title={isFiltering ? t('projectsV2.emptyFilterTitle') : t('projectsV2.emptyTitle')}
             description={isFiltering ? t('projectsV2.emptyFilterDesc') : t('projectsV2.emptyDesc')}
             ctaLabel={isFiltering ? undefined : t('projectsV2.emptyCta')}

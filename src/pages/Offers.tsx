@@ -20,6 +20,7 @@ import { SearchInput } from '@/components/ui/search-input';
 import { SkeletonList } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
+import EmptyOffers from '@/components/illustrations/EmptyOffers';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -377,6 +378,7 @@ export default function Offers() {
         <div className="space-y-3">
           <EmptyState
             icon={FileText}
+            illustration={isFiltering ? undefined : EmptyOffers}
             title={isFiltering ? t('offersList.emptyFilterTitle') : t('offersList.emptyTitle')}
             description={isFiltering ? t('offersList.emptyFilterDesc') : t('offersList.emptyDesc')}
             ctaLabel={isFiltering ? t('offersList.emptyFilterCta') : t('offersList.emptyCta')}
