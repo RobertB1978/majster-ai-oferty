@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { trackEvent, ANALYTICS_EVENTS } from '@/lib/analytics';
 
 export interface OnboardingProgress {
   id: string;
@@ -107,6 +108,13 @@ export function useCompleteOnboardingStep() {
       
       const nextStep = Math.min(stepId + 1, ONBOARDING_STEPS.length);
       const isCompleted = newCompletedSteps.length === ONBOARDING_STEPS.length;
+
+      if (stepId === 1 && !completedSteps.includes(1)) {
+        trackEvent(ANALYTICS_EVENTS.ONBOARDING_STARTED);
+      }
+      if (isCompleted) {
+        trackEvent(ANALYTICS_EVENTS.ONBOARDING_COMPLETED);
+      }
 
       const { data, error } = await supabase
         .from('onboarding_progress')

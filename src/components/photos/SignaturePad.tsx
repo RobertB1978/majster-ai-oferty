@@ -144,7 +144,7 @@ export function SignaturePad({ onSave, savedSignatureUrl, className }: Signature
             src={savedSignatureUrl}
             alt={t('signature.savedAlt')}
             loading="lazy"
-            className="h-20 border rounded-md bg-white object-contain"
+            className="h-20 border rounded-md bg-white dark:bg-zinc-900 object-contain"
           />
         </div>
       )}
@@ -156,7 +156,7 @@ export function SignaturePad({ onSave, savedSignatureUrl, className }: Signature
         <canvas
           ref={canvasRef}
           className={cn(
-            'w-full h-36 border-2 rounded-lg bg-white touch-none cursor-crosshair',
+            'w-full h-36 border-2 rounded-lg bg-white dark:bg-zinc-900 touch-none cursor-crosshair',
             isDrawing ? 'border-primary' : 'border-dashed border-muted-foreground/50'
           )}
           onMouseDown={startDrawing}

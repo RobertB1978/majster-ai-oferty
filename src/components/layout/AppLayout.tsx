@@ -9,6 +9,8 @@ import { LoadingScreen } from '@/components/ui/loading-screen';
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isTradeOnboardingDone } from '@/hooks/useTradeOnboarding';
+import { useDenseMode } from '@/hooks/useDenseMode';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 // Lazy-load heavy layout components that are not needed for initial render
 const AiChatAgent = lazy(() => import('@/components/ai/AiChatAgent').then(m => ({ default: m.AiChatAgent })));
@@ -27,6 +29,8 @@ export function AppLayout() {
    * which unmounts TradeOnboardingModal and allows OnboardingModal to show.
    */
   const [tradeOnboardingDone, setTradeOnboardingDone] = useState(isTradeOnboardingDone);
+  const { effectiveDense } = useDenseMode();
+  useKeyboardShortcuts(effectiveDense);
 
   // Show content when auth is resolved; reset on logout or re-loading
   useEffect(() => {

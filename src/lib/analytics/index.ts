@@ -10,3 +10,4 @@ export type { AnalyticsEventName } from "./events";
 export { trackEvent, registerSink, clearSink } from "./track";
 export type { AnalyticsSink } from "./track";
 export type { AnalyticsPayload, ForbiddenPayloadKeys } from "./event-schema";
+export { plausibleSink } from "./plausible";

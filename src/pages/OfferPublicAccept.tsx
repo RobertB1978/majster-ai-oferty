@@ -498,7 +498,7 @@ export default function OfferPublicAccept() {
                       src={data.company.logo_url}
                       alt="Logo"
                       loading="lazy"
-                      className="h-10 w-10 rounded object-contain shrink-0 border border-border bg-white"
+                      className="h-10 w-10 rounded object-contain shrink-0 border border-border bg-white dark:bg-zinc-900"
                     />
                   ) : (
                     <div className="h-10 w-10 rounded bg-primary/10 flex items-center justify-center shrink-0">

@@ -5,9 +5,14 @@ import "./i18n";
 import { initSentry } from "./lib/sentry";
 import { APP_VERSION, APP_NAME } from "./lib/version";
 import { logger } from "./lib/logger";
+import { registerSink, plausibleSink } from "./lib/analytics";
 
 // Log app version on boot (PR-01 versioning metadata)
 logger.info(`${APP_NAME} v${APP_VERSION} starting`);
+
+// Register Plausible analytics sink (roadmap §23.2 — ETAP 4 Hard Stop Gate)
+// Plausible script loaded via index.html; sink silently no-ops in dev/localhost.
+registerSink(plausibleSink);
 
 // Render first, initialize monitoring async to avoid blocking critical render path
 createRoot(document.getElementById("root")!).render(<App />);
