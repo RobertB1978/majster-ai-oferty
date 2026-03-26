@@ -2,7 +2,7 @@
  * OfferPreviewModal — PR-11
  *
  * Full-screen modal showing an HTML preview of a DRAFT offer + action buttons:
- *   - Download PDF (generate via jsPDF)
+ *   - Download PDF (generate via Edge Function — roadmap §26)
  *   - Send to client (quota check → SENT status → email best-effort)
  *   - Back to Edit
  *
