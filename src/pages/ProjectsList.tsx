@@ -39,9 +39,9 @@ type StatusFilter = ProjectStatus | 'ALL';
 const STATUS_TABS: StatusFilter[] = ['ALL', 'ACTIVE', 'COMPLETED', 'ON_HOLD'];
 
 const STATUS_BADGE_CLASSES: Record<ProjectStatus, string> = {
-  ACTIVE:    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  COMPLETED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  ON_HOLD:   'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  ACTIVE:    'bg-info/10 text-info dark:bg-info/20',
+  COMPLETED: 'bg-success/10 text-success dark:bg-success/20',
+  ON_HOLD:   'bg-warning/10 text-warning dark:bg-warning/20',
 };
 
 const STATUS_I18N_KEYS: Record<StatusFilter, string> = {

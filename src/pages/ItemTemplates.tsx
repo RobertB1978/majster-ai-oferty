@@ -296,15 +296,21 @@ export default function ItemTemplates() {
                   )}
                 </div>
                 <div className="mt-3 flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleOpenDialog(template)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-11 min-h-[44px]"
+                    onClick={() => handleOpenDialog(template)}
+                  >
                     <Edit className="mr-1 h-3 w-3" />
                     {t('common.edit')}
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-destructive hover:bg-destructive/10"
+                    className="h-11 min-h-[44px] text-destructive hover:bg-destructive/10"
                     onClick={() => setDeleteConfirmId(template.id)}
+                    aria-label={t('common.delete')}
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>

@@ -294,16 +294,18 @@ export default function Clients() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-11 w-11 min-h-[44px] min-w-[44px]"
                         onClick={() => handleOpenDialog(client)}
+                        aria-label={t('clients.editClient')}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        className="h-11 w-11 min-h-[44px] min-w-[44px] text-destructive hover:text-destructive"
                         onClick={() => handleDelete(client.id, client.name)}
+                        aria-label={t('clients.deleteClient', { name: client.name })}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -337,13 +339,13 @@ export default function Clients() {
                   )}
                   {/* Nawigacja relacyjna: oferty i projekty tego klienta */}
                   <div className="flex gap-2 pt-2 mt-2 border-t">
-                    <Button variant="ghost" size="sm" className="h-7 text-xs px-2" asChild>
+                    <Button variant="ghost" size="sm" className="h-11 min-h-[44px] text-xs px-2" asChild>
                       <Link to={`/app/offers?client=${encodeURIComponent(client.name)}`}>
                         <FileText className="h-3 w-3 mr-1" />
                         {t('clients.offers')}
                       </Link>
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-7 text-xs px-2" asChild>
+                    <Button variant="ghost" size="sm" className="h-11 min-h-[44px] text-xs px-2" asChild>
                       <Link to={`/app/projects?client=${encodeURIComponent(client.name)}`}>
                         <FolderKanban className="h-3 w-3 mr-1" />
                         {t('clients.projects')}

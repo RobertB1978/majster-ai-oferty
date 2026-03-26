@@ -674,6 +674,9 @@ textarea[aria-invalid="true"]:focus-visible {
   .animate-shake,
   .animate-message-appear,
   .animate-success-pop,
+  .animate-float,
+  .animate-bounce-soft,
+  .animate-pulse-glow,
   .skeleton-shimmer {
     animation: none;
     opacity: 1;
