@@ -14,6 +14,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // ─── Mocks ─────────────────────────────────────────────────────────────────
 
@@ -119,10 +120,13 @@ describe('Settings — BETA-CAL-01: zakładka kalendarza ukryta', () => {
 
 describe('Navigation — niedokończone moduły niewidoczne w nawigacji użytkownika', () => {
   function renderNav() {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     return render(
-      <MemoryRouter initialEntries={['/app/dashboard']}>
-        <Navigation />
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/app/dashboard']}>
+          <Navigation />
+        </MemoryRouter>
+      </QueryClientProvider>
     );
   }
 

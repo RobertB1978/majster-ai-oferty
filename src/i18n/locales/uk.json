@@ -3652,7 +3652,9 @@
     "sentAt": "Надіслано",
     "createdAt": "Створено",
     "newOfferButton": "Нова пропозиція",
-    "newOfferButtonShort": "Нова"
+    "newOfferButtonShort": "Нова",
+    "loadMore": "Завантажити ще",
+    "loadingMore": "Завантаження…"
   },
   "offerWizard": {
     "titleNew": "Нова пропозиція",

@@ -6,7 +6,7 @@
  * RLS enforced server-side (user_id = auth.uid()).
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -126,6 +126,75 @@ export function useSourceOffer(offerId: string | null | undefined) {
     staleTime: 60_000,
   });
 }
+
+// ── Paginated (infinite) offers ───────────────────────────────────────────────
+
+export const PAGE_SIZE = 20;
+
+export const offersInfiniteKeys = {
+  all: ['offers-infinite'] as const,
+  list: (params: OffersQueryParams) => [...offersInfiniteKeys.all, 'list', params] as const,
+};
+
+/**
+ * Cursor-based paginated offers using useInfiniteQuery.
+ * Each page fetches PAGE_SIZE (20) items ordered by last_activity_at DESC.
+ * Use `hasNextPage` / `fetchNextPage` to power a "Load more" button.
+ */
+export function useOffersInfinite(params: OffersQueryParams = {}) {
+  const { user } = useAuth();
+  const { status = 'ALL', search = '', sort = 'last_activity_at' } = params;
+
+  return useInfiniteQuery({
+    queryKey: offersInfiniteKeys.list(params),
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }): Promise<Offer[]> => {
+      const from = (pageParam as number) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
+      let query = supabase
+        .from('offers')
+        .select('id, user_id, client_id, status, title, total_net, total_gross, currency, sent_at, accepted_at, rejected_at, last_activity_at, created_at, updated_at, source_template_id')
+        .order(sort, { ascending: false })
+        .range(from, to);
+
+      if (status && status !== 'ALL') {
+        query = query.eq('status', status);
+      }
+      if (search.trim()) {
+        query = query.ilike('title', `%${search.trim()}%`);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const offers = (data as Offer[]) ?? [];
+      const clientIds = Array.from(new Set(offers.map((o) => o.client_id).filter(Boolean))) as string[];
+
+      let clientMap = new Map<string, string>();
+      if (clientIds.length > 0) {
+        const { data: clients, error: clientsError } = await supabase
+          .from('clients')
+          .select('id, name')
+          .in('id', clientIds);
+        if (!clientsError) {
+          clientMap = new Map((clients ?? []).map((c) => [c.id, c.name]));
+        }
+      }
+
+      return offers.map((o) => ({
+        ...o,
+        client_reference: o.client_id ? (clientMap.get(o.client_id) ?? o.client_id) : null,
+      }));
+    },
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length < PAGE_SIZE ? undefined : allPages.length,
+    enabled: !!user,
+    staleTime: 30_000,
+  });
+}
+
+// ── Archive ───────────────────────────────────────────────────────────────────
 
 /**
  * Soft-delete (archive) an offer by setting status to ARCHIVED.
