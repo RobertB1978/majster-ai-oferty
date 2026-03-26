@@ -7,6 +7,7 @@
  * - StaggerChildren: Staggers animation of child elements
  * - MotionCard: Card with hover translateY(-2px) + shadow
  * - CountUp: Animated number counter (1200ms ease-out)
+ * - SkeletonPremium: Shimmer skeleton placeholder
  *
  * All respect prefers-reduced-motion.
  */
@@ -218,5 +219,64 @@ export function CountUp({
     <span className={cn('tabular-nums', className)} aria-live="polite">
       {text}
     </span>
+  );
+}
+
+// ── SkeletonPremium ──────────────────────────────────────────────────────────
+
+interface SkeletonPremiumProps {
+  /** Width class, e.g. "w-full", "w-48" */
+  width?: string;
+  /** Height class, e.g. "h-4", "h-10" */
+  height?: string;
+  /** Rounded variant */
+  rounded?: 'sm' | 'md' | 'lg' | 'full';
+  className?: string;
+}
+
+/**
+ * Premium skeleton with shimmer effect.
+ * Falls back to static placeholder when prefers-reduced-motion is set.
+ * Source of truth: §8 — SkeletonPremium (shimmer)
+ */
+export function SkeletonPremium({
+  width = 'w-full',
+  height = 'h-4',
+  rounded = 'md',
+  className,
+}: SkeletonPremiumProps) {
+  const shouldReduce = useReducedMotion();
+
+  const radiusMap = {
+    sm: 'rounded-sm',
+    md: 'rounded-md',
+    lg: 'rounded-lg',
+    full: 'rounded-full',
+  } as const;
+
+  return (
+    <div
+      role="status"
+      aria-label="Loading…"
+      className={cn(
+        width,
+        height,
+        radiusMap[rounded],
+        'overflow-hidden',
+        className,
+      )}
+      style={
+        shouldReduce
+          ? { background: 'var(--bg-surface-raised, #F5F3EF)' }
+          : {
+              background:
+                'linear-gradient(90deg, var(--bg-surface-raised, #F5F3EF) 25%, var(--bg-surface, #FFFFFF) 50%, var(--bg-surface-raised, #F5F3EF) 75%)',
+              backgroundSize: '200% 100%',
+              animation: 'shimmer 1.5s ease-in-out infinite',
+            }
+      }
+    >
+      <span className="sr-only">Loading…</span>
+    </div>
   );
 }
