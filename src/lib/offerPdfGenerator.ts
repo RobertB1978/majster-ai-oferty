@@ -135,8 +135,12 @@ export function getPdfComplianceLines(payload: OfferPdfPayload) {
 }
 
 /**
- * Generate PDF document from offer payload
- * Returns a Blob that can be downloaded or uploaded to storage
+ * Generate PDF document from offer payload (browser-side, jsPDF).
+ *
+ * @deprecated Replaced by generate-offer-pdf Edge Function (roadmap §26).
+ *   Use generateOfferPdfEdge() from '@/lib/generate-offer-pdf-edge' instead.
+ *   This function is retained for template/warranty PDF generators
+ *   that have not yet been migrated to the Edge Function.
  */
 export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> {
   // Create new PDF document (A4 portrait)
