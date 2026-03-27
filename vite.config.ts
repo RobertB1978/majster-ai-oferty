@@ -156,7 +156,10 @@ export default defineConfig(({ mode }) => {
               if (id.includes('qrcode')) return 'qrcode-vendor';
               if (id.includes('cmdk')) return 'cmdk-vendor';
             }
-            // ── App code splitting — break up the main bundle ──
+            // ── App code splitting — isolate feature directories into lazy chunks ──
+            // These chunks load on-demand because AppLayout/AdminLayout/NewShellLayout
+            // are lazy-imported in App.tsx. Without lazy layouts, these would become
+            // static dependencies of the main entry and block first render.
             if (id.includes('/src/components/landing/')) return 'landing';
             if (id.includes('/src/components/admin/')) return 'admin';
             if (id.includes('/src/components/calendar/')) return 'calendar';
