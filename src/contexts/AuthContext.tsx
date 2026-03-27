@@ -24,9 +24,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Safety timeout — if getSession() hangs (network issue, Supabase down),
+    // release isLoading after 5s so the UI doesn't stay stuck on splash screen.
+    const safetyTimeout = setTimeout(() => {
+      setIsLoading((current) => {
+        if (current) {
+          logger.warn('AuthProvider: getSession() safety timeout reached (5s) — releasing isLoading');
+        }
+        return false;
+      });
+    }, 5_000);
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        clearTimeout(safetyTimeout);
         setSession(session);
         setUser(session?.user ?? null);
         setIsLoading(false);
@@ -34,13 +46,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    });
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        clearTimeout(safetyTimeout);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        clearTimeout(safetyTimeout);
+        logger.error('AuthProvider: getSession() failed', err);
+        setIsLoading(false);
+      });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(safetyTimeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<{ error: string | null }> => {

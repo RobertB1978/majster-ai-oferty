@@ -10,12 +10,16 @@ import { registerSink, plausibleSink } from "./lib/analytics";
 // Log app version on boot (PR-01 versioning metadata)
 logger.info(`${APP_NAME} v${APP_VERSION} starting`);
 
-// Register Plausible analytics sink (roadmap §23.2 — ETAP 4 Hard Stop Gate)
-// Plausible script loaded via index.html; sink silently no-ops in dev/localhost.
-registerSink(plausibleSink);
-
 // Render first, initialize monitoring async to avoid blocking critical render path
 createRoot(document.getElementById("root")!).render(<App />);
+
+// Register Plausible analytics sink after first render (roadmap §23.2 — ETAP 4 Hard Stop Gate)
+// Plausible script loaded via index.html; sink silently no-ops in dev/localhost.
+try {
+  registerSink(plausibleSink);
+} catch {
+  // Analytics registration must never block app startup
+}
 
 // Initialize Sentry after first paint
 // Note: Static import used here because ErrorBoundary already statically imports sentry,

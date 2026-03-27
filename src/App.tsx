@@ -24,18 +24,18 @@ import { OfflineBanner } from "@/components/pwa/OfflineBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsent } from "@/components/legal/CookieConsent";
 
-// === ZONE 1: PUBLIC (loaded immediately - auth flow) ===
+// === ZONE 1: PUBLIC (loaded immediately - critical for first paint) ===
 import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
 import EnvCheck from "./pages/EnvCheck";
+import Login from "./pages/Login";
+import Landing from "./pages/Landing";
 
-// === ZONE 1: PUBLIC (lazy) ===
-const Login = lazy(() => import("./pages/Login"));
+// === ZONE 1: PUBLIC (lazy - secondary auth pages, visited rarely) ===
 const Register = lazy(() => import("./pages/Register"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-const Landing = lazy(() => import("./pages/Landing"));
 const OfferApproval = lazy(() => import("./pages/OfferApproval"));
 const OfferPublicPage = lazy(() => import("./pages/OfferPublicPage"));
 // PR-12: New tokenized acceptance page
@@ -116,7 +116,10 @@ function JobsRedirect({ suffix = '' }: { suffix?: string }) {
   return <Navigate to={`/app/projects/${id}${suffix}`} replace />;
 }
 
-/** Wires offline queue sync into the app lifecycle (§3.9, §18.1). */
+/**
+ * Wires offline queue sync into the app lifecycle (§3.9, §18.1).
+ * Mounted only inside authenticated routes — no network activity on public pages.
+ */
 function OfflineSyncWatcher() {
   useOfflineSync();
   return null;
@@ -177,7 +180,6 @@ const App = () => (
           <BrowserRouter>
             <ConfigProvider>
             <AuthProvider>
-              <OfflineSyncWatcher />
               <ThemeInitializer />
               <ScrollRestoration />
               <Sonner />
@@ -185,7 +187,6 @@ const App = () => (
               <OfflineBanner />
               <InstallPrompt />
               <CookieConsent />
-              <DraftProvider>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   {/* ============================================
@@ -251,7 +252,10 @@ const App = () => (
                     path="/app"
                     element={
                       <ProtectedRoute>
-                        {FF_NEW_SHELL ? <NewShellLayout /> : <AppLayout />}
+                        <DraftProvider>
+                          <OfflineSyncWatcher />
+                          {FF_NEW_SHELL ? <NewShellLayout /> : <AppLayout />}
+                        </DraftProvider>
                       </ProtectedRoute>
                     }
                   >
@@ -351,7 +355,6 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
-              </DraftProvider>
             </AuthProvider>
             </ConfigProvider>
           </BrowserRouter>

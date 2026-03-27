@@ -27,12 +27,21 @@ describe('Performance Regression Guards', () => {
       }
     });
 
-    it('Auth pages are lazy-loaded to keep startup path light', async () => {
+    it('Login and Landing are statically imported for instant public boot', async () => {
       const fs = await import('fs');
       const appContent = fs.readFileSync('src/App.tsx', 'utf-8');
 
-      // Auth pages should stay lazy-loaded to avoid eager auth chunk in initial bundle
-      expect(appContent).toContain('const Login = lazy(');
+      // Login and Landing must be static imports — they are the primary public entry points.
+      // Lazy-loading them adds a round-trip before first paint on / and /login.
+      expect(appContent).toContain('import Login from "./pages/Login"');
+      expect(appContent).toContain('import Landing from "./pages/Landing"');
+    });
+
+    it('Secondary auth pages stay lazy-loaded', async () => {
+      const fs = await import('fs');
+      const appContent = fs.readFileSync('src/App.tsx', 'utf-8');
+
+      // Secondary auth pages are visited rarely — keep them lazy
       expect(appContent).toContain('const Register = lazy(');
       expect(appContent).toContain('const ForgotPassword = lazy(');
       expect(appContent).toContain('const ResetPassword = lazy(');
