@@ -10,12 +10,21 @@ import { registerSink, plausibleSink } from "./lib/analytics";
 // Log app version on boot (PR-01 versioning metadata)
 logger.info(`${APP_NAME} v${APP_VERSION} starting`);
 
-// Register Plausible analytics sink (roadmap §23.2 — ETAP 4 Hard Stop Gate)
+// Render first, initialize monitoring async to avoid blocking critical render path
+try {
+  createRoot(document.getElementById("root")!).render(<App />);
+} catch (err) {
+  logger.error('Fatal: failed to render app', err);
+  // Show a minimal fallback so the user sees something
+  const root = document.getElementById("root");
+  if (root) {
+    root.innerHTML = '<div style="padding:2rem;text-align:center"><h1>Majster.AI</h1><p>Wystąpił błąd podczas uruchamiania aplikacji. Odśwież stronę.</p></div>';
+  }
+}
+
+// Register Plausible analytics sink AFTER render (roadmap §23.2 — ETAP 4 Hard Stop Gate)
 // Plausible script loaded via index.html; sink silently no-ops in dev/localhost.
 registerSink(plausibleSink);
-
-// Render first, initialize monitoring async to avoid blocking critical render path
-createRoot(document.getElementById("root")!).render(<App />);
 
 // Initialize Sentry after first paint
 // Note: Static import used here because ErrorBoundary already statically imports sentry,

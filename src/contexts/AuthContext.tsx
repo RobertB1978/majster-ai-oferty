@@ -1,8 +1,12 @@
 import { logger } from '@/lib/logger';
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+
+/** Safety timeout — if auth state is not resolved within this time, force isLoading=false.
+ *  Prevents the app from being stuck on the loading spinner forever (e.g. Supabase unreachable). */
+const AUTH_TIMEOUT_MS = 10_000;
 
 interface AuthContextType {
   user: User | null;
@@ -22,25 +26,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const resolvedRef = useRef(false);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const markResolved = (s: Session | null) => {
+      if (!isMounted || resolvedRef.current) return;
+      resolvedRef.current = true;
+      setSession(s);
+      setUser(s?.user ?? null);
+      setIsLoading(false);
+    };
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
+        if (!isMounted) return;
+        // Always update session/user on auth events (login, logout, token refresh)
         setSession(session);
         setUser(session?.user ?? null);
-        setIsLoading(false);
+        if (!resolvedRef.current) {
+          resolvedRef.current = true;
+          setIsLoading(false);
+        }
       }
     );
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
+      markResolved(session);
+    }).catch((err) => {
+      logger.error('Failed to get session:', err);
+      markResolved(null);
     });
 
-    return () => subscription.unsubscribe();
+    // Safety timeout — prevent eternal loading if Supabase is unreachable
+    const timeout = setTimeout(() => {
+      if (!resolvedRef.current) {
+        logger.error('Auth timeout: session not resolved within', AUTH_TIMEOUT_MS, 'ms');
+        markResolved(null);
+      }
+    }, AUTH_TIMEOUT_MS);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<{ error: string | null }> => {
@@ -79,6 +112,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         return { error: error.message, data: undefined };
+      }
+
+      // Eager state update — don't wait for onAuthStateChange callback
+      if (data.session) {
+        setSession(data.session);
+        setUser(data.user);
       }
 
       return { error: null, data: { user: data.user, session: data.session } };
