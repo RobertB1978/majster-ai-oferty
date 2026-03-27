@@ -22,6 +22,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Boot checkpoint helper
+const win = typeof window !== 'undefined' ? window as Window & { __BOOT?: (c: string, d?: string) => void } : null;
+const boot = win?.__BOOT ?? ((_c: string, _d?: string) => {});
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -30,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let isMounted = true;
+    boot('BOOT_5', 'Auth init start');
 
     const markResolved = (s: Session | null) => {
       if (!isMounted || resolvedRef.current) return;
@@ -37,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s);
       setUser(s?.user ?? null);
       setIsLoading(false);
+      boot('BOOT_6', 'Auth init done — user=' + (s?.user?.email ?? 'anonymous'));
     };
 
     // Set up auth state listener FIRST
@@ -49,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!resolvedRef.current) {
           resolvedRef.current = true;
           setIsLoading(false);
+          boot('BOOT_6', 'Auth init done (via listener) — user=' + (session?.user?.email ?? 'anonymous'));
         }
       }
     );
@@ -65,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const timeout = setTimeout(() => {
       if (!resolvedRef.current) {
         logger.error('Auth timeout: session not resolved within', AUTH_TIMEOUT_MS, 'ms');
+        boot('BOOT_6', 'Auth init done (TIMEOUT — Supabase unreachable)');
         markResolved(null);
       }
     }, AUTH_TIMEOUT_MS);
