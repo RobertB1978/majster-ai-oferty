@@ -107,6 +107,8 @@
         <div id="app-splash-dot"></div>
       </div>
     </div>
+    <!-- Boot checkpoint logger + splash safety timeout (must load BEFORE main bundle) -->
+    <script src="/splash-guard.js"></script>
     <script type="module" src="/src/main.tsx"></script>
     <script src="/sw-register.js"></script>
   </body>

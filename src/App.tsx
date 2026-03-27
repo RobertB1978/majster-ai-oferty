@@ -3,7 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType, useParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 
 // Lazy load React Query Devtools only in development
 const ReactQueryDevtools = import.meta.env.MODE === 'development'
@@ -125,6 +125,35 @@ const OfflineSyncWatcher = lazy(() => import("@/hooks/useOfflineSync").then(m =>
   return { default: Watcher };
 }));
 
+// Boot checkpoint helper
+const win = typeof window !== 'undefined' ? window as Window & { __BOOT?: (c: string, d?: string) => void } : null;
+const boot = win?.__BOOT ?? ((_c: string, _d?: string) => {});
+
+/** Fires BOOT_3 on first render, BOOT_8 on mount (splash removal). */
+function BootCheckpoint() {
+  const firedRef = useRef(false);
+  if (!firedRef.current) {
+    firedRef.current = true;
+    boot('BOOT_3', 'App render started');
+  }
+  useEffect(() => {
+    boot('BOOT_7', 'App mounted — removing splash');
+    // Explicitly remove splash in case React 18 concurrent render didn't clear it
+    const splash = document.getElementById('app-splash');
+    if (splash) {
+      splash.style.transition = 'opacity 0.15s ease-out';
+      splash.style.opacity = '0';
+      setTimeout(() => {
+        if (splash.parentNode) splash.parentNode.removeChild(splash);
+        boot('BOOT_8', 'Splash hidden');
+      }, 200);
+    } else {
+      boot('BOOT_8', 'Splash already gone');
+    }
+  }, []);
+  return null;
+}
+
 /** Initialize theme + lang from localStorage or system preference for all routes. */
 function ThemeInitializer() {
   useEffect(() => {
@@ -151,6 +180,11 @@ function ThemeInitializer() {
 function ScrollRestoration() {
   const { pathname } = useLocation();
   const navigationType = useNavigationType();
+
+  useEffect(() => {
+    boot('BOOT_4', 'Router mounted — path=' + pathname);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (navigationType !== 'POP') {
@@ -180,6 +214,7 @@ const App = () => (
           <BrowserRouter>
             <ConfigProvider>
             <AuthProvider>
+              <BootCheckpoint />
               <ThemeInitializer />
               <ScrollRestoration />
               <Sonner />
