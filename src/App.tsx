@@ -11,8 +11,7 @@ const ReactQueryDevtools = import.meta.env.MODE === 'development'
   : null;
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ConfigProvider } from "@/contexts/ConfigContext";
-import { DraftProvider } from "@/contexts/DraftContext";
-import { useOfflineSync } from "@/hooks/useOfflineSync";
+const DraftProvider = lazy(() => import("@/contexts/DraftContext").then(m => ({ default: m.DraftProvider })));
 const AppLayout = lazy(() => import("@/components/layout/AppLayout").then(m => ({ default: m.AppLayout })));
 const AdminLayout = lazy(() => import("@/components/layout/AdminLayout").then(m => ({ default: m.AdminLayout })));
 const NewShellLayout = lazy(() => import("@/components/layout/NewShellLayout").then(m => ({ default: m.NewShellLayout })));
@@ -116,11 +115,15 @@ function JobsRedirect({ suffix = '' }: { suffix?: string }) {
   return <Navigate to={`/app/projects/${id}${suffix}`} replace />;
 }
 
-/** Wires offline queue sync into the app lifecycle (§3.9, §18.1). */
-function OfflineSyncWatcher() {
-  useOfflineSync();
-  return null;
-}
+/** Wires offline queue sync into the app lifecycle (§3.9, §18.1).
+ *  Lazy-loaded to keep offline-queue deps out of the initial bundle. */
+const OfflineSyncWatcher = lazy(() => import("@/hooks/useOfflineSync").then(m => {
+  function Watcher() {
+    m.useOfflineSync();
+    return null;
+  }
+  return { default: Watcher };
+}));
 
 /** Initialize theme + lang from localStorage or system preference for all routes. */
 function ThemeInitializer() {
@@ -177,7 +180,6 @@ const App = () => (
           <BrowserRouter>
             <ConfigProvider>
             <AuthProvider>
-              <OfflineSyncWatcher />
               <ThemeInitializer />
               <ScrollRestoration />
               <Sonner />
@@ -185,7 +187,6 @@ const App = () => (
               <OfflineBanner />
               <InstallPrompt />
               <CookieConsent />
-              <DraftProvider>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   {/* ============================================
@@ -251,7 +252,10 @@ const App = () => (
                     path="/app"
                     element={
                       <ProtectedRoute>
-                        {FF_NEW_SHELL ? <NewShellLayout /> : <AppLayout />}
+                        <Suspense fallback={null}><OfflineSyncWatcher /></Suspense>
+                        <DraftProvider>
+                          {FF_NEW_SHELL ? <NewShellLayout /> : <AppLayout />}
+                        </DraftProvider>
                       </ProtectedRoute>
                     }
                   >
@@ -351,7 +355,6 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
-              </DraftProvider>
             </AuthProvider>
             </ConfigProvider>
           </BrowserRouter>
