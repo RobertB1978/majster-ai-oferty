@@ -32,8 +32,9 @@ import { getStarterPack } from '@/data/starterPacks';
 import { BurnBarSection } from '@/components/costs/BurnBarSection';
 import { PhotoReportPanel } from '@/components/photos/PhotoReportPanel';
 import { AcceptanceChecklistPanel } from '@/components/photos/AcceptanceChecklistPanel';
-import { DossierPanel } from '@/components/documents/DossierPanel';
-import { WarrantySection } from '@/components/documents/WarrantySection';
+// Sprint 0 containment: DossierPanel and WarrantySection hidden — broken flows disabled
+// import { DossierPanel } from '@/components/documents/DossierPanel';
+// import { WarrantySection } from '@/components/documents/WarrantySection';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -488,10 +489,10 @@ export default function ProjectHub() {
                     <BurnBarSection project={project} />
                   )}
                   {section.id === 'documents' && (
-                    <DossierPanel
-                      projectId={project.id}
-                      projectTitle={project.title}
-                    />
+                    // Sprint 0 containment: Dossier backend broken — storage bucket not restored
+                    <div className="py-6 text-center text-sm text-muted-foreground">
+                      Moduł tymczasowo niedostępny
+                    </div>
                   )}
                   {section.id === 'photoReport' && (
                     <PhotoReportPanel projectId={project.id} />
@@ -500,10 +501,10 @@ export default function ProjectHub() {
                     <AcceptanceChecklistPanel projectId={project.id} />
                   )}
                   {section.id === 'warranty' && (
-                    <WarrantySection
-                      projectId={project.id}
-                      projectTitle={project.title}
-                    />
+                    // Sprint 0 containment: Warranty DB save broken — disabled until fixed
+                    <div className="py-6 text-center text-sm text-muted-foreground">
+                      Moduł tymczasowo niedostępny
+                    </div>
                   )}
                 </div>
               )}
