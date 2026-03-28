@@ -1666,7 +1666,10 @@
     "checkConnection": "Check your internet connection",
     "goBack": "Go back",
     "loadFailed": "Failed to load data",
-    "pageNotFoundDesc": "The page you are looking for does not exist or has been moved. Check the URL or return to the home page."
+    "pageNotFoundDesc": "The page you are looking for does not exist or has been moved. Check the URL or return to the home page.",
+    "loadPartFailed": "Failed to load this part of the application.",
+    "errorCode": "Error code:",
+    "debugId": "Report ID:"
   },
   "cookies": {
     "title": "Cookie settings",
