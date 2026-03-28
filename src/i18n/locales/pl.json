@@ -1665,7 +1665,10 @@
     "checkConnection": "Sprawdź połączenie z internetem",
     "goBack": "Wróć",
     "loadFailed": "Nie udało się załadować danych",
-    "pageNotFoundDesc": "Strona, której szukasz, nie istnieje lub została przeniesiona. Sprawdź adres URL lub wróć do strony głównej."
+    "pageNotFoundDesc": "Strona, której szukasz, nie istnieje lub została przeniesiona. Sprawdź adres URL lub wróć do strony głównej.",
+    "loadPartFailed": "Nie udało się załadować tej części aplikacji.",
+    "errorCode": "Kod błędu:",
+    "debugId": "Id zgłoszenia:"
   },
   "cookies": {
     "title": "Ustawienia plików cookies",

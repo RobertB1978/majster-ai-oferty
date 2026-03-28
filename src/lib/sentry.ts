@@ -168,13 +168,35 @@ function initWebVitals() {
 }
 
 /**
- * Helper do logowania błędów do Sentry
+ * Helper do logowania błędów do Sentry.
+ *
+ * Opcjonalnie przyjmuje stable errorCode i debugId z errorDiagnostics,
+ * które są dołączane jako tagi Sentry (nie jako PII-wrażliwe extra).
+ * Bieżąca ścieżka (route) jest dołączana automatycznie.
  */
-export function logError(error: Error, context?: Record<string, unknown>) {
+export function logError(
+  error: Error,
+  context?: Record<string, unknown> & {
+    errorCode?: string;
+    debugId?: string;
+  }
+) {
+  const route = typeof window !== 'undefined' ? window.location.pathname : undefined;
+  const { errorCode, debugId, ...extra } = context ?? {};
+
   if (import.meta.env.VITE_SENTRY_DSN) {
-    Sentry.captureException(error, { extra: context });
+    Sentry.withScope((scope) => {
+      if (route) scope.setTag('route', route);
+      if (errorCode) scope.setTag('error_code', errorCode);
+      if (debugId) scope.setTag('debug_id', debugId);
+      if (import.meta.env.VITE_APP_VERSION) {
+        scope.setTag('release', import.meta.env.VITE_APP_VERSION);
+      }
+      scope.setExtras(extra);
+      Sentry.captureException(error);
+    });
   } else {
-    console.error('Error:', error, context);
+    console.error('Error:', error, { errorCode, debugId, route, ...extra });
   }
 }
 

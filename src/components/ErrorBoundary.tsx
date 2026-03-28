@@ -4,6 +4,7 @@ import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { logError } from '@/lib/sentry';
+import { buildDiagnostic, type ErrorDiagnostic } from '@/lib/errorDiagnostics';
 import i18n from '@/i18n';
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+  diagnostic: ErrorDiagnostic | null;
 }
 
 /**
@@ -21,17 +23,20 @@ interface State {
  * Renders null on error so the rest of the page remains usable.
  */
 export class PanelErrorBoundary extends Component<Props, State> {
-  public state: State = { hasError: false, error: null };
+  public state: State = { hasError: false, error: null, diagnostic: null };
 
   public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { hasError: true, error, diagnostic: buildDiagnostic(error) };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    const { diagnostic } = this.state;
     logger.error('PanelErrorBoundary caught an error:', error, errorInfo);
     logError(error, {
       componentStack: errorInfo.componentStack,
       boundary: 'PanelErrorBoundary',
+      errorCode: diagnostic?.code,
+      debugId: diagnostic?.debugId,
     });
   }
 
@@ -47,24 +52,28 @@ export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null,
+    diagnostic: null,
   };
 
   public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { hasError: true, error, diagnostic: buildDiagnostic(error) };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    const { diagnostic } = this.state;
     logger.error('ErrorBoundary caught an error:', error, errorInfo);
 
-    // Report to Sentry with context
+    // Report to Sentry with stable diagnostic metadata — no raw stack exposed
     logError(error, {
       componentStack: errorInfo.componentStack,
-      boundary: 'RootErrorBoundary'
+      boundary: 'RootErrorBoundary',
+      errorCode: diagnostic?.code,
+      debugId: diagnostic?.debugId,
     });
   }
 
   private handleRetry = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({ hasError: false, error: null, diagnostic: null });
   };
 
   private handleReload = () => {
@@ -77,6 +86,8 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
 
+      const { diagnostic } = this.state;
+
       return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
           <Card className="max-w-md w-full">
@@ -88,15 +99,19 @@ export class ErrorBoundary extends Component<Props, State> {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground text-center text-sm">
-                {i18n.t('errors.unexpectedError')}
+                {i18n.t('errors.loadPartFailed')}
               </p>
-              {this.state.error && (
-                <details className="text-xs text-muted-foreground bg-muted p-3 rounded-md">
-                  <summary className="cursor-pointer font-medium">{i18n.t('errors.errorDetails')}</summary>
-                  <pre className="mt-2 whitespace-pre-wrap break-words">
-                    {this.state.error.message}
-                  </pre>
-                </details>
+              {diagnostic && (
+                <div className="text-xs text-muted-foreground bg-muted px-3 py-2 rounded-md space-y-1 select-all">
+                  <p>
+                    <span className="font-medium">{i18n.t('errors.errorCode')}</span>{' '}
+                    {diagnostic.code}
+                  </p>
+                  <p>
+                    <span className="font-medium">{i18n.t('errors.debugId')}</span>{' '}
+                    {diagnostic.debugId}
+                  </p>
+                </div>
               )}
               <div className="flex gap-2 justify-center">
                 <Button variant="outline" onClick={this.handleRetry}>
