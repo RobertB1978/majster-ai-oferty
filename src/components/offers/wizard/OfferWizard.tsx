@@ -71,6 +71,7 @@ function emptyForm(offerId: string | null): WizardFormData {
     newClient: null,
     title: '',
     items: [],
+    variants: [],
   };
 }
 
@@ -113,6 +114,7 @@ export function OfferWizard({ offerId }: Props) {
         newClient: null,
         title: existing.title ?? '',
         items: existing.items,
+        variants: existing.variants ?? [],
       });
     }
   }, [existing]);
