@@ -97,4 +97,22 @@
       clearTimeout(timer);
     }
   };
+
+  // Global error trap — catches module-level errors that try/catch in main.tsx cannot.
+  // These errors (e.g. circular chunk dependency, missing export) crash the entire
+  // module graph BEFORE any application code runs.
+  window.addEventListener('error', function (ev) {
+    LOG.push({ c: 'GLOBAL_ERROR', t: Date.now(), d: ev.message + ' @ ' + (ev.filename || '?') + ':' + (ev.lineno || '?') });
+    if (typeof console !== 'undefined' && console.error) {
+      console.error('[SPLASH-GUARD] Uncaught error:', ev.message, ev.filename, ev.lineno);
+    }
+  });
+
+  window.addEventListener('unhandledrejection', function (ev) {
+    var msg = ev.reason ? (ev.reason.message || String(ev.reason)) : 'unknown';
+    LOG.push({ c: 'UNHANDLED_REJECTION', t: Date.now(), d: msg });
+    if (typeof console !== 'undefined' && console.error) {
+      console.error('[SPLASH-GUARD] Unhandled rejection:', msg);
+    }
+  });
 })();

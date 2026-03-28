@@ -135,8 +135,12 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks(id) {
             // ── Vendor chunks ──
+            // IMPORTANT: 'react' (core) MUST be in react-vendor to avoid circular
+            // chunk dependency between sonner-vendor and react-vendor.
+            // Without this, Rollup may place react core in sonner-vendor, creating
+            // a cycle that can cause undefined bindings during module evaluation.
             if (id.includes('node_modules')) {
-              if (id.includes('react-dom') || id.includes('react-router-dom')) return 'react-vendor';
+              if (id.includes('/react/') || id.includes('react-dom') || id.includes('react-router-dom') || id.includes('scheduler')) return 'react-vendor';
               if (id.includes('@radix-ui')) return 'ui-vendor';
               if (id.includes('@supabase')) return 'supabase-vendor';
               if (id.includes('react-hook-form') || id.includes('zod') || id.includes('@hookform')) return 'form-vendor';
