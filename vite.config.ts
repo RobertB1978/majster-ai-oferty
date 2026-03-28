@@ -160,24 +160,9 @@ export default defineConfig(({ mode }) => {
               if (id.includes('qrcode')) return 'qrcode-vendor';
               if (id.includes('cmdk')) return 'cmdk-vendor';
             }
-            // ── App code splitting — isolate feature directories into lazy chunks ──
-            // These chunks load on-demand because AppLayout/AdminLayout/NewShellLayout
-            // are lazy-imported in App.tsx. Without lazy layouts, these would become
-            // static dependencies of the main entry and block first render.
-            if (id.includes('/src/components/landing/')) return 'landing';
-            if (id.includes('/src/components/admin/')) return 'admin';
-            if (id.includes('/src/components/calendar/')) return 'calendar';
-            if (id.includes('/src/components/marketplace/')) return 'marketplace';
-            if (id.includes('/src/components/documents/')) return 'documents';
-            if (id.includes('/src/components/team/')) return 'team';
-            if (id.includes('/src/components/finance/')) return 'finance';
-            if (id.includes('/src/components/illustrations/')) return 'illustrations';
-            if (id.includes('/src/components/settings/')) return 'settings';
-            if (id.includes('/src/components/onboarding/')) return 'onboarding';
-            if (id.includes('/src/components/billing/')) return 'billing';
-            if (id.includes('/src/components/map/')) return 'map-components';
-            if (id.includes('/src/components/photos/')) return 'photos';
-            if (id.includes('/src/components/voice/')) return 'voice';
+            // App/feature manual chunks removed — caused circular chunk dependencies
+            // between landing↔billing, settings↔billing, calendar↔billing, etc.
+            // Rollup will handle app code splitting automatically.
           },
           // Optimize chunk file naming for better caching
           chunkFileNames: 'assets/js/[name]-[hash].js',
