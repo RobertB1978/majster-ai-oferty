@@ -11,18 +11,17 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
-  Shield, Download, FolderOpen, Mail, Pencil, Trash2, Loader2, Plus,
+  Shield, Download, Mail, Pencil, Trash2, Loader2, Plus,
 } from 'lucide-react';
 
 import {
   useWarranty,
   useUpsertWarranty,
   useDeleteWarranty,
-  useMarkWarrantyPdfPath,
   daysUntilExpiry,
   type WarrantyFormData,
 } from '@/hooks/useWarranty';
-import { generateWarrantyPdfBlob, uploadWarrantyToDossier } from '@/lib/warrantyPdfGenerator';
+import { generateWarrantyPdfBlob } from '@/lib/warrantyPdfGenerator';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -242,8 +241,7 @@ function WarrantyCard({
   const { t, i18n } = useTranslation();
   const { data: warranty } = useWarranty(projectId);
   const deleteMut = useDeleteWarranty(projectId);
-  const markPdf = useMarkWarrantyPdfPath(projectId);
-  const [busy, setBusy] = useState<'pdf' | 'dossier' | 'email' | null>(null);
+  const [busy, setBusy] = useState<'pdf' | 'email' | null>(null);
 
   if (!warranty) return null;
 
@@ -269,32 +267,6 @@ function WarrantyCard({
       a.download = `gwarancja_${projectTitle.replace(/\s+/g, '_').slice(0, 30)}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch {
-      toast.error(t('common.errorGeneric'));
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  const handleSaveToDossier = async () => {
-    setBusy('dossier');
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('company_name, city')
-        .maybeSingle();
-
-      const blob = generateWarrantyPdfBlob({
-        warranty,
-        projectTitle,
-        companyName: profile?.company_name ?? 'Majster',
-        companyAddress: profile?.city ?? undefined,
-        t,
-      });
-
-      const path = await uploadWarrantyToDossier(blob, projectId, projectTitle);
-      await markPdf.mutateAsync({ warrantyId: warranty.id, pdfPath: path });
-      toast.success(t('warranty.savedToDossier'));
     } catch {
       toast.error(t('common.errorGeneric'));
     } finally {
@@ -388,10 +360,7 @@ function WarrantyCard({
           {busy === 'pdf' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
           {t('warranty.downloadPdf')}
         </Button>
-        <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={handleSaveToDossier} disabled={busy === 'dossier'}>
-          {busy === 'dossier' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FolderOpen className="h-3.5 w-3.5" />}
-          {t('warranty.saveToDossier')}
-        </Button>
+        {/* Sprint 0 containment: Dossier backend not restored — button hidden */}
         <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={handleSendEmail} disabled={busy === 'email' || !warranty.client_email}>
           {busy === 'email' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Mail className="h-3.5 w-3.5" />}
           {t('warranty.sendEmail')}

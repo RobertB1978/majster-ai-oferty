@@ -1608,9 +1608,91 @@ export type Database = {
           },
         ]
       }
+      project_warranties: {
+        Row: {
+          id: string
+          user_id: string
+          project_id: string
+          client_email: string | null
+          client_name: string | null
+          contact_phone: string | null
+          warranty_months: number
+          start_date: string
+          scope_of_work: string | null
+          exclusions: string | null
+          pdf_storage_path: string | null
+          reminder_30_sent_at: string | null
+          reminder_7_sent_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          project_id: string
+          client_email?: string | null
+          client_name?: string | null
+          contact_phone?: string | null
+          warranty_months?: number
+          start_date?: string
+          scope_of_work?: string | null
+          exclusions?: string | null
+          pdf_storage_path?: string | null
+          reminder_30_sent_at?: string | null
+          reminder_7_sent_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          project_id?: string
+          client_email?: string | null
+          client_name?: string | null
+          contact_phone?: string | null
+          warranty_months?: number
+          start_date?: string
+          scope_of_work?: string | null
+          exclusions?: string | null
+          pdf_storage_path?: string | null
+          reminder_30_sent_at?: string | null
+          reminder_7_sent_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_warranties_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "v2_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      project_warranties_with_end: {
+        Row: {
+          id: string
+          user_id: string
+          project_id: string
+          client_email: string | null
+          client_name: string | null
+          contact_phone: string | null
+          warranty_months: number
+          start_date: string
+          end_date: string
+          scope_of_work: string | null
+          exclusions: string | null
+          pdf_storage_path: string | null
+          reminder_30_sent_at: string | null
+          reminder_7_sent_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_org_ids: { Args: { _user_id: string }; Returns: string[] }
