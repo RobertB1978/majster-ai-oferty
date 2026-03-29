@@ -1693,6 +1693,94 @@ export type Database = {
         }
         Relationships: []
       }
+      project_dossier_items: {
+        Row: {
+          id: string
+          user_id: string
+          project_id: string
+          category: string
+          file_path: string
+          file_name: string
+          mime_type: string | null
+          size_bytes: number | null
+          source: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          project_id: string
+          category: string
+          file_path: string
+          file_name: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          source?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          project_id?: string
+          category?: string
+          file_path?: string
+          file_name?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          source?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_dossier_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v2_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_dossier_share_tokens: {
+        Row: {
+          id: string
+          user_id: string
+          project_id: string
+          token: string
+          expires_at: string
+          allowed_categories: string[]
+          label: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          project_id: string
+          token?: string
+          expires_at?: string
+          allowed_categories?: string[]
+          label?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          project_id?: string
+          token?: string
+          expires_at?: string
+          allowed_categories?: string[]
+          label?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_dossier_share_tokens_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v2_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       get_user_org_ids: { Args: { _user_id: string }; Returns: string[] }
@@ -1717,6 +1805,7 @@ export type Database = {
       }
       validate_offer_token: { Args: { _token: string }; Returns: boolean }
       resolve_project_public_token: { Args: { p_token: string }; Returns: Json }
+      resolve_dossier_share_token: { Args: { p_token: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
