@@ -1667,7 +1667,25 @@
     "checkConnection": "Sprawdź połączenie z internetem",
     "goBack": "Wróć",
     "loadFailed": "Nie udało się załadować danych",
-    "pageNotFoundDesc": "Strona, której szukasz, nie istnieje lub została przeniesiona. Sprawdź adres URL lub wróć do strony głównej."
+    "pageNotFoundDesc": "Strona, której szukasz, nie istnieje lub została przeniesiona. Sprawdź adres URL lub wróć do strony głównej.",
+    "standard": {
+      "domainCode": "Kod błędu",
+      "requestId": "Id zgłoszenia",
+      "loadPartFailed": "Nie udało się załadować tej części aplikacji. Spróbuj odświeżyć stronę."
+    },
+    "catalog": {
+      "MAJ_UNK_001": "Wystąpił nieoczekiwany błąd. Spróbuj odświeżyć stronę.",
+      "MAJ_OFF_001": "Nie udało się załadować kreatora oferty. Spróbuj ponownie.",
+      "MAJ_OFF_002": "Nie udało się zapisać wersji roboczej oferty. Sprawdź połączenie i spróbuj ponownie.",
+      "MAJ_CUS_001": "Nie udało się utworzyć klienta. Sprawdź poprawność danych i spróbuj ponownie.",
+      "MAJ_DOS_001": "Nie udało się załadować teczki. Spróbuj odświeżyć stronę.",
+      "MAJ_WAR_001": "Nie udało się zapisać gwarancji. Spróbuj ponownie.",
+      "MAJ_CAL_001": "Nie udało się utworzyć wydarzenia w kalendarzu. Sprawdź dane i spróbuj ponownie.",
+      "MAJ_CFG_001": "Brak wymaganej konfiguracji aplikacji. Skontaktuj się z pomocą techniczną.",
+      "MAJ_DB_001": "Usługa bazy danych jest niedostępna. Spróbuj ponownie za chwilę.",
+      "MAJ_AUTH_001": "Sesja wygasła lub brak autoryzacji. Zaloguj się ponownie.",
+      "MAJ_NET_001": "Błąd połączenia sieciowego. Sprawdź internet i spróbuj ponownie."
+    }
   },
   "cookies": {
     "title": "Ustawienia plików cookies",

@@ -1668,7 +1668,25 @@
     "checkConnection": "Check your internet connection",
     "goBack": "Go back",
     "loadFailed": "Failed to load data",
-    "pageNotFoundDesc": "The page you are looking for does not exist or has been moved. Check the URL or return to the home page."
+    "pageNotFoundDesc": "The page you are looking for does not exist or has been moved. Check the URL or return to the home page.",
+    "standard": {
+      "domainCode": "Error code",
+      "requestId": "Report ID",
+      "loadPartFailed": "Failed to load this part of the application. Try refreshing the page."
+    },
+    "catalog": {
+      "MAJ_UNK_001": "An unexpected error occurred. Try refreshing the page.",
+      "MAJ_OFF_001": "Failed to load the offer wizard. Please try again.",
+      "MAJ_OFF_002": "Failed to save the offer draft. Check your connection and try again.",
+      "MAJ_CUS_001": "Failed to create the customer. Check your input and try again.",
+      "MAJ_DOS_001": "Failed to load the dossier. Try refreshing the page.",
+      "MAJ_WAR_001": "Failed to save the warranty. Please try again.",
+      "MAJ_CAL_001": "Failed to create the calendar event. Check the details and try again.",
+      "MAJ_CFG_001": "Required application configuration is missing. Please contact support.",
+      "MAJ_DB_001": "The database service is unavailable. Please try again in a moment.",
+      "MAJ_AUTH_001": "Your session has expired or you are not authorized. Please log in again.",
+      "MAJ_NET_001": "Network connection error. Check your internet and try again."
+    }
   },
   "cookies": {
     "title": "Cookie settings",
