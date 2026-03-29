@@ -231,7 +231,7 @@ interface PhotoReportPanelProps {
 
 export function PhotoReportPanel({ projectId }: PhotoReportPanelProps) {
   const { t } = useTranslation();
-  const { data: photos, isLoading, isError, refetch } = usePhotoReport(projectId);
+  const { data: photos, isLoading, isError } = usePhotoReport(projectId);
   const uploadPhoto = useUploadPhotoReport();
   const deletePhoto = useDeletePhotoReport();
 
