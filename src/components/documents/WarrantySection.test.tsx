@@ -38,6 +38,13 @@ vi.mock('react-i18next', () => ({
         'warranty.addWarranty': 'Dodaj gwarancję',
         'warranty.expired': 'Gwarancja wygasła',
         'warranty.active': 'Aktywna',
+        'warranty.downloadPdf': 'Pobierz kartę PDF',
+        'warranty.saveToDossier': 'Zapisz do teczki',
+        'warranty.sendEmail': 'Wyślij do klienta',
+        'warranty.editWarranty': 'Edytuj gwarancję',
+        'warranty.fields.warrantyMonths': 'Okres gwarancji (miesiące)',
+        'warranty.pdf.endDate': 'Data ważności',
+        'warranty.pdf.title': 'Karta Gwarancyjna',
       };
       return map[key] ?? key;
     },
@@ -101,6 +108,56 @@ import { WarrantySection } from './WarrantySection';
 describe('WarrantySection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it('renders "Zapisz do teczki" button when warranty exists', async () => {
+    const mockWarranty = {
+      id: 'w-1',
+      user_id: 'user-1',
+      project_id: 'proj-1',
+      client_name: 'Jan Kowalski',
+      client_email: 'jan@example.com',
+      contact_phone: '123456789',
+      warranty_months: 24,
+      start_date: '2026-01-01',
+      end_date: '2028-01-01',
+      scope_of_work: 'Remont łazienki',
+      exclusions: null,
+      pdf_storage_path: null,
+      reminder_30_sent_at: null,
+      reminder_7_sent_at: null,
+      created_at: '2026-01-01T00:00:00Z',
+      updated_at: '2026-01-01T00:00:00Z',
+    };
+
+    const { supabase } = await import('@/integrations/supabase/client');
+    (supabase.from as ReturnType<typeof vi.fn>).mockImplementation((table: string) => {
+      if (table === 'project_warranties_with_end') {
+        return {
+          select: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              maybeSingle: vi.fn().mockResolvedValue({ data: mockWarranty, error: null }),
+            })),
+          })),
+        };
+      }
+      return {
+        select: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+          })),
+        })),
+      };
+    });
+
+    render(
+      <WarrantySection projectId="proj-1" projectTitle="Remont kuchni" />,
+      { wrapper }
+    );
+
+    await screen.findByText('Zapisz do teczki');
+    expect(screen.getByText('Pobierz kartę PDF')).toBeTruthy();
+    expect(screen.getByText('Wyślij do klienta')).toBeTruthy();
   });
 
   it('renders empty state when no warranty', async () => {
