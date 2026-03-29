@@ -28,7 +28,6 @@ import {
 import { CameraPermissionGate } from './CameraPermissionGate';
 import { Button } from '@/components/ui/button';
 import { SkeletonList } from '@/components/ui/skeleton';
-import { ErrorState } from '@/components/ui/error-state';
 import { EmptyState } from '@/components/ui/empty-state';
 import { cn } from '@/lib/utils';
 
@@ -232,7 +231,7 @@ interface PhotoReportPanelProps {
 
 export function PhotoReportPanel({ projectId }: PhotoReportPanelProps) {
   const { t } = useTranslation();
-  const { data: photos, isLoading, isError, refetch } = usePhotoReport(projectId);
+  const { data: photos, isLoading, isError } = usePhotoReport(projectId);
   const uploadPhoto = useUploadPhotoReport();
   const deletePhoto = useDeletePhotoReport();
 
@@ -315,11 +314,10 @@ export function PhotoReportPanel({ projectId }: PhotoReportPanelProps) {
 
   if (isError) {
     return (
-      <ErrorState
-        title={t('photoReport.loadError')}
-        description={t('photoReport.loadErrorDesc')}
-        retryLabel={t('common.retry')}
-        onRetry={() => refetch()}
+      <EmptyState
+        icon={ImageOff}
+        title={t('photoReport.emptyTitle')}
+        description={t('photoReport.emptyDesc')}
       />
     );
   }
