@@ -53,10 +53,13 @@ function validateStep(
     }
   }
   if (step === 1) {
-    if (form.items.length === 0) {
+    // In variant mode items live in form.variants[x].items; form.items is always [] there.
+    const effectiveItems =
+      form.variants.length > 0 ? form.variants.flatMap((v) => v.items) : form.items;
+    if (effectiveItems.length === 0) {
       errs.items = t('offerWizard.errors.addItem');
     }
-    const emptyName = form.items.find((it) => !it.name.trim());
+    const emptyName = effectiveItems.find((it) => !it.name.trim());
     if (emptyName) errs.items = t('offerWizard.errors.itemNameRequired');
   }
   return errs;
