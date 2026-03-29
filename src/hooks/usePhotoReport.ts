@@ -103,28 +103,36 @@ export function usePhotoReport(projectId: string | undefined) {
     queryFn: async (): Promise<ProjectPhotoV2[]> => {
       if (!projectId) return [];
 
-      const { data, error } = await supabase
-        .from('project_photos')
-        .select('id, project_id, user_id, phase, photo_url, file_name, mime_type, size_bytes, width, height, created_at')
-        .eq('project_id', projectId)
-        .order('created_at', { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from('project_photos')
+          .select('id, project_id, user_id, phase, photo_url, file_name, mime_type, size_bytes, width, height, created_at')
+          .eq('project_id', projectId)
+          .order('created_at', { ascending: true });
 
-      if (error) throw error;
+        if (error) {
+          logger.error('[PhotoReport] Query error (returning empty):', error.message);
+          return [];
+        }
 
-      // Fetch signed URLs for all photos in parallel
-      const photos = await Promise.all(
-        (data ?? []).map(async (row) => {
-          const storagePath = extractStoragePath(row.photo_url as string);
-          const signedUrl = storagePath ? await getSignedPhotoUrl(storagePath) : '';
-          return {
-            ...row,
-            phase: (row.phase ?? 'BEFORE') as PhotoPhase,
-            signedUrl,
-          } as ProjectPhotoV2;
-        })
-      );
+        // Fetch signed URLs for all photos in parallel
+        const photos = await Promise.all(
+          (data ?? []).map(async (row) => {
+            const storagePath = extractStoragePath(row.photo_url as string);
+            const signedUrl = storagePath ? await getSignedPhotoUrl(storagePath) : '';
+            return {
+              ...row,
+              phase: (row.phase ?? 'BEFORE') as PhotoPhase,
+              signedUrl,
+            } as ProjectPhotoV2;
+          })
+        );
 
-      return photos;
+        return photos;
+      } catch (err) {
+        logger.error('[PhotoReport] Unexpected error (returning empty):', err);
+        return [];
+      }
     },
     enabled: !!user && !!projectId,
     staleTime: 60_000,

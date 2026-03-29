@@ -28,7 +28,6 @@ import {
 import { CameraPermissionGate } from './CameraPermissionGate';
 import { Button } from '@/components/ui/button';
 import { SkeletonList } from '@/components/ui/skeleton';
-import { ErrorState } from '@/components/ui/error-state';
 import { EmptyState } from '@/components/ui/empty-state';
 import { cn } from '@/lib/utils';
 
@@ -315,11 +314,10 @@ export function PhotoReportPanel({ projectId }: PhotoReportPanelProps) {
 
   if (isError) {
     return (
-      <ErrorState
-        title={t('photoReport.loadError')}
-        description={t('photoReport.loadErrorDesc')}
-        retryLabel={t('common.retry')}
-        onRetry={() => refetch()}
+      <EmptyState
+        icon={ImageOff}
+        title={t('photoReport.emptyTitle')}
+        description={t('photoReport.emptyDesc')}
       />
     );
   }
