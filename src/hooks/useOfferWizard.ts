@@ -296,8 +296,11 @@ export function useSaveDraft() {
 
       return offerId;
     },
-    onSuccess: () => {
+    onSuccess: (savedOfferId: string) => {
       queryClient.invalidateQueries({ queryKey: offersKeys.all });
+      // Clear stale wizard cache so reopening the draft fetches fresh data
+      // (fixes client not being hydrated on reopen — PR-009)
+      queryClient.removeQueries({ queryKey: offerWizardKeys.detail(savedOfferId) });
     },
   });
 }
