@@ -113,6 +113,33 @@ It is a ready-to-use shape that Edge Function adapters can adopt incrementally i
 
 ---
 
+## Auto-Detection (no explicit domainCode needed)
+
+`formatError()` inspects the thrown value automatically when no `domainCode` is provided in context.
+This covers the most common Supabase and network error shapes out of the box.
+
+| Condition | Auto-detected code |
+|-----------|-------------------|
+| `value.status === 401` or `403` | MAJ-AUTH-001 |
+| `value.name` contains `'AuthError'` | MAJ-AUTH-001 |
+| `value.message` contains `'unauthorized'` | MAJ-AUTH-001 |
+| `value.code` starts with `'PGRST'` (PostgREST) | MAJ-DB-001 |
+| `value.code` matches 5-char Postgres format (e.g. `23505`, `42P01`) | MAJ-DB-001 |
+| `value.message` contains `'failed to fetch'` / `'NetworkError'` / `'network request failed'` | MAJ-NET-001 |
+| anything else | MAJ-UNK-001 |
+
+**Priority:** explicit `context.domainCode` → auto-detection → `MAJ-UNK-001`
+
+```typescript
+// No domainCode needed — auto-detected as MAJ-DB-001:
+const fmt = formatError(postgrestError);
+
+// Explicit wins over auto-detection:
+const fmt = formatError(postgrestError, { domainCode: 'MAJ-OFF-002' }); // → MAJ-OFF-002
+```
+
+---
+
 ## How to Add a New Error Code
 
 1. **Add an entry to `src/lib/errors/catalog.ts`:**
