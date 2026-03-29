@@ -32,9 +32,9 @@ import { getStarterPack } from '@/data/starterPacks';
 import { BurnBarSection } from '@/components/costs/BurnBarSection';
 import { PhotoReportPanel } from '@/components/photos/PhotoReportPanel';
 import { AcceptanceChecklistPanel } from '@/components/photos/AcceptanceChecklistPanel';
-// Sprint 0 containment: DossierPanel and WarrantySection hidden — broken flows disabled
-// import { DossierPanel } from '@/components/documents/DossierPanel';
+// Sprint 0 containment: WarrantySection hidden — broken flows disabled
 // import { WarrantySection } from '@/components/documents/WarrantySection';
+import { DossierPanel } from '@/components/documents/DossierPanel';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -489,10 +489,7 @@ export default function ProjectHub() {
                     <BurnBarSection project={project} />
                   )}
                   {section.id === 'documents' && (
-                    // Sprint 0 containment: Dossier backend broken — storage bucket not restored
-                    <div className="py-6 text-center text-sm text-muted-foreground">
-                      Moduł tymczasowo niedostępny
-                    </div>
+                    <DossierPanel projectId={project.id} projectTitle={project.title} />
                   )}
                   {section.id === 'photoReport' && (
                     <PhotoReportPanel projectId={project.id} />

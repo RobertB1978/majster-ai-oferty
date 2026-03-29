@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import {
   FileText, FolderOpen, Receipt, Camera, Shield, MoreHorizontal,
   Upload, Trash2, Download, Share2, Loader2, ExternalLink, Plus,
-  Check,
+  Check, RefreshCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -34,7 +34,6 @@ import { DossierShareModal } from './DossierShareModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SkeletonList } from '@/components/ui/skeleton';
-import { ErrorState } from '@/components/ui/error-state';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/formatters';
 
@@ -247,7 +246,7 @@ export function DossierPanel({ projectId, projectTitle }: DossierPanelProps) {
   const [showShareModal, setShowShareModal] = useState(false);
   const [uploadingCategory, setUploadingCategory] = useState<DossierCategory | null>(null);
 
-  const { data: items = [], isLoading, error } = useDossierItems(projectId);
+  const { data: items = [], isLoading, error, refetch } = useDossierItems(projectId);
   const uploadItem = useUploadDossierItem();
   const deleteItem = useDeleteDossierItem();
   const exportPdf = useExportDossierPdf();
@@ -292,11 +291,16 @@ export function DossierPanel({ projectId, projectTitle }: DossierPanelProps) {
   if (isLoading) return <SkeletonList rows={4} />;
   if (error) {
     return (
-      <ErrorState
-        title={t('dossier.loadError')}
-        description={t('dossier.loadErrorDesc')}
-        className="py-6"
-      />
+      <div className="py-8 text-center space-y-3">
+        <FolderOpen className="mx-auto h-8 w-8 text-muted-foreground/50" />
+        <p className="text-sm text-muted-foreground">
+          {t('dossier.loadErrorSoft', 'Nie udało się załadować dokumentów. Spróbuj ponownie.')}
+        </p>
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => refetch()}>
+          <RefreshCw className="h-3.5 w-3.5" />
+          {t('dossier.retry', 'Ponów')}
+        </Button>
+      </div>
     );
   }
 
