@@ -95,7 +95,7 @@ function detectDomainCode(value: unknown): string | undefined {
   const err = value as Record<string, unknown>;
   // Supabase AuthError or any 401/403 response
   if (err['status'] === 401 || err['status'] === 403 ||
-      String(err['name'] ?? '').includes('AuthError') ||
+      String(err['name'] ?? '').startsWith('Auth') ||
       String(err['message'] ?? '').toLowerCase().includes('unauthorized'))
     return 'MAJ-AUTH-001';
   // PostgREST errors (code starts with PGRST) or raw Postgres 5-char codes
