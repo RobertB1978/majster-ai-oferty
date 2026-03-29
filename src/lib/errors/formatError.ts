@@ -87,13 +87,35 @@ function toError(value: unknown): Error {
 }
 
 /**
- * Resolve the catalog entry from context or fall back to MAJ-UNK-001.
+ * Auto-detect a domain code from well-known Supabase/network error shapes.
+ * Only used as a fallback when no explicit domainCode is provided in context.
  */
-function resolveCatalogEntry(context?: FormatErrorContext): ErrorCatalogEntry {
-  if (context?.domainCode) {
-    return getCatalogEntry(context.domainCode);
-  }
-  return FALLBACK_CATALOG_ENTRY;
+function detectDomainCode(value: unknown): string | undefined {
+  if (value == null || typeof value !== 'object') return undefined;
+  const err = value as Record<string, unknown>;
+  // Supabase AuthError or any 401/403 response
+  if (err['status'] === 401 || err['status'] === 403 ||
+      String(err['name'] ?? '').includes('AuthError') ||
+      String(err['message'] ?? '').toLowerCase().includes('unauthorized'))
+    return 'MAJ-AUTH-001';
+  // PostgREST errors (code starts with PGRST) or raw Postgres 5-char codes
+  const code = String(err['code'] ?? '');
+  if (code.startsWith('PGRST') || /^[0-9][0-9A-Z]{4}$/.test(code))
+    return 'MAJ-DB-001';
+  // Transient network errors
+  const msg = String(err['message'] ?? '').toLowerCase();
+  if (msg.includes('failed to fetch') || msg.includes('networkerror') ||
+      msg.includes('network request failed'))
+    return 'MAJ-NET-001';
+  return undefined;
+}
+
+/**
+ * Resolve the catalog entry: explicit context > auto-detection > MAJ-UNK-001.
+ */
+function resolveCatalogEntry(value: unknown, context?: FormatErrorContext): ErrorCatalogEntry {
+  const code = context?.domainCode ?? detectDomainCode(value);
+  return code ? getCatalogEntry(code) : FALLBACK_CATALOG_ENTRY;
 }
 
 /**
@@ -127,7 +149,7 @@ export function formatError(
   context?: FormatErrorContext
 ): FormattedError {
   const error = toError(value);
-  const entry = resolveCatalogEntry(context);
+  const entry = resolveCatalogEntry(value, context);
   const requestId = generateDebugId();
   const fingerprint = getErrorCode(error);
   const userMessage = resolveUserMessage(entry);
