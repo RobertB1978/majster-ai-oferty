@@ -126,11 +126,14 @@ export default function Clients() {
       return;
     }
 
+    // Normalize NIP: trim whitespace so that blank-only input is treated as no NIP
+    const normalizedData = { ...formData, nip: formData.nip.trim() };
+
     try {
       if (editingClient) {
-        await updateClient.mutateAsync({ id: editingClient.id, ...formData });
+        await updateClient.mutateAsync({ id: editingClient.id, ...normalizedData });
       } else {
-        await addClient.mutateAsync(formData);
+        await addClient.mutateAsync(normalizedData);
       }
       setIsOpen(false);
       resetForm();
