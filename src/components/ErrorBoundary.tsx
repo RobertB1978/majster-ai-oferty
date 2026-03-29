@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { logError } from '@/lib/sentry';
 import i18n from '@/i18n';
+import { buildDiagnostics, type ErrorDiagnostics } from '@/lib/errorDiagnostics';
 
 interface Props {
   children: ReactNode;
@@ -14,6 +15,7 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+  diagnostics: ErrorDiagnostics | null;
 }
 
 /**
@@ -21,10 +23,10 @@ interface State {
  * Renders null on error so the rest of the page remains usable.
  */
 export class PanelErrorBoundary extends Component<Props, State> {
-  public state: State = { hasError: false, error: null };
+  public state: State = { hasError: false, error: null, diagnostics: null };
 
   public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { hasError: true, error, diagnostics: null };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -47,24 +49,30 @@ export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null,
+    diagnostics: null,
   };
 
   public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return {
+      hasError: true,
+      error,
+      diagnostics: buildDiagnostics(error),
+    };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     logger.error('ErrorBoundary caught an error:', error, errorInfo);
+    const { diagnostics } = this.state;
 
-    // Report to Sentry with context
     logError(error, {
       componentStack: errorInfo.componentStack,
-      boundary: 'RootErrorBoundary'
+      boundary: 'RootErrorBoundary',
+      ...(diagnostics ?? {}),
     });
   }
 
   private handleRetry = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({ hasError: false, error: null, diagnostics: null });
   };
 
   private handleReload = () => {
@@ -76,6 +84,8 @@ export class ErrorBoundary extends Component<Props, State> {
       if (this.props.fallback) {
         return this.props.fallback;
       }
+
+      const { diagnostics } = this.state;
 
       return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -90,13 +100,11 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-muted-foreground text-center text-sm">
                 {i18n.t('errors.unexpectedError')}
               </p>
-              {this.state.error && (
-                <details className="text-xs text-muted-foreground bg-muted p-3 rounded-md">
-                  <summary className="cursor-pointer font-medium">{i18n.t('errors.errorDetails')}</summary>
-                  <pre className="mt-2 whitespace-pre-wrap break-words">
-                    {this.state.error.message}
-                  </pre>
-                </details>
+              {diagnostics && (
+                <div className="text-xs text-muted-foreground bg-muted p-3 rounded-md space-y-1 font-mono">
+                  <p>{i18n.t('errors.errorCode')}: {diagnostics.errorCode}</p>
+                  <p>{i18n.t('errors.debugId')}: {diagnostics.debugId}</p>
+                </div>
               )}
               <div className="flex gap-2 justify-center">
                 <Button variant="outline" onClick={this.handleRetry}>
