@@ -90,6 +90,40 @@ describe('validations - Comprehensive Tests', () => {
       });
       expect(result.success).toBe(false);
     });
+
+    // NIP optional — PR-007 regression guard
+    it('should accept empty string NIP (private individual)', () => {
+      const result = clientSchema.safeParse({ name: 'Jan Kowalski', nip: '' });
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept whitespace-only NIP as empty (no validation error)', () => {
+      const result = clientSchema.safeParse({ name: 'Jan Kowalski', nip: '   ' });
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept valid NIP when provided', () => {
+      const result = clientSchema.safeParse({ name: 'Firma Sp. z o.o.', nip: '5270103391' });
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept valid NIP with dashes when provided', () => {
+      const result = clientSchema.safeParse({ name: 'Firma', nip: '527-010-33-91' });
+      expect(result.success).toBe(true);
+    });
+
+    it('should reject non-empty NIP with invalid checksum', () => {
+      const result = clientSchema.safeParse({ name: 'Firma', nip: '5270103392' });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toContain('NIP');
+      }
+    });
+
+    it('should reject non-empty NIP with wrong digit count', () => {
+      const result = clientSchema.safeParse({ name: 'Firma', nip: '123456789' });
+      expect(result.success).toBe(false);
+    });
   });
 
   describe('projectSchema', () => {

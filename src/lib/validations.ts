@@ -17,7 +17,7 @@ export const clientSchema = z.object({
     .max(100, i18n.t('validations.client.nameMaxLength', { max: 100 })),
   nip: z.string()
     .optional()
-    .refine(val => !val || validateNip(val), {
+    .refine(val => !val?.trim() || validateNip(val), {
       message: i18n.t('validations.client.nipInvalid'),
     }),
   phone: z.string()
