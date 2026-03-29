@@ -119,6 +119,27 @@ describe('i18n Locale Completeness', () => {
       }
     });
 
+    it('error standard keys (PR-ERR-STD-01) should exist in all locales', () => {
+      const errorStandardKeys = [
+        'errors.standard.domainCode',
+        'errors.standard.requestId',
+        'errors.standard.loadPartFailed',
+        'errors.catalog.MAJ_UNK_001',
+        'errors.catalog.MAJ_OFF_001',
+        'errors.catalog.MAJ_AUTH_001',
+        'errors.catalog.MAJ_DB_001',
+        'errors.catalog.MAJ_NET_001',
+      ];
+      for (const key of errorStandardKeys) {
+        ['pl', 'en', 'uk'].forEach(lang => {
+          i18n.changeLanguage(lang);
+          const val = i18n.t(key);
+          expect(val, `${lang}:${key} should be translated, not a raw key`).not.toBe(key);
+          expect(val, `${lang}:${key} should not be empty`).toBeTruthy();
+        });
+      }
+    });
+
     it('core-flow keys fixed in i18n-fix PR should exist in all locales', () => {
       const fixedKeys = [
         // Calendar toast messages
