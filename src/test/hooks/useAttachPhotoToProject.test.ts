@@ -104,16 +104,21 @@ describe('useAttachPhotoToProject', () => {
       wrapper: createWrapper(),
     });
 
-    await expect(
-      act(async () => {
+    // Catch inside act so TanStack Query can flush state updates after the throw
+    let caughtError: unknown;
+    await act(async () => {
+      try {
         await result.current.mutateAsync({
           photoId: 'photo-1',
           projectId: 'project-1',
           phase: 'DURING',
         });
-      })
-    ).rejects.toBeTruthy();
+      } catch (err) {
+        caughtError = err;
+      }
+    });
 
+    expect(caughtError).toBeTruthy();
     await waitFor(() => expect(result.current.isError).toBe(true));
   });
 
