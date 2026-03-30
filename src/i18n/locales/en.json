@@ -4137,6 +4137,8 @@
     "deleteError": "Error deleting file",
     "confirmDelete": "Confirm delete",
     "openFile": "Open",
+    "downloadFile": "Download",
+    "downloadError": "Download failed. Please try again.",
     "generateFromTemplate": "Generate from template",
     "exportEmpty": "No files to export",
     "loadError": "Loading error",

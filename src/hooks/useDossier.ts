@@ -94,6 +94,25 @@ async function getSignedUrl(filePath: string): Promise<string> {
   return data.signedUrl;
 }
 
+/**
+ * Trigger browser download for a file via its signed URL.
+ * Fetches blob cross-origin and creates a temporary object URL
+ * with the download attribute so the browser saves instead of navigating.
+ */
+export async function downloadDossierFile(signedUrl: string, fileName: string): Promise<void> {
+  const res = await fetch(signedUrl);
+  if (!res.ok) throw new Error('Download failed');
+  const blob = await res.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = objectUrl;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(objectUrl);
+}
+
 export function buildDossierShareUrl(token: string): string {
   return `${window.location.origin}/d/${token}`;
 }

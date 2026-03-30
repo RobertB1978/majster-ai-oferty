@@ -4137,6 +4137,8 @@
     "deleteError": "Błąd usuwania pliku",
     "confirmDelete": "Potwierdz usuniecie",
     "openFile": "Otworz",
+    "downloadFile": "Pobierz",
+    "downloadError": "Błąd pobierania pliku. Spróbuj ponownie.",
     "generateFromTemplate": "Generuj z szablonu",
     "exportEmpty": "Brak plików do wyeksportowania",
     "loadError": "Błąd ładowania",
