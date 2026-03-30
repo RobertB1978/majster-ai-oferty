@@ -281,6 +281,7 @@ export function useUploadPhotoReport() {
     },
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: photoReportKeys.byProject(projectId) });
+      queryClient.invalidateQueries({ queryKey: ['gallery_photos'] });
     },
   });
 }
@@ -326,6 +327,7 @@ export function useDeletePhotoReport() {
     },
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: photoReportKeys.byProject(projectId) });
+      queryClient.invalidateQueries({ queryKey: ['gallery_photos'] });
     },
   });
 }

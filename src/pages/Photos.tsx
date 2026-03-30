@@ -32,13 +32,19 @@ import {
   Upload,
   Loader2,
   ImagePlus,
+  Trash2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MEDIA_BUCKET, normalizeStoragePath } from '@/lib/storage';
 import { PHOTO_PHASES, type PhotoPhase } from '@/hooks/usePhotoReport';
-import { useMediaLibraryUpload } from '@/hooks/useMediaLibraryUpload';
+import { useMediaLibraryUpload, useDeleteMediaLibraryPhoto } from '@/hooks/useMediaLibraryUpload';
 import { logger } from '@/lib/logger';
 import { useToast } from '@/hooks/use-toast';
+
+// ── Constants ────────────────────────────────────────────────────────────────
+
+const MAX_FILE_SIZE_MB = 20;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -156,7 +162,21 @@ function useUniqueProjects(photos: GalleryPhoto[]) {
 
 // ── Lightbox ─────────────────────────────────────────────────────────────────
 
-function Lightbox({ photo, onClose }: { photo: GalleryPhoto; onClose: () => void }) {
+function Lightbox({
+  photo,
+  onClose,
+  onDelete,
+  deleteConfirm,
+  onDeleteConfirmToggle,
+  isDeleting,
+}: {
+  photo: GalleryPhoto;
+  onClose: () => void;
+  onDelete: (photo: GalleryPhoto) => void;
+  deleteConfirm: boolean;
+  onDeleteConfirmToggle: (id: string | null) => void;
+  isDeleting: boolean;
+}) {
   const { t } = useTranslation();
 
   return (
@@ -199,6 +219,31 @@ function Lightbox({ photo, onClose }: { photo: GalleryPhoto; onClose: () => void
           <span className="text-white/60 ml-auto">
             {new Date(photo.createdAt).toLocaleDateString()}
           </span>
+          {deleteConfirm ? (
+            <div className="flex gap-2">
+              <button
+                className="text-xs bg-destructive text-white px-3 py-1 rounded-md hover:bg-destructive/80 transition-colors disabled:opacity-50"
+                onClick={() => onDelete(photo)}
+                disabled={isDeleting}
+              >
+                {isDeleting ? t('common.loading') : t('photos.confirmDelete')}
+              </button>
+              <button
+                className="text-xs bg-white/20 text-white px-3 py-1 rounded-md hover:bg-white/30 transition-colors"
+                onClick={() => onDeleteConfirmToggle(null)}
+              >
+                {t('common.cancel')}
+              </button>
+            </div>
+          ) : (
+            <button
+              className="text-white/60 hover:text-destructive transition-colors p-1"
+              onClick={() => onDeleteConfirmToggle(photo.id)}
+              aria-label={t('photos.deletePhoto')}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -212,10 +257,12 @@ export default function Photos() {
   const { toast } = useToast();
   const { data: photos, isLoading, isError, refetch } = useGalleryPhotos();
   const uploadMutation = useMediaLibraryUpload();
+  const deleteMutation = useDeleteMediaLibraryPhoto();
 
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [selectedPhase, setSelectedPhase] = useState<PhotoPhase | null>(null);
   const [lightboxPhoto, setLightboxPhoto] = useState<GalleryPhoto | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -255,6 +302,15 @@ export default function Photos() {
       for (const file of fileList) {
         if (!file.type.startsWith('image/')) continue;
 
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          toast({
+            title: t('photos.fileTooLarge'),
+            description: t('photos.fileTooLargeDesc', { max: MAX_FILE_SIZE_MB }),
+            variant: 'destructive',
+          });
+          continue;
+        }
+
         try {
           await uploadMutation.mutateAsync(file);
           toast({
@@ -272,6 +328,27 @@ export default function Photos() {
       }
     },
     [uploadMutation, toast, t]
+  );
+
+  const handleDeletePhoto = useCallback(
+    async (photo: GalleryPhoto) => {
+      try {
+        await deleteMutation.mutateAsync({
+          photoId: photo.mediaId,
+          storagePath: photo.storagePath,
+        });
+        setLightboxPhoto(null);
+        setDeleteConfirmId(null);
+        toast({ title: t('photos.deleteSuccess') });
+      } catch (err) {
+        logger.error('[Photos] Delete failed:', err);
+        toast({
+          title: t('photos.deleteFailed'),
+          variant: 'destructive',
+        });
+      }
+    },
+    [deleteMutation, toast, t]
   );
 
   const hasActiveFilters = selectedProject !== null || selectedPhase !== null;
@@ -295,7 +372,14 @@ export default function Photos() {
       />
 
       {lightboxPhoto && (
-        <Lightbox photo={lightboxPhoto} onClose={() => setLightboxPhoto(null)} />
+        <Lightbox
+          photo={lightboxPhoto}
+          onClose={() => { setLightboxPhoto(null); setDeleteConfirmId(null); }}
+          onDelete={handleDeletePhoto}
+          deleteConfirm={deleteConfirmId === lightboxPhoto.id}
+          onDeleteConfirmToggle={setDeleteConfirmId}
+          isDeleting={deleteMutation.isPending}
+        />
       )}
 
       <div className="space-y-6 animate-fade-in">

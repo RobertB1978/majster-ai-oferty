@@ -16,7 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { compressImage } from '@/lib/imageCompression';
 import { logger } from '@/lib/logger';
-import { MEDIA_BUCKET } from '@/lib/storage';
+import { MEDIA_BUCKET, normalizeStoragePath } from '@/lib/storage';
 
 const COMPRESSION_OPTIONS = {
   maxWidth: 1600,
@@ -91,6 +91,45 @@ export function useMediaLibraryUpload() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gallery_photos'] });
+    },
+  });
+}
+
+// ── useDeleteMediaLibraryPhoto ───────────────────────────────────────────────
+
+export function useDeleteMediaLibraryPhoto() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ photoId, storagePath }: {
+      photoId: string;
+      storagePath: string;
+    }): Promise<void> => {
+      // Delete all links first (project, offer, client) — RLS enforced
+      await supabase.from('photo_project_links').delete().eq('photo_id', photoId);
+      await supabase.from('photo_offer_links').delete().eq('photo_id', photoId);
+      await supabase.from('photo_client_links').delete().eq('photo_id', photoId);
+
+      // Delete from media_library
+      const { error } = await supabase
+        .from('media_library')
+        .delete()
+        .eq('id', photoId);
+
+      if (error) throw error;
+
+      // Best-effort: legacy table cleanup
+      await supabase.from('project_photos').delete().eq('id', photoId);
+
+      // Best-effort: storage cleanup
+      const path = normalizeStoragePath(storagePath);
+      if (path) {
+        await supabase.storage.from(MEDIA_BUCKET).remove([path]);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['gallery_photos'] });
+      queryClient.invalidateQueries({ queryKey: ['photo_report'] });
     },
   });
 }
