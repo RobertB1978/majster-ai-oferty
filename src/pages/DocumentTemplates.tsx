@@ -24,7 +24,7 @@ import { FileText, FolderOpen, CheckCircle2, AlertCircle } from 'lucide-react';
 import type { DocumentTemplate } from '@/data/documentTemplates';
 import { TemplatesLibrary } from '@/components/documents/templates/TemplatesLibrary';
 import { TemplateEditor } from '@/components/documents/templates/TemplateEditor';
-import { useProjectsV2List } from '@/hooks/useProjectsV2';
+import { useProjectsV2List, type ProjectStatus } from '@/hooks/useProjectsV2';
 import {
   Select,
   SelectContent,
@@ -32,6 +32,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const STATUS_I18N_KEY: Partial<Record<ProjectStatus, string>> = {
+  ACTIVE: 'projects.statusActive',
+  COMPLETED: 'projects.statusCompleted',
+  ON_HOLD: 'projects.statusOnHold',
+};
 
 // ── DocumentTemplates ─────────────────────────────────────────────────────────
 
@@ -46,7 +54,12 @@ export default function DocumentTemplates() {
   const [pickedProjectId, setPickedProjectId] = useState<string | null>(null);
   const projectId = urlProjectId ?? pickedProjectId;
 
-  const { data: projects = [] } = useProjectsV2List('ACTIVE');
+  const { data: allProjects = [] } = useProjectsV2List('ALL');
+  // Exclude cancelled projects from selector
+  const projects = useMemo(
+    () => allProjects.filter((p) => p.status !== 'CANCELLED'),
+    [allProjects]
+  );
 
   // Auto-resolve clientId & offerId from selected project
   const pickedProject = useMemo(
@@ -127,7 +140,14 @@ export default function DocumentTemplates() {
               <SelectContent>
                 {projects.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
-                    {p.title}
+                    <span className="flex items-center gap-2">
+                      {p.title}
+                      {p.status !== 'ACTIVE' && STATUS_I18N_KEY[p.status] && (
+                        <span className="text-xs text-muted-foreground">
+                          ({t(STATUS_I18N_KEY[p.status]!)})
+                        </span>
+                      )}
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>

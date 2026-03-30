@@ -11,6 +11,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
@@ -281,6 +282,7 @@ export function TemplateEditor({
 }: TemplateEditorProps) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [data, setData] = useState<Record<string, string>>(() => {
@@ -487,9 +489,7 @@ export function TemplateEditor({
       toast.success(t('docTemplates.editor.savedToDossier'), {
         action: {
           label: t('docTemplates.editor.goToDossier'),
-          onClick: () => {
-            window.location.href = `/app/projects/${projectId}`;
-          },
+          onClick: () => navigate(`/app/projects/${projectId}`),
         },
       });
       onSaved?.(iid);
