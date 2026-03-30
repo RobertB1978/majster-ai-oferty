@@ -24,6 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Camera,
   ExternalLink,
+  FolderOpen,
   ImageOff,
   AlertTriangle,
   RefreshCw,
@@ -311,18 +312,26 @@ export default function Photos() {
               {t('photos.subtitle')}
             </p>
           </div>
-          <Button
-            onClick={handleUploadClick}
-            disabled={isUploading}
-            className="gap-2"
-          >
-            {isUploading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Upload className="h-4 w-4" />
-            )}
-            {isUploading ? t('photos.uploading') : t('photos.uploadPhoto')}
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link to="/app/projects">
+                <FolderOpen className="h-4 w-4 mr-2" />
+                {t('photos.goToProjects')}
+              </Link>
+            </Button>
+            <Button
+              onClick={handleUploadClick}
+              disabled={isUploading}
+              className="gap-2"
+            >
+              {isUploading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              {isUploading ? t('photos.uploading') : t('photos.uploadPhoto')}
+            </Button>
+          </div>
         </div>
 
         {/* Filters (only shown when photos exist) */}
