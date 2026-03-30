@@ -1,53 +1,237 @@
+/**
+ * Photos page — PR-2
+ *
+ * Real gallery backed by media_library + photo_project_links.
+ * Features:
+ *  - Filter by project
+ *  - Filter by phase
+ *  - Gallery preview with signed URLs
+ *  - Empty / loading / error states
+ *  - Mobile-friendly grid
+ */
+
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Camera, ExternalLink, FolderOpen, ImageOff } from 'lucide-react';
+import {
+  Camera,
+  ExternalLink,
+  FolderOpen,
+  ImageOff,
+  AlertTriangle,
+  RefreshCw,
+  X,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { MEDIA_BUCKET, normalizeStoragePath } from '@/lib/storage';
+import { PHOTO_PHASES, type PhotoPhase } from '@/hooks/usePhotoReport';
+import { logger } from '@/lib/logger';
 
-interface PhotoRow {
+// ── Types ────────────────────────────────────────────────────────────────────
+
+interface GalleryPhoto {
   id: string;
-  photo_url: string;
-  description: string | null;
-  analysis_result: string | null;
-  created_at: string;
-  project_id: string;
-  project?: { name: string };
+  mediaId: string;
+  storagePath: string;
+  fileName: string;
+  mimeType: string | null;
+  phase: string | null;
+  projectId: string;
+  projectName: string | null;
+  aiAnalysis: Record<string, unknown> | null;
+  createdAt: string;
+  signedUrl: string;
 }
 
-function useAllPhotos() {
+// ── Data hook ────────────────────────────────────────────────────────────────
+
+function useGalleryPhotos() {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ['all_project_photos'],
-    queryFn: async (): Promise<PhotoRow[]> => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    queryKey: ['gallery_photos', user?.id],
+    queryFn: async (): Promise<GalleryPhoto[]> => {
       if (!user) return [];
 
-      // Get photos via projects the user owns
+      // Fetch links + media + project name in one query
       const { data, error } = await supabase
-        .from('project_photos')
-        .select('id, photo_url, description, analysis_result, created_at, project_id, projects(name)')
+        .from('photo_project_links')
+        .select(`
+          id,
+          photo_id,
+          project_id,
+          phase,
+          created_at,
+          media_library (
+            id,
+            storage_path,
+            file_name,
+            mime_type,
+            ai_analysis
+          ),
+          v2_projects (
+            name
+          )
+        `)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(60);
+        .limit(120);
 
-      if (error) throw error;
+      if (error) {
+        logger.error('[Gallery] Query error:', error.message);
+        throw error;
+      }
 
-      return (data ?? []).map((row) => ({
-        ...row,
-        project: Array.isArray(row.projects) ? row.projects[0] : (row.projects as { name: string } | null) ?? undefined,
-      }));
+      // Generate signed URLs in bounded batches
+      const rows = data ?? [];
+      const photos: GalleryPhoto[] = [];
+
+      // Process in batches of 20 to avoid overwhelming the API
+      const BATCH_SIZE = 20;
+      for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+        const batch = rows.slice(i, i + BATCH_SIZE);
+        const batchResults = await Promise.all(
+          batch.map(async (row) => {
+            const media = row.media_library as unknown as {
+              id: string;
+              storage_path: string;
+              file_name: string;
+              mime_type: string | null;
+              ai_analysis: Record<string, unknown> | null;
+            } | null;
+
+            if (!media) return null;
+
+            const project = row.v2_projects as unknown as { name: string } | null;
+            const storagePath = normalizeStoragePath(media.storage_path);
+
+            const { data: urlData } = await supabase.storage
+              .from(MEDIA_BUCKET)
+              .createSignedUrl(storagePath, 3600);
+
+            return {
+              id: row.id,
+              mediaId: media.id,
+              storagePath,
+              fileName: media.file_name,
+              mimeType: media.mime_type,
+              phase: row.phase,
+              projectId: row.project_id,
+              projectName: project?.name ?? null,
+              aiAnalysis: media.ai_analysis,
+              createdAt: row.created_at,
+              signedUrl: urlData?.signedUrl ?? '',
+            } satisfies GalleryPhoto;
+          })
+        );
+        photos.push(...batchResults.filter((p): p is GalleryPhoto => p !== null));
+      }
+
+      return photos;
     },
+    enabled: !!user,
+    staleTime: 60_000,
   });
 }
 
+// ── Gallery filter helpers ───────────────────────────────────────────────────
+
+function useUniqueProjects(photos: GalleryPhoto[]) {
+  return useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of photos) {
+      if (p.projectName && !map.has(p.projectId)) {
+        map.set(p.projectId, p.projectName);
+      }
+    }
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+  }, [photos]);
+}
+
+// ── Lightbox ─────────────────────────────────────────────────────────────────
+
+function Lightbox({ photo, onClose }: { photo: GalleryPhoto; onClose: () => void }) {
+  const { t } = useTranslation();
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={photo.fileName}
+    >
+      <button
+        className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors z-10"
+        onClick={onClose}
+        aria-label={t('photos.filterAll')}
+      >
+        <X className="h-5 w-5" />
+      </button>
+      <div className="max-w-4xl max-h-[90vh] w-full" onClick={(e) => e.stopPropagation()}>
+        <img
+          src={photo.signedUrl}
+          alt={photo.fileName}
+          className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+        />
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-white text-sm">
+          {photo.projectName && (
+            <Badge variant="secondary" className="bg-white/20 text-white">
+              {photo.projectName}
+            </Badge>
+          )}
+          {photo.phase && (
+            <Badge variant="outline" className="border-white/40 text-white">
+              {t(`photoReport.phase.${photo.phase}`)}
+            </Badge>
+          )}
+          <span className="text-white/60 ml-auto">
+            {new Date(photo.createdAt).toLocaleDateString()}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main component ───────────────────────────────────────────────────────────
+
 export default function Photos() {
   const { t } = useTranslation();
-  const { data: photos, isLoading } = useAllPhotos();
+  const { data: photos, isLoading, isError, refetch } = useGalleryPhotos();
+
+  const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [selectedPhase, setSelectedPhase] = useState<PhotoPhase | null>(null);
+  const [lightboxPhoto, setLightboxPhoto] = useState<GalleryPhoto | null>(null);
+
+  const allPhotos = photos ?? [];
+  const projects = useUniqueProjects(allPhotos);
+
+  const filteredPhotos = useMemo(() => {
+    let result = allPhotos;
+    if (selectedProject) {
+      result = result.filter((p) => p.projectId === selectedProject);
+    }
+    if (selectedPhase) {
+      result = result.filter((p) => p.phase === selectedPhase);
+    }
+    return result;
+  }, [allPhotos, selectedProject, selectedPhase]);
+
+  const handlePhotoClick = useCallback((photo: GalleryPhoto) => {
+    if (photo.signedUrl) {
+      setLightboxPhoto(photo);
+    }
+  }, []);
+
+  const hasActiveFilters = selectedProject !== null || selectedPhase !== null;
 
   return (
     <>
@@ -55,7 +239,12 @@ export default function Photos() {
         <title>{t('photos.title')} | Majster.AI</title>
       </Helmet>
 
+      {lightboxPhoto && (
+        <Lightbox photo={lightboxPhoto} onClose={() => setLightboxPhoto(null)} />
+      )}
+
       <div className="space-y-6 animate-fade-in">
+        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold sm:text-3xl flex items-center gap-3">
@@ -76,6 +265,54 @@ export default function Photos() {
           </Button>
         </div>
 
+        {/* Filters (only shown when photos exist) */}
+        {!isLoading && !isError && allPhotos.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {/* Project filter */}
+            <select
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              value={selectedProject ?? ''}
+              onChange={(e) => setSelectedProject(e.target.value || null)}
+              aria-label={t('photos.filterProject')}
+            >
+              <option value="">{t('photos.allProjects')}</option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+
+            {/* Phase filter */}
+            <select
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              value={selectedPhase ?? ''}
+              onChange={(e) => setSelectedPhase((e.target.value || null) as PhotoPhase | null)}
+              aria-label={t('photos.filterPhase')}
+            >
+              <option value="">{t('photos.allPhases')}</option>
+              {PHOTO_PHASES.map((phase) => (
+                <option key={phase} value={phase}>{t(`photoReport.phase.${phase}`)}</option>
+              ))}
+            </select>
+
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-9"
+                onClick={() => { setSelectedProject(null); setSelectedPhase(null); }}
+              >
+                <X className="h-3 w-3 mr-1" />
+                {t('photos.filterAll')}
+              </Button>
+            )}
+
+            <span className="text-xs text-muted-foreground self-center ml-auto">
+              {t('photos.photoCount', { count: filteredPhotos.length })}
+            </span>
+          </div>
+        )}
+
+        {/* Loading state */}
         {isLoading && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -84,7 +321,29 @@ export default function Photos() {
           </div>
         )}
 
-        {!isLoading && (!photos || photos.length === 0) && (
+        {/* Error state */}
+        {isError && (
+          <Card className="border-destructive/50">
+            <CardContent className="flex flex-col items-center justify-center py-16 gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
+                <AlertTriangle className="h-8 w-8 text-destructive" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium">{t('photos.errorTitle')}</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t('photos.errorDesc')}
+                </p>
+              </div>
+              <Button onClick={() => refetch()} variant="outline">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                {t('photos.retry')}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Empty state */}
+        {!isLoading && !isError && filteredPhotos.length === 0 && (
           <Card className="border-dashed">
             <CardContent className="flex flex-col items-center justify-center py-16 gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
@@ -93,64 +352,88 @@ export default function Photos() {
               <div className="text-center">
                 <p className="font-medium">{t('photos.empty')}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {t('photos.emptyHint')}
+                  {hasActiveFilters
+                    ? t('photos.emptyHint')
+                    : t('photos.emptyHint')
+                  }
                 </p>
               </div>
-              <Button asChild>
-                <Link to="/app/projects">
-                  <FolderOpen className="h-4 w-4 mr-2" />
-                  {t('photos.openProjects')}
-                </Link>
-              </Button>
+              {!hasActiveFilters && (
+                <Button asChild>
+                  <Link to="/app/projects">
+                    <FolderOpen className="h-4 w-4 mr-2" />
+                    {t('photos.openProjects')}
+                  </Link>
+                </Button>
+              )}
             </CardContent>
           </Card>
         )}
 
-        {!isLoading && photos && photos.length > 0 && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {photos.map((photo) => (
+        {/* Gallery grid */}
+        {!isLoading && !isError && filteredPhotos.length > 0 && (
+          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {filteredPhotos.map((photo) => (
               <div
                 key={photo.id}
-                className="group relative overflow-hidden rounded-xl border bg-card hover:shadow-md transition-shadow"
+                className="group relative overflow-hidden rounded-xl border bg-card hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => handlePhotoClick(photo)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handlePhotoClick(photo); }}
+                aria-label={photo.fileName}
               >
                 {/* Photo */}
                 <div className="aspect-square bg-muted overflow-hidden">
-                  <img
-                    src={photo.photo_url}
-                    alt={photo.description ?? t('photos.photoAlt')}
-                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
+                  {photo.signedUrl ? (
+                    <img
+                      src={photo.signedUrl}
+                      alt={photo.fileName}
+                      className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full w-full">
+                      <ImageOff className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                  )}
                 </div>
 
+                {/* Phase badge */}
+                {photo.phase && (
+                  <div className="absolute top-2 left-2">
+                    <Badge variant="secondary" className="bg-black/60 text-white text-[10px] px-1.5 py-0.5">
+                      {t(`photoReport.phase.${photo.phase}`)}
+                    </Badge>
+                  </div>
+                )}
+
                 {/* AI badge */}
-                {photo.analysis_result && (
+                {photo.aiAnalysis && (
                   <div className="absolute top-2 right-2">
                     <Badge className="bg-primary/90 text-primary-foreground text-xs">
-                      AI ✓
+                      AI
                     </Badge>
                   </div>
                 )}
 
                 {/* Footer */}
-                <div className="p-3 space-y-1">
-                  {photo.project?.name && (
-                    <p className="text-xs font-medium truncate">{photo.project.name}</p>
+                <div className="p-2 space-y-0.5">
+                  {photo.projectName && (
+                    <p className="text-xs font-medium truncate">{photo.projectName}</p>
                   )}
-                  {photo.description && (
-                    <p className="text-xs text-muted-foreground line-clamp-2">{photo.description}</p>
-                  )}
-                  {photo.analysis_result && (
-                    <p className="text-xs text-muted-foreground line-clamp-2 border-t border-border pt-1">
-                      {photo.analysis_result}
-                    </p>
-                  )}
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(photo.created_at).toLocaleDateString()}
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-muted-foreground">
+                      {new Date(photo.createdAt).toLocaleDateString()}
                     </span>
-                    <Button asChild variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]">
-                      <Link to={`/app/projects/${photo.project_id}`}>
+                    <Button
+                      asChild
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 min-h-[32px] min-w-[32px]"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Link to={`/app/projects/${photo.projectId}`}>
                         <ExternalLink className="h-3 w-3" />
                       </Link>
                     </Button>

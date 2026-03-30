@@ -4675,13 +4675,23 @@
     "inspectionDueIn7": "Inspection due in 7 days ({{date}})"
   },
   "photos": {
-    "title": "Project photos",
-    "subtitle": "All photos from your projects. AI can analyze technical condition.",
+    "title": "Photo Gallery",
+    "subtitle": "All photos from your projects in one place.",
     "goToProjects": "Add photos in a project",
     "empty": "No photos",
-    "emptyHint": "Add photos in the project view. AI will analyze the technical condition and suggest items for the quote.",
+    "emptyHint": "Add photos in a project view. They will appear here automatically.",
     "openProjects": "Open projects",
-    "photoAlt": "Project photo"
+    "photoAlt": "Project photo",
+    "filterAll": "All",
+    "filterProject": "Project",
+    "filterPhase": "Phase",
+    "allProjects": "All projects",
+    "allPhases": "All phases",
+    "errorTitle": "Loading error",
+    "errorDesc": "Could not load the photo gallery. Please try again.",
+    "retry": "Try again",
+    "photoCount": "{{count}} photos",
+    "fromProject": "Project: {{name}}"
   },
   "offerDetail": {
     "notFoundTitle": "Offer not found",
