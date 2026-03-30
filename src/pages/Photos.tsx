@@ -110,16 +110,16 @@ function useGalleryPhotos() {
       const photoIds = rows.map((r) => r.id);
       const { data: linkRows } = await supabase
         .from('photo_project_links')
-        .select('photo_id, project_id, phase, v2_projects ( name )')
+        .select('photo_id, project_id, phase, v2_projects ( title )')
         .in('photo_id', photoIds);
 
       // Build a map: photo_id → { projectId, projectName, phase }
       const linkMap = new Map<string, { projectId: string; projectName: string | null; phase: string | null }>();
       for (const link of linkRows ?? []) {
-        const project = link.v2_projects as unknown as { name: string } | null;
+        const project = link.v2_projects as unknown as { title: string } | null;
         linkMap.set(link.photo_id, {
           projectId: link.project_id,
-          projectName: project?.name ?? null,
+          projectName: project?.title ?? null,
           phase: link.phase,
         });
       }
