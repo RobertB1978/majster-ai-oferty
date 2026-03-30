@@ -726,6 +726,51 @@ export type Database = {
         }
         Relationships: []
       }
+      photo_project_links: {
+        Row: {
+          created_at: string
+          id: string
+          phase: string | null
+          photo_id: string
+          project_id: string
+          sort_order: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          phase?: string | null
+          photo_id: string
+          project_id: string
+          sort_order?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          phase?: string | null
+          photo_id?: string
+          project_id?: string
+          sort_order?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_project_links_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "media_library"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_project_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v2_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_acceptance: {
         Row: {
           accepted_at: string | null
@@ -1418,6 +1463,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      media_library: {
+        Row: {
+          ai_analysis: Json | null
+          caption: string | null
+          created_at: string
+          file_name: string
+          file_size: number | null
+          height: number | null
+          id: string
+          mime_type: string | null
+          storage_path: string
+          tags: string[] | null
+          updated_at: string
+          user_id: string
+          width: number | null
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          caption?: string | null
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          storage_path: string
+          tags?: string[] | null
+          updated_at?: string
+          user_id: string
+          width?: number | null
+        }
+        Update: {
+          ai_analysis?: Json | null
+          caption?: string | null
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          storage_path?: string
+          tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+          width?: number | null
+        }
+        Relationships: []
       }
       offer_items: {
         Row: {

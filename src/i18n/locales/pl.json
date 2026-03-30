@@ -4675,13 +4675,23 @@
     "inspectionDueIn7": "Przegląd za 7 dni ({{date}})"
   },
   "photos": {
-    "title": "Zdjęcia projektów",
-    "subtitle": "Wszystkie zdjęcia z Twoich projektów. AI może analizować stan techniczny.",
+    "title": "Galeria zdjęć",
+    "subtitle": "Wszystkie zdjęcia z Twoich projektów w jednym miejscu.",
     "goToProjects": "Dodaj zdjęcia w projekcie",
     "empty": "Brak zdjęć",
-    "emptyHint": "Dodaj zdjęcia w widoku projektu. AI przeanalizuje stan techniczny i zaproponuje pozycje w wycenie.",
+    "emptyHint": "Dodaj zdjęcia w widoku projektu. Pojawią się tutaj automatycznie.",
     "openProjects": "Otwórz projekty",
-    "photoAlt": "Zdjęcie projektu"
+    "photoAlt": "Zdjęcie projektu",
+    "filterAll": "Wszystkie",
+    "filterProject": "Projekt",
+    "filterPhase": "Faza",
+    "allProjects": "Wszystkie projekty",
+    "allPhases": "Wszystkie fazy",
+    "errorTitle": "Błąd ładowania",
+    "errorDesc": "Nie udało się załadować galerii zdjęć. Spróbuj ponownie.",
+    "retry": "Spróbuj ponownie",
+    "photoCount": "{{count}} zdjęć",
+    "fromProject": "Projekt: {{name}}"
   },
   "offerDetail": {
     "notFoundTitle": "Oferta nie znaleziona",

@@ -1,6 +1,7 @@
 /**
- * usePhotoReport — minimal test for Sprint 0 containment fix.
+ * usePhotoReport — PR-2 updated tests.
  *
+ * Now queries photo_project_links joined with media_library.
  * Verifies that query errors are caught and return [] instead of throwing,
  * so PhotoReportPanel shows empty-state instead of broken error.
  */
@@ -19,13 +20,13 @@ vi.mock('@/contexts/AuthContext', () => ({
   }),
 }));
 
-const mockSelect = vi.fn();
+const mockOrder = vi.fn();
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     from: () => ({
       select: () => ({
         eq: () => ({
-          order: mockSelect,
+          order: mockOrder,
         }),
       }),
     }),
@@ -65,9 +66,9 @@ describe('usePhotoReport', () => {
   });
 
   it('returns empty array when Supabase query returns an error', async () => {
-    mockSelect.mockResolvedValue({
+    mockOrder.mockResolvedValue({
       data: null,
-      error: { message: 'relation "project_photos" does not exist', code: '42P01' },
+      error: { message: 'relation "photo_project_links" does not exist', code: '42P01' },
     });
 
     const { usePhotoReport } = await import('@/hooks/usePhotoReport');
@@ -83,7 +84,7 @@ describe('usePhotoReport', () => {
   });
 
   it('returns empty array when Supabase throws unexpectedly', async () => {
-    mockSelect.mockRejectedValue(new Error('Network error'));
+    mockOrder.mockRejectedValue(new Error('Network error'));
 
     const { usePhotoReport } = await import('@/hooks/usePhotoReport');
 
@@ -98,20 +99,26 @@ describe('usePhotoReport', () => {
   });
 
   it('returns photos when query succeeds', async () => {
-    mockSelect.mockResolvedValue({
+    mockOrder.mockResolvedValue({
       data: [
         {
-          id: 'photo-1',
+          id: 'link-1',
+          photo_id: 'photo-1',
           project_id: 'proj-1',
           user_id: 'user-1',
           phase: 'BEFORE',
-          photo_url: 'user-1/proj-1/abc.jpg',
-          file_name: 'abc.jpg',
-          mime_type: 'image/jpeg',
-          size_bytes: 1024,
-          width: null,
-          height: null,
+          sort_order: 0,
           created_at: '2025-01-01T00:00:00Z',
+          media_library: {
+            id: 'photo-1',
+            storage_path: 'user-1/proj-1/abc.jpg',
+            file_name: 'abc.jpg',
+            file_size: 1024,
+            mime_type: 'image/jpeg',
+            width: null,
+            height: null,
+            ai_analysis: null,
+          },
         },
       ],
       error: null,
@@ -127,6 +134,9 @@ describe('usePhotoReport', () => {
 
     expect(result.current.data).toHaveLength(1);
     expect(result.current.data![0].phase).toBe('BEFORE');
+    expect(result.current.data![0].file_name).toBe('abc.jpg');
+    expect(result.current.data![0].media_id).toBe('photo-1');
+    expect(result.current.data![0].link_id).toBe('link-1');
     expect(result.current.isError).toBe(false);
   });
 });
