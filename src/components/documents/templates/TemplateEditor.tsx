@@ -11,7 +11,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
@@ -282,7 +281,6 @@ export function TemplateEditor({
 }: TemplateEditorProps) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [data, setData] = useState<Record<string, string>>(() => {
@@ -486,10 +484,24 @@ export function TemplateEditor({
       // Invalidate dossier cache so DossierPanel refreshes
       queryClient.invalidateQueries({ queryKey: ['dossier_items', projectId] });
 
+      // Capture blob reference for immediate download from toast
+      const savedBlob = pdfBlob;
+      const savedFileName = fileName;
+
       toast.success(t('docTemplates.editor.savedToDossier'), {
+        description: t('docTemplates.editor.savedToDossierDesc'),
         action: {
-          label: t('docTemplates.editor.goToDossier'),
-          onClick: () => navigate(`/app/projects/${projectId}`),
+          label: t('docTemplates.editor.downloadPdf'),
+          onClick: () => {
+            const url = URL.createObjectURL(savedBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = savedFileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+          },
         },
       });
       onSaved?.(iid);

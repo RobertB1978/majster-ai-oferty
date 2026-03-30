@@ -4175,6 +4175,8 @@
       "noFiles": "Brak plikow w teczce",
       "files": "plikow",
       "open": "Otworz",
+      "download": "Pobierz",
+      "downloadFile": "Pobierz plik {{name}}",
       "openFile": "Otworz plik {{name}}",
       "linkUnavailable": "Link niedostepny",
       "poweredBy": "Majster.AI — Teczka projektu",
@@ -4232,6 +4234,8 @@
       "draftSaved": "Szkic zapisany",
       "requiredFields": "Uzupełnij wymagane pola: {{fields}}",
       "goToDossier": "Przejdź do teczki",
+      "downloadPdf": "Pobierz PDF",
+      "savedToDossierDesc": "Możesz pobrać PDF teraz lub znaleźć go później w teczce projektu.",
       "projectRequired": "Wybierz projekt aby zapisać do teczki"
     },
     "pdf": {
