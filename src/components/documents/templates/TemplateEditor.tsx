@@ -484,7 +484,14 @@ export function TemplateEditor({
       // Invalidate dossier cache so DossierPanel refreshes
       queryClient.invalidateQueries({ queryKey: ['dossier_items', projectId] });
 
-      toast.success(t('docTemplates.editor.savedToDossier'));
+      toast.success(t('docTemplates.editor.savedToDossier'), {
+        action: {
+          label: t('docTemplates.editor.goToDossier'),
+          onClick: () => {
+            window.location.href = `/app/projects/${projectId}`;
+          },
+        },
+      });
       onSaved?.(iid);
     } catch (_err) {
       toast.error(t('docTemplates.editor.saveError'));

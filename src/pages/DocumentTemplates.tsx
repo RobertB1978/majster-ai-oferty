@@ -16,10 +16,10 @@
  *   ?offerId=<uuid>    — pre-select offer context (auto-fill)
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { FileText, FolderOpen } from 'lucide-react';
+import { FileText, FolderOpen, CheckCircle2, AlertCircle } from 'lucide-react';
 
 import type { DocumentTemplate } from '@/data/documentTemplates';
 import { TemplatesLibrary } from '@/components/documents/templates/TemplatesLibrary';
@@ -40,13 +40,21 @@ export default function DocumentTemplates() {
   const [searchParams] = useSearchParams();
 
   const urlProjectId = searchParams.get('projectId') ?? null;
-  const clientId = searchParams.get('clientId') ?? null;
-  const offerId = searchParams.get('offerId') ?? null;
+  const urlClientId = searchParams.get('clientId') ?? null;
+  const urlOfferId = searchParams.get('offerId') ?? null;
 
   const [pickedProjectId, setPickedProjectId] = useState<string | null>(null);
   const projectId = urlProjectId ?? pickedProjectId;
 
   const { data: projects = [] } = useProjectsV2List('ACTIVE');
+
+  // Auto-resolve clientId & offerId from selected project
+  const pickedProject = useMemo(
+    () => projects.find((p) => p.id === pickedProjectId) ?? null,
+    [projects, pickedProjectId]
+  );
+  const clientId = urlClientId ?? pickedProject?.client_id ?? null;
+  const offerId = urlOfferId ?? pickedProject?.source_offer_id ?? null;
 
   const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplate | null>(null);
 
@@ -100,28 +108,54 @@ export default function DocumentTemplates() {
             <FolderOpen className="w-4 h-4 text-primary shrink-0" />
             <p className="text-sm font-medium">{t('docTemplates.page.selectProject')}</p>
           </div>
-          <Select
-            value={pickedProjectId ?? ''}
-            onValueChange={(val) => setPickedProjectId(val || null)}
-          >
-            <SelectTrigger className="h-9 text-sm">
-              <SelectValue placeholder={t('docTemplates.page.selectProjectPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              {projects.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">
-            {t('docTemplates.page.selectProjectHint')}
-          </p>
+
+          {projects.length === 0 ? (
+            <div className="flex items-center gap-2 py-2">
+              <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                {t('docTemplates.page.noProjects')}
+              </p>
+            </div>
+          ) : (
+            <Select
+              value={pickedProjectId ?? ''}
+              onValueChange={(val) => setPickedProjectId(val || null)}
+            >
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue placeholder={t('docTemplates.page.selectProjectPlaceholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {/* Selected project info badge */}
+          {pickedProject && (
+            <div className="flex items-center gap-2 rounded-md bg-primary/5 border border-primary/20 px-3 py-2">
+              <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+              <div className="min-w-0">
+                <p className="text-sm font-medium truncate">{pickedProject.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {t('docTemplates.page.projectLinked')}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {!pickedProjectId && projects.length > 0 && (
+            <p className="text-xs text-muted-foreground">
+              {t('docTemplates.page.selectProjectHint')}
+            </p>
+          )}
         </div>
       )}
 
-      {/* Context info (if project-scoped) */}
+      {/* Context info (if project-scoped via URL) */}
       {urlProjectId && (
         <div className="rounded-lg border bg-muted/30 px-4 py-3">
           <p className="text-sm text-muted-foreground">
