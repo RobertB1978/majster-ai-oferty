@@ -1,16 +1,17 @@
 /**
- * Photos page — PR-2
+ * Photos page — PR-3: Direct upload + global media library
  *
- * Real gallery backed by media_library + photo_project_links.
- * Features:
- *  - Filter by project
- *  - Filter by phase
- *  - Gallery preview with signed URLs
- *  - Empty / loading / error states
- *  - Mobile-friendly grid
+ * True global media library entry point. Users can:
+ *  - Upload photos directly (no project required)
+ *  - Browse all photos (linked and unlinked)
+ *  - Filter by project and phase
+ *  - View in lightbox
+ *
+ * Data source: media_library (all user photos),
+ * enriched with photo_project_links for project info.
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
@@ -28,11 +29,22 @@ import {
   AlertTriangle,
   RefreshCw,
   X,
+  Upload,
+  Loader2,
+  ImagePlus,
+  Trash2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MEDIA_BUCKET, normalizeStoragePath } from '@/lib/storage';
 import { PHOTO_PHASES, type PhotoPhase } from '@/hooks/usePhotoReport';
+import { useMediaLibraryUpload, useDeleteMediaLibraryPhoto } from '@/hooks/useMediaLibraryUpload';
 import { logger } from '@/lib/logger';
+import { useToast } from '@/hooks/use-toast';
+
+// ── Constants ────────────────────────────────────────────────────────────────
+
+const MAX_FILE_SIZE_MB = 20;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,7 +55,7 @@ interface GalleryPhoto {
   fileName: string;
   mimeType: string | null;
   phase: string | null;
-  projectId: string;
+  projectId: string | null;
   projectName: string | null;
   aiAnalysis: Record<string, unknown> | null;
   createdAt: string;
@@ -60,78 +72,71 @@ function useGalleryPhotos() {
     queryFn: async (): Promise<GalleryPhoto[]> => {
       if (!user) return [];
 
-      // Fetch links + media + project name in one query
-      const { data, error } = await supabase
-        .from('photo_project_links')
-        .select(`
-          id,
-          photo_id,
-          project_id,
-          phase,
-          created_at,
-          media_library (
-            id,
-            storage_path,
-            file_name,
-            mime_type,
-            ai_analysis
-          ),
-          v2_projects (
-            name
-          )
-        `)
+      // Query media_library directly — includes ALL photos (linked + unlinked)
+      const { data: mediaRows, error: mediaError } = await supabase
+        .from('media_library')
+        .select('id, storage_path, file_name, mime_type, ai_analysis, created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(120);
 
-      if (error) {
-        logger.error('[Gallery] Query error:', error.message);
-        throw error;
+      if (mediaError) {
+        logger.error('[Gallery] media_library query error:', mediaError.message);
+        throw mediaError;
+      }
+
+      const rows = mediaRows ?? [];
+      if (rows.length === 0) return [];
+
+      // Fetch project links for these photos
+      const photoIds = rows.map((r) => r.id);
+      const { data: linkRows } = await supabase
+        .from('photo_project_links')
+        .select('photo_id, project_id, phase, v2_projects ( name )')
+        .in('photo_id', photoIds);
+
+      // Build a map: photo_id → { projectId, projectName, phase }
+      const linkMap = new Map<string, { projectId: string; projectName: string | null; phase: string | null }>();
+      for (const link of linkRows ?? []) {
+        const project = link.v2_projects as unknown as { name: string } | null;
+        linkMap.set(link.photo_id, {
+          projectId: link.project_id,
+          projectName: project?.name ?? null,
+          phase: link.phase,
+        });
       }
 
       // Generate signed URLs in bounded batches
-      const rows = data ?? [];
       const photos: GalleryPhoto[] = [];
-
-      // Process in batches of 20 to avoid overwhelming the API
       const BATCH_SIZE = 20;
+
       for (let i = 0; i < rows.length; i += BATCH_SIZE) {
         const batch = rows.slice(i, i + BATCH_SIZE);
         const batchResults = await Promise.all(
-          batch.map(async (row) => {
-            const media = row.media_library as unknown as {
-              id: string;
-              storage_path: string;
-              file_name: string;
-              mime_type: string | null;
-              ai_analysis: Record<string, unknown> | null;
-            } | null;
-
-            if (!media) return null;
-
-            const project = row.v2_projects as unknown as { name: string } | null;
+          batch.map(async (media) => {
             const storagePath = normalizeStoragePath(media.storage_path);
-
             const { data: urlData } = await supabase.storage
               .from(MEDIA_BUCKET)
               .createSignedUrl(storagePath, 3600);
 
+            const link = linkMap.get(media.id);
+
             return {
-              id: row.id,
+              id: media.id,
               mediaId: media.id,
               storagePath,
               fileName: media.file_name,
               mimeType: media.mime_type,
-              phase: row.phase,
-              projectId: row.project_id,
-              projectName: project?.name ?? null,
-              aiAnalysis: media.ai_analysis,
-              createdAt: row.created_at,
+              phase: link?.phase ?? null,
+              projectId: link?.projectId ?? null,
+              projectName: link?.projectName ?? null,
+              aiAnalysis: media.ai_analysis as Record<string, unknown> | null,
+              createdAt: media.created_at,
               signedUrl: urlData?.signedUrl ?? '',
             } satisfies GalleryPhoto;
           })
         );
-        photos.push(...batchResults.filter((p): p is GalleryPhoto => p !== null));
+        photos.push(...batchResults);
       }
 
       return photos;
@@ -147,7 +152,7 @@ function useUniqueProjects(photos: GalleryPhoto[]) {
   return useMemo(() => {
     const map = new Map<string, string>();
     for (const p of photos) {
-      if (p.projectName && !map.has(p.projectId)) {
+      if (p.projectId && p.projectName && !map.has(p.projectId)) {
         map.set(p.projectId, p.projectName);
       }
     }
@@ -157,7 +162,21 @@ function useUniqueProjects(photos: GalleryPhoto[]) {
 
 // ── Lightbox ─────────────────────────────────────────────────────────────────
 
-function Lightbox({ photo, onClose }: { photo: GalleryPhoto; onClose: () => void }) {
+function Lightbox({
+  photo,
+  onClose,
+  onDelete,
+  deleteConfirm,
+  onDeleteConfirmToggle,
+  isDeleting,
+}: {
+  photo: GalleryPhoto;
+  onClose: () => void;
+  onDelete: (photo: GalleryPhoto) => void;
+  deleteConfirm: boolean;
+  onDeleteConfirmToggle: (id: string | null) => void;
+  isDeleting: boolean;
+}) {
   const { t } = useTranslation();
 
   return (
@@ -187,6 +206,11 @@ function Lightbox({ photo, onClose }: { photo: GalleryPhoto; onClose: () => void
               {photo.projectName}
             </Badge>
           )}
+          {!photo.projectId && (
+            <Badge variant="outline" className="border-white/40 text-white">
+              {t('photos.libraryOnly')}
+            </Badge>
+          )}
           {photo.phase && (
             <Badge variant="outline" className="border-white/40 text-white">
               {t(`photoReport.phase.${photo.phase}`)}
@@ -195,6 +219,31 @@ function Lightbox({ photo, onClose }: { photo: GalleryPhoto; onClose: () => void
           <span className="text-white/60 ml-auto">
             {new Date(photo.createdAt).toLocaleDateString()}
           </span>
+          {deleteConfirm ? (
+            <div className="flex gap-2">
+              <button
+                className="text-xs bg-destructive text-white px-3 py-1 rounded-md hover:bg-destructive/80 transition-colors disabled:opacity-50"
+                onClick={() => onDelete(photo)}
+                disabled={isDeleting}
+              >
+                {isDeleting ? t('common.loading') : t('photos.confirmDelete')}
+              </button>
+              <button
+                className="text-xs bg-white/20 text-white px-3 py-1 rounded-md hover:bg-white/30 transition-colors"
+                onClick={() => onDeleteConfirmToggle(null)}
+              >
+                {t('common.cancel')}
+              </button>
+            </div>
+          ) : (
+            <button
+              className="text-white/60 hover:text-destructive transition-colors p-1"
+              onClick={() => onDeleteConfirmToggle(photo.id)}
+              aria-label={t('photos.deletePhoto')}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -205,11 +254,17 @@ function Lightbox({ photo, onClose }: { photo: GalleryPhoto; onClose: () => void
 
 export default function Photos() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const { data: photos, isLoading, isError, refetch } = useGalleryPhotos();
+  const uploadMutation = useMediaLibraryUpload();
+  const deleteMutation = useDeleteMediaLibraryPhoto();
 
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [selectedPhase, setSelectedPhase] = useState<PhotoPhase | null>(null);
   const [lightboxPhoto, setLightboxPhoto] = useState<GalleryPhoto | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const allPhotos = photos ?? [];
   const projects = useUniqueProjects(allPhotos);
@@ -231,7 +286,73 @@ export default function Photos() {
     }
   }, []);
 
+  const handleUploadClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      // Reset file input so the same file can be re-selected
+      const fileList = Array.from(files);
+      e.target.value = '';
+
+      for (const file of fileList) {
+        if (!file.type.startsWith('image/')) continue;
+
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          toast({
+            title: t('photos.fileTooLarge'),
+            description: t('photos.fileTooLargeDesc', { max: MAX_FILE_SIZE_MB }),
+            variant: 'destructive',
+          });
+          continue;
+        }
+
+        try {
+          await uploadMutation.mutateAsync(file);
+          toast({
+            title: t('photos.uploadSuccess'),
+            variant: 'default',
+          });
+        } catch (err) {
+          logger.error('[Photos] Upload failed:', err);
+          toast({
+            title: t('photos.uploadFailed'),
+            description: t('photos.uploadFailedDesc'),
+            variant: 'destructive',
+          });
+        }
+      }
+    },
+    [uploadMutation, toast, t]
+  );
+
+  const handleDeletePhoto = useCallback(
+    async (photo: GalleryPhoto) => {
+      try {
+        await deleteMutation.mutateAsync({
+          photoId: photo.mediaId,
+          storagePath: photo.storagePath,
+        });
+        setLightboxPhoto(null);
+        setDeleteConfirmId(null);
+        toast({ title: t('photos.deleteSuccess') });
+      } catch (err) {
+        logger.error('[Photos] Delete failed:', err);
+        toast({
+          title: t('photos.deleteFailed'),
+          variant: 'destructive',
+        });
+      }
+    },
+    [deleteMutation, toast, t]
+  );
+
   const hasActiveFilters = selectedProject !== null || selectedPhase !== null;
+  const isUploading = uploadMutation.isPending;
 
   return (
     <>
@@ -239,8 +360,26 @@ export default function Photos() {
         <title>{t('photos.title')} | Majster.AI</title>
       </Helmet>
 
+      {/* Hidden file input for upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={handleFileChange}
+        aria-hidden="true"
+      />
+
       {lightboxPhoto && (
-        <Lightbox photo={lightboxPhoto} onClose={() => setLightboxPhoto(null)} />
+        <Lightbox
+          photo={lightboxPhoto}
+          onClose={() => { setLightboxPhoto(null); setDeleteConfirmId(null); }}
+          onDelete={handleDeletePhoto}
+          deleteConfirm={deleteConfirmId === lightboxPhoto.id}
+          onDeleteConfirmToggle={setDeleteConfirmId}
+          isDeleting={deleteMutation.isPending}
+        />
       )}
 
       <div className="space-y-6 animate-fade-in">
@@ -257,12 +396,26 @@ export default function Photos() {
               {t('photos.subtitle')}
             </p>
           </div>
-          <Button asChild variant="outline">
-            <Link to="/app/projects">
-              <FolderOpen className="h-4 w-4 mr-2" />
-              {t('photos.goToProjects')}
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link to="/app/projects">
+                <FolderOpen className="h-4 w-4 mr-2" />
+                {t('photos.goToProjects')}
+              </Link>
+            </Button>
+            <Button
+              onClick={handleUploadClick}
+              disabled={isUploading}
+              className="gap-2"
+            >
+              {isUploading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              {isUploading ? t('photos.uploading') : t('photos.uploadPhoto')}
+            </Button>
+          </div>
         </div>
 
         {/* Filters (only shown when photos exist) */}
@@ -353,17 +506,19 @@ export default function Photos() {
                 <p className="font-medium">{t('photos.empty')}</p>
                 <p className="text-sm text-muted-foreground mt-1">
                   {hasActiveFilters
-                    ? t('photos.emptyHint')
-                    : t('photos.emptyHint')
+                    ? t('photos.emptyFiltered')
+                    : t('photos.emptyHintDirect')
                   }
                 </p>
               </div>
               {!hasActiveFilters && (
-                <Button asChild>
-                  <Link to="/app/projects">
-                    <FolderOpen className="h-4 w-4 mr-2" />
-                    {t('photos.openProjects')}
-                  </Link>
+                <Button onClick={handleUploadClick} disabled={isUploading} className="gap-2">
+                  {isUploading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ImagePlus className="h-4 w-4" />
+                  )}
+                  {t('photos.uploadPhoto')}
                 </Button>
               )}
             </CardContent>
@@ -417,26 +572,39 @@ export default function Photos() {
                   </div>
                 )}
 
+                {/* Library-only badge (no project link) */}
+                {!photo.projectId && !photo.aiAnalysis && (
+                  <div className="absolute top-2 right-2">
+                    <Badge variant="outline" className="bg-black/40 text-white border-white/30 text-[10px] px-1.5 py-0.5">
+                      {t('photos.libraryOnly')}
+                    </Badge>
+                  </div>
+                )}
+
                 {/* Footer */}
                 <div className="p-2 space-y-0.5">
-                  {photo.projectName && (
+                  {photo.projectName ? (
                     <p className="text-xs font-medium truncate">{photo.projectName}</p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground truncate">{photo.fileName}</p>
                   )}
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-muted-foreground">
                       {new Date(photo.createdAt).toLocaleDateString()}
                     </span>
-                    <Button
-                      asChild
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 min-h-[32px] min-w-[32px]"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Link to={`/app/projects/${photo.projectId}`}>
-                        <ExternalLink className="h-3 w-3" />
-                      </Link>
-                    </Button>
+                    {photo.projectId && (
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 min-h-[32px] min-w-[32px]"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Link to={`/app/projects/${photo.projectId}`}>
+                          <ExternalLink className="h-3 w-3" />
+                        </Link>
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
