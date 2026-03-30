@@ -33,7 +33,7 @@ SELECT
   contact_phone,
   warranty_months,
   start_date,
-  (start_date + (warranty_months || ' months')::interval)::date AS end_date,
+  ((start_date + make_interval(months => warranty_months))::date) AS end_date,
   scope_of_work,
   exclusions,
   pdf_storage_path,

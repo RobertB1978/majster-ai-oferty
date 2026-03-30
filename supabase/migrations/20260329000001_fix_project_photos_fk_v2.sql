@@ -28,12 +28,17 @@ ALTER TABLE public.project_photos
   DROP CONSTRAINT IF EXISTS project_photos_project_id_fkey;
 
 -- ── 2. Add new FK to v2_projects (NOT VALID = skip existing legacy rows) ──────
+-- Wrapped in DO/EXCEPTION to be idempotent if constraint was manually added.
 
-ALTER TABLE public.project_photos
-  ADD CONSTRAINT project_photos_project_id_v2_fkey
-  FOREIGN KEY (project_id)
-  REFERENCES public.v2_projects(id) ON DELETE CASCADE
-  NOT VALID;
+DO $$
+BEGIN
+  ALTER TABLE public.project_photos
+    ADD CONSTRAINT project_photos_project_id_v2_fkey
+    FOREIGN KEY (project_id)
+    REFERENCES public.v2_projects(id) ON DELETE CASCADE
+    NOT VALID;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 COMMENT ON CONSTRAINT project_photos_project_id_v2_fkey
   ON public.project_photos

@@ -42,28 +42,36 @@ CREATE INDEX IF NOT EXISTS idx_project_warranties_user_id
 
 CREATE INDEX IF NOT EXISTS idx_project_warranties_end_date
   ON public.project_warranties (
-    (start_date + (warranty_months || ' months')::interval)::date
+    ((start_date + make_interval(months => warranty_months))::date)
   )
   WHERE reminder_30_sent_at IS NULL OR reminder_7_sent_at IS NULL;
 
 ALTER TABLE public.project_warranties ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "warranties_select_own"
-  ON public.project_warranties FOR SELECT
-  USING (auth.uid() = user_id);
+DO $$ BEGIN
+  CREATE POLICY "warranties_select_own"
+    ON public.project_warranties FOR SELECT
+    USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "warranties_insert_own"
-  ON public.project_warranties FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+DO $$ BEGIN
+  CREATE POLICY "warranties_insert_own"
+    ON public.project_warranties FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "warranties_update_own"
-  ON public.project_warranties FOR UPDATE
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+DO $$ BEGIN
+  CREATE POLICY "warranties_update_own"
+    ON public.project_warranties FOR UPDATE
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE POLICY "warranties_delete_own"
-  ON public.project_warranties FOR DELETE
-  USING (auth.uid() = user_id);
+DO $$ BEGIN
+  CREATE POLICY "warranties_delete_own"
+    ON public.project_warranties FOR DELETE
+    USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ── 2. updated_at trigger ────────────────────────────────────────────────────
 
@@ -88,7 +96,9 @@ END $$;
 
 -- ── 3. Helper view (end_date computed) ───────────────────────────────────────
 
-CREATE OR REPLACE VIEW public.project_warranties_with_end AS
+CREATE OR REPLACE VIEW public.project_warranties_with_end
+  WITH (security_invoker = on)
+AS
 SELECT
   id,
   user_id,
@@ -98,7 +108,7 @@ SELECT
   contact_phone,
   warranty_months,
   start_date,
-  (start_date + (warranty_months || ' months')::interval)::date AS end_date,
+  ((start_date + make_interval(months => warranty_months))::date) AS end_date,
   scope_of_work,
   exclusions,
   pdf_storage_path,
