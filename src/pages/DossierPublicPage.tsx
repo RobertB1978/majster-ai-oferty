@@ -22,7 +22,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/formatters';
-import { DOSSIER_BUCKET, type DossierCategory } from '@/hooks/useDossier';
+import { DOSSIER_BUCKET, downloadDossierFile, type DossierCategory } from '@/hooks/useDossier';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -75,6 +75,70 @@ function formatBytes(bytes: number | null): string {
   if (!bytes) return '';
   if (bytes < 1024 * 1024) return `${Math.ceil(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+// ── PublicFileActions ─────────────────────────────────────────────────────────
+
+function PublicFileActions({
+  signedUrl,
+  fileName,
+  isImage,
+}: {
+  signedUrl: string;
+  fileName: string;
+  isImage: boolean;
+}) {
+  const { t } = useTranslation();
+  const [downloading, setDownloading] = useState(false);
+
+  const btnCls = cn(
+    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium',
+    'bg-blue-50 text-blue-700 hover:bg-blue-100',
+    'dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50',
+    'transition-colors shrink-0',
+  );
+
+  return (
+    <div className="flex items-center gap-1.5 shrink-0">
+      {/* Preview — opens in new tab */}
+      <a
+        href={signedUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={btnCls}
+        aria-label={t('dossier.public.openFile', { name: fileName })}
+      >
+        <ExternalLink className="w-3 h-3" />
+        {t('dossier.public.open')}
+      </a>
+
+      {/* Download — saves to device */}
+      {!isImage && (
+        <button
+          className={cn(btnCls, 'border-0 cursor-pointer')}
+          disabled={downloading}
+          aria-label={t('dossier.public.downloadFile', { name: fileName })}
+          onClick={async () => {
+            setDownloading(true);
+            try {
+              await downloadDossierFile(signedUrl, fileName);
+            } catch {
+              // silent on public page — no toast system
+            } finally {
+              setDownloading(false);
+            }
+          }}
+        >
+          {downloading ? (
+            <Loader2 className="w-3 h-3 animate-spin" />
+          ) : (
+            <Download className="w-3 h-3" />
+          )}
+          {t('dossier.public.download')}
+        </button>
+      )}
+    </div>
+  );
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -247,25 +311,11 @@ export default function DossierPublicPage() {
                         </p>
                       </div>
                       {item.signed_url ? (
-                        <a
-                          href={item.signed_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={cn(
-                            'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium',
-                            'bg-blue-50 text-blue-700 hover:bg-blue-100',
-                            'dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50',
-                            'transition-colors shrink-0'
-                          )}
-                          aria-label={t('dossier.public.openFile', { name: item.file_name })}
-                        >
-                          {item.mime_type?.startsWith('image/') ? (
-                            <ExternalLink className="w-3 h-3" />
-                          ) : (
-                            <Download className="w-3 h-3" />
-                          )}
-                          {t('dossier.public.open')}
-                        </a>
+                        <PublicFileActions
+                          signedUrl={item.signed_url}
+                          fileName={item.file_name}
+                          isImage={!!item.mime_type?.startsWith('image/')}
+                        />
                       ) : (
                         <span className="text-xs text-muted-foreground">
                           {t('dossier.public.linkUnavailable')}

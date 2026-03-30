@@ -30,6 +30,7 @@ import {
   useUploadDossierItem,
   useDeleteDossierItem,
   useExportDossierPdf,
+  downloadDossierFile,
 } from '@/hooks/useDossier';
 import { DossierShareModal } from './DossierShareModal';
 import { Button } from '@/components/ui/button';
@@ -173,6 +174,7 @@ function FileRow({ item, onDelete }: FileRowProps) {
   const { t, i18n } = useTranslation();
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const sizeLabel = item.size_bytes
     ? item.size_bytes < 1024 * 1024
@@ -205,16 +207,40 @@ function FileRow({ item, onDelete }: FileRowProps) {
       </div>
 
       {item.signed_url && (
-        <a
-          href={item.signed_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-          aria-label={t('dossier.openFile')}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <ExternalLink className="w-3.5 h-3.5" />
-        </a>
+        <>
+          <a
+            href={item.signed_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            aria-label={t('dossier.openFile')}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+          <button
+            className="p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            aria-label={t('dossier.downloadFile')}
+            disabled={downloading}
+            onClick={async (e) => {
+              e.stopPropagation();
+              setDownloading(true);
+              try {
+                await downloadDossierFile(item.signed_url!, item.file_name);
+              } catch {
+                toast.error(t('dossier.downloadError'));
+              } finally {
+                setDownloading(false);
+              }
+            }}
+          >
+            {downloading ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Download className="w-3.5 h-3.5" />
+            )}
+          </button>
+        </>
       )}
 
       <button

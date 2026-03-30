@@ -4137,6 +4137,8 @@
     "deleteError": "Error deleting file",
     "confirmDelete": "Confirm delete",
     "openFile": "Open",
+    "downloadFile": "Download",
+    "downloadError": "Download failed. Please try again.",
     "generateFromTemplate": "Generate from template",
     "exportEmpty": "No files to export",
     "loadError": "Loading error",
@@ -4173,6 +4175,8 @@
       "noFiles": "No files in this dossier",
       "files": "files",
       "open": "Open",
+      "download": "Download",
+      "downloadFile": "Download file {{name}}",
       "openFile": "Open file {{name}}",
       "linkUnavailable": "Link unavailable",
       "poweredBy": "Majster.AI — Project Dossier",
@@ -4230,6 +4234,8 @@
       "draftSaved": "Draft saved",
       "requiredFields": "Please fill required fields: {{fields}}",
       "goToDossier": "Go to dossier",
+      "downloadPdf": "Download PDF",
+      "savedToDossierDesc": "You can download the PDF now or find it later in the project dossier.",
       "projectRequired": "Select a project to save to dossier"
     },
     "pdf": {

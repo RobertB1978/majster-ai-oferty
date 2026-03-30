@@ -4137,6 +4137,8 @@
     "deleteError": "Помилка видалення файлу",
     "confirmDelete": "Підтвердити видалення",
     "openFile": "Відкрити",
+    "downloadFile": "Завантажити",
+    "downloadError": "Помилка завантаження файлу. Спробуйте ще раз.",
     "generateFromTemplate": "Генерувати з шаблону",
     "exportEmpty": "Немає файлів для експорту",
     "loadError": "Помилка завантаження",
@@ -4173,6 +4175,8 @@
       "noFiles": "Немає файлів у теці",
       "files": "файлів",
       "open": "Відкрити",
+      "download": "Завантажити",
+      "downloadFile": "Завантажити файл {{name}}",
       "openFile": "Відкрити файл {{name}}",
       "linkUnavailable": "Посилання недоступне",
       "poweredBy": "Majster.AI — Тека проекту",
@@ -4230,6 +4234,8 @@
       "draftSaved": "Чернетку збережено",
       "requiredFields": "Заповніть обов'язкові поля: {{fields}}",
       "goToDossier": "Перейти до теки",
+      "downloadPdf": "Завантажити PDF",
+      "savedToDossierDesc": "Ви можете завантажити PDF зараз або знайти його пізніше в теці проекту.",
       "projectRequired": "Оберіть проект для збереження до теки"
     },
     "pdf": {
