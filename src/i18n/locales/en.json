@@ -4705,7 +4705,18 @@
     "errorDesc": "Could not load the photo gallery. Please try again.",
     "retry": "Try again",
     "photoCount": "{{count}} photos",
-    "fromProject": "Project: {{name}}"
+    "fromProject": "Project: {{name}}",
+    "actions": "Actions",
+    "attachToProject": "Attach to project",
+    "attachTitle": "Attach photo to project",
+    "attachDesc": "Select the project and phase in which this photo was taken.",
+    "attachProject": "Project",
+    "attachSelectProject": "Choose project…",
+    "attachPhase": "Phase",
+    "attachConfirm": "Attach",
+    "attachSuccess": "Photo attached to project",
+    "attachFailed": "Could not attach the photo",
+    "deleteConfirmQuestion": "Remove this photo from the library?"
   },
   "offerDetail": {
     "notFoundTitle": "Offer not found",

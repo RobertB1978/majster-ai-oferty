@@ -17,6 +17,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { compressImage } from '@/lib/imageCompression';
 import { logger } from '@/lib/logger';
 import { MEDIA_BUCKET, normalizeStoragePath } from '@/lib/storage';
+import type { PhotoPhase } from '@/hooks/usePhotoReport';
 
 const COMPRESSION_OPTIONS = {
   maxWidth: 1600,
@@ -91,6 +92,46 @@ export function useMediaLibraryUpload() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gallery_photos'] });
+    },
+  });
+}
+
+// ── useAttachPhotoToProject ──────────────────────────────────────────────────
+
+export function useAttachPhotoToProject() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      photoId,
+      projectId,
+      phase,
+    }: {
+      photoId: string;
+      projectId: string;
+      phase: PhotoPhase;
+    }): Promise<void> => {
+      if (!user) throw new Error('Not authenticated');
+
+      // Upsert so that re-attaching updates the phase instead of throwing a duplicate key error
+      const { error } = await supabase
+        .from('photo_project_links')
+        .upsert(
+          {
+            photo_id: photoId,
+            project_id: projectId,
+            user_id: user.id,
+            phase,
+          },
+          { onConflict: 'photo_id,project_id' }
+        );
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['gallery_photos'] });
+      queryClient.invalidateQueries({ queryKey: ['photo_report'] });
     },
   });
 }
