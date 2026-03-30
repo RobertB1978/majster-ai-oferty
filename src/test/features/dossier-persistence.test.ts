@@ -12,7 +12,9 @@
 import { describe, it, expect } from 'vitest';
 import {
   ALL_TEMPLATES,
+  getTemplatesByCategory,
 } from '@/data/documentTemplates';
+import type { TemplateCategory } from '@/data/documentTemplates';
 import { DOSSIER_CATEGORIES, type DossierCategory } from '@/hooks/useDossier';
 
 // ── 1: Every template has a valid dossierCategory ────────────────────────────
@@ -50,6 +52,40 @@ describe('Dossier persistence — template dossierCategory mapping', () => {
     for (const tpl of protocolTemplates) {
       expect(tpl.dossierCategory).toBe('PROTOCOL');
     }
+  });
+
+  it('ANNEXES templates have valid dossier categories (CONTRACT or OTHER)', () => {
+    const annexTemplates = ALL_TEMPLATES.filter(
+      (tpl) => tpl.category === 'ANNEXES'
+    );
+    expect(annexTemplates.length).toBe(6);
+    for (const tpl of annexTemplates) {
+      expect(['CONTRACT', 'OTHER']).toContain(tpl.dossierCategory);
+    }
+  });
+
+  it('COMPLIANCE templates map to OTHER dossier category', () => {
+    const complianceTemplates = ALL_TEMPLATES.filter(
+      (tpl) => tpl.category === 'COMPLIANCE'
+    );
+    expect(complianceTemplates.length).toBe(5);
+    for (const tpl of complianceTemplates) {
+      expect(tpl.dossierCategory).toBe('OTHER');
+    }
+  });
+
+  it('every template category in TEMPLATE_CATEGORIES has consistent templates', () => {
+    const categoriesWithTemplates: TemplateCategory[] = ['CONTRACTS', 'PROTOCOLS', 'ANNEXES', 'COMPLIANCE'];
+    for (const cat of categoriesWithTemplates) {
+      const templates = getTemplatesByCategory(cat);
+      expect(templates.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('every template key is unique across ALL_TEMPLATES', () => {
+    const keys = ALL_TEMPLATES.map((t) => t.key);
+    const unique = new Set(keys);
+    expect(unique.size).toBe(keys.length);
   });
 });
 
