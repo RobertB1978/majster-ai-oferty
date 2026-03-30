@@ -4705,7 +4705,18 @@
     "errorDesc": "Не вдалося завантажити галерею фото. Спробуйте ще раз.",
     "retry": "Спробувати ще раз",
     "photoCount": "{{count}} фото",
-    "fromProject": "Проект: {{name}}"
+    "fromProject": "Проект: {{name}}",
+    "actions": "Дії",
+    "attachToProject": "Прикріпити до проекту",
+    "attachTitle": "Прикріпити фото до проекту",
+    "attachDesc": "Виберіть проект та фазу, на якій було зроблено фото.",
+    "attachProject": "Проект",
+    "attachSelectProject": "Оберіть проект…",
+    "attachPhase": "Фаза",
+    "attachConfirm": "Прикріпити",
+    "attachSuccess": "Фото прикріплено до проекту",
+    "attachFailed": "Не вдалося прикріпити фото",
+    "deleteConfirmQuestion": "Видалити це фото з бібліотеки?"
   },
   "offerDetail": {
     "notFoundTitle": "Пропозицію не знайдено",

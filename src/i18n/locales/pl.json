@@ -4705,7 +4705,18 @@
     "errorDesc": "Nie udało się załadować galerii zdjęć. Spróbuj ponownie.",
     "retry": "Spróbuj ponownie",
     "photoCount": "{{count}} zdjęć",
-    "fromProject": "Projekt: {{name}}"
+    "fromProject": "Projekt: {{name}}",
+    "actions": "Akcje",
+    "attachToProject": "Przypisz do projektu",
+    "attachTitle": "Przypisz zdjęcie do projektu",
+    "attachDesc": "Wybierz projekt i fazę, w której zostało wykonane zdjęcie.",
+    "attachProject": "Projekt",
+    "attachSelectProject": "Wybierz projekt…",
+    "attachPhase": "Faza",
+    "attachConfirm": "Przypisz",
+    "attachSuccess": "Zdjęcie przypisane do projektu",
+    "attachFailed": "Nie udało się przypisać zdjęcia",
+    "deleteConfirmQuestion": "Usunąć to zdjęcie z biblioteki?"
   },
   "offerDetail": {
     "notFoundTitle": "Oferta nie znaleziona",
