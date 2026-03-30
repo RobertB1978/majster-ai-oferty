@@ -11,6 +11,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
@@ -33,6 +34,7 @@ import {
   resolveAutofill,
   type AutofillContext,
 } from '@/hooks/useDocumentInstances';
+import { useQueryClient } from '@tanstack/react-query';
 import { generateTemplatePdf, uploadTemplatePdf } from '@/lib/templatePdfGenerator';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -280,6 +282,8 @@ export function TemplateEditor({
 }: TemplateEditorProps) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [data, setData] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
@@ -479,7 +483,15 @@ export function TemplateEditor({
         dossierItemId: dossierItem.id,
       });
 
-      toast.success(t('docTemplates.editor.savedToDossier'));
+      // Invalidate dossier cache so DossierPanel refreshes
+      queryClient.invalidateQueries({ queryKey: ['dossier_items', projectId] });
+
+      toast.success(t('docTemplates.editor.savedToDossier'), {
+        action: {
+          label: t('docTemplates.editor.goToDossier'),
+          onClick: () => navigate(`/app/projects/${projectId}`),
+        },
+      });
       onSaved?.(iid);
     } catch (_err) {
       toast.error(t('docTemplates.editor.saveError'));

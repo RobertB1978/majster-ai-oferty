@@ -4137,6 +4137,7 @@
     "deleteError": "Error deleting file",
     "confirmDelete": "Confirm delete",
     "openFile": "Open",
+    "generateFromTemplate": "Generate from template",
     "exportEmpty": "No files to export",
     "loadError": "Loading error",
     "loadErrorDesc": "Could not load the project dossier.",
@@ -4188,7 +4189,12 @@
     "page": {
       "title": "Document Templates Library",
       "subtitle": "Contracts, protocols, annexes and technical inspections",
-      "projectContext": "Filled fields will be linked to the selected project"
+      "projectContext": "Filled fields will be linked to the selected project",
+      "selectProject": "Select project",
+      "selectProjectPlaceholder": "Select a project...",
+      "selectProjectHint": "To save a document to the dossier, select a project from the list.",
+      "noProjects": "No active projects. Create a project first.",
+      "projectLinked": "Document will be linked to this project"
     },
     "library": {
       "searchPlaceholder": "Search document templates...",
@@ -4223,6 +4229,7 @@
       "saveDraft": "Save draft",
       "draftSaved": "Draft saved",
       "requiredFields": "Please fill required fields: {{fields}}",
+      "goToDossier": "Go to dossier",
       "projectRequired": "Select a project to save to dossier"
     },
     "pdf": {

@@ -14,10 +14,11 @@
 
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import {
   FileText, FolderOpen, Receipt, Camera, Shield, MoreHorizontal,
   Upload, Trash2, Download, Share2, Loader2, ExternalLink, Plus,
-  Check, RefreshCw,
+  Check, RefreshCw, BookOpen,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -243,6 +244,7 @@ function FileRow({ item, onDelete }: FileRowProps) {
 
 export function DossierPanel({ projectId, projectTitle }: DossierPanelProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [showShareModal, setShowShareModal] = useState(false);
   const [uploadingCategory, setUploadingCategory] = useState<DossierCategory | null>(null);
 
@@ -312,6 +314,15 @@ export function DossierPanel({ projectId, projectTitle }: DossierPanelProps) {
           {t('dossier.totalFiles', { count: items.length })}
         </p>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-8"
+            onClick={() => navigate(`/app/document-templates?projectId=${projectId}`)}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            {t('dossier.generateFromTemplate')}
+          </Button>
           <Button
             variant="outline"
             size="sm"

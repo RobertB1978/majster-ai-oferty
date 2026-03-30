@@ -16,14 +16,30 @@
  *   ?offerId=<uuid>    — pre-select offer context (auto-fill)
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { FileText } from 'lucide-react';
+import { FileText, FolderOpen, CheckCircle2, AlertCircle } from 'lucide-react';
 
 import type { DocumentTemplate } from '@/data/documentTemplates';
 import { TemplatesLibrary } from '@/components/documents/templates/TemplatesLibrary';
 import { TemplateEditor } from '@/components/documents/templates/TemplateEditor';
+import { useProjectsV2List, type ProjectStatus } from '@/hooks/useProjectsV2';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const STATUS_I18N_KEY: Partial<Record<ProjectStatus, string>> = {
+  ACTIVE: 'projects.statusActive',
+  COMPLETED: 'projects.statusCompleted',
+  ON_HOLD: 'projects.statusOnHold',
+};
 
 // ── DocumentTemplates ─────────────────────────────────────────────────────────
 
@@ -31,9 +47,27 @@ export default function DocumentTemplates() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
 
-  const projectId = searchParams.get('projectId') ?? null;
-  const clientId = searchParams.get('clientId') ?? null;
-  const offerId = searchParams.get('offerId') ?? null;
+  const urlProjectId = searchParams.get('projectId') ?? null;
+  const urlClientId = searchParams.get('clientId') ?? null;
+  const urlOfferId = searchParams.get('offerId') ?? null;
+
+  const [pickedProjectId, setPickedProjectId] = useState<string | null>(null);
+  const projectId = urlProjectId ?? pickedProjectId;
+
+  const { data: allProjects = [] } = useProjectsV2List('ALL');
+  // Exclude cancelled projects from selector
+  const projects = useMemo(
+    () => allProjects.filter((p) => p.status !== 'CANCELLED'),
+    [allProjects]
+  );
+
+  // Auto-resolve clientId & offerId from selected project
+  const pickedProject = useMemo(
+    () => projects.find((p) => p.id === pickedProjectId) ?? null,
+    [projects, pickedProjectId]
+  );
+  const clientId = urlClientId ?? pickedProject?.client_id ?? null;
+  const offerId = urlOfferId ?? pickedProject?.source_offer_id ?? null;
 
   const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplate | null>(null);
 
@@ -80,8 +114,69 @@ export default function DocumentTemplates() {
         </div>
       </div>
 
-      {/* Context info (if project-scoped) */}
-      {projectId && (
+      {/* Project selector (when no projectId from URL) */}
+      {!urlProjectId && (
+        <div className="rounded-lg border bg-muted/30 px-4 py-3 space-y-2">
+          <div className="flex items-center gap-2">
+            <FolderOpen className="w-4 h-4 text-primary shrink-0" />
+            <p className="text-sm font-medium">{t('docTemplates.page.selectProject')}</p>
+          </div>
+
+          {projects.length === 0 ? (
+            <div className="flex items-center gap-2 py-2">
+              <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                {t('docTemplates.page.noProjects')}
+              </p>
+            </div>
+          ) : (
+            <Select
+              value={pickedProjectId ?? ''}
+              onValueChange={(val) => setPickedProjectId(val || null)}
+            >
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue placeholder={t('docTemplates.page.selectProjectPlaceholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    <span className="flex items-center gap-2">
+                      {p.title}
+                      {p.status !== 'ACTIVE' && STATUS_I18N_KEY[p.status] && (
+                        <span className="text-xs text-muted-foreground">
+                          ({t(STATUS_I18N_KEY[p.status]!)})
+                        </span>
+                      )}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {/* Selected project info badge */}
+          {pickedProject && (
+            <div className="flex items-center gap-2 rounded-md bg-primary/5 border border-primary/20 px-3 py-2">
+              <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+              <div className="min-w-0">
+                <p className="text-sm font-medium truncate">{pickedProject.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {t('docTemplates.page.projectLinked')}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {!pickedProjectId && projects.length > 0 && (
+            <p className="text-xs text-muted-foreground">
+              {t('docTemplates.page.selectProjectHint')}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Context info (if project-scoped via URL) */}
+      {urlProjectId && (
         <div className="rounded-lg border bg-muted/30 px-4 py-3">
           <p className="text-sm text-muted-foreground">
             {t('docTemplates.page.projectContext')}
