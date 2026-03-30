@@ -19,11 +19,19 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { FileText } from 'lucide-react';
+import { FileText, FolderOpen } from 'lucide-react';
 
 import type { DocumentTemplate } from '@/data/documentTemplates';
 import { TemplatesLibrary } from '@/components/documents/templates/TemplatesLibrary';
 import { TemplateEditor } from '@/components/documents/templates/TemplateEditor';
+import { useProjectsV2List } from '@/hooks/useProjectsV2';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 // ── DocumentTemplates ─────────────────────────────────────────────────────────
 
@@ -31,9 +39,14 @@ export default function DocumentTemplates() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
 
-  const projectId = searchParams.get('projectId') ?? null;
+  const urlProjectId = searchParams.get('projectId') ?? null;
   const clientId = searchParams.get('clientId') ?? null;
   const offerId = searchParams.get('offerId') ?? null;
+
+  const [pickedProjectId, setPickedProjectId] = useState<string | null>(null);
+  const projectId = urlProjectId ?? pickedProjectId;
+
+  const { data: projects = [] } = useProjectsV2List('ACTIVE');
 
   const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplate | null>(null);
 
@@ -80,8 +93,36 @@ export default function DocumentTemplates() {
         </div>
       </div>
 
+      {/* Project selector (when no projectId from URL) */}
+      {!urlProjectId && (
+        <div className="rounded-lg border bg-muted/30 px-4 py-3 space-y-2">
+          <div className="flex items-center gap-2">
+            <FolderOpen className="w-4 h-4 text-primary shrink-0" />
+            <p className="text-sm font-medium">{t('docTemplates.page.selectProject')}</p>
+          </div>
+          <Select
+            value={pickedProjectId ?? ''}
+            onValueChange={(val) => setPickedProjectId(val || null)}
+          >
+            <SelectTrigger className="h-9 text-sm">
+              <SelectValue placeholder={t('docTemplates.page.selectProjectPlaceholder')} />
+            </SelectTrigger>
+            <SelectContent>
+              {projects.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            {t('docTemplates.page.selectProjectHint')}
+          </p>
+        </div>
+      )}
+
       {/* Context info (if project-scoped) */}
-      {projectId && (
+      {urlProjectId && (
         <div className="rounded-lg border bg-muted/30 px-4 py-3">
           <p className="text-sm text-muted-foreground">
             {t('docTemplates.page.projectContext')}

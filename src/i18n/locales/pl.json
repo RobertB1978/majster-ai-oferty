@@ -4137,6 +4137,7 @@
     "deleteError": "Błąd usuwania pliku",
     "confirmDelete": "Potwierdz usuniecie",
     "openFile": "Otworz",
+    "generateFromTemplate": "Generuj z szablonu",
     "exportEmpty": "Brak plików do wyeksportowania",
     "loadError": "Błąd ładowania",
     "loadErrorDesc": "Nie można załadować teczki projektu.",
@@ -4188,7 +4189,10 @@
     "page": {
       "title": "Biblioteka wzorów dokumentów",
       "subtitle": "Umowy, protokoły, załączniki i przeglądy techniczne",
-      "projectContext": "Wypełnione pola zostaną powiązane z wybranym projektem"
+      "projectContext": "Wypełnione pola zostaną powiązane z wybranym projektem",
+      "selectProject": "Wybierz projekt",
+      "selectProjectPlaceholder": "Wybierz projekt...",
+      "selectProjectHint": "Aby zapisać dokument do teczki, wybierz projekt z listy."
     },
     "library": {
       "searchPlaceholder": "Szukaj wzoru dokumentu...",

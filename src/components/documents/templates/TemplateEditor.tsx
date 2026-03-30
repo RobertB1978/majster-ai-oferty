@@ -33,6 +33,7 @@ import {
   resolveAutofill,
   type AutofillContext,
 } from '@/hooks/useDocumentInstances';
+import { useQueryClient } from '@tanstack/react-query';
 import { generateTemplatePdf, uploadTemplatePdf } from '@/lib/templatePdfGenerator';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -280,6 +281,7 @@ export function TemplateEditor({
 }: TemplateEditorProps) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const [data, setData] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
@@ -478,6 +480,9 @@ export function TemplateEditor({
         pdfPath,
         dossierItemId: dossierItem.id,
       });
+
+      // Invalidate dossier cache so DossierPanel refreshes
+      queryClient.invalidateQueries({ queryKey: ['dossier_items', projectId] });
 
       toast.success(t('docTemplates.editor.savedToDossier'));
       onSaved?.(iid);
