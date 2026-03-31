@@ -122,7 +122,8 @@ describe('Dossier persistence — upload path format', () => {
     const projectId = 'proj-456';
     const instanceId = 'inst-789';
     const templateKey = 'umowa_ryczaltowa';
-    const safeName = templateKey.replace(/[^a-zA-Z0-9_-]/g, '_');
+    // Regex must match uploadTemplatePdf() in templatePdfGenerator.ts
+    const safeName = templateKey.replace(/[^a-z0-9_]/g, '_');
 
     const filePath = `${userId}/${projectId}/documents/${safeName}_${instanceId}.pdf`;
 
@@ -132,17 +133,19 @@ describe('Dossier persistence — upload path format', () => {
     expect(filePath.endsWith('.pdf')).toBe(true);
   });
 
-  it('path without projectId uses _no_project_ prefix', () => {
+  it('path without projectId uses no_project segment', () => {
     const userId = 'user-123';
     const projectId: string | null = null;
     const instanceId = 'inst-789';
     const templateKey = 'protokol_koncowy';
-    const safeName = templateKey.replace(/[^a-zA-Z0-9_-]/g, '_');
-    const projectPart = projectId ?? '_no_project_';
+    // Regex must match uploadTemplatePdf() in templatePdfGenerator.ts
+    const safeName = templateKey.replace(/[^a-z0-9_]/g, '_');
+    // Fallback must match uploadTemplatePdf(): projectId ?? 'no_project'
+    const projectPart = projectId ?? 'no_project';
 
     const filePath = `${userId}/${projectPart}/documents/${safeName}_${instanceId}.pdf`;
 
-    expect(filePath).toContain('_no_project_');
+    expect(filePath).toContain('no_project');
     expect(filePath.endsWith('.pdf')).toBe(true);
   });
 });
