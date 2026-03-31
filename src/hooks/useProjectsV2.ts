@@ -288,7 +288,16 @@ export function useCreateProjectV2() {
       }
       return data as ProjectV2;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Eagerly populate the bySourceOffer cache so that OfferRow immediately
+      // shows "Open project" when navigating back to the offers list after
+      // project creation — prevents a stale-null flash of "Create project".
+      if (data.source_offer_id) {
+        queryClient.setQueryData(
+          projectsV2Keys.bySourceOffer(data.source_offer_id),
+          data,
+        );
+      }
       queryClient.invalidateQueries({ queryKey: projectsV2Keys.all });
     },
   });
