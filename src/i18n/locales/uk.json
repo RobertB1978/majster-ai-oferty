@@ -3664,7 +3664,6 @@
     "actionScheduleFollowup": "Запланувати follow-up",
     "archiveSuccess": "Пропозицію заархівовано",
     "archiveError": "Не вдалося заархівувати пропозицію",
-    "duplicateComingSoon": "Дублювання пропозицій — незабаром",
     "duplicateSuccess": "Пропозицію продубльовано — відкрито нову чернетку",
     "duplicateError": "Не вдалося дублювати пропозицію",
     "projectFilterAll": "Усі проєкти",
@@ -3683,7 +3682,18 @@
     "newOfferButton": "Нова пропозиція",
     "newOfferButtonShort": "Нова",
     "loadMore": "Завантажити ще",
-    "loadingMore": "Завантаження…"
+    "loadingMore": "Завантаження…",
+    "bulkSelectToggle": "Вибрати",
+    "bulkSelectCancel": "Скасувати вибір",
+    "bulkSelectAll": "Вибрати все",
+    "bulkSelectedCount": "Вибрано: {{count}}",
+    "bulkSelectOffer": "Вибрати пропозицію: {{title}}",
+    "bulkArchive": "Архівувати",
+    "bulkDuplicate": "Дублювати",
+    "bulkArchiveSuccess": "Заархівовано {{count}} пропозицій",
+    "bulkArchiveError": "Не вдалося заархівувати {{count}} пропозицій",
+    "bulkDuplicateSuccess": "Продубльовано {{count}} пропозицій — створено нові чернетки",
+    "bulkDuplicateError": "Не вдалося дублювати {{count}} пропозицій"
   },
   "offerWizard": {
     "titleNew": "Нова пропозиція",

@@ -3664,7 +3664,6 @@
     "actionScheduleFollowup": "Schedule follow-up",
     "archiveSuccess": "Offer archived",
     "archiveError": "Failed to archive offer",
-    "duplicateComingSoon": "Offer duplication — coming soon",
     "duplicateSuccess": "Offer duplicated — new draft opened",
     "duplicateError": "Failed to duplicate offer",
     "projectFilterAll": "All projects",
@@ -3683,7 +3682,18 @@
     "newOfferButton": "New offer",
     "newOfferButtonShort": "New",
     "loadMore": "Load more",
-    "loadingMore": "Loading…"
+    "loadingMore": "Loading…",
+    "bulkSelectToggle": "Select",
+    "bulkSelectCancel": "Cancel selection",
+    "bulkSelectAll": "Select all",
+    "bulkSelectedCount": "Selected: {{count}}",
+    "bulkSelectOffer": "Select offer: {{title}}",
+    "bulkArchive": "Archive",
+    "bulkDuplicate": "Duplicate",
+    "bulkArchiveSuccess": "Archived {{count}} offers",
+    "bulkArchiveError": "Failed to archive {{count}} offers",
+    "bulkDuplicateSuccess": "Duplicated {{count}} offers — new drafts created",
+    "bulkDuplicateError": "Failed to duplicate {{count}} offers"
   },
   "offerWizard": {
     "titleNew": "New Offer",
