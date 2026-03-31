@@ -59,18 +59,25 @@ export function useCreateAcceptanceLink(offerId: string) {
     mutationFn: async (): Promise<AcceptanceLink> => {
       if (!user) throw new Error('Not authenticated');
 
-      // Upsert: UNIQUE constraint on offer_id ensures only one link per offer.
-      // On conflict (offer_id), do nothing — return existing row.
+      // Delete any existing link first.
+      // This handles two cases safely:
+      //   1. No link exists → DELETE is a no-op, INSERT creates fresh link.
+      //   2. Expired link exists → DELETE removes it, INSERT creates new link
+      //      with a fresh token (UUID) and new 30-day expiry via DB defaults.
+      // Note: the "Create link" button is only shown when no link or link is
+      // expired, so this never invalidates a live, non-expired client session.
+      await supabase
+        .from('acceptance_links')
+        .delete()
+        .eq('offer_id', offerId);
+
       const { data, error } = await supabase
         .from('acceptance_links')
-        .upsert(
-          {
-            user_id: user.id,
-            offer_id: offerId,
-            // token and expires_at use DB defaults (gen_random_uuid, now+30d)
-          },
-          { onConflict: 'offer_id', ignoreDuplicates: true }
-        )
+        .insert({
+          user_id: user.id,
+          offer_id: offerId,
+          // token and expires_at use DB defaults (gen_random_uuid, now+30d)
+        })
         .select('id, offer_id, token, expires_at, created_at')
         .single();
 
