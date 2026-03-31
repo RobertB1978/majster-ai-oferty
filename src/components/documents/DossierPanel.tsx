@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   FileText, FolderOpen, Receipt, Camera, Shield, MoreHorizontal,
-  Upload, Trash2, Download, Share2, Loader2, ExternalLink, Plus,
+  Upload, Trash2, Download, Share2, Loader2, Eye, Plus,
   Check, RefreshCw, BookOpen,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -214,13 +214,15 @@ function FileRow({ item, onDelete }: FileRowProps) {
             rel="noopener noreferrer"
             className="flex items-center justify-center p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px]"
             aria-label={t('dossier.openFile')}
+            title={t('dossier.openFile')}
             onClick={(e) => e.stopPropagation()}
           >
-            <ExternalLink className="w-3.5 h-3.5" />
+            <Eye className="w-3.5 h-3.5" />
           </a>
           <button
             className="flex items-center justify-center p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px]"
             aria-label={t('dossier.downloadFile')}
+            title={t('dossier.downloadFile')}
             disabled={downloading}
             onClick={async (e) => {
               e.stopPropagation();
@@ -253,6 +255,7 @@ function FileRow({ item, onDelete }: FileRowProps) {
         onClick={handleDelete}
         disabled={deleting}
         aria-label={confirmDelete ? t('dossier.confirmDelete') : t('dossier.deleteFile')}
+        title={confirmDelete ? t('dossier.confirmDelete') : t('dossier.deleteFile')}
       >
         {deleting ? (
           <Loader2 className="w-3.5 h-3.5 animate-spin" />

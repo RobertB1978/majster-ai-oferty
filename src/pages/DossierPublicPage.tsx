@@ -17,7 +17,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   FolderOpen, FileText, Clock, CheckCircle2, AlertCircle,
-  Loader2, Download, ExternalLink,
+  Loader2, Download, Eye,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -108,7 +108,7 @@ function PublicFileActions({
         className={btnCls}
         aria-label={t('dossier.public.openFile', { name: fileName })}
       >
-        <ExternalLink className="w-3 h-3" />
+        <Eye className="w-3 h-3" />
         {t('dossier.public.open')}
       </a>
 
