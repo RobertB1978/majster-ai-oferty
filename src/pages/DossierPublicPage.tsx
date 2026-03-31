@@ -95,7 +95,7 @@ function PublicFileActions({
     'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium',
     'bg-blue-50 text-blue-700 hover:bg-blue-100',
     'dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50',
-    'transition-colors shrink-0',
+    'transition-colors shrink-0 min-h-[44px]',
   );
 
   return (

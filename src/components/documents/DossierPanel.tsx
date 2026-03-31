@@ -115,7 +115,7 @@ function CategoryCard({ category, items, onUpload, onDelete, uploading }: Catego
         <Button
           variant="ghost"
           size="icon"
-          className="h-7 w-7 shrink-0"
+          className="h-11 w-11 shrink-0"
           onClick={(e) => {
             e.stopPropagation();
             fileInputRef.current?.click();
@@ -212,14 +212,14 @@ function FileRow({ item, onDelete }: FileRowProps) {
             href={item.signed_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            className="flex items-center justify-center p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px]"
             aria-label={t('dossier.openFile')}
             onClick={(e) => e.stopPropagation()}
           >
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
           <button
-            className="p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            className="flex items-center justify-center p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px]"
             aria-label={t('dossier.downloadFile')}
             disabled={downloading}
             onClick={async (e) => {
@@ -245,7 +245,7 @@ function FileRow({ item, onDelete }: FileRowProps) {
 
       <button
         className={cn(
-          'p-1.5 rounded transition-colors',
+          'flex items-center justify-center p-1.5 rounded transition-colors min-h-[44px] min-w-[44px]',
           confirmDelete
             ? 'bg-red-100 text-red-600 dark:bg-red-900/30'
             : 'hover:bg-muted text-muted-foreground hover:text-destructive'

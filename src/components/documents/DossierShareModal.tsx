@@ -98,7 +98,7 @@ function TokenRow({ token, onRevoke }: TokenRowProps) {
           {url}
         </code>
         <button
-          className="p-1.5 rounded hover:bg-muted transition-colors"
+          className="flex items-center justify-center p-1.5 rounded hover:bg-muted transition-colors min-h-[44px] min-w-[44px]"
           onClick={handleCopy}
           aria-label={t('dossier.share.copyLink')}
         >
@@ -106,7 +106,7 @@ function TokenRow({ token, onRevoke }: TokenRowProps) {
         </button>
         <button
           className={cn(
-            'p-1.5 rounded transition-colors',
+            'flex items-center justify-center p-1.5 rounded transition-colors min-h-[44px] min-w-[44px]',
             confirmRevoke
               ? 'bg-red-100 text-red-600 dark:bg-red-900/30'
               : 'hover:bg-muted text-muted-foreground hover:text-destructive'
