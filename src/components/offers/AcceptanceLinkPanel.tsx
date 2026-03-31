@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Link2, Copy, Check, Loader2, CheckCircle2, XCircle, FolderPlus } from 'lucide-react';
+import { Link2, Copy, Check, Loader2, CheckCircle2, XCircle, FolderPlus, FolderOpen } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +26,7 @@ import {
   buildAcceptanceLinkUrl,
   daysUntilExpiry,
 } from '@/hooks/useAcceptanceLink';
-import { useCreateProjectV2, findProjectBySourceOffer } from '@/hooks/useProjectsV2';
+import { useCreateProjectV2, useProjectBySourceOffer } from '@/hooks/useProjectsV2';
 import { formatDateTime } from '@/lib/formatters';
 
 interface Props {
@@ -49,6 +49,11 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
   const isAccepted = offerStatus === 'ACCEPTED';
   const isRejected = offerStatus === 'REJECTED';
   const isSent = offerStatus === 'SENT';
+
+  // Eager project lookup — only runs when offer is ACCEPTED.
+  // Allows showing "Open project" immediately instead of "Create project".
+  const { data: existingProject, isLoading: existingProjectLoading } =
+    useProjectBySourceOffer(isAccepted ? offerId : undefined);
 
   const handleCreate = async () => {
     try {
@@ -87,39 +92,54 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
           </p>
         )}
         <div className="pt-1">
-          <p className="text-xs text-green-600 dark:text-green-500 mb-2">
-            {t('acceptanceLink.createProjectHint')}
-          </p>
-          <Button
-            size="sm"
-            onClick={async () => {
-              setCreatingProject(true);
-              try {
-                // Duplicate prevention: check if project already exists for this offer
-                const existing = await findProjectBySourceOffer(offerId);
-                if (existing) {
-                  toast.info(t('projectsV2.alreadyExists'));
-                  navigate(`/app/projects/${existing.id}`);
-                  return;
-                }
-                const project = await createProject.mutateAsync({
-                  title: t('projectsV2.defaultTitle'),
-                  source_offer_id: offerId,
-                });
-                toast.success(t('projectsV2.createSuccess'));
-                navigate(`/app/projects/${project.id}`);
-              } catch {
-                toast.error(t('projectsV2.createError'));
-              } finally {
-                setCreatingProject(false);
-              }
-            }}
-            disabled={creatingProject}
-            className="gap-2"
-          >
-            {creatingProject ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderPlus className="h-4 w-4" />}
-            {creatingProject ? t('projectsV2.creating') : t('acceptanceLink.createProjectCta')}
-          </Button>
+          {existingProjectLoading ? (
+            // Checking if project already exists
+            <div className="flex items-center gap-2 text-sm text-muted-foreground py-1">
+              <Loader2 className="h-4 w-4 animate-spin" />
+            </div>
+          ) : existingProject ? (
+            // Project already exists — go straight to it, no misleading "Create" path
+            <Button
+              size="sm"
+              onClick={() => navigate(`/app/projects/${existingProject.id}`)}
+              className="gap-2"
+            >
+              <FolderOpen className="h-4 w-4" />
+              {t('acceptanceLink.openProjectCta')}
+            </Button>
+          ) : (
+            // No project yet — offer creation
+            <>
+              <p className="text-xs text-green-600 dark:text-green-500 mb-2">
+                {t('acceptanceLink.createProjectHint')}
+              </p>
+              <Button
+                size="sm"
+                onClick={async () => {
+                  setCreatingProject(true);
+                  try {
+                    // useCreateProjectV2 handles race-condition 23505 internally
+                    // (returns existing project when DB unique index rejects duplicate)
+                    const project = await createProject.mutateAsync({
+                      title: t('projectsV2.defaultTitle'),
+                      source_offer_id: offerId,
+                    });
+                    toast.success(t('projectsV2.createSuccess'));
+                    navigate(`/app/projects/${project.id}`);
+                  } catch {
+                    toast.error(t('projectsV2.createError'));
+                  } finally {
+                    setCreatingProject(false);
+                  }
+                }}
+                disabled={creatingProject}
+                className="gap-2"
+              >
+                {creatingProject ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderPlus className="h-4 w-4" />}
+                {creatingProject ? t('projectsV2.creating') : t('acceptanceLink.createProjectCta')}
+              </Button>
+            </>
+          )}
         </div>
       </div>
     );
