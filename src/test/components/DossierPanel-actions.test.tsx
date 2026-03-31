@@ -149,6 +149,28 @@ describe('DossierPanel — FileRow action buttons', () => {
     expect(deleteBtn.tagName).toBe('BUTTON');
   });
 
+  it('file action buttons meet 44px touch target requirement (min-h-[44px] min-w-[44px])', async () => {
+    const user = userEvent.setup();
+    renderPanel();
+
+    const contractCard = screen.getByRole('button', {
+      name: i18n.t('dossier.category.CONTRACT'),
+    });
+    await user.click(contractCard);
+
+    const previewLink = screen.getByLabelText(i18n.t('dossier.openFile'));
+    expect(previewLink.className).toContain('min-h-[44px]');
+    expect(previewLink.className).toContain('min-w-[44px]');
+
+    const downloadBtn = screen.getByLabelText(i18n.t('dossier.downloadFile'));
+    expect(downloadBtn.className).toContain('min-h-[44px]');
+    expect(downloadBtn.className).toContain('min-w-[44px]');
+
+    const deleteBtn = screen.getByLabelText(i18n.t('dossier.deleteFile'));
+    expect(deleteBtn.className).toContain('min-h-[44px]');
+    expect(deleteBtn.className).toContain('min-w-[44px]');
+  });
+
   it('delete requires two clicks (confirmation pattern)', async () => {
     const user = userEvent.setup();
     renderPanel();
