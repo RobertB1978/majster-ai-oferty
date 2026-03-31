@@ -131,22 +131,28 @@ describe('DossierPanel — FileRow action buttons', () => {
     // File name should be visible
     expect(screen.getByText('Umowa_serwisowa.pdf')).toBeInTheDocument();
 
-    // Preview link (ExternalLink icon, opens in new tab)
+    // Preview link (Eye icon, opens in new tab)
     const previewLink = screen.getByLabelText(i18n.t('dossier.openFile'));
     expect(previewLink).toBeInTheDocument();
     expect(previewLink.tagName).toBe('A');
     expect(previewLink).toHaveAttribute('href', 'https://storage.example.com/signed/test.pdf');
     expect(previewLink).toHaveAttribute('target', '_blank');
+    // title attribute provides tooltip — disambiguates preview from download
+    expect(previewLink).toHaveAttribute('title', i18n.t('dossier.openFile'));
 
     // Download button
     const downloadBtn = screen.getByLabelText(i18n.t('dossier.downloadFile'));
     expect(downloadBtn).toBeInTheDocument();
     expect(downloadBtn.tagName).toBe('BUTTON');
+    // title attribute provides tooltip — ensures download action is explicit
+    expect(downloadBtn).toHaveAttribute('title', i18n.t('dossier.downloadFile'));
 
     // Delete button
     const deleteBtn = screen.getByLabelText(i18n.t('dossier.deleteFile'));
     expect(deleteBtn).toBeInTheDocument();
     expect(deleteBtn.tagName).toBe('BUTTON');
+    // title attribute provides tooltip — ensures delete intent is clear
+    expect(deleteBtn).toHaveAttribute('title', i18n.t('dossier.deleteFile'));
   });
 
   it('file action buttons meet 44px touch target requirement (min-h-[44px] min-w-[44px])', async () => {
@@ -185,7 +191,35 @@ describe('DossierPanel — FileRow action buttons', () => {
     const deleteBtn = screen.getByLabelText(i18n.t('dossier.deleteFile'));
     await user.click(deleteBtn);
 
-    // Now the button should have confirmation label
-    expect(screen.getByLabelText(i18n.t('dossier.confirmDelete'))).toBeInTheDocument();
+    // Now the button should have confirmation label and title (both must update)
+    const confirmBtn = screen.getByLabelText(i18n.t('dossier.confirmDelete'));
+    expect(confirmBtn).toBeInTheDocument();
+    expect(confirmBtn).toHaveAttribute('title', i18n.t('dossier.confirmDelete'));
+  });
+
+  it('preview and download actions are distinct — different aria-labels and different targets', async () => {
+    const user = userEvent.setup();
+    renderPanel();
+
+    const contractCard = screen.getByRole('button', {
+      name: i18n.t('dossier.category.CONTRACT'),
+    });
+    await user.click(contractCard);
+
+    const previewLink = screen.getByLabelText(i18n.t('dossier.openFile'));
+    const downloadBtn = screen.getByLabelText(i18n.t('dossier.downloadFile'));
+
+    // They must be different elements
+    expect(previewLink).not.toBe(downloadBtn);
+
+    // Preview is an anchor — navigates in new tab (not a button)
+    expect(previewLink.tagName).toBe('A');
+    // Download is a button — triggers fetch-based download (not a link)
+    expect(downloadBtn.tagName).toBe('BUTTON');
+
+    // Their aria-labels must be different
+    expect(previewLink.getAttribute('aria-label')).not.toBe(
+      downloadBtn.getAttribute('aria-label')
+    );
   });
 });
