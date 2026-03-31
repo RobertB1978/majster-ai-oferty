@@ -344,6 +344,34 @@ export function useCreateProjectPublicToken(projectId: string) {
   });
 }
 
+// ── Project source-offer IDs (for offers-list filter) ────────────────────────
+
+/**
+ * Returns the set of offer IDs that already have at least one non-cancelled project.
+ * Used by the offers list to power the "with project / without project" filter
+ * without issuing a per-row query.
+ *
+ * @param enabled — set false when the filter is not active to avoid unnecessary fetches.
+ */
+export function useProjectSourceOfferIds(enabled: boolean) {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: [...projectsV2Keys.all, 'sourceOfferIds'] as const,
+    queryFn: async (): Promise<Set<string>> => {
+      const { data, error } = await supabase
+        .from('v2_projects')
+        .select('source_offer_id')
+        .neq('status', 'CANCELLED')
+        .not('source_offer_id', 'is', null);
+      if (error) throw error;
+      return new Set((data ?? []).map((p) => p.source_offer_id as string));
+    },
+    enabled: !!user && enabled,
+    staleTime: 30_000,
+  });
+}
+
 /** Build the public QR status URL from a token */
 export function buildProjectStatusUrl(token: string): string {
   return `${window.location.origin}/p/${token}`;

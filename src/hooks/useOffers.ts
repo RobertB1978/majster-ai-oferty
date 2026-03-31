@@ -215,3 +215,131 @@ export function useArchiveOffer() {
     },
   });
 }
+
+// ── Duplicate as new version ──────────────────────────────────────────────────
+
+/**
+ * Duplicate an existing offer as a new DRAFT.
+ * - Copies title (appends " (kopia)"), client, currency.
+ * - Clones all items and variants via save_offer_items RPC.
+ * - Original offer is not modified.
+ * - Returns the new offer's id.
+ */
+export function useDuplicateOffer() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (sourceOfferId: string): Promise<string> => {
+      if (!user) throw new Error('Not authenticated');
+
+      // 1. Load source offer header
+      const { data: source, error: sourceErr } = await supabase
+        .from('offers')
+        .select('client_id, title, currency')
+        .eq('id', sourceOfferId)
+        .single();
+      if (sourceErr) throw sourceErr;
+
+      // 2. Load source items
+      const { data: rawItems, error: itemsErr } = await supabase
+        .from('offer_items')
+        .select('item_type, name, unit, qty, unit_price_net, vat_rate, variant_id')
+        .eq('offer_id', sourceOfferId)
+        .order('created_at', { ascending: true });
+      if (itemsErr) throw itemsErr;
+
+      // 3. Load source variants
+      const { data: rawVariants, error: variantsErr } = await supabase
+        .from('offer_variants')
+        .select('id, label, sort_order')
+        .eq('offer_id', sourceOfferId)
+        .order('sort_order', { ascending: true });
+      if (variantsErr) throw variantsErr;
+
+      const allItems = rawItems ?? [];
+      const allVariants = rawVariants ?? [];
+      const hasVariants = allVariants.length > 0;
+
+      // 4. Compute totals (mirrors computeTotals from useOfferWizard)
+      let totalNet = 0;
+      let totalVat = 0;
+      const repItems = hasVariants
+        ? allItems.filter((it) => it.variant_id === allVariants[0].id)
+        : allItems.filter((it) => it.variant_id === null);
+      for (const it of repItems) {
+        const net = Number(it.qty) * Number(it.unit_price_net);
+        const vat = net * (Number(it.vat_rate ?? 0) / 100);
+        totalNet += net;
+        totalVat += vat;
+      }
+      const roundedNet = Math.round(totalNet * 100) / 100;
+      const roundedVat = Math.round(totalVat * 100) / 100;
+      const roundedGross = Math.round((totalNet + totalVat) * 100) / 100;
+
+      // 5. Create new DRAFT offer (source_template_id intentionally not copied)
+      const { data: newOffer, error: insertErr } = await supabase
+        .from('offers')
+        .insert({
+          user_id: user.id,
+          client_id: source.client_id,
+          title: source.title ? `${source.title} (kopia)` : null,
+          status: 'DRAFT' as OfferStatus,
+          currency: source.currency,
+          total_net: roundedNet,
+          total_vat: roundedVat,
+          total_gross: roundedGross,
+        })
+        .select('id')
+        .single();
+      if (insertErr) throw insertErr;
+
+      const newOfferId = newOffer.id as string;
+
+      // 6. Clone variants + items atomically via save_offer_items RPC
+      const variantsPayload = hasVariants
+        ? allVariants.map((v) => ({
+            label: v.label,
+            sort_order: v.sort_order,
+            items: allItems
+              .filter((it) => it.variant_id === v.id)
+              .map((it) => ({
+                item_type: it.item_type,
+                name: it.name,
+                unit: it.unit ?? '',
+                qty: Number(it.qty),
+                unit_price_net: Number(it.unit_price_net),
+                vat_rate: it.vat_rate !== null ? Number(it.vat_rate) : null,
+              })),
+          }))
+        : [];
+
+      const itemsPayload = !hasVariants
+        ? allItems
+            .filter((it) => it.variant_id === null)
+            .map((it) => ({
+              item_type: it.item_type,
+              name: it.name,
+              unit: it.unit ?? '',
+              qty: Number(it.qty),
+              unit_price_net: Number(it.unit_price_net),
+              vat_rate: it.vat_rate !== null ? Number(it.vat_rate) : null,
+            }))
+        : [];
+
+      const { error: saveErr } = await supabase.rpc('save_offer_items', {
+        p_offer_id: newOfferId,
+        p_user_id: user.id,
+        p_variants: variantsPayload,
+        p_items: itemsPayload,
+      });
+      if (saveErr) throw saveErr;
+
+      return newOfferId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: offersKeys.all });
+      queryClient.invalidateQueries({ queryKey: offersInfiniteKeys.all });
+    },
+  });
+}

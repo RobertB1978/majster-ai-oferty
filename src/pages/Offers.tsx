@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { differenceInDays, addDays, format } from 'date-fns';
-import { FileText, MoreHorizontal, ExternalLink, FolderPlus, FolderOpen, Sparkles, Archive, Plus, CalendarDays, Loader2 } from 'lucide-react';
+import { FileText, MoreHorizontal, ExternalLink, FolderPlus, FolderOpen, Sparkles, Archive, Plus, CalendarDays, Loader2, Copy } from 'lucide-react';
 
-import { useCreateProjectV2, useProjectBySourceOffer, findProjectBySourceOffer } from '@/hooks/useProjectsV2';
+import { useCreateProjectV2, useProjectBySourceOffer, findProjectBySourceOffer, useProjectSourceOfferIds } from '@/hooks/useProjectsV2';
+import type { ProjectStatus } from '@/hooks/useProjectsV2';
 import { IndustryTemplateSheet } from '@/components/offers/IndustryTemplateSheet';
 import { getStarterPack } from '@/data/starterPacks';
 import { useAddCalendarEvent } from '@/hooks/useCalendarEvents';
 
-import { useOffersInfinite, useArchiveOffer, NO_RESPONSE_DAYS } from '@/hooks/useOffers';
+import { useOffersInfinite, useArchiveOffer, useDuplicateOffer, NO_RESPONSE_DAYS } from '@/hooks/useOffers';
 import type { Offer, OfferStatus, OfferSort } from '@/hooks/useOffers';
 import { useDebounce } from '@/hooks/useDebounce';
 
@@ -37,9 +38,10 @@ import {
 import { cn } from '@/lib/utils';
 import { formatDate, formatNumberCompact } from '@/lib/formatters';
 
-// ── Status config ──────────────────────────────────────────────────────────────
+// ── Status + project filter config ────────────────────────────────────────────
 
 type StatusFilter = OfferStatus | 'ALL';
+type ProjectFilter = 'ALL' | 'WITH_PROJECT' | 'WITHOUT_PROJECT';
 
 const STATUS_TABS: StatusFilter[] = ['ALL', 'DRAFT', 'SENT', 'ACCEPTED', 'REJECTED', 'ARCHIVED'];
 
@@ -58,6 +60,20 @@ const STATUS_I18N_KEYS: Record<StatusFilter, string> = {
   ACCEPTED: 'offersList.statusAccepted',
   REJECTED: 'offersList.statusRejected',
   ARCHIVED: 'offersList.statusArchived',
+};
+
+const PROJECT_BADGE_CLASSES: Record<ProjectStatus, string> = {
+  ACTIVE:    'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 border border-green-200 dark:border-green-800',
+  COMPLETED: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 border border-gray-200 dark:border-gray-700',
+  ON_HOLD:   'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 border border-amber-200 dark:border-amber-800',
+  CANCELLED: 'bg-secondary text-secondary-foreground',
+};
+
+const PROJECT_BADGE_I18N: Record<ProjectStatus, string> = {
+  ACTIVE:    'offersList.projectBadgeActive',
+  COMPLETED: 'offersList.projectBadgeCompleted',
+  ON_HOLD:   'offersList.projectBadgeOnHold',
+  CANCELLED: 'offersList.projectBadgeOnHold',
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -92,11 +108,12 @@ interface OfferRowProps {
   onCreateProject: (id: string) => void;
   onOpenProject: (projectId: string) => void;
   onArchive: (id: string) => void;
+  onDuplicate: (id: string) => void;
   onScheduleFollowup: (offer: Offer) => void;
   isCreatingProject?: boolean;
 }
 
-function OfferRow({ offer, onOpen, onCreateProject, onOpenProject, onArchive, onScheduleFollowup, isCreatingProject }: OfferRowProps) {
+function OfferRow({ offer, onOpen, onCreateProject, onOpenProject, onArchive, onDuplicate, onScheduleFollowup, isCreatingProject }: OfferRowProps) {
   const { t, i18n } = useTranslation();
   const noResp = offer.status === 'SENT' ? noResponseDays(offer.sent_at) : null;
   const amount = formatAmount(offer.total_net, offer.currency, i18n.language);
@@ -144,6 +161,18 @@ function OfferRow({ offer, onOpen, onCreateProject, onOpenProject, onArchive, on
               <Sparkles className="h-3 w-3" />
               {templatePack.tradeName}
             </Badge>
+          )}
+          {/* Project status badge — only for ACCEPTED offers, shows after async lookup */}
+          {isAccepted && !existingProjectLoading && (
+            existingProject ? (
+              <Badge className={cn('shrink-0 text-[11px] font-semibold px-2 py-0.5', PROJECT_BADGE_CLASSES[existingProject.status])}>
+                {t(PROJECT_BADGE_I18N[existingProject.status])}
+              </Badge>
+            ) : (
+              <Badge className="shrink-0 bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400 border border-orange-200 dark:border-orange-800 text-[11px] font-semibold px-2 py-0.5">
+                {t('offersList.projectBadgeNone')}
+              </Badge>
+            )
           )}
         </div>
         <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
@@ -203,6 +232,10 @@ function OfferRow({ offer, onOpen, onCreateProject, onOpenProject, onArchive, on
             <ExternalLink className="mr-2 h-4 w-4" />
             {t('offersList.actionOpen')}
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDuplicate(offer.id); }}>
+            <Copy className="mr-2 h-4 w-4" />
+            {t('offersList.actionDuplicate')}
+          </DropdownMenuItem>
           {offer.status === 'SENT' && (
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onScheduleFollowup(offer); }}>
               <CalendarDays className="mr-2 h-4 w-4" />
@@ -228,6 +261,7 @@ export default function Offers() {
   const navigate = useNavigate();
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
+  const [projectFilter, setProjectFilter] = useState<ProjectFilter>('ALL');
   const [searchRaw, setSearchRaw] = useState('');
   const [sort, setSort] = useState<OfferSort>('last_activity_at');
   const [creatingProjectId, setCreatingProjectId] = useState<string | null>(null);
@@ -236,7 +270,11 @@ export default function Offers() {
   const search = useDebounce(searchRaw, 300);
   const createProject = useCreateProjectV2();
   const archiveOffer = useArchiveOffer();
+  const duplicateOffer = useDuplicateOffer();
   const addCalendarEvent = useAddCalendarEvent();
+
+  // When project filter is active, force ACCEPTED status (projects only exist for accepted offers)
+  const effectiveStatus: StatusFilter = projectFilter !== 'ALL' ? 'ACCEPTED' : statusFilter;
 
   const {
     data: offersData,
@@ -247,13 +285,22 @@ export default function Offers() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useOffersInfinite({ status: statusFilter, search, sort });
+  } = useOffersInfinite({ status: effectiveStatus, search, sort });
 
-  // Flatten infinite pages into a single array for rendering and lookups
-  const offers = useMemo(
-    () => offersData?.pages.flat() ?? [],
-    [offersData?.pages],
-  );
+  // Batch project lookup — enabled only when project filter is active (avoids extra query otherwise)
+  const { data: projectSourceOfferIds } = useProjectSourceOfferIds(projectFilter !== 'ALL');
+
+  // Flatten infinite pages, then apply client-side project filter
+  const offers = useMemo(() => {
+    const all = offersData?.pages.flat() ?? [];
+    if (projectFilter === 'WITH_PROJECT') {
+      return all.filter((o) => projectSourceOfferIds?.has(o.id) ?? false);
+    }
+    if (projectFilter === 'WITHOUT_PROJECT') {
+      return all.filter((o) => !(projectSourceOfferIds?.has(o.id) ?? false));
+    }
+    return all;
+  }, [offersData?.pages, projectFilter, projectSourceOfferIds]);
 
   // Sentinel ref for future IntersectionObserver upgrade — Load More button for now
   const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -267,6 +314,24 @@ export default function Offers() {
       toast.success(t('offersList.archiveSuccess'));
     } catch {
       toast.error(t('offersList.archiveError'));
+    }
+  };
+
+  const handleDuplicate = async (offerId: string) => {
+    try {
+      const newId = await duplicateOffer.mutateAsync(offerId);
+      toast.success(t('offersList.duplicateSuccess'));
+      navigate(`/app/offers/${newId}`);
+    } catch {
+      toast.error(t('offersList.duplicateError'));
+    }
+  };
+
+  const handleProjectFilterChange = (newFilter: ProjectFilter) => {
+    setProjectFilter(newFilter);
+    // Automatically switch to ACCEPTED tab when project filter is selected
+    if (newFilter !== 'ALL' && statusFilter !== 'ACCEPTED') {
+      setStatusFilter('ACCEPTED');
     }
   };
 
@@ -326,7 +391,7 @@ export default function Offers() {
     return t('offersList.errorDesc');
   }, [error, t]);
 
-  const isFiltering = statusFilter !== 'ALL' || searchRaw.trim() !== '';
+  const isFiltering = statusFilter !== 'ALL' || searchRaw.trim() !== '' || projectFilter !== 'ALL';
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
@@ -381,17 +446,27 @@ export default function Offers() {
         ))}
       </div>
 
-      {/* Search + Sort row */}
-      <div className="flex gap-2 mb-4">
+      {/* Search + Project filter + Sort row */}
+      <div className="flex flex-wrap gap-2 mb-4">
         <SearchInput
-          className="flex-1"
+          className="flex-1 min-w-[140px]"
           value={searchRaw}
           onChange={(e) => setSearchRaw(e.target.value)}
           onClear={() => setSearchRaw('')}
           placeholder={t('offersList.searchPlaceholder')}
         />
+        <Select value={projectFilter} onValueChange={(v) => handleProjectFilterChange(v as ProjectFilter)}>
+          <SelectTrigger className="w-[150px] shrink-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">{t('offersList.projectFilterAll')}</SelectItem>
+            <SelectItem value="WITH_PROJECT">{t('offersList.projectFilterWithProject')}</SelectItem>
+            <SelectItem value="WITHOUT_PROJECT">{t('offersList.projectFilterWithoutProject')}</SelectItem>
+          </SelectContent>
+        </Select>
         <Select value={sort} onValueChange={(v) => setSort(v as OfferSort)}>
-          <SelectTrigger className="w-[160px] shrink-0">
+          <SelectTrigger className="w-[150px] shrink-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -426,7 +501,7 @@ export default function Offers() {
             title={isFiltering ? t('offersList.emptyFilterTitle') : t('offersList.emptyTitle')}
             description={isFiltering ? t('offersList.emptyFilterDesc') : t('offersList.emptyDesc')}
             ctaLabel={isFiltering ? t('offersList.emptyFilterCta') : t('offersList.emptyCta')}
-            onCta={isFiltering ? () => { setStatusFilter('ALL'); setSearchRaw(''); } : handleCreateFirst}
+            onCta={isFiltering ? () => { setStatusFilter('ALL'); setSearchRaw(''); setProjectFilter('ALL'); } : handleCreateFirst}
           />
           {!isFiltering && (
             <div className="flex justify-center">
@@ -454,6 +529,7 @@ export default function Offers() {
               onCreateProject={handleCreateProject}
               onOpenProject={handleOpenProject}
               onArchive={handleArchive}
+              onDuplicate={handleDuplicate}
               onScheduleFollowup={handleScheduleFollowup}
               isCreatingProject={creatingProjectId === offer.id}
             />
