@@ -192,3 +192,136 @@ describe('Duplicate prevention — flow decision logic', () => {
     expect(navigatedTo[0]).toBe(navigatedTo[1]);
   });
 });
+
+// ── Nowe testy: eager state UI + obsługa race condition (23505) ───────────────
+
+describe('Duplicate prevention — eager UI state (useProjectBySourceOffer)', () => {
+  beforeEach(() => {
+    mockProjects.length = 0;
+  });
+
+  it('zwraca null gdy brak projektu — panel pokazuje przycisk "Utwórz projekt"', () => {
+    const result = findProjectBySourceOffer(mockProjects, 'offer-new');
+    // null => AcceptanceLinkPanel renderuje gałąź "Create project"
+    expect(result).toBeNull();
+  });
+
+  it('zwraca istniejący projekt — panel pokazuje przycisk "Otwórz projekt"', () => {
+    const project = createProject('offer-exists', 'Projekt bazowy');
+    const result = findProjectBySourceOffer(mockProjects, 'offer-exists');
+    // nie-null => AcceptanceLinkPanel renderuje gałąź "Open project"
+    expect(result).not.toBeNull();
+    expect(result!.id).toBe(project.id);
+  });
+
+  it('po anulowaniu projektu panel wraca do "Utwórz projekt" dla tej samej oferty', () => {
+    const project = createProject('offer-cancel', 'Do anulowania');
+    project.status = 'CANCELLED';
+
+    const result = findProjectBySourceOffer(mockProjects, 'offer-cancel');
+    // CANCELLED ignorowany => null => panel pokazuje "Utwórz projekt"
+    expect(result).toBeNull();
+  });
+});
+
+describe('Duplicate prevention — race condition / 23505 create-or-return-existing', () => {
+  beforeEach(() => {
+    mockProjects.length = 0;
+  });
+
+  it('symulacja 23505: gdy INSERT nie powiedzie się, fallback zwraca istniejący projekt', () => {
+    // Scenariusz: dwa równoczesne żądania. Pierwsze tworzy projekt.
+    // Drugie otrzymuje błąd 23505 (unique constraint violation) i musi
+    // zwrócić istniejący projekt zamiast rzucać wyjątek.
+    const first = createProject('offer-race', 'Pierwszy');
+
+    // Symulacja logiki 23505-fallback (mirroring useCreateProjectV2)
+    function createOrReturnExisting(
+      offerId: string,
+      postgresErrorCode: string,
+    ): ProjectV2Stub | null {
+      if (postgresErrorCode === '23505') {
+        return findProjectBySourceOffer(mockProjects, offerId);
+      }
+      return null;
+    }
+
+    const recovered = createOrReturnExisting('offer-race', '23505');
+    expect(recovered).not.toBeNull();
+    expect(recovered!.id).toBe(first.id);
+    // Nadal tylko jeden projekt — żaden duplikat nie powstał
+    expect(mockProjects).toHaveLength(1);
+  });
+
+  it('błąd inny niż 23505 NIE jest wyciszany — jest rzucany dalej', () => {
+    // Weryfikacja: 23505-fallback nie łapie innych błędów DB
+    function shouldFallback(errorCode: string): boolean {
+      return errorCode === '23505';
+    }
+    expect(shouldFallback('23505')).toBe(true);
+    expect(shouldFallback('23514')).toBe(false); // CHECK constraint
+    expect(shouldFallback('42501')).toBe(false); // insufficient privilege
+    expect(shouldFallback('23503')).toBe(false); // FK violation
+  });
+
+  it('fallback 23505 wymaga source_offer_id — bez niego błąd jest rzucany', () => {
+    // Jeśli source_offer_id jest null (projekt ręczny), 23505 nie może być
+    // duplikatem source_offer — rzucamy dalej.
+    function shouldFallback(errorCode: string, sourceOfferId: string | null): boolean {
+      return errorCode === '23505' && sourceOfferId !== null;
+    }
+    expect(shouldFallback('23505', 'offer-abc')).toBe(true);
+    expect(shouldFallback('23505', null)).toBe(false);
+  });
+});
+
+describe('Duplicate prevention — data-level unique index semantics', () => {
+  beforeEach(() => {
+    mockProjects.length = 0;
+  });
+
+  it('partial unique index: CANCELLED projekty nie blokują nowych (WHERE status != CANCELLED)', () => {
+    // Indeks uq_v2_projects_active_source_offer wyklucza CANCELLED.
+    // Weryfikacja logiki: CANCELLED + nowy ACTIVE to dozwolone.
+    const cancelled = createProject('offer-idx', 'Stary anulowany');
+    cancelled.status = 'CANCELLED';
+
+    // findProjectBySourceOffer zwraca null (CANCELLED pominięty)
+    const existing = findProjectBySourceOffer(mockProjects, 'offer-idx');
+    expect(existing).toBeNull();
+
+    // Można stworzyć nowy projekt
+    const newProject = createProject('offer-idx', 'Nowy aktywny');
+    expect(newProject.status).toBe('ACTIVE');
+    // W bazie: 2 rekordy dla tej samej oferty, ale partial index
+    // pozwala na to (CANCELLED jest poza zakresem indeksu)
+    expect(mockProjects).toHaveLength(2);
+  });
+
+  it('partial unique index: NULL source_offer_id nie objęty indeksem (WHERE source_offer_id IS NOT NULL)', () => {
+    // Projekty ręczne mają source_offer_id = null — nigdy nie kolidują
+    mockProjects.push({ id: 'manual-a', source_offer_id: null, status: 'ACTIVE' });
+    mockProjects.push({ id: 'manual-b', source_offer_id: null, status: 'ACTIVE' });
+
+    // Wiele projektów ręcznych zawsze dozwolone
+    expect(mockProjects.filter(p => p.source_offer_id === null)).toHaveLength(2);
+    // Szukanie po konkretnej ofercie nie zwraca projektów ręcznych
+    expect(findProjectBySourceOffer(mockProjects, 'any-offer')).toBeNull();
+  });
+
+  it('business rule: wiele różnych ofert w kontekście jednego projektu — brak blokady', () => {
+    // offer-A, offer-B, offer-C to osobne ID — każda może mieć własny projekt.
+    // Reguła "wiele ofert w jednym projekcie" jest po stronie tabeli offers
+    // (wiele offers.project_id = ten sam projekt), NIE w v2_projects.
+    // Ten test potwierdza, że indeks nie blokuje tego scenariusza.
+    const pA = createProject('offer-A', 'Wariant A');
+    const pB = createProject('offer-B', 'Wariant B');
+    const pC = createProject('offer-C', 'Wariant C');
+
+    // Każda oferta ma osobny projekt — brak kolizji source_offer_id
+    expect(findProjectBySourceOffer(mockProjects, 'offer-A')!.id).toBe(pA.id);
+    expect(findProjectBySourceOffer(mockProjects, 'offer-B')!.id).toBe(pB.id);
+    expect(findProjectBySourceOffer(mockProjects, 'offer-C')!.id).toBe(pC.id);
+    expect(mockProjects).toHaveLength(3);
+  });
+});

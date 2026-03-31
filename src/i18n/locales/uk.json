@@ -3805,7 +3805,8 @@
     "acceptedAt": "Прийнято: {{date}}",
     "rejectedAt": "Відхилено: {{date}}",
     "createProjectCta": "Створити проект",
-    "createProjectHint": "Пропозицію прийнято — час починати проект!"
+    "createProjectHint": "Пропозицію прийнято — час починати проект!",
+    "openProjectCta": "Відкрити проєкт"
   },
   "publicOffer": {
     "pageTitle": "Пропозиція для акцепту",

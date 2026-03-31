@@ -3805,7 +3805,8 @@
     "acceptedAt": "Accepted: {{date}}",
     "rejectedAt": "Rejected: {{date}}",
     "createProjectCta": "Create project",
-    "createProjectHint": "Offer accepted — time to start the project!"
+    "createProjectHint": "Offer accepted — time to start the project!",
+    "openProjectCta": "Open project"
   },
   "publicOffer": {
     "pageTitle": "Offer for approval",

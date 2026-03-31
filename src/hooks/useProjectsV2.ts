@@ -92,6 +92,7 @@ export const projectsV2Keys = {
     [...projectsV2Keys.all, 'list', status, search, page, pageSize] as const,
   detail: (id: string) => [...projectsV2Keys.all, 'detail', id] as const,
   token: (projectId: string) => [...projectsV2Keys.all, 'token', projectId] as const,
+  bySourceOffer: (offerId: string) => [...projectsV2Keys.all, 'bySourceOffer', offerId] as const,
 };
 
 // ── List ──────────────────────────────────────────────────────────────────────
@@ -168,6 +169,27 @@ export async function findProjectBySourceOffer(sourceOfferId: string): Promise<P
   return data as ProjectV2 | null;
 }
 
+// ── React Query hook: find existing project by source offer ───────────────────
+
+/**
+ * Eagerly fetches an existing non-cancelled project for the given offer.
+ * Used in AcceptanceLinkPanel to show "Open project" vs "Create project"
+ * without requiring a click to discover the existing project.
+ */
+export function useProjectBySourceOffer(sourceOfferId: string | undefined) {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: projectsV2Keys.bySourceOffer(sourceOfferId ?? ''),
+    queryFn: async (): Promise<ProjectV2 | null> => {
+      if (!sourceOfferId) return null;
+      return findProjectBySourceOffer(sourceOfferId);
+    },
+    enabled: !!user && !!sourceOfferId,
+    staleTime: 30_000,
+  });
+}
+
 // ── Create ────────────────────────────────────────────────────────────────────
 
 export function useCreateProjectV2() {
@@ -204,7 +226,18 @@ export function useCreateProjectV2() {
         .select('id, user_id, client_id, source_offer_id, title, status, start_date, end_date, progress_percent, stages_json, total_from_offer, budget_net, budget_source, budget_updated_at, created_at, updated_at')
         .single();
 
-      if (error) throw error;
+      if (error) {
+        // Race condition guard: DB unique constraint violation (PostgreSQL 23505).
+        // Occurs when two concurrent requests both pass the app-level
+        // findProjectBySourceOffer() check and both attempt INSERT.
+        // The partial unique index uq_v2_projects_active_source_offer rejects
+        // the second INSERT — we recover by returning the already-created project.
+        if (error.code === '23505' && input.source_offer_id) {
+          const existing = await findProjectBySourceOffer(input.source_offer_id);
+          if (existing) return existing;
+        }
+        throw error;
+      }
       return data as ProjectV2;
     },
     onSuccess: () => {
