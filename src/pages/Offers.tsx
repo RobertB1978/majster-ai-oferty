@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { differenceInDays, addDays, format } from 'date-fns';
-import { FileText, MoreHorizontal, ExternalLink, FolderPlus, Sparkles, Archive, Plus, CalendarDays, Loader2 } from 'lucide-react';
+import { FileText, MoreHorizontal, ExternalLink, FolderPlus, FolderOpen, Sparkles, Archive, Plus, CalendarDays, Loader2 } from 'lucide-react';
 
-import { useCreateProjectV2, findProjectBySourceOffer } from '@/hooks/useProjectsV2';
+import { useCreateProjectV2, useProjectBySourceOffer, findProjectBySourceOffer } from '@/hooks/useProjectsV2';
 import { IndustryTemplateSheet } from '@/components/offers/IndustryTemplateSheet';
 import { getStarterPack } from '@/data/starterPacks';
 import { useAddCalendarEvent } from '@/hooks/useCalendarEvents';
@@ -90,12 +90,13 @@ interface OfferRowProps {
   offer: Offer;
   onOpen: (id: string) => void;
   onCreateProject: (id: string) => void;
+  onOpenProject: (projectId: string) => void;
   onArchive: (id: string) => void;
   onScheduleFollowup: (offer: Offer) => void;
   isCreatingProject?: boolean;
 }
 
-function OfferRow({ offer, onOpen, onCreateProject, onArchive, onScheduleFollowup, isCreatingProject }: OfferRowProps) {
+function OfferRow({ offer, onOpen, onCreateProject, onOpenProject, onArchive, onScheduleFollowup, isCreatingProject }: OfferRowProps) {
   const { t, i18n } = useTranslation();
   const noResp = offer.status === 'SENT' ? noResponseDays(offer.sent_at) : null;
   const amount = formatAmount(offer.total_net, offer.currency, i18n.language);
@@ -105,6 +106,11 @@ function OfferRow({ offer, onOpen, onCreateProject, onArchive, onScheduleFollowu
   const visibleDate = formatShortDate(offer.sent_at ?? offer.created_at, i18n.language);
   // Sprint E: resolve template pack for list badge (gracefully undefined for non-template offers)
   const templatePack = offer.source_template_id ? getStarterPack(offer.source_template_id) : undefined;
+
+  // Eager project lookup — only runs for ACCEPTED offers.
+  // Mirrors AcceptanceLinkPanel: shows "Open project" when project already exists.
+  const { data: existingProject, isLoading: existingProjectLoading } =
+    useProjectBySourceOffer(isAccepted ? offer.id : undefined);
 
   return (
     <div
@@ -146,19 +152,35 @@ function OfferRow({ offer, onOpen, onCreateProject, onArchive, onScheduleFollowu
           {visibleDate && <span>{offer.sent_at ? t('offersList.sentAt') : t('offersList.createdAt')}: {visibleDate}</span>}
           <span>{t('offersList.updatedAgo', { time: updatedAgo })}</span>
         </div>
-        {/* PR-13: ACCEPTED CTA — create project */}
+        {/* ACCEPTED CTA — open existing project or create new one */}
         {isAccepted && (
           <div className="mt-2">
-            <Button
-              size="sm"
-              variant="default"
-              className="gap-1.5 h-7 text-xs bg-green-600 hover:bg-green-700 text-white"
-              onClick={(e) => { e.stopPropagation(); onCreateProject(offer.id); }}
-              disabled={isCreatingProject}
-            >
-              <FolderPlus className="h-3.5 w-3.5" />
-              {isCreatingProject ? t('projectsV2.creating') : t('acceptanceLink.createProjectCta')}
-            </Button>
+            {existingProjectLoading ? (
+              <div className="flex items-center gap-1.5 h-7 text-xs text-muted-foreground py-1">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              </div>
+            ) : existingProject ? (
+              <Button
+                size="sm"
+                variant="default"
+                className="gap-1.5 h-7 text-xs bg-green-600 hover:bg-green-700 text-white"
+                onClick={(e) => { e.stopPropagation(); onOpenProject(existingProject.id); }}
+              >
+                <FolderOpen className="h-3.5 w-3.5" />
+                {t('acceptanceLink.openProjectCta')}
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="default"
+                className="gap-1.5 h-7 text-xs bg-green-600 hover:bg-green-700 text-white"
+                onClick={(e) => { e.stopPropagation(); onCreateProject(offer.id); }}
+                disabled={isCreatingProject}
+              >
+                <FolderPlus className="h-3.5 w-3.5" />
+                {isCreatingProject ? t('projectsV2.creating') : t('acceptanceLink.createProjectCta')}
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -237,6 +259,7 @@ export default function Offers() {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const handleOpen = (id: string) => navigate(`/app/offers/${id}`);
+  const handleOpenProject = (projectId: string) => navigate(`/app/projects/${projectId}`);
   const handleCreateFirst = () => navigate('/app/offers/new');
   const handleArchive = async (offerId: string) => {
     try {
@@ -429,6 +452,7 @@ export default function Offers() {
               offer={offer}
               onOpen={handleOpen}
               onCreateProject={handleCreateProject}
+              onOpenProject={handleOpenProject}
               onArchive={handleArchive}
               onScheduleFollowup={handleScheduleFollowup}
               isCreatingProject={creatingProjectId === offer.id}
