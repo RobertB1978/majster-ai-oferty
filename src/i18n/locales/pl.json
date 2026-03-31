@@ -3919,6 +3919,7 @@
     "createSuccess": "Projekt utworzony pomyślnie!",
     "createError": "Błąd tworzenia projektu. Spróbuj ponownie.",
     "creating": "Tworzenie...",
+    "alreadyExists": "Projekt z tej oferty już istnieje — otwieram go.",
     "selectClientPlaceholder": "Wybierz klienta (opcjonalnie)",
     "hub": {
       "back": "Projekty",

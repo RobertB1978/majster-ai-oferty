@@ -20,6 +20,7 @@ import type { ItemTemplate } from '@/hooks/useItemTemplates';
 import type { StarterPack } from '@/data/starterPacks';
 import { useQuickEstimateDraft } from '@/hooks/useQuickEstimateDraft';
 import { useDraftContext } from '@/contexts/DraftContext';
+import { findProjectBySourceOffer } from '@/hooks/useProjectsV2';
 
 export default function QuickEstimateWorkspace() {
   const { t } = useTranslation();
@@ -204,7 +205,15 @@ export default function QuickEstimateWorkspace() {
         items: validItems,
       });
 
-      // Step 2: Create a canonical v2_project linked to the finalized offer.
+      // Step 2: Duplicate prevention — check if project already exists for this offer
+      const existingProject = await findProjectBySourceOffer(offerId);
+      if (existingProject) {
+        toast.info(t('projectsV2.alreadyExists'));
+        navigate(`/app/projects/${existingProject.id}`);
+        return;
+      }
+
+      // Step 3: Create a canonical v2_project linked to the finalized offer.
       // v2_projects is the single source of truth read by Dashboard, ProjectsList,
       // ProjectHub, Finance — the old `projects` table is not read by any V2 surface.
       const now = new Date().toISOString();
