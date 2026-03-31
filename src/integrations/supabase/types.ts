@@ -1701,6 +1701,68 @@ export type Database = {
           },
         ]
       }
+      document_instances: {
+        Row: {
+          id: string
+          user_id: string
+          project_id: string | null
+          client_id: string | null
+          offer_id: string | null
+          template_key: string
+          template_version: string
+          locale: string
+          title: string | null
+          data_json: Json
+          references_json: Json
+          pdf_path: string | null
+          dossier_item_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          project_id?: string | null
+          client_id?: string | null
+          offer_id?: string | null
+          template_key: string
+          template_version?: string
+          locale?: string
+          title?: string | null
+          data_json?: Json
+          references_json?: Json
+          pdf_path?: string | null
+          dossier_item_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          project_id?: string | null
+          client_id?: string | null
+          offer_id?: string | null
+          template_key?: string
+          template_version?: string
+          locale?: string
+          title?: string | null
+          data_json?: Json
+          references_json?: Json
+          pdf_path?: string | null
+          dossier_item_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_instances_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v2_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_warranties: {
         Row: {
           id: string
