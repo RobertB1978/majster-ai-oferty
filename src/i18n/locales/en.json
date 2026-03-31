@@ -5229,6 +5229,26 @@
       "photos_plural": "{{count}} site photos"
     }
   },
+  "pwa": {
+    "installTitle": "Install Majster.AI",
+    "installDescription": "Add the app to your home screen for faster access.",
+    "installButton": "Install"
+  },
+  "companyDocs": {
+    "title": "Company Documents",
+    "description": "Licences, references, certificates and policies to attach to offers",
+    "addDocument": "Add document",
+    "addNewDocument": "Add new document",
+    "addNewDescription": "Upload a document that can be attached to offers"
+  },
+  "dossierPublic": {
+    "categoryContract": "Contracts",
+    "categoryProtocol": "Protocols",
+    "categoryReceipt": "Receipts",
+    "categoryPhoto": "Photo report",
+    "categoryGuarantee": "Guarantees",
+    "categoryOther": "Other"
+  },
   "globalSearch": {
     "placeholder": "Search offers, clients, projects…",
     "searching": "Searching…",

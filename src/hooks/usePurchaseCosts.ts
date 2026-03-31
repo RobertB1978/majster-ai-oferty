@@ -168,11 +168,12 @@ export function useProcessInvoiceOCR() {
       queryClient.invalidateQueries({ queryKey: ['purchase_costs', result.projectId] });
       toast.success(t('costs.toast.ocrComplete'));
     },
-    onError: async (_, { costId }) => {
-      await supabase
+    onError: (_, { costId }) => {
+      supabase
         .from('purchase_costs')
         .update({ ocr_status: 'failed' })
-        .eq('id', costId);
+        .eq('id', costId)
+        .then(undefined, () => { /* best-effort status update */ });
       toast.error(t('costs.toast.ocrError'));
     },
   });

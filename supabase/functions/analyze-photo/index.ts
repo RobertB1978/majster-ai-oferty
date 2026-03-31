@@ -6,11 +6,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
-import { 
-  validateUrl, 
+import { sanitizeAiOutput } from "../_shared/sanitization.ts";
+import {
+  validateUrl,
   validateString,
   createValidationErrorResponse,
-  combineValidations 
+  combineValidations
 } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
 import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
@@ -147,19 +148,34 @@ Odpowiedz w formacie JSON:
       if (jsonMatch) {
         analysis = JSON.parse(jsonMatch[0]);
         
-        // Sanitize output
-        analysis.summary = String(analysis.summary || '').substring(0, 1000);
-        analysis.works = Array.isArray(analysis.works) ? analysis.works.slice(0, 50) : [];
-        analysis.materials = Array.isArray(analysis.materials) ? analysis.materials.slice(0, 50) : [];
-        analysis.risks = Array.isArray(analysis.risks) ? analysis.risks.slice(0, 20) : [];
-        analysis.recommendations = Array.isArray(analysis.recommendations) ? analysis.recommendations.slice(0, 20) : [];
+        // Sanitize output — use sanitizeAiOutput for all text fields
+        analysis.summary = sanitizeAiOutput(analysis.summary, 1000);
+        const sanitizeWorkItem = (item: Record<string, unknown>) => ({
+          name: sanitizeAiOutput(item.name as string, 200),
+          category: sanitizeAiOutput(item.category as string, 50),
+          unit: sanitizeAiOutput(item.unit as string, 20),
+          estimatedQty: Math.max(0, Number(item.estimatedQty) || 0),
+          estimatedPrice: Math.max(0, Number(item.estimatedPrice) || 0),
+          notes: sanitizeAiOutput(item.notes as string, 500),
+        });
+        analysis.works = Array.isArray(analysis.works) ? analysis.works.slice(0, 50).map(sanitizeWorkItem) : [];
+        analysis.materials = Array.isArray(analysis.materials) ? analysis.materials.slice(0, 50).map(sanitizeWorkItem) : [];
+        analysis.estimatedTotalLabor = Math.max(0, Number(analysis.estimatedTotalLabor) || 0);
+        analysis.estimatedTotalMaterials = Math.max(0, Number(analysis.estimatedTotalMaterials) || 0);
+        analysis.estimatedMargin = Math.min(100, Math.max(0, Number(analysis.estimatedMargin) || 0));
+        analysis.risks = Array.isArray(analysis.risks)
+          ? analysis.risks.slice(0, 20).map((r: unknown) => sanitizeAiOutput(String(r), 500))
+          : [];
+        analysis.recommendations = Array.isArray(analysis.recommendations)
+          ? analysis.recommendations.slice(0, 20).map((r: unknown) => sanitizeAiOutput(String(r), 500))
+          : [];
       } else {
         throw new Error("No JSON found in response");
       }
     } catch (e) {
       console.error("Failed to parse AI response:", e);
       analysis = {
-        summary: content.substring(0, 1000),
+        summary: sanitizeAiOutput(content, 1000),
         works: [],
         materials: [],
         estimatedTotalLabor: 0,

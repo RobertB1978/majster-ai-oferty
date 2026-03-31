@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Download, X } from 'lucide-react';
@@ -9,6 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function InstallPrompt() {
+  const { t } = useTranslation();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -68,9 +70,9 @@ export function InstallPrompt() {
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
-            <h3 className="font-semibold">Zainstaluj Majster.AI</h3>
+            <h3 className="font-semibold">{t('pwa.installTitle')}</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Dodaj aplikację do ekranu głównego dla szybszego dostępu.
+              {t('pwa.installDescription')}
             </p>
           </div>
           <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" onClick={handleDismiss}>
@@ -80,7 +82,7 @@ export function InstallPrompt() {
         <div className="mt-3 flex gap-2">
           <Button className="flex-1" onClick={handleInstall}>
             <Download className="mr-2 h-4 w-4" />
-            Zainstaluj
+            {t('pwa.installButton')}
           </Button>
           <Button variant="outline" onClick={handleDismiss}>
             Później

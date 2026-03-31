@@ -5229,6 +5229,26 @@
       "photos_plural": "{{count}} фото з об'єкта"
     }
   },
+  "pwa": {
+    "installTitle": "Встановити Majster.AI",
+    "installDescription": "Додайте застосунок на головний екран для швидшого доступу.",
+    "installButton": "Встановити"
+  },
+  "companyDocs": {
+    "title": "Документи компанії",
+    "description": "Ліцензії, рекомендації, сертифікати та поліси для додавання до пропозицій",
+    "addDocument": "Додати документ",
+    "addNewDocument": "Додати новий документ",
+    "addNewDescription": "Завантажте документ, який можна прикріпити до пропозицій"
+  },
+  "dossierPublic": {
+    "categoryContract": "Договори",
+    "categoryProtocol": "Протоколи",
+    "categoryReceipt": "Квитанції",
+    "categoryPhoto": "Фотопротокол",
+    "categoryGuarantee": "Гарантії",
+    "categoryOther": "Інше"
+  },
   "globalSearch": {
     "placeholder": "Пошук пропозицій, клієнтів, проектів…",
     "searching": "Шукаю…",

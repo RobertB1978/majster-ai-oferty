@@ -5229,6 +5229,46 @@
       "photos_plural": "{{count}} zdjęć z terenu"
     }
   },
+  "pwa": {
+    "installTitle": "Zainstaluj Majster.AI",
+    "installDescription": "Dodaj aplikację do ekranu głównego dla szybszego dostępu.",
+    "installButton": "Zainstaluj"
+  },
+  "companyDocs": {
+    "title": "Dokumenty firmowe",
+    "description": "Uprawnienia, referencje, certyfikaty i polisy do załączenia do ofert",
+    "addDocument": "Dodaj dokument",
+    "addNewDocument": "Dodaj nowy dokument",
+    "addNewDescription": "Prześlij dokument, który będzie można załączać do ofert"
+  },
+  "dossierPublic": {
+    "categoryContract": "Umowy",
+    "categoryProtocol": "Protokoły",
+    "categoryReceipt": "Rachunki",
+    "categoryPhoto": "Fotoprotokół",
+    "categoryGuarantee": "Gwarancje",
+    "categoryOther": "Inne"
+  },
+  "pwa": {
+    "installTitle": "Zainstaluj Majster.AI",
+    "installDescription": "Dodaj aplikację do ekranu głównego dla szybszego dostępu.",
+    "installButton": "Zainstaluj"
+  },
+  "companyDocs": {
+    "title": "Dokumenty firmowe",
+    "description": "Uprawnienia, referencje, certyfikaty i polisy do załączenia do ofert",
+    "addDocument": "Dodaj dokument",
+    "addNewDocument": "Dodaj nowy dokument",
+    "addNewDescription": "Prześlij dokument, który będzie można załączać do ofert"
+  },
+  "dossierPublic": {
+    "categoryContract": "Umowy",
+    "categoryProtocol": "Protokoły",
+    "categoryReceipt": "Rachunki",
+    "categoryPhoto": "Fotoprotokół",
+    "categoryGuarantee": "Gwarancje",
+    "categoryOther": "Inne"
+  },
   "globalSearch": {
     "placeholder": "Szukaj ofert, klientów, projektów…",
     "searching": "Szukam…",

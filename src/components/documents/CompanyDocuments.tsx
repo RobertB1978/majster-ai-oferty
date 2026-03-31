@@ -180,24 +180,24 @@ export function CompanyDocuments() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Dokumenty firmowe
+              {t('companyDocs.title')}
             </CardTitle>
             <CardDescription>
-              Uprawnienia, referencje, certyfikaty i polisy do załączenia do ofert
+              {t('companyDocs.description')}
             </CardDescription>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Dodaj dokument
+                {t('companyDocs.addDocument')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Dodaj nowy dokument</DialogTitle>
+                <DialogTitle>{t('companyDocs.addNewDocument')}</DialogTitle>
                 <DialogDescription>
-                  Prześlij dokument, który będzie można załączać do ofert
+                  {t('companyDocs.addNewDescription')}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
