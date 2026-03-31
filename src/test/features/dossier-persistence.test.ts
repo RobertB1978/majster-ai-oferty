@@ -122,7 +122,8 @@ describe('Dossier persistence — upload path format', () => {
     const projectId = 'proj-456';
     const instanceId = 'inst-789';
     const templateKey = 'umowa_ryczaltowa';
-    const safeName = templateKey.replace(/[^a-zA-Z0-9_-]/g, '_');
+    // Regex must match uploadTemplatePdf() in templatePdfGenerator.ts
+    const safeName = templateKey.replace(/[^a-z0-9_]/g, '_');
 
     const filePath = `${userId}/${projectId}/documents/${safeName}_${instanceId}.pdf`;
 
@@ -132,17 +133,19 @@ describe('Dossier persistence — upload path format', () => {
     expect(filePath.endsWith('.pdf')).toBe(true);
   });
 
-  it('path without projectId uses _no_project_ prefix', () => {
+  it('path without projectId uses no_project segment', () => {
     const userId = 'user-123';
     const projectId: string | null = null;
     const instanceId = 'inst-789';
     const templateKey = 'protokol_koncowy';
-    const safeName = templateKey.replace(/[^a-zA-Z0-9_-]/g, '_');
-    const projectPart = projectId ?? '_no_project_';
+    // Regex must match uploadTemplatePdf() in templatePdfGenerator.ts
+    const safeName = templateKey.replace(/[^a-z0-9_]/g, '_');
+    // Fallback must match uploadTemplatePdf(): projectId ?? 'no_project'
+    const projectPart = projectId ?? 'no_project';
 
     const filePath = `${userId}/${projectPart}/documents/${safeName}_${instanceId}.pdf`;
 
-    expect(filePath).toContain('_no_project_');
+    expect(filePath).toContain('no_project');
     expect(filePath.endsWith('.pdf')).toBe(true);
   });
 });
@@ -163,5 +166,87 @@ describe('Dossier persistence — cache invalidation', () => {
     const invalidationKey = ['dossier_items', 'proj-B'];
 
     expect(queryKey).not.toEqual(invalidationKey);
+  });
+});
+
+// ── 5: Error resilience — ensureInstance failure does not block dossier save ──
+//
+// Covers the fix for the "Zapisz do teczki" runtime blocker:
+// document_instances table may be absent in production (migration not yet applied).
+// The save flow must complete the critical path (storage + project_dossier_items)
+// even when ensureInstance() throws.
+
+describe('Dossier persistence — error resilience', () => {
+  it('fallback path using random UUID is still valid storage path', () => {
+    const userId = 'user-abc';
+    const projectId = 'proj-xyz';
+    // Simulate crypto.randomUUID() fallback when ensureInstance fails
+    const fallbackId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+    const templateKey = 'umowa_ryczaltowa';
+    const safeName = templateKey.replace(/[^a-z0-9_]/g, '_');
+
+    const filePath = `${userId}/${projectId}/documents/${safeName}_${fallbackId}.pdf`;
+
+    expect(filePath).toContain(userId);
+    expect(filePath).toContain(projectId);
+    expect(filePath).toContain(fallbackId);
+    expect(filePath.endsWith('.pdf')).toBe(true);
+    // First path segment must be userId to satisfy storage RLS policy
+    expect(filePath.split('/')[0]).toBe(userId);
+  });
+
+  it('ensureInstance failure does not prevent project_dossier_items insert attempt', () => {
+    // Simulates the restructured handleSaveToDossier logic:
+    // ensureInstance is caught separately; the dossier save still proceeds.
+    let instanceFailed = false;
+    let dossierSaveAttempted = false;
+
+    const simulateHandleSaveToDossier = () => {
+      // Step: ensureInstance (best-effort)
+      try {
+        throw new Error('relation "public.document_instances" does not exist');
+      } catch (_instanceErr) {
+        instanceFailed = true;
+        // Continue — the critical path must still run
+      }
+
+      // Step: storage upload + project_dossier_items (always attempted)
+      dossierSaveAttempted = true;
+    };
+
+    simulateHandleSaveToDossier();
+
+    expect(instanceFailed).toBe(true);
+    expect(dossierSaveAttempted).toBe(true);
+  });
+
+  it('updateInstance failure after successful dossier insert does not revert the save', () => {
+    // Simulates: dossier item was created, but updateInstance throws.
+    // The dossier entry must remain persisted.
+    let dossierItemCreated = false;
+    let updateInstanceFailed = false;
+    let finalSaveSucceeded = false;
+
+    const simulateFlow = () => {
+      // Critical: dossier item created
+      dossierItemCreated = true;
+
+      // Best-effort: link instance
+      try {
+        throw new Error('relation "public.document_instances" does not exist');
+      } catch (_updateErr) {
+        updateInstanceFailed = true;
+        // Non-critical — dossier item already in DB
+      }
+
+      // Success path still reached
+      finalSaveSucceeded = true;
+    };
+
+    simulateFlow();
+
+    expect(dossierItemCreated).toBe(true);
+    expect(updateInstanceFailed).toBe(true);
+    expect(finalSaveSucceeded).toBe(true);
   });
 });

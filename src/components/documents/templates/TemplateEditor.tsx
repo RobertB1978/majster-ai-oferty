@@ -37,6 +37,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { generateTemplatePdf, uploadTemplatePdf } from '@/lib/templatePdfGenerator';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { logger } from '@/lib/logger';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -440,19 +441,26 @@ export function TemplateEditor({
         t,
       });
 
-      // 2. Ensure instance exists
-      const iid = await ensureInstance();
+      // 2. Ensure instance exists (best-effort — document_instances table may not exist yet in DB)
+      //    If it fails we continue with a fallback ID so the critical dossier save still completes.
+      let iid: string | null = null;
+      try {
+        iid = await ensureInstance();
+      } catch (instanceErr) {
+        logger.error('[TemplateEditor] ensureInstance failed — continuing without instance', instanceErr);
+      }
+      const effectiveId = iid ?? crypto.randomUUID();
 
-      // 3. Upload PDF to dossier bucket
+      // 3. Upload PDF to dossier bucket (critical)
       const pdfPath = await uploadTemplatePdf({
         userId: user.id,
         projectId,
-        instanceId: iid,
+        instanceId: effectiveId,
         templateKey: template.key,
         pdfBlob,
       });
 
-      // 4. Create dossier item
+      // 4. Create dossier item (critical)
       const safeTitle = t(template.titleKey).trim() || template.key;
       const fileName = `${safeTitle}_${formatDate(new Date(), i18n.language).replace(/\./g, '-')}.pdf`;
 
@@ -473,13 +481,19 @@ export function TemplateEditor({
 
       if (dossierErr) throw dossierErr;
 
-      // 5. Update instance with pdf_path + dossier_item_id
-      await updateInstance.mutateAsync({
-        id: iid,
-        dataJson: data,
-        pdfPath,
-        dossierItemId: dossierItem.id,
-      });
+      // 5. Update instance with pdf_path + dossier_item_id (best-effort)
+      if (iid) {
+        try {
+          await updateInstance.mutateAsync({
+            id: iid,
+            dataJson: data,
+            pdfPath,
+            dossierItemId: dossierItem.id,
+          });
+        } catch (updateErr) {
+          logger.error('[TemplateEditor] updateInstance failed (non-critical)', updateErr);
+        }
+      }
 
       // Invalidate dossier cache so DossierPanel refreshes
       queryClient.invalidateQueries({ queryKey: ['dossier_items', projectId] });
@@ -504,8 +518,9 @@ export function TemplateEditor({
           },
         },
       });
-      onSaved?.(iid);
-    } catch (_err) {
+      onSaved?.(iid ?? effectiveId);
+    } catch (err) {
+      logger.error('[TemplateEditor] Save to dossier failed', err);
       toast.error(t('docTemplates.editor.saveError'));
     } finally {
       setIsSavingDossier(false);
