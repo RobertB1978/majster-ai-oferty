@@ -85,7 +85,7 @@ export function InstallPrompt() {
             {t('pwa.installButton')}
           </Button>
           <Button variant="outline" onClick={handleDismiss}>
-            Później
+            {t('pwa.dismissButton')}
           </Button>
         </div>
       </CardContent>
