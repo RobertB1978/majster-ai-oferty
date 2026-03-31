@@ -26,7 +26,7 @@ import {
   buildAcceptanceLinkUrl,
   daysUntilExpiry,
 } from '@/hooks/useAcceptanceLink';
-import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
+import { useCreateProjectV2, findProjectBySourceOffer } from '@/hooks/useProjectsV2';
 import { formatDateTime } from '@/lib/formatters';
 
 interface Props {
@@ -95,6 +95,13 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
             onClick={async () => {
               setCreatingProject(true);
               try {
+                // Duplicate prevention: check if project already exists for this offer
+                const existing = await findProjectBySourceOffer(offerId);
+                if (existing) {
+                  toast.info(t('projectsV2.alreadyExists'));
+                  navigate(`/app/projects/${existing.id}`);
+                  return;
+                }
                 const project = await createProject.mutateAsync({
                   title: t('projectsV2.defaultTitle'),
                   source_offer_id: offerId,

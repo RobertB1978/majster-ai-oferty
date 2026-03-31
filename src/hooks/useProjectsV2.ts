@@ -146,6 +146,28 @@ export function useProjectV2(id: string | undefined) {
   });
 }
 
+// ── Find existing project by source offer (duplicate prevention) ─────────────
+
+const PROJECT_SELECT = 'id, user_id, client_id, source_offer_id, title, status, start_date, end_date, progress_percent, stages_json, total_from_offer, budget_net, budget_source, budget_updated_at, created_at, updated_at' as const;
+
+/**
+ * Check if a non-cancelled project already exists for the given offer.
+ * Returns the existing project or null.
+ * Used to prevent duplicate project creation from the same accepted offer.
+ */
+export async function findProjectBySourceOffer(sourceOfferId: string): Promise<ProjectV2 | null> {
+  const { data, error } = await supabase
+    .from('v2_projects')
+    .select(PROJECT_SELECT)
+    .eq('source_offer_id', sourceOfferId)
+    .neq('status', 'CANCELLED')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data as ProjectV2 | null;
+}
+
 // ── Create ────────────────────────────────────────────────────────────────────
 
 export function useCreateProjectV2() {

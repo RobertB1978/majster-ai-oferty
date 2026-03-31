@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { differenceInDays, addDays, format } from 'date-fns';
 import { FileText, MoreHorizontal, ExternalLink, FolderPlus, Sparkles, Archive, Plus, CalendarDays, Loader2 } from 'lucide-react';
 
-import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
+import { useCreateProjectV2, findProjectBySourceOffer } from '@/hooks/useProjectsV2';
 import { IndustryTemplateSheet } from '@/components/offers/IndustryTemplateSheet';
 import { getStarterPack } from '@/data/starterPacks';
 import { useAddCalendarEvent } from '@/hooks/useCalendarEvents';
@@ -253,6 +253,13 @@ export default function Offers() {
     if (!offer) return;
     setCreatingProjectId(offerId);
     try {
+      // Duplicate prevention: check if project already exists for this offer
+      const existing = await findProjectBySourceOffer(offerId);
+      if (existing) {
+        toast.info(t('projectsV2.alreadyExists'));
+        navigate(`/app/projects/${existing.id}`);
+        return;
+      }
       const project = await createProject.mutateAsync({
         title: offer.title ?? t('projectsV2.defaultTitle'),
         client_id: offer.client_id ?? null,
