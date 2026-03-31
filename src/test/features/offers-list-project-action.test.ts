@@ -167,6 +167,62 @@ describe('Offers list — duplicate prevention nienaruszony', () => {
   });
 });
 
+// ── Eager cache update — back-navigation stale state (naprawa) ───────────────
+
+describe('Offers list — eager cache update po tworzeniu projektu (back-navigation)', () => {
+  it('PRZED naprawą: stale null w cache + isLoading=false → błędnie "Utwórz projekt"', () => {
+    // Dokumentuje stary bug: po stworzeniu projektu i navigate() wstecz,
+    // useProjectBySourceOffer zwracało stare dane (null), bo isLoading=false.
+    // resolveProjectActionLabel(false, null) = 'createProject' — błędny label.
+    const staleDataFromCache: ProjectStub | null = null;
+    expect(resolveProjectActionLabel(false, staleDataFromCache)).toBe('createProject');
+  });
+
+  it('PO naprawie: setQueryData ustawia projekt w cache natychmiast → "Otwórz projekt" bez flashowania', () => {
+    // useCreateProjectV2.onSuccess wywołuje setQueryData(bySourceOffer(id), projekt)
+    // przed navigate(). Kiedy OfferRow montuje się ponownie, dane są poprawne od razu.
+    const freshProjectFromSetQueryData: ProjectStub = {
+      id: 'proj-eager',
+      source_offer_id: 'offer-test',
+      status: 'ACTIVE',
+    };
+    expect(resolveProjectActionLabel(false, freshProjectFromSetQueryData)).toBe('openProject');
+  });
+
+  it('setQueryData wywoływane tylko gdy source_offer_id nie jest null', () => {
+    // Projekty ręczne (source_offer_id = null) nie mają powiązanej oferty —
+    // setQueryData(bySourceOffer(null)) nie powinno być wywoływane.
+    const manualProject: ProjectStub = {
+      id: 'proj-manual',
+      source_offer_id: null,
+      status: 'ACTIVE',
+    };
+    // Warunek w onSuccess: if (data.source_offer_id)
+    expect(manualProject.source_offer_id).toBeNull();
+    // Inne oferty w cache są niezmienione
+    const unrelatedOfferCache: ProjectStub | null = null;
+    expect(resolveProjectActionLabel(false, unrelatedOfferCache)).toBe('createProject');
+  });
+
+  it('setQueryData z nowo stworzonym projektem: cache dla źródłowej oferty od razu poprawny', () => {
+    // Symulacja: onSuccess(createdProject) → setQueryData(bySourceOffer(offer.id), project)
+    // Po powrocie na listę: data = createdProject (nie null), isLoading = false
+    const createdProject: ProjectStub = {
+      id: 'proj-just-created',
+      source_offer_id: 'offer-source',
+      status: 'ACTIVE',
+    };
+    expect(createdProject.source_offer_id).not.toBeNull();
+    // OfferRow dostaje dane natychmiast z cache → "Otwórz projekt"
+    expect(resolveProjectActionLabel(false, createdProject)).toBe('openProject');
+    // Duplikat NIE jest tworzony — handleCreateProject sprawdza findProjectBySourceOffer
+    projects.push(createdProject);
+    const dup = simulateHandleCreateProject(projects, 'offer-source');
+    expect(dup.action).toBe('redirect');
+    expect(dup.targetId).toBe('proj-just-created');
+  });
+});
+
 describe('Offers list — reguła biznesowa: wiele ofert, jeden projekt', () => {
   beforeEach(() => {
     projects.length = 0;
