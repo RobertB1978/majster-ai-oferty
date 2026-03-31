@@ -3664,7 +3664,6 @@
     "actionScheduleFollowup": "Zaplanuj follow-up",
     "archiveSuccess": "Oferta zarchiwizowana",
     "archiveError": "Nie udało się zarchiwizować oferty",
-    "duplicateComingSoon": "Duplikowanie ofert — wkrótce dostępne",
     "duplicateSuccess": "Oferta zduplikowana — otwarto nowy szkic",
     "duplicateError": "Nie udało się zduplikować oferty",
     "projectFilterAll": "Wszystkie projekty",
@@ -3683,7 +3682,18 @@
     "newOfferButton": "Nowa oferta",
     "newOfferButtonShort": "Nowa",
     "loadMore": "Załaduj więcej",
-    "loadingMore": "Ładowanie…"
+    "loadingMore": "Ładowanie…",
+    "bulkSelectToggle": "Zaznacz",
+    "bulkSelectCancel": "Anuluj zaznaczanie",
+    "bulkSelectAll": "Zaznacz wszystkie",
+    "bulkSelectedCount": "Zaznaczono: {{count}}",
+    "bulkSelectOffer": "Zaznacz ofertę: {{title}}",
+    "bulkArchive": "Archiwizuj",
+    "bulkDuplicate": "Duplikuj",
+    "bulkArchiveSuccess": "Zarchiwizowano {{count}} ofert",
+    "bulkArchiveError": "Nie udało się zarchiwizować {{count}} ofert",
+    "bulkDuplicateSuccess": "Zduplikowano {{count}} ofert — nowe szkice utworzone",
+    "bulkDuplicateError": "Nie udało się zduplikować {{count}} ofert"
   },
   "offerWizard": {
     "titleNew": "Nowa oferta",
