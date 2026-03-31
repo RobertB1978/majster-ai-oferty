@@ -12,6 +12,7 @@ import { isTradeOnboardingDone } from '@/hooks/useTradeOnboarding';
 import { useDenseMode } from '@/hooks/useDenseMode';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useFieldSafety } from '@/hooks/useFieldSafety';
+import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { FieldSafetyBanner } from './FieldSafetyBanner';
 import { GlobalSearch } from './GlobalSearch';
 import { TabletSidebar } from './TabletSidebar';
@@ -39,6 +40,11 @@ export function AppLayout() {
   // Field Safety — activates high-glare, battery-saver and reduced-motion modes.
   // Sets data-field-* attributes on <html> that CSS reads for Field-Safe variants.
   useFieldSafety();
+
+  // Realtime signal: shows a toast and refreshes the notification bell
+  // whenever the backend inserts a new notification for the current user
+  // (e.g. offer accepted, offer viewed by client).
+  useRealtimeNotifications();
 
   // Show content when auth is resolved; reset on logout or re-loading
   useEffect(() => {
