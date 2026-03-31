@@ -93,6 +93,8 @@ export const projectsV2Keys = {
   detail: (id: string) => [...projectsV2Keys.all, 'detail', id] as const,
   token: (projectId: string) => [...projectsV2Keys.all, 'token', projectId] as const,
   bySourceOffer: (offerId: string) => [...projectsV2Keys.all, 'bySourceOffer', offerId] as const,
+  bySourceOfferBatch: (sortedIds: string[]) =>
+    [...projectsV2Keys.all, 'bySourceOfferBatch', sortedIds] as const,
 };
 
 // ── List ──────────────────────────────────────────────────────────────────────
@@ -186,6 +188,52 @@ export function useProjectBySourceOffer(sourceOfferId: string | undefined) {
       return findProjectBySourceOffer(sourceOfferId);
     },
     enabled: !!user && !!sourceOfferId,
+    staleTime: 30_000,
+  });
+}
+
+// ── Batch: find projects for multiple source offers in one query ──────────────
+
+/** Minimal project shape returned by the batch lookup for each accepted offer row. */
+export interface OfferProjectLookup {
+  id: string;
+  status: ProjectStatus;
+}
+
+/**
+ * Batch-fetches existing non-cancelled projects for a set of accepted offer IDs.
+ * Issues a single .in() query instead of one query per row, eliminating the
+ * N+1 lookup that occurs when rendering a list of accepted offers.
+ *
+ * Returns a Map<offerId, OfferProjectLookup> for O(1) lookups inside OfferRow.
+ * Includes project status so rows can render the project-status badge without
+ * an extra per-row query.
+ * Invalidated automatically when useCreateProjectV2 / useDeleteProjectV2
+ * succeed (both invalidate projectsV2Keys.all which is a prefix of this key).
+ */
+export function useProjectsBySourceOffers(offerIds: string[]) {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: projectsV2Keys.bySourceOfferBatch([...offerIds].sort()),
+    queryFn: async (): Promise<Map<string, OfferProjectLookup>> => {
+      if (offerIds.length === 0) return new Map();
+      const { data, error } = await supabase
+        .from('v2_projects')
+        .select('id, source_offer_id, status')
+        .in('source_offer_id', offerIds)
+        .neq('status', 'CANCELLED');
+      if (error) throw error;
+      return new Map(
+        (data ?? [])
+          .filter(
+            (p): p is { id: string; source_offer_id: string; status: ProjectStatus } =>
+              p.source_offer_id !== null,
+          )
+          .map((p) => [p.source_offer_id, { id: p.id, status: p.status }]),
+      );
+    },
+    enabled: !!user && offerIds.length > 0,
     staleTime: 30_000,
   });
 }

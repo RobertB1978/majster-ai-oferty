@@ -1,12 +1,12 @@
-import { useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { differenceInDays, addDays, format } from 'date-fns';
 import { FileText, MoreHorizontal, ExternalLink, FolderPlus, FolderOpen, Sparkles, Archive, Plus, CalendarDays, Loader2, Copy } from 'lucide-react';
 
-import { useCreateProjectV2, useProjectBySourceOffer, findProjectBySourceOffer, useProjectSourceOfferIds } from '@/hooks/useProjectsV2';
-import type { ProjectStatus } from '@/hooks/useProjectsV2';
+import { useCreateProjectV2, useProjectsBySourceOffers, findProjectBySourceOffer, useProjectSourceOfferIds } from '@/hooks/useProjectsV2';
+import type { ProjectStatus, OfferProjectLookup } from '@/hooks/useProjectsV2';
 import { IndustryTemplateSheet } from '@/components/offers/IndustryTemplateSheet';
 import { getStarterPack } from '@/data/starterPacks';
 import { useAddCalendarEvent } from '@/hooks/useCalendarEvents';
@@ -111,9 +111,13 @@ interface OfferRowProps {
   onDuplicate: (id: string) => void;
   onScheduleFollowup: (offer: Offer) => void;
   isCreatingProject?: boolean;
+  /** Batch-resolved project data from useProjectsBySourceOffers. Null = no project exists. */
+  existingProject?: OfferProjectLookup | null;
+  /** True while the batch project lookup is in flight. */
+  projectsLoading?: boolean;
 }
 
-function OfferRow({ offer, onOpen, onCreateProject, onOpenProject, onArchive, onDuplicate, onScheduleFollowup, isCreatingProject }: OfferRowProps) {
+function OfferRow({ offer, onOpen, onCreateProject, onOpenProject, onArchive, onDuplicate, onScheduleFollowup, isCreatingProject, existingProject, projectsLoading }: OfferRowProps) {
   const { t, i18n } = useTranslation();
   const noResp = offer.status === 'SENT' ? noResponseDays(offer.sent_at) : null;
   const amount = formatAmount(offer.total_net, offer.currency, i18n.language);
@@ -123,11 +127,6 @@ function OfferRow({ offer, onOpen, onCreateProject, onOpenProject, onArchive, on
   const visibleDate = formatShortDate(offer.sent_at ?? offer.created_at, i18n.language);
   // Sprint E: resolve template pack for list badge (gracefully undefined for non-template offers)
   const templatePack = offer.source_template_id ? getStarterPack(offer.source_template_id) : undefined;
-
-  // Eager project lookup — only runs for ACCEPTED offers.
-  // Mirrors AcceptanceLinkPanel: shows "Open project" when project already exists.
-  const { data: existingProject, isLoading: existingProjectLoading } =
-    useProjectBySourceOffer(isAccepted ? offer.id : undefined);
 
   return (
     <div
@@ -162,8 +161,8 @@ function OfferRow({ offer, onOpen, onCreateProject, onOpenProject, onArchive, on
               {templatePack.tradeName}
             </Badge>
           )}
-          {/* Project status badge — only for ACCEPTED offers, shows after async lookup */}
-          {isAccepted && !existingProjectLoading && (
+          {/* Project status badge — only for ACCEPTED offers, shows after batch lookup */}
+          {isAccepted && !projectsLoading && (
             existingProject ? (
               <Badge className={cn('shrink-0 text-[11px] font-semibold px-2 py-0.5', PROJECT_BADGE_CLASSES[existingProject.status])}>
                 {t(PROJECT_BADGE_I18N[existingProject.status])}
@@ -184,7 +183,7 @@ function OfferRow({ offer, onOpen, onCreateProject, onOpenProject, onArchive, on
         {/* ACCEPTED CTA — open existing project or create new one */}
         {isAccepted && (
           <div className="mt-2">
-            {existingProjectLoading ? (
+            {projectsLoading ? (
               <div className="flex items-center gap-1.5 h-7 text-xs text-muted-foreground py-1">
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
               </div>
@@ -302,8 +301,35 @@ export default function Offers() {
     return all;
   }, [offersData?.pages, projectFilter, projectSourceOfferIds]);
 
-  // Sentinel ref for future IntersectionObserver upgrade — Load More button for now
+  // Collect accepted offer IDs for a single batch project lookup
+  const acceptedOfferIds = useMemo(
+    () => offers.filter((o) => o.status === 'ACCEPTED').map((o) => o.id),
+    [offers],
+  );
+
+  // One query for all accepted-offer → project mappings instead of N per-row queries
+  const { data: projectMap = new Map<string, OfferProjectLookup>(), isLoading: projectsLoading } =
+    useProjectsBySourceOffers(acceptedOfferIds);
+
+  // IntersectionObserver sentinel — triggers fetchNextPage when bottom of list is visible
   const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const sentinel = loadMoreRef.current;
+    if (!sentinel || !hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleOpen = (id: string) => navigate(`/app/offers/${id}`);
   const handleOpenProject = (projectId: string) => navigate(`/app/projects/${projectId}`);
@@ -532,28 +558,18 @@ export default function Offers() {
               onDuplicate={handleDuplicate}
               onScheduleFollowup={handleScheduleFollowup}
               isCreatingProject={creatingProjectId === offer.id}
+              existingProject={projectMap.get(offer.id) ?? null}
+              projectsLoading={projectsLoading}
             />
           ))}
 
-          {/* Load More sentinel + button */}
+          {/* IntersectionObserver sentinel — auto-triggers fetchNextPage when visible */}
           <div ref={loadMoreRef} className="flex justify-center pt-2 pb-4">
-            {hasNextPage && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => fetchNextPage()}
-                disabled={isFetchingNextPage}
-                className="min-w-[160px]"
-              >
-                {isFetchingNextPage ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    {t('offersList.loadingMore')}
-                  </>
-                ) : (
-                  t('offersList.loadMore')
-                )}
-              </Button>
+            {isFetchingNextPage && (
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {t('offersList.loadingMore')}
+              </div>
             )}
           </div>
         </div>
