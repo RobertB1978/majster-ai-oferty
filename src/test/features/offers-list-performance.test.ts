@@ -37,12 +37,12 @@ interface ProjectStub {
  * Mirrors the queryFn in useProjectsBySourceOffers:
  * Filtruje projekty w pamięci identycznie jak zapytanie Supabase:
  *   .in('source_offer_id', offerIds).neq('status', 'CANCELLED')
- * i zwraca Map<offerId, projectId>.
+ * i zwraca Map<offerId, { id, status }> (OfferProjectLookup).
  */
 function buildProjectMap(
   projects: ProjectStub[],
   offerIds: string[],
-): Map<string, string> {
+): Map<string, { id: string; status: ProjectStub['status'] }> {
   if (offerIds.length === 0) return new Map();
   return new Map(
     projects
@@ -52,7 +52,7 @@ function buildProjectMap(
           offerIds.includes(p.source_offer_id) &&
           p.status !== 'CANCELLED',
       )
-      .map((p) => [p.source_offer_id as string, p.id]),
+      .map((p) => [p.source_offer_id as string, { id: p.id, status: p.status }]),
   );
 }
 
@@ -89,17 +89,17 @@ describe('useProjectsBySourceOffers — logika batch lookup', () => {
     expect(result.size).toBe(0);
   });
 
-  it('zwraca poprawne mapowanie offerId → projectId dla jednej oferty', () => {
+  it('zwraca poprawne mapowanie offerId → { id, status } dla jednej oferty', () => {
     const result = buildProjectMap(projects, ['offer-1']);
-    expect(result.get('offer-1')).toBe('proj-1');
+    expect(result.get('offer-1')).toEqual({ id: 'proj-1', status: 'ACTIVE' });
     expect(result.size).toBe(1);
   });
 
-  it('jedno batch zapytanie obsługuje wiele ofert naraz', () => {
+  it('jedno batch zapytanie obsługuje wiele ofert naraz i zwraca id+status', () => {
     const result = buildProjectMap(projects, ['offer-1', 'offer-2', 'offer-4']);
-    expect(result.get('offer-1')).toBe('proj-1');
-    expect(result.get('offer-2')).toBe('proj-2');
-    expect(result.get('offer-4')).toBe('proj-4');
+    expect(result.get('offer-1')).toEqual({ id: 'proj-1', status: 'ACTIVE' });
+    expect(result.get('offer-2')).toEqual({ id: 'proj-2', status: 'COMPLETED' });
+    expect(result.get('offer-4')).toEqual({ id: 'proj-4', status: 'ON_HOLD' });
     expect(result.size).toBe(3);
   });
 
@@ -109,10 +109,10 @@ describe('useProjectsBySourceOffers — logika batch lookup', () => {
     expect(result.size).toBe(0);
   });
 
-  it('projekty COMPLETED i ON_HOLD są traktowane jako istniejące', () => {
+  it('projekty COMPLETED i ON_HOLD są traktowane jako istniejące (badge renderowany)', () => {
     const result = buildProjectMap(projects, ['offer-2', 'offer-4']);
-    expect(result.get('offer-2')).toBe('proj-2');
-    expect(result.get('offer-4')).toBe('proj-4');
+    expect(result.get('offer-2')?.status).toBe('COMPLETED');
+    expect(result.get('offer-4')?.status).toBe('ON_HOLD');
   });
 
   it('oferta bez powiązanego projektu zwraca undefined z mapy', () => {

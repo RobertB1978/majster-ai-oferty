@@ -194,12 +194,20 @@ export function useProjectBySourceOffer(sourceOfferId: string | undefined) {
 
 // ── Batch: find projects for multiple source offers in one query ──────────────
 
+/** Minimal project shape returned by the batch lookup for each accepted offer row. */
+export interface OfferProjectLookup {
+  id: string;
+  status: ProjectStatus;
+}
+
 /**
  * Batch-fetches existing non-cancelled projects for a set of accepted offer IDs.
  * Issues a single .in() query instead of one query per row, eliminating the
  * N+1 lookup that occurs when rendering a list of accepted offers.
  *
- * Returns a Map<offerId, projectId> for O(1) lookups inside OfferRow.
+ * Returns a Map<offerId, OfferProjectLookup> for O(1) lookups inside OfferRow.
+ * Includes project status so rows can render the project-status badge without
+ * an extra per-row query.
  * Invalidated automatically when useCreateProjectV2 / useDeleteProjectV2
  * succeed (both invalidate projectsV2Keys.all which is a prefix of this key).
  */
@@ -208,21 +216,21 @@ export function useProjectsBySourceOffers(offerIds: string[]) {
 
   return useQuery({
     queryKey: projectsV2Keys.bySourceOfferBatch([...offerIds].sort()),
-    queryFn: async (): Promise<Map<string, string>> => {
+    queryFn: async (): Promise<Map<string, OfferProjectLookup>> => {
       if (offerIds.length === 0) return new Map();
       const { data, error } = await supabase
         .from('v2_projects')
-        .select('id, source_offer_id')
+        .select('id, source_offer_id, status')
         .in('source_offer_id', offerIds)
         .neq('status', 'CANCELLED');
       if (error) throw error;
       return new Map(
         (data ?? [])
           .filter(
-            (p): p is { id: string; source_offer_id: string } =>
+            (p): p is { id: string; source_offer_id: string; status: ProjectStatus } =>
               p.source_offer_id !== null,
           )
-          .map((p) => [p.source_offer_id, p.id]),
+          .map((p) => [p.source_offer_id, { id: p.id, status: p.status }]),
       );
     },
     enabled: !!user && offerIds.length > 0,
@@ -381,6 +389,34 @@ export function useCreateProjectPublicToken(projectId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: projectsV2Keys.token(projectId) });
     },
+  });
+}
+
+// ── Project source-offer IDs (for offers-list filter) ────────────────────────
+
+/**
+ * Returns the set of offer IDs that already have at least one non-cancelled project.
+ * Used by the offers list to power the "with project / without project" filter
+ * without issuing a per-row query.
+ *
+ * @param enabled — set false when the filter is not active to avoid unnecessary fetches.
+ */
+export function useProjectSourceOfferIds(enabled: boolean) {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: [...projectsV2Keys.all, 'sourceOfferIds'] as const,
+    queryFn: async (): Promise<Set<string>> => {
+      const { data, error } = await supabase
+        .from('v2_projects')
+        .select('source_offer_id')
+        .neq('status', 'CANCELLED')
+        .not('source_offer_id', 'is', null);
+      if (error) throw error;
+      return new Set((data ?? []).map((p) => p.source_offer_id as string));
+    },
+    enabled: !!user && enabled,
+    staleTime: 30_000,
   });
 }
 
