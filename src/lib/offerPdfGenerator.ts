@@ -7,6 +7,19 @@
  * Scope per sekcja 26.1: typography, spacing, hierarchy, layout, colors,
  * header (logo, company data, document ID), footer (validity, date, page X/Y),
  * QR code, amber Total accent, JetBrains Mono for amounts.
+ *
+ * ── Klasyfikacja PDF Platform v2 ─────────────────────────────────────────────
+ * STATUS: FALLBACK
+ *
+ * Ten plik jest FALLBACKIEM dla ścieżki kanonicznej v2.
+ * Wywoływany gdy Edge Function generate-pdf-v2 jest niedostępna (sieć, timeout).
+ * Nowe przepływy powinny używać renderPdfV2.ts, który wywołuje ten moduł
+ * automatycznie jako fallback dla documentType='offer'.
+ *
+ * ŚCIEŻKA KANONICZNA: src/lib/pdf/renderPdfV2.ts → generate-pdf-v2 (Edge Fn)
+ * FALLBACK:           ten plik (jsPDF, client-side)
+ * LEGACY (v1 flow):   src/lib/generateServerPdf.ts → generate-offer-pdf (Edge Fn)
+ * ─────────────────────────────────────────────────────────────────────────────
  */
 
 import jsPDF from 'jspdf';
