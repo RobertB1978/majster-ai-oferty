@@ -92,22 +92,32 @@ export function useAdminTheme(organizationId: string | null): UseAdminThemeResul
 
     fetchTheme();
 
-    // Subscribe to changes
-    const subscription = supabase
-      .from('admin_theme_config')
-      .on('*', (payload) => {
-        if (payload.new?.organization_id === organizationId) {
-          setTheme(payload.new as AdminThemeConfig);
-        }
-      })
+    // Subscribe to changes using the current Supabase Realtime v2 channel API.
+    // The previous .on().subscribe() + removeSubscription() pattern is deprecated
+    // and was removed in @supabase/supabase-js v2.
+    const channel = supabase
+      .channel(`admin-theme-org-${organizationId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'admin_theme_config',
+          filter: `organization_id=eq.${organizationId}`,
+        },
+        (payload) => {
+          if (payload.new && 'organization_id' in payload.new) {
+            setTheme(payload.new as AdminThemeConfig);
+          }
+        },
+      )
       .subscribe();
 
-    subscriptionRef.current = subscription;
+    subscriptionRef.current = channel;
 
     return () => {
-      if (subscriptionRef.current) {
-        supabase.removeSubscription(subscription);
-      }
+      void supabase.removeChannel(channel);
+      subscriptionRef.current = null;
     };
   }, [organizationId, fetchTheme, t]);
 
