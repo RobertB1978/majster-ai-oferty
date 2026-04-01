@@ -75,5 +75,16 @@ export function serializeOfferPdfPayload(payload: OfferPdfPayload): OfferPDFPayl
     validUntil: payload.validUntil.toISOString(),
     variantSections: payload.variantSections?.map(serializeVariantSection),
     acceptanceUrl: payload.acceptanceUrl,
+
+    // ── PDF Platform v2 Foundation — metadane (backward compatible) ─────────
+    //
+    // documentType: zawsze 'offer' dla schemaVersion: 1 — stały fakt.
+    // locale: domyślnie 'pl-PL', może być nadpisane przez payload (przyszłe).
+    // trade / planTier: pass-through jeśli obecne w payloadzie (opcjonalne).
+
+    documentType: 'offer',
+    locale: payload.locale ?? 'pl-PL',
+    ...(payload.trade !== undefined && { trade: payload.trade }),
+    ...(payload.planTier !== undefined && { planTier: payload.planTier }),
   };
 }

@@ -84,6 +84,40 @@ export interface OfferPDFPayload {
   variantSections?: PDFVariantSection[];
   acceptanceUrl?: string;
   schemaVersion: 1;
+
+  // ── PDF Platform v2 Foundation — pola opcjonalne (backward compatible) ─────
+  //
+  // Pola te są OPCJONALNE dla schemaVersion: 1 — nie są wymagane przez
+  // istniejące przepływy. Ich obecność umożliwia przyszłe auto-mapowanie
+  // szablonu i raportowanie per-documentType / per-trade / per-planTier.
+  //
+  // Dla schemaVersion: 1 domyślne wartości (gdy pola nieobecne):
+  //   documentType = 'offer'
+  //   locale       = 'pl-PL'
+  //   trade        = 'general'
+  //   planTier     = brak gwarancji (zależne od profilu użytkownika)
+
+  /** Typ dokumentu — zawsze 'offer' dla schemaVersion: 1 */
+  documentType?: "offer";
+
+  /**
+   * Branża wykonawcy — umożliwia przyszły dobór szablonu per trade.
+   * Domyślnie 'general' gdy nieobecne.
+   */
+  trade?: string;
+
+  /**
+   * Poziom planu subskrypcji — określa dostępne funkcje PDF.
+   * Dozwolone wartości: 'free' | 'basic' | 'pro' | 'enterprise'.
+   */
+  planTier?: string;
+
+  /**
+   * Lokalizacja formatowania (daty, waluty, etykiety).
+   * Format BCP 47, np. 'pl-PL'.
+   * Domyślnie 'pl-PL' gdy nieobecne.
+   */
+  locale?: string;
 }
 
 // ── Runtime validation ────────────────────────────────────────────────────────
