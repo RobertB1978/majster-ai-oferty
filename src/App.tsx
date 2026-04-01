@@ -286,12 +286,17 @@ const App = () => (
                   <Route
                     path="/app"
                     element={
-                      <ProtectedRoute>
-                        <Suspense fallback={null}><OfflineSyncWatcher /></Suspense>
-                        <DraftProvider>
-                          {FF_NEW_SHELL ? <NewShellLayout /> : <AppLayout />}
-                        </DraftProvider>
-                      </ProtectedRoute>
+                      // Zone-level ErrorBoundary: catches crashes in layout providers
+                      // (DraftProvider, AppLayout, NewShellLayout) so the rest of the
+                      // app (landing, auth, admin) remains unaffected.
+                      <ErrorBoundary>
+                        <ProtectedRoute>
+                          <Suspense fallback={null}><OfflineSyncWatcher /></Suspense>
+                          <DraftProvider>
+                            {FF_NEW_SHELL ? <NewShellLayout /> : <AppLayout />}
+                          </DraftProvider>
+                        </ProtectedRoute>
+                      </ErrorBoundary>
                     }
                   >
                     <Route index element={<Navigate to="/app/dashboard" replace />} />
@@ -318,7 +323,8 @@ const App = () => (
                     <Route path="jobs/:id/pdf" element={<JobsRedirect suffix="/pdf" />} />
                     {/* Legacy quick-est redirect → canonical szybka-wycena */}
                     <Route path="quick-est" element={<Navigate to="/app/szybka-wycena" replace />} />
-                    <Route path="szybka-wycena" element={<QuickEstimateWorkspace />} />
+                    {/* Page-level boundary: keeps AppLayout nav functional when draft workspace crashes */}
+                    <Route path="szybka-wycena" element={<ErrorBoundary><QuickEstimateWorkspace /></ErrorBoundary>} />
                     {/* Gate 1 Condition 1: Quick Mode — field data capture one-handed on mobile */}
                     <Route path="quick-mode" element={<QuickMode />} />
                     <Route path="quick" element={<QuickMode />} />
@@ -347,7 +353,8 @@ const App = () => (
                       ZONE 3: OWNER CONSOLE (admin auth required)
                       Lazy-loaded: customers never download this bundle
                       ============================================ */}
-                  <Route path="/admin" element={<AdminLayout />}>
+                  {/* Zone-level boundary: admin crashes stay isolated from customer app */}
+                  <Route path="/admin" element={<ErrorBoundary><AdminLayout /></ErrorBoundary>}>
                     <Route index element={<Navigate to="/admin/dashboard" replace />} />
                     <Route path="dashboard" element={<AdminDashboardPage />} />
                     <Route path="users" element={<AdminUsersPage />} />
