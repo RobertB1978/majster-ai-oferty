@@ -75,7 +75,7 @@ export function InstallPrompt() {
               {t('pwa.installDescription')}
             </p>
           </div>
-          <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" onClick={handleDismiss}>
+          <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" onClick={handleDismiss} aria-label={t('pwa.dismissButton')}>
             <X className="h-4 w-4" />
           </Button>
         </div>

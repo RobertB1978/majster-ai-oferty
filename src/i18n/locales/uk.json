@@ -618,7 +618,10 @@
       "addEmployeeBtn": "Додати співробітника",
       "noEmployees": "Немає співробітників",
       "inactive": "Неактивний"
-    }
+    },
+    "namePlaceholder": "Іван Коваль",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailPlaceholder": "ivan@example.com"
   },
   "templates": {
     "title": "Мій прайс-лист",
@@ -2982,7 +2985,14 @@
     "addressLine2Label": "Адреса — рядок 2",
     "addressLine2Placeholder": "Квартира / офіс (необов'язково)",
     "countryLabel": "Країна",
-    "countryDefault": "Польща"
+    "countryDefault": "Польща",
+    "nipPlaceholder": "напр. 1234567890",
+    "streetPlaceholder": "напр. вул. Прикладна 1",
+    "cityPlaceholder": "напр. Варшава",
+    "postalCodePlaceholder": "напр. 00-001",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailForOffersPlaceholder": "kontakt@firma.pl",
+    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000"
   },
   "marketplacePage": {
     "addSubcontractor": "Додати субпідрядника",

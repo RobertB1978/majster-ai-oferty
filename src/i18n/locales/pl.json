@@ -618,7 +618,10 @@
       "addEmployeeBtn": "Dodaj pracownika",
       "noEmployees": "Brak pracowników",
       "inactive": "Nieaktywny"
-    }
+    },
+    "namePlaceholder": "Jan Kowalski",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailPlaceholder": "jan@example.com"
   },
   "templates": {
     "title": "Mój cennik",
@@ -2982,7 +2985,14 @@
     "addressLine2Label": "Adres — linia 2",
     "addressLine2Placeholder": "Nr lokalu / piętro (opcjonalne)",
     "countryLabel": "Kraj",
-    "countryDefault": "Polska"
+    "countryDefault": "Polska",
+    "nipPlaceholder": "np. 1234567890",
+    "streetPlaceholder": "np. ul. Przykładowa 1",
+    "cityPlaceholder": "np. Warszawa",
+    "postalCodePlaceholder": "np. 00-001",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailForOffersPlaceholder": "kontakt@firma.pl",
+    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000"
   },
   "marketplacePage": {
     "addSubcontractor": "Dodaj podwykonawcę",

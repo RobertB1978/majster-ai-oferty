@@ -618,7 +618,10 @@
       "addEmployeeBtn": "Add employee",
       "noEmployees": "No employees",
       "inactive": "Inactive"
-    }
+    },
+    "namePlaceholder": "John Smith",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailPlaceholder": "john@example.com"
   },
   "templates": {
     "title": "My Price Book",
@@ -2982,7 +2985,14 @@
     "addressLine2Label": "Address line 2",
     "addressLine2Placeholder": "Apt/Suite/Unit (optional)",
     "countryLabel": "Country",
-    "countryDefault": "Poland"
+    "countryDefault": "Poland",
+    "nipPlaceholder": "e.g. 1234567890",
+    "streetPlaceholder": "e.g. 123 Main Street",
+    "cityPlaceholder": "e.g. Warsaw",
+    "postalCodePlaceholder": "e.g. 00-001",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailForOffersPlaceholder": "contact@company.com",
+    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000"
   },
   "marketplacePage": {
     "addSubcontractor": "Add subcontractor",
