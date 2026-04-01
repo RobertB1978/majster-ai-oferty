@@ -61,6 +61,8 @@ export function useQuickEstimateDraft() {
   // Keep a ref so saveDraftNow can always read the latest id without closure staleness
   const draftOfferIdRef = useRef<string | null>(null);
   useEffect(() => { draftOfferIdRef.current = draftOfferId; }, [draftOfferId]);
+  // Track in-flight save so concurrent calls (debounce + manual, or debounce + promote) don't race
+  const saveInFlightRef = useRef<Promise<void> | null>(null);
 
   /* ── Load ──────────────────────────────────────────────────── */
 
@@ -143,6 +145,11 @@ export function useQuickEstimateDraft() {
    * Replaces all offer_items on each save (simple and correct for drafts).
    */
   const saveDraftNow = useCallback(async (data: QuickEstimateData): Promise<void> => {
+    // Skip if a save is already in flight — prevents duplicate DRAFT inserts and
+    // item-level write conflicts when scheduleSave and manual save overlap.
+    if (saveInFlightRef.current !== null) return;
+
+    const runSave = async (): Promise<void> => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -235,6 +242,14 @@ export function useQuickEstimateDraft() {
     } catch {
       setSaveStatus('error');
     }
+    }; // end runSave
+
+    saveInFlightRef.current = runSave();
+    try {
+      await saveInFlightRef.current;
+    } finally {
+      saveInFlightRef.current = null;
+    }
   }, []);
 
   /* ── Schedule (debounced) ─────────────────────────────────── */
@@ -289,6 +304,11 @@ export function useQuickEstimateDraft() {
       clearTimeout(debounceRef.current);
       debounceRef.current = null;
     }
+
+    // If an auto-save fired just before the debounce was cancelled, wait for it
+    // to finish before writing — prevents item-list corruption from interleaved
+    // delete+insert sequences on the same offer_items rows.
+    if (saveInFlightRef.current) await saveInFlightRef.current;
 
     const {
       data: { user },

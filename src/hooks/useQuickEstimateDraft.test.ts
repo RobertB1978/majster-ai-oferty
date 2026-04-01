@@ -363,6 +363,41 @@ describe('useQuickEstimateDraft', () => {
     });
   });
 
+  /* ── concurrent-save guard ──────────────────────────────────── */
+
+  describe('concurrent-save guard', () => {
+    it('does not start a second save while one is already in flight', async () => {
+      // Provide builders for ONE save cycle only (insert + delete + insert).
+      // If the guard is absent, the second concurrent call would also call from()
+      // and exhaust the queue — causing the mock to throw.
+      builderQueue.push(makeBuilder({ terminal: { data: { id: 'offer-race' }, error: null } }));
+      builderQueue.push(makeBuilder({ deleteEqResolved: { data: null, error: null } }));
+      builderQueue.push(makeBuilder({ insertResolved: { data: null, error: null } }));
+
+      const { result } = renderHook(() => useQuickEstimateDraft());
+
+      const data = {
+        projectName: 'Race test',
+        clientId: '',
+        vatEnabled: true,
+        items: [makeItem()],
+      };
+
+      await act(async () => {
+        // Fire two concurrent saves — only one should actually execute DB calls.
+        await Promise.all([
+          result.current.saveDraftNow(data),
+          result.current.saveDraftNow(data),
+        ]);
+      });
+
+      // Guard maintained: exactly one offer insert (from() called exactly 3 times:
+      // offers-insert, offer_items-delete, offer_items-insert).
+      expect(mockSupabase.from).toHaveBeenCalledTimes(3);
+      expect(result.current.saveStatus).toBe('saved');
+    });
+  });
+
   /* ── clearDraft ─────────────────────────────────────────────── */
 
   describe('clearDraft', () => {
