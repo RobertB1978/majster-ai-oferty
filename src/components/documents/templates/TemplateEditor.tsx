@@ -35,6 +35,8 @@ import {
 } from '@/hooks/useDocumentInstances';
 import { useQueryClient } from '@tanstack/react-query';
 import { generateTemplatePdf, uploadTemplatePdf } from '@/lib/templatePdfGenerator';
+import { buildTemplatePayload } from '@/lib/pdf/templatePayloadAdapter';
+import { renderDocumentPdfV2, PendingMigrationError } from '@/lib/pdf/renderPdfV2';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { logger } from '@/lib/logger';
@@ -395,13 +397,31 @@ export function TemplateEditor({
     setIsGeneratingPdf(true);
 
     try {
-      const pdfBlob = await generateTemplatePdf({
-        template,
-        data,
-        autofillContext: autofillQuery.data ?? {},
-        locale: 'pl',
-        t,
-      });
+      // Kanoniczny przepływ v2: próba Edge Function, fallback na jsPDF
+      let pdfBlob: Blob;
+      try {
+        const v2Payload = buildTemplatePayload({
+          template,
+          data,
+          autofillContext: autofillQuery.data ?? {},
+          locale: 'pl',
+          t,
+        });
+        pdfBlob = await renderDocumentPdfV2(v2Payload);
+      } catch (pdfErr) {
+        if (pdfErr instanceof PendingMigrationError) {
+          logger.warn('[TemplateEditor] generatePdf: PendingMigration — fallback na jsPDF (', pdfErr.documentType, ')');
+        } else {
+          logger.warn('[TemplateEditor] generatePdf: Edge Function niedostępna — fallback na jsPDF:', pdfErr);
+        }
+        pdfBlob = await generateTemplatePdf({
+          template,
+          data,
+          autofillContext: autofillQuery.data ?? {},
+          locale: 'pl',
+          t,
+        });
+      }
 
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
@@ -432,14 +452,31 @@ export function TemplateEditor({
 
     setIsSavingDossier(true);
     try {
-      // 1. Generate PDF blob
-      const pdfBlob = await generateTemplatePdf({
-        template,
-        data,
-        autofillContext: autofillQuery.data ?? {},
-        locale: 'pl',
-        t,
-      });
+      // 1. Generate PDF blob — kanoniczny przepływ v2 z fallbackiem na jsPDF
+      let pdfBlob: Blob;
+      try {
+        const v2Payload = buildTemplatePayload({
+          template,
+          data,
+          autofillContext: autofillQuery.data ?? {},
+          locale: 'pl',
+          t,
+        });
+        pdfBlob = await renderDocumentPdfV2(v2Payload);
+      } catch (pdfErr) {
+        if (pdfErr instanceof PendingMigrationError) {
+          logger.warn('[TemplateEditor] saveToDossier: PendingMigration — fallback na jsPDF (', pdfErr.documentType, ')');
+        } else {
+          logger.warn('[TemplateEditor] saveToDossier: Edge Function niedostępna — fallback na jsPDF:', pdfErr);
+        }
+        pdfBlob = await generateTemplatePdf({
+          template,
+          data,
+          autofillContext: autofillQuery.data ?? {},
+          locale: 'pl',
+          t,
+        });
+      }
 
       // 2. Ensure instance exists (best-effort — document_instances table may not exist yet in DB)
       //    If it fails we continue with a fallback ID so the critical dossier save still completes.
