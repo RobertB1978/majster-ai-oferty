@@ -90,21 +90,21 @@ CREATE INDEX IF NOT EXISTS idx_doc_instances_dossier_item_id
 --   (itd. dla pozostałych)
 
 ALTER TABLE public.document_instances
-  ADD CONSTRAINT doc_instances_client_id_fkey
+  ADD CONSTRAINT IF NOT EXISTS doc_instances_client_id_fkey
   FOREIGN KEY (client_id)
   REFERENCES public.clients(id)
   ON DELETE SET NULL
   NOT VALID;
 
 ALTER TABLE public.document_instances
-  ADD CONSTRAINT doc_instances_offer_id_fkey
+  ADD CONSTRAINT IF NOT EXISTS doc_instances_offer_id_fkey
   FOREIGN KEY (offer_id)
   REFERENCES public.offers(id)
   ON DELETE SET NULL
   NOT VALID;
 
 ALTER TABLE public.document_instances
-  ADD CONSTRAINT doc_instances_dossier_item_id_fkey
+  ADD CONSTRAINT IF NOT EXISTS doc_instances_dossier_item_id_fkey
   FOREIGN KEY (dossier_item_id)
   REFERENCES public.project_dossier_items(id)
   ON DELETE SET NULL
