@@ -247,7 +247,8 @@ function FileRow({ item, onDelete }: FileRowProps) {
 
       <button
         className={cn(
-          'flex items-center justify-center p-1.5 rounded transition-colors min-h-[44px] min-w-[44px]',
+          'flex items-center justify-center gap-1 p-1.5 rounded transition-colors min-h-[44px]',
+          confirmDelete ? 'px-2' : 'min-w-[44px]',
           confirmDelete
             ? 'bg-red-100 text-red-600 dark:bg-red-900/30'
             : 'hover:bg-muted text-muted-foreground hover:text-destructive'
@@ -260,7 +261,12 @@ function FileRow({ item, onDelete }: FileRowProps) {
         {deleting ? (
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
         ) : confirmDelete ? (
-          <Check className="w-3.5 h-3.5" />
+          <>
+            <Check className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-xs font-medium whitespace-nowrap">
+              {t('dossier.confirmDeleteShort')}
+            </span>
+          </>
         ) : (
           <Trash2 className="w-3.5 h-3.5" />
         )}

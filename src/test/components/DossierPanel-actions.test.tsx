@@ -195,6 +195,9 @@ describe('DossierPanel — FileRow action buttons', () => {
     const confirmBtn = screen.getByLabelText(i18n.t('dossier.confirmDelete'));
     expect(confirmBtn).toBeInTheDocument();
     expect(confirmBtn).toHaveAttribute('title', i18n.t('dossier.confirmDelete'));
+
+    // Confirmation state must show visible text (not just icon) so user knows to click again
+    expect(screen.getByText(i18n.t('dossier.confirmDeleteShort'))).toBeInTheDocument();
   });
 
   it('preview and download actions are distinct — different aria-labels and different targets', async () => {

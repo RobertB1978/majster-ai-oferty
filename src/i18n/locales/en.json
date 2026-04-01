@@ -4164,6 +4164,9 @@
     "exportEmpty": "No files to export",
     "loadError": "Loading error",
     "loadErrorDesc": "Could not load the project dossier.",
+    "loadErrorSoft": "Could not load documents. Please try again.",
+    "retry": "Retry",
+    "confirmDeleteShort": "Delete?",
     "share": {
       "title": "Share dossier",
       "selectCategories": "Select categories to share",
@@ -4204,7 +4207,8 @@
       "expiredTitle": "Link expired",
       "expiredDesc": "This share link has expired. Contact the contractor to get a new link.",
       "notFoundTitle": "Link not found",
-      "notFoundDesc": "This link is invalid or has been revoked."
+      "notFoundDesc": "This link is invalid or has been revoked.",
+      "downloadError": "Download failed"
     },
     "toast": {
       "exportError": "PDF export error. Please try again."

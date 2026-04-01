@@ -90,6 +90,7 @@ function PublicFileActions({
 }) {
   const { t } = useTranslation();
   const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState(false);
 
   const btnCls = cn(
     'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium',
@@ -115,15 +116,17 @@ function PublicFileActions({
       {/* Download — saves to device */}
       {!isImage && (
         <button
-          className={cn(btnCls, 'border-0 cursor-pointer')}
+          className={cn(btnCls, 'border-0 cursor-pointer', downloadError && 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400')}
           disabled={downloading}
           aria-label={t('dossier.public.downloadFile', { name: fileName })}
           onClick={async () => {
             setDownloading(true);
+            setDownloadError(false);
             try {
               await downloadDossierFile(signedUrl, fileName);
             } catch {
-              // silent on public page — no toast system
+              setDownloadError(true);
+              setTimeout(() => setDownloadError(false), 3000);
             } finally {
               setDownloading(false);
             }
@@ -134,7 +137,7 @@ function PublicFileActions({
           ) : (
             <Download className="w-3 h-3" />
           )}
-          {t('dossier.public.download')}
+          {downloadError ? t('dossier.public.downloadError') : t('dossier.public.download')}
         </button>
       )}
     </div>
