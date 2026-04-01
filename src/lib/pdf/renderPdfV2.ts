@@ -42,6 +42,10 @@ import type {
   UnifiedVariantSection,
   DocumentType,
 } from '@/types/unified-document-payload';
+import {
+  resolveTemplateVariant,
+  visualStyleToJsPdfTemplate,
+} from '@/lib/pdf/documentVisualSystem';
 
 // ── Typy błędów ───────────────────────────────────────────────────────────────
 
@@ -108,6 +112,24 @@ function resolvePdfVersion(planTier: string): 'standard' | 'premium' {
 }
 
 /**
+ * Rozwiązuje wariant szablonu wizualnego dla danego payloadu.
+ * Używane w ścieżce fallback jsPDF — mapuje VisualBaseStyle na PdfTemplateId.
+ */
+function resolveJsPdfTemplateId(
+  payload: UnifiedDocumentPayload,
+): import('@/lib/offerDataBuilder').PdfTemplateId {
+  const variant = resolveTemplateVariant({
+    documentType: payload.documentType,
+    trade: payload.trade,
+    planTier: payload.planTier,
+  });
+  logger.info(
+    `[renderPdfV2] Wariant wizualny: ${variant.variantKey}`,
+  );
+  return visualStyleToJsPdfTemplate(variant.baseStyle);
+}
+
+/**
  * Adaptuje UnifiedDocumentPayload (offer) do OfferPdfPayload (jsPDF format).
  * Używane wyłącznie w fallbacku gdy Edge Function jest niedostępna.
  */
@@ -138,6 +160,7 @@ function adaptToOfferPdfPayload(payload: UnifiedDocumentPayload): OfferPdfPayloa
     quote: section.quote ? adaptQuoteV2(section.quote) : null,
     pdfConfig: {
       version: resolvePdfVersion(payload.planTier),
+      templateId: resolveJsPdfTemplateId(payload),
       title: section.pdfConfig.title,
       offerText: section.pdfConfig.offerText,
       terms: section.pdfConfig.terms,
