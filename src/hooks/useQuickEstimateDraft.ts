@@ -150,98 +150,98 @@ export function useQuickEstimateDraft() {
     if (saveInFlightRef.current !== null) return;
 
     const runSave = async (): Promise<void> => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
 
-    setSaveStatus('saving');
+      setSaveStatus('saving');
 
-    try {
-      const { netTotal, vatAmount, grossTotal } = calcTotals(data.items, data.vatEnabled);
+      try {
+        const { netTotal, vatAmount, grossTotal } = calcTotals(data.items, data.vatEnabled);
 
-      let currentId = draftOfferIdRef.current;
+        let currentId = draftOfferIdRef.current;
 
-      if (!currentId) {
-        // First save — create the DRAFT offer record
-        // `source` and `vat_enabled` exist in DB but not in generated types
-        const { data: offer, error: insertErr } = await typedResult<{ id: string } | null>(
-          supabase
-            .from('offers')
-            .insert(withExtraColumns({
-              user_id: user.id,
-              status: 'DRAFT',
-              title: data.projectName.trim() || null,
-              client_id: data.clientId || null,
-              total_net: netTotal,
-              total_gross: grossTotal,
-              total_vat: vatAmount,
-            }, { source: DRAFT_SOURCE, vat_enabled: data.vatEnabled }))
-            .select('id')
-            .single(),
-        );
+        if (!currentId) {
+          // First save — create the DRAFT offer record
+          // `source` and `vat_enabled` exist in DB but not in generated types
+          const { data: offer, error: insertErr } = await typedResult<{ id: string } | null>(
+            supabase
+              .from('offers')
+              .insert(withExtraColumns({
+                user_id: user.id,
+                status: 'DRAFT',
+                title: data.projectName.trim() || null,
+                client_id: data.clientId || null,
+                total_net: netTotal,
+                total_gross: grossTotal,
+                total_vat: vatAmount,
+              }, { source: DRAFT_SOURCE, vat_enabled: data.vatEnabled }))
+              .select('id')
+              .single(),
+          );
 
-        if (insertErr || !offer) throw insertErr ?? new Error('Insert returned no data');
-        currentId = offer.id;
-        setDraftOfferId(offer.id);
-      } else {
-        // Subsequent save — update existing DRAFT offer
-        // `vat_enabled` exists in DB but not in generated types
-        const { error: updateErr } = await typedMutationResult(
-          supabase
-            .from('offers')
-            .update(withExtraColumns({
-              title: data.projectName.trim() || null,
-              client_id: data.clientId || null,
-              total_net: netTotal,
-              total_gross: grossTotal,
-              total_vat: vatAmount,
-            }, { vat_enabled: data.vatEnabled }))
-            .eq('id', currentId),
-        );
+          if (insertErr || !offer) throw insertErr ?? new Error('Insert returned no data');
+          currentId = offer.id;
+          setDraftOfferId(offer.id);
+        } else {
+          // Subsequent save — update existing DRAFT offer
+          // `vat_enabled` exists in DB but not in generated types
+          const { error: updateErr } = await typedMutationResult(
+            supabase
+              .from('offers')
+              .update(withExtraColumns({
+                title: data.projectName.trim() || null,
+                client_id: data.clientId || null,
+                total_net: netTotal,
+                total_gross: grossTotal,
+                total_vat: vatAmount,
+              }, { vat_enabled: data.vatEnabled }))
+              .eq('id', currentId),
+          );
 
-        if (updateErr) throw updateErr;
+          if (updateErr) throw updateErr;
+        }
+
+        // Replace all line items (delete + insert is simplest and safe for DRAFT)
+        await supabase.from('offer_items').delete().eq('offer_id', currentId);
+
+        const validItems = data.items.filter((i) => i.name.trim());
+        if (validItems.length > 0) {
+          // `metadata` column exists in DB but not in generated types
+          const { error: itemsErr } = await typedMutationResult(
+            supabase.from('offer_items').insert(
+              validItems.map((item) => withExtraColumns({
+                user_id: user.id,
+                offer_id: currentId!,
+                name: item.name,
+                unit: item.unit,
+                qty: item.qty,
+                item_type: item.itemType,
+                unit_price_net: itemUnitPrice(item),
+                line_total_net: itemLineTotal(item),
+                vat_rate: data.vatEnabled ? 23 : null,
+              }, {
+                metadata: {
+                  priceMode: item.priceMode,
+                  price: item.price,
+                  laborCost: item.laborCost,
+                  materialCost: item.materialCost,
+                  marginPct: item.marginPct,
+                  showMargin: item.showMargin,
+                } satisfies LineItemMetadata,
+              })),
+            ),
+          );
+
+          if (itemsErr) throw itemsErr;
+        }
+
+        setSaveStatus('saved');
+        setLastSavedAt(new Date());
+      } catch {
+        setSaveStatus('error');
       }
-
-      // Replace all line items (delete + insert is simplest and safe for DRAFT)
-      await supabase.from('offer_items').delete().eq('offer_id', currentId);
-
-      const validItems = data.items.filter((i) => i.name.trim());
-      if (validItems.length > 0) {
-        // `metadata` column exists in DB but not in generated types
-        const { error: itemsErr } = await typedMutationResult(
-          supabase.from('offer_items').insert(
-            validItems.map((item) => withExtraColumns({
-              user_id: user.id,
-              offer_id: currentId!,
-              name: item.name,
-              unit: item.unit,
-              qty: item.qty,
-              item_type: item.itemType,
-              unit_price_net: itemUnitPrice(item),
-              line_total_net: itemLineTotal(item),
-              vat_rate: data.vatEnabled ? 23 : null,
-            }, {
-              metadata: {
-                priceMode: item.priceMode,
-                price: item.price,
-                laborCost: item.laborCost,
-                materialCost: item.materialCost,
-                marginPct: item.marginPct,
-                showMargin: item.showMargin,
-              } satisfies LineItemMetadata,
-            })),
-          ),
-        );
-
-        if (itemsErr) throw itemsErr;
-      }
-
-      setSaveStatus('saved');
-      setLastSavedAt(new Date());
-    } catch {
-      setSaveStatus('error');
-    }
     }; // end runSave
 
     saveInFlightRef.current = runSave();
@@ -398,7 +398,6 @@ export function useQuickEstimateDraft() {
     setLastSavedAt(null);
 
     return { offerId: offerId!, netTotal };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* ── Cleanup debounce on unmount ─────────────────────────── */

@@ -10,32 +10,30 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 
-/* ── Mock channel returned by supabase.channel() ──────────────── */
+/* ── Hoisted mocks (vi.mock factories are hoisted — must use vi.hoisted) ─ */
 
-const mockChannel = {
-  on: vi.fn(),
-  subscribe: vi.fn(),
-};
-mockChannel.on.mockReturnValue(mockChannel);
-mockChannel.subscribe.mockReturnValue(mockChannel);
+const { mockChannel, mockSupabase } = vi.hoisted(() => {
+  const channel = {
+    on: vi.fn(),
+    subscribe: vi.fn(),
+  };
+  channel.on.mockReturnValue(channel);
+  channel.subscribe.mockReturnValue(channel);
 
-const mockSupabase = {
-  from: vi.fn(),
-  channel: vi.fn().mockReturnValue(mockChannel),
-  removeChannel: vi.fn().mockResolvedValue(undefined),
-};
+  const supabase = {
+    from: vi.fn(),
+    channel: vi.fn().mockReturnValue(channel),
+    removeChannel: vi.fn().mockResolvedValue(undefined),
+  };
+
+  return { mockChannel: channel, mockSupabase: supabase };
+});
 
 vi.mock('@/integrations/supabase/client', () => ({ supabase: mockSupabase }));
-
-/* ── i18n stub (hook calls useTranslation) ─────────────────────── */
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
-
-/* ── toast stub ────────────────────────────────────────────────── */
 vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn(), info: vi.fn() } }));
-
-/* ── logger stub ───────────────────────────────────────────────── */
 vi.mock('@/lib/logger', () => ({ logger: { error: vi.fn(), warn: vi.fn() } }));
 
 /* ── Hook import (after mocks) ─────────────────────────────────── */
@@ -50,6 +48,8 @@ function makeFromBuilder(data: unknown = null, error: unknown = null) {
   b.single = vi.fn().mockResolvedValue({ data, error });
   return b;
 }
+
+/* ── Tests ─────────────────────────────────────────────────────── */
 
 describe('useAdminTheme', () => {
   beforeEach(() => {

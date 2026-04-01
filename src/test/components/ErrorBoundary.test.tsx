@@ -9,6 +9,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ErrorBoundary, PanelErrorBoundary } from '@/components/ErrorBoundary';
 
@@ -28,19 +29,33 @@ vi.mock('@/lib/errors/formatError', () => ({
   }),
 }));
 
-// i18n returns the key as-is so error UI text is predictable
+// i18n zwraca klucz jako tekst — fallback ErrorBoundary jest przewidywalny
 vi.mock('@/i18n', () => ({
   default: { t: (key: string) => key },
 }));
 
-/* ── Helper: component that throws ─────────────────────────────── */
+/* ── Helper: komponent rzucający błąd ──────────────────────────── */
 
 function Bomb({ shouldThrow }: { shouldThrow: boolean }) {
   if (shouldThrow) throw new Error('Boom');
   return <span>OK</span>;
 }
 
-/* ── Suppress React's console.error for caught errors in tests ── */
+/**
+ * BombRef używa ref zamiast props — zmiana ref nie wywołuje ponownego
+ * renderowania, ale wartość jest widoczna przy następnym renderowaniu
+ * wyzwolonym przez Retry. Konieczne do poprawnego testu Retry.
+ */
+function makeBombRef() {
+  const ref = { current: true };
+  function BombRef() {
+    if (ref.current) throw new Error('Boom');
+    return <span>OK</span>;
+  }
+  return { ref, BombRef };
+}
+
+/* ── Suppress React's console.error for expected caught errors ── */
 beforeEach(() => {
   vi.spyOn(console, 'error').mockImplementation(() => {});
 });
@@ -63,32 +78,29 @@ describe('ErrorBoundary', () => {
         <Bomb shouldThrow />
       </ErrorBoundary>,
     );
-    // The boundary renders i18n key text
     expect(screen.getByText('errors.somethingWentWrong')).toBeDefined();
-    expect(screen.getByText('MAJ-TEST-001')).toBeDefined();
+    // Kod błędu jest częścią dłuższego tekstu "errors.standard.domainCode: MAJ-TEST-001"
+    expect(screen.getByText(/MAJ-TEST-001/)).toBeDefined();
   });
 
   it('resets error state when Retry button is clicked', () => {
-    let shouldThrow = true;
+    // Używamy ref żeby zatrzymać rzucanie błędu zanim Retry wyzwoli re-render.
+    // Zwykła prop nie zadziała bo ErrorBoundary re-renderuje stare dzieci
+    // (te które rzucają) zanim dostanie nowe z rerender().
+    const { ref, BombRef } = makeBombRef();
 
-    const { rerender } = render(
+    render(
       <ErrorBoundary>
-        <Bomb shouldThrow={shouldThrow} />
+        <BombRef />
       </ErrorBoundary>,
     );
 
     expect(screen.getByText('errors.somethingWentWrong')).toBeDefined();
 
-    // Stop throwing, then hit Retry
-    shouldThrow = false;
+    // Wyłącz rzucanie przed kliknięciem — następny render (wyzwolony przez Retry)
+    // dostanie component bez błędu.
+    ref.current = false;
     fireEvent.click(screen.getByText('common.retry'));
-
-    // Retry resets state — re-render with non-throwing Bomb
-    rerender(
-      <ErrorBoundary>
-        <Bomb shouldThrow={false} />
-      </ErrorBoundary>,
-    );
 
     expect(screen.getByText('OK')).toBeDefined();
   });
