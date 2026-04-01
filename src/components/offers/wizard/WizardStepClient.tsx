@@ -138,7 +138,7 @@ export function WizardStepClient({ form, onChange, errors }: Props) {
                 type="tel"
                 value={form.newClient?.phone ?? ''}
                 onChange={(e) => handleNewClientChange('phone', e.target.value)}
-                placeholder="+48 500 000 000"
+                placeholder={t('offerWizard.clientStep.phonePlaceholder')}
               />
             </div>
             <div className="space-y-1">

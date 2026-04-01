@@ -1056,7 +1056,8 @@
       "submit": "Submit request",
       "sending": "Sending...",
       "error": "Error: {{message}}. Try again or write to",
-      "unknownError": "Unknown error"
+      "unknownError": "Unknown error",
+      "phonePlaceholder": "+48 123 456 789"
     }
   },
   "profile": {
@@ -3739,7 +3740,8 @@
       "namePlaceholder": "John Smith",
       "phone": "Phone",
       "email": "Email",
-      "emailPlaceholder": "john@example.com"
+      "emailPlaceholder": "john@example.com",
+      "phonePlaceholder": "+48 500 000 000"
     },
     "itemsStep": {
       "libraryTitle": "Price Library",

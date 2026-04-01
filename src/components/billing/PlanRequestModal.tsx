@@ -104,7 +104,7 @@ export function PlanRequestModal({ open, planSlug, planName, onClose }: PlanRequ
               <Input
                 id="plan-request-phone"
                 type="tel"
-                placeholder="+48 123 456 789"
+                placeholder={t('billing.planRequest.phonePlaceholder')}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 maxLength={20}

@@ -1056,7 +1056,8 @@
       "submit": "Надіслати запит",
       "success": "Запит збережено!",
       "title": "Замовити план {{plan}}",
-      "unknownError": "Невідома помилка"
+      "unknownError": "Невідома помилка",
+      "phonePlaceholder": "+48 123 456 789"
     }
   },
   "profile": {
@@ -3739,7 +3740,8 @@
       "namePlaceholder": "Іван Коваль",
       "phone": "Телефон",
       "email": "Email",
-      "emailPlaceholder": "ivan@example.com"
+      "emailPlaceholder": "ivan@example.com",
+      "phonePlaceholder": "+48 500 000 000"
     },
     "itemsStep": {
       "libraryTitle": "Бібліотека цін",

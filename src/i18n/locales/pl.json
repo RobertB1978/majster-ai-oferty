@@ -1056,7 +1056,8 @@
       "submit": "Wyślij zgłoszenie",
       "sending": "Wysyłanie...",
       "error": "Błąd: {{message}}. Spróbuj ponownie lub napisz na",
-      "unknownError": "Nieznany błąd"
+      "unknownError": "Nieznany błąd",
+      "phonePlaceholder": "+48 123 456 789"
     }
   },
   "profile": {
@@ -3739,7 +3740,8 @@
       "namePlaceholder": "Jan Kowalski",
       "phone": "Telefon",
       "email": "Email",
-      "emailPlaceholder": "jan@example.pl"
+      "emailPlaceholder": "jan@example.pl",
+      "phonePlaceholder": "+48 500 000 000"
     },
     "itemsStep": {
       "libraryTitle": "Biblioteka cennika",
