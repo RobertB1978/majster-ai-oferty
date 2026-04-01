@@ -8,6 +8,20 @@
  * existing jsPDF client-side generator so users are never blocked.
  *
  * Roadmap §26 PDF Migration — PR 4 (Frontend Integration).
+ *
+ * ── Klasyfikacja PDF Platform v2 ─────────────────────────────────────────────
+ * STATUS: LEGACY (v1 flow — zachowany jako działająca ścieżka produkcyjna)
+ *
+ * Ta funkcja obsługuje ISTNIEJĄCE przepływy ofert przez OfferPDFPayload v1.
+ * NOWE przepływy ofert powinny używać renderPdfV2.ts z UnifiedDocumentPayload v2.
+ *
+ * Różnica:
+ *   - generateOfferPdfWithServer: OfferPdfPayload (v1) → generate-offer-pdf
+ *   - renderDocumentPdfV2:        UnifiedDocumentPayload (v2) → generate-pdf-v2
+ *
+ * Zachowany bez zmian — istniejące wywołania w OfferPreviewModal i useSendOffer
+ * nie są naruszane w tym PR.
+ * ─────────────────────────────────────────────────────────────────────────────
  */
 
 import { supabase } from '@/integrations/supabase/client';

@@ -1,8 +1,21 @@
 /**
- * Modern PDF Design Tokens — derived from design system sections 3.1–3.4.
+ * PDF Design Tokens — KANONICZNE ŹRÓDŁO (frontend / jsPDF)
  *
- * Used by offerPdfGenerator.ts for the prestige PDF uplift (Gate 1 / Warunek 3).
- * Tokens are RGB tuples compatible with jsPDF setTextColor / setFillColor.
+ * ════════════════════════════════════════════════════════════════════════════
+ * ⚑  To jest jedyne kanoniczne źródło tokenów designu PDF dla środowiska
+ *    frontend (jsPDF). Zmiana wartości tutaj MUSI być zsynchronizowana z:
+ *    → supabase/functions/_shared/pdf-tokens.ts  (Deno / @react-pdf/renderer)
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * Tokeny są jako RGB tuples [R, G, B] — format wymagany przez jsPDF
+ * (setTextColor / setFillColor). Odpowiednik hex w pliku Deno powyżej.
+ *
+ * Aktualnie importowane przez:
+ *   - offerPdfGenerator.ts        ← UŻYWA TOKENÓW
+ *   - templatePdfGenerator.ts     ← OCZEKUJE MIGRACJI (hardkodowane kolory)
+ *   - warrantyPdfGenerator.ts     ← OCZEKUJE MIGRACJI (hardkodowane kolory)
+ *
+ * Derived from design system sections 3.1–3.4.
  *
  * NOTE: Bricolage Grotesque requires TTF for jsPDF embedding.
  * Only woff2 is currently available in /public/fonts/.

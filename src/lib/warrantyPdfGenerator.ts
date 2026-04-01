@@ -3,6 +3,23 @@
  *
  * Generates a warranty card PDF using jsPDF.
  * Returns a Blob for download and optionally uploads to the dossier bucket.
+ *
+ * ── Klasyfikacja PDF Platform v2 ─────────────────────────────────────────────
+ * STATUS: STANDALONE / OCZEKUJE MIGRACJI
+ *
+ * Ten generator używa jsPDF z hardkodowanymi kolorami (niezgodnymi z tokenami
+ * z modernPdfStyles.ts). Jest wywoływany bezpośrednio przez WarrantySection.tsx.
+ *
+ * Deferred migracja do v2:
+ *   - Krok 1: implementacja 'warranty' w generate-pdf-v2 (Edge Fn) — prio 1
+ *   - Krok 2: adapter UnifiedDocumentPayload → WarrantyPdfContext (wymaga t fn)
+ *   - Krok 3: migracja WarrantySection.tsx → renderDocumentPdfV2
+ *   - Krok 4: zastąpienie hardkodowanych kolorów tokenami z modernPdfStyles.ts
+ *
+ * Tokeny docelowe (modernPdfStyles.ts):
+ *   blue `[30, 90, 200]`  → ACCENT_BLUE = [30, 64, 175]  (do ujednolicenia)
+ *   gray `[100, 100, 100]`→ TEXT_SECONDARY = [107, 114, 128]
+ * ─────────────────────────────────────────────────────────────────────────────
  */
 
 import { jsPDF } from 'jspdf';
