@@ -61,5 +61,11 @@ verify_jwt = true
 verify_jwt = false
 
 [functions.generate-offer-pdf]
-# Server-side PDF generation — requires authenticated user
+# Server-side PDF generation (v1, legacy) — requires authenticated user
+verify_jwt = true
+
+[functions.generate-pdf-v2]
+# Canonical PDF v2 renderer — UnifiedDocumentPayload (schemaVersion: 2)
+# Requires authenticated user; renders offer, routes warranty/protocol/contract/inspection
+# with 501+pendingMigration for not-yet-migrated types (frontend falls back to jsPDF).
 verify_jwt = true
