@@ -4,10 +4,17 @@
  * PR 3/5 — Full prestige A4 template with design tokens from roadmap §3.1–3.4.
  * Replaces the minimal scaffold from PR 2/5.
  *
+ * PDF Platform v2 Foundation update:
+ *   - Zastąpiono Helvetica/Courier czcionkami NotoSans/NotoSansMono
+ *   - NotoSans pokrywa pełne Latin Extended (ą ć ę ł ń ó ś ź ż) w przeciwieństwie
+ *     do Helvetica (Latin-1 tylko), która nie renderowała polskich znaków diakrytycznych
+ *   - Rejestracja czcionek via font-config.ts (jsDelivr CDN, leniwe ładowanie)
+ *   - Fallback na Helvetica/Courier gdy CDN niedostępny (degradacja z logiem CRITICAL)
+ *
  * Design principles:
  * - Warm off-white feel via subtle backgrounds
  * - Amber brand accent for totals and key elements
- * - Monospace (Courier) for monetary amounts (Helvetica-family only in @react-pdf)
+ * - Monospace (NotoSansMono) for monetary amounts
  * - Professional spacing and hierarchy
  * - Variant sections support (multi-quote offers)
  * - QR code placeholder for acceptance URL
@@ -31,6 +38,24 @@ import {
 } from "npm:@react-pdf/renderer@3";
 import React from "npm:react@18";
 import type { OfferPDFPayload, PDFQuoteData } from "./types.ts";
+import {
+  registerPolishFonts,
+  getBodyFontFamily,
+  getMonoFontFamily,
+} from "./font-config.ts";
+
+// ── Rejestracja polskich czcionek (wykonywana raz na poziomie modułu) ─────────
+//
+// registerPolishFonts() jest synchroniczne — rejestruje tylko konfigurację URL.
+// Faktyczne ładowanie pliku TTF odbywa się leniwie podczas renderToBuffer().
+// Jeśli CDN jest niedostępny, renderToBuffer() rzuci wyjątek, Edge Function
+// zwróci 500, a frontend przejdzie na fallback jsPDF.
+
+registerPolishFonts();
+
+// Nazwy rodzin czcionek (zależne od powodzenia rejestracji)
+const BODY = getBodyFontFamily();   // "NotoSans" lub "Helvetica" (fallback)
+const MONO = getMonoFontFamily();   // "NotoSansMono" lub "Courier" (fallback)
 
 // ── Design Tokens (roadmap §3.1–3.4) ────────────────────────────────────────
 
@@ -50,10 +75,13 @@ const COLORS = {
 };
 
 // ── Styles ────────────────────────────────────────────────────────────────────
+//
+// UWAGA: StyleSheet.create() wywoływany po registerPolishFonts() i getBodyFontFamily(),
+// żeby stałe BODY/MONO odzwierciedlały aktualny stan rejestracji.
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: "Helvetica",
+    fontFamily: BODY,
     fontSize: 9.5,
     paddingTop: 40,
     paddingBottom: 70,
@@ -77,7 +105,8 @@ const styles = StyleSheet.create({
   },
   companyName: {
     fontSize: 16,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: BODY,
+    fontWeight: "bold",
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
@@ -91,13 +120,14 @@ const styles = StyleSheet.create({
   },
   docTitle: {
     fontSize: 20,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: BODY,
+    fontWeight: "bold",
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
   docId: {
     fontSize: 9,
-    fontFamily: "Courier",
+    fontFamily: MONO,
     color: COLORS.textSecondary,
     marginBottom: 2,
   },
@@ -133,7 +163,8 @@ const styles = StyleSheet.create({
   },
   infoValueBold: {
     fontSize: 10,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: BODY,
+    fontWeight: "bold",
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
@@ -160,7 +191,7 @@ const styles = StyleSheet.create({
   },
   dateValue: {
     fontSize: 10,
-    fontFamily: "Courier",
+    fontFamily: MONO,
     color: COLORS.textPrimary,
   },
 
@@ -170,7 +201,8 @@ const styles = StyleSheet.create({
   },
   scopeLabel: {
     fontSize: 8,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: BODY,
+    fontWeight: "bold",
     color: COLORS.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.8,
@@ -193,7 +225,8 @@ const styles = StyleSheet.create({
   },
   variantTitle: {
     fontSize: 10,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: BODY,
+    fontWeight: "bold",
     color: COLORS.textPrimary,
   },
 
@@ -208,7 +241,8 @@ const styles = StyleSheet.create({
   },
   tableHeaderText: {
     fontSize: 7.5,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: BODY,
+    fontWeight: "bold",
     color: COLORS.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -230,10 +264,10 @@ const styles = StyleSheet.create({
   },
   colLp: { width: 24, fontSize: 8, color: COLORS.textMuted },
   colName: { flex: 3, fontSize: 9.5, color: COLORS.textPrimary },
-  colQty: { flex: 1, fontSize: 9, fontFamily: "Courier", color: COLORS.textPrimary, textAlign: "right" },
+  colQty: { flex: 1, fontSize: 9, fontFamily: MONO, color: COLORS.textPrimary, textAlign: "right" },
   colUnit: { width: 32, fontSize: 8.5, color: COLORS.textSecondary, textAlign: "center" },
-  colPrice: { flex: 1.2, fontSize: 9, fontFamily: "Courier", color: COLORS.textPrimary, textAlign: "right" },
-  colTotal: { flex: 1.2, fontSize: 9, fontFamily: "Courier-Bold", color: COLORS.textPrimary, textAlign: "right" },
+  colPrice: { flex: 1.2, fontSize: 9, fontFamily: MONO, color: COLORS.textPrimary, textAlign: "right" },
+  colTotal: { flex: 1.2, fontSize: 9, fontFamily: MONO, fontWeight: "bold", color: COLORS.textPrimary, textAlign: "right" },
 
   // ── Totals box ──
   totalsContainer: {
@@ -252,7 +286,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   totalLabel: { fontSize: 9, color: COLORS.textSecondary },
-  totalValue: { fontSize: 9, fontFamily: "Courier", color: COLORS.textPrimary },
+  totalValue: { fontSize: 9, fontFamily: MONO, color: COLORS.textPrimary },
   totalSeparator: {
     borderTopWidth: 1,
     borderTopColor: COLORS.borderDefault,
@@ -270,12 +304,14 @@ const styles = StyleSheet.create({
   },
   grandTotalLabel: {
     fontSize: 11,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: BODY,
+    fontWeight: "bold",
     color: COLORS.textPrimary,
   },
   grandTotalValue: {
     fontSize: 13,
-    fontFamily: "Courier-Bold",
+    fontFamily: MONO,
+    fontWeight: "bold",
     color: COLORS.accentAmberHover,
   },
 
@@ -288,7 +324,8 @@ const styles = StyleSheet.create({
   },
   termsLabel: {
     fontSize: 8,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: BODY,
+    fontWeight: "bold",
     color: COLORS.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.8,
@@ -312,7 +349,8 @@ const styles = StyleSheet.create({
   },
   acceptanceLabel: {
     fontSize: 8,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: BODY,
+    fontWeight: "bold",
     color: COLORS.accentAmberHover,
     textTransform: "uppercase",
     letterSpacing: 1,
@@ -320,7 +358,7 @@ const styles = StyleSheet.create({
   },
   acceptanceUrl: {
     fontSize: 7.5,
-    fontFamily: "Courier",
+    fontFamily: MONO,
     color: COLORS.textSecondary,
   },
 
@@ -347,7 +385,7 @@ const styles = StyleSheet.create({
   },
   footerRight: {
     fontSize: 7.5,
-    fontFamily: "Courier",
+    fontFamily: MONO,
     color: COLORS.textMuted,
   },
 });
@@ -577,6 +615,7 @@ function buildFooter(payload: OfferPDFPayload) {
  * - Amber-highlighted grand total
  * - Professional footer with page numbers
  * - Variant sections support
+ * - NotoSans/NotoSansMono for full Polish Unicode support (PDF Platform v2)
  */
 export function buildPdfDocument(payload: OfferPDFPayload): unknown {
   const { quote, variantSections } = payload;
