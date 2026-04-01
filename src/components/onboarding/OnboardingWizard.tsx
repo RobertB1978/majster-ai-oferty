@@ -166,7 +166,7 @@ export function OnboardingWizard({ open, onClose }: OnboardingWizardProps) {
                     {t('onboarding.setupSubtitle')}
                   </p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleSkip}>
+                <Button variant="ghost" size="icon" onClick={handleSkip} aria-label={t('onboarding.skip')}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>

@@ -1871,7 +1871,8 @@
       "removeError": "Error removing member",
       "roleUpdated": "Role updated",
       "roleUpdateError": "Error updating role"
-    }
+    },
+    "removeMember": "Remove member"
   },
   "marketplace": {
     "title": "Marketplace",
@@ -2097,7 +2098,8 @@
     },
     "timeRemaining": "~{{minutes}} min remaining",
     "encouragement": "Great progress! {{completed}} of {{total}} steps done.",
-    "stepTimeEstimate": "~{{minutes}} min"
+    "stepTimeEstimate": "~{{minutes}} min",
+    "skip": "Skip"
   },
   "adminSettings": {
     "loadingSettings": "Loading settings...",
@@ -4993,7 +4995,10 @@
     "faq3a": "Yes, Majster.AI allows you to generate professional PDF offers with your company logo, cost items, and payment terms."
   },
   "notifications": {
-    "deleteNotification": "Delete notification"
+    "deleteNotification": "Delete notification",
+    "bellLabel": "Notifications",
+    "bellLabelWithCount": "Notifications ({{count}} unread)",
+    "markAsRead": "Mark as read"
   },
   "workTasks": {
     "unknownProject": "Unknown project",

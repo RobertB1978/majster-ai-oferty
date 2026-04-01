@@ -1853,7 +1853,8 @@
       "removeError": "Помилка видалення учасника",
       "roleUpdated": "Роль оновлено",
       "roleUpdateError": "Помилка оновлення ролі"
-    }
+    },
+    "removeMember": "Видалити учасника"
   },
   "marketplace": {
     "title": "Маркетплейс",
@@ -2097,7 +2098,8 @@
     },
     "timeRemaining": "~{{minutes}} хв залишилось",
     "encouragement": "Чудовий прогрес! {{completed}} з {{total}} кроків виконано.",
-    "stepTimeEstimate": "~{{minutes}} хв"
+    "stepTimeEstimate": "~{{minutes}} хв",
+    "skip": "Пропустити"
   },
   "adminSettings": {
     "loadingSettings": "Завантаження налаштувань...",
@@ -4993,7 +4995,10 @@
     "faq3a": "Так, Majster.AI дозволяє генерувати професійні PDF-пропозиції з логотипом компанії, позиціями кошторису та умовами оплати."
   },
   "notifications": {
-    "deleteNotification": "Видалити сповіщення"
+    "deleteNotification": "Видалити сповіщення",
+    "bellLabel": "Сповіщення",
+    "bellLabelWithCount": "Сповіщення ({{count}} непрочитаних)",
+    "markAsRead": "Позначити як прочитане"
   },
   "workTasks": {
     "unknownProject": "Невідомий проєкт",

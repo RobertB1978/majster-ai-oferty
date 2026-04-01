@@ -208,6 +208,7 @@ export function OrganizationManager() {
                               variant="ghost"
                               size="icon"
                               className="text-destructive"
+                              aria-label={t('organizations.removeMember')}
                               onClick={() => removeMember.mutate({
                                 memberId: member.id,
                                 organizationId: selectedOrg

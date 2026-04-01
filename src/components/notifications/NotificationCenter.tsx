@@ -72,7 +72,7 @@ export function NotificationCenter() {
           variant="ghost"
           size="icon"
           className="relative"
-          aria-label={unreadCount > 0 ? `Powiadomienia (${unreadCount} nieprzeczytanych)` : 'Powiadomienia'}
+          aria-label={unreadCount > 0 ? t('notifications.bellLabelWithCount', { count: unreadCount }) : t('notifications.bellLabel')}
         >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
@@ -147,7 +147,7 @@ export function NotificationCenter() {
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6"
-                            aria-label="Oznacz jako przeczytane"
+                            aria-label={t('notifications.markAsRead')}
                             onClick={(e) => {
                               e.stopPropagation();
                               markRead.mutate(notification.id);

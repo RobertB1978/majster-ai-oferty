@@ -1610,7 +1610,8 @@
       "removeError": "Błąd podczas usuwania członka",
       "roleUpdated": "Rola została zaktualizowana",
       "roleUpdateError": "Błąd podczas aktualizacji roli"
-    }
+    },
+    "removeMember": "Usuń członka"
   },
   "marketplace": {
     "title": "Marketplace",
@@ -2097,7 +2098,8 @@
     },
     "timeRemaining": "~{{minutes}} min pozostało",
     "encouragement": "Świetnie! {{completed}} z {{total}} kroków ukończone.",
-    "stepTimeEstimate": "~{{minutes}} min"
+    "stepTimeEstimate": "~{{minutes}} min",
+    "skip": "Pomiń"
   },
   "adminSettings": {
     "loadingSettings": "Wczytywanie ustawień...",
@@ -4993,7 +4995,10 @@
     "faq3a": "Tak, Majster.AI umożliwia generowanie profesjonalnych ofert w formacie PDF z logo firmy, pozycjami kosztorysowymi i warunkami płatności."
   },
   "notifications": {
-    "deleteNotification": "Usuń powiadomienie"
+    "deleteNotification": "Usuń powiadomienie",
+    "bellLabel": "Powiadomienia",
+    "bellLabelWithCount": "Powiadomienia ({{count}} nieprzeczytanych)",
+    "markAsRead": "Oznacz jako przeczytane"
   },
   "workTasks": {
     "unknownProject": "Nieznany projekt",
