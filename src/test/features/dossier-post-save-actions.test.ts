@@ -145,9 +145,13 @@ describe('Dossier post-save actions — translation key coverage', () => {
     'dossier.downloadError',
     'dossier.deleteFile',
     'dossier.confirmDelete',
+    'dossier.confirmDeleteShort',
     'dossier.shareLink',
     'dossier.exportPdf',
     'dossier.generateFromTemplate',
+    'dossier.loadErrorSoft',
+    'dossier.retry',
+    'dossier.public.downloadError',
   ];
 
   // We verify the keys exist by loading the EN locale
