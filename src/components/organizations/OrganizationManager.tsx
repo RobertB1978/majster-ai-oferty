@@ -260,7 +260,7 @@ export function OrganizationManager() {
                 id="org-name"
                 value={newOrgName}
                 onChange={(e) => setNewOrgName(e.target.value)}
-                placeholder="Moja Firma Budowlana"
+                placeholder={t('organizations.namePlaceholder')}
               />
             </div>
             <div>
@@ -271,7 +271,7 @@ export function OrganizationManager() {
                   id="org-slug"
                   value={newOrgSlug}
                   onChange={(e) => setNewOrgSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                  placeholder="moja-firma"
+                  placeholder={t('organizations.slugPlaceholder')}
                 />
               </div>
               <p className="text-xs text-muted-foreground mt-1">

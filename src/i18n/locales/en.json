@@ -836,7 +836,8 @@
         "saveError": "Failed to save email address",
         "verificationSent": "Verification email sent. Check your inbox.",
         "verificationSentNoService": "Verification email sent (email service must be configured)."
-      }
+      },
+      "placeholder": "john@company.com"
     }
   },
   "billing": {
@@ -1800,7 +1801,9 @@
       "rejectReasonToggle": "I want to provide a rejection reason",
       "rejectReasonPlaceholder": "Rejection reason (optional)...",
       "questionPrefix": "Have a question →",
-      "contactLink": "contact the contractor"
+      "contactLink": "contact the contractor",
+      "namePlaceholder": "John Smith",
+      "emailPlaceholder": "john@example.com"
     },
     "errors": {
       "notFound": "Offer not found",
@@ -1873,7 +1876,9 @@
       "roleUpdated": "Role updated",
       "roleUpdateError": "Error updating role"
     },
-    "removeMember": "Remove member"
+    "removeMember": "Remove member",
+    "namePlaceholder": "My Construction Company",
+    "slugPlaceholder": "my-company"
   },
   "marketplace": {
     "title": "Marketplace",
@@ -2877,7 +2882,8 @@
     "removeItemAriaLabel": "Remove item",
     "showMarginAriaLabel": "Show margin to client",
     "typeBadgeTitle": "Type: {{type}} (click to change)",
-    "visibleColumns": "Visible columns"
+    "visibleColumns": "Visible columns",
+    "unitPlaceholder": "pcs"
   },
   "tradeOnboarding": {
     "step1Title": "What is your trade?",
@@ -3732,7 +3738,8 @@
       "name": "Name / company",
       "namePlaceholder": "John Smith",
       "phone": "Phone",
-      "email": "Email"
+      "email": "Email",
+      "emailPlaceholder": "john@example.com"
     },
     "itemsStep": {
       "libraryTitle": "Price Library",

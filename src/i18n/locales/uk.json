@@ -836,7 +836,8 @@
         "saveError": "Не вдалося зберегти адресу email",
         "verificationSent": "Лист підтвердження надіслано. Перевірте пошту.",
         "verificationSentNoService": "Лист підтвердження надіслано (сервіс email має бути налаштований)."
-      }
+      },
+      "placeholder": "ivan@firma.pl"
     }
   },
   "billing": {
@@ -1769,7 +1770,9 @@
       "rejectReasonToggle": "Я хочу вказати причину відхилення",
       "rejectReasonPlaceholder": "Причина відхилення (необов'язково)...",
       "questionPrefix": "Є запитання →",
-      "contactLink": "напишіть підряднику"
+      "contactLink": "напишіть підряднику",
+      "namePlaceholder": "Іван Коваль",
+      "emailPlaceholder": "ivan@example.com"
     },
     "errors": {
       "notFound": "Пропозицію не знайдено",
@@ -1855,7 +1858,9 @@
       "roleUpdated": "Роль оновлено",
       "roleUpdateError": "Помилка оновлення ролі"
     },
-    "removeMember": "Видалити учасника"
+    "removeMember": "Видалити учасника",
+    "namePlaceholder": "Моя будівельна компанія",
+    "slugPlaceholder": "moya-kompania"
   },
   "marketplace": {
     "title": "Маркетплейс",
@@ -2877,7 +2882,8 @@
     "removeItemAriaLabel": "Видалити позицію",
     "showMarginAriaLabel": "Показати маржу клієнту",
     "typeBadgeTitle": "Тип: {{type}} (натисніть, щоб змінити)",
-    "visibleColumns": "Видимі колонки"
+    "visibleColumns": "Видимі колонки",
+    "unitPlaceholder": "шт"
   },
   "tradeOnboarding": {
     "step1Title": "Чим ви займаєтесь?",
@@ -3732,7 +3738,8 @@
       "name": "Ім'я / компанія",
       "namePlaceholder": "Іван Коваль",
       "phone": "Телефон",
-      "email": "Email"
+      "email": "Email",
+      "emailPlaceholder": "ivan@example.com"
     },
     "itemsStep": {
       "libraryTitle": "Бібліотека цін",

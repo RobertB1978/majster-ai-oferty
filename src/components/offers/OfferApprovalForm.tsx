@@ -53,7 +53,7 @@ export function OfferApprovalForm({
             <Input
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
-              placeholder="Jan Kowalski"
+              placeholder={t('offerApproval.form.namePlaceholder')}
               aria-required="true"
             />
           </div>
@@ -63,7 +63,7 @@ export function OfferApprovalForm({
               type="email"
               value={clientEmail}
               onChange={(e) => setClientEmail(e.target.value)}
-              placeholder="jan@example.com"
+              placeholder={t('offerApproval.form.emailPlaceholder')}
             />
           </div>
         </div>

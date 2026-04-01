@@ -156,7 +156,7 @@ export function ContactEmailSettings() {
               <Input
                 id="contact-email"
                 type="email"
-                placeholder="jan@firma.pl"
+                placeholder={t('settings.contactEmail.placeholder')}
                 value={editEmail}
                 onChange={(e) => {
                   setEditEmail(e.target.value);

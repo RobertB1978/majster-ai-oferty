@@ -836,7 +836,8 @@
         "saveError": "Nie udało się zapisać adresu email",
         "verificationSent": "Email weryfikacyjny został wysłany. Sprawdź skrzynkę pocztową.",
         "verificationSentNoService": "Email weryfikacyjny wysłany (usługa email musi być skonfigurowana)."
-      }
+      },
+      "placeholder": "jan@firma.pl"
     }
   },
   "billing": {
@@ -1612,7 +1613,9 @@
       "roleUpdated": "Rola została zaktualizowana",
       "roleUpdateError": "Błąd podczas aktualizacji roli"
     },
-    "removeMember": "Usuń członka"
+    "removeMember": "Usuń członka",
+    "namePlaceholder": "Moja Firma Budowlana",
+    "slugPlaceholder": "moja-firma"
   },
   "marketplace": {
     "title": "Marketplace",
@@ -1790,7 +1793,9 @@
       "rejectReasonToggle": "Chcę podać powód odrzucenia",
       "rejectReasonPlaceholder": "Powód odrzucenia (opcjonalnie)...",
       "questionPrefix": "Mam pytanie →",
-      "contactLink": "napisz do wykonawcy"
+      "contactLink": "napisz do wykonawcy",
+      "namePlaceholder": "Jan Kowalski",
+      "emailPlaceholder": "jan@example.com"
     },
     "errors": {
       "notFound": "Nie znaleziono oferty",
@@ -2877,7 +2882,8 @@
     "removeItemAriaLabel": "Usuń pozycję",
     "showMarginAriaLabel": "Pokaż marżę klientowi",
     "typeBadgeTitle": "Typ: {{type}} (kliknij, aby zmienić)",
-    "visibleColumns": "Widoczne kolumny"
+    "visibleColumns": "Widoczne kolumny",
+    "unitPlaceholder": "szt"
   },
   "tradeOnboarding": {
     "step1Title": "Czym się zajmujesz?",
@@ -3732,7 +3738,8 @@
       "name": "Imię / nazwa firmy",
       "namePlaceholder": "Jan Kowalski",
       "phone": "Telefon",
-      "email": "Email"
+      "email": "Email",
+      "emailPlaceholder": "jan@example.pl"
     },
     "itemsStep": {
       "libraryTitle": "Biblioteka cennika",

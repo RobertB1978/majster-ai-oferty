@@ -148,7 +148,7 @@ export function WizardStepClient({ form, onChange, errors }: Props) {
                 type="email"
                 value={form.newClient?.email ?? ''}
                 onChange={(e) => handleNewClientChange('email', e.target.value)}
-                placeholder="jan@example.pl"
+                placeholder={t('offerWizard.clientStep.emailPlaceholder')}
               />
             </div>
           </div>
