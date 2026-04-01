@@ -61,6 +61,8 @@ export function useQuickEstimateDraft() {
   // Keep a ref so saveDraftNow can always read the latest id without closure staleness
   const draftOfferIdRef = useRef<string | null>(null);
   useEffect(() => { draftOfferIdRef.current = draftOfferId; }, [draftOfferId]);
+  // Track in-flight save so concurrent calls (debounce + manual, or debounce + promote) don't race
+  const saveInFlightRef = useRef<Promise<void> | null>(null);
 
   /* ── Load ──────────────────────────────────────────────────── */
 
@@ -143,97 +145,110 @@ export function useQuickEstimateDraft() {
    * Replaces all offer_items on each save (simple and correct for drafts).
    */
   const saveDraftNow = useCallback(async (data: QuickEstimateData): Promise<void> => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    // Skip if a save is already in flight — prevents duplicate DRAFT inserts and
+    // item-level write conflicts when scheduleSave and manual save overlap.
+    if (saveInFlightRef.current !== null) return;
 
-    setSaveStatus('saving');
+    const runSave = async (): Promise<void> => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
 
+      setSaveStatus('saving');
+
+      try {
+        const { netTotal, vatAmount, grossTotal } = calcTotals(data.items, data.vatEnabled);
+
+        let currentId = draftOfferIdRef.current;
+
+        if (!currentId) {
+          // First save — create the DRAFT offer record
+          // `source` and `vat_enabled` exist in DB but not in generated types
+          const { data: offer, error: insertErr } = await typedResult<{ id: string } | null>(
+            supabase
+              .from('offers')
+              .insert(withExtraColumns({
+                user_id: user.id,
+                status: 'DRAFT',
+                title: data.projectName.trim() || null,
+                client_id: data.clientId || null,
+                total_net: netTotal,
+                total_gross: grossTotal,
+                total_vat: vatAmount,
+              }, { source: DRAFT_SOURCE, vat_enabled: data.vatEnabled }))
+              .select('id')
+              .single(),
+          );
+
+          if (insertErr || !offer) throw insertErr ?? new Error('Insert returned no data');
+          currentId = offer.id;
+          setDraftOfferId(offer.id);
+        } else {
+          // Subsequent save — update existing DRAFT offer
+          // `vat_enabled` exists in DB but not in generated types
+          const { error: updateErr } = await typedMutationResult(
+            supabase
+              .from('offers')
+              .update(withExtraColumns({
+                title: data.projectName.trim() || null,
+                client_id: data.clientId || null,
+                total_net: netTotal,
+                total_gross: grossTotal,
+                total_vat: vatAmount,
+              }, { vat_enabled: data.vatEnabled }))
+              .eq('id', currentId),
+          );
+
+          if (updateErr) throw updateErr;
+        }
+
+        // Replace all line items (delete + insert is simplest and safe for DRAFT)
+        await supabase.from('offer_items').delete().eq('offer_id', currentId);
+
+        const validItems = data.items.filter((i) => i.name.trim());
+        if (validItems.length > 0) {
+          // `metadata` column exists in DB but not in generated types
+          const { error: itemsErr } = await typedMutationResult(
+            supabase.from('offer_items').insert(
+              validItems.map((item) => withExtraColumns({
+                user_id: user.id,
+                offer_id: currentId!,
+                name: item.name,
+                unit: item.unit,
+                qty: item.qty,
+                item_type: item.itemType,
+                unit_price_net: itemUnitPrice(item),
+                line_total_net: itemLineTotal(item),
+                vat_rate: data.vatEnabled ? 23 : null,
+              }, {
+                metadata: {
+                  priceMode: item.priceMode,
+                  price: item.price,
+                  laborCost: item.laborCost,
+                  materialCost: item.materialCost,
+                  marginPct: item.marginPct,
+                  showMargin: item.showMargin,
+                } satisfies LineItemMetadata,
+              })),
+            ),
+          );
+
+          if (itemsErr) throw itemsErr;
+        }
+
+        setSaveStatus('saved');
+        setLastSavedAt(new Date());
+      } catch {
+        setSaveStatus('error');
+      }
+    }; // end runSave
+
+    saveInFlightRef.current = runSave();
     try {
-      const { netTotal, vatAmount, grossTotal } = calcTotals(data.items, data.vatEnabled);
-
-      let currentId = draftOfferIdRef.current;
-
-      if (!currentId) {
-        // First save — create the DRAFT offer record
-        // `source` and `vat_enabled` exist in DB but not in generated types
-        const { data: offer, error: insertErr } = await typedResult<{ id: string } | null>(
-          supabase
-            .from('offers')
-            .insert(withExtraColumns({
-              user_id: user.id,
-              status: 'DRAFT',
-              title: data.projectName.trim() || null,
-              client_id: data.clientId || null,
-              total_net: netTotal,
-              total_gross: grossTotal,
-              total_vat: vatAmount,
-            }, { source: DRAFT_SOURCE, vat_enabled: data.vatEnabled }))
-            .select('id')
-            .single(),
-        );
-
-        if (insertErr || !offer) throw insertErr ?? new Error('Insert returned no data');
-        currentId = offer.id;
-        setDraftOfferId(offer.id);
-      } else {
-        // Subsequent save — update existing DRAFT offer
-        // `vat_enabled` exists in DB but not in generated types
-        const { error: updateErr } = await typedMutationResult(
-          supabase
-            .from('offers')
-            .update(withExtraColumns({
-              title: data.projectName.trim() || null,
-              client_id: data.clientId || null,
-              total_net: netTotal,
-              total_gross: grossTotal,
-              total_vat: vatAmount,
-            }, { vat_enabled: data.vatEnabled }))
-            .eq('id', currentId),
-        );
-
-        if (updateErr) throw updateErr;
-      }
-
-      // Replace all line items (delete + insert is simplest and safe for DRAFT)
-      await supabase.from('offer_items').delete().eq('offer_id', currentId);
-
-      const validItems = data.items.filter((i) => i.name.trim());
-      if (validItems.length > 0) {
-        // `metadata` column exists in DB but not in generated types
-        const { error: itemsErr } = await typedMutationResult(
-          supabase.from('offer_items').insert(
-            validItems.map((item) => withExtraColumns({
-              user_id: user.id,
-              offer_id: currentId!,
-              name: item.name,
-              unit: item.unit,
-              qty: item.qty,
-              item_type: item.itemType,
-              unit_price_net: itemUnitPrice(item),
-              line_total_net: itemLineTotal(item),
-              vat_rate: data.vatEnabled ? 23 : null,
-            }, {
-              metadata: {
-                priceMode: item.priceMode,
-                price: item.price,
-                laborCost: item.laborCost,
-                materialCost: item.materialCost,
-                marginPct: item.marginPct,
-                showMargin: item.showMargin,
-              } satisfies LineItemMetadata,
-            })),
-          ),
-        );
-
-        if (itemsErr) throw itemsErr;
-      }
-
-      setSaveStatus('saved');
-      setLastSavedAt(new Date());
-    } catch {
-      setSaveStatus('error');
+      await saveInFlightRef.current;
+    } finally {
+      saveInFlightRef.current = null;
     }
   }, []);
 
@@ -289,6 +304,11 @@ export function useQuickEstimateDraft() {
       clearTimeout(debounceRef.current);
       debounceRef.current = null;
     }
+
+    // If an auto-save fired just before the debounce was cancelled, wait for it
+    // to finish before writing — prevents item-list corruption from interleaved
+    // delete+insert sequences on the same offer_items rows.
+    if (saveInFlightRef.current) await saveInFlightRef.current;
 
     const {
       data: { user },
@@ -378,7 +398,6 @@ export function useQuickEstimateDraft() {
     setLastSavedAt(null);
 
     return { offerId: offerId!, netTotal };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* ── Cleanup debounce on unmount ─────────────────────────── */
