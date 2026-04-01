@@ -5229,6 +5229,37 @@
       "photos_plural": "{{count}} zdjęć z terenu"
     }
   },
+  "pwa": {
+    "installTitle": "Zainstaluj Majster.AI",
+    "installDescription": "Dodaj aplikację do ekranu głównego dla szybszego dostępu.",
+    "installButton": "Zainstaluj",
+    "dismissButton": "Później"
+  },
+  "companyDocs": {
+    "title": "Dokumenty firmowe",
+    "description": "Uprawnienia, referencje, certyfikaty i polisy do załączenia do ofert",
+    "addDocument": "Dodaj dokument",
+    "addNewDocument": "Dodaj nowy dokument",
+    "addNewDescription": "Prześlij dokument, który będzie można załączać do ofert",
+    "docType": "Typ dokumentu",
+    "docName": "Nazwa dokumentu",
+    "docNamePlaceholder": "np. Uprawnienia elektryczne SEP",
+    "descriptionOptional": "Opis (opcjonalnie)",
+    "descriptionPlaceholder": "Krótki opis dokumentu",
+    "uploading": "Przesyłanie...",
+    "selectFileAndUpload": "Wybierz plik i prześlij",
+    "acceptedFormats": "Akceptowane formaty: PDF, JPG, PNG, DOC. Max 10MB",
+    "noDocuments": "Brak dokumentów",
+    "noDocumentsHint": "Dodaj uprawnienia, referencje lub certyfikaty"
+  },
+  "dossierPublic": {
+    "categoryContract": "Umowy",
+    "categoryProtocol": "Protokoły",
+    "categoryReceipt": "Rachunki",
+    "categoryPhoto": "Fotoprotokół",
+    "categoryGuarantee": "Gwarancje",
+    "categoryOther": "Inne"
+  },
   "globalSearch": {
     "placeholder": "Szukaj ofert, klientów, projektów…",
     "searching": "Szukam…",

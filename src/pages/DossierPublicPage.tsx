@@ -50,15 +50,15 @@ type LoadState =
   | { state: 'error'; code: 'not_found' | 'expired' | 'server_error' }
   | { state: 'ok'; dossier: PublicDossierData };
 
-// ── Category labels (hardcoded for public page — no i18n key access issues) ──
+// ── Category i18n key mapping ──
 
-const CATEGORY_LABELS: Record<string, string> = {
-  CONTRACT:  'Umowy',
-  PROTOCOL:  'Protokoły',
-  RECEIPT:   'Rachunki',
-  PHOTO:     'Fotoprotokół',
-  GUARANTEE: 'Gwarancje',
-  OTHER:     'Inne',
+const CATEGORY_I18N_KEYS: Record<string, string> = {
+  CONTRACT:  'dossierPublic.categoryContract',
+  PROTOCOL:  'dossierPublic.categoryProtocol',
+  RECEIPT:   'dossierPublic.categoryReceipt',
+  PHOTO:     'dossierPublic.categoryPhoto',
+  GUARANTEE: 'dossierPublic.categoryGuarantee',
+  OTHER:     'dossierPublic.categoryOther',
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -289,7 +289,7 @@ export default function DossierPublicPage() {
                 {/* Category header */}
                 <div className="px-4 py-3 border-b bg-gray-50 dark:bg-gray-800/50">
                   <h2 className="text-sm font-semibold">
-                    {CATEGORY_LABELS[cat] ?? cat}
+                    {CATEGORY_I18N_KEYS[cat] ? t(CATEGORY_I18N_KEYS[cat]) : cat}
                   </h2>
                   <p className="text-xs text-muted-foreground">{catItems.length} {t('dossier.public.files')}</p>
                 </div>

@@ -6,6 +6,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { completeAI, handleAIError } from "../_shared/ai-provider.ts";
+import { sanitizeAiOutput } from "../_shared/sanitization.ts";
 import { validateUrl, createValidationErrorResponse } from "../_shared/validation.ts";
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
 import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
@@ -128,10 +129,20 @@ Odpowiedz w formacie JSON:
       if (jsonMatch) {
         ocrResult = JSON.parse(jsonMatch[0]);
         
-        // Sanitize output
-        ocrResult.supplierName = String(ocrResult.supplierName || '').substring(0, 200);
-        ocrResult.invoiceNumber = String(ocrResult.invoiceNumber || '').substring(0, 100);
-        ocrResult.items = Array.isArray(ocrResult.items) ? ocrResult.items.slice(0, 100) : [];
+        // Sanitize output — use sanitizeAiOutput for all text fields
+        ocrResult.supplierName = sanitizeAiOutput(ocrResult.supplierName, 200);
+        ocrResult.invoiceNumber = sanitizeAiOutput(ocrResult.invoiceNumber, 100);
+        ocrResult.invoiceDate = sanitizeAiOutput(ocrResult.invoiceDate, 10);
+        ocrResult.items = Array.isArray(ocrResult.items)
+          ? ocrResult.items.slice(0, 100).map((item: Record<string, unknown>) => ({
+              name: sanitizeAiOutput(item.name as string, 200),
+              quantity: Math.max(0, Number(item.quantity) || 0),
+              unit: sanitizeAiOutput(item.unit as string, 20),
+              netPrice: Math.max(0, Number(item.netPrice) || 0),
+              vatRate: Math.min(100, Math.max(0, Number(item.vatRate) || 0)),
+              grossPrice: Math.max(0, Number(item.grossPrice) || 0),
+            }))
+          : [];
         ocrResult.netAmount = Math.max(0, Number(ocrResult.netAmount) || 0);
         ocrResult.vatAmount = Math.max(0, Number(ocrResult.vatAmount) || 0);
         ocrResult.grossAmount = Math.max(0, Number(ocrResult.grossAmount) || 0);
