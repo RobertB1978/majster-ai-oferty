@@ -229,6 +229,7 @@ function FileRow({ item, onDelete }: FileRowProps) {
               setDownloading(true);
               try {
                 await downloadDossierFile(item.signed_url!, item.file_name);
+                toast.success(t('dossier.downloadSuccess'));
               } catch {
                 toast.error(t('dossier.downloadError'));
               } finally {

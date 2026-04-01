@@ -4183,6 +4183,7 @@
     "confirmDeleteShort": "Usuń?",
     "openFile": "Otwórz",
     "downloadFile": "Pobierz",
+    "downloadSuccess": "Pobieranie rozpoczęte",
     "downloadError": "Błąd pobierania pliku. Spróbuj ponownie.",
     "generateFromTemplate": "Generuj z szablonu",
     "exportEmpty": "Brak plików do wyeksportowania",

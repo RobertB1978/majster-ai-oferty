@@ -142,6 +142,7 @@ describe('Dossier post-save actions — translation key coverage', () => {
   const REQUIRED_DOSSIER_KEYS = [
     'dossier.openFile',
     'dossier.downloadFile',
+    'dossier.downloadSuccess',
     'dossier.downloadError',
     'dossier.deleteFile',
     'dossier.confirmDelete',

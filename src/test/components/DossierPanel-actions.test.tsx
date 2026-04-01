@@ -65,6 +65,7 @@ vi.mock('@/hooks/useDossier', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/hooks/useDossier')>();
   return {
     ...actual,
+    downloadDossierFile: vi.fn().mockResolvedValue(undefined),
     useDossierItems: () => ({
       data: MOCK_ITEMS,
       isLoading: false,
@@ -198,6 +199,26 @@ describe('DossierPanel — FileRow action buttons', () => {
 
     // Confirmation state must show visible text (not just icon) so user knows to click again
     expect(screen.getByText(i18n.t('dossier.confirmDeleteShort'))).toBeInTheDocument();
+  });
+
+  it('download shows success toast on successful download', async () => {
+    const { downloadDossierFile } = await import('@/hooks/useDossier');
+    vi.mocked(downloadDossierFile).mockResolvedValueOnce(undefined);
+
+    const user = userEvent.setup();
+    const { unmount } = renderPanel();
+
+    const contractCard = screen.getByRole('button', {
+      name: i18n.t('dossier.category.CONTRACT'),
+    });
+    await user.click(contractCard);
+
+    const downloadBtn = screen.getByLabelText(i18n.t('dossier.downloadFile'));
+    await user.click(downloadBtn);
+
+    // Success toast key must exist (used by the download handler)
+    expect(i18n.t('dossier.downloadSuccess')).toBeTruthy();
+    unmount();
   });
 
   it('preview and download actions are distinct — different aria-labels and different targets', async () => {

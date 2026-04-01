@@ -4182,6 +4182,7 @@
     "confirmDelete": "Confirm delete",
     "openFile": "Open",
     "downloadFile": "Download",
+    "downloadSuccess": "Download started",
     "downloadError": "Download failed. Please try again.",
     "generateFromTemplate": "Generate from template",
     "exportEmpty": "No files to export",
