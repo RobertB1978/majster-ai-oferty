@@ -140,4 +140,41 @@ describe('serializeOfferPdfPayload', () => {
     );
     expect(result.acceptanceUrl).toBe('https://app.example.com/a/token123');
   });
+
+  // ── PDF Platform v2 Foundation — metadane (backward compatible) ────────────
+
+  it('zawsze ustawia documentType na "offer"', () => {
+    const result = serializeOfferPdfPayload(makePayload());
+    expect(result.documentType).toBe('offer');
+  });
+
+  it('ustawia locale na "pl-PL" gdy nieobecne w payloadzie', () => {
+    const result = serializeOfferPdfPayload(makePayload());
+    expect(result.locale).toBe('pl-PL');
+  });
+
+  it('zachowuje locale z payloadu gdy podane', () => {
+    const result = serializeOfferPdfPayload(makePayload({ locale: 'en-US' }));
+    expect(result.locale).toBe('en-US');
+  });
+
+  it('pomija trade gdy nieobecne w payloadzie', () => {
+    const result = serializeOfferPdfPayload(makePayload());
+    expect(result.trade).toBeUndefined();
+  });
+
+  it('zachowuje trade z payloadu gdy podane', () => {
+    const result = serializeOfferPdfPayload(makePayload({ trade: 'tiling' }));
+    expect(result.trade).toBe('tiling');
+  });
+
+  it('pomija planTier gdy nieobecne w payloadzie', () => {
+    const result = serializeOfferPdfPayload(makePayload());
+    expect(result.planTier).toBeUndefined();
+  });
+
+  it('zachowuje planTier z payloadu gdy podane', () => {
+    const result = serializeOfferPdfPayload(makePayload({ planTier: 'pro' }));
+    expect(result.planTier).toBe('pro');
+  });
 });

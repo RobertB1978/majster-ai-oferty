@@ -130,6 +130,30 @@ export interface OfferPdfPayload {
    * Format: https://app.example.com/a/{token}
    */
   acceptanceUrl?: string;
+
+  // ── PDF Platform v2 Foundation — pola metadanych (opcjonalne) ─────────────
+  //
+  // Umożliwiają przyszłe auto-mapowanie szablonu per documentType/trade/planTier.
+  // Opcjonalne — nie wpływają na bieżące przepływy generowania PDF.
+  // serializeOfferPdfPayload() wypełnia je domyślnymi wartościami.
+
+  /** Typ dokumentu — zawsze 'offer' dla ofert */
+  documentType?: 'offer';
+
+  /** Lokalizacja formatowania (np. 'pl-PL'). Domyślnie 'pl-PL'. */
+  locale?: string;
+
+  /**
+   * Branża wykonawcy. Opcjonalne — pochodzi z profilu użytkownika.
+   * Gdy nieobecne, serializer pomija (Edge Function używa 'general' jako default).
+   */
+  trade?: string;
+
+  /**
+   * Poziom planu subskrypcji. Opcjonalne — pochodzi z danych rozliczeniowych.
+   * Gdy nieobecne, serializer pomija.
+   */
+  planTier?: string;
 }
 
 /**

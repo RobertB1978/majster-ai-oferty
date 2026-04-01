@@ -115,4 +115,37 @@ export interface OfferPDFPayload {
    * Current: 1
    */
   schemaVersion: 1;
+
+  // ── PDF Platform v2 Foundation — pola metadanych (opcjonalne, backward compatible) ──
+  //
+  // Dodane w ramach PDF Platform v2 Foundation aby umożliwić przyszłe
+  // auto-mapowanie szablonu (documentType + trade + planTier → renderer).
+  // Pola opcjonalne — nie wpływają na istniejące przepływy.
+  //
+  // Domyślne wartości gdy nieobecne:
+  //   documentType = 'offer'  (dla schemaVersion: 1 zawsze oferta)
+  //   locale       = 'pl-PL'
+  //   trade        = 'general'
+  //   planTier     = (zależne od profilu użytkownika)
+
+  /** Typ dokumentu — zawsze 'offer' dla ofert (schemaVersion: 1) */
+  documentType?: 'offer';
+
+  /**
+   * Lokalizacja formatowania (daty, waluty, etykiety).
+   * Format BCP 47, np. 'pl-PL'.
+   */
+  locale?: string;
+
+  /**
+   * Branża wykonawcy — umożliwia przyszły dobór szablonu per trade.
+   * Wartości: TradeType z unified-document-payload.ts
+   */
+  trade?: string;
+
+  /**
+   * Poziom planu subskrypcji.
+   * Wartości: 'free' | 'basic' | 'pro' | 'enterprise'
+   */
+  planTier?: string;
 }
