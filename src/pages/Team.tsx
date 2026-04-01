@@ -157,7 +157,7 @@ export default function Team() {
                   <Input
                     value={newMember.name}
                     onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
-                    placeholder="Jan Kowalski"
+                    placeholder={t('team.namePlaceholder')}
                   />
                 </div>
                 <div>
@@ -165,7 +165,7 @@ export default function Team() {
                   <Input
                     value={newMember.phone}
                     onChange={(e) => setNewMember({ ...newMember, phone: e.target.value })}
-                    placeholder="+48 123 456 789"
+                    placeholder={t('team.phonePlaceholder')}
                   />
                 </div>
                 <div>
@@ -173,7 +173,7 @@ export default function Team() {
                   <Input
                     value={newMember.email}
                     onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
-                    placeholder="jan@example.com"
+                    placeholder={t('team.emailPlaceholder')}
                   />
                 </div>
                 <div>

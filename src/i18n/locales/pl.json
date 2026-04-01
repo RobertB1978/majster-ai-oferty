@@ -60,7 +60,8 @@
     "errorGeneric": "Wystąpił błąd. Spróbuj ponownie.",
     "offline": "Offline",
     "online": "Online",
-    "unknownError": "Nieznany błąd"
+    "unknownError": "Nieznany błąd",
+    "backToDashboard": "Wróć do dashboardu"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -618,7 +619,10 @@
       "addEmployeeBtn": "Dodaj pracownika",
       "noEmployees": "Brak pracowników",
       "inactive": "Nieaktywny"
-    }
+    },
+    "namePlaceholder": "Jan Kowalski",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailPlaceholder": "jan@example.com"
   },
   "templates": {
     "title": "Mój cennik",
@@ -832,7 +836,8 @@
         "saveError": "Nie udało się zapisać adresu email",
         "verificationSent": "Email weryfikacyjny został wysłany. Sprawdź skrzynkę pocztową.",
         "verificationSentNoService": "Email weryfikacyjny wysłany (usługa email musi być skonfigurowana)."
-      }
+      },
+      "placeholder": "jan@firma.pl"
     }
   },
   "billing": {
@@ -1051,7 +1056,8 @@
       "submit": "Wyślij zgłoszenie",
       "sending": "Wysyłanie...",
       "error": "Błąd: {{message}}. Spróbuj ponownie lub napisz na",
-      "unknownError": "Nieznany błąd"
+      "unknownError": "Nieznany błąd",
+      "phonePlaceholder": "+48 123 456 789"
     }
   },
   "profile": {
@@ -1607,7 +1613,10 @@
       "removeError": "Błąd podczas usuwania członka",
       "roleUpdated": "Rola została zaktualizowana",
       "roleUpdateError": "Błąd podczas aktualizacji roli"
-    }
+    },
+    "removeMember": "Usuń członka",
+    "namePlaceholder": "Moja Firma Budowlana",
+    "slugPlaceholder": "moja-firma"
   },
   "marketplace": {
     "title": "Marketplace",
@@ -1785,7 +1794,9 @@
       "rejectReasonToggle": "Chcę podać powód odrzucenia",
       "rejectReasonPlaceholder": "Powód odrzucenia (opcjonalnie)...",
       "questionPrefix": "Mam pytanie →",
-      "contactLink": "napisz do wykonawcy"
+      "contactLink": "napisz do wykonawcy",
+      "namePlaceholder": "Jan Kowalski",
+      "emailPlaceholder": "jan@example.com"
     },
     "errors": {
       "notFound": "Nie znaleziono oferty",
@@ -2094,7 +2105,8 @@
     },
     "timeRemaining": "~{{minutes}} min pozostało",
     "encouragement": "Świetnie! {{completed}} z {{total}} kroków ukończone.",
-    "stepTimeEstimate": "~{{minutes}} min"
+    "stepTimeEstimate": "~{{minutes}} min",
+    "skip": "Pomiń"
   },
   "adminSettings": {
     "loadingSettings": "Wczytywanie ustawień...",
@@ -2871,7 +2883,8 @@
     "removeItemAriaLabel": "Usuń pozycję",
     "showMarginAriaLabel": "Pokaż marżę klientowi",
     "typeBadgeTitle": "Typ: {{type}} (kliknij, aby zmienić)",
-    "visibleColumns": "Widoczne kolumny"
+    "visibleColumns": "Widoczne kolumny",
+    "unitPlaceholder": "szt"
   },
   "tradeOnboarding": {
     "step1Title": "Czym się zajmujesz?",
@@ -2982,7 +2995,14 @@
     "addressLine2Label": "Adres — linia 2",
     "addressLine2Placeholder": "Nr lokalu / piętro (opcjonalne)",
     "countryLabel": "Kraj",
-    "countryDefault": "Polska"
+    "countryDefault": "Polska",
+    "nipPlaceholder": "np. 1234567890",
+    "streetPlaceholder": "np. ul. Przykładowa 1",
+    "cityPlaceholder": "np. Warszawa",
+    "postalCodePlaceholder": "np. 00-001",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailForOffersPlaceholder": "kontakt@firma.pl",
+    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000"
   },
   "marketplacePage": {
     "addSubcontractor": "Dodaj podwykonawcę",
@@ -3068,7 +3088,8 @@
     "anotherQuestion": "Zadaj kolejne pytanie",
     "justAccepted": "Oferta zaakceptowana!",
     "printButton": "Drukuj / Zapisz PDF",
-    "printAriaLabel": "Wydrukuj lub zapisz ofertę jako PDF"
+    "printAriaLabel": "Wydrukuj lub zapisz ofertę jako PDF",
+    "emailPlaceholder": "jan@example.com"
   },
   "pdfGenerator": {
     "defaultOfferText": "Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na realizację prac.",
@@ -3718,7 +3739,9 @@
       "name": "Imię / nazwa firmy",
       "namePlaceholder": "Jan Kowalski",
       "phone": "Telefon",
-      "email": "Email"
+      "email": "Email",
+      "emailPlaceholder": "jan@example.pl",
+      "phonePlaceholder": "+48 500 000 000"
     },
     "itemsStep": {
       "libraryTitle": "Biblioteka cennika",
@@ -4983,7 +5006,11 @@
     "faq3a": "Tak, Majster.AI umożliwia generowanie profesjonalnych ofert w formacie PDF z logo firmy, pozycjami kosztorysowymi i warunkami płatności."
   },
   "notifications": {
-    "deleteNotification": "Usuń powiadomienie"
+    "deleteNotification": "Usuń powiadomienie",
+    "bellLabel": "Powiadomienia",
+    "bellLabelWithCount": "Powiadomienia ({{count}} nieprzeczytanych)",
+    "markAsRead": "Oznacz jako przeczytane",
+    "closeToast": "Zamknij powiadomienie"
   },
   "workTasks": {
     "unknownProject": "Nieznany projekt",

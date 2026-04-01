@@ -60,7 +60,8 @@
     "errorGeneric": "An error occurred. Please try again.",
     "offline": "Offline",
     "online": "Online",
-    "unknownError": "Unknown error"
+    "unknownError": "Unknown error",
+    "backToDashboard": "Back to dashboard"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -618,7 +619,10 @@
       "addEmployeeBtn": "Add employee",
       "noEmployees": "No employees",
       "inactive": "Inactive"
-    }
+    },
+    "namePlaceholder": "John Smith",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailPlaceholder": "john@example.com"
   },
   "templates": {
     "title": "My Price Book",
@@ -832,7 +836,8 @@
         "saveError": "Failed to save email address",
         "verificationSent": "Verification email sent. Check your inbox.",
         "verificationSentNoService": "Verification email sent (email service must be configured)."
-      }
+      },
+      "placeholder": "john@company.com"
     }
   },
   "billing": {
@@ -1051,7 +1056,8 @@
       "submit": "Submit request",
       "sending": "Sending...",
       "error": "Error: {{message}}. Try again or write to",
-      "unknownError": "Unknown error"
+      "unknownError": "Unknown error",
+      "phonePlaceholder": "+48 123 456 789"
     }
   },
   "profile": {
@@ -1796,7 +1802,9 @@
       "rejectReasonToggle": "I want to provide a rejection reason",
       "rejectReasonPlaceholder": "Rejection reason (optional)...",
       "questionPrefix": "Have a question →",
-      "contactLink": "contact the contractor"
+      "contactLink": "contact the contractor",
+      "namePlaceholder": "John Smith",
+      "emailPlaceholder": "john@example.com"
     },
     "errors": {
       "notFound": "Offer not found",
@@ -1868,7 +1876,10 @@
       "removeError": "Error removing member",
       "roleUpdated": "Role updated",
       "roleUpdateError": "Error updating role"
-    }
+    },
+    "removeMember": "Remove member",
+    "namePlaceholder": "My Construction Company",
+    "slugPlaceholder": "my-company"
   },
   "marketplace": {
     "title": "Marketplace",
@@ -2094,7 +2105,8 @@
     },
     "timeRemaining": "~{{minutes}} min remaining",
     "encouragement": "Great progress! {{completed}} of {{total}} steps done.",
-    "stepTimeEstimate": "~{{minutes}} min"
+    "stepTimeEstimate": "~{{minutes}} min",
+    "skip": "Skip"
   },
   "adminSettings": {
     "loadingSettings": "Loading settings...",
@@ -2871,7 +2883,8 @@
     "removeItemAriaLabel": "Remove item",
     "showMarginAriaLabel": "Show margin to client",
     "typeBadgeTitle": "Type: {{type}} (click to change)",
-    "visibleColumns": "Visible columns"
+    "visibleColumns": "Visible columns",
+    "unitPlaceholder": "pcs"
   },
   "tradeOnboarding": {
     "step1Title": "What is your trade?",
@@ -2982,7 +2995,14 @@
     "addressLine2Label": "Address line 2",
     "addressLine2Placeholder": "Apt/Suite/Unit (optional)",
     "countryLabel": "Country",
-    "countryDefault": "Poland"
+    "countryDefault": "Poland",
+    "nipPlaceholder": "e.g. 1234567890",
+    "streetPlaceholder": "e.g. 123 Main Street",
+    "cityPlaceholder": "e.g. Warsaw",
+    "postalCodePlaceholder": "e.g. 00-001",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailForOffersPlaceholder": "contact@company.com",
+    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000"
   },
   "marketplacePage": {
     "addSubcontractor": "Add subcontractor",
@@ -3068,7 +3088,8 @@
     "anotherQuestion": "Ask another question",
     "justAccepted": "Offer accepted!",
     "printButton": "Print / Save PDF",
-    "printAriaLabel": "Print or save offer as PDF"
+    "printAriaLabel": "Print or save offer as PDF",
+    "emailPlaceholder": "john@example.com"
   },
   "pdfGenerator": {
     "defaultOfferText": "Dear Sir/Madam,\n\nWe are pleased to present our offer for the requested works.",
@@ -3718,7 +3739,9 @@
       "name": "Name / company",
       "namePlaceholder": "John Smith",
       "phone": "Phone",
-      "email": "Email"
+      "email": "Email",
+      "emailPlaceholder": "john@example.com",
+      "phonePlaceholder": "+48 500 000 000"
     },
     "itemsStep": {
       "libraryTitle": "Price Library",
@@ -4983,7 +5006,11 @@
     "faq3a": "Yes, Majster.AI allows you to generate professional PDF offers with your company logo, cost items, and payment terms."
   },
   "notifications": {
-    "deleteNotification": "Delete notification"
+    "deleteNotification": "Delete notification",
+    "bellLabel": "Notifications",
+    "bellLabelWithCount": "Notifications ({{count}} unread)",
+    "markAsRead": "Mark as read",
+    "closeToast": "Close notification"
   },
   "workTasks": {
     "unknownProject": "Unknown project",

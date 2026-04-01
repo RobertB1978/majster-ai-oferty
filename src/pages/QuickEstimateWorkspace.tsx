@@ -272,7 +272,7 @@ export default function QuickEstimateWorkspace() {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/app/dashboard')}
-            aria-label="Wróć do dashboardu"
+            aria-label={t('common.backToDashboard')}
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>

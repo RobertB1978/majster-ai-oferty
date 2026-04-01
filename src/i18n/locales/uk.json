@@ -60,7 +60,8 @@
     "errorGeneric": "Сталася помилка. Спробуйте ще раз.",
     "offline": "Офлайн",
     "online": "Онлайн",
-    "unknownError": "Невідома помилка"
+    "unknownError": "Невідома помилка",
+    "backToDashboard": "Повернутися до панелі"
   },
   "nav": {
     "dashboard": "Панель",
@@ -618,7 +619,10 @@
       "addEmployeeBtn": "Додати співробітника",
       "noEmployees": "Немає співробітників",
       "inactive": "Неактивний"
-    }
+    },
+    "namePlaceholder": "Іван Коваль",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailPlaceholder": "ivan@example.com"
   },
   "templates": {
     "title": "Мій прайс-лист",
@@ -832,7 +836,8 @@
         "saveError": "Не вдалося зберегти адресу email",
         "verificationSent": "Лист підтвердження надіслано. Перевірте пошту.",
         "verificationSentNoService": "Лист підтвердження надіслано (сервіс email має бути налаштований)."
-      }
+      },
+      "placeholder": "ivan@firma.pl"
     }
   },
   "billing": {
@@ -1051,7 +1056,8 @@
       "submit": "Надіслати запит",
       "success": "Запит збережено!",
       "title": "Замовити план {{plan}}",
-      "unknownError": "Невідома помилка"
+      "unknownError": "Невідома помилка",
+      "phonePlaceholder": "+48 123 456 789"
     }
   },
   "profile": {
@@ -1765,7 +1771,9 @@
       "rejectReasonToggle": "Я хочу вказати причину відхилення",
       "rejectReasonPlaceholder": "Причина відхилення (необов'язково)...",
       "questionPrefix": "Є запитання →",
-      "contactLink": "напишіть підряднику"
+      "contactLink": "напишіть підряднику",
+      "namePlaceholder": "Іван Коваль",
+      "emailPlaceholder": "ivan@example.com"
     },
     "errors": {
       "notFound": "Пропозицію не знайдено",
@@ -1850,7 +1858,10 @@
       "removeError": "Помилка видалення учасника",
       "roleUpdated": "Роль оновлено",
       "roleUpdateError": "Помилка оновлення ролі"
-    }
+    },
+    "removeMember": "Видалити учасника",
+    "namePlaceholder": "Моя будівельна компанія",
+    "slugPlaceholder": "moya-kompania"
   },
   "marketplace": {
     "title": "Маркетплейс",
@@ -2094,7 +2105,8 @@
     },
     "timeRemaining": "~{{minutes}} хв залишилось",
     "encouragement": "Чудовий прогрес! {{completed}} з {{total}} кроків виконано.",
-    "stepTimeEstimate": "~{{minutes}} хв"
+    "stepTimeEstimate": "~{{minutes}} хв",
+    "skip": "Пропустити"
   },
   "adminSettings": {
     "loadingSettings": "Завантаження налаштувань...",
@@ -2871,7 +2883,8 @@
     "removeItemAriaLabel": "Видалити позицію",
     "showMarginAriaLabel": "Показати маржу клієнту",
     "typeBadgeTitle": "Тип: {{type}} (натисніть, щоб змінити)",
-    "visibleColumns": "Видимі колонки"
+    "visibleColumns": "Видимі колонки",
+    "unitPlaceholder": "шт"
   },
   "tradeOnboarding": {
     "step1Title": "Чим ви займаєтесь?",
@@ -2982,7 +2995,14 @@
     "addressLine2Label": "Адреса — рядок 2",
     "addressLine2Placeholder": "Квартира / офіс (необов'язково)",
     "countryLabel": "Країна",
-    "countryDefault": "Польща"
+    "countryDefault": "Польща",
+    "nipPlaceholder": "напр. 1234567890",
+    "streetPlaceholder": "напр. вул. Прикладна 1",
+    "cityPlaceholder": "напр. Варшава",
+    "postalCodePlaceholder": "напр. 00-001",
+    "phonePlaceholder": "+48 123 456 789",
+    "emailForOffersPlaceholder": "kontakt@firma.pl",
+    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000"
   },
   "marketplacePage": {
     "addSubcontractor": "Додати субпідрядника",
@@ -3068,7 +3088,8 @@
     "anotherQuestion": "Задати ще одне запитання",
     "justAccepted": "Пропозицію прийнято!",
     "printButton": "Друк / Зберегти PDF",
-    "printAriaLabel": "Надрукуйте або збережіть пропозицію як PDF"
+    "printAriaLabel": "Надрукуйте або збережіть пропозицію як PDF",
+    "emailPlaceholder": "ivan@example.com"
   },
   "pdfGenerator": {
     "defaultOfferText": "Шановні пані та панове,\n\nЗ радістю представляємо пропозицію на виконання робіт.",
@@ -3718,7 +3739,9 @@
       "name": "Ім'я / компанія",
       "namePlaceholder": "Іван Коваль",
       "phone": "Телефон",
-      "email": "Email"
+      "email": "Email",
+      "emailPlaceholder": "ivan@example.com",
+      "phonePlaceholder": "+48 500 000 000"
     },
     "itemsStep": {
       "libraryTitle": "Бібліотека цін",
@@ -4983,7 +5006,11 @@
     "faq3a": "Так, Majster.AI дозволяє генерувати професійні PDF-пропозиції з логотипом компанії, позиціями кошторису та умовами оплати."
   },
   "notifications": {
-    "deleteNotification": "Видалити сповіщення"
+    "deleteNotification": "Видалити сповіщення",
+    "bellLabel": "Сповіщення",
+    "bellLabelWithCount": "Сповіщення ({{count}} непрочитаних)",
+    "markAsRead": "Позначити як прочитане",
+    "closeToast": "Закрити сповіщення"
   },
   "workTasks": {
     "unknownProject": "Невідомий проєкт",

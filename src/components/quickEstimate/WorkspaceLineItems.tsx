@@ -838,7 +838,7 @@ function ItemRow({
 
         {/* Unit */}
         <Input
-          placeholder="szt"
+          placeholder={t('szybkaWycena.unitPlaceholder')}
           value={item.unit}
           onChange={(e) => onUpdate('unit', e.target.value)}
           className="w-16 shrink-0 h-9 text-sm"
