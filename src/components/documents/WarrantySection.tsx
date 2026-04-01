@@ -23,6 +23,8 @@ import {
   type WarrantyFormData,
 } from '@/hooks/useWarranty';
 import { generateWarrantyPdfBlob, uploadWarrantyToDossier } from '@/lib/warrantyPdfGenerator';
+import { buildWarrantyUnifiedPayload } from '@/lib/pdf/warrantyPdfAdapter';
+import { renderDocumentPdfV2, PendingMigrationError } from '@/lib/pdf/renderPdfV2';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -255,13 +257,35 @@ function WarrantyCard({
         .select('company_name, city')
         .maybeSingle();
 
-      const blob = generateWarrantyPdfBlob({
-        warranty,
-        projectTitle,
-        companyName: profile?.company_name ?? 'Majster',
-        companyAddress: profile?.city ?? undefined,
-        t,
-      });
+      const companyName = profile?.company_name ?? 'Majster';
+      const companyCity = profile?.city ?? undefined;
+
+      let blob: Blob;
+      try {
+        // Próba kanonicznego pipeline v2 (serwer-first)
+        const payload = buildWarrantyUnifiedPayload(warranty, {
+          projectTitle,
+          companyName,
+          companyCity,
+          locale: i18n.language,
+          sourceProjectId: projectId,
+        });
+        blob = await renderDocumentPdfV2(payload);
+      } catch (pdfErr) {
+        if (pdfErr instanceof PendingMigrationError) {
+          // Edge Function warranty nie jest jeszcze gotowa — bezpieczny fallback jsPDF
+          blob = generateWarrantyPdfBlob({
+            warranty,
+            projectTitle,
+            companyName,
+            companyAddress: companyCity,
+            t,
+            locale: i18n.language,
+          });
+        } else {
+          throw pdfErr;
+        }
+      }
 
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -284,13 +308,35 @@ function WarrantyCard({
         .select('company_name, city')
         .maybeSingle();
 
-      const blob = generateWarrantyPdfBlob({
-        warranty,
-        projectTitle,
-        companyName: profile?.company_name ?? 'Majster',
-        companyAddress: profile?.city ?? undefined,
-        t,
-      });
+      const companyName = profile?.company_name ?? 'Majster';
+      const companyCity = profile?.city ?? undefined;
+
+      let blob: Blob;
+      try {
+        // Próba kanonicznego pipeline v2 (serwer-first)
+        const payload = buildWarrantyUnifiedPayload(warranty, {
+          projectTitle,
+          companyName,
+          companyCity,
+          locale: i18n.language,
+          sourceProjectId: projectId,
+        });
+        blob = await renderDocumentPdfV2(payload);
+      } catch (pdfErr) {
+        if (pdfErr instanceof PendingMigrationError) {
+          // Edge Function warranty nie jest jeszcze gotowa — bezpieczny fallback jsPDF
+          blob = generateWarrantyPdfBlob({
+            warranty,
+            projectTitle,
+            companyName,
+            companyAddress: companyCity,
+            t,
+            locale: i18n.language,
+          });
+        } else {
+          throw pdfErr;
+        }
+      }
 
       const path = await uploadWarrantyToDossier(blob, projectId, projectTitle);
       await markPdfPath.mutateAsync({ warrantyId: warranty.id, pdfPath: path });
@@ -314,13 +360,35 @@ function WarrantyCard({
         .select('company_name, city')
         .maybeSingle();
 
-      const blob = generateWarrantyPdfBlob({
-        warranty,
-        projectTitle,
-        companyName: profile?.company_name ?? 'Majster',
-        companyAddress: profile?.city ?? undefined,
-        t,
-      });
+      const companyName = profile?.company_name ?? 'Majster';
+      const companyCity = profile?.city ?? undefined;
+
+      let blob: Blob;
+      try {
+        // Próba kanonicznego pipeline v2 (serwer-first)
+        const payload = buildWarrantyUnifiedPayload(warranty, {
+          projectTitle,
+          companyName,
+          companyCity,
+          locale: i18n.language,
+          sourceProjectId: projectId,
+        });
+        blob = await renderDocumentPdfV2(payload);
+      } catch (pdfErr) {
+        if (pdfErr instanceof PendingMigrationError) {
+          // Edge Function warranty nie jest jeszcze gotowa — bezpieczny fallback jsPDF
+          blob = generateWarrantyPdfBlob({
+            warranty,
+            projectTitle,
+            companyName,
+            companyAddress: companyCity,
+            t,
+            locale: i18n.language,
+          });
+        } else {
+          throw pdfErr;
+        }
+      }
 
       // Convert blob → base64 for Resend attachment
       const arrayBuffer = await blob.arrayBuffer();
