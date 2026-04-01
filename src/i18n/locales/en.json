@@ -60,7 +60,8 @@
     "errorGeneric": "An error occurred. Please try again.",
     "offline": "Offline",
     "online": "Online",
-    "unknownError": "Unknown error"
+    "unknownError": "Unknown error",
+    "backToDashboard": "Back to dashboard"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -3080,7 +3081,8 @@
     "anotherQuestion": "Ask another question",
     "justAccepted": "Offer accepted!",
     "printButton": "Print / Save PDF",
-    "printAriaLabel": "Print or save offer as PDF"
+    "printAriaLabel": "Print or save offer as PDF",
+    "emailPlaceholder": "john@example.com"
   },
   "pdfGenerator": {
     "defaultOfferText": "Dear Sir/Madam,\n\nWe are pleased to present our offer for the requested works.",
@@ -4998,7 +5000,8 @@
     "deleteNotification": "Delete notification",
     "bellLabel": "Notifications",
     "bellLabelWithCount": "Notifications ({{count}} unread)",
-    "markAsRead": "Mark as read"
+    "markAsRead": "Mark as read",
+    "closeToast": "Close notification"
   },
   "workTasks": {
     "unknownProject": "Unknown project",

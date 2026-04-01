@@ -60,7 +60,8 @@
     "errorGeneric": "Wystąpił błąd. Spróbuj ponownie.",
     "offline": "Offline",
     "online": "Online",
-    "unknownError": "Nieznany błąd"
+    "unknownError": "Nieznany błąd",
+    "backToDashboard": "Wróć do dashboardu"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -3080,7 +3081,8 @@
     "anotherQuestion": "Zadaj kolejne pytanie",
     "justAccepted": "Oferta zaakceptowana!",
     "printButton": "Drukuj / Zapisz PDF",
-    "printAriaLabel": "Wydrukuj lub zapisz ofertę jako PDF"
+    "printAriaLabel": "Wydrukuj lub zapisz ofertę jako PDF",
+    "emailPlaceholder": "jan@example.com"
   },
   "pdfGenerator": {
     "defaultOfferText": "Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na realizację prac.",
@@ -4998,7 +5000,8 @@
     "deleteNotification": "Usuń powiadomienie",
     "bellLabel": "Powiadomienia",
     "bellLabelWithCount": "Powiadomienia ({{count}} nieprzeczytanych)",
-    "markAsRead": "Oznacz jako przeczytane"
+    "markAsRead": "Oznacz jako przeczytane",
+    "closeToast": "Zamknij powiadomienie"
   },
   "workTasks": {
     "unknownProject": "Nieznany projekt",

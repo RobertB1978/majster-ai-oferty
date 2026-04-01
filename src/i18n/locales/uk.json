@@ -60,7 +60,8 @@
     "errorGeneric": "Сталася помилка. Спробуйте ще раз.",
     "offline": "Офлайн",
     "online": "Онлайн",
-    "unknownError": "Невідома помилка"
+    "unknownError": "Невідома помилка",
+    "backToDashboard": "Повернутися до панелі"
   },
   "nav": {
     "dashboard": "Панель",
@@ -3080,7 +3081,8 @@
     "anotherQuestion": "Задати ще одне запитання",
     "justAccepted": "Пропозицію прийнято!",
     "printButton": "Друк / Зберегти PDF",
-    "printAriaLabel": "Надрукуйте або збережіть пропозицію як PDF"
+    "printAriaLabel": "Надрукуйте або збережіть пропозицію як PDF",
+    "emailPlaceholder": "ivan@example.com"
   },
   "pdfGenerator": {
     "defaultOfferText": "Шановні пані та панове,\n\nЗ радістю представляємо пропозицію на виконання робіт.",
@@ -4998,7 +5000,8 @@
     "deleteNotification": "Видалити сповіщення",
     "bellLabel": "Сповіщення",
     "bellLabelWithCount": "Сповіщення ({{count}} непрочитаних)",
-    "markAsRead": "Позначити як прочитане"
+    "markAsRead": "Позначити як прочитане",
+    "closeToast": "Закрити сповіщення"
   },
   "workTasks": {
     "unknownProject": "Невідомий проєкт",

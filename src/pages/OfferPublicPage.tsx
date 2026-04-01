@@ -416,7 +416,7 @@ export default function OfferPublicPage() {
                         type="email"
                         value={clientEmail}
                         onChange={(e) => setClientEmail(e.target.value)}
-                        placeholder="jan@example.com"
+                        placeholder={t('offerPublicPage.emailPlaceholder')}
                       />
                     </div>
                   </div>
