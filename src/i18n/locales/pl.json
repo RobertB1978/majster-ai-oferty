@@ -3949,6 +3949,7 @@
     "statusActive": "Aktywny",
     "statusCompleted": "Zakończony",
     "statusOnHold": "Wstrzymany",
+    "statusCancelled": "Anulowany",
     "startDate": "Rozpoczęcie",
     "emptyTitle": "Brak projektów",
     "emptyDesc": "Utwórz projekt z zaakceptowanej oferty.",
@@ -4021,7 +4022,9 @@
     "archiveConfirmAction": "Archiwizuj",
     "archiveConfirmDesc": "Projekt zostanie oznaczony jako anulowany. Możesz go nadal przeglądać.",
     "archiveConfirmTitle": "Archiwizuj projekt?",
-    "archiveProject": "Archiwizuj projekt"
+    "archiveProject": "Archiwizuj projekt",
+    "archiveSuccess": "Projekt zarchiwizowany",
+    "archiveError": "Nie udało się zarchiwizować projektu"
   },
   "burnBar": {
     "budget": "Budżet",

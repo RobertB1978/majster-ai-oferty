@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { FolderKanban, Plus, Archive, FileText, LayoutList } from 'lucide-react';
 
 import { useProjectsV2List, useDeleteProjectV2, type ProjectStatus } from '@/hooks/useProjectsV2';
@@ -43,6 +44,7 @@ const STATUS_BADGE_CLASSES: Record<ProjectStatus, string> = {
   ACTIVE:    'bg-info/10 text-info dark:bg-info/20',
   COMPLETED: 'bg-success/10 text-success dark:bg-success/20',
   ON_HOLD:   'bg-warning/10 text-warning dark:bg-warning/20',
+  CANCELLED: 'bg-muted text-muted-foreground',
 };
 
 const STATUS_I18N_KEYS: Record<StatusFilter, string> = {
@@ -50,6 +52,7 @@ const STATUS_I18N_KEYS: Record<StatusFilter, string> = {
   ACTIVE:    'projectsV2.statusActive',
   COMPLETED: 'projectsV2.statusCompleted',
   ON_HOLD:   'projectsV2.statusOnHold',
+  CANCELLED: 'projectsV2.statusCancelled',
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -243,8 +246,12 @@ export default function ProjectsList() {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => {
                 if (archiveConfirmId) {
-                  deleteProject.mutate(archiveConfirmId);
+                  const id = archiveConfirmId;
                   setArchiveConfirmId(null);
+                  deleteProject.mutate(id, {
+                    onSuccess: () => toast.success(t('projectsV2.archiveSuccess')),
+                    onError: () => toast.error(t('projectsV2.archiveError')),
+                  });
                 }
               }}
             >
