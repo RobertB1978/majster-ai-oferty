@@ -8,6 +8,7 @@ import {
   handleSendOfferEmail,
   generateOfferEmailHtml,
   checkEmailDeliveryConfig,
+  getLocaleStrings,
   BLOCKED_SENDER_DOMAINS,
   type EmailDeps,
   type SendOfferPayload
@@ -59,6 +60,133 @@ describe('generateOfferEmailHtml', () => {
     const html = generateOfferEmailHtml('Project', 'Line 1\nLine 2\nLine 3');
 
     expect(html).toContain('Line 1<br>Line 2<br>Line 3');
+  });
+});
+
+// ============================================================
+// getLocaleStrings — locale lookup & fallback
+// ============================================================
+
+describe('getLocaleStrings', () => {
+  it('returns Polish strings for locale "pl"', () => {
+    const s = getLocaleStrings('pl');
+    expect(s.acceptButton).toBe('✓ AKCEPTUJĘ (1 klik)');
+    expect(s.viewButton).toBe('OGLĄDAM OFERTĘ →');
+    expect(s.htmlLang).toBe('pl');
+  });
+
+  it('returns English strings for locale "en"', () => {
+    const s = getLocaleStrings('en');
+    expect(s.acceptButton).toBe('✓ ACCEPT (1 click)');
+    expect(s.viewButton).toBe('VIEW QUOTE →');
+    expect(s.downloadPdf).toContain('Download');
+    expect(s.htmlLang).toBe('en');
+  });
+
+  it('returns Ukrainian strings for locale "uk"', () => {
+    const s = getLocaleStrings('uk');
+    expect(s.acceptButton).toBe('✓ ПРИЙМАЮ (1 клік)');
+    expect(s.viewButton).toBe('ПЕРЕГЛЯНУТИ ПРОПОЗИЦІЮ →');
+    expect(s.htmlLang).toBe('uk');
+  });
+
+  it('falls back to Polish for unsupported locale', () => {
+    const s = getLocaleStrings('de');
+    expect(s.htmlLang).toBe('pl');
+    expect(s.acceptButton).toBe('✓ AKCEPTUJĘ (1 klik)');
+  });
+
+  it('falls back to Polish when locale is undefined', () => {
+    const s = getLocaleStrings(undefined);
+    expect(s.htmlLang).toBe('pl');
+  });
+});
+
+// ============================================================
+// generateOfferEmailHtml — locale-aware labels
+// ============================================================
+
+describe('generateOfferEmailHtml locale support', () => {
+  const baseOpts = {
+    publicToken: 'pub-token',
+    acceptToken: 'acc-token',
+    frontendUrl: 'https://app.majster.ai',
+  };
+
+  it('renders Polish labels by default (no locale)', () => {
+    const html = generateOfferEmailHtml('Projekt', 'Wiadomość', baseOpts);
+    expect(html).toContain('AKCEPTUJĘ');
+    expect(html).toContain('OGLĄDAM OFERTĘ');
+    expect(html).toContain('lang="pl"');
+  });
+
+  it('renders Polish labels for locale "pl"', () => {
+    const html = generateOfferEmailHtml('Projekt', 'Wiadomość', { ...baseOpts, locale: 'pl' });
+    expect(html).toContain('AKCEPTUJĘ');
+    expect(html).toContain('OGLĄDAM OFERTĘ');
+    expect(html).toContain('lang="pl"');
+  });
+
+  it('renders English labels for locale "en"', () => {
+    const html = generateOfferEmailHtml('Project', 'Message', { ...baseOpts, locale: 'en' });
+    expect(html).toContain('ACCEPT (1 click)');
+    expect(html).toContain('VIEW QUOTE');
+    expect(html).toContain('lang="en"');
+    expect(html).not.toContain('AKCEPTUJĘ');
+  });
+
+  it('renders Ukrainian labels for locale "uk"', () => {
+    const html = generateOfferEmailHtml('Проект', 'Повідомлення', { ...baseOpts, locale: 'uk' });
+    expect(html).toContain('ПРИЙМАЮ');
+    expect(html).toContain('ПЕРЕГЛЯНУТИ');
+    expect(html).toContain('lang="uk"');
+    expect(html).not.toContain('AKCEPTUJĘ');
+  });
+
+  it('falls back to Polish for unsupported locale', () => {
+    const html = generateOfferEmailHtml('Project', 'Message', { ...baseOpts, locale: 'fr' });
+    expect(html).toContain('AKCEPTUJĘ');
+    expect(html).toContain('lang="pl"');
+  });
+
+  it('renders English PDF download label for locale "en"', () => {
+    const html = generateOfferEmailHtml('Project', 'Message', {
+      ...baseOpts,
+      locale: 'en',
+      pdfUrl: 'https://example.com/offer.pdf',
+    });
+    expect(html).toContain('Download quote PDF');
+    expect(html).not.toContain('Pobierz ofertę');
+  });
+
+  it('renders Ukrainian PDF download label for locale "uk"', () => {
+    const html = generateOfferEmailHtml('Проект', 'Повідомлення', {
+      ...baseOpts,
+      locale: 'uk',
+      pdfUrl: 'https://example.com/offer.pdf',
+    });
+    expect(html).toContain('Завантажити PDF');
+    expect(html).not.toContain('Pobierz ofertę');
+  });
+
+  it('renders English footer for locale "en"', () => {
+    const html = generateOfferEmailHtml('Project', 'Message', { ...baseOpts, locale: 'en' });
+    expect(html).toContain('This message was sent via');
+    expect(html).not.toContain('Ta wiadomość');
+  });
+
+  it('does not alter user-entered projectName or message regardless of locale', () => {
+    const html = generateOfferEmailHtml(
+      'Remont Dachu 2024',
+      'Wycena: 12 500 PLN\nTermin: 30 dni',
+      { ...baseOpts, locale: 'en' }
+    );
+    // User content preserved (dangerous HTML chars sanitized but user text intact)
+    expect(html).toContain('Remont Dachu 2024');
+    expect(html).toContain('Wycena: 12 500 PLN');
+    expect(html).toContain('Termin: 30 dni');
+    // System labels follow EN locale, not user content locale
+    expect(html).toContain('ACCEPT (1 click)');
   });
 });
 

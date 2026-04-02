@@ -2036,7 +2036,17 @@
     "setExpiryRequired": "Ustaw termin ważności oferty",
     "days_one": "{{count}} dzień",
     "days_few": "{{count}} dni",
-    "days_many": "{{count}} dni"
+    "days_many": "{{count}} dni",
+    "autoSubject": "Oferta: {{title}}",
+    "autoMessage": "Przesyłamy ofertę. Wartość: {{amount}} {{currency}}.",
+    "autoSubjectNoTitle": "Oferta",
+    "notificationTitle": "📤 Oferta wysłana",
+    "notificationMessage": "Oferta do projektu \"{{projectName}}\" została wysłana na adres email klienta.",
+    "emailAcceptButton": "✓ AKCEPTUJĘ (1 klik)",
+    "emailViewButton": "OGLĄDAM OFERTĘ →",
+    "emailDownloadPdf": "📄 Pobierz ofertę w PDF",
+    "emailFooter": "Ta wiadomość została wysłana przez",
+    "emailFooterFallback": "Nie możesz kliknąć przycisku? Użyj tego linku:"
   },
   "onboarding": {
     "welcome": "Witaj w Majster.AI!",

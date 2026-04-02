@@ -144,14 +144,16 @@ export function useSendOffer() {
           const currency = (offerRow.currency as string) ?? 'PLN';
           const amount = (gross ?? net ?? 0).toFixed(2);
 
+          const offerTitle = title ?? t('sendOffer.autoSubjectNoTitle');
           const { error: emailErr } = await supabase.functions.invoke('send-offer-email', {
             body: {
               to: clientEmail,
-              subject: `Oferta: ${title ?? 'Oferta'}`,
-              message: `Przesyłamy ofertę. Wartość: ${amount} ${currency}.`,
-              projectName: title ?? 'Oferta',
+              subject: t('sendOffer.autoSubject', { title: offerTitle }),
+              message: t('sendOffer.autoMessage', { amount, currency }),
+              projectName: offerTitle,
               pdfUrl: pdfUrl ?? undefined,
               publicToken: acceptanceLinkToken,
+              locale: i18n.language,
             },
           });
           if (!emailErr) emailSent = true;

@@ -2036,7 +2036,17 @@
     "setExpiryRequired": "Set the offer expiry date",
     "days_one": "{{count}} day",
     "days_few": "{{count}} days",
-    "days_many": "{{count}} days"
+    "days_many": "{{count}} days",
+    "autoSubject": "Quote: {{title}}",
+    "autoMessage": "Please find the quote attached. Value: {{amount}} {{currency}}.",
+    "autoSubjectNoTitle": "Quote",
+    "notificationTitle": "📤 Quote sent",
+    "notificationMessage": "Quote for project \"{{projectName}}\" has been sent to the client's email.",
+    "emailAcceptButton": "✓ ACCEPT (1 click)",
+    "emailViewButton": "VIEW QUOTE →",
+    "emailDownloadPdf": "📄 Download quote PDF",
+    "emailFooter": "This message was sent via",
+    "emailFooterFallback": "Can't click the button? Use this link:"
   },
   "onboarding": {
     "welcome": "Welcome to Majster.AI!",
