@@ -390,20 +390,130 @@ const styles = StyleSheet.create({
   },
 });
 
+// ── Locale labels dictionary ─────────────────────────────────────────────────
+
+interface OfferPdfLabels {
+  issuer: string;
+  forClient: string;
+  issuedAt: string;
+  validUntil: string;
+  deadline: string;
+  scopeOfWork: string;
+  colLp: string;
+  colName: string;
+  colQty: string;
+  colUnit: string;
+  colUnitPrice: string;
+  colValue: string;
+  materials: string;
+  labour: string;
+  net: string;
+  vat: string;
+  totalGross: string;
+  terms: string;
+  onlineAcceptance: string;
+  footerValidUntil: (date: string) => string;
+  footerPage: (n: number, total: number) => string;
+}
+
+const LABELS: Record<string, OfferPdfLabels> = {
+  pl: {
+    issuer: "WYSTAWCA",
+    forClient: "DLA KLIENTA",
+    issuedAt: "DATA WYSTAWIENIA",
+    validUntil: "WAŻNA DO",
+    deadline: "TERMIN REALIZACJI",
+    scopeOfWork: "ZAKRES PRAC",
+    colLp: "LP",
+    colName: "NAZWA",
+    colQty: "ILOŚĆ",
+    colUnit: "JM",
+    colUnitPrice: "CENA JEDN.",
+    colValue: "WARTOŚĆ",
+    materials: "Materiały",
+    labour: "Robocizna",
+    net: "Netto",
+    vat: "VAT",
+    totalGross: "RAZEM BRUTTO",
+    terms: "WARUNKI",
+    onlineAcceptance: "AKCEPTACJA ONLINE",
+    footerValidUntil: (date) => `Ważna do: ${date}`,
+    footerPage: (n, total) => `Strona ${n} / ${total}`,
+  },
+  en: {
+    issuer: "ISSUED BY",
+    forClient: "FOR CLIENT",
+    issuedAt: "ISSUE DATE",
+    validUntil: "VALID UNTIL",
+    deadline: "DEADLINE",
+    scopeOfWork: "SCOPE OF WORK",
+    colLp: "No.",
+    colName: "NAME",
+    colQty: "QTY",
+    colUnit: "UNIT",
+    colUnitPrice: "UNIT PRICE",
+    colValue: "VALUE",
+    materials: "Materials",
+    labour: "Labour",
+    net: "Net",
+    vat: "VAT",
+    totalGross: "TOTAL GROSS",
+    terms: "TERMS",
+    onlineAcceptance: "ONLINE ACCEPTANCE",
+    footerValidUntil: (date) => `Valid until: ${date}`,
+    footerPage: (n, total) => `Page ${n} / ${total}`,
+  },
+  uk: {
+    issuer: "ВИСТАВНИК",
+    forClient: "ДЛЯ КЛІЄНТА",
+    issuedAt: "ДАТА ВИСТАВЛЕННЯ",
+    validUntil: "ДІЙСНА ДО",
+    deadline: "ТЕРМІН ВИКОНАННЯ",
+    scopeOfWork: "ОБСЯГ РОБІТ",
+    colLp: "№",
+    colName: "НАЗВА",
+    colQty: "КІЛЬКІСТЬ",
+    colUnit: "ОД.",
+    colUnitPrice: "ЦІНА ОД.",
+    colValue: "ВАРТІСТЬ",
+    materials: "Матеріали",
+    labour: "Робота",
+    net: "Нетто",
+    vat: "ПДВ",
+    totalGross: "РАЗОМ БРУТТО",
+    terms: "УМОВИ",
+    onlineAcceptance: "ПРИЙНЯТТЯ ОНЛАЙН",
+    footerValidUntil: (date) => `Дійсна до: ${date}`,
+    footerPage: (n, total) => `Сторінка ${n} / ${total}`,
+  },
+};
+
+/** Map BCP-47 locale string or short code to LABELS key ('pl' | 'en' | 'uk'). */
+function resolveEdgeLang(locale?: string): string {
+  if (!locale) return "pl";
+  const lang = locale.split("-")[0].toLowerCase();
+  return LABELS[lang] ? lang : "pl";
+}
+
+/** Return the label set for the given locale, falling back to Polish. */
+function getOfferLabels(locale?: string): OfferPdfLabels {
+  return LABELS[resolveEdgeLang(locale)];
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function formatPLN(amount: number): string {
+function formatPLN(amount: number, locale?: string): string {
   return (
-    new Intl.NumberFormat("pl-PL", {
+    new Intl.NumberFormat(locale ?? "pl-PL", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount) + " PLN"
   );
 }
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, locale?: string): string {
   try {
-    return new Date(iso).toLocaleDateString("pl-PL", {
+    return new Date(iso).toLocaleDateString(locale ?? "pl-PL", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -445,13 +555,13 @@ function buildHeader(payload: OfferPDFPayload) {
   );
 }
 
-function buildInfoCards(payload: OfferPDFPayload) {
+function buildInfoCards(payload: OfferPDFPayload, labels: OfferPdfLabels) {
   const { company, client } = payload;
 
   return e(View, { style: styles.infoRow },
     // Issuer card
     e(View, { style: styles.infoCard },
-      e(Text, { style: styles.infoLabel }, "WYSTAWCA"),
+      e(Text, { style: styles.infoLabel }, labels.issuer),
       e(Text, { style: styles.infoValueBold }, company.name),
       company.nip ? e(Text, { style: styles.infoValue }, `NIP: ${company.nip}`) : null,
       company.phone ? e(Text, { style: styles.infoValue }, `tel. ${company.phone}`) : null,
@@ -460,7 +570,7 @@ function buildInfoCards(payload: OfferPDFPayload) {
     // Client card
     client
       ? e(View, { style: styles.infoCard },
-          e(Text, { style: styles.infoLabel }, "DLA KLIENTA"),
+          e(Text, { style: styles.infoLabel }, labels.forClient),
           e(Text, { style: styles.infoValueBold }, client.name),
           client.address ? e(Text, { style: styles.infoValue }, client.address) : null,
           client.phone ? e(Text, { style: styles.infoValue }, `tel. ${client.phone}`) : null,
@@ -470,39 +580,41 @@ function buildInfoCards(payload: OfferPDFPayload) {
   );
 }
 
-function buildDates(payload: OfferPDFPayload) {
+function buildDates(payload: OfferPDFPayload, labels: OfferPdfLabels) {
+  const locale = payload.locale;
   return e(View, { style: styles.datesRow },
     e(View, { style: styles.dateCard },
-      e(Text, { style: styles.dateLabel }, "DATA WYSTAWIENIA"),
-      e(Text, { style: styles.dateValue }, formatDate(payload.issuedAt)),
+      e(Text, { style: styles.dateLabel }, labels.issuedAt),
+      e(Text, { style: styles.dateValue }, formatDate(payload.issuedAt, locale)),
     ),
     e(View, { style: styles.dateCard },
-      e(Text, { style: styles.dateLabel }, "WAŻNA DO"),
-      e(Text, { style: styles.dateValue }, formatDate(payload.validUntil)),
+      e(Text, { style: styles.dateLabel }, labels.validUntil),
+      e(Text, { style: styles.dateValue }, formatDate(payload.validUntil, locale)),
     ),
     e(View, { style: styles.dateCard },
-      e(Text, { style: styles.dateLabel }, "TERMIN REALIZACJI"),
+      e(Text, { style: styles.dateLabel }, labels.deadline),
       e(Text, { style: styles.dateValue }, payload.pdfConfig.deadlineText || "—"),
     ),
   );
 }
 
-function buildOfferText(payload: OfferPDFPayload) {
+function buildOfferText(payload: OfferPDFPayload, labels: OfferPdfLabels) {
   if (!payload.pdfConfig.offerText) return null;
   return e(View, { style: styles.scopeSection },
-    e(Text, { style: styles.scopeLabel }, "ZAKRES PRAC"),
+    e(Text, { style: styles.scopeLabel }, labels.scopeOfWork),
     e(Text, { style: styles.scopeText }, payload.pdfConfig.offerText),
   );
 }
 
-function buildPositionsTable(quote: PDFQuoteData, label?: string) {
+function buildPositionsTable(quote: PDFQuoteData, label?: string, labels?: OfferPdfLabels, locale?: string) {
+  const L = labels ?? LABELS.pl;
   const header = e(View, { style: styles.tableHeader },
-    e(Text, { style: { ...styles.tableHeaderText, width: 24 } }, "LP"),
-    e(Text, { style: { ...styles.tableHeaderText, flex: 3 } }, "NAZWA"),
-    e(Text, { style: { ...styles.tableHeaderText, flex: 1, textAlign: "right" } }, "ILOŚĆ"),
-    e(Text, { style: { ...styles.tableHeaderText, width: 32, textAlign: "center" } }, "JM"),
-    e(Text, { style: { ...styles.tableHeaderText, flex: 1.2, textAlign: "right" } }, "CENA JEDN."),
-    e(Text, { style: { ...styles.tableHeaderText, flex: 1.2, textAlign: "right" } }, "WARTOŚĆ"),
+    e(Text, { style: { ...styles.tableHeaderText, width: 24 } }, L.colLp),
+    e(Text, { style: { ...styles.tableHeaderText, flex: 3 } }, L.colName),
+    e(Text, { style: { ...styles.tableHeaderText, flex: 1, textAlign: "right" } }, L.colQty),
+    e(Text, { style: { ...styles.tableHeaderText, width: 32, textAlign: "center" } }, L.colUnit),
+    e(Text, { style: { ...styles.tableHeaderText, flex: 1.2, textAlign: "right" } }, L.colUnitPrice),
+    e(Text, { style: { ...styles.tableHeaderText, flex: 1.2, textAlign: "right" } }, L.colValue),
   );
 
   const rows = quote.positions.map((pos, idx) => {
@@ -512,8 +624,8 @@ function buildPositionsTable(quote: PDFQuoteData, label?: string) {
       e(Text, { style: styles.colName }, pos.name),
       e(Text, { style: styles.colQty }, String(pos.qty)),
       e(Text, { style: styles.colUnit }, pos.unit),
-      e(Text, { style: styles.colPrice }, formatPLN(pos.price)),
-      e(Text, { style: styles.colTotal }, formatPLN(pos.qty * pos.price)),
+      e(Text, { style: styles.colPrice }, formatPLN(pos.price, locale)),
+      e(Text, { style: styles.colTotal }, formatPLN(pos.qty * pos.price, locale)),
     );
   });
 
@@ -531,73 +643,74 @@ function buildPositionsTable(quote: PDFQuoteData, label?: string) {
   return elements;
 }
 
-function buildTotals(quote: PDFQuoteData) {
+function buildTotals(quote: PDFQuoteData, labels: OfferPdfLabels, locale?: string) {
   return e(View, { style: styles.totalsContainer },
     e(View, { style: styles.totalsBox },
       // Materials subtotal
       quote.summaryMaterials > 0
         ? e(View, { style: styles.totalRow },
-            e(Text, { style: styles.totalLabel }, "Materiały"),
-            e(Text, { style: styles.totalValue }, formatPLN(quote.summaryMaterials)),
+            e(Text, { style: styles.totalLabel }, labels.materials),
+            e(Text, { style: styles.totalValue }, formatPLN(quote.summaryMaterials, locale)),
           )
         : null,
       // Labor subtotal
       quote.summaryLabor > 0
         ? e(View, { style: styles.totalRow },
-            e(Text, { style: styles.totalLabel }, "Robocizna"),
-            e(Text, { style: styles.totalValue }, formatPLN(quote.summaryLabor)),
+            e(Text, { style: styles.totalLabel }, labels.labour),
+            e(Text, { style: styles.totalValue }, formatPLN(quote.summaryLabor, locale)),
           )
         : null,
       // Separator
       e(View, { style: styles.totalSeparator }),
       // Net total
       e(View, { style: styles.totalRow },
-        e(Text, { style: styles.totalLabel }, "Netto"),
-        e(Text, { style: styles.totalValue }, formatPLN(quote.netTotal)),
+        e(Text, { style: styles.totalLabel }, labels.net),
+        e(Text, { style: styles.totalValue }, formatPLN(quote.netTotal, locale)),
       ),
       // VAT
       quote.isVatExempt
         ? e(View, { style: styles.totalRow },
-            e(Text, { style: styles.totalLabel }, "VAT"),
+            e(Text, { style: styles.totalLabel }, labels.vat),
             e(Text, { style: styles.totalValue }, "zw."),
           )
         : e(View, { style: styles.totalRow },
-            e(Text, { style: styles.totalLabel }, `VAT ${quote.vatRate ?? 0}%`),
-            e(Text, { style: styles.totalValue }, formatPLN(quote.vatAmount)),
+            e(Text, { style: styles.totalLabel }, `${labels.vat} ${quote.vatRate ?? 0}%`),
+            e(Text, { style: styles.totalValue }, formatPLN(quote.vatAmount, locale)),
           ),
     ),
     // Grand total — amber highlight
     e(View, { style: styles.grandTotalRow },
-      e(Text, { style: styles.grandTotalLabel }, "RAZEM BRUTTO"),
-      e(Text, { style: styles.grandTotalValue }, formatPLN(quote.grossTotal)),
+      e(Text, { style: styles.grandTotalLabel }, labels.totalGross),
+      e(Text, { style: styles.grandTotalValue }, formatPLN(quote.grossTotal, locale)),
     ),
   );
 }
 
-function buildTerms(payload: OfferPDFPayload) {
+function buildTerms(payload: OfferPDFPayload, labels: OfferPdfLabels) {
   if (!payload.pdfConfig.terms) return null;
   return e(View, { style: styles.termsSection },
-    e(Text, { style: styles.termsLabel }, "WARUNKI"),
+    e(Text, { style: styles.termsLabel }, labels.terms),
     e(Text, { style: styles.termsText }, payload.pdfConfig.terms),
   );
 }
 
-function buildAcceptanceUrl(payload: OfferPDFPayload) {
+function buildAcceptanceUrl(payload: OfferPDFPayload, labels: OfferPdfLabels) {
   if (!payload.acceptanceUrl) return null;
   return e(View, { style: styles.acceptanceSection },
-    e(Text, { style: styles.acceptanceLabel }, "AKCEPTACJA ONLINE"),
+    e(Text, { style: styles.acceptanceLabel }, labels.onlineAcceptance),
     e(Text, { style: styles.acceptanceUrl }, payload.acceptanceUrl),
   );
 }
 
-function buildFooter(payload: OfferPDFPayload) {
+function buildFooter(payload: OfferPDFPayload, labels: OfferPdfLabels) {
+  const locale = payload.locale;
   return e(View, { style: styles.footer, fixed: true },
     e(Text, { style: styles.footerLeft }, payload.company.name),
     e(Text, { style: styles.footerCenter },
-      `Ważna do: ${formatDate(payload.validUntil)}`
+      labels.footerValidUntil(formatDate(payload.validUntil, locale)),
     ),
     e(Text, { style: styles.footerRight, render: ({ pageNumber, totalPages }: any) =>
-      `Strona ${pageNumber} / ${totalPages}`
+      labels.footerPage(pageNumber, totalPages)
     }),
   );
 }
@@ -619,32 +732,34 @@ function buildFooter(payload: OfferPDFPayload) {
  */
 export function buildPdfDocument(payload: OfferPDFPayload): unknown {
   const { quote, variantSections } = payload;
+  const labels = getOfferLabels(payload.locale);
+  const locale = payload.locale;
 
   const pageContent: any[] = [
     buildHeader(payload),
-    buildInfoCards(payload),
-    buildDates(payload),
-    buildOfferText(payload),
+    buildInfoCards(payload, labels),
+    buildDates(payload, labels),
+    buildOfferText(payload, labels),
   ];
 
   // Multi-variant: render each variant with its own table + totals
   if (variantSections && variantSections.length > 0) {
     const sorted = [...variantSections].sort((a, b) => a.sort_order - b.sort_order);
     for (const variant of sorted) {
-      const tableElements = buildPositionsTable(variant.quote, variant.label);
+      const tableElements = buildPositionsTable(variant.quote, variant.label, labels, locale);
       pageContent.push(...tableElements);
-      pageContent.push(buildTotals(variant.quote));
+      pageContent.push(buildTotals(variant.quote, labels, locale));
     }
   } else if (quote) {
     // Single quote
-    const tableElements = buildPositionsTable(quote);
+    const tableElements = buildPositionsTable(quote, undefined, labels, locale);
     pageContent.push(...tableElements);
-    pageContent.push(buildTotals(quote));
+    pageContent.push(buildTotals(quote, labels, locale));
   }
 
-  pageContent.push(buildTerms(payload));
-  pageContent.push(buildAcceptanceUrl(payload));
-  pageContent.push(buildFooter(payload));
+  pageContent.push(buildTerms(payload, labels));
+  pageContent.push(buildAcceptanceUrl(payload, labels));
+  pageContent.push(buildFooter(payload, labels));
 
   return e(Document, { title: `${payload.pdfConfig.title} — ${payload.documentId}` },
     e(Page, { size: "A4", style: styles.page, wrap: true },
