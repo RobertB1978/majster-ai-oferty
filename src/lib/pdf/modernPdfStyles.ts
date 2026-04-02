@@ -12,8 +12,8 @@
  *
  * Aktualnie importowane przez:
  *   - offerPdfGenerator.ts        ← UŻYWA TOKENÓW
- *   - templatePdfGenerator.ts     ← OCZEKUJE MIGRACJI (hardkodowane kolory)
- *   - warrantyPdfGenerator.ts     ← OCZEKUJE MIGRACJI (hardkodowane kolory)
+ *   - templatePdfGenerator.ts     ← UŻYWA TOKENÓW (zmigrowane)
+ *   - warrantyPdfGenerator.ts     ← UŻYWA TOKENÓW (zmigrowane)
  *
  * Derived from design system sections 3.1–3.4.
  *
