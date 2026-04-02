@@ -21,6 +21,10 @@ interface OfferReminderStrings {
   footer: string;
   subject: (projectName: string) => string;
   logMessage: string;
+  /** Fallback names when DB value is null */
+  fallbackClient: string;
+  fallbackCompany: string;
+  fallbackProject: string;
 }
 
 interface WarrantyReminderStrings {
@@ -31,6 +35,9 @@ interface WarrantyReminderStrings {
   contactNote: string;
   footer: string;
   subject: (days: number, companyName: string) => string;
+  /** Fallback names when DB value is null */
+  fallbackClient: string;
+  fallbackCompany: string;
 }
 
 const OFFER_REMINDER_STRINGS: Record<SupportedLocale, OfferReminderStrings> = {
@@ -46,7 +53,10 @@ const OFFER_REMINDER_STRINGS: Record<SupportedLocale, OfferReminderStrings> = {
     contactNote: 'Aby przejrzeć szczegóły oferty i podjąć decyzję, kliknij poniższy przycisk:',
     footer: 'Ta wiadomość została wysłana automatycznie przez system Majster.AI',
     subject: (project) => `Przypomnienie: Oferta na "${project}" wygasa za 3 dni`,
-    logMessage: 'Automatyczne przypomnienie o wygasającej ofercie (3 dni)',
+    logMessage: '[AUTO-REMINDER] Automatyczne przypomnienie o wygasającej ofercie (3 dni)',
+    fallbackClient: 'Szanowny Kliencie',
+    fallbackCompany: 'Firma',
+    fallbackProject: 'Projekt',
   },
   en: {
     htmlLang: 'en',
@@ -60,7 +70,10 @@ const OFFER_REMINDER_STRINGS: Record<SupportedLocale, OfferReminderStrings> = {
     contactNote: 'To review the details and make a decision, click the button below:',
     footer: 'This message was sent automatically by Majster.AI',
     subject: (project) => `Reminder: Quote for "${project}" expires in 3 days`,
-    logMessage: 'Automatic expiring offer reminder (3 days)',
+    logMessage: '[AUTO-REMINDER] Automatic expiring offer reminder (3 days)',
+    fallbackClient: 'Dear Client',
+    fallbackCompany: 'Company',
+    fallbackProject: 'Project',
   },
   uk: {
     htmlLang: 'uk',
@@ -74,7 +87,10 @@ const OFFER_REMINDER_STRINGS: Record<SupportedLocale, OfferReminderStrings> = {
     contactNote: 'Щоб переглянути деталі та прийняти рішення, натисніть кнопку нижче:',
     footer: 'Це повідомлення надіслано автоматично системою Majster.AI',
     subject: (project) => `Нагадування: Пропозиція на "${project}" закінчується через 3 дні`,
-    logMessage: 'Automatic expiring offer reminder (3 days)',
+    logMessage: '[AUTO-REMINDER] Automatic expiring offer reminder (3 days)',
+    fallbackClient: 'Шановний Клієнте',
+    fallbackCompany: 'Компанія',
+    fallbackProject: 'Проєкт',
   },
 };
 
@@ -88,6 +104,8 @@ const WARRANTY_REMINDER_STRINGS: Record<SupportedLocale, WarrantyReminderStrings
     contactNote: 'Jeśli zauważyłeś/aś usterki lub problemy, skontaktuj się z wykonawcą przed upływem gwarancji.',
     footer: 'Ta wiadomość została wysłana automatycznie przez system Majster.AI',
     subject: (days, company) => `Gwarancja wygasa za ${plDays(days)} — ${company}`,
+    fallbackClient: 'Kliencie',
+    fallbackCompany: 'Wykonawca',
   },
   en: {
     htmlLang: 'en',
@@ -98,6 +116,8 @@ const WARRANTY_REMINDER_STRINGS: Record<SupportedLocale, WarrantyReminderStrings
     contactNote: 'If you have noticed any defects or issues, please contact the contractor before the warranty expires.',
     footer: 'This message was sent automatically by Majster.AI',
     subject: (days, company) => `Warranty expires in ${enDays(days)} — ${company}`,
+    fallbackClient: 'Client',
+    fallbackCompany: 'Contractor',
   },
   uk: {
     htmlLang: 'uk',
@@ -108,6 +128,8 @@ const WARRANTY_REMINDER_STRINGS: Record<SupportedLocale, WarrantyReminderStrings
     contactNote: 'Якщо ви помітили дефекти або проблеми, зверніться до виконавця до закінчення гарантії.',
     footer: 'Це повідомлення надіслано автоматично системою Majster.AI',
     subject: (days, company) => `Гарантія закінчується через ${ukDays(days)} — ${company}`,
+    fallbackClient: 'Клієнте',
+    fallbackCompany: 'Виконавець',
   },
 };
 
@@ -288,17 +310,24 @@ Deno.serve(async (req) => {
           .eq('user_id', offer.user_id)
           .single();
 
-        const companyName = htmlEscape(profile?.company_name || 'Firma');
-        const projectName = htmlEscape((offer.projects as unknown)?.project_name || 'Projekt');
+        // Locale: defaults to 'pl' — no per-client locale stored yet.
+        // When profiles gains a preferred_locale column, pass it here.
+        const locale: SupportedLocale = 'pl';
+        const s = getOfferReminderStrings(locale);
+        const intlLocale = resolveIntlLocale(locale);
+
+        const companyName = htmlEscape(profile?.company_name || s.fallbackCompany);
+        const projectName = htmlEscape((offer.projects as unknown)?.project_name || s.fallbackProject);
         const clientEmail = offer.client_email;
-        const clientName = htmlEscape(offer.client_name || 'Szanowny Kliencie');
+        const clientName = htmlEscape(offer.client_name || s.fallbackClient);
 
         if (!clientEmail) {
           console.log(`Skipping offer ${offer.id} - no client email`);
           continue;
         }
 
-        // Check if we already sent a reminder today
+        // Check if we already sent a reminder today.
+        // Uses locale-neutral marker [AUTO-REMINDER] instead of Polish keyword.
         const today = new Date().toISOString().split('T')[0];
         const { data: existingReminder } = await supabase
           .from('offer_sends')
@@ -306,18 +335,12 @@ Deno.serve(async (req) => {
           .eq('project_id', offer.project_id)
           .eq('client_email', clientEmail)
           .gte('sent_at', `${today}T00:00:00`)
-          .like('subject', '%przypomnienie%');
+          .like('message', '%[AUTO-REMINDER]%');
 
         if (existingReminder && existingReminder.length > 0) {
           console.log(`Reminder already sent today for offer ${offer.id}`);
           continue;
         }
-
-        // Locale: defaults to 'pl' — no per-client locale stored yet.
-        // When profiles gains a preferred_locale column, pass it here.
-        const locale: SupportedLocale = 'pl';
-        const s = getOfferReminderStrings(locale);
-        const intlLocale = resolveIntlLocale(locale);
 
         const approvalUrl = `${frontendUrl}/offer/${offer.public_token}`;
         const expiresDate = new Date(offer.expires_at).toLocaleDateString(intlLocale, {
@@ -475,7 +498,7 @@ Deno.serve(async (req) => {
       for (const w of (expiringWarranties ?? [])) {
         try {
           const clientEmail = w.client_email as string;
-          const clientName  = htmlEscape((w.client_name as string | null) ?? 'Kliencie');
+          const clientName  = htmlEscape((w.client_name as string | null) ?? ws.fallbackClient);
 
           // Locale: defaults to 'pl' — no per-client locale stored yet.
           const wLocale: SupportedLocale = 'pl';
@@ -491,7 +514,7 @@ Deno.serve(async (req) => {
             .select('company_name')
             .eq('user_id', w.user_id)
             .maybeSingle();
-          const companyName = htmlEscape((profile?.company_name as string | null) ?? 'Wykonawca');
+          const companyName = htmlEscape((profile?.company_name as string | null) ?? ws.fallbackCompany);
 
           const subject = ws.subject(daysAhead, companyName);
 
