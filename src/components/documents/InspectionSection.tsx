@@ -39,6 +39,7 @@ import { Input } from '@/components/ui/input';
 import { SkeletonList } from '@/components/ui/skeleton';
 import { RemindersPanel } from './RemindersPanel';
 import { NotificationPermissionPrompt } from '@/components/notifications/NotificationPermissionPrompt';
+import { useAutofillContext } from '@/hooks/useDocumentInstances';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/formatters';
 import { generateTemplatePdf } from '@/lib/templatePdfGenerator';
@@ -226,6 +227,7 @@ function InspectionCard({
   const markDone = useMarkInspectionDone(projectId);
   const deleteInsp = useDeleteInspection(projectId);
   const markPdf = useMarkInspectionPdfPath(projectId);
+  const autofillQuery = useAutofillContext({ projectId });
   const [busy, setBusy] = useState<'done' | 'dossier' | 'delete' | null>(null);
 
   const handleMarkDone = async () => {
@@ -273,7 +275,7 @@ function InspectionCard({
       const blob = await generateTemplatePdf({
         template,
         data: formData,
-        autofillContext: {},
+        autofillContext: autofillQuery.data ?? {},
         locale: locale as 'pl' | 'en' | 'uk',
         t,
       });
