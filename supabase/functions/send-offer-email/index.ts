@@ -15,6 +15,26 @@ import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shar
 import { handleSendOfferEmail, checkEmailDeliveryConfig, type EmailDeps, type SendOfferPayload } from "./emailHandler.ts";
 import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
 
+// Notification strings per locale — used for in-app notifications only.
+const NOTIFICATION_STRINGS: Record<string, { title: string; message: string }> = {
+  pl: {
+    title: '📤 Oferta wysłana',
+    message: 'Oferta do projektu "{{projectName}}" została wysłana na adres email klienta.',
+  },
+  en: {
+    title: '📤 Quote sent',
+    message: 'Quote for project "{{projectName}}" has been sent to the client\'s email.',
+  },
+  uk: {
+    title: '📤 Пропозицію надіслано',
+    message: 'Пропозицію для проекту "{{projectName}}" надіслано на email клієнта.',
+  },
+};
+
+function getNotificationStrings(locale?: string): { title: string; message: string } {
+  return NOTIFICATION_STRINGS[locale ?? 'pl'] ?? NOTIFICATION_STRINGS['pl'];
+}
+
 interface SendOfferRequest {
   offerSendId?: string;
   to: string;
@@ -28,6 +48,7 @@ interface SendOfferRequest {
   acceptToken?: string;
   replyTo?: string;
   companyName?: string;
+  locale?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -83,7 +104,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const { to, subject, message, projectName, pdfUrl, offerSendId, tracking_status,
-            publicToken, acceptToken, replyTo, companyName } = body;
+            publicToken, acceptToken, replyTo, companyName, locale } = body;
 
     // Validate all inputs
     const validation = combineValidations(
@@ -211,6 +232,7 @@ const handler = async (req: Request): Promise<Response> => {
       replyTo,
       companyName,
       frontendUrl: frontendUrl ?? undefined,
+      locale,
     };
 
     // Call handler with dependencies
@@ -243,10 +265,11 @@ const handler = async (req: Request): Promise<Response> => {
             .eq('project_id', sendRow.project_id)
             .maybeSingle();
           if (approval?.user_id) {
+            const notifStrings = getNotificationStrings(locale);
             await supabase.from('notifications').insert({
               user_id: approval.user_id,
-              title: '📤 Oferta wysłana',
-              message: `Oferta do projektu "${projectName}" została wysłana na adres email klienta.`,
+              title: notifStrings.title,
+              message: notifStrings.message.replace('{{projectName}}', projectName),
               type: 'info',
               action_url: `/app/projects/${sendRow.project_id}`,
             });

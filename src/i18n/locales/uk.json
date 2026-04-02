@@ -2036,7 +2036,17 @@
     "setExpiryRequired": "Встановіть термін дії пропозиції",
     "days_one": "{{count}} день",
     "days_few": "{{count}} дні",
-    "days_many": "{{count}} днів"
+    "days_many": "{{count}} днів",
+    "autoSubject": "Пропозиція: {{title}}",
+    "autoMessage": "Надсилаємо пропозицію. Вартість: {{amount}} {{currency}}.",
+    "autoSubjectNoTitle": "Пропозиція",
+    "notificationTitle": "📤 Пропозицію надіслано",
+    "notificationMessage": "Пропозицію для проекту \"{{projectName}}\" надіслано на email клієнта.",
+    "emailAcceptButton": "✓ ПРИЙМАЮ (1 клік)",
+    "emailViewButton": "ПЕРЕГЛЯНУТИ ПРОПОЗИЦІЮ →",
+    "emailDownloadPdf": "📄 Завантажити PDF пропозиції",
+    "emailFooter": "Це повідомлення надіслано через",
+    "emailFooterFallback": "Не можете натиснути кнопку? Використайте це посилання:"
   },
   "onboarding": {
     "welcome": "Ласкаво просимо до Majster.AI!",

@@ -69,6 +69,57 @@ export function checkEmailDeliveryConfig(config: {
   return { valid: true, warnings: warnings.length > 0 ? warnings : undefined };
 }
 
+// ============================================================
+// LOCALE STRINGS — system-generated email UI labels only.
+// User-entered content (subject, message) is passed through
+// unchanged from the frontend and must never be modified here.
+// ============================================================
+
+type SupportedLocale = 'pl' | 'en' | 'uk';
+
+interface EmailLocaleStrings {
+  acceptButton: string;
+  viewButton: string;
+  downloadPdf: string;
+  footer: string;
+  footerFallback: string;
+  htmlLang: string;
+}
+
+const EMAIL_STRINGS: Record<SupportedLocale, EmailLocaleStrings> = {
+  pl: {
+    acceptButton: '✓ AKCEPTUJĘ (1 klik)',
+    viewButton: 'OGLĄDAM OFERTĘ →',
+    downloadPdf: '📄 Pobierz ofertę w PDF',
+    footer: 'Ta wiadomość została wysłana przez',
+    footerFallback: 'Nie możesz kliknąć przycisku? Użyj tego linku:',
+    htmlLang: 'pl',
+  },
+  en: {
+    acceptButton: '✓ ACCEPT (1 click)',
+    viewButton: 'VIEW QUOTE →',
+    downloadPdf: '📄 Download quote PDF',
+    footer: 'This message was sent via',
+    footerFallback: "Can't click the button? Use this link:",
+    htmlLang: 'en',
+  },
+  uk: {
+    acceptButton: '✓ ПРИЙМАЮ (1 клік)',
+    viewButton: 'ПЕРЕГЛЯНУТИ ПРОПОЗИЦІЮ →',
+    downloadPdf: '📄 Завантажити PDF пропозиції',
+    footer: 'Це повідомлення надіслано через',
+    footerFallback: 'Не можете натиснути кнопку? Використайте це посилання:',
+    htmlLang: 'uk',
+  },
+};
+
+/** Returns locale strings for the given locale, falling back to Polish. */
+export function getLocaleStrings(locale?: string): EmailLocaleStrings {
+  const supported: SupportedLocale[] = ['pl', 'en', 'uk'];
+  const lang = locale as SupportedLocale;
+  return EMAIL_STRINGS[supported.includes(lang) ? lang : 'pl'];
+}
+
 /**
  * Payload for sending an offer email
  */
@@ -86,6 +137,7 @@ export interface SendOfferPayload {
   replyTo?: string;       // verified contact_email → Reply-To header
   companyName?: string;
   frontendUrl?: string;   // injected from env FRONTEND_URL
+  locale?: string;        // BCP-47 locale tag (pl / en / uk)
 }
 
 /**
@@ -117,7 +169,9 @@ export interface EmailDeps {
 }
 
 /**
- * Generate HTML content for offer email with dual action buttons
+ * Generate HTML content for offer email with dual action buttons.
+ * System-generated UI labels (buttons, footer) follow the provided locale.
+ * User-entered content (projectName, message) is passed through unchanged.
  */
 export function generateOfferEmailHtml(
   projectName: string,
@@ -128,6 +182,7 @@ export function generateOfferEmailHtml(
     companyName?: string;
     pdfUrl?: string;
     frontendUrl?: string;
+    locale?: string;
   }
 ): string {
   const safeProjectName = sanitizeString(projectName);
@@ -137,6 +192,8 @@ export function generateOfferEmailHtml(
   // checkEmailDeliveryConfig() in index.ts rejects requests when it is missing,
   // so reaching this fallback at runtime indicates a misconfiguration.
   const baseUrl = opts?.frontendUrl ?? '';
+
+  const strings = getLocaleStrings(opts?.locale);
 
   const viewUrl = opts?.publicToken
     ? `${baseUrl}/a/${opts.publicToken}`
@@ -150,13 +207,13 @@ export function generateOfferEmailHtml(
       <a href="${acceptUrl}"
          style="display:inline-block; background:#16a34a; color:#ffffff; padding:14px 28px; border-radius:6px;
                 text-decoration:none; font-size:16px; font-weight:700; letter-spacing:0.5px; margin-bottom:12px; min-width:200px;">
-        ✓ AKCEPTUJĘ (1 klik)
+        ${strings.acceptButton}
       </a>
       <br>
       <a href="${viewUrl}"
          style="display:inline-block; background:#2563eb; color:#ffffff; padding:14px 28px; border-radius:6px;
                 text-decoration:none; font-size:15px; font-weight:600; letter-spacing:0.5px; min-width:200px;">
-        OGLĄDAM OFERTĘ →
+        ${strings.viewButton}
       </a>
     </div>
   ` : viewUrl ? `
@@ -164,7 +221,7 @@ export function generateOfferEmailHtml(
       <a href="${viewUrl}"
          style="display:inline-block; background:#2563eb; color:#ffffff; padding:14px 28px; border-radius:6px;
                 text-decoration:none; font-size:15px; font-weight:600;">
-        OGLĄDAM OFERTĘ →
+        ${strings.viewButton}
       </a>
     </div>
   ` : '';
@@ -172,17 +229,17 @@ export function generateOfferEmailHtml(
   const pdfSection = opts?.pdfUrl ? `
     <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:12px; margin-top:16px; text-align:center;">
       <a href="${opts.pdfUrl}" style="color:#16a34a; text-decoration:none; font-size:14px;">
-        📄 Pobierz ofertę w PDF
+        ${strings.downloadPdf}
       </a>
     </div>
   ` : '';
 
   return `<!DOCTYPE html>
-<html lang="pl">
+<html lang="${strings.htmlLang}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oferta — ${safeProjectName}</title>
+    <title>${safeProjectName}</title>
   </head>
   <body style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:#1a1a1a;max-width:600px;margin:0 auto;padding:20px;background:#ffffff;">
     <div style="background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:30px;border-radius:8px;text-align:center;margin-bottom:24px;">
@@ -200,8 +257,8 @@ export function generateOfferEmailHtml(
     ${pdfSection}
 
     <div style="text-align:center;color:#6b7280;font-size:12px;margin-top:30px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <p style="margin:0 0 4px;">Ta wiadomość została wysłana przez <strong>Majster.AI</strong></p>
-      ${viewUrl ? `<p style="margin:0;"><a href="${viewUrl}" style="color:#9ca3af;font-size:11px;">Nie możesz kliknąć przycisku? Użyj tego linku: ${viewUrl}</a></p>` : ''}
+      <p style="margin:0 0 4px;">${strings.footer} <strong>Majster.AI</strong></p>
+      ${viewUrl ? `<p style="margin:0;"><a href="${viewUrl}" style="color:#9ca3af;font-size:11px;">${strings.footerFallback} ${viewUrl}</a></p>` : ''}
     </div>
   </body>
 </html>`;
@@ -217,7 +274,7 @@ export async function handleSendOfferEmail(
 ): Promise<SendOfferResult> {
   const {
     to, subject, message, projectName, pdfUrl, offerSendId, tracking_status,
-    publicToken, acceptToken, replyTo, companyName, frontendUrl,
+    publicToken, acceptToken, replyTo, companyName, frontendUrl, locale,
   } = payload;
 
   if (!to?.trim()) return { ok: false, error: "Email recipient is required" };
@@ -232,6 +289,7 @@ export async function handleSendOfferEmail(
       companyName,
       pdfUrl,
       frontendUrl,
+      locale,
     });
 
     const emailResult = await deps.sendEmail({
