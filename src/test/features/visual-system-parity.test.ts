@@ -8,6 +8,9 @@
  * WHY: The two files are maintained as mirrors because the Deno runtime
  * cannot import from src/. A drift between them would cause PDFs rendered
  * server-side (Edge Function) to differ visually from client-side fallback.
+ *
+ * APPROACH: Parse actual data structures from Deno source (not just substring),
+ * then compare value-by-value with frontend exports.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -16,7 +19,7 @@ import type { DocumentType, TradeType, PlanTier } from '@/types/unified-document
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-// ── Read the Deno mirror source to compare data tables ───────────────────────
+// ── Read the Deno mirror source ──────────────────────────────────────────────
 
 const DENO_MIRROR_PATH = path.resolve(
   __dirname,
@@ -37,45 +40,156 @@ const TRADE_TYPES: TradeType[] = [
 
 const PLAN_TIERS: PlanTier[] = ['free', 'basic', 'pro', 'enterprise'];
 
+// ── Parsing helpers for Deno source ──────────────────────────────────────────
+
+/**
+ * Extract a JSON-like object from Deno TypeScript source by key name.
+ * Converts single-quoted TS syntax to valid JSON.
+ */
+function extractObjectBlock(source: string, objectName: string): string | null {
+  const regex = new RegExp(`(const ${objectName}[^=]*=\\s*)({[\\s\\S]*?});`, 'm');
+  const match = source.match(regex);
+  if (!match) return null;
+  return match[2];
+}
+
+/**
+ * Parse BASE_STYLE_TOKENS from Deno source by extracting hex values per style.
+ * More robust than JSON.parse since TS source may have comments and trailing commas.
+ */
+function extractDenoStyleTokens(): Record<string, Record<string, string>> {
+  const result: Record<string, Record<string, string>> = {};
+
+  for (const style of ['classic', 'technical', 'premium']) {
+    // Find the style block between its key and the next closing brace
+    const stylePattern = new RegExp(
+      `${style}:\\s*\\{([\\s\\S]*?)\\}`,
+      'm',
+    );
+    const block = extractObjectBlock(denoSource, 'BASE_STYLE_TOKENS');
+    if (!block) continue;
+
+    const styleMatch = block.match(stylePattern);
+    if (!styleMatch) continue;
+
+    const fields: Record<string, string> = {};
+    // Extract key: "value" pairs
+    const fieldPattern = /(\w+):\s*"([^"]+)"/g;
+    let m: RegExpExecArray | null;
+    while ((m = fieldPattern.exec(styleMatch[1])) !== null) {
+      fields[m[1]] = m[2];
+    }
+
+    result[style] = fields;
+  }
+
+  return result;
+}
+
+/**
+ * Parse TRADE_ACCENT_MAP from Deno source.
+ */
+function extractDenoTradeAccents(): Record<string, { primary: string; subtleBg: string }> {
+  const result: Record<string, { primary: string; subtleBg: string }> = {};
+  const block = extractObjectBlock(denoSource, 'TRADE_ACCENT_MAP');
+  if (!block) return result;
+
+  // Match: trade: { primary: "#...", subtleBg: "#..." }
+  const tradePattern = /(\w+):\s*\{\s*primary:\s*"([^"]+)",\s*subtleBg:\s*"([^"]+)"\s*\}/g;
+  let m: RegExpExecArray | null;
+  while ((m = tradePattern.exec(block)) !== null) {
+    result[m[1]] = { primary: m[2], subtleBg: m[3] };
+  }
+
+  return result;
+}
+
+// ── Pre-computed data from Deno source ───────────────────────────────────────
+
+const denoStyleTokens = extractDenoStyleTokens();
+const denoTradeAccents = extractDenoTradeAccents();
+
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('Visual System — frontend vs Deno mirror parity', () => {
-  it('BASE_STYLE_TOKENS are identical in both files', () => {
-    // Extract token values from Deno source using regex
+
+  // ── 1: BASE_STYLE_TOKENS structural equality ──────────────────────────────
+
+  describe('BASE_STYLE_TOKENS — value-by-value comparison', () => {
     for (const style of ['classic', 'technical', 'premium'] as const) {
-      const frontendTokens = frontend.BASE_STYLE_TOKENS[style];
+      describe(`${style} style`, () => {
+        const frontendTokens = frontend.BASE_STYLE_TOKENS[style];
+        const denoTokens = denoStyleTokens[style];
 
-      // Verify each token value appears in the Deno source
-      expect(denoSource).toContain(frontendTokens.headerBg);
-      expect(denoSource).toContain(frontendTokens.headerText);
-      expect(denoSource).toContain(frontendTokens.sectionAccent);
-      expect(denoSource).toContain(frontendTokens.accentStripeBg);
-      expect(denoSource).toContain(frontendTokens.tableAltRowBg);
-      expect(denoSource).toContain(frontendTokens.tableHeaderBg);
-      expect(denoSource).toContain(frontendTokens.tableHeaderText);
-      expect(denoSource).toContain(frontendTokens.summaryBg);
-      expect(denoSource).toContain(frontendTokens.grossAccent);
-      expect(denoSource).toContain(frontendTokens.tableTheme);
-    }
-  });
+        it('exists in Deno mirror', () => {
+          expect(denoTokens).toBeDefined();
+        });
 
-  it('trade accent colors are identical in both files', () => {
-    for (const trade of TRADE_TYPES) {
-      // The frontend resolveTemplateVariant uses the accent map internally.
-      // We verify the Deno source contains the same hex values.
-      const variant = frontend.resolveTemplateVariant({
-        documentType: 'offer',
-        trade,
-        planTier: 'pro',
+        const tokenKeys: (keyof typeof frontendTokens)[] = [
+          'headerBg', 'headerText', 'sectionAccent', 'accentStripeBg',
+          'tableAltRowBg', 'tableHeaderBg', 'tableHeaderText',
+          'summaryBg', 'grossAccent', 'tableTheme',
+        ];
+
+        for (const key of tokenKeys) {
+          it(`${key} matches: frontend="${frontendTokens[key]}" vs Deno="${denoTokens?.[key]}"`, () => {
+            expect(denoTokens?.[key]).toBe(frontendTokens[key]);
+          });
+        }
       });
-      expect(denoSource).toContain(variant.tradeAccent.primary);
-      expect(denoSource).toContain(variant.tradeAccent.subtleBg);
     }
   });
 
-  it('resolveTemplateVariant produces identical variantKey for every input combination', () => {
-    // We can't directly import the Deno file, but we verify the logic
-    // by checking that all exported functions exist in both files.
+  // ── 2: TRADE_ACCENT_MAP structural equality ───────────────────────────────
+
+  describe('TRADE_ACCENT_MAP — value-by-value comparison', () => {
+    for (const trade of TRADE_TYPES) {
+      it(`${trade}: primary color matches`, () => {
+        const feVariant = frontend.resolveTemplateVariant({
+          documentType: 'offer', trade, planTier: 'pro',
+        });
+        expect(denoTradeAccents[trade]).toBeDefined();
+        expect(denoTradeAccents[trade]?.primary).toBe(feVariant.tradeAccent.primary);
+      });
+
+      it(`${trade}: subtleBg color matches`, () => {
+        const feVariant = frontend.resolveTemplateVariant({
+          documentType: 'offer', trade, planTier: 'pro',
+        });
+        expect(denoTradeAccents[trade]?.subtleBg).toBe(feVariant.tradeAccent.subtleBg);
+      });
+    }
+
+    it('Deno has same number of trades as frontend', () => {
+      expect(Object.keys(denoTradeAccents).length).toBe(TRADE_TYPES.length);
+    });
+  });
+
+  // ── 3: Type enums present in both ─────────────────────────────────────────
+
+  describe('Type enum completeness in Deno mirror', () => {
+    it('all DocumentType values present', () => {
+      for (const docType of DOCUMENT_TYPES) {
+        expect(denoSource).toMatch(new RegExp(`"${docType}"`));
+      }
+    });
+
+    it('all TradeType values present', () => {
+      for (const trade of TRADE_TYPES) {
+        expect(denoSource).toMatch(new RegExp(`"${trade}"`));
+      }
+    });
+
+    it('all PlanTier values present', () => {
+      for (const tier of PLAN_TIERS) {
+        expect(denoSource).toMatch(new RegExp(`"${tier}"`));
+      }
+    });
+  });
+
+  // ── 4: Exported function signatures present ───────────────────────────────
+
+  describe('Exported functions exist in Deno mirror', () => {
     const expectedFunctions = [
       'resolveTemplateVariant',
       'mergeStyleWithTradeAccent',
@@ -83,113 +197,138 @@ describe('Visual System — frontend vs Deno mirror parity', () => {
     ];
 
     for (const fn of expectedFunctions) {
-      expect(denoSource).toContain(`export function ${fn}`);
+      it(`export function ${fn} exists`, () => {
+        expect(denoSource).toContain(`export function ${fn}`);
+      });
     }
   });
 
-  it('variant resolution is deterministic for all 200 combinations', () => {
-    const results = new Map<string, frontend.TemplateVariant>();
+  // ── 5: Resolution logic consistency ───────────────────────────────────────
 
-    for (const documentType of DOCUMENT_TYPES) {
-      for (const trade of TRADE_TYPES) {
-        for (const planTier of PLAN_TIERS) {
-          const variant = frontend.resolveTemplateVariant({
-            documentType,
-            trade,
-            planTier,
-          });
+  describe('resolveTemplateVariant — determinism and consistency', () => {
+    it('is deterministic for all 200 combinations', () => {
+      const results = new Map<string, frontend.TemplateVariant>();
 
-          // Verify variantKey format: {style}:{trade}:{planTier}:{documentType}
-          expect(variant.variantKey).toBe(
-            `${variant.baseStyle}:${trade}:${planTier}:${documentType}`,
-          );
+      for (const documentType of DOCUMENT_TYPES) {
+        for (const trade of TRADE_TYPES) {
+          for (const planTier of PLAN_TIERS) {
+            const variant = frontend.resolveTemplateVariant({
+              documentType, trade, planTier,
+            });
 
-          // No duplicates with different content
-          const existing = results.get(variant.variantKey);
-          if (existing) {
-            expect(variant.baseStyle).toBe(existing.baseStyle);
-            expect(variant.tradeAccent).toEqual(existing.tradeAccent);
-            expect(variant.features).toEqual(existing.features);
+            expect(variant.variantKey).toBe(
+              `${variant.baseStyle}:${trade}:${planTier}:${documentType}`,
+            );
+
+            const existing = results.get(variant.variantKey);
+            if (existing) {
+              expect(variant.baseStyle).toBe(existing.baseStyle);
+              expect(variant.tradeAccent).toEqual(existing.tradeAccent);
+              expect(variant.features).toEqual(existing.features);
+            }
+            results.set(variant.variantKey, variant);
           }
-          results.set(variant.variantKey, variant);
         }
       }
-    }
 
-    // 5 docTypes × 10 trades × 4 tiers = 200 combinations
-    // Some produce the same variantKey (e.g., offer+general+free === contract+general+free)
-    expect(results.size).toBeGreaterThan(0);
-    expect(results.size).toBeLessThanOrEqual(200);
+      expect(results.size).toBeGreaterThan(0);
+      expect(results.size).toBeLessThanOrEqual(200);
+    });
+
+    it('baseStyle rules: free/basic → classic, pro offer → premium, pro protocol → technical', () => {
+      expect(
+        frontend.resolveTemplateVariant({ documentType: 'offer', trade: 'general', planTier: 'free' }).baseStyle,
+      ).toBe('classic');
+      expect(
+        frontend.resolveTemplateVariant({ documentType: 'offer', trade: 'general', planTier: 'basic' }).baseStyle,
+      ).toBe('classic');
+      expect(
+        frontend.resolveTemplateVariant({ documentType: 'offer', trade: 'general', planTier: 'pro' }).baseStyle,
+      ).toBe('premium');
+      expect(
+        frontend.resolveTemplateVariant({ documentType: 'protocol', trade: 'general', planTier: 'pro' }).baseStyle,
+      ).toBe('technical');
+      expect(
+        frontend.resolveTemplateVariant({ documentType: 'warranty', trade: 'general', planTier: 'enterprise' }).baseStyle,
+      ).toBe('classic');
+    });
+
+    it('Deno resolveBaseStyle logic matches (verify switch cases present)', () => {
+      // Verify the Deno source contains the same resolution logic
+      expect(denoSource).toContain('case "offer"');
+      expect(denoSource).toContain('case "contract"');
+      expect(denoSource).toContain('return "premium"');
+      expect(denoSource).toContain('case "protocol"');
+      expect(denoSource).toContain('case "inspection"');
+      expect(denoSource).toContain('return "technical"');
+      expect(denoSource).toContain('case "warranty"');
+      // free/basic → classic
+      expect(denoSource).toMatch(/free.*basic[\s\S]*?return "classic"/);
+    });
   });
 
-  it('Deno mirror contains all TradeType values from frontend', () => {
-    for (const trade of TRADE_TYPES) {
-      expect(denoSource).toContain(`"${trade}"`);
-    }
-  });
+  // ── 6: mergeStyleWithTradeAccent correctness ──────────────────────────────
 
-  it('Deno mirror contains all DocumentType values from frontend', () => {
-    for (const docType of DOCUMENT_TYPES) {
-      expect(denoSource).toContain(`"${docType}"`);
-    }
-  });
-
-  it('Deno mirror contains all PlanTier values from frontend', () => {
-    for (const tier of PLAN_TIERS) {
-      expect(denoSource).toContain(`"${tier}"`);
-    }
-  });
-
-  it('mergeStyleWithTradeAccent overrides only sectionAccent and accentStripeBg', () => {
+  describe('mergeStyleWithTradeAccent — override semantics', () => {
     for (const style of ['classic', 'technical', 'premium'] as const) {
-      const accent = { primary: '#TEST01', subtleBg: '#TEST02' };
-      const merged = frontend.mergeStyleWithTradeAccent(style, accent);
-      const base = frontend.BASE_STYLE_TOKENS[style];
+      it(`${style}: overrides ONLY sectionAccent and accentStripeBg`, () => {
+        const accent = { primary: '#TEST01', subtleBg: '#TEST02' };
+        const merged = frontend.mergeStyleWithTradeAccent(style, accent);
+        const base = frontend.BASE_STYLE_TOKENS[style];
 
-      // Overridden
-      expect(merged.sectionAccent).toBe('#TEST01');
-      expect(merged.accentStripeBg).toBe('#TEST02');
+        // Overridden
+        expect(merged.sectionAccent).toBe('#TEST01');
+        expect(merged.accentStripeBg).toBe('#TEST02');
 
-      // Preserved
-      expect(merged.headerBg).toBe(base.headerBg);
-      expect(merged.headerText).toBe(base.headerText);
-      expect(merged.tableAltRowBg).toBe(base.tableAltRowBg);
-      expect(merged.tableHeaderBg).toBe(base.tableHeaderBg);
-      expect(merged.tableHeaderText).toBe(base.tableHeaderText);
-      expect(merged.summaryBg).toBe(base.summaryBg);
-      expect(merged.grossAccent).toBe(base.grossAccent);
-      expect(merged.tableTheme).toBe(base.tableTheme);
+        // Preserved (every other property)
+        expect(merged.headerBg).toBe(base.headerBg);
+        expect(merged.headerText).toBe(base.headerText);
+        expect(merged.tableAltRowBg).toBe(base.tableAltRowBg);
+        expect(merged.tableHeaderBg).toBe(base.tableHeaderBg);
+        expect(merged.tableHeaderText).toBe(base.tableHeaderText);
+        expect(merged.summaryBg).toBe(base.summaryBg);
+        expect(merged.grossAccent).toBe(base.grossAccent);
+        expect(merged.tableTheme).toBe(base.tableTheme);
+      });
     }
   });
 
-  it('feature flags follow plan tier rules consistently', () => {
-    // Free: watermark=true, logo=false, qr=false, minimal header
-    const freeVariant = frontend.resolveTemplateVariant({
-      documentType: 'offer', trade: 'general', planTier: 'free',
-    });
-    expect(freeVariant.features.showWatermark).toBe(true);
-    expect(freeVariant.features.showLogo).toBe(false);
-    expect(freeVariant.features.showQrCode).toBe(false);
-    expect(freeVariant.features.headerStyle).toBe('minimal');
+  // ── 7: Feature flags per plan tier ────────────────────────────────────────
 
-    // Basic: no watermark, logo=true, qr=true, standard header
-    const basicVariant = frontend.resolveTemplateVariant({
-      documentType: 'offer', trade: 'general', planTier: 'basic',
+  describe('feature flags follow plan tier rules', () => {
+    it('free: watermark=true, logo=false, qr=false, minimal header', () => {
+      const v = frontend.resolveTemplateVariant({
+        documentType: 'offer', trade: 'general', planTier: 'free',
+      });
+      expect(v.features).toEqual({
+        showWatermark: true, showLogo: false, showQrCode: false, headerStyle: 'minimal',
+      });
     });
-    expect(basicVariant.features.showWatermark).toBe(false);
-    expect(basicVariant.features.showLogo).toBe(true);
-    expect(basicVariant.features.headerStyle).toBe('standard');
 
-    // Pro: branded header
-    const proVariant = frontend.resolveTemplateVariant({
-      documentType: 'offer', trade: 'general', planTier: 'pro',
+    it('basic: no watermark, logo=true, qr=true, standard header', () => {
+      const v = frontend.resolveTemplateVariant({
+        documentType: 'offer', trade: 'general', planTier: 'basic',
+      });
+      expect(v.features).toEqual({
+        showWatermark: false, showLogo: true, showQrCode: true, headerStyle: 'standard',
+      });
     });
-    expect(proVariant.features.headerStyle).toBe('branded');
 
-    // Enterprise: same as pro
-    const entVariant = frontend.resolveTemplateVariant({
-      documentType: 'offer', trade: 'general', planTier: 'enterprise',
+    it('pro: branded header', () => {
+      const v = frontend.resolveTemplateVariant({
+        documentType: 'offer', trade: 'general', planTier: 'pro',
+      });
+      expect(v.features.headerStyle).toBe('branded');
     });
-    expect(entVariant.features.headerStyle).toBe('branded');
+
+    it('enterprise: same flags as pro', () => {
+      const pro = frontend.resolveTemplateVariant({
+        documentType: 'offer', trade: 'general', planTier: 'pro',
+      });
+      const ent = frontend.resolveTemplateVariant({
+        documentType: 'offer', trade: 'general', planTier: 'enterprise',
+      });
+      expect(ent.features).toEqual(pro.features);
+    });
   });
 });

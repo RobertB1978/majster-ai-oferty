@@ -84,49 +84,81 @@ const WARRANTY_REMINDER_STRINGS: Record<SupportedLocale, WarrantyReminderStrings
     title: '🛡️ Przypomnienie o gwarancji',
     greeting: (name) => `Szanowny/a <strong>${name}</strong>,`,
     body: (company, days, dateStr) =>
-      `Gwarancja udzielona przez firmę <strong>${company}</strong> wygasa za <strong style="color:#1e5ac8;">${days} dni</strong> — dnia <strong>${dateStr}</strong>.`,
+      `Gwarancja udzielona przez firmę <strong>${company}</strong> wygasa za <strong style="color:#1e5ac8;">${plDays(days)}</strong> — dnia <strong>${dateStr}</strong>.`,
     contactNote: 'Jeśli zauważyłeś/aś usterki lub problemy, skontaktuj się z wykonawcą przed upływem gwarancji.',
     footer: 'Ta wiadomość została wysłana automatycznie przez system Majster.AI',
-    subject: (days, company) => `Gwarancja wygasa za ${days} dni — ${company}`,
+    subject: (days, company) => `Gwarancja wygasa za ${plDays(days)} — ${company}`,
   },
   en: {
     htmlLang: 'en',
     title: '🛡️ Warranty Reminder',
     greeting: (name) => `Dear <strong>${name}</strong>,`,
     body: (company, days, dateStr) =>
-      `The warranty provided by <strong>${company}</strong> expires in <strong style="color:#1e5ac8;">${days} days</strong> — on <strong>${dateStr}</strong>.`,
+      `The warranty provided by <strong>${company}</strong> expires in <strong style="color:#1e5ac8;">${enDays(days)}</strong> — on <strong>${dateStr}</strong>.`,
     contactNote: 'If you have noticed any defects or issues, please contact the contractor before the warranty expires.',
     footer: 'This message was sent automatically by Majster.AI',
-    subject: (days, company) => `Warranty expires in ${days} days — ${company}`,
+    subject: (days, company) => `Warranty expires in ${enDays(days)} — ${company}`,
   },
   uk: {
     htmlLang: 'uk',
     title: '🛡️ Нагадування про гарантію',
     greeting: (name) => `Шановний/а <strong>${name}</strong>,`,
     body: (company, days, dateStr) =>
-      `Гарантія від компанії <strong>${company}</strong> закінчується через <strong style="color:#1e5ac8;">${days} днів</strong> — <strong>${dateStr}</strong>.`,
+      `Гарантія від компанії <strong>${company}</strong> закінчується через <strong style="color:#1e5ac8;">${ukDays(days)}</strong> — <strong>${dateStr}</strong>.`,
     contactNote: 'Якщо ви помітили дефекти або проблеми, зверніться до виконавця до закінчення гарантії.',
     footer: 'Це повідомлення надіслано автоматично системою Majster.AI',
-    subject: (days, company) => `Гарантія закінчується через ${days} днів — ${company}`,
+    subject: (days, company) => `Гарантія закінчується через ${ukDays(days)} — ${company}`,
   },
 };
 
-function getOfferReminderStrings(locale?: string): OfferReminderStrings {
+function toSupportedLocale(locale?: string): SupportedLocale {
   const supported: SupportedLocale[] = ['pl', 'en', 'uk'];
-  const lang = locale as SupportedLocale;
-  return OFFER_REMINDER_STRINGS[supported.includes(lang) ? lang : 'pl'];
+  return supported.includes(locale as SupportedLocale) ? (locale as SupportedLocale) : 'pl';
+}
+
+function getOfferReminderStrings(locale?: string): OfferReminderStrings {
+  return OFFER_REMINDER_STRINGS[toSupportedLocale(locale)];
 }
 
 function getWarrantyReminderStrings(locale?: string): WarrantyReminderStrings {
-  const supported: SupportedLocale[] = ['pl', 'en', 'uk'];
-  const lang = locale as SupportedLocale;
-  return WARRANTY_REMINDER_STRINGS[supported.includes(lang) ? lang : 'pl'];
+  return WARRANTY_REMINDER_STRINGS[toSupportedLocale(locale)];
 }
 
 /** Resolve BCP-47 locale tag for Intl date formatting. */
 function resolveIntlLocale(locale?: string): string {
   const map: Record<string, string> = { pl: 'pl-PL', en: 'en-GB', uk: 'uk-UA' };
   return map[locale ?? 'pl'] ?? 'pl-PL';
+}
+
+/**
+ * Ukrainian plural form for "day" (день/дні/днів).
+ * Slavic languages have 3 plural forms based on number:
+ *   1         → "день" (nominative singular)
+ *   2, 3, 4   → "дні"  (nominative plural)
+ *   5–20      → "днів" (genitive plural)
+ *   21        → "день" (cycle restarts)
+ */
+function ukDays(n: number): string {
+  const abs = Math.abs(n);
+  const lastTwo = abs % 100;
+  const lastOne = abs % 10;
+  if (lastTwo >= 11 && lastTwo <= 19) return `${n} днів`;
+  if (lastOne === 1) return `${n} день`;
+  if (lastOne >= 2 && lastOne <= 4) return `${n} дні`;
+  return `${n} днів`;
+}
+
+/**
+ * Polish plural form for "day" (dzień/dni).
+ * Polish: 1 → "dzień", 2+ → "dni"
+ */
+function plDays(n: number): string {
+  return n === 1 ? `${n} dzień` : `${n} dni`;
+}
+
+/** English plural "day"/"days". */
+function enDays(n: number): string {
+  return n === 1 ? `${n} day` : `${n} days`;
 }
 
 Deno.serve(async (req) => {
@@ -408,9 +440,7 @@ Deno.serve(async (req) => {
 
     // ── PR-18: Warranty expiry reminders (T-30 and T-7) ─────────────────────
 
-    const now = new Date();
-
-    // Helper: ISO date string for today + N days
+    // Helper: ISO date string for today + N days (reuses `now` from line 232)
     const isoDatePlusDays = (n: number): string => {
       const d = new Date(now);
       d.setDate(d.getDate() + n);

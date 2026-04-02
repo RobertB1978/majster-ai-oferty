@@ -23,7 +23,10 @@ import { logger } from '@/lib/logger';
 import { formatDate } from '@/lib/formatters';
 import type { ProjectWarranty } from '@/hooks/useWarranty';
 import { registerNotoSans } from '@/lib/pdf/registerNotoSansJsPDF';
-import { ACCENT_BLUE, TEXT_SECONDARY, TEXT_PRIMARY } from '@/lib/pdf/modernPdfStyles';
+import {
+  ACCENT_BLUE, TEXT_SECONDARY, TEXT_PRIMARY, WHITE,
+  BORDER_LINE, TEXT_FOOTER, TEXT_HEADER_META,
+} from '@/lib/pdf/modernPdfStyles';
 
 export interface WarrantyPdfContext {
   warranty: ProjectWarranty;
@@ -43,7 +46,7 @@ function fmtDate(iso: string | null | undefined, locale?: string): string {
 }
 
 function drawLine(doc: jsPDF, y: number): void {
-  doc.setDrawColor(220, 220, 220);
+  doc.setDrawColor(...BORDER_LINE);
   doc.line(15, y, 195, y);
 }
 
@@ -83,7 +86,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
 
   doc.setFontSize(18);
   doc.setFont(bodyFont, 'bold');
-  doc.setTextColor(255, 255, 255);
+  doc.setTextColor(...WHITE);
   doc.text(t('warranty.pdf.title'), 15, 13);
 
   doc.setFontSize(9);
@@ -94,7 +97,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   // ── Document number + date ───────────────────────────────────────────────────
   const docNum = `GWR/${new Date().getFullYear()}/${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
   doc.setFontSize(8);
-  doc.setTextColor(200, 220, 255);
+  doc.setTextColor(...TEXT_HEADER_META);
   doc.text(`${t('warranty.pdf.docNo')}: ${docNum}`, 195, 10, { align: 'right' });
   doc.text(`${t('warranty.pdf.issueDate')}: ${fmtDate(new Date().toISOString(), locale)}`, 195, 16, { align: 'right' });
 
@@ -170,7 +173,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
 
   // ── Footer ───────────────────────────────────────────────────────────────────
   doc.setFontSize(7);
-  doc.setTextColor(180, 180, 180);
+  doc.setTextColor(...TEXT_FOOTER);
   doc.text(`Majster.AI — ${t('warranty.pdf.footerGenerated')} ${formatDate(new Date(), locale)}`, 105, 290, { align: 'center' });
 
   return doc.output('blob');

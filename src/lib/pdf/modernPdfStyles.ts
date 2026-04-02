@@ -66,6 +66,24 @@ export const STATE_SUCCESS: [number, number, number] = [22, 163, 74]; // #16A34A
 /** Error state */
 export const STATE_ERROR: [number, number, number] = [220, 38, 38]; // #DC2626
 
+/** Pure white — header text on dark backgrounds, logo placeholders */
+export const WHITE: [number, number, number] = [255, 255, 255]; // #FFFFFF
+
+/** Light separator lines, dividers between sections */
+export const BORDER_LINE: [number, number, number] = [220, 220, 220]; // #DCDCDC
+
+/** Medium separator lines (section dividers) */
+export const BORDER_LINE_MEDIUM: [number, number, number] = [150, 150, 150]; // #969696
+
+/** Dark separator lines (signature lines) */
+export const BORDER_LINE_DARK: [number, number, number] = [80, 80, 80]; // #505050
+
+/** Footer / watermark text — very subtle */
+export const TEXT_FOOTER: [number, number, number] = [160, 160, 160]; // #A0A0A0
+
+/** Header metadata on dark background — faded light blue */
+export const TEXT_HEADER_META: [number, number, number] = [200, 220, 255]; // #C8DCFF
+
 // ---------------------------------------------------------------------------
 // Amber scale for PDF summary highlights
 // ---------------------------------------------------------------------------
