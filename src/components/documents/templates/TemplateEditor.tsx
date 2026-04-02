@@ -380,7 +380,7 @@ export function TemplateEditor({
 
     const result = await createInstance.mutateAsync({
       template,
-      locale: 'pl',
+      locale: i18n.language as 'pl' | 'en' | 'uk',
       projectId,
       clientId,
       offerId,
@@ -404,7 +404,7 @@ export function TemplateEditor({
           template,
           data,
           autofillContext: autofillQuery.data ?? {},
-          locale: 'pl',
+          locale: i18n.language as 'pl' | 'en' | 'uk',
           t,
         });
         pdfBlob = await renderDocumentPdfV2(v2Payload);
@@ -418,7 +418,7 @@ export function TemplateEditor({
           template,
           data,
           autofillContext: autofillQuery.data ?? {},
-          locale: 'pl',
+          locale: i18n.language as 'pl' | 'en' | 'uk',
           t,
         });
       }
@@ -459,7 +459,7 @@ export function TemplateEditor({
           template,
           data,
           autofillContext: autofillQuery.data ?? {},
-          locale: 'pl',
+          locale: i18n.language as 'pl' | 'en' | 'uk',
           t,
         });
         pdfBlob = await renderDocumentPdfV2(v2Payload);
@@ -473,7 +473,7 @@ export function TemplateEditor({
           template,
           data,
           autofillContext: autofillQuery.data ?? {},
-          locale: 'pl',
+          locale: i18n.language as 'pl' | 'en' | 'uk',
           t,
         });
       }

@@ -95,7 +95,7 @@ export default function PdfGenerator() {
       setVatRate(existingPdfData.vat_rate ?? null);
       setIsInitialized(true);
     } else if (!pdfDataLoading && !existingPdfData && project && !isInitialized) {
-      setTitle(`Oferta - ${project.project_name}`);
+      setTitle(t('offerPdf.defaultTitle', { projectName: project.project_name }));
       setIsInitialized(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- offerText/deadlineText/terms are used as fallbacks on initial load only; adding them would reset user edits
