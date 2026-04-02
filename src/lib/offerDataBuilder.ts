@@ -212,6 +212,8 @@ export function buildOfferData(params: {
   documentId?: string;
   /** Override the validity date (default: issuedAt + 30 days) */
   validUntil?: Date;
+  /** Locale for formatting (e.g. 'pl-PL', 'en-GB', 'uk-UA'). Default: 'pl-PL'. */
+  locale?: string;
 }): OfferPdfPayload {
   // Company info
   const company: CompanyInfo = {
@@ -303,6 +305,7 @@ export function buildOfferData(params: {
     documentId: params.documentId ?? generateDocumentId(params.projectId, issuedAt),
     issuedAt,
     validUntil,
+    locale: params.locale ?? 'pl-PL',
   };
 }
 

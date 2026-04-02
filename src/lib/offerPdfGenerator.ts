@@ -135,7 +135,7 @@ const TEMPLATE_THEMES: Record<PdfTemplateId, TemplateTheme> = {
  * Exported for direct unit testing — generateOfferPdf uses these same strings.
  */
 export function getPdfComplianceLines(payload: OfferPdfPayload) {
-  const locale = 'pl-PL';
+  const locale = payload.locale ?? 'pl-PL';
   return {
     documentIdLine: `Nr: ${payload.documentId}`,
     issuedAtLine: `Data wystawienia: ${payload.issuedAt.toLocaleDateString(locale)}`,
@@ -720,7 +720,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
 
   const totalPages = doc.getNumberOfPages();
   const footerY = doc.internal.pageSize.getHeight() - 10;
-  const locale = 'pl-PL';
+  const locale = payload.locale ?? 'pl-PL';
   const validUntilStr = payload.validUntil.toLocaleDateString(locale);
   const generatedStr = payload.generatedAt.toLocaleString(locale);
 
