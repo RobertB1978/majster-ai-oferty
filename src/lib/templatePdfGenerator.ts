@@ -13,20 +13,17 @@
  *  - Upload to dossier bucket
  *
  * ── Klasyfikacja PDF Platform v2 ─────────────────────────────────────────────
- * STATUS: STANDALONE / OCZEKUJE MIGRACJI
+ * STATUS: STANDALONE / OCZEKUJE MIGRACJI (kolory zmigrowane na tokeny)
  *
- * Ten generator używa jsPDF z hardkodowanymi kolorami (niezgodnymi z tokenami
- * z modernPdfStyles.ts). Jest wywoływany bezpośrednio przez TemplateEditor.tsx.
+ * Ten generator używa jsPDF z tokenami z modernPdfStyles.ts.
+ * Jest wywoływany bezpośrednio przez TemplateEditor.tsx.
  *
  * Deferred migracja do v2:
  *   - Krok 1: implementacja 'protocol'/'inspection' w generate-pdf-v2 (Edge Fn)
  *   - Krok 2: adapter UnifiedDocumentPayload → TemplatePdfInput
  *   - Krok 3: migracja TemplateEditor.tsx → renderDocumentPdfV2
- *   - Krok 4: zastąpienie hardkodowanych kolorów tokenami z modernPdfStyles.ts
  *
- * Tokeny docelowe (modernPdfStyles.ts):
- *   blue `[37, 99, 235]`   → ACCENT_BLUE = [30, 64, 175]  (do ujednolicenia)
- *   gray `[100, 100, 100]` → TEXT_SECONDARY = [107, 114, 128]
+ * Tokeny: importowane z modernPdfStyles.ts (ACCENT_BLUE, TEXT_SECONDARY, TEXT_PRIMARY).
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -36,6 +33,7 @@ import { formatDate } from '@/lib/formatters';
 import type { DocumentTemplate } from '@/data/documentTemplates';
 import type { AutofillContext } from '@/hooks/useDocumentInstances';
 import { registerNotoSans } from '@/lib/pdf/registerNotoSansJsPDF';
+import { ACCENT_BLUE, TEXT_SECONDARY, TEXT_PRIMARY } from '@/lib/pdf/modernPdfStyles';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -120,9 +118,9 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   const margin = 18;
   let y = margin;
 
-  const blue: [number, number, number] = [37, 99, 235];
-  const gray: [number, number, number] = [100, 100, 100];
-  const darkGray: [number, number, number] = [50, 50, 50];
+  const blue = ACCENT_BLUE;
+  const gray = TEXT_SECONDARY;
+  const darkGray = TEXT_PRIMARY;
 
   // ── Company header ──────────────────────────────────────────────────────────
   const companyName = autofillContext.company?.name ?? t('docTemplates.pdf.unknownCompany');

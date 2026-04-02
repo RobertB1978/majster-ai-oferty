@@ -95,7 +95,7 @@ function generateTemplateDocId(templateKey: string): string {
 function toLocale(short: 'pl' | 'en' | 'uk'): string {
   switch (short) {
     case 'pl': return 'pl-PL';
-    case 'en': return 'en-US';
+    case 'en': return 'en-GB';
     case 'uk': return 'uk-UA';
   }
 }

@@ -5,20 +5,15 @@
  * Returns a Blob for download and optionally uploads to the dossier bucket.
  *
  * ── Klasyfikacja PDF Platform v2 ─────────────────────────────────────────────
- * STATUS: STANDALONE / OCZEKUJE MIGRACJI
+ * STATUS: STANDALONE / OCZEKUJE MIGRACJI (kolory zmigrowane na tokeny)
  *
- * Ten generator używa jsPDF z hardkodowanymi kolorami (niezgodnymi z tokenami
- * z modernPdfStyles.ts). Jest wywoływany bezpośrednio przez WarrantySection.tsx.
+ * Ten generator używa jsPDF z tokenami z modernPdfStyles.ts.
+ * Jest wywoływany bezpośrednio przez WarrantySection.tsx.
  *
  * Deferred migracja do v2:
  *   - Krok 1: implementacja 'warranty' w generate-pdf-v2 (Edge Fn) — prio 1
  *   - Krok 2: adapter UnifiedDocumentPayload → WarrantyPdfContext (wymaga t fn)
  *   - Krok 3: migracja WarrantySection.tsx → renderDocumentPdfV2
- *   - Krok 4: zastąpienie hardkodowanych kolorów tokenami z modernPdfStyles.ts
- *
- * Tokeny docelowe (modernPdfStyles.ts):
- *   blue `[30, 90, 200]`  → ACCENT_BLUE = [30, 64, 175]  (do ujednolicenia)
- *   gray `[100, 100, 100]`→ TEXT_SECONDARY = [107, 114, 128]
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -28,6 +23,7 @@ import { logger } from '@/lib/logger';
 import { formatDate } from '@/lib/formatters';
 import type { ProjectWarranty } from '@/hooks/useWarranty';
 import { registerNotoSans } from '@/lib/pdf/registerNotoSansJsPDF';
+import { ACCENT_BLUE, TEXT_SECONDARY, TEXT_PRIMARY } from '@/lib/pdf/modernPdfStyles';
 
 export interface WarrantyPdfContext {
   warranty: ProjectWarranty;
@@ -54,7 +50,7 @@ function drawLine(doc: jsPDF, y: number): void {
 function sectionTitle(doc: jsPDF, font: string, text: string, y: number): number {
   doc.setFontSize(10);
   doc.setFont(font, 'bold');
-  doc.setTextColor(40, 40, 40);
+  doc.setTextColor(...TEXT_PRIMARY);
   doc.text(text.toUpperCase(), 15, y);
   drawLine(doc, y + 2);
   return y + 8;
@@ -63,11 +59,11 @@ function sectionTitle(doc: jsPDF, font: string, text: string, y: number): number
 function field(doc: jsPDF, font: string, label: string, value: string, y: number): number {
   doc.setFontSize(9);
   doc.setFont(font, 'bold');
-  doc.setTextColor(100, 100, 100);
+  doc.setTextColor(...TEXT_SECONDARY);
   doc.text(label, 15, y);
 
   doc.setFont(font, 'normal');
-  doc.setTextColor(30, 30, 30);
+  doc.setTextColor(...TEXT_PRIMARY);
   const lines = doc.splitTextToSize(value || '—', 120);
   doc.text(lines, 75, y);
   return y + lines.length * 5 + 2;
@@ -82,7 +78,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   const bodyFont = registerNotoSans(doc);
 
   // ── Header ───────────────────────────────────────────────────────────────────
-  doc.setFillColor(30, 90, 200);
+  doc.setFillColor(...ACCENT_BLUE);
   doc.rect(0, 0, 210, 30, 'F');
 
   doc.setFontSize(18);
@@ -130,7 +126,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
     y = sectionTitle(doc, bodyFont, t('warranty.pdf.sectionScope'), y);
     doc.setFontSize(9);
     doc.setFont(bodyFont, 'normal');
-    doc.setTextColor(30, 30, 30);
+    doc.setTextColor(...TEXT_PRIMARY);
     const scopeLines = doc.splitTextToSize(warranty.scope_of_work, 175);
     doc.text(scopeLines, 15, y);
     y += scopeLines.length * 5 + 6;
@@ -141,7 +137,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
     y = sectionTitle(doc, bodyFont, t('warranty.pdf.sectionExclusions'), y);
     doc.setFontSize(9);
     doc.setFont(bodyFont, 'normal');
-    doc.setTextColor(30, 30, 30);
+    doc.setTextColor(...TEXT_PRIMARY);
     const excLines = doc.splitTextToSize(warranty.exclusions, 175);
     doc.text(excLines, 15, y);
     y += excLines.length * 5 + 6;
@@ -151,7 +147,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   y = sectionTitle(doc, bodyFont, t('warranty.pdf.sectionLegal'), y);
   doc.setFontSize(8);
   doc.setFont(bodyFont, 'normal');
-  doc.setTextColor(100, 100, 100);
+  doc.setTextColor(...TEXT_SECONDARY);
   const legalText = t('warranty.pdf.legalText');
   const legalLines = doc.splitTextToSize(legalText, 175);
   doc.text(legalLines, 15, y);
@@ -166,7 +162,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   y += 8;
   doc.setFontSize(9);
   doc.setFont(bodyFont, 'normal');
-  doc.setTextColor(60, 60, 60);
+  doc.setTextColor(...TEXT_SECONDARY);
   doc.text(t('warranty.pdf.sigWarrantor'), 30, y + 20, { align: 'center' });
   doc.text('...................................', 30, y + 22, { align: 'center' });
   doc.text(t('warranty.pdf.sigBeneficiary'), 175, y + 20, { align: 'center' });

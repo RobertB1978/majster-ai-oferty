@@ -2,17 +2,132 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { htmlEscape } from '../_shared/sanitization.ts';
 import { getCorsHeaders, getCorsPreflightHeaders } from '../_shared/cors.ts';
 
-// interface ExpiringOffer {
-//   id: string;
-//   project_id: string;
-//   client_email: string;
-//   client_name: string;
-//   expires_at: string;
-//   public_token: string;
-//   project_name: string;
-//   company_name: string;
-//   owner_email: string;
-// }
+// ── Locale strings for offer expiry reminders ────────────────────────────────
+// Mirrors the pattern from send-offer-email/emailHandler.ts.
+// Default: 'pl' — until profiles table gains a preferred_locale column,
+// all automated reminders default to Polish (93%+ users are Polish).
+
+type SupportedLocale = 'pl' | 'en' | 'uk';
+
+interface OfferReminderStrings {
+  htmlLang: string;
+  title: string;
+  greeting: (name: string) => string;
+  body: (projectName: string, companyName: string) => string;
+  expiresIn: string;
+  expiresLabel: string;
+  cta: string;
+  contactNote: string;
+  footer: string;
+  subject: (projectName: string) => string;
+  logMessage: string;
+}
+
+interface WarrantyReminderStrings {
+  htmlLang: string;
+  title: string;
+  greeting: (name: string) => string;
+  body: (companyName: string, days: number, dateStr: string) => string;
+  contactNote: string;
+  footer: string;
+  subject: (days: number, companyName: string) => string;
+}
+
+const OFFER_REMINDER_STRINGS: Record<SupportedLocale, OfferReminderStrings> = {
+  pl: {
+    htmlLang: 'pl',
+    title: '⏰ Przypomnienie o ofercie',
+    greeting: (name) => `Szanowny/a <strong>${name}</strong>,`,
+    body: (project, company) =>
+      `Przypominamy, że oferta na projekt <strong>"${project}"</strong> od firmy <strong>${company}</strong> wygasa za <strong style="color: #ea580c;">3 dni</strong>.`,
+    expiresIn: '3 dni',
+    expiresLabel: '📅 Data wygaśnięcia:',
+    cta: 'Zobacz ofertę',
+    contactNote: 'Aby przejrzeć szczegóły oferty i podjąć decyzję, kliknij poniższy przycisk:',
+    footer: 'Ta wiadomość została wysłana automatycznie przez system Majster.AI',
+    subject: (project) => `Przypomnienie: Oferta na "${project}" wygasa za 3 dni`,
+    logMessage: 'Automatyczne przypomnienie o wygasającej ofercie (3 dni)',
+  },
+  en: {
+    htmlLang: 'en',
+    title: '⏰ Quote Reminder',
+    greeting: (name) => `Dear <strong>${name}</strong>,`,
+    body: (project, company) =>
+      `This is a reminder that the quote for project <strong>"${project}"</strong> from <strong>${company}</strong> expires in <strong style="color: #ea580c;">3 days</strong>.`,
+    expiresIn: '3 days',
+    expiresLabel: '📅 Expiry date:',
+    cta: 'View quote',
+    contactNote: 'To review the details and make a decision, click the button below:',
+    footer: 'This message was sent automatically by Majster.AI',
+    subject: (project) => `Reminder: Quote for "${project}" expires in 3 days`,
+    logMessage: 'Automatic expiring offer reminder (3 days)',
+  },
+  uk: {
+    htmlLang: 'uk',
+    title: '⏰ Нагадування про пропозицію',
+    greeting: (name) => `Шановний/а <strong>${name}</strong>,`,
+    body: (project, company) =>
+      `Нагадуємо, що пропозиція на проєкт <strong>"${project}"</strong> від компанії <strong>${company}</strong> закінчується через <strong style="color: #ea580c;">3 дні</strong>.`,
+    expiresIn: '3 дні',
+    expiresLabel: '📅 Дата закінчення:',
+    cta: 'Переглянути пропозицію',
+    contactNote: 'Щоб переглянути деталі та прийняти рішення, натисніть кнопку нижче:',
+    footer: 'Це повідомлення надіслано автоматично системою Majster.AI',
+    subject: (project) => `Нагадування: Пропозиція на "${project}" закінчується через 3 дні`,
+    logMessage: 'Automatic expiring offer reminder (3 days)',
+  },
+};
+
+const WARRANTY_REMINDER_STRINGS: Record<SupportedLocale, WarrantyReminderStrings> = {
+  pl: {
+    htmlLang: 'pl',
+    title: '🛡️ Przypomnienie o gwarancji',
+    greeting: (name) => `Szanowny/a <strong>${name}</strong>,`,
+    body: (company, days, dateStr) =>
+      `Gwarancja udzielona przez firmę <strong>${company}</strong> wygasa za <strong style="color:#1e5ac8;">${days} dni</strong> — dnia <strong>${dateStr}</strong>.`,
+    contactNote: 'Jeśli zauważyłeś/aś usterki lub problemy, skontaktuj się z wykonawcą przed upływem gwarancji.',
+    footer: 'Ta wiadomość została wysłana automatycznie przez system Majster.AI',
+    subject: (days, company) => `Gwarancja wygasa za ${days} dni — ${company}`,
+  },
+  en: {
+    htmlLang: 'en',
+    title: '🛡️ Warranty Reminder',
+    greeting: (name) => `Dear <strong>${name}</strong>,`,
+    body: (company, days, dateStr) =>
+      `The warranty provided by <strong>${company}</strong> expires in <strong style="color:#1e5ac8;">${days} days</strong> — on <strong>${dateStr}</strong>.`,
+    contactNote: 'If you have noticed any defects or issues, please contact the contractor before the warranty expires.',
+    footer: 'This message was sent automatically by Majster.AI',
+    subject: (days, company) => `Warranty expires in ${days} days — ${company}`,
+  },
+  uk: {
+    htmlLang: 'uk',
+    title: '🛡️ Нагадування про гарантію',
+    greeting: (name) => `Шановний/а <strong>${name}</strong>,`,
+    body: (company, days, dateStr) =>
+      `Гарантія від компанії <strong>${company}</strong> закінчується через <strong style="color:#1e5ac8;">${days} днів</strong> — <strong>${dateStr}</strong>.`,
+    contactNote: 'Якщо ви помітили дефекти або проблеми, зверніться до виконавця до закінчення гарантії.',
+    footer: 'Це повідомлення надіслано автоматично системою Majster.AI',
+    subject: (days, company) => `Гарантія закінчується через ${days} днів — ${company}`,
+  },
+};
+
+function getOfferReminderStrings(locale?: string): OfferReminderStrings {
+  const supported: SupportedLocale[] = ['pl', 'en', 'uk'];
+  const lang = locale as SupportedLocale;
+  return OFFER_REMINDER_STRINGS[supported.includes(lang) ? lang : 'pl'];
+}
+
+function getWarrantyReminderStrings(locale?: string): WarrantyReminderStrings {
+  const supported: SupportedLocale[] = ['pl', 'en', 'uk'];
+  const lang = locale as SupportedLocale;
+  return WARRANTY_REMINDER_STRINGS[supported.includes(lang) ? lang : 'pl'];
+}
+
+/** Resolve BCP-47 locale tag for Intl date formatting. */
+function resolveIntlLocale(locale?: string): string {
+  const map: Record<string, string> = { pl: 'pl-PL', en: 'en-GB', uk: 'uk-UA' };
+  return map[locale ?? 'pl'] ?? 'pl-PL';
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -166,8 +281,14 @@ Deno.serve(async (req) => {
           continue;
         }
 
+        // Locale: defaults to 'pl' — no per-client locale stored yet.
+        // When profiles gains a preferred_locale column, pass it here.
+        const locale: SupportedLocale = 'pl';
+        const s = getOfferReminderStrings(locale);
+        const intlLocale = resolveIntlLocale(locale);
+
         const approvalUrl = `${frontendUrl}/offer/${offer.public_token}`;
-        const expiresDate = new Date(offer.expires_at).toLocaleDateString('pl-PL', {
+        const expiresDate = new Date(offer.expires_at).toLocaleDateString(intlLocale, {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
@@ -176,11 +297,11 @@ Deno.serve(async (req) => {
 
         const emailHtml = `
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="${s.htmlLang}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Przypomnienie o ofercie</title>
+  <title>${s.title}</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
   <table role="presentation" style="width: 100%; border-collapse: collapse;">
@@ -190,51 +311,51 @@ Deno.serve(async (req) => {
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); padding: 30px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">⏰ Przypomnienie o ofercie</h1>
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">${s.title}</h1>
             </td>
           </tr>
-          
+
           <!-- Content -->
           <tr>
             <td style="padding: 40px 30px;">
               <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
-                Szanowny/a <strong>${clientName}</strong>,
+                ${s.greeting(clientName)}
               </p>
-              
+
               <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
-                Przypominamy, że oferta na projekt <strong>"${projectName}"</strong> od firmy <strong>${companyName}</strong> wygasa za <strong style="color: #ea580c;">3 dni</strong>.
+                ${s.body(projectName, companyName)}
               </p>
 
               <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px 20px; margin: 25px 0; border-radius: 0 8px 8px 0;">
                 <p style="color: #92400e; font-size: 14px; margin: 0;">
-                  <strong>📅 Data wygaśnięcia:</strong> ${expiresDate}
+                  <strong>${s.expiresLabel}</strong> ${expiresDate}
                 </p>
               </div>
 
               <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
-                Aby przejrzeć szczegóły oferty i podjąć decyzję, kliknij poniższy przycisk:
+                ${s.contactNote}
               </p>
-              
+
               <table role="presentation" style="width: 100%; border-collapse: collapse;">
                 <tr>
                   <td align="center">
                     <a href="${approvalUrl}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 15px 40px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);">
-                      Zobacz ofertę
+                      ${s.cta}
                     </a>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
-          
+
           <!-- Footer -->
           <tr>
             <td style="background-color: #f9fafb; padding: 25px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
               <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px 0;">
-                Ta wiadomość została wysłana automatycznie przez system Majster.AI
+                ${s.footer}
               </p>
               <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                © ${new Date().getFullYear()} ${companyName}. Wszelkie prawa zastrzeżone.
+                © ${new Date().getFullYear()} ${companyName}
               </p>
             </td>
           </tr>
@@ -255,7 +376,7 @@ Deno.serve(async (req) => {
           body: JSON.stringify({
             from: `Majster.AI <${senderEmail}>`,
             to: [clientEmail],
-            subject: `Przypomnienie: Oferta na "${projectName}" wygasa za 3 dni`,
+            subject: s.subject(projectName),
             html: emailHtml,
           }),
         });
@@ -270,8 +391,8 @@ Deno.serve(async (req) => {
           project_id: offer.project_id,
           user_id: offer.user_id,
           client_email: clientEmail,
-          subject: `Przypomnienie: Oferta na "${projectName}" wygasa za 3 dni`,
-          message: 'Automatyczne przypomnienie o wygasającej ofercie (3 dni)',
+          subject: s.subject(projectName),
+          message: s.logMessage,
           status: 'sent',
         });
 
@@ -325,7 +446,13 @@ Deno.serve(async (req) => {
         try {
           const clientEmail = w.client_email as string;
           const clientName  = htmlEscape((w.client_name as string | null) ?? 'Kliencie');
-          const endDateStr  = new Date(w.end_date as string).toLocaleDateString('pl-PL', {
+
+          // Locale: defaults to 'pl' — no per-client locale stored yet.
+          const wLocale: SupportedLocale = 'pl';
+          const ws = getWarrantyReminderStrings(wLocale);
+          const wIntlLocale = resolveIntlLocale(wLocale);
+
+          const endDateStr  = new Date(w.end_date as string).toLocaleDateString(wIntlLocale, {
             year: 'numeric', month: 'long', day: 'numeric',
           });
 
@@ -336,35 +463,32 @@ Deno.serve(async (req) => {
             .maybeSingle();
           const companyName = htmlEscape((profile?.company_name as string | null) ?? 'Wykonawca');
 
-          const subject = daysAhead === 30
-            ? `Gwarancja wygasa za 30 dni — ${companyName}`
-            : `Gwarancja wygasa za 7 dni — ${companyName}`;
+          const subject = ws.subject(daysAhead, companyName);
 
           const emailHtml = `<!DOCTYPE html>
-<html lang="pl">
+<html lang="${ws.htmlLang}">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;font-family:'Segoe UI',Tahoma,sans-serif;background:#f5f5f5;">
   <table role="presentation" style="width:100%;border-collapse:collapse;">
     <tr><td align="center" style="padding:40px 0;">
       <table role="presentation" style="width:600px;max-width:100%;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,.1);">
         <tr><td style="background:linear-gradient(135deg,#1e5ac8,#1348a8);padding:30px;text-align:center;">
-          <h1 style="color:#fff;margin:0;font-size:22px;">🛡️ Przypomnienie o gwarancji</h1>
+          <h1 style="color:#fff;margin:0;font-size:22px;">${ws.title}</h1>
         </td></tr>
         <tr><td style="padding:36px 30px;">
           <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 16px;">
-            Szanowny/a <strong>${clientName}</strong>,
+            ${ws.greeting(clientName)}
           </p>
           <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 20px;">
-            Gwarancja udzielona przez firmę <strong>${companyName}</strong> wygasa za
-            <strong style="color:#1e5ac8;">${daysAhead} dni</strong> — dnia <strong>${endDateStr}</strong>.
+            ${ws.body(companyName, daysAhead, endDateStr)}
           </p>
           <div style="background:#eff6ff;border-left:4px solid #1e5ac8;padding:14px 18px;margin:20px 0;border-radius:0 8px 8px 0;">
             <p style="color:#1e40af;font-size:14px;margin:0;">
-              Jeśli zauważyłeś/aś usterki lub problemy, skontaktuj się z wykonawcą przed upływem gwarancji.
+              ${ws.contactNote}
             </p>
           </div>
           <p style="color:#6b7280;font-size:13px;margin:24px 0 0;">
-            Ta wiadomość została wysłana automatycznie przez system Majster.AI
+            ${ws.footer}
           </p>
         </td></tr>
         <tr><td style="background:#f9fafb;padding:20px 30px;text-align:center;border-top:1px solid #e5e7eb;">
