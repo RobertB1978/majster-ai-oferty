@@ -197,6 +197,72 @@ describe('i18n Locale Completeness', () => {
         });
       }
     });
+
+    it('fix-multilingual-ui: offer approval email subject must be translated in all locales', () => {
+      // Regression guard: OfferApprovalForm.tsx mailto subject must NOT be hardcoded Polish
+      i18n.changeLanguage('pl');
+      expect(i18n.t('offerApproval.form.emailSubject')).toBe('Pytanie dot. oferty');
+
+      i18n.changeLanguage('en');
+      const enVal = i18n.t('offerApproval.form.emailSubject');
+      expect(enVal).toBeTruthy();
+      expect(enVal).not.toBe('offerApproval.form.emailSubject');
+      expect(enVal).not.toBe('Pytanie dot. oferty');
+
+      i18n.changeLanguage('uk');
+      const ukVal = i18n.t('offerApproval.form.emailSubject');
+      expect(ukVal).toBeTruthy();
+      expect(ukVal).not.toBe('offerApproval.form.emailSubject');
+      expect(ukVal).not.toBe('Pytanie dot. oferty');
+    });
+
+    it('fix-multilingual-ui: offerPublicPage.companyLabel must be translated in all locales', () => {
+      // Regression guard: OfferPublicPage "Contractor" label must not fall back to Polish
+      i18n.changeLanguage('pl');
+      expect(i18n.t('offerPublicPage.companyLabel')).toBe('Wykonawca');
+
+      i18n.changeLanguage('en');
+      const enVal = i18n.t('offerPublicPage.companyLabel');
+      expect(enVal).not.toBe('offerPublicPage.companyLabel');
+      expect(enVal).not.toBe('Wykonawca');
+      expect(enVal).toBeTruthy();
+
+      i18n.changeLanguage('uk');
+      const ukVal = i18n.t('offerPublicPage.companyLabel');
+      expect(ukVal).not.toBe('offerPublicPage.companyLabel');
+      expect(ukVal).not.toBe('Wykonawca');
+      expect(ukVal).toBeTruthy();
+    });
+
+    it('fix-multilingual-ui: projectsV2.hub.qrCopy must be translated in all locales (ProjectHub aria-label)', () => {
+      // Regression guard: ProjectHub QR copy button aria-label must not use broken key
+      i18n.changeLanguage('en');
+      const enVal = i18n.t('projectsV2.hub.qrCopy');
+      expect(enVal).not.toBe('projectsV2.hub.qrCopy');
+      expect(enVal).not.toBe('Kopiuj link');
+      expect(enVal).toBeTruthy();
+
+      i18n.changeLanguage('uk');
+      const ukVal = i18n.t('projectsV2.hub.qrCopy');
+      expect(ukVal).not.toBe('projectsV2.hub.qrCopy');
+      expect(ukVal).not.toBe('Kopiuj link');
+      expect(ukVal).toBeTruthy();
+    });
+
+    it('fix-multilingual-ui: dossier error keys must be translated in all locales', () => {
+      // Regression guard: DossierPanel error state must not show Polish to EN/UK users
+      for (const key of ['dossier.loadErrorSoft', 'dossier.retry']) {
+        i18n.changeLanguage('en');
+        const enVal = i18n.t(key);
+        expect(enVal, `EN: ${key}`).not.toBe(key);
+        expect(enVal, `EN: ${key} not Polish`).not.toMatch(/Nie udało się|Ponów/);
+
+        i18n.changeLanguage('uk');
+        const ukVal = i18n.t(key);
+        expect(ukVal, `UK: ${key}`).not.toBe(key);
+        expect(ukVal, `UK: ${key} not Polish`).not.toMatch(/Nie udało się|Ponów/);
+      }
+    });
   });
 
   describe('Language switching consistency', () => {
