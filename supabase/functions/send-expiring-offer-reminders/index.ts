@@ -14,7 +14,6 @@ interface OfferReminderStrings {
   title: string;
   greeting: (name: string) => string;
   body: (projectName: string, companyName: string) => string;
-  expiresIn: string;
   expiresLabel: string;
   cta: string;
   contactNote: string;
@@ -47,7 +46,7 @@ const OFFER_REMINDER_STRINGS: Record<SupportedLocale, OfferReminderStrings> = {
     greeting: (name) => `Szanowny/a <strong>${name}</strong>,`,
     body: (project, company) =>
       `Przypominamy, że oferta na projekt <strong>"${project}"</strong> od firmy <strong>${company}</strong> wygasa za <strong style="color: #ea580c;">3 dni</strong>.`,
-    expiresIn: '3 dni',
+
     expiresLabel: '📅 Data wygaśnięcia:',
     cta: 'Zobacz ofertę',
     contactNote: 'Aby przejrzeć szczegóły oferty i podjąć decyzję, kliknij poniższy przycisk:',
@@ -64,7 +63,7 @@ const OFFER_REMINDER_STRINGS: Record<SupportedLocale, OfferReminderStrings> = {
     greeting: (name) => `Dear <strong>${name}</strong>,`,
     body: (project, company) =>
       `This is a reminder that the quote for project <strong>"${project}"</strong> from <strong>${company}</strong> expires in <strong style="color: #ea580c;">3 days</strong>.`,
-    expiresIn: '3 days',
+
     expiresLabel: '📅 Expiry date:',
     cta: 'View quote',
     contactNote: 'To review the details and make a decision, click the button below:',
@@ -81,7 +80,7 @@ const OFFER_REMINDER_STRINGS: Record<SupportedLocale, OfferReminderStrings> = {
     greeting: (name) => `Шановний/а <strong>${name}</strong>,`,
     body: (project, company) =>
       `Нагадуємо, що пропозиція на проєкт <strong>"${project}"</strong> від компанії <strong>${company}</strong> закінчується через <strong style="color: #ea580c;">3 дні</strong>.`,
-    expiresIn: '3 дні',
+
     expiresLabel: '📅 Дата закінчення:',
     cta: 'Переглянути пропозицію',
     contactNote: 'Щоб переглянути деталі та прийняти рішення, натисніть кнопку нижче:',
@@ -287,26 +286,15 @@ Deno.serve(async (req) => {
 
     console.log(`Found ${expiringOffers?.length || 0} offers expiring in 3 days`);
 
-    if (!expiringOffers || expiringOffers.length === 0) {
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: 'No offers expiring in 3 days',
-          sent: 0 
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     const sentEmails: string[] = [];
     const errors: string[] = [];
 
-    for (const offer of expiringOffers) {
+    for (const offer of (expiringOffers ?? [])) {
       try {
         // Get company profile for the offer owner
         const { data: profile } = await supabase
           .from('profiles')
-          .select('company_name, email_for_offers')
+          .select('company_name')
           .eq('user_id', offer.user_id)
           .single();
 
@@ -337,7 +325,7 @@ Deno.serve(async (req) => {
           .select('id')
           .eq('project_id', offer.project_id)
           .eq('client_email', clientEmail)
-          .gte('sent_at', `${today}T00:00:00`)
+          .gte('sent_at', `${today}T00:00:00Z`)
           .like('message', '%[AUTO-REMINDER]%');
 
         if (existingReminder && existingReminder.length > 0) {
