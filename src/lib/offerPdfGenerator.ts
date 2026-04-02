@@ -58,6 +58,9 @@ import {
   BORDER_DEFAULT,
   FONT_SIZES,
   PDF_MARGIN,
+  WHITE,
+  TEXT_HEADER_SUBTITLE,
+  TABLE_GRID_LINE,
   drawLogoPlaceholder,
 } from './pdf/modernPdfStyles';
 
@@ -219,47 +222,47 @@ export async function generateOfferPdf(
   if (theme.companyBg) {
     // Modern template: full-width colored header band with logo placeholder
     const bandHeight = 50;
-    doc.setFillColor(theme.companyBg[0], theme.companyBg[1], theme.companyBg[2]);
+    doc.setFillColor(...theme.companyBg);
     doc.rect(0, 0, pageWidth, bandHeight, 'F');
 
     // Lighter stripe at the very top (3mm) for depth effect
     if (theme.companyBgLight) {
-      doc.setFillColor(theme.companyBgLight[0], theme.companyBgLight[1], theme.companyBgLight[2]);
+      doc.setFillColor(...theme.companyBgLight);
       doc.rect(0, 0, pageWidth, 3, 'F');
     }
 
     // Amber accent bar at the bottom of the header band
-    doc.setFillColor(ACCENT_AMBER[0], ACCENT_AMBER[1], ACCENT_AMBER[2]);
+    doc.setFillColor(...ACCENT_AMBER);
     doc.rect(0, bandHeight - 2, pageWidth, 2, 'F');
 
     // "OFERTA" label right-aligned in header
     doc.setFontSize(FONT_SIZES.sm);
     doc.setFont(bodyFont, 'bold');
-    doc.setTextColor(ACCENT_AMBER[0], ACCENT_AMBER[1], ACCENT_AMBER[2]);
+    doc.setTextColor(...ACCENT_AMBER);
     doc.text(t ? t('offerPdf.label') : 'OFERTA', pageWidth - margin, 12, { align: 'right' });
 
     // Logo placeholder (white rounded square with initial) in the header band
     const logoY = 14;
     const logoSize = 12;
-    doc.setFillColor(255, 255, 255);
+    doc.setFillColor(...WHITE);
     doc.roundedRect(margin, logoY, logoSize, logoSize, 2, 2, 'F');
     const initial = payload.company.name.trim().charAt(0).toUpperCase() || 'M';
     doc.setFontSize(logoSize * 0.55);
     doc.setFont(bodyFont, 'bold');
-    doc.setTextColor(theme.companyBg[0], theme.companyBg[1], theme.companyBg[2]);
+    doc.setTextColor(...theme.companyBg);
     doc.text(initial, margin + logoSize / 2, logoY + logoSize * 0.68, { align: 'center' });
 
     // Company name in white — next to logo
     const nameX = margin + logoSize + 4;
     doc.setFontSize(FONT_SIZES['2xl']);
     doc.setFont(bodyFont, 'bold');
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(...WHITE);
     doc.text(payload.company.name, nameX, 22);
 
     // Company details: NIP + address on one line, contact on next
     doc.setFontSize(FONT_SIZES.sm);
     doc.setFont(bodyFont, 'normal');
-    doc.setTextColor(190, 215, 245);
+    doc.setTextColor(...TEXT_HEADER_SUBTITLE);
 
     const addrParts: string[] = [];
     if (payload.company.nip) addrParts.push(`NIP: ${payload.company.nip}`);
@@ -274,7 +277,7 @@ export async function generateOfferPdf(
     if (payload.company.email) contactParts.push(`Email: ${payload.company.email}`);
     if (contactParts.length > 0) doc.text(contactParts.join('  ·  '), nameX, 38);
 
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(...TEXT_PRIMARY);
     yPosition = bandHeight + 6;
   } else {
     // Classic / Minimal template: text-only header with logo placeholder
@@ -284,13 +287,13 @@ export async function generateOfferPdf(
 
     doc.setFontSize(FONT_SIZES.xl);
     doc.setFont(bodyFont, 'bold');
-    doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
+    doc.setTextColor(...theme.accentColor);
     doc.text(payload.company.name, nameX, yPosition + 2);
     yPosition += 8;
 
     doc.setFontSize(FONT_SIZES.base);
     doc.setFont(bodyFont, 'normal');
-    doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
+    doc.setTextColor(...TEXT_SECONDARY);
 
     if (payload.company.nip) {
       doc.text(`NIP: ${payload.company.nip}`, nameX, yPosition);
@@ -322,10 +325,10 @@ export async function generateOfferPdf(
     yPosition += 5;
 
     // Separator line with amber accent
-    doc.setDrawColor(BORDER_DEFAULT[0], BORDER_DEFAULT[1], BORDER_DEFAULT[2]);
+    doc.setDrawColor(...BORDER_DEFAULT);
     doc.line(margin, yPosition, pageWidth - margin, yPosition);
     // Amber accent segment (first 40mm)
-    doc.setDrawColor(ACCENT_AMBER[0], ACCENT_AMBER[1], ACCENT_AMBER[2]);
+    doc.setDrawColor(...ACCENT_AMBER);
     doc.setLineWidth(0.8);
     doc.line(margin, yPosition, margin + 40, yPosition);
     doc.setLineWidth(0.2);
@@ -349,9 +352,9 @@ export async function generateOfferPdf(
         color: { dark: '#111827', light: '#FFFFFF' },
       });
       // Amber-accented frame around QR code
-      doc.setFillColor(ACCENT_AMBER_SUBTLE[0], ACCENT_AMBER_SUBTLE[1], ACCENT_AMBER_SUBTLE[2]);
+      doc.setFillColor(...ACCENT_AMBER_SUBTLE);
       doc.roundedRect(qrX - 2, yPosition - 4, QR_SIZE + 4, QR_SIZE + 12, 2, 2, 'F');
-      doc.setDrawColor(ACCENT_AMBER[0], ACCENT_AMBER[1], ACCENT_AMBER[2]);
+      doc.setDrawColor(...ACCENT_AMBER);
       doc.setLineWidth(0.4);
       doc.roundedRect(qrX - 2, yPosition - 4, QR_SIZE + 4, QR_SIZE + 12, 2, 2, 'S');
       doc.setLineWidth(0.2);
@@ -359,9 +362,9 @@ export async function generateOfferPdf(
       // Label below QR
       doc.setFontSize(FONT_SIZES.xs);
       doc.setFont(bodyFont, 'bold');
-      doc.setTextColor(AMBER_700[0], AMBER_700[1], AMBER_700[2]);
+      doc.setTextColor(...AMBER_700);
       doc.text(t ? t('offerPdf.onlineLabel') : 'OFERTA ONLINE', qrX + QR_SIZE / 2, yPosition + QR_SIZE + 3, { align: 'center' });
-      doc.setTextColor(0);
+      doc.setTextColor(...TEXT_PRIMARY);
       qrPlaced = true;
     } catch {
       // QR generation failure is non-fatal — PDF continues without QR
@@ -370,7 +373,7 @@ export async function generateOfferPdf(
 
   doc.setFontSize(FONT_SIZES.lg);
   doc.setFont(bodyFont, 'bold');
-  doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
+  doc.setTextColor(...TEXT_PRIMARY);
   // Leave room for QR code when present
   const titleMaxWidth = qrPlaced ? qrX - margin - 5 : pageWidth - 2 * margin;
   doc.text(payload.pdfConfig.title, margin, yPosition, { maxWidth: titleMaxWidth });
@@ -384,15 +387,15 @@ export async function generateOfferPdf(
   const complianceRightX = qrPlaced ? qrX - 3 : pageWidth - margin;
   // Document ID in monospace
   doc.setFont(monoFont, 'bold');
-  doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
+  doc.setTextColor(...TEXT_SECONDARY);
   doc.text(complianceLines.documentIdLine, complianceRightX, yPosition, { align: 'right' });
   doc.setFont(bodyFont, 'normal');
-  doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
+  doc.setTextColor(...TEXT_SECONDARY);
   doc.text(complianceLines.issuedAtLine, margin, yPosition);
   yPosition += 5;
 
   doc.text(complianceLines.validUntilLine, margin, yPosition);
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(...TEXT_PRIMARY);
   // Advance past QR code if it was placed
   if (qrPlaced) {
     yPosition = Math.max(yPosition + 5, yPosition + QR_SIZE - 3);
@@ -408,18 +411,18 @@ export async function generateOfferPdf(
     ensureSpace(30); // client block needs ~30mm
     doc.setFontSize(FONT_SIZES.md);
     doc.setFont(bodyFont, 'bold');
-    doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
+    doc.setTextColor(...TEXT_PRIMARY);
     doc.text(t ? t('offerPdf.clientSection') : 'Dane klienta:', margin, yPosition);
     yPosition += 6;
 
     doc.setFontSize(FONT_SIZES.base);
     doc.setFont(bodyFont, 'bold');
-    doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
+    doc.setTextColor(...TEXT_PRIMARY);
     doc.text(payload.client.name, margin, yPosition);
     yPosition += 5;
 
     doc.setFont(bodyFont, 'normal');
-    doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
+    doc.setTextColor(...TEXT_SECONDARY);
 
     if (payload.client.address) {
       doc.text(payload.client.address, margin, yPosition);
@@ -436,7 +439,7 @@ export async function generateOfferPdf(
       yPosition += 5;
     }
 
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(...TEXT_PRIMARY);
     yPosition += 5;
   }
 
@@ -448,13 +451,13 @@ export async function generateOfferPdf(
     ensureSpace(15); // at least one line + padding
     doc.setFontSize(FONT_SIZES.base);
     doc.setFont(bodyFont, 'normal');
-    doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
+    doc.setTextColor(...TEXT_PRIMARY);
     const offerTextLines = doc.splitTextToSize(
       payload.pdfConfig.offerText,
       pageWidth - 2 * margin
     );
     doc.text(offerTextLines, margin, yPosition);
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(...TEXT_PRIMARY);
     yPosition += offerTextLines.length * 5 + 5;
   }
 
@@ -481,14 +484,14 @@ export async function generateOfferPdf(
     ensureSpace(20); // heading + at least first table row
     doc.setFontSize(FONT_SIZES.lg);
     doc.setFont(bodyFont, 'bold');
-    doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
+    doc.setTextColor(...theme.accentColor);
     doc.text(sectionLabel ?? (t ? t('offerPdf.positionsHeading') : 'Pozycje wyceny:'), margin, yPosition);
     // Amber underline accent
-    doc.setDrawColor(ACCENT_AMBER[0], ACCENT_AMBER[1], ACCENT_AMBER[2]);
+    doc.setDrawColor(...ACCENT_AMBER);
     doc.setLineWidth(0.8);
     doc.line(margin, yPosition + 1.5, margin + 50, yPosition + 1.5);
     doc.setLineWidth(0.2);
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(...TEXT_PRIMARY);
     yPosition += 9;
 
     // Resolve VAT label for table header
@@ -577,9 +580,9 @@ export async function generateOfferPdf(
 
     doc.setFontSize(FONT_SIZES.md);
     doc.setFont(bodyFont, 'bold');
-    doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
+    doc.setTextColor(...theme.accentColor);
     doc.text(t ? t('offerPdf.summary') : 'Podsumowanie:', margin, yPosition + 4);
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(...TEXT_PRIMARY);
     yPosition += 6;
 
     doc.setFontSize(FONT_SIZES.base);
@@ -587,7 +590,7 @@ export async function generateOfferPdf(
 
     if (quote.isVatExempt) {
       // Amber highlight band behind the total row
-      doc.setFillColor(AMBER_100[0], AMBER_100[1], AMBER_100[2]);
+      doc.setFillColor(...AMBER_100);
       doc.rect(summaryX - 4, yPosition - 1, summaryBoxWidth, 10, 'F');
 
       doc.setFontSize(FONT_SIZES.lg);
@@ -597,40 +600,40 @@ export async function generateOfferPdf(
       doc.setFont(monoFont, 'bold');
       doc.text(formatCurrency(quote.total, locale), pageWidth - margin, yPosition + 5, { align: 'right' });
       doc.setFont(bodyFont, 'normal');
-      doc.setTextColor(0, 0, 0);
+      doc.setTextColor(...TEXT_PRIMARY);
       yPosition += 12;
       doc.setFontSize(FONT_SIZES.sm);
       doc.setFont(bodyFont, 'italic');
-      doc.setTextColor(TEXT_MUTED[0], TEXT_MUTED[1], TEXT_MUTED[2]);
+      doc.setTextColor(...TEXT_MUTED);
       doc.text(t ? t('offerPdf.vatExemptNote') : 'Sprzedawca zwolniony z podatku VAT (art. 43 ust. 1 ustawy o VAT)', summaryX + 1, yPosition);
-      doc.setTextColor(0);
+      doc.setTextColor(...TEXT_PRIMARY);
       yPosition += 10;
     } else {
-      doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
+      doc.setTextColor(...TEXT_SECONDARY);
       doc.text(t ? t('offerPdf.netValue') : 'Wartość netto:', summaryX + 1, yPosition);
       doc.setFont(monoFont, 'normal');
       doc.text(formatCurrency(quote.netTotal, locale), pageWidth - margin, yPosition, { align: 'right' });
       doc.setFont(bodyFont, 'normal');
-      doc.setTextColor(0, 0, 0);
+      doc.setTextColor(...TEXT_PRIMARY);
       yPosition += 6;
       if (quote.vatRate !== null) {
-        doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
+        doc.setTextColor(...TEXT_SECONDARY);
         doc.text(`VAT (${quote.vatRate}%):`, summaryX + 1, yPosition);
         doc.setFont(monoFont, 'normal');
         doc.text(formatCurrency(quote.vatAmount, locale), pageWidth - margin, yPosition, { align: 'right' });
         doc.setFont(bodyFont, 'normal');
-        doc.setTextColor(0, 0, 0);
+        doc.setTextColor(...TEXT_PRIMARY);
         yPosition += 6;
       }
       // Amber highlight band behind the gross total row
-      doc.setFillColor(AMBER_100[0], AMBER_100[1], AMBER_100[2]);
+      doc.setFillColor(...AMBER_100);
       doc.rect(summaryX - 4, yPosition - 1, summaryBoxWidth, 11, 'F');
       // Separator line above gross total
-      doc.setDrawColor(ACCENT_AMBER[0], ACCENT_AMBER[1], ACCENT_AMBER[2]);
+      doc.setDrawColor(...ACCENT_AMBER);
       doc.setLineWidth(0.8);
       doc.line(summaryX - 2, yPosition - 1, pageWidth - margin + 2, yPosition - 1);
       doc.setLineWidth(0.2);
-      doc.setDrawColor(180);
+      doc.setDrawColor(...TABLE_GRID_LINE);
 
       doc.setFontSize(FONT_SIZES.lg);
       doc.setFont(bodyFont, 'bold');
@@ -639,7 +642,7 @@ export async function generateOfferPdf(
       doc.setFont(monoFont, 'bold');
       doc.text(formatCurrency(quote.grossTotal, locale), pageWidth - margin, yPosition + 5, { align: 'right' });
       doc.setFont(bodyFont, 'normal');
-      doc.setTextColor(0, 0, 0);
+      doc.setTextColor(...TEXT_PRIMARY);
       yPosition += 15;
     }
   }
@@ -649,7 +652,7 @@ export async function generateOfferPdf(
     payload.variantSections.forEach((section, idx) => {
       if (idx > 0) {
         // Thin separator between variants
-        doc.setDrawColor(180);
+        doc.setDrawColor(...TABLE_GRID_LINE);
         doc.setLineDashPattern([2, 2], 0);
         doc.line(margin, yPosition - 2, pageWidth - margin, yPosition - 2);
         doc.setLineDashPattern([], 0);
@@ -675,17 +678,17 @@ export async function generateOfferPdf(
     ensureSpace(20); // section heading + at least one line
     doc.setFontSize(FONT_SIZES.md);
     doc.setFont(bodyFont, 'bold');
-    doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
+    doc.setTextColor(...theme.accentColor);
     doc.text(t ? t('offerPdf.termsSection') : 'Warunki:', margin, yPosition);
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(...TEXT_PRIMARY);
     yPosition += 6;
 
     doc.setFontSize(FONT_SIZES.sm);
     doc.setFont(bodyFont, 'normal');
-    doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
+    doc.setTextColor(...TEXT_SECONDARY);
     const termsLines = doc.splitTextToSize(payload.pdfConfig.terms, pageWidth - 2 * margin);
     doc.text(termsLines, margin, yPosition);
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(...TEXT_PRIMARY);
     yPosition += termsLines.length * 4 + 5;
   }
 
@@ -697,9 +700,9 @@ export async function generateOfferPdf(
     ensureSpace(12);
     doc.setFontSize(FONT_SIZES.base);
     doc.setFont(bodyFont, 'normal');
-    doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
+    doc.setTextColor(...TEXT_PRIMARY);
     doc.text(payload.pdfConfig.deadlineText, margin, yPosition);
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(...TEXT_PRIMARY);
     yPosition += 10;
   }
 
@@ -713,7 +716,7 @@ export async function generateOfferPdf(
   yPosition += 12;
 
   // Separator before signatures
-  doc.setDrawColor(180);
+  doc.setDrawColor(...TABLE_GRID_LINE);
   doc.line(margin, yPosition, pageWidth - margin, yPosition);
   yPosition += 18;
 
@@ -724,7 +727,7 @@ export async function generateOfferPdf(
   // Contractor name label
   doc.setFontSize(FONT_SIZES.sm);
   doc.setFont(bodyFont, 'bold');
-  doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
+  doc.setTextColor(...TEXT_PRIMARY);
   doc.text(payload.company.name, margin, yPosition);
 
   // Client name label
@@ -732,18 +735,18 @@ export async function generateOfferPdf(
   doc.text(clientName, rightSigX, yPosition);
 
   // Signature lines
-  doc.setDrawColor(BORDER_DEFAULT[0], BORDER_DEFAULT[1], BORDER_DEFAULT[2]);
+  doc.setDrawColor(...BORDER_DEFAULT);
   doc.line(margin, sigLineY, margin + sigColWidth, sigLineY);
   doc.line(rightSigX, sigLineY, rightSigX + sigColWidth, sigLineY);
 
   // Labels below lines
   doc.setFontSize(FONT_SIZES.xs);
   doc.setFont(bodyFont, 'normal');
-  doc.setTextColor(TEXT_MUTED[0], TEXT_MUTED[1], TEXT_MUTED[2]);
+  doc.setTextColor(...TEXT_MUTED);
   doc.text(t ? t('offerPdf.contractorSignature') : 'Podpis i pieczęć wykonawcy', margin, sigLineY + 5);
   doc.text(t ? t('offerPdf.clientSignature') : 'Podpis klienta', rightSigX, sigLineY + 5);
 
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(...TEXT_PRIMARY);
   yPosition = sigLineY + 10;
 
   // ========================================
@@ -758,14 +761,14 @@ export async function generateOfferPdf(
   for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
     doc.setPage(pageNum);
     doc.setFontSize(FONT_SIZES.xs);
-    doc.setTextColor(TEXT_MUTED[0], TEXT_MUTED[1], TEXT_MUTED[2]);
+    doc.setTextColor(...TEXT_MUTED);
 
     // Thin separator line above footer
-    doc.setDrawColor(BORDER_DEFAULT[0], BORDER_DEFAULT[1], BORDER_DEFAULT[2]);
+    doc.setDrawColor(...BORDER_DEFAULT);
     doc.setLineWidth(0.2);
     doc.line(margin, footerY - 7, pageWidth - margin, footerY - 7);
     // Amber accent on first 30mm
-    doc.setDrawColor(ACCENT_AMBER[0], ACCENT_AMBER[1], ACCENT_AMBER[2]);
+    doc.setDrawColor(...ACCENT_AMBER);
     doc.setLineWidth(0.5);
     doc.line(margin, footerY - 7, margin + 30, footerY - 7);
     doc.setLineWidth(0.2);
@@ -799,7 +802,7 @@ export async function generateOfferPdf(
     );
 
     doc.setFont(bodyFont, 'normal');
-    doc.setTextColor(0);
+    doc.setTextColor(...TEXT_PRIMARY);
   }
 
   // Convert to Blob

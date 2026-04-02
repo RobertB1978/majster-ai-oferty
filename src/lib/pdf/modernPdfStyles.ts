@@ -12,8 +12,8 @@
  *
  * Aktualnie importowane przez:
  *   - offerPdfGenerator.ts        ← UŻYWA TOKENÓW
- *   - templatePdfGenerator.ts     ← OCZEKUJE MIGRACJI (hardkodowane kolory)
- *   - warrantyPdfGenerator.ts     ← OCZEKUJE MIGRACJI (hardkodowane kolory)
+ *   - templatePdfGenerator.ts     ← UŻYWA TOKENÓW (zmigrowane)
+ *   - warrantyPdfGenerator.ts     ← UŻYWA TOKENÓW (zmigrowane)
  *
  * Derived from design system sections 3.1–3.4.
  *
@@ -65,6 +65,30 @@ export const STATE_SUCCESS: [number, number, number] = [22, 163, 74]; // #16A34A
 
 /** Error state */
 export const STATE_ERROR: [number, number, number] = [220, 38, 38]; // #DC2626
+
+/** Pure white — header text on dark backgrounds, logo placeholders */
+export const WHITE: [number, number, number] = [255, 255, 255]; // #FFFFFF
+
+/** Light separator lines, dividers between sections */
+export const BORDER_LINE: [number, number, number] = [220, 220, 220]; // #DCDCDC
+
+/** Medium separator lines (section dividers) */
+export const BORDER_LINE_MEDIUM: [number, number, number] = [150, 150, 150]; // #969696
+
+/** Dark separator lines (signature lines) */
+export const BORDER_LINE_DARK: [number, number, number] = [80, 80, 80]; // #505050
+
+/** Footer / watermark text — very subtle */
+export const TEXT_FOOTER: [number, number, number] = [160, 160, 160]; // #A0A0A0
+
+/** Header metadata on dark background — faded light blue */
+export const TEXT_HEADER_META: [number, number, number] = [200, 220, 255]; // #C8DCFF
+
+/** Offer header subtitle on dark background — muted sky blue */
+export const TEXT_HEADER_SUBTITLE: [number, number, number] = [190, 215, 245]; // #BED7F5
+
+/** Table grid lines — medium gray for autotable borders */
+export const TABLE_GRID_LINE: [number, number, number] = [180, 180, 180]; // #B4B4B4
 
 // ---------------------------------------------------------------------------
 // Amber scale for PDF summary highlights
@@ -148,12 +172,12 @@ export function drawLogoPlaceholder(
   const initial = companyName.trim().charAt(0).toUpperCase() || 'M';
 
   // Amber rounded square
-  doc.setFillColor(ACCENT_AMBER[0], ACCENT_AMBER[1], ACCENT_AMBER[2]);
+  doc.setFillColor(...ACCENT_AMBER);
   doc.roundedRect(x, y, size, size, 2, 2, 'F');
 
   // White initial letter centered
   doc.setFontSize(size * 0.55);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(255, 255, 255);
+  doc.setTextColor(...WHITE);
   doc.text(initial, x + size / 2, y + size * 0.68, { align: 'center' });
 }

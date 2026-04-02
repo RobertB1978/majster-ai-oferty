@@ -13,20 +13,17 @@
  *  - Upload to dossier bucket
  *
  * ── Klasyfikacja PDF Platform v2 ─────────────────────────────────────────────
- * STATUS: STANDALONE / OCZEKUJE MIGRACJI
+ * STATUS: STANDALONE / OCZEKUJE MIGRACJI (kolory zmigrowane na tokeny)
  *
- * Ten generator używa jsPDF z hardkodowanymi kolorami (niezgodnymi z tokenami
- * z modernPdfStyles.ts). Jest wywoływany bezpośrednio przez TemplateEditor.tsx.
+ * Ten generator używa jsPDF z tokenami z modernPdfStyles.ts.
+ * Jest wywoływany bezpośrednio przez TemplateEditor.tsx.
  *
  * Deferred migracja do v2:
  *   - Krok 1: implementacja 'protocol'/'inspection' w generate-pdf-v2 (Edge Fn)
  *   - Krok 2: adapter UnifiedDocumentPayload → TemplatePdfInput
  *   - Krok 3: migracja TemplateEditor.tsx → renderDocumentPdfV2
- *   - Krok 4: zastąpienie hardkodowanych kolorów tokenami z modernPdfStyles.ts
  *
- * Tokeny docelowe (modernPdfStyles.ts):
- *   blue `[37, 99, 235]`   → ACCENT_BLUE = [30, 64, 175]  (do ujednolicenia)
- *   gray `[100, 100, 100]` → TEXT_SECONDARY = [107, 114, 128]
+ * Tokeny: importowane z modernPdfStyles.ts (ACCENT_BLUE, TEXT_SECONDARY, TEXT_PRIMARY).
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -36,6 +33,10 @@ import { formatDate } from '@/lib/formatters';
 import type { DocumentTemplate } from '@/data/documentTemplates';
 import type { AutofillContext } from '@/hooks/useDocumentInstances';
 import { registerNotoSans } from '@/lib/pdf/registerNotoSansJsPDF';
+import {
+  ACCENT_BLUE, TEXT_SECONDARY, TEXT_PRIMARY, WHITE,
+  BORDER_LINE, BORDER_LINE_MEDIUM, BORDER_LINE_DARK, TEXT_FOOTER,
+} from '@/lib/pdf/modernPdfStyles';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -120,9 +121,9 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   const margin = 18;
   let y = margin;
 
-  const blue: [number, number, number] = [37, 99, 235];
-  const gray: [number, number, number] = [100, 100, 100];
-  const darkGray: [number, number, number] = [50, 50, 50];
+  const blue = ACCENT_BLUE;
+  const gray = TEXT_SECONDARY;
+  const darkGray = TEXT_PRIMARY;
 
   // ── Company header ──────────────────────────────────────────────────────────
   const companyName = autofillContext.company?.name ?? t('docTemplates.pdf.unknownCompany');
@@ -133,7 +134,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
 
   doc.setFont(bodyFont, 'bold');
   doc.setFontSize(16);
-  doc.setTextColor(255, 255, 255);
+  doc.setTextColor(...WHITE);
   doc.text(companyName, margin, 16);
 
   doc.setFont(bodyFont, 'normal');
@@ -147,7 +148,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
     doc.text(companyParts.join('  |  '), margin, 25);
   }
 
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(...TEXT_PRIMARY);
   y = 44;
 
   // ── Document title + number ─────────────────────────────────────────────────
@@ -170,10 +171,10 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
     { align: 'right' }
   );
 
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(...TEXT_PRIMARY);
   y += 12;
 
-  doc.setDrawColor(200, 200, 200);
+  doc.setDrawColor(...BORDER_LINE);
   doc.line(margin, y, pageWidth - margin, y);
   y += 6;
 
@@ -191,7 +192,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
     doc.setLineWidth(0.4);
     doc.line(margin, y, pageWidth - margin, y);
     doc.setLineWidth(0.2);
-    doc.setDrawColor(200, 200, 200);
+    doc.setDrawColor(...BORDER_LINE);
     y += 5;
 
     for (const field of section.fields) {
@@ -255,7 +256,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   }
 
   y += 6;
-  doc.setDrawColor(150, 150, 150);
+  doc.setDrawColor(...BORDER_LINE_MEDIUM);
   doc.setLineWidth(0.3);
   doc.line(margin, y, pageWidth - margin, y);
   y += 20;
@@ -263,7 +264,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   const sigWidth = (pageWidth - 2 * margin - 10) / 2;
   const rightSigX = margin + sigWidth + 10;
 
-  doc.setDrawColor(80, 80, 80);
+  doc.setDrawColor(...BORDER_LINE_DARK);
   doc.line(margin, y, margin + sigWidth, y);
   doc.line(rightSigX, y, rightSigX + sigWidth, y);
 
@@ -316,7 +317,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFontSize(7);
-    doc.setTextColor(160, 160, 160);
+    doc.setTextColor(...TEXT_FOOTER);
     doc.text(
       `Majster.AI — ${docTitle} | ${t('docTemplates.pdf.page')} ${i} / ${pageCount} | ${docNum}`,
       margin,
