@@ -177,6 +177,7 @@ interface TemplateRecoveryCardProps {
 }
 
 function TemplateRecoveryCard({ pack, onViewDetails }: TemplateRecoveryCardProps) {
+  const { t } = useTranslation();
   const materialCount = pack.items.filter(i => i.category === 'Materiał').length;
   const laborCount    = pack.items.filter(i => i.category === 'Robocizna').length;
 
@@ -195,10 +196,10 @@ function TemplateRecoveryCard({ pack, onViewDetails }: TemplateRecoveryCardProps
           variant="outline"
           className="shrink-0 h-7 text-xs gap-1.5"
           onClick={onViewDetails}
-          aria-label={`Podgląd szablonu ${pack.tradeName}`}
+          aria-label={`${t('offerDetail.template.preview')} ${pack.tradeName}`}
         >
           <Eye className="h-3 w-3" />
-          Podgląd szablonu
+          {t('offerDetail.template.preview')}
         </Button>
       </div>
 
@@ -209,7 +210,7 @@ function TemplateRecoveryCard({ pack, onViewDetails }: TemplateRecoveryCardProps
       )}
 
       <p className="text-xs text-muted-foreground font-medium">
-        {materialCount} materiałów · {laborCount} poz. robocizny
+        {t('offerDetail.template.itemSummary', { materialCount, laborCount })}
       </p>
     </div>
   );
@@ -324,10 +325,10 @@ export default function OfferDetail() {
                 size="sm"
                 className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground gap-1"
                 onClick={() => setTemplateSheetOpen(true)}
-                aria-label={`Podgląd szablonu ${templatePack.tradeName}`}
+                aria-label={`${t('offerDetail.template.preview')} ${templatePack.tradeName}`}
               >
                 <Eye className="h-3 w-3" />
-                Podgląd
+                {t('offerDetail.template.previewShort')}
               </Button>
             </>
           )}

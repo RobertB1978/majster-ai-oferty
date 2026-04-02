@@ -4791,7 +4791,10 @@
       "complexity": "Złożoność",
       "starterNotes": "Notatki startowe",
       "materials": "Materiały",
-      "labor": "Robocizna"
+      "labor": "Robocizna",
+      "preview": "Podgląd szablonu",
+      "previewShort": "Podgląd",
+      "itemSummary": "{{materialCount}} materiałów · {{laborCount}} poz. robocizny"
     }
   },
   "offline": {
@@ -5284,7 +5287,14 @@
     "selectFileAndUpload": "Wybierz plik i prześlij",
     "acceptedFormats": "Akceptowane formaty: PDF, JPG, PNG, DOC. Max 10MB",
     "noDocuments": "Brak dokumentów",
-    "noDocumentsHint": "Dodaj uprawnienia, referencje lub certyfikaty"
+    "noDocumentsHint": "Dodaj uprawnienia, referencje lub certyfikaty",
+    "docTypes": {
+      "uprawnienia": "Uprawnienia",
+      "referencje": "Referencje",
+      "certyfikat": "Certyfikat",
+      "polisa": "Polisa OC",
+      "inne": "Inne"
+    }
   },
   "dossierPublic": {
     "categoryContract": "Umowy",

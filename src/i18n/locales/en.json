@@ -4791,7 +4791,10 @@
       "complexity": "Complexity",
       "starterNotes": "Starter notes",
       "materials": "Materials",
-      "labor": "Labour"
+      "labor": "Labour",
+      "preview": "Template preview",
+      "previewShort": "Preview",
+      "itemSummary": "{{materialCount}} materials · {{laborCount}} labour items"
     }
   },
   "offline": {
@@ -5284,7 +5287,14 @@
     "selectFileAndUpload": "Choose file and upload",
     "acceptedFormats": "Accepted formats: PDF, JPG, PNG, DOC. Max 10MB",
     "noDocuments": "No documents",
-    "noDocumentsHint": "Add licences, references or certificates"
+    "noDocumentsHint": "Add licences, references or certificates",
+    "docTypes": {
+      "uprawnienia": "Licences",
+      "referencje": "References",
+      "certyfikat": "Certificate",
+      "polisa": "Insurance policy",
+      "inne": "Other"
+    }
   },
   "dossierPublic": {
     "categoryContract": "Contracts",

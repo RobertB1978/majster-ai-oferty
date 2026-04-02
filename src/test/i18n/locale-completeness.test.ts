@@ -175,6 +175,28 @@ describe('i18n Locale Completeness', () => {
         });
       }
     });
+    it('multilingual UI hardening keys (offers/documents) should exist in all locales', () => {
+      const hardeningKeys = [
+        // Company document type labels
+        'companyDocs.docTypes.uprawnienia',
+        'companyDocs.docTypes.referencje',
+        'companyDocs.docTypes.certyfikat',
+        'companyDocs.docTypes.polisa',
+        'companyDocs.docTypes.inne',
+        // Offer detail template preview
+        'offerDetail.template.preview',
+        'offerDetail.template.previewShort',
+        'offerDetail.template.itemSummary',
+      ];
+      for (const key of hardeningKeys) {
+        ['pl', 'en', 'uk'].forEach(lang => {
+          i18n.changeLanguage(lang);
+          const val = i18n.t(key);
+          expect(val, `${lang}:${key} should be translated, not a raw key`).not.toBe(key);
+          expect(val, `${lang}:${key} should not be empty`).toBeTruthy();
+        });
+      }
+    });
   });
 
   describe('Language switching consistency', () => {
@@ -190,6 +212,37 @@ describe('i18n Locale Completeness', () => {
       // Test Ukrainian
       i18n.changeLanguage('uk');
       expect(i18n.t('common.save')).toBe('Зберегти');
+    });
+
+    it('should not leak Polish document type labels in EN/UK', () => {
+      const docTypeKeys = [
+        'companyDocs.docTypes.uprawnienia',
+        'companyDocs.docTypes.referencje',
+        'companyDocs.docTypes.certyfikat',
+        'companyDocs.docTypes.polisa',
+        'companyDocs.docTypes.inne',
+      ];
+      const polishForbidden = ['Uprawnienia', 'Referencje', 'Certyfikat', 'Polisa OC', 'Inne'];
+
+      for (const lang of ['en', 'uk'] as const) {
+        i18n.changeLanguage(lang);
+        for (const key of docTypeKeys) {
+          const val = i18n.t(key);
+          for (const pl of polishForbidden) {
+            expect(val, `${lang}:${key} should not contain Polish "${pl}"`).not.toBe(pl);
+          }
+        }
+      }
+    });
+
+    it('should not leak Polish offer template labels in EN/UK', () => {
+      for (const lang of ['en', 'uk'] as const) {
+        i18n.changeLanguage(lang);
+        expect(i18n.t('offerDetail.template.preview')).not.toContain('Podgląd');
+        expect(i18n.t('offerDetail.template.previewShort')).not.toContain('Podgląd');
+        expect(i18n.t('offerDetail.template.itemSummary')).not.toContain('materiałów');
+        expect(i18n.t('offerDetail.template.itemSummary')).not.toContain('robocizny');
+      }
     });
 
     it('should translate critical user-reported keys consistently', () => {

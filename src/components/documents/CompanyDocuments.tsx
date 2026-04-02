@@ -17,7 +17,10 @@ import {
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { format } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { pl, enUS, uk } from 'date-fns/locale';
+import type { Locale } from 'date-fns/locale';
+
+const dateLocaleMap: Record<string, Locale> = { pl, en: enUS, uk };
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 
 interface CompanyDocument {
@@ -33,15 +36,15 @@ interface CompanyDocument {
 }
 
 const documentTypeConfig = {
-  uprawnienia: { label: 'Uprawnienia', icon: Award, color: 'bg-blue-500' },
-  referencje: { label: 'Referencje', icon: FileCheck, color: 'bg-green-500' },
-  certyfikat: { label: 'Certyfikat', icon: Shield, color: 'bg-purple-500' },
-  polisa: { label: 'Polisa OC', icon: Shield, color: 'bg-orange-500' },
-  inne: { label: 'Inne', icon: FileText, color: 'bg-gray-500' },
+  uprawnienia: { labelKey: 'companyDocs.docTypes.uprawnienia' as const, icon: Award, color: 'bg-blue-500' },
+  referencje: { labelKey: 'companyDocs.docTypes.referencje' as const, icon: FileCheck, color: 'bg-green-500' },
+  certyfikat: { labelKey: 'companyDocs.docTypes.certyfikat' as const, icon: Shield, color: 'bg-purple-500' },
+  polisa: { labelKey: 'companyDocs.docTypes.polisa' as const, icon: Shield, color: 'bg-orange-500' },
+  inne: { labelKey: 'companyDocs.docTypes.inne' as const, icon: FileText, color: 'bg-gray-500' },
 };
 
 export function CompanyDocuments() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -215,7 +218,7 @@ export function CompanyDocuments() {
                         <SelectItem key={key} value={key}>
                           <div className="flex items-center gap-2">
                             <config.icon className="h-4 w-4" />
-                            {config.label}
+                            {t(config.labelKey)}
                           </div>
                         </SelectItem>
                       ))}
@@ -301,7 +304,7 @@ export function CompanyDocuments() {
                     <h4 className="font-medium truncate">{doc.name}</h4>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge variant="outline" className="text-xs">
-                        {config.label}
+                        {t(config.labelKey)}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
                         {formatFileSize(doc.file_size)}
@@ -313,7 +316,7 @@ export function CompanyDocuments() {
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground mt-1">
-                      {format(new Date(doc.created_at), 'd MMM yyyy', { locale: pl })}
+                      {format(new Date(doc.created_at), 'd MMM yyyy', { locale: dateLocaleMap[i18n.language] ?? pl })}
                     </p>
                   </div>
                   <div className="flex gap-1">
