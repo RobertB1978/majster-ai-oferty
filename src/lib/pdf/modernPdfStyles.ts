@@ -84,6 +84,12 @@ export const TEXT_FOOTER: [number, number, number] = [160, 160, 160]; // #A0A0A0
 /** Header metadata on dark background — faded light blue */
 export const TEXT_HEADER_META: [number, number, number] = [200, 220, 255]; // #C8DCFF
 
+/** Offer header subtitle on dark background — muted sky blue */
+export const TEXT_HEADER_SUBTITLE: [number, number, number] = [190, 215, 245]; // #BED7F5
+
+/** Table grid lines — medium gray for autotable borders */
+export const TABLE_GRID_LINE: [number, number, number] = [180, 180, 180]; // #B4B4B4
+
 // ---------------------------------------------------------------------------
 // Amber scale for PDF summary highlights
 // ---------------------------------------------------------------------------

@@ -274,7 +274,7 @@ Deno.serve(async (req) => {
         expires_at,
         public_token,
         user_id,
-        projects!inner(project_name, client_id)
+        projects!inner(project_name)
       `)
       .eq('status', 'pending')
       .gte('expires_at', startOfDay.toISOString())
@@ -316,10 +316,13 @@ Deno.serve(async (req) => {
         const s = getOfferReminderStrings(locale);
         const intlLocale = resolveIntlLocale(locale);
 
-        const companyName = htmlEscape(profile?.company_name || s.fallbackCompany);
-        const projectName = htmlEscape((offer.projects as unknown)?.project_name || s.fallbackProject);
+        const companyNameRaw = profile?.company_name || s.fallbackCompany;
+        const projectNameRaw = (offer.projects as unknown)?.project_name || s.fallbackProject;
+        const clientNameRaw = offer.client_name || s.fallbackClient;
+        const companyName = htmlEscape(companyNameRaw);
+        const projectName = htmlEscape(projectNameRaw);
         const clientEmail = offer.client_email;
-        const clientName = htmlEscape(offer.client_name || s.fallbackClient);
+        const clientName = htmlEscape(clientNameRaw);
 
         if (!clientEmail) {
           console.log(`Skipping offer ${offer.id} - no client email`);
@@ -431,7 +434,7 @@ Deno.serve(async (req) => {
           body: JSON.stringify({
             from: `Majster.AI <${senderEmail}>`,
             to: [clientEmail],
-            subject: s.subject(projectName),
+            subject: s.subject(projectNameRaw),
             html: emailHtml,
           }),
         });
@@ -442,14 +445,17 @@ Deno.serve(async (req) => {
         }
 
         // Log the send in offer_sends table
-        await supabase.from('offer_sends').insert({
+        const { error: sendLogErr } = await supabase.from('offer_sends').insert({
           project_id: offer.project_id,
           user_id: offer.user_id,
           client_email: clientEmail,
-          subject: s.subject(projectName),
+          subject: s.subject(projectNameRaw),
           message: s.logMessage,
           status: 'sent',
         });
+        if (sendLogErr) {
+          console.error(`offer_sends insert failed for offer ${offer.id}:`, sendLogErr);
+        }
 
         sentEmails.push(clientEmail);
         console.log(`Reminder sent for offer ${offer.id}`);
@@ -463,7 +469,7 @@ Deno.serve(async (req) => {
 
     // ── PR-18: Warranty expiry reminders (T-30 and T-7) ─────────────────────
 
-    // Helper: ISO date string for today + N days (reuses `now` from line 232)
+    // Helper: ISO date string for today + N days (reuses `now` declared above)
     const isoDatePlusDays = (n: number): string => {
       const d = new Date(now);
       d.setDate(d.getDate() + n);
@@ -514,9 +520,10 @@ Deno.serve(async (req) => {
             .select('company_name')
             .eq('user_id', w.user_id)
             .maybeSingle();
-          const companyName = htmlEscape((profile?.company_name as string | null) ?? ws.fallbackCompany);
+          const companyNameRaw = (profile?.company_name as string | null) ?? ws.fallbackCompany;
+          const companyName = htmlEscape(companyNameRaw);
 
-          const subject = ws.subject(daysAhead, companyName);
+          const subject = ws.subject(daysAhead, companyNameRaw);
 
           const emailHtml = `<!DOCTYPE html>
 <html lang="${ws.htmlLang}">
@@ -564,10 +571,13 @@ Deno.serve(async (req) => {
           }
 
           // Mark reminder sent
-          await supabase
+          const { error: updateErr } = await supabase
             .from('project_warranties')
             .update({ [reminderField]: new Date().toISOString() })
             .eq('id', w.id);
+          if (updateErr) {
+            console.error(`warranty ${w.id} update ${reminderField} failed:`, updateErr);
+          }
 
           warrantySent.push(`${clientEmail} (T-${daysAhead})`);
           console.log(`Warranty reminder T-${daysAhead} sent for warranty ${w.id}`);
