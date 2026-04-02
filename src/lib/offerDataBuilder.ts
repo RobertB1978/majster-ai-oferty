@@ -214,7 +214,11 @@ export function buildOfferData(params: {
   validUntil?: Date;
   /** Locale for formatting (e.g. 'pl-PL', 'en-GB', 'uk-UA'). Default: 'pl-PL'. */
   locale?: string;
+  /** Optional i18n translation function for locale-aware default text. */
+  t?: (key: string, opts?: Record<string, unknown>) => string;
 }): OfferPdfPayload {
+  const t = params.t;
+
   // Company info
   const company: CompanyInfo = {
     name: params.profile?.company_name || 'Majster.AI',
@@ -230,7 +234,7 @@ export function buildOfferData(params: {
   // Client info
   const client: ClientInfo | null = params.client
     ? {
-        name: params.client.name || 'Klient',
+        name: params.client.name || (t ? t('offerPdf.defaultClientName') : 'Klient'),
         email: params.client.email,
         address: params.client.address,
         phone: params.client.phone,
@@ -281,12 +285,18 @@ export function buildOfferData(params: {
     : {
         version: 'standard',
         templateId: params.templateId ?? 'classic',
-        title: `Oferta - ${params.projectName}`,
-        offerText:
-          'Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na wykonanie prac zgodnie z poniższym kosztorysem.',
-        terms:
-          'Warunki płatności: 50% zaliczka, 50% po wykonaniu.\nGwarancja: 24 miesiące na wykonane prace.',
-        deadlineText: 'Termin realizacji: do uzgodnienia.',
+        title: t
+          ? t('offerPdf.defaultTitle', { projectName: params.projectName })
+          : `Oferta - ${params.projectName}`,
+        offerText: t
+          ? t('pdfGenerator.defaultOfferText')
+          : 'Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na wykonanie prac zgodnie z poniższym kosztorysem.',
+        terms: t
+          ? t('pdfGenerator.defaultTerms')
+          : 'Warunki płatności: 50% zaliczka, 50% po wykonaniu.\nGwarancja: 24 miesiące na wykonane prace.',
+        deadlineText: t
+          ? t('pdfGenerator.defaultDeadline')
+          : 'Termin realizacji: do uzgodnienia.',
       };
 
   const issuedAt = new Date();
