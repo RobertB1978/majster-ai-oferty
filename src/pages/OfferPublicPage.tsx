@@ -531,7 +531,7 @@ export default function OfferPublicPage() {
                       <Building2 className="h-4 w-4 text-primary" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs text-muted-foreground">{t('offerPublicPage.companyLabel', 'Wykonawca')}</p>
+                      <p className="text-xs text-muted-foreground">{t('offerPublicPage.companyLabel')}</p>
                       <p className="font-semibold text-sm truncate">{offer.company.company_name}</p>
                     </div>
                   </div>

@@ -1795,6 +1795,7 @@
       "rejectReasonPlaceholder": "Powód odrzucenia (opcjonalnie)...",
       "questionPrefix": "Mam pytanie →",
       "contactLink": "napisz do wykonawcy",
+      "emailSubject": "Pytanie dot. oferty",
       "namePlaceholder": "Jan Kowalski",
       "emailPlaceholder": "jan@example.com"
     },
@@ -3099,7 +3100,8 @@
     "justAccepted": "Oferta zaakceptowana!",
     "printButton": "Drukuj / Zapisz PDF",
     "printAriaLabel": "Wydrukuj lub zapisz ofertę jako PDF",
-    "emailPlaceholder": "jan@example.com"
+    "emailPlaceholder": "jan@example.com",
+    "companyLabel": "Wykonawca"
   },
   "pdfGenerator": {
     "defaultOfferText": "Szanowni Państwo,\n\nZ przyjemnością przedstawiamy ofertę na realizację prac.",

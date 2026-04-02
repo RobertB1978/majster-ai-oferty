@@ -132,7 +132,7 @@ export function OfferApprovalForm({
           <div className="text-center text-sm text-muted-foreground">
             {t('offerApproval.form.questionPrefix')}{' '}
             <a
-              href={`mailto:${contactEmail}?subject=Pytanie dot. oferty`}
+              href={`mailto:${contactEmail}?subject=${encodeURIComponent(t('offerApproval.form.emailSubject'))}`}
               className="text-primary hover:underline"
             >
               {t('offerApproval.form.contactLink')}

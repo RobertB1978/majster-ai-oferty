@@ -1772,6 +1772,7 @@
       "rejectReasonPlaceholder": "Причина відхилення (необов'язково)...",
       "questionPrefix": "Є запитання →",
       "contactLink": "напишіть підряднику",
+      "emailSubject": "Питання щодо пропозиції",
       "namePlaceholder": "Іван Коваль",
       "emailPlaceholder": "ivan@example.com"
     },
@@ -3099,7 +3100,8 @@
     "justAccepted": "Пропозицію прийнято!",
     "printButton": "Друк / Зберегти PDF",
     "printAriaLabel": "Надрукуйте або збережіть пропозицію як PDF",
-    "emailPlaceholder": "ivan@example.com"
+    "emailPlaceholder": "ivan@example.com",
+    "companyLabel": "Виконавець"
   },
   "pdfGenerator": {
     "defaultOfferText": "Шановні пані та панове,\n\nЗ радістю представляємо пропозицію на виконання робіт.",
