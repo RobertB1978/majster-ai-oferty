@@ -16,18 +16,22 @@ vi.mock('@/integrations/supabase/client', () => ({
 
 // Mock payload builder
 vi.mock('./offerPdfPayloadBuilder', () => ({
-  buildOfferPdfPayloadFromOffer: vi.fn().mockResolvedValue({
-    projectId: 'test-id',
-    projectName: 'Test',
-    company: { name: 'Test Co' },
-    client: null,
-    quote: null,
-    pdfConfig: { version: 'standard', title: 'Oferta', offerText: '', terms: '', deadlineText: '' },
-    generatedAt: new Date('2026-01-01'),
-    documentId: 'OF/2026/TEST',
-    issuedAt: new Date('2026-01-01'),
-    validUntil: new Date('2026-01-31'),
-  }),
+  buildOfferPdfPayloadFromOffer: vi.fn().mockImplementation(
+    (_offerId: string, _userId: string, locale?: string) =>
+      Promise.resolve({
+        projectId: 'test-id',
+        projectName: 'Test',
+        company: { name: 'Test Co' },
+        client: null,
+        quote: null,
+        pdfConfig: { version: 'standard', title: 'Oferta', offerText: '', terms: '', deadlineText: '' },
+        generatedAt: new Date('2026-01-01'),
+        documentId: 'OF/2026/TEST',
+        issuedAt: new Date('2026-01-01'),
+        validUntil: new Date('2026-01-31'),
+        locale,
+      }),
+  ),
 }));
 
 // Mock client-side generator (fallback)
@@ -60,6 +64,7 @@ vi.mock('./logger', () => ({
 import { generateOfferPdfWithServer } from './generateServerPdf';
 import { supabase } from '@/integrations/supabase/client';
 import { generateOfferPdf as generateClientPdf } from './offerPdfGenerator';
+import { buildOfferPdfPayloadFromOffer } from './offerPdfPayloadBuilder';
 
 describe('generateOfferPdfWithServer', () => {
   beforeEach(() => {
@@ -115,5 +120,50 @@ describe('generateOfferPdfWithServer', () => {
     expect(result).toBeInstanceOf(Blob);
     expect(result.type).toBe('application/pdf');
     expect(generateClientPdf).not.toHaveBeenCalled();
+  });
+
+  // ── Locale + translate function wiring ─────────────────────────────────────
+
+  it('passes locale to buildOfferPdfPayloadFromOffer', async () => {
+    vi.mocked(supabase.functions.invoke).mockResolvedValue({
+      data: null,
+      error: { message: 'Function not found', name: 'FunctionsError', context: {} as unknown },
+    });
+
+    await generateOfferPdfWithServer('offer-123', 'user-456', undefined, 'en');
+
+    expect(buildOfferPdfPayloadFromOffer).toHaveBeenCalledWith('offer-123', 'user-456', 'en');
+  });
+
+  it('passes t function to jsPDF fallback', async () => {
+    vi.mocked(supabase.functions.invoke).mockResolvedValue({
+      data: null,
+      error: { message: 'Function not found', name: 'FunctionsError', context: {} as unknown },
+    });
+
+    const mockT = vi.fn((key: string) => key);
+
+    await generateOfferPdfWithServer('offer-123', 'user-456', mockT, 'en');
+
+    expect(generateClientPdf).toHaveBeenCalledWith(
+      expect.objectContaining({ locale: 'en' }),
+      mockT,
+    );
+  });
+
+  it('works without t and locale (backward compatible)', async () => {
+    vi.mocked(supabase.functions.invoke).mockResolvedValue({
+      data: null,
+      error: { message: 'Function not found', name: 'FunctionsError', context: {} as unknown },
+    });
+
+    const result = await generateOfferPdfWithServer('offer-123', 'user-456');
+
+    expect(result).toBeInstanceOf(Blob);
+    expect(buildOfferPdfPayloadFromOffer).toHaveBeenCalledWith('offer-123', 'user-456', undefined);
+    expect(generateClientPdf).toHaveBeenCalledWith(
+      expect.objectContaining({ locale: undefined }),
+      undefined,
+    );
   });
 });

@@ -34,6 +34,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 import { generateOfferPdf } from '@/lib/offerPdfGenerator';
+import type { OfferPdfTranslateFn } from '@/lib/offerPdfGenerator';
 import type { OfferPdfPayload, QuoteData, OfferVariantSection } from '@/lib/offerDataBuilder';
 import type {
   UnifiedDocumentPayload,
@@ -220,10 +221,10 @@ async function callGeneratePdfV2(payload: UnifiedDocumentPayload): Promise<Blob>
 
 // ── Fallback jsPDF dla oferty ─────────────────────────────────────────────────
 
-async function offerClientFallback(payload: UnifiedDocumentPayload): Promise<Blob> {
+async function offerClientFallback(payload: UnifiedDocumentPayload, t?: OfferPdfTranslateFn): Promise<Blob> {
   logger.warn('[renderPdfV2] Fallback na jsPDF dla oferty');
   const legacyPayload = adaptToOfferPdfPayload(payload);
-  return generateOfferPdf(legacyPayload);
+  return generateOfferPdf(legacyPayload, t);
 }
 
 // ── Kanoniczny koordynator ────────────────────────────────────────────────────
@@ -243,6 +244,7 @@ async function offerClientFallback(payload: UnifiedDocumentPayload): Promise<Blo
  */
 export async function renderDocumentPdfV2(
   payload: UnifiedDocumentPayload,
+  t?: OfferPdfTranslateFn,
 ): Promise<Blob> {
   // ── Próba serwer-first (canonical path) ──────────────────────────────────
   try {
@@ -255,7 +257,7 @@ export async function renderDocumentPdfV2(
       if (payload.documentType === 'offer') {
         // Offer nie powinien zwracać pendingMigration z serwera; fallback na wszelki wypadek
         logger.warn('[renderPdfV2] Nieoczekiwany pendingMigration dla offer — fallback jsPDF');
-        return offerClientFallback(payload);
+        return offerClientFallback(payload, t);
       }
       // Pozostałe typy: propaguj błąd — nie ma fallbacku klient-side
       throw serverErr;
@@ -264,7 +266,7 @@ export async function renderDocumentPdfV2(
     // Błąd sieciowy / 5xx → fallback tylko dla 'offer'
     if (payload.documentType === 'offer') {
       logger.warn('[renderPdfV2] Edge Function niedostępna — fallback jsPDF dla oferty:', serverErr);
-      return offerClientFallback(payload);
+      return offerClientFallback(payload, t);
     }
 
     // Dla innych typów: nie ma klient-side fallback → rzuć PendingMigrationError
