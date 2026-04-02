@@ -10,7 +10,7 @@
  * 4. FileRow actions are complete (preview + download + delete)
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   DOSSIER_CATEGORIES,
   DOSSIER_BUCKET,
@@ -21,54 +21,61 @@ import {
 } from '@/hooks/useDossier';
 
 // ── 1: downloadDossierFile helper ───────────────────────────────────────────
+//
+// Implementation note: downloadDossierFile no longer uses fetch+blob.
+// It appends Supabase's `?download=<filename>` parameter to the signed URL
+// so the storage server responds with Content-Disposition: attachment.
+// The browser then downloads the file directly — no CORS issues, no blob timing.
 
 describe('downloadDossierFile', () => {
-  let createObjectURLSpy: ReturnType<typeof vi.fn>;
-  let revokeObjectURLSpy: ReturnType<typeof vi.fn>;
-
-  beforeEach(() => {
-    createObjectURLSpy = vi.fn().mockReturnValue('blob:http://localhost/fake');
-    revokeObjectURLSpy = vi.fn();
-    global.URL.createObjectURL = createObjectURLSpy;
-    global.URL.revokeObjectURL = revokeObjectURLSpy;
-  });
-
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('fetches the signed URL and triggers download via anchor element', async () => {
-    const fakeBlob = new Blob(['pdf-content'], { type: 'application/pdf' });
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      blob: () => Promise.resolve(fakeBlob),
-    });
-
-    const clickSpy = vi.fn();
-    const removeSpy = vi.fn();
-    vi.spyOn(document, 'createElement').mockReturnValue({
-      href: '',
-      download: '',
-      click: clickSpy,
-      remove: removeSpy,
-    } as unknown as HTMLAnchorElement);
+  it('appends download param and triggers download via anchor element', () => {
+    const mockAnchor = { href: '', download: '', click: vi.fn(), remove: vi.fn() };
+    vi.spyOn(document, 'createElement').mockReturnValue(
+      mockAnchor as unknown as HTMLAnchorElement
+    );
     vi.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
 
-    await downloadDossierFile('https://storage.example.com/signed-url', 'contract.pdf');
+    downloadDossierFile('https://storage.example.com/signed-url?token=abc', 'contract.pdf');
 
-    expect(global.fetch).toHaveBeenCalledWith('https://storage.example.com/signed-url');
-    expect(createObjectURLSpy).toHaveBeenCalledWith(fakeBlob);
-    expect(clickSpy).toHaveBeenCalled();
-    expect(removeSpy).toHaveBeenCalled();
-    expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:http://localhost/fake');
+    expect(mockAnchor.href).toContain('&download=contract.pdf');
+    expect(mockAnchor.download).toBe('contract.pdf');
+    expect(mockAnchor.click).toHaveBeenCalledTimes(1);
+    expect(mockAnchor.remove).toHaveBeenCalledTimes(1);
   });
 
-  it('throws on fetch failure', async () => {
-    global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 403 });
+  it('encodes special characters in filename for download param', () => {
+    const mockAnchor = { href: '', download: '', click: vi.fn(), remove: vi.fn() };
+    vi.spyOn(document, 'createElement').mockReturnValue(
+      mockAnchor as unknown as HTMLAnchorElement
+    );
+    vi.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
 
-    await expect(
-      downloadDossierFile('https://storage.example.com/expired', 'file.pdf')
-    ).rejects.toThrow('Download failed');
+    downloadDossierFile('https://storage.example.com/url?token=x', 'umowa końcowa.pdf');
+
+    expect(mockAnchor.href).toContain('&download=umowa%20ko%C5%84cowa.pdf');
+    expect(mockAnchor.click).toHaveBeenCalled();
+  });
+
+  it('throws synchronously when signedUrl is empty', () => {
+    expect(() => downloadDossierFile('', 'file.pdf')).toThrow('Download failed: missing URL');
+  });
+
+  it('does not call fetch (no cross-origin blob fetch needed)', () => {
+    const mockAnchor = { href: '', download: '', click: vi.fn(), remove: vi.fn() };
+    vi.spyOn(document, 'createElement').mockReturnValue(
+      mockAnchor as unknown as HTMLAnchorElement
+    );
+    vi.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy;
+
+    downloadDossierFile('https://storage.example.com/url?token=x', 'file.pdf');
+
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
 

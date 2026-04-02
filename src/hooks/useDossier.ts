@@ -96,21 +96,28 @@ async function getSignedUrl(filePath: string): Promise<string> {
 
 /**
  * Trigger browser download for a file via its signed URL.
- * Fetches blob cross-origin and creates a temporary object URL
- * with the download attribute so the browser saves instead of navigating.
+ *
+ * Appends Supabase's `?download=<filename>` parameter to the URL so the
+ * storage server responds with `Content-Disposition: attachment; filename=…`.
+ * The browser then saves the file directly — no cross-origin fetch, no blob
+ * manipulation, no async-gesture timing issues.
+ *
+ * Why not fetch+blob?
+ *  - Private Supabase bucket requires CORS headers on the storage endpoint;
+ *    if CORS is not configured for `fetch()` the download silently fails.
+ *  - Chrome ignores the `download` attribute on cross-origin anchor clicks,
+ *    so the blob:// URL trick is unreliable in practice.
+ *  - Content-Disposition: attachment (server-side) is universally respected.
  */
-export async function downloadDossierFile(signedUrl: string, fileName: string): Promise<void> {
-  const res = await fetch(signedUrl);
-  if (!res.ok) throw new Error('Download failed');
-  const blob = await res.blob();
-  const objectUrl = URL.createObjectURL(blob);
+export function downloadDossierFile(signedUrl: string, fileName: string): void {
+  if (!signedUrl) throw new Error('Download failed: missing URL');
+  const url = `${signedUrl}&download=${encodeURIComponent(fileName)}`;
   const a = document.createElement('a');
-  a.href = objectUrl;
-  a.download = fileName;
+  a.href = url;
+  a.download = fileName; // fallback hint for same-origin environments
   document.body.appendChild(a);
   a.click();
   a.remove();
-  URL.revokeObjectURL(objectUrl);
 }
 
 export function buildDossierShareUrl(token: string): string {
