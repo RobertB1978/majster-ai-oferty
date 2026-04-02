@@ -1803,6 +1803,7 @@
       "rejectReasonPlaceholder": "Rejection reason (optional)...",
       "questionPrefix": "Have a question →",
       "contactLink": "contact the contractor",
+      "emailSubject": "Question about the offer",
       "namePlaceholder": "John Smith",
       "emailPlaceholder": "john@example.com"
     },
@@ -3099,7 +3100,8 @@
     "justAccepted": "Offer accepted!",
     "printButton": "Print / Save PDF",
     "printAriaLabel": "Print or save offer as PDF",
-    "emailPlaceholder": "john@example.com"
+    "emailPlaceholder": "john@example.com",
+    "companyLabel": "Contractor"
   },
   "pdfGenerator": {
     "defaultOfferText": "Dear Sir/Madam,\n\nWe are pleased to present our offer for the requested works.",

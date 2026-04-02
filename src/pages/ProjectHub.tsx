@@ -343,7 +343,7 @@ function QrTokenPanel({ projectId }: { projectId: string }) {
           </Badge>
           <div className="flex items-center gap-2 rounded-md border bg-background px-3 py-2">
             <span className="flex-1 text-xs text-muted-foreground truncate font-mono">{url}</span>
-            <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px] shrink-0" onClick={handleCopy} aria-label={t('offerDetails.copyLink', 'Kopiuj link')}>
+            <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px] shrink-0" onClick={handleCopy} aria-label={t('projectsV2.hub.qrCopy')}>
               {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
             </Button>
           </div>

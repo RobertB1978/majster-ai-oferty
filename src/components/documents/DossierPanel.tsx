@@ -331,11 +331,11 @@ export function DossierPanel({ projectId, projectTitle }: DossierPanelProps) {
       <div className="py-8 text-center space-y-3">
         <FolderOpen className="mx-auto h-8 w-8 text-muted-foreground/50" />
         <p className="text-sm text-muted-foreground">
-          {t('dossier.loadErrorSoft', 'Nie udało się załadować dokumentów. Spróbuj ponownie.')}
+          {t('dossier.loadErrorSoft')}
         </p>
         <Button variant="outline" size="sm" className="gap-1.5" onClick={() => refetch()}>
           <RefreshCw className="h-3.5 w-3.5" />
-          {t('dossier.retry', 'Ponów')}
+          {t('dossier.retry')}
         </Button>
       </div>
     );
