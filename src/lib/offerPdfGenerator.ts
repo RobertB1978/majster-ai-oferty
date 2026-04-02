@@ -38,6 +38,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { trackEvent } from './analytics/track';
 import { ANALYTICS_EVENTS } from './analytics/events';
 import { JETBRAINS_MONO_REGULAR_B64 } from './jetbrains-mono-b64';
+import { registerNotoSans } from './pdf/registerNotoSansJsPDF';
 import {
   TEXT_PRIMARY,
   TEXT_SECONDARY,
@@ -159,6 +160,9 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     format: 'a4',
   });
 
+  // Register NotoSans — Unicode body font for Polish diacritics (ą ć ę ł ń ó ś ź ż)
+  const bodyFont = registerNotoSans(doc);
+
   // Register JetBrains Mono — used for all monetary amounts
   const monoFont = registerJetBrainsMono(doc);
 
@@ -202,7 +206,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
 
     // "OFERTA" label right-aligned in header
     doc.setFontSize(FONT_SIZES.sm);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(bodyFont, 'bold');
     doc.setTextColor(ACCENT_AMBER[0], ACCENT_AMBER[1], ACCENT_AMBER[2]);
     doc.text('OFERTA', pageWidth - margin, 12, { align: 'right' });
 
@@ -213,20 +217,20 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     doc.roundedRect(margin, logoY, logoSize, logoSize, 2, 2, 'F');
     const initial = payload.company.name.trim().charAt(0).toUpperCase() || 'M';
     doc.setFontSize(logoSize * 0.55);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(bodyFont, 'bold');
     doc.setTextColor(theme.companyBg[0], theme.companyBg[1], theme.companyBg[2]);
     doc.text(initial, margin + logoSize / 2, logoY + logoSize * 0.68, { align: 'center' });
 
     // Company name in white — next to logo
     const nameX = margin + logoSize + 4;
     doc.setFontSize(FONT_SIZES['2xl']);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(bodyFont, 'bold');
     doc.setTextColor(255, 255, 255);
     doc.text(payload.company.name, nameX, 22);
 
     // Company details: NIP + address on one line, contact on next
     doc.setFontSize(FONT_SIZES.sm);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
     doc.setTextColor(190, 215, 245);
 
     const addrParts: string[] = [];
@@ -251,13 +255,13 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     const nameX = margin + 18; // after logo placeholder
 
     doc.setFontSize(FONT_SIZES.xl);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(bodyFont, 'bold');
     doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
     doc.text(payload.company.name, nameX, yPosition + 2);
     yPosition += 8;
 
     doc.setFontSize(FONT_SIZES.base);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
     doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
 
     if (payload.company.nip) {
@@ -326,7 +330,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
       doc.addImage(qrDataUrl, 'PNG', qrX, yPosition - 2, QR_SIZE, QR_SIZE);
       // Label below QR
       doc.setFontSize(FONT_SIZES.xs);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(bodyFont, 'bold');
       doc.setTextColor(AMBER_700[0], AMBER_700[1], AMBER_700[2]);
       doc.text('OFERTA ONLINE', qrX + QR_SIZE / 2, yPosition + QR_SIZE + 3, { align: 'center' });
       doc.setTextColor(0);
@@ -337,7 +341,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   }
 
   doc.setFontSize(FONT_SIZES.lg);
-  doc.setFont('helvetica', 'bold');
+  doc.setFont(bodyFont, 'bold');
   doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
   // Leave room for QR code when present
   const titleMaxWidth = qrPlaced ? qrX - margin - 5 : pageWidth - 2 * margin;
@@ -345,7 +349,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   yPosition += 8;
 
   doc.setFontSize(FONT_SIZES.base);
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(bodyFont, 'normal');
 
   // Compliance: document ID + dates (uses getPdfComplianceLines for testable strings)
   const complianceLines = getPdfComplianceLines(payload);
@@ -354,7 +358,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   doc.setFont(monoFont, 'bold');
   doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
   doc.text(complianceLines.documentIdLine, complianceRightX, yPosition, { align: 'right' });
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(bodyFont, 'normal');
   doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
   doc.text(complianceLines.issuedAtLine, margin, yPosition);
   yPosition += 5;
@@ -375,18 +379,18 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   if (payload.client) {
     ensureSpace(30); // client block needs ~30mm
     doc.setFontSize(FONT_SIZES.md);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(bodyFont, 'bold');
     doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
     doc.text('Dane klienta:', margin, yPosition);
     yPosition += 6;
 
     doc.setFontSize(FONT_SIZES.base);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(bodyFont, 'bold');
     doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
     doc.text(payload.client.name, margin, yPosition);
     yPosition += 5;
 
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
     doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
 
     if (payload.client.address) {
@@ -415,7 +419,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   if (payload.pdfConfig.offerText) {
     ensureSpace(15); // at least one line + padding
     doc.setFontSize(FONT_SIZES.base);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
     doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
     const offerTextLines = doc.splitTextToSize(
       payload.pdfConfig.offerText,
@@ -439,7 +443,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   function renderQuoteSection(quote: typeof payload.quote, sectionLabel?: string) {
     if (!quote || quote.positions.length === 0) {
       doc.setFontSize(10);
-      doc.setFont('helvetica', 'italic');
+      doc.setFont(bodyFont, 'italic');
       doc.text('Brak pozycji.', margin, yPosition);
       yPosition += 8;
       return;
@@ -448,7 +452,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     // Section header (variant label or default "Pozycje wyceny")
     ensureSpace(20); // heading + at least first table row
     doc.setFontSize(FONT_SIZES.lg);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(bodyFont, 'bold');
     doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
     doc.text(sectionLabel ?? 'Pozycje wyceny:', margin, yPosition);
     // Amber underline accent
@@ -514,7 +518,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
           data.section === 'body' &&
           (data.column.index === 3 || data.column.index === 5)
         ) {
-          data.doc.setFont('helvetica', 'normal');
+          data.doc.setFont(bodyFont, 'normal');
         }
       },
     });
@@ -540,14 +544,14 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     doc.rect(summaryX - 4, yPosition - 2, 2.5, summaryBoxHeight, 'F');
 
     doc.setFontSize(FONT_SIZES.md);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(bodyFont, 'bold');
     doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
     doc.text('Podsumowanie:', margin, yPosition + 4);
     doc.setTextColor(0, 0, 0);
     yPosition += 6;
 
     doc.setFontSize(FONT_SIZES.base);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
 
     if (quote.isVatExempt) {
       // Amber highlight band behind the total row
@@ -555,16 +559,16 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
       doc.rect(summaryX - 4, yPosition - 1, summaryBoxWidth, 10, 'F');
 
       doc.setFontSize(FONT_SIZES.lg);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(bodyFont, 'bold');
       doc.setTextColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
       doc.text('Wartość końcowa:', summaryX + 1, yPosition + 5);
       doc.setFont(monoFont, 'bold');
       doc.text(formatCurrency(quote.total), pageWidth - margin, yPosition + 5, { align: 'right' });
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(bodyFont, 'normal');
       doc.setTextColor(0, 0, 0);
       yPosition += 12;
       doc.setFontSize(FONT_SIZES.sm);
-      doc.setFont('helvetica', 'italic');
+      doc.setFont(bodyFont, 'italic');
       doc.setTextColor(TEXT_MUTED[0], TEXT_MUTED[1], TEXT_MUTED[2]);
       doc.text('Sprzedawca zwolniony z podatku VAT (art. 43 ust. 1 ustawy o VAT)', summaryX + 1, yPosition);
       doc.setTextColor(0);
@@ -574,7 +578,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
       doc.text('Wartość netto:', summaryX + 1, yPosition);
       doc.setFont(monoFont, 'normal');
       doc.text(formatCurrency(quote.netTotal), pageWidth - margin, yPosition, { align: 'right' });
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(bodyFont, 'normal');
       doc.setTextColor(0, 0, 0);
       yPosition += 6;
       if (quote.vatRate !== null) {
@@ -582,7 +586,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
         doc.text(`VAT (${quote.vatRate}%):`, summaryX + 1, yPosition);
         doc.setFont(monoFont, 'normal');
         doc.text(formatCurrency(quote.vatAmount), pageWidth - margin, yPosition, { align: 'right' });
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(bodyFont, 'normal');
         doc.setTextColor(0, 0, 0);
         yPosition += 6;
       }
@@ -597,12 +601,12 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
       doc.setDrawColor(180);
 
       doc.setFontSize(FONT_SIZES.lg);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(bodyFont, 'bold');
       doc.setTextColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
       doc.text('Do zapłaty (brutto):', summaryX + 1, yPosition + 5);
       doc.setFont(monoFont, 'bold');
       doc.text(formatCurrency(quote.grossTotal), pageWidth - margin, yPosition + 5, { align: 'right' });
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(bodyFont, 'normal');
       doc.setTextColor(0, 0, 0);
       yPosition += 15;
     }
@@ -626,7 +630,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   } else {
     // No quote available
     doc.setFontSize(10);
-    doc.setFont('helvetica', 'italic');
+    doc.setFont(bodyFont, 'italic');
     doc.text('Wycena nie została jeszcze przygotowana.', margin, yPosition);
     yPosition += 10;
   }
@@ -638,14 +642,14 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   if (payload.pdfConfig.terms) {
     ensureSpace(20); // section heading + at least one line
     doc.setFontSize(FONT_SIZES.md);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(bodyFont, 'bold');
     doc.setTextColor(theme.accentColor[0], theme.accentColor[1], theme.accentColor[2]);
     doc.text('Warunki:', margin, yPosition);
     doc.setTextColor(0, 0, 0);
     yPosition += 6;
 
     doc.setFontSize(FONT_SIZES.sm);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
     doc.setTextColor(TEXT_SECONDARY[0], TEXT_SECONDARY[1], TEXT_SECONDARY[2]);
     const termsLines = doc.splitTextToSize(payload.pdfConfig.terms, pageWidth - 2 * margin);
     doc.text(termsLines, margin, yPosition);
@@ -660,7 +664,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
   if (payload.pdfConfig.deadlineText) {
     ensureSpace(12);
     doc.setFontSize(FONT_SIZES.base);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
     doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
     doc.text(payload.pdfConfig.deadlineText, margin, yPosition);
     doc.setTextColor(0, 0, 0);
@@ -687,7 +691,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
 
   // Contractor name label
   doc.setFontSize(FONT_SIZES.sm);
-  doc.setFont('helvetica', 'bold');
+  doc.setFont(bodyFont, 'bold');
   doc.setTextColor(TEXT_PRIMARY[0], TEXT_PRIMARY[1], TEXT_PRIMARY[2]);
   doc.text(payload.company.name, margin, yPosition);
 
@@ -702,7 +706,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
 
   // Labels below lines
   doc.setFontSize(FONT_SIZES.xs);
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(bodyFont, 'normal');
   doc.setTextColor(TEXT_MUTED[0], TEXT_MUTED[1], TEXT_MUTED[2]);
   doc.text('Podpis i pieczęć wykonawcy', margin, sigLineY + 5);
   doc.text('Podpis klienta', rightSigX, sigLineY + 5);
@@ -736,11 +740,11 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
     doc.setLineWidth(0.2);
 
     // Left: validity date
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
     doc.text(`Ważna do: ${validUntilStr}`, margin, footerY - 2);
 
     // Center: generator notice
-    doc.setFont('helvetica', 'italic');
+    doc.setFont(bodyFont, 'italic');
     doc.text(
       `Wygenerowano przez Majster.AI  ·  ${generatedStr}`,
       pageWidth / 2,
@@ -757,7 +761,7 @@ export async function generateOfferPdf(payload: OfferPdfPayload): Promise<Blob> 
       { align: 'right' }
     );
 
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
     doc.setTextColor(0);
   }
 

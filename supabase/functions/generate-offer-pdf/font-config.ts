@@ -47,11 +47,12 @@ import { Font } from "npm:@react-pdf/renderer@3";
 //   Latin Extended-B (U+0180–U+024F)
 //   oraz wiele innych skryptów (cyrylica, greka, itp.)
 //
-// TODO(pdf-v2-hardening): Przypiąć do konkretnego taga/commita repo, np.:
-//   @v1.0/hinted/... zamiast @main/hinted/...
+// Przypięty do commita ffebf8c1ee44 (2023-01-25) — stabilny snapshot repozytorium.
+// jsDelivr cache'uje pliki dla commitów na stałe (immutable), co eliminuje ryzyko
+// zmiany zawartości czcionki przy nowych commitach na @main.
 
 const CDN_BASE =
-  "https://cdn.jsdelivr.net/gh/notofonts/noto-fonts@main/hinted/ttf";
+  "https://cdn.jsdelivr.net/gh/notofonts/noto-fonts@ffebf8c1ee44/hinted/ttf";
 
 const FONT_URLS = {
   notoSansRegular: `${CDN_BASE}/NotoSans/NotoSans-Regular.ttf`,

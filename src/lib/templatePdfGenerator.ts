@@ -35,6 +35,7 @@ import { logger } from '@/lib/logger';
 import { formatDate } from '@/lib/formatters';
 import type { DocumentTemplate } from '@/data/documentTemplates';
 import type { AutofillContext } from '@/hooks/useDocumentInstances';
+import { registerNotoSans } from '@/lib/pdf/registerNotoSansJsPDF';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -113,6 +114,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   const { template, data, autofillContext, t, documentNumber } = input;
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const bodyFont = registerNotoSans(doc);
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 18;
@@ -129,12 +131,12 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   doc.setFillColor(...blue);
   doc.rect(0, 0, pageWidth, 36, 'F');
 
-  doc.setFont('helvetica', 'bold');
+  doc.setFont(bodyFont, 'bold');
   doc.setFontSize(16);
   doc.setTextColor(255, 255, 255);
   doc.text(companyName, margin, 16);
 
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(bodyFont, 'normal');
   doc.setFontSize(8);
   const companyParts: string[] = [];
   if (autofillContext.company?.nip) companyParts.push(`NIP: ${autofillContext.company.nip}`);
@@ -152,12 +154,12 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   const docNum = documentNumber ?? docNumber(template.key);
   const docTitle = t(template.titleKey);
 
-  doc.setFont('helvetica', 'bold');
+  doc.setFont(bodyFont, 'bold');
   doc.setFontSize(14);
   doc.setTextColor(...darkGray);
   doc.text(docTitle, margin, y);
 
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(bodyFont, 'normal');
   doc.setFontSize(9);
   doc.setTextColor(...gray);
   doc.text(`${t('docTemplates.pdf.docNumber')}: ${docNum}`, pageWidth - margin, y, { align: 'right' });
@@ -178,7 +180,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   // ── Sections ────────────────────────────────────────────────────────────────
   for (const section of template.sections) {
     // Section heading
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(bodyFont, 'bold');
     doc.setFontSize(10);
     doc.setTextColor(...blue);
     doc.text(t(section.titleKey).toUpperCase(), margin, y);
@@ -207,13 +209,13 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
 
       if (field.type === 'textarea') {
         // Label above, value below (multi-line)
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(bodyFont, 'bold');
         doc.setFontSize(8);
         doc.setTextColor(...gray);
         doc.text(labelText + ':', margin, y);
         y += 4;
 
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(bodyFont, 'normal');
         doc.setFontSize(9);
         doc.setTextColor(...darkGray);
         const lines = doc.splitTextToSize(valueText, pageWidth - 2 * margin);
@@ -221,7 +223,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
         y += lines.length * 4.5 + 3;
       } else if (field.type === 'checkbox') {
         // Checkbox field
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(bodyFont, 'normal');
         doc.setFontSize(9);
         doc.setTextColor(...darkGray);
         const checkMark = value === 'true' ? '☑' : '☐';
@@ -229,13 +231,13 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
         y += 6;
       } else {
         // Inline label: value
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(bodyFont, 'bold');
         doc.setFontSize(8);
         doc.setTextColor(...gray);
         doc.text(labelText + ': ', margin, y);
 
         const labelWidth = doc.getTextWidth(labelText + ': ');
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(bodyFont, 'normal');
         doc.setFontSize(9);
         doc.setTextColor(...darkGray);
         doc.text(valueText, margin + labelWidth, y);
@@ -265,7 +267,7 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
   doc.line(margin, y, margin + sigWidth, y);
   doc.line(rightSigX, y, rightSigX + sigWidth, y);
 
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(bodyFont, 'normal');
   doc.setFontSize(8);
   doc.setTextColor(...gray);
   doc.text(t('docTemplates.pdf.contractorSignature'), margin, y + 5);
@@ -287,13 +289,13 @@ export async function generateTemplatePdf(input: TemplatePdfInput): Promise<Blob
     doc.line(margin, y, pageWidth - margin, y);
     y += 5;
 
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(bodyFont, 'bold');
     doc.setFontSize(9);
     doc.setTextColor(...blue);
     doc.text(t('docTemplates.pdf.references'), margin, y);
     y += 5;
 
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
     doc.setFontSize(7.5);
     doc.setTextColor(...gray);
 

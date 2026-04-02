@@ -27,6 +27,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 import { formatDate } from '@/lib/formatters';
 import type { ProjectWarranty } from '@/hooks/useWarranty';
+import { registerNotoSans } from '@/lib/pdf/registerNotoSansJsPDF';
 
 export interface WarrantyPdfContext {
   warranty: ProjectWarranty;
@@ -50,22 +51,22 @@ function drawLine(doc: jsPDF, y: number): void {
   doc.line(15, y, 195, y);
 }
 
-function sectionTitle(doc: jsPDF, text: string, y: number): number {
+function sectionTitle(doc: jsPDF, font: string, text: string, y: number): number {
   doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
+  doc.setFont(font, 'bold');
   doc.setTextColor(40, 40, 40);
   doc.text(text.toUpperCase(), 15, y);
   drawLine(doc, y + 2);
   return y + 8;
 }
 
-function field(doc: jsPDF, label: string, value: string, y: number): number {
+function field(doc: jsPDF, font: string, label: string, value: string, y: number): number {
   doc.setFontSize(9);
-  doc.setFont('helvetica', 'bold');
+  doc.setFont(font, 'bold');
   doc.setTextColor(100, 100, 100);
   doc.text(label, 15, y);
 
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(font, 'normal');
   doc.setTextColor(30, 30, 30);
   const lines = doc.splitTextToSize(value || '—', 120);
   doc.text(lines, 75, y);
@@ -78,18 +79,19 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   const { warranty, projectTitle, companyName, companyAddress, companyPhone, t, locale } = ctx;
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const bodyFont = registerNotoSans(doc);
 
   // ── Header ───────────────────────────────────────────────────────────────────
   doc.setFillColor(30, 90, 200);
   doc.rect(0, 0, 210, 30, 'F');
 
   doc.setFontSize(18);
-  doc.setFont('helvetica', 'bold');
+  doc.setFont(bodyFont, 'bold');
   doc.setTextColor(255, 255, 255);
   doc.text(t('warranty.pdf.title'), 15, 13);
 
   doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(bodyFont, 'normal');
   doc.text(companyName, 15, 20);
   if (companyAddress) doc.text(companyAddress, 15, 25);
 
@@ -103,31 +105,31 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   let y = 40;
 
   // ── Parties ──────────────────────────────────────────────────────────────────
-  y = sectionTitle(doc, t('warranty.pdf.sectionParties'), y);
-  y = field(doc, t('warranty.pdf.warrantor'), companyName, y);
-  if (companyPhone) y = field(doc, t('warranty.pdf.phone'), companyPhone, y);
-  y = field(doc, t('warranty.pdf.beneficiary'), warranty.client_name || '—', y);
-  if (warranty.client_email) y = field(doc, t('warranty.pdf.email'), warranty.client_email, y);
-  if (warranty.contact_phone) y = field(doc, t('warranty.pdf.contactPhone'), warranty.contact_phone, y);
+  y = sectionTitle(doc, bodyFont, t('warranty.pdf.sectionParties'), y);
+  y = field(doc, bodyFont, t('warranty.pdf.warrantor'), companyName, y);
+  if (companyPhone) y = field(doc, bodyFont, t('warranty.pdf.phone'), companyPhone, y);
+  y = field(doc, bodyFont, t('warranty.pdf.beneficiary'), warranty.client_name || '—', y);
+  if (warranty.client_email) y = field(doc, bodyFont, t('warranty.pdf.email'), warranty.client_email, y);
+  if (warranty.contact_phone) y = field(doc, bodyFont, t('warranty.pdf.contactPhone'), warranty.contact_phone, y);
   y += 4;
 
   // ── Object ───────────────────────────────────────────────────────────────────
-  y = sectionTitle(doc, t('warranty.pdf.sectionObject'), y);
-  y = field(doc, t('warranty.pdf.projectName'), projectTitle, y);
+  y = sectionTitle(doc, bodyFont, t('warranty.pdf.sectionObject'), y);
+  y = field(doc, bodyFont, t('warranty.pdf.projectName'), projectTitle, y);
   y += 4;
 
   // ── Warranty period ──────────────────────────────────────────────────────────
-  y = sectionTitle(doc, t('warranty.pdf.sectionPeriod'), y);
-  y = field(doc, t('warranty.pdf.startDate'), fmtDate(warranty.start_date, locale), y);
-  y = field(doc, t('warranty.pdf.endDate'), fmtDate(warranty.end_date, locale), y);
-  y = field(doc, t('warranty.pdf.duration'), `${warranty.warranty_months} ${t('warranty.pdf.months')}`, y);
+  y = sectionTitle(doc, bodyFont, t('warranty.pdf.sectionPeriod'), y);
+  y = field(doc, bodyFont, t('warranty.pdf.startDate'), fmtDate(warranty.start_date, locale), y);
+  y = field(doc, bodyFont, t('warranty.pdf.endDate'), fmtDate(warranty.end_date, locale), y);
+  y = field(doc, bodyFont, t('warranty.pdf.duration'), `${warranty.warranty_months} ${t('warranty.pdf.months')}`, y);
   y += 4;
 
   // ── Scope ────────────────────────────────────────────────────────────────────
   if (warranty.scope_of_work) {
-    y = sectionTitle(doc, t('warranty.pdf.sectionScope'), y);
+    y = sectionTitle(doc, bodyFont, t('warranty.pdf.sectionScope'), y);
     doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
     doc.setTextColor(30, 30, 30);
     const scopeLines = doc.splitTextToSize(warranty.scope_of_work, 175);
     doc.text(scopeLines, 15, y);
@@ -136,9 +138,9 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
 
   // ── Exclusions ───────────────────────────────────────────────────────────────
   if (warranty.exclusions) {
-    y = sectionTitle(doc, t('warranty.pdf.sectionExclusions'), y);
+    y = sectionTitle(doc, bodyFont, t('warranty.pdf.sectionExclusions'), y);
     doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(bodyFont, 'normal');
     doc.setTextColor(30, 30, 30);
     const excLines = doc.splitTextToSize(warranty.exclusions, 175);
     doc.text(excLines, 15, y);
@@ -146,9 +148,9 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   }
 
   // ── Legal basis ──────────────────────────────────────────────────────────────
-  y = sectionTitle(doc, t('warranty.pdf.sectionLegal'), y);
+  y = sectionTitle(doc, bodyFont, t('warranty.pdf.sectionLegal'), y);
   doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(bodyFont, 'normal');
   doc.setTextColor(100, 100, 100);
   const legalText = t('warranty.pdf.legalText');
   const legalLines = doc.splitTextToSize(legalText, 175);
@@ -163,7 +165,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   drawLine(doc, y);
   y += 8;
   doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(bodyFont, 'normal');
   doc.setTextColor(60, 60, 60);
   doc.text(t('warranty.pdf.sigWarrantor'), 30, y + 20, { align: 'center' });
   doc.text('...................................', 30, y + 22, { align: 'center' });
