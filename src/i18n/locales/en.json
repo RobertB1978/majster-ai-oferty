@@ -4059,7 +4059,7 @@
     "manualCta": "Create project manually",
     "manualCreationHint": "Recommended flow: Offer → Acceptance → Project. Manual creation is for small direct jobs or work without a formal offer.",
     "archiveConfirmAction": "Archive",
-    "archiveConfirmDesc": "The project will be marked as cancelled. You can still view it.",
+    "archiveConfirmDesc": "The project will be archived and removed from the active projects list.",
     "archiveConfirmTitle": "Archive project?",
     "archiveProject": "Archive project",
     "archiveSuccess": "Project archived",

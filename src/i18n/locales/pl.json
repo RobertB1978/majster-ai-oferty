@@ -4059,7 +4059,7 @@
     "manualCta": "Utwórz projekt ręcznie",
     "manualCreationHint": "Zalecana ścieżka: Oferta → Akceptacja → Projekt. Ręczne tworzenie jest przeznaczone dla małych zleceń bezpośrednich lub prac bez formalnej oferty.",
     "archiveConfirmAction": "Archiwizuj",
-    "archiveConfirmDesc": "Projekt zostanie oznaczony jako anulowany. Możesz go nadal przeglądać.",
+    "archiveConfirmDesc": "Projekt zostanie przeniesiony do archiwum i zniknie z listy aktywnych projektów.",
     "archiveConfirmTitle": "Archiwizuj projekt?",
     "archiveProject": "Archiwizuj projekt",
     "archiveSuccess": "Projekt zarchiwizowany",
