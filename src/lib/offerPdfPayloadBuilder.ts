@@ -78,10 +78,12 @@ interface RawProfile {
  *
  * @param offerId - UUID of the offer row
  * @param userId  - UUID of the authenticated user (for profile fetch)
+ * @param locale  - Optional i18n locale string (e.g. 'pl', 'en', 'uk'). Defaults to 'pl-PL'.
  */
 export async function buildOfferPdfPayloadFromOffer(
   offerId: string,
   userId: string,
+  locale?: string,
 ): Promise<OfferPdfPayload> {
   // ── 1. Load offer row ────────────────────────────────────────────────────
   const { data: offer, error: offerErr } = await supabase
@@ -271,5 +273,6 @@ export async function buildOfferPdfPayloadFromOffer(
     validUntil,
     variantSections,
     acceptanceUrl,
+    locale,
   };
 }

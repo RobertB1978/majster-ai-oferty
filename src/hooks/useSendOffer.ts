@@ -16,6 +16,7 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { offersKeys } from '@/hooks/useOffers';
@@ -49,6 +50,7 @@ export interface SendOfferResult {
 
 export function useSendOffer() {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation<SendOfferResult, Error, SendOfferParams>({
@@ -92,7 +94,8 @@ export function useSendOffer() {
       // ── 3. Generate + upload PDF (non-fatal) ──────────────────────────
       let pdfUrl: string | null = null;
       try {
-        const pdfBlob = await generateOfferPdfWithServer(offerId, user.id);
+        const translateFn = (key: string, opts?: Record<string, unknown>) => t(key, opts as never) as string;
+        const pdfBlob = await generateOfferPdfWithServer(offerId, user.id, translateFn, i18n.language);
         const { publicUrl } = await uploadOfferPdf({
           projectId: offerId,
           pdfBlob,

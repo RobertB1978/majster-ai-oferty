@@ -198,7 +198,8 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
     if (!user || !data) return;
     setIsPdfGenerating(true);
     try {
-      const pdfBlob = await generateOfferPdfWithServer(offerId, user.id);
+      const translateFn = (key: string, opts?: Record<string, unknown>) => t(key, opts as never) as string;
+      const pdfBlob = await generateOfferPdfWithServer(offerId, user.id, translateFn, i18n.language);
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = url;

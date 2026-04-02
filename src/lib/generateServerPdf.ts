@@ -28,6 +28,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { serializeOfferPdfPayload } from './serialize-offer-pdf-payload';
 import { buildOfferPdfPayloadFromOffer } from './offerPdfPayloadBuilder';
 import { generateOfferPdf as generateClientPdf } from './offerPdfGenerator';
+import type { OfferPdfTranslateFn } from './offerPdfGenerator';
 import { logger } from './logger';
 import type { OfferPdfPayload } from './offerDataBuilder';
 
@@ -35,15 +36,20 @@ import type { OfferPdfPayload } from './offerDataBuilder';
  * Generate a PDF for an offer, preferring server-side rendering.
  *
  * @param offerId - Offer UUID
- * @param userId - Current user UUID (for payload builder)
+ * @param userId  - Current user UUID (for payload builder)
+ * @param t       - Optional i18n translation function. When provided, system PDF labels
+ *                  (headings, table headers, footer) follow the active locale.
+ * @param locale  - Optional i18n locale string (e.g. 'pl', 'en', 'uk'). Used for date/currency formatting.
  * @returns Blob of the generated PDF
  */
 export async function generateOfferPdfWithServer(
   offerId: string,
   userId: string,
+  t?: OfferPdfTranslateFn,
+  locale?: string,
 ): Promise<Blob> {
   // Build the browser-side payload (shared by both paths)
-  const payload = await buildOfferPdfPayloadFromOffer(offerId, userId);
+  const payload = await buildOfferPdfPayloadFromOffer(offerId, userId, locale);
 
   // Try server-side first
   try {
@@ -54,8 +60,8 @@ export async function generateOfferPdfWithServer(
     logger.warn('[generateServerPdf] Server-side failed, falling back to jsPDF:', err);
   }
 
-  // Fallback: client-side jsPDF
-  return generateClientPdf(payload);
+  // Fallback: client-side jsPDF — pass t so labels follow the active locale
+  return generateClientPdf(payload, t);
 }
 
 /**
