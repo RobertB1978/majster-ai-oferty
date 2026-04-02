@@ -166,7 +166,7 @@ export function drawLogoPlaceholder(
   const initial = companyName.trim().charAt(0).toUpperCase() || 'M';
 
   // Amber rounded square
-  doc.setFillColor(ACCENT_AMBER[0], ACCENT_AMBER[1], ACCENT_AMBER[2]);
+  doc.setFillColor(...ACCENT_AMBER);
   doc.roundedRect(x, y, size, size, 2, 2, 'F');
 
   // White initial letter centered
