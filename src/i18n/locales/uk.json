@@ -4791,7 +4791,10 @@
       "complexity": "Складність",
       "starterNotes": "Початкові нотатки",
       "materials": "Матеріали",
-      "labor": "Праця"
+      "labor": "Праця",
+      "preview": "Попередній перегляд шаблону",
+      "previewShort": "Перегляд",
+      "itemSummary": "{{materialCount}} матеріалів · {{laborCount}} поз. робіт"
     }
   },
   "offline": {
@@ -5284,7 +5287,14 @@
     "selectFileAndUpload": "Обрати файл та завантажити",
     "acceptedFormats": "Дозволені формати: PDF, JPG, PNG, DOC. Макс. 10MB",
     "noDocuments": "Немає документів",
-    "noDocumentsHint": "Додайте ліцензії, рекомендації або сертифікати"
+    "noDocumentsHint": "Додайте ліцензії, рекомендації або сертифікати",
+    "docTypes": {
+      "uprawnienia": "Ліцензії",
+      "referencje": "Рекомендації",
+      "certyfikat": "Сертифікат",
+      "polisa": "Страховий поліс",
+      "inne": "Інше"
+    }
   },
   "dossierPublic": {
     "categoryContract": "Договори",
