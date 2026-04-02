@@ -172,6 +172,6 @@ export function drawLogoPlaceholder(
   // White initial letter centered
   doc.setFontSize(size * 0.55);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(255, 255, 255);
+  doc.setTextColor(...WHITE);
   doc.text(initial, x + size / 2, y + size * 0.68, { align: 'center' });
 }

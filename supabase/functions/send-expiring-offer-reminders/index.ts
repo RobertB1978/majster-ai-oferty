@@ -497,13 +497,13 @@ Deno.serve(async (req) => {
 
       for (const w of (expiringWarranties ?? [])) {
         try {
-          const clientEmail = w.client_email as string;
-          const clientName  = htmlEscape((w.client_name as string | null) ?? ws.fallbackClient);
-
           // Locale: defaults to 'pl' — no per-client locale stored yet.
           const wLocale: SupportedLocale = 'pl';
           const ws = getWarrantyReminderStrings(wLocale);
           const wIntlLocale = resolveIntlLocale(wLocale);
+
+          const clientEmail = w.client_email as string;
+          const clientName  = htmlEscape((w.client_name as string | null) ?? ws.fallbackClient);
 
           const endDateStr  = new Date(w.end_date as string).toLocaleDateString(wIntlLocale, {
             year: 'numeric', month: 'long', day: 'numeric',

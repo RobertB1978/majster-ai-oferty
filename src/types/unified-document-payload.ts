@@ -267,7 +267,7 @@ export interface UnifiedDocumentPayload {
 
   /**
    * Lokalizacja formatowania (daty, waluty, etykiety).
-   * Format BCP 47, np. 'pl-PL', 'en-US'.
+   * Format BCP 47, np. 'pl-PL', 'en-GB'.
    * Wymagane do prawidłowego formatowania polskich dat i kwot.
    */
   locale: string;
