@@ -41,6 +41,19 @@ import { RemindersPanel } from './RemindersPanel';
 import { NotificationPermissionPrompt } from '@/components/notifications/NotificationPermissionPrompt';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/formatters';
+import { generateTemplatePdf } from '@/lib/templatePdfGenerator';
+import { getTemplateByKey } from '@/data/documentTemplates';
+
+// ── Mapowanie InspectionType → klucz szablonu COMPLIANCE ─────────────────────
+
+const INSPECTION_TEMPLATE_KEY: Record<InspectionType, string> = {
+  ANNUAL_BUILDING: 'compliance_annual_building',
+  FIVE_YEAR_BUILDING: 'compliance_five_year_building',
+  FIVE_YEAR_ELECTRICAL: 'compliance_electrical_lightning',
+  ANNUAL_GAS_CHIMNEY: 'compliance_gas_chimney',
+  LARGE_AREA_SEMIANNUAL: 'compliance_large_building',
+  OTHER: 'compliance_annual_building',
+};
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -233,23 +246,37 @@ function InspectionCard({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Create a simple protocol PDF placeholder using existing approach
       const fileName = `protokol_${inspection.inspection_type}_${inspection.due_date}.pdf`;
       const path = `${user.id}/${projectId}/inspection/${fileName}`;
 
-      // Placeholder text blob — full PDF generation via PR-17 templatePdfGenerator is out of scope
-      const blobLines = [
-        `${t('inspection.protocol.title')}\n\n`,
-        `${t('inspection.protocol.type')}: ${t(INSPECTION_TYPE_LABELS[inspection.inspection_type])}\n`,
-        `${t('inspection.protocol.dueDate')}: ${inspection.due_date}\n`,
-        `${t('inspection.protocol.project')}: ${projectTitle}\n`,
-        inspection.object_address ? `${t('inspection.protocol.address')}: ${inspection.object_address}\n` : '',
-        `${t('inspection.protocol.status')}: ${t(`inspection.status.${inspection.status.toLowerCase()}`)}\n`,
-        inspection.notes ? `${t('inspection.protocol.notes')}: ${inspection.notes}\n` : '',
-        `\n${t('inspection.protocol.generated')}: Majster.AI | ${formatDate(new Date(), i18n.language)}\n`,
-      ].join('');
+      // Resolve COMPLIANCE template for this inspection type
+      const templateKey = INSPECTION_TEMPLATE_KEY[inspection.inspection_type];
+      const template = getTemplateByKey(templateKey);
+      if (!template) throw new Error(`Missing template: ${templateKey}`);
 
-      const blob = new Blob([blobLines], { type: 'application/pdf' });
+      // Build form data from inspection fields
+      const locale = (i18n.language === 'pl' || i18n.language === 'en' || i18n.language === 'uk')
+        ? i18n.language
+        : 'pl';
+      const formData: Record<string, string> = {
+        object_name: projectTitle,
+        object_address: inspection.object_address ?? '',
+        inspection_date: inspection.completed_at
+          ? new Date(inspection.completed_at).toISOString().slice(0, 10)
+          : new Date().toISOString().slice(0, 10),
+        next_inspection_date: inspection.due_date,
+        findings: inspection.notes ?? '',
+        overall_assessment: inspection.status === 'DONE' ? 'fit_for_use' : '',
+      };
+
+      // Generate real PDF via jsPDF (templatePdfGenerator)
+      const blob = await generateTemplatePdf({
+        template,
+        data: formData,
+        autofillContext: {},
+        locale: locale as 'pl' | 'en' | 'uk',
+        t,
+      });
 
       const { error: uploadErr } = await supabase.storage
         .from('dossier')
