@@ -3949,6 +3949,7 @@
     "statusActive": "Active",
     "statusCompleted": "Completed",
     "statusOnHold": "On hold",
+    "statusCancelled": "Cancelled",
     "startDate": "Start",
     "emptyTitle": "No projects",
     "emptyDesc": "Create a project from an accepted offer.",
@@ -4021,7 +4022,9 @@
     "archiveConfirmAction": "Archive",
     "archiveConfirmDesc": "The project will be marked as cancelled. You can still view it.",
     "archiveConfirmTitle": "Archive project?",
-    "archiveProject": "Archive project"
+    "archiveProject": "Archive project",
+    "archiveSuccess": "Project archived",
+    "archiveError": "Failed to archive project"
   },
   "burnBar": {
     "budget": "Budget",

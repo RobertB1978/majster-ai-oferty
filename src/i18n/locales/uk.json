@@ -3949,6 +3949,7 @@
     "statusActive": "Активний",
     "statusCompleted": "Завершений",
     "statusOnHold": "Призупинений",
+    "statusCancelled": "Скасований",
     "startDate": "Початок",
     "emptyTitle": "Немає проєктів",
     "emptyDesc": "Створіть проєкт із прийнятої пропозиції.",
@@ -4021,7 +4022,9 @@
     "archiveConfirmAction": "Архівувати",
     "archiveConfirmDesc": "Проект буде позначений як скасований. Ви все ще зможете його переглядати.",
     "archiveConfirmTitle": "Архівувати проект?",
-    "archiveProject": "Архівувати проект"
+    "archiveProject": "Архівувати проект",
+    "archiveSuccess": "Проект заархівовано",
+    "archiveError": "Не вдалося заархівувати проект"
   },
   "burnBar": {
     "budget": "Бюджет",

@@ -109,7 +109,11 @@ export function useProjectsV2List(status: ProjectStatus | 'ALL' = 'ALL', search 
         .from('v2_projects')
         .select('id, user_id, client_id, source_offer_id, title, status, start_date, end_date, progress_percent, stages_json, total_from_offer, budget_net, budget_source, budget_updated_at, created_at, updated_at')
         .order('created_at', { ascending: false })
-        .range(page * pageSize, (page + 1) * pageSize - 1);
+        .range(page * pageSize, (page + 1) * pageSize - 1)
+        // Always exclude soft-deleted (CANCELLED) projects from the list view.
+        // CANCELLED is the soft-delete sentinel — users should never see archived
+        // projects in the main list, regardless of which status tab is active.
+        .neq('status', 'CANCELLED');
 
       if (status !== 'ALL') {
         query = query.eq('status', status);
