@@ -22,58 +22,108 @@ import {
 
 // ── 1: downloadDossierFile helper ───────────────────────────────────────────
 //
-// Implementation note: downloadDossierFile no longer uses fetch+blob.
-// It appends Supabase's `?download=<filename>` parameter to the signed URL
-// so the storage server responds with Content-Disposition: attachment.
-// The browser then downloads the file directly — no CORS issues, no blob timing.
+// Implementation note: downloadDossierFile creates a fresh signed URL with
+// the `download` option embedded in the JWT via createSignedUrl(path, 60, { download: fileName }).
+// Supabase Storage then responds with Content-Disposition: attachment; filename=…
+// The parameter must be in the JWT — manually appending &download= is ignored by the server.
+
+// Default signed URL returned by the createSignedUrl mock
+const MOCK_SIGNED_DOWNLOAD_URL =
+  'https://storage.example.com/signed-download-url?token=JWT&download=file.pdf';
+
+// vi.hoisted ensures these are available when vi.mock factory runs (hoisted to top)
+const { mockCreateSignedUrl } = vi.hoisted(() => ({
+  mockCreateSignedUrl: vi.fn().mockResolvedValue({
+    data: {
+      signedUrl:
+        'https://storage.example.com/signed-download-url?token=JWT&download=file.pdf',
+    },
+    error: null,
+  }),
+}));
+
+vi.mock('@/integrations/supabase/client', () => ({
+  supabase: {
+    storage: {
+      from: vi.fn().mockReturnValue({
+        createSignedUrl: mockCreateSignedUrl,
+      }),
+    },
+  },
+}));
 
 describe('downloadDossierFile', () => {
+  beforeEach(() => {
+    // Reset call counts but keep implementations
+    mockCreateSignedUrl.mockClear();
+    mockCreateSignedUrl.mockResolvedValue({
+      data: { signedUrl: MOCK_SIGNED_DOWNLOAD_URL },
+      error: null,
+    });
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('appends download param and triggers download via anchor element', () => {
-    const mockAnchor = { href: '', download: '', click: vi.fn(), remove: vi.fn() };
+  it('calls createSignedUrl with download option and triggers anchor click', async () => {
+    const { supabase } = await import('@/integrations/supabase/client');
+    const mockAnchor = { href: '', click: vi.fn(), remove: vi.fn() };
     vi.spyOn(document, 'createElement').mockReturnValue(
       mockAnchor as unknown as HTMLAnchorElement
     );
     vi.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
 
-    downloadDossierFile('https://storage.example.com/signed-url?token=abc', 'contract.pdf');
+    await downloadDossierFile('u1/p1/contract/1234_contract.pdf', 'contract.pdf');
 
-    expect(mockAnchor.href).toContain('&download=contract.pdf');
-    expect(mockAnchor.download).toBe('contract.pdf');
+    expect(supabase.storage.from).toHaveBeenCalledWith('dossier');
+    expect(mockCreateSignedUrl).toHaveBeenCalledWith(
+      'u1/p1/contract/1234_contract.pdf',
+      60,
+      { download: 'contract.pdf' }
+    );
+    expect(mockAnchor.href).toBe(MOCK_SIGNED_DOWNLOAD_URL);
     expect(mockAnchor.click).toHaveBeenCalledTimes(1);
     expect(mockAnchor.remove).toHaveBeenCalledTimes(1);
   });
 
-  it('encodes special characters in filename for download param', () => {
-    const mockAnchor = { href: '', download: '', click: vi.fn(), remove: vi.fn() };
-    vi.spyOn(document, 'createElement').mockReturnValue(
-      mockAnchor as unknown as HTMLAnchorElement
-    );
+  it('works with Polish filenames (special characters)', async () => {
+    const mockAnchor = { href: '', click: vi.fn(), remove: vi.fn() };
+    vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as unknown as HTMLAnchorElement);
     vi.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
 
-    downloadDossierFile('https://storage.example.com/url?token=x', 'umowa końcowa.pdf');
+    await downloadDossierFile('u1/p1/contract/ts_umowa.pdf', 'umowa końcowa.pdf');
 
-    expect(mockAnchor.href).toContain('&download=umowa%20ko%C5%84cowa.pdf');
+    expect(mockCreateSignedUrl).toHaveBeenCalledWith(
+      'u1/p1/contract/ts_umowa.pdf',
+      60,
+      { download: 'umowa końcowa.pdf' }
+    );
     expect(mockAnchor.click).toHaveBeenCalled();
   });
 
-  it('throws synchronously when signedUrl is empty', () => {
-    expect(() => downloadDossierFile('', 'file.pdf')).toThrow('Download failed: missing URL');
+  it('throws when filePath is empty', async () => {
+    await expect(downloadDossierFile('', 'file.pdf')).rejects.toThrow(
+      'Download failed: missing file path'
+    );
   });
 
-  it('does not call fetch (no cross-origin blob fetch needed)', () => {
-    const mockAnchor = { href: '', download: '', click: vi.fn(), remove: vi.fn() };
-    vi.spyOn(document, 'createElement').mockReturnValue(
-      mockAnchor as unknown as HTMLAnchorElement
-    );
+  it('throws when createSignedUrl returns an error', async () => {
+    mockCreateSignedUrl.mockResolvedValueOnce({ data: null, error: { message: 'Permission denied' } });
+
+    await expect(
+      downloadDossierFile('u1/p1/contract/file.pdf', 'file.pdf')
+    ).rejects.toThrow('Download failed: could not generate download URL');
+  });
+
+  it('does not call fetch (uses Supabase signed URL, not blob fetch)', async () => {
+    const mockAnchor = { href: '', click: vi.fn(), remove: vi.fn() };
+    vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as unknown as HTMLAnchorElement);
     vi.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
     const fetchSpy = vi.fn();
     global.fetch = fetchSpy;
 
-    downloadDossierFile('https://storage.example.com/url?token=x', 'file.pdf');
+    await downloadDossierFile('u1/p1/contract/file.pdf', 'file.pdf');
 
     expect(fetchSpy).not.toHaveBeenCalled();
   });

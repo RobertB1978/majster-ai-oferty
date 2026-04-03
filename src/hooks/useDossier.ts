@@ -95,26 +95,37 @@ async function getSignedUrl(filePath: string): Promise<string> {
 }
 
 /**
- * Trigger browser download for a file via its signed URL.
+ * Trigger browser download for a dossier file by its storage path.
  *
- * Appends Supabase's `?download=<filename>` parameter to the URL so the
- * storage server responds with `Content-Disposition: attachment; filename=…`.
- * The browser then saves the file directly — no cross-origin fetch, no blob
- * manipulation, no async-gesture timing issues.
+ * Creates a fresh short-lived (60 s) signed URL with the `download` option
+ * embedded in the JWT signature. Supabase Storage then responds with
+ * `Content-Disposition: attachment; filename=…`, forcing the browser to save
+ * the file regardless of its MIME type.
+ *
+ * Why not reuse the preview signed URL with `&download=` appended?
+ *  - Supabase Storage validates the `download` claim inside the JWT.
+ *    A parameter appended manually after signing is ignored by the server.
+ *  - Result: file opens in the browser instead of downloading.
  *
  * Why not fetch+blob?
- *  - Private Supabase bucket requires CORS headers on the storage endpoint;
- *    if CORS is not configured for `fetch()` the download silently fails.
- *  - Chrome ignores the `download` attribute on cross-origin anchor clicks,
- *    so the blob:// URL trick is unreliable in practice.
- *  - Content-Disposition: attachment (server-side) is universally respected.
+ *  - Would work, but requires an extra round-trip and holds the entire file
+ *    in JS memory — unreliable for large files on mobile.
+ *  - The signed-URL approach offloads the transfer to the browser's native
+ *    download manager, which handles resume, progress, and disk buffering.
  */
-export function downloadDossierFile(signedUrl: string, fileName: string): void {
-  if (!signedUrl) throw new Error('Download failed: missing URL');
-  const url = `${signedUrl}&download=${encodeURIComponent(fileName)}`;
+export async function downloadDossierFile(filePath: string, fileName: string): Promise<void> {
+  if (!filePath) throw new Error('Download failed: missing file path');
+
+  const { data, error } = await supabase.storage
+    .from(DOSSIER_BUCKET)
+    .createSignedUrl(filePath, 60, { download: fileName });
+
+  if (error || !data?.signedUrl) {
+    throw new Error('Download failed: could not generate download URL');
+  }
+
   const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName; // fallback hint for same-origin environments
+  a.href = data.signedUrl;
   document.body.appendChild(a);
   a.click();
   a.remove();
