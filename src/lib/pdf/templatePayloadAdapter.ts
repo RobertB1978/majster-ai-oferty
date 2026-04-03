@@ -135,6 +135,12 @@ function buildClientInfo(
  * Mapowane pola (spójne z kluczami pól w documentTemplates.ts):
  *   receptionDate: acceptance_date | work_end_date | contract_date
  *   notes:         additional_notes
+ *
+ * UWAGA: items[] (ProtocolItem[]) NIE jest mapowane.
+ * TemplateEditor używa Record<string, string> (flat key-value) i FieldType
+ * nie wspiera typu 'array'. Pozycje odbioru wpisywane są jako tekst w textarea.
+ * Gdy UI do items[] zostanie dodane (osobne zadanie), mapowanie należy dodać tutaj:
+ *   items: Array<{ description: string; accepted: boolean; notes?: string }>
  */
 function buildProtocolSection(data: Record<string, string>): ProtocolDocumentSection {
   return {
