@@ -374,6 +374,10 @@ export function validateUnifiedPayload(body: unknown): string | null {
     return 'Brakujące wymagane pole: issuedAt (ISO 8601).';
   }
 
+  if (typeof p.generatedAt !== 'string' || !p.generatedAt) {
+    return 'Brakujące wymagane pole: generatedAt (ISO 8601).';
+  }
+
   if (!('validUntil' in p)) {
     return 'Brakujące wymagane pole: validUntil (ISO 8601 lub null).';
   }
