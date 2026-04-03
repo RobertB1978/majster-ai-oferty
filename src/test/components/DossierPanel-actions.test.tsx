@@ -74,6 +74,8 @@ vi.mock('@/hooks/useDossier', async (importOriginal) => {
     useUploadDossierItem: () => ({ mutateAsync: vi.fn() }),
     useDeleteDossierItem: () => ({ mutateAsync: vi.fn() }),
     useExportDossierPdf: () => ({ mutate: vi.fn(), isPending: false }),
+    // Explicit mock: real downloadDossierFile calls Supabase which is not available in tests
+    downloadDossierFile: vi.fn().mockResolvedValue(undefined),
   };
 });
 
@@ -198,6 +200,29 @@ describe('DossierPanel — FileRow action buttons', () => {
 
     // Confirmation state must show visible text (not just icon) so user knows to click again
     expect(screen.getByText(i18n.t('dossier.confirmDeleteShort'))).toBeInTheDocument();
+  });
+
+  it('download button click calls downloadDossierFile with file_path (not signed_url)', async () => {
+    const { downloadDossierFile } = await import('@/hooks/useDossier');
+    const user = userEvent.setup();
+    renderPanel();
+
+    // Expand CONTRACT category
+    const contractCard = screen.getByRole('button', {
+      name: i18n.t('dossier.category.CONTRACT'),
+    });
+    await user.click(contractCard);
+
+    // Click the Download button
+    const downloadBtn = screen.getByLabelText(i18n.t('dossier.downloadFile'));
+    await user.click(downloadBtn);
+
+    // Must be called with file_path (not signed_url) so Supabase can create
+    // a proper download-signed URL with Content-Disposition: attachment
+    expect(vi.mocked(downloadDossierFile)).toHaveBeenCalledWith(
+      'u1/p1/contract/test.pdf',  // file_path from MOCK_ITEMS
+      'Umowa_serwisowa.pdf'        // file_name from MOCK_ITEMS
+    );
   });
 
   it('preview and download actions are distinct — different aria-labels and different targets', async () => {

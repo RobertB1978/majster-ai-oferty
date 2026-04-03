@@ -81,10 +81,12 @@ function formatBytes(bytes: number | null): string {
 
 function PublicFileActions({
   signedUrl,
+  filePath,
   fileName,
   isImage,
 }: {
   signedUrl: string;
+  filePath: string;
   fileName: string;
   isImage: boolean;
 }) {
@@ -123,7 +125,7 @@ function PublicFileActions({
             setDownloading(true);
             setDownloadError(false);
             try {
-              await downloadDossierFile(signedUrl, fileName);
+              await downloadDossierFile(filePath, fileName);
             } catch {
               setDownloadError(true);
               setTimeout(() => setDownloadError(false), 3000);
@@ -316,6 +318,7 @@ export default function DossierPublicPage() {
                       {item.signed_url ? (
                         <PublicFileActions
                           signedUrl={item.signed_url}
+                          filePath={item.file_path}
                           fileName={item.file_name}
                           isImage={!!item.mime_type?.startsWith('image/')}
                         />
