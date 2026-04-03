@@ -109,8 +109,10 @@ describe('downloadDossierFile', () => {
     );
   });
 
-  it('throws when createSignedUrl returns an error', async () => {
-    mockCreateSignedUrl.mockResolvedValueOnce({ data: null, error: { message: 'Permission denied' } });
+  it('throws when createSignedUrl returns an error (after retry)', async () => {
+    mockCreateSignedUrl
+      .mockResolvedValueOnce({ data: null, error: { message: 'Permission denied' } })
+      .mockResolvedValueOnce({ data: null, error: { message: 'Permission denied' } });
 
     await expect(
       downloadDossierFile('u1/p1/contract/file.pdf', 'file.pdf')

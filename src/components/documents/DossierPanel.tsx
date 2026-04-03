@@ -206,7 +206,7 @@ function FileRow({ item, onDelete }: FileRowProps) {
         </p>
       </div>
 
-      {item.signed_url && (
+      {item.signed_url ? (
         <>
           <a
             href={item.signed_url}
@@ -243,6 +243,10 @@ function FileRow({ item, onDelete }: FileRowProps) {
             )}
           </button>
         </>
+      ) : (
+        <span className="text-xs text-muted-foreground italic">
+          {t('dossier.urlUnavailable', { defaultValue: 'URL niedostępny' })}
+        </span>
       )}
 
       <button
@@ -287,6 +291,8 @@ export function DossierPanel({ projectId, projectTitle }: DossierPanelProps) {
   const uploadItem = useUploadDossierItem();
   const deleteItem = useDeleteDossierItem();
   const exportPdf = useExportDossierPdf();
+
+  const hasStaleUrls = items.length > 0 && items.some((i) => !i.signed_url);
 
   const itemsByCategory = DOSSIER_CATEGORIES.reduce<Record<DossierCategory, DossierItem[]>>(
     (acc, cat) => {
@@ -345,9 +351,22 @@ export function DossierPanel({ projectId, projectTitle }: DossierPanelProps) {
     <div className="space-y-3">
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <p className="text-xs text-muted-foreground">
-          {t('dossier.totalFiles', { count: items.length })}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-xs text-muted-foreground">
+            {t('dossier.totalFiles', { count: items.length })}
+          </p>
+          {hasStaleUrls && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 h-7 text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-900/20"
+              onClick={() => refetch()}
+            >
+              <RefreshCw className="w-3 h-3" />
+              {t('dossier.refreshUrls', { defaultValue: 'Odśwież linki' })}
+            </Button>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"

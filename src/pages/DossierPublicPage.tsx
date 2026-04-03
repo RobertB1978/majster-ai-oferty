@@ -17,7 +17,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   FolderOpen, FileText, Clock, CheckCircle2, AlertCircle,
-  Loader2, Download, Eye,
+  Loader2, Download, Eye, RefreshCw,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -65,11 +65,18 @@ const CATEGORY_I18N_KEYS: Record<string, string> = {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 async function fetchSignedUrl(filePath: string): Promise<string> {
-  const { data, error } = await supabase.storage
-    .from(DOSSIER_BUCKET)
-    .createSignedUrl(filePath, 3600);
-  if (error || !data?.signedUrl) return '';
-  return data.signedUrl;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const { data, error } = await supabase.storage
+      .from(DOSSIER_BUCKET)
+      .createSignedUrl(filePath, 3600);
+    if (data?.signedUrl) return data.signedUrl;
+    if (attempt === 0) {
+      logger.warn('[DossierPublic] signed URL attempt 1 failed, retrying', error);
+      continue;
+    }
+    logger.error('[DossierPublic] signed URL failed after retry', filePath, error);
+  }
+  return '';
 }
 
 function formatBytes(bytes: number | null): string {
@@ -153,6 +160,27 @@ export default function DossierPublicPage() {
   const { token } = useParams<{ token: string }>();
   const { t, i18n } = useTranslation();
   const [load, setLoad] = useState<LoadState>({ state: 'loading' });
+  const [retryingUrls, setRetryingUrls] = useState(false);
+
+  // Refresh only signed URLs without re-fetching dossier data
+  const retrySignedUrls = async () => {
+    if (load.state !== 'ok') return;
+    setRetryingUrls(true);
+    try {
+      const refreshed = await Promise.all(
+        load.dossier.items.map(async (item) => ({
+          ...item,
+          signed_url: await fetchSignedUrl(item.file_path),
+        }))
+      );
+      setLoad({
+        state: 'ok',
+        dossier: { ...load.dossier, items: refreshed },
+      });
+    } finally {
+      setRetryingUrls(false);
+    }
+  };
 
   useEffect(() => {
     if (!token) {
@@ -296,6 +324,25 @@ export default function DossierPublicPage() {
         </div>
       </div>
 
+      {/* Retry banner when some signed URLs failed */}
+      {dossier.items.length > 0 && dossier.items.some((i) => !i.signed_url) && (
+        <div className="max-w-2xl mx-auto px-4 pt-4">
+          <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
+            <p className="text-xs text-orange-700 dark:text-orange-400">
+              {t('dossier.public.someFilesUnavailable', { defaultValue: 'Niektóre pliki nie załadowały się poprawnie.' })}
+            </p>
+            <button
+              onClick={retrySignedUrls}
+              disabled={retryingUrls}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-900/40 dark:text-orange-300 dark:hover:bg-orange-900/60 transition-colors shrink-0"
+            >
+              {retryingUrls ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+              {t('dossier.public.retryLoad', { defaultValue: 'Spróbuj ponownie' })}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Content */}
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {dossier.items.length === 0 ? (
@@ -342,8 +389,8 @@ export default function DossierPublicPage() {
                           isImage={!!item.mime_type?.startsWith('image/')}
                         />
                       ) : (
-                        <span className="text-xs text-muted-foreground">
-                          {t('dossier.public.linkUnavailable')}
+                        <span className="text-xs text-orange-500 dark:text-orange-400 italic">
+                          {t('dossier.public.linkUnavailable', { defaultValue: 'Plik tymczasowo niedostępny' })}
                         </span>
                       )}
                     </div>
