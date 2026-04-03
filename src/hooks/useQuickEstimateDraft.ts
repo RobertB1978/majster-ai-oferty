@@ -50,6 +50,29 @@ interface LineItemMetadata {
 const DEBOUNCE_MS = 2000;
 const DRAFT_SOURCE = 'quick_estimate';
 
+/** Build JSONB array for replace_offer_items_quick RPC */
+function buildItemsJsonb(items: LineItem[], vatEnabled: boolean): object[] {
+  return items
+    .filter((i) => i.name.trim())
+    .map((item) => ({
+      name: item.name,
+      unit: item.unit,
+      qty: item.qty,
+      item_type: item.itemType,
+      unit_price_net: itemUnitPrice(item),
+      line_total_net: itemLineTotal(item),
+      vat_rate: vatEnabled ? 23 : null,
+      metadata: {
+        priceMode: item.priceMode,
+        price: item.price,
+        laborCost: item.laborCost,
+        materialCost: item.materialCost,
+        marginPct: item.marginPct,
+        showMargin: item.showMargin,
+      } satisfies LineItemMetadata,
+    }));
+}
+
 /* ── Hook ─────────────────────────────────────────────────────── */
 
 export function useQuickEstimateDraft() {
@@ -203,39 +226,14 @@ export function useQuickEstimateDraft() {
           if (updateErr) throw updateErr;
         }
 
-        // Replace all line items (delete + insert is simplest and safe for DRAFT)
-        await supabase.from('offer_items').delete().eq('offer_id', currentId);
-
-        const validItems = data.items.filter((i) => i.name.trim());
-        if (validItems.length > 0) {
-          // `metadata` column exists in DB but not in generated types
-          const { error: itemsErr } = await typedMutationResult(
-            supabase.from('offer_items').insert(
-              validItems.map((item) => withExtraColumns({
-                user_id: user.id,
-                offer_id: currentId!,
-                name: item.name,
-                unit: item.unit,
-                qty: item.qty,
-                item_type: item.itemType,
-                unit_price_net: itemUnitPrice(item),
-                line_total_net: itemLineTotal(item),
-                vat_rate: data.vatEnabled ? 23 : null,
-              }, {
-                metadata: {
-                  priceMode: item.priceMode,
-                  price: item.price,
-                  laborCost: item.laborCost,
-                  materialCost: item.materialCost,
-                  marginPct: item.marginPct,
-                  showMargin: item.showMargin,
-                } satisfies LineItemMetadata,
-              })),
-            ),
-          );
-
-          if (itemsErr) throw itemsErr;
-        }
+        // Atomic replace via RPC — DELETE + INSERT in a single transaction
+        // prevents data loss if INSERT fails after DELETE
+        const { error: itemsErr } = await supabase.rpc('replace_offer_items_quick', {
+          p_offer_id: currentId!,
+          p_user_id: user.id,
+          p_items: buildItemsJsonb(data.items, data.vatEnabled),
+        });
+        if (itemsErr) throw itemsErr;
 
         setSaveStatus('saved');
         setLastSavedAt(new Date());
@@ -358,38 +356,13 @@ export function useQuickEstimateDraft() {
       offerId = offer.id;
     }
 
-    // Replace offer_items with the final validated set
-    await supabase.from('offer_items').delete().eq('offer_id', offerId);
-
-    const validItems = data.items.filter((i) => i.name.trim());
-    if (validItems.length > 0) {
-      // `metadata` column exists in DB but not in generated types
-      const { error: itemsErr } = await typedMutationResult(
-        supabase.from('offer_items').insert(
-          validItems.map((item) => withExtraColumns({
-            user_id: user.id,
-            offer_id: offerId!,
-            name: item.name,
-            unit: item.unit,
-            qty: item.qty,
-            item_type: item.itemType,
-            unit_price_net: itemUnitPrice(item),
-            line_total_net: itemLineTotal(item),
-            vat_rate: data.vatEnabled ? 23 : null,
-          }, {
-            metadata: {
-              priceMode: item.priceMode,
-              price: item.price,
-              laborCost: item.laborCost,
-              materialCost: item.materialCost,
-              marginPct: item.marginPct,
-              showMargin: item.showMargin,
-            } satisfies LineItemMetadata,
-          })),
-        ),
-      );
-      if (itemsErr) throw itemsErr;
-    }
+    // Atomic replace via RPC — DELETE + INSERT in a single transaction
+    const { error: itemsErr } = await supabase.rpc('replace_offer_items_quick', {
+      p_offer_id: offerId!,
+      p_user_id: user.id,
+      p_items: buildItemsJsonb(data.items, data.vatEnabled),
+    });
+    if (itemsErr) throw itemsErr;
 
     // Reset local draft state — offer is kept as SENT, not deleted
     draftOfferIdRef.current = null;
