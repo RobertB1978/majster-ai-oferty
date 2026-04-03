@@ -8,25 +8,27 @@
  * ── Strategia renderowania ─────────────────────────────────────────────────
  *   1. Próba serwer-first: Edge Function generate-pdf-v2 (@react-pdf/renderer)
  *      → Wyższa jakość, polskie czcionki, serwer-side rendering
- *   2. Fallback klient-side (tylko dla 'offer'):
- *      → jsPDF (offerPdfGenerator) — zawsze dostępny, niezależny od sieci
- *   3. Dla typów oczekujących migracji (warranty, protocol, contract, inspection):
+ *   2. Fallback klient-side (dla 'offer' i 'warranty'):
+ *      → jsPDF (offerPdfGenerator / warrantyPdfGenerator) — zawsze dostępny
+ *   3. Dla typów oczekujących migracji (protocol, contract, inspection):
  *      → rzuca PendingMigrationError — wywołujący musi obsłużyć
  *      → Istniejące UI komponentów używają bezpośrednio generatorów jsPDF
- *        (warrantyPdfGenerator, templatePdfGenerator) — nie ma regresi
+ *        (templatePdfGenerator) — nie ma regresji
  *
  * ── Klasyfikacja ścieżek renderowania ─────────────────────────────────────
  *   CANONICAL  : generate-pdf-v2 (Edge Function, @react-pdf/renderer)
- *   FALLBACK   : offerPdfGenerator.ts (jsPDF, tylko dla 'offer')
+ *                Obsługuje: 'offer', 'warranty'
+ *   FALLBACK   : offerPdfGenerator.ts (jsPDF, 'offer')
+ *                warrantyPdfGenerator.ts (jsPDF, 'warranty')
  *   LEGACY     : generateServerPdf.ts (OfferPDFPayload v1 → generate-offer-pdf)
- *   STANDALONE : templatePdfGenerator.ts, warrantyPdfGenerator.ts
- *                (jsPDF, poza v2 — oczekują migracji)
+ *   STANDALONE : templatePdfGenerator.ts
+ *                (jsPDF, poza v2 — oczekuje migracji)
  *
  * ── Przyszłe rozszerzenia (bez resetu architektury) ───────────────────────
  *   - documentType-based routing: już w miejscu (switch po documentType)
  *   - trade-aware styling: planTier/trade w UnifiedDocumentPayload → v2 renderer
  *   - plan-tier differentiation: pdfConfig.version='premium' dla pro/enterprise
- *   - warranty/protocol fallback: implementacja adaptorów w następnym PR
+ *   - protocol/contract/inspection: migracja w następnych PR
  *
  * Roadmap: PDF Platform v2 — Canonical Renderer.
  */
@@ -35,6 +37,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 import { generateOfferPdf } from '@/lib/offerPdfGenerator';
 import type { OfferPdfTranslateFn } from '@/lib/offerPdfGenerator';
+import { generateWarrantyPdfBlob } from '@/lib/warrantyPdfGenerator';
+import type { WarrantyPdfContext } from '@/lib/warrantyPdfGenerator';
 import type { OfferPdfPayload, QuoteData, OfferVariantSection } from '@/lib/offerDataBuilder';
 import type {
   UnifiedDocumentPayload,
@@ -227,6 +231,91 @@ async function offerClientFallback(payload: UnifiedDocumentPayload, t?: OfferPdf
   return generateOfferPdf(legacyPayload, t);
 }
 
+// ── Fallback jsPDF dla gwarancji ─────────────────────────────────────────────
+
+/**
+ * Adapter UnifiedDocumentPayload (warranty) → WarrantyPdfContext (jsPDF format).
+ * Używane wyłącznie w fallbacku gdy Edge Function jest niedostępna.
+ *
+ * UWAGA: Funkcja tłumaczenia `t` jest zastąpiona domyślnym mapowaniem
+ * kluczy polskojęzycznych — fallback nie wymaga kontekstu i18next.
+ */
+function warrantyClientFallback(
+  payload: UnifiedDocumentPayload,
+  warrantyFallbackT?: (key: string) => string,
+): Blob {
+  if (payload.section.type !== 'warranty') {
+    throw new Error(`warrantyClientFallback: oczekiwano section.type='warranty'`);
+  }
+
+  const section = payload.section;
+
+  // Domyślne tłumaczenia polskie dla fallbacku (brak pełnego i18n w koordynatorze)
+  const defaultT = (key: string): string => {
+    const map: Record<string, string> = {
+      'warranty.pdf.title': 'KARTA GWARANCYJNA',
+      'warranty.pdf.docNo': 'Nr dokumentu',
+      'warranty.pdf.issueDate': 'Data wystawienia',
+      'warranty.pdf.sectionParties': 'Strony',
+      'warranty.pdf.warrantor': 'Gwarant:',
+      'warranty.pdf.phone': 'Telefon:',
+      'warranty.pdf.beneficiary': 'Beneficjent:',
+      'warranty.pdf.email': 'E-mail:',
+      'warranty.pdf.contactPhone': 'Tel. kontaktowy:',
+      'warranty.pdf.sectionObject': 'Obiekt gwarancji',
+      'warranty.pdf.projectName': 'Projekt:',
+      'warranty.pdf.sectionPeriod': 'Okres gwarancji',
+      'warranty.pdf.startDate': 'Od:',
+      'warranty.pdf.endDate': 'Do:',
+      'warranty.pdf.duration': 'Czas trwania:',
+      'warranty.pdf.months': 'mies.',
+      'warranty.pdf.sectionScope': 'Zakres prac',
+      'warranty.pdf.sectionExclusions': 'Wyłączenia',
+      'warranty.pdf.sectionLegal': 'Podstawa prawna',
+      'warranty.pdf.legalText':
+        'Niniejsza gwarancja jest udzielana na podstawie art. 577–581 Kodeksu cywilnego.',
+      'warranty.pdf.sigWarrantor': 'Podpis gwaranta',
+      'warranty.pdf.sigBeneficiary': 'Podpis beneficjenta',
+      'warranty.pdf.footerGenerated': 'Wygenerowano',
+    };
+    return map[key] ?? key;
+  };
+
+  const t = warrantyFallbackT ?? defaultT;
+
+  const ctx: WarrantyPdfContext = {
+    warranty: {
+      id: payload.documentId,
+      user_id: '',
+      project_id: payload.sourceProjectId ?? payload.documentId,
+      client_name: payload.client?.name ?? null,
+      client_email: payload.client?.email ?? null,
+      contact_phone: section.contactPhone ?? null,
+      warranty_months: section.warrantyMonths,
+      start_date: section.startDate,
+      end_date: section.endDate,
+      scope_of_work: section.scopeOfWork ?? null,
+      exclusions: section.exclusions ?? null,
+      pdf_storage_path: null,
+      reminder_30_sent_at: null,
+      reminder_7_sent_at: null,
+      created_at: payload.generatedAt,
+      updated_at: payload.generatedAt,
+    },
+    projectTitle: payload.sourceProjectId ?? payload.documentId,
+    companyName: payload.company.name,
+    companyAddress: [payload.company.street, payload.company.postalCode, payload.company.city]
+      .filter(Boolean)
+      .join(', ') || undefined,
+    companyPhone: payload.company.phone,
+    t,
+    locale: payload.locale,
+  };
+
+  logger.warn('[renderPdfV2] Fallback na jsPDF dla gwarancji');
+  return generateWarrantyPdfBlob(ctx);
+}
+
 // ── Kanoniczny koordynator ────────────────────────────────────────────────────
 
 /**
@@ -234,12 +323,12 @@ async function offerClientFallback(payload: UnifiedDocumentPayload, t?: OfferPdf
  *
  * Strategia:
  *   1. Zawsze próbuje Edge Function generate-pdf-v2 (serwer-first)
- *   2. Dla 'offer': fallback na jsPDF gdy Edge Function zawiedzie
+ *   2. Dla 'offer' i 'warranty': fallback na jsPDF gdy Edge Function zawiedzie
  *   3. Dla typów oczekujących migracji: rzuca PendingMigrationError
  *
  * @param payload - UnifiedDocumentPayload (schemaVersion: 2)
  * @returns Blob z zawartością PDF
- * @throws {PendingMigrationError} dla warranty/protocol/contract/inspection
+ * @throws {PendingMigrationError} dla protocol/contract/inspection
  *         (do czasu implementacji ich ścieżek w następnych PR)
  */
 export async function renderDocumentPdfV2(
@@ -252,21 +341,28 @@ export async function renderDocumentPdfV2(
     logger.info(`[renderPdfV2] PDF wygenerowany przez Edge Function v2 (${payload.documentType})`);
     return blob;
   } catch (serverErr) {
-    // Jeśli to PendingMigrationError — nie próbuj fallbacku dla nieofertowych typów
+    // Jeśli to PendingMigrationError — fallback dla typów z klient-side generatorem
     if (serverErr instanceof PendingMigrationError) {
       if (payload.documentType === 'offer') {
-        // Offer nie powinien zwracać pendingMigration z serwera; fallback na wszelki wypadek
         logger.warn('[renderPdfV2] Nieoczekiwany pendingMigration dla offer — fallback jsPDF');
         return offerClientFallback(payload, t);
+      }
+      if (payload.documentType === 'warranty') {
+        logger.warn('[renderPdfV2] Nieoczekiwany pendingMigration dla warranty — fallback jsPDF');
+        return warrantyClientFallback(payload);
       }
       // Pozostałe typy: propaguj błąd — nie ma fallbacku klient-side
       throw serverErr;
     }
 
-    // Błąd sieciowy / 5xx → fallback tylko dla 'offer'
+    // Błąd sieciowy / 5xx → fallback dla typów z klient-side generatorem
     if (payload.documentType === 'offer') {
       logger.warn('[renderPdfV2] Edge Function niedostępna — fallback jsPDF dla oferty:', serverErr);
       return offerClientFallback(payload, t);
+    }
+    if (payload.documentType === 'warranty') {
+      logger.warn('[renderPdfV2] Edge Function niedostępna — fallback jsPDF dla gwarancji:', serverErr);
+      return warrantyClientFallback(payload);
     }
 
     // Dla innych typów: nie ma klient-side fallback → rzuć PendingMigrationError

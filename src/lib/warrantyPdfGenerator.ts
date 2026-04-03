@@ -5,15 +5,15 @@
  * Returns a Blob for download and optionally uploads to the dossier bucket.
  *
  * ── Klasyfikacja PDF Platform v2 ─────────────────────────────────────────────
- * STATUS: STANDALONE / OCZEKUJE MIGRACJI (kolory zmigrowane na tokeny)
+ * STATUS: FALLBACK (siatka bezpieczeństwa)
  *
  * Ten generator używa jsPDF z tokenami z modernPdfStyles.ts.
- * Jest wywoływany bezpośrednio przez WarrantySection.tsx.
+ * Pełni rolę fallbacku klient-side gdy Edge Function jest niedostępna.
+ * Ścieżka kanoniczna: generate-pdf-v2 → warrantyRenderer.ts (@react-pdf/renderer)
  *
- * Deferred migracja do v2:
- *   - Krok 1: implementacja 'warranty' w generate-pdf-v2 (Edge Fn) — prio 1
- *   - Krok 2: adapter UnifiedDocumentPayload → WarrantyPdfContext (wymaga t fn)
- *   - Krok 3: migracja WarrantySection.tsx → renderDocumentPdfV2
+ * Wywoływany przez:
+ *   - renderPdfV2.ts → warrantyClientFallback() (gdy serwer niedostępny)
+ *   - WarrantySection.tsx → bezpośrednio (legacy catch PendingMigrationError)
  * ─────────────────────────────────────────────────────────────────────────────
  */
 

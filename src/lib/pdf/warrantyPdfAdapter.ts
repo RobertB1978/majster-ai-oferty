@@ -9,12 +9,9 @@
  * ── Jak to działa ──────────────────────────────────────────────────────────────
  *   WarrantySection.tsx (UI)
  *     → buildWarrantyUnifiedPayload()  ← ten moduł
- *     → renderDocumentPdfV2()          ← koordynator v2 (próbuje Edge Function)
- *     → PendingMigrationError (501)    ← Edge Function jeszcze nie obsługuje warranty
- *     → WarrantySection catch          ← fallback na generateWarrantyPdfBlob (jsPDF)
- *
- * Gdy Edge Function 'generate-pdf-v2' zostanie rozszerzona o obsługę 'warranty',
- * WarrantySection automatycznie zacznie korzystać z serwera — bez zmian w UI.
+ *     → renderDocumentPdfV2()          ← koordynator v2 (serwer-first)
+ *     → Edge Function generate-pdf-v2  ← warrantyRenderer.ts (@react-pdf/renderer)
+ *     → fallback jsPDF                 ← warrantyPdfGenerator (jeśli serwer niedostępny)
  *
  * ── Zakres tego pliku ──────────────────────────────────────────────────────────
  *   TYLKO budowanie payloadu. Nie renderuje. Nie wywołuje API.
