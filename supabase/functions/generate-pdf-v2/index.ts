@@ -21,23 +21,14 @@
  *   Status: 400 / 422
  *   Body: { error: string }
  *
- * Response (pendingMigration — typ dokumentu jeszcze niezaimplementowany):
- *   Content-Type: application/json
- *   Status: 501
- *   Body: { error: string, pendingMigration: true, documentType: string }
  *
  * ── Obsługiwane typy dokumentów ───────────────────────────────────────────────
- *   ZAIMPLEMENTOWANE:
- *     'offer'    — deleguje do renderera @react-pdf/renderer przez adapter v2→v1
- *     'warranty' — bezpośredni renderer @react-pdf/renderer (warrantyRenderer.ts)
- *     'protocol' — bezpośredni renderer @react-pdf/renderer (protocolRenderer.ts)
- *
- *   OCZEKUJĄCE MIGRACJI (zwracają 501):
- *     'contract'   — jeszcze niezaimplementowane
- *     'inspection' — jeszcze niezaimplementowane
- *
- * Frontend (renderPdfV2.ts) rozumie 501+pendingMigration i automatycznie
- * przekierowuje do odpowiedniego generatora jsPDF jako fallback.
+ *   WSZYSTKIE ZAIMPLEMENTOWANE:
+ *     'offer'      — deleguje do renderera @react-pdf/renderer przez adapter v2→v1
+ *     'warranty'   — bezpośredni renderer @react-pdf/renderer (warrantyRenderer.ts)
+ *     'protocol'   — bezpośredni renderer @react-pdf/renderer (protocolRenderer.ts)
+ *     'contract'   — bezpośredni renderer @react-pdf/renderer (contractRenderer.ts)
+ *     'inspection' — bezpośredni renderer @react-pdf/renderer (inspectionRenderer.ts)
  *
  * Roadmap: PDF Platform v2 — Canonical Renderer.
  */
@@ -51,6 +42,8 @@ import {
 import { renderOfferFromV2Payload } from "./offerRenderer.ts";
 import { renderWarrantyFromV2Payload } from "./warrantyRenderer.ts";
 import { renderProtocolFromV2Payload } from "./protocolRenderer.ts";
+import { renderContractFromV2Payload } from "./contractRenderer.ts";
+import { renderInspectionFromV2Payload } from "./inspectionRenderer.ts";
 
 // ── Handler ───────────────────────────────────────────────────────────────────
 
@@ -145,26 +138,37 @@ serve(async (req: Request): Promise<Response> => {
         });
       }
 
-      // ── OCZEKUJĄCE MIGRACJI ──────────────────────────────────────────────
-      //
-      // Zwracamy 501 z flagą pendingMigration: true.
-      // Frontend (renderPdfV2.ts) rozpoznaje tę odpowiedź i automatycznie
-      // przekierowuje do odpowiedniego generatora jsPDF jako fallback.
-      //
-      // Kolejność migracji (następne PR):
-      //   1. contract   — nowy typ, wymaga nowego generatora
-      //   2. inspection — wymaga obsługi zdjęć w @react-pdf/renderer
+      // ── ZAIMPLEMENTOWANE: contract ──────────────────────────────────────
+      case "contract": {
+        const pdfBytes = await renderContractFromV2Payload(payload);
+        const filename = `${payload.documentId.replace(/\//g, "-")}.pdf`;
 
-      case "contract":
-      case "inspection":
-        return new Response(
-          JSON.stringify({
-            error: `documentType '${payload.documentType}' oczekuje na migrację do renderera v2. Użyj generatora jsPDF po stronie klienta.`,
-            pendingMigration: true,
-            documentType: payload.documentType,
-          }),
-          { status: 501, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
+        return new Response(pdfBytes, {
+          status: 200,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename="${filename}"`,
+            "Content-Length": String(pdfBytes.byteLength),
+          },
+        });
+      }
+
+      // ── ZAIMPLEMENTOWANE: inspection ────────────────────────────────────
+      case "inspection": {
+        const pdfBytes = await renderInspectionFromV2Payload(payload);
+        const filename = `${payload.documentId.replace(/\//g, "-")}.pdf`;
+
+        return new Response(pdfBytes, {
+          status: 200,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename="${filename}"`,
+            "Content-Length": String(pdfBytes.byteLength),
+          },
+        });
+      }
 
       // ── TypeScript exhaustive check ──────────────────────────────────────
       default: {

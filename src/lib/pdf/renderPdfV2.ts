@@ -326,12 +326,10 @@ function warrantyClientFallback(
  * Strategia:
  *   1. Zawsze próbuje Edge Function generate-pdf-v2 (serwer-first)
  *   2. Dla 'offer' i 'warranty': fallback na jsPDF gdy Edge Function zawiedzie
- *   3. Dla typów oczekujących migracji: rzuca PendingMigrationError
+ *   3. Wszystkie 5 typów dokumentów obsługiwane server-side
  *
  * @param payload - UnifiedDocumentPayload (schemaVersion: 2)
  * @returns Blob z zawartością PDF
- * @throws {PendingMigrationError} dla contract/inspection
- *         (do czasu implementacji ich ścieżek w następnych PR)
  */
 export async function renderDocumentPdfV2(
   payload: UnifiedDocumentPayload,
