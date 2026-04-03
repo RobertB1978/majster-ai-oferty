@@ -222,6 +222,21 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontStyle: "italic",
   },
+  photoPlaceholder: {
+    width: "100%",
+    height: 160,
+    borderRadius: 4,
+    borderWidth: 0.5,
+    borderColor: BORDER_DEFAULT,
+    backgroundColor: BG_SURFACE_RAISED,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  photoPlaceholderText: {
+    fontSize: 9,
+    color: TEXT_MUTED,
+    fontStyle: "italic",
+  },
 
   // ── Signatures ──
   signaturesRow: {
@@ -284,6 +299,7 @@ interface InspectionLabels {
   recommendations: string;
   photoGallery: string;
   noPhotos: string;
+  photoUnavailable: string;
   noFindings: string;
   noRecommendations: string;
   sigInspector: string;
@@ -301,6 +317,7 @@ const LABELS: Record<string, InspectionLabels> = {
     recommendations: "ZALECENIA",
     photoGallery: "DOKUMENTACJA FOTOGRAFICZNA",
     noPhotos: "Brak zdj\u0119\u0107",
+    photoUnavailable: "Zdj\u0119cie niedost\u0119pne",
     noFindings: "Brak ustale\u0144",
     noRecommendations: "Brak zalece\u0144",
     sigInspector: "Podpis inspektora",
@@ -316,6 +333,7 @@ const LABELS: Record<string, InspectionLabels> = {
     recommendations: "RECOMMENDATIONS",
     photoGallery: "PHOTO DOCUMENTATION",
     noPhotos: "No photos",
+    photoUnavailable: "Photo unavailable",
     noFindings: "No findings",
     noRecommendations: "No recommendations",
     sigInspector: "Inspector signature",
@@ -331,6 +349,7 @@ const LABELS: Record<string, InspectionLabels> = {
     recommendations: "\u0420\u0415\u041A\u041E\u041C\u0415\u041D\u0414\u0410\u0426\u0406\u0407",
     photoGallery: "\u0424\u041E\u0422\u041E\u0414\u041E\u041A\u0423\u041C\u0415\u041D\u0422\u0410\u0426\u0406\u042F",
     noPhotos: "\u041D\u0435\u043C\u0430\u0454 \u0444\u043E\u0442\u043E",
+    photoUnavailable: "\u0424\u043E\u0442\u043E \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u0435",
     noFindings: "\u041D\u0435\u043C\u0430\u0454 \u0432\u0438\u0441\u043D\u043E\u0432\u043A\u0456\u0432",
     noRecommendations: "\u041D\u0435\u043C\u0430\u0454 \u0440\u0435\u043A\u043E\u043C\u0435\u043D\u0434\u0430\u0446\u0456\u0439",
     sigInspector: "\u041F\u0456\u0434\u043F\u0438\u0441 \u0456\u043D\u0441\u043F\u0435\u043A\u0442\u043E\u0440\u0430",
@@ -367,6 +386,25 @@ function formatDate(iso: string | undefined, locale?: string): string {
 
 function e(type: any, props: any, ...children: any[]): any {
   return React.createElement(type, props, ...children);
+}
+
+/**
+ * Waliduje dostępność URL zdjęcia via HEAD request.
+ * Zwraca false jeśli URL jest pusty, fetch rzuci wyjątek lub odpowiedź nie jest ok.
+ */
+async function validatePhotoUrl(url: string): Promise<boolean> {
+  if (!url) return false;
+  try {
+    const resp = await fetch(url, { method: "HEAD" });
+    return resp.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** Zdjęcie z informacją o walidacji URL */
+interface ValidatedPhoto extends InspectionPhoto {
+  isValid: boolean;
 }
 
 // ── Sub-components ──────────────────────────────────────────────────────────
@@ -498,13 +536,11 @@ function buildRecommendationsSection(
 }
 
 function buildPhotoGallery(
-  section: InspectionDocumentSection,
+  validatedPhotos: ValidatedPhoto[],
   labels: InspectionLabels,
   tokens: BaseStyleTokens,
 ) {
-  const photos: InspectionPhoto[] = section.photos ?? [];
-
-  if (photos.length === 0) {
+  if (validatedPhotos.length === 0) {
     return e(
       View,
       { style: styles.sectionContainer },
@@ -513,14 +549,20 @@ function buildPhotoGallery(
     );
   }
 
-  const photoElements = photos.map((photo, idx) =>
+  const photoElements = validatedPhotos.map((photo, idx) =>
     e(
       View,
       { key: `photo-${idx}`, style: styles.photoItem },
-      e(Image, {
-        style: styles.photoImage,
-        src: photo.url,
-      }),
+      photo.isValid
+        ? e(Image, {
+            style: styles.photoImage,
+            src: photo.url,
+          })
+        : e(
+            View,
+            { style: styles.photoPlaceholder },
+            e(Text, { style: styles.photoPlaceholderText }, labels.photoUnavailable),
+          ),
       photo.caption
         ? e(Text, { style: styles.photoCaption }, photo.caption)
         : null,
@@ -529,7 +571,7 @@ function buildPhotoGallery(
 
   return e(
     View,
-    { style: styles.sectionContainer, break: photos.length > 2 },
+    { style: styles.sectionContainer, break: validatedPhotos.length > 2 },
     buildSectionLabelWithAccent(labels.photoGallery, tokens),
     e(
       View,
@@ -585,6 +627,7 @@ function buildFooter(
 
 export function buildInspectionDocument(
   payload: UnifiedDocumentPayload,
+  validatedPhotos: ValidatedPhoto[],
 ): unknown {
   const section = payload.section as InspectionDocumentSection;
   const labels = getInspectionLabels(payload.locale);
@@ -595,7 +638,7 @@ export function buildInspectionDocument(
     buildInfoCards(payload, labels),
     buildFindingsSection(section, labels, tokens),
     buildRecommendationsSection(section, labels, tokens),
-    buildPhotoGallery(section, labels, tokens),
+    buildPhotoGallery(validatedPhotos, labels, tokens),
     buildSignatures(labels),
     buildFooter(payload, labels, tokens),
   ];
@@ -629,7 +672,15 @@ export async function renderInspectionFromV2Payload(
     );
   }
 
-  const doc = buildInspectionDocument(payload);
+  const section = payload.section as InspectionDocumentSection;
+  const validatedPhotos: ValidatedPhoto[] = await Promise.all(
+    (section.photos ?? []).map(async (photo) => ({
+      ...photo,
+      isValid: await validatePhotoUrl(photo.url),
+    })),
+  );
+
+  const doc = buildInspectionDocument(payload, validatedPhotos);
   const buffer = await renderToBuffer(doc as any);
   return new Uint8Array(buffer);
 }

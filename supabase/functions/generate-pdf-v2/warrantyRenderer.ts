@@ -53,24 +53,20 @@ import {
   type PlanTier,
   type BaseStyleTokens,
 } from "../_shared/document-visual-system.ts";
+import {
+  TEXT_PRIMARY,
+  TEXT_SECONDARY,
+  TEXT_MUTED,
+  BG_SURFACE,
+  BG_SURFACE_RAISED,
+  BORDER_DEFAULT,
+  BORDER_SUBTLE,
+  ACCENT_BLUE,
+} from "../_shared/pdf-tokens.ts";
 
 // ── Czcionki (rejestracja odbywa się w offerRenderer — moduł ładowany wcześniej) ─
 const BODY = getBodyFontFamily();
 const MONO = getMonoFontFamily();
-
-// ── Design Tokens ────────────────────────────────────────────────────────────
-
-const COLORS = {
-  textPrimary: "#111827",
-  textSecondary: "#6B7280",
-  textMuted: "#9CA3AF",
-  bgSurface: "#FFFFFF",
-  bgSurfaceRaised: "#F5F3EF",
-  borderDefault: "#E8E4DC",
-  borderSubtle: "#F0EDE8",
-  accentBlue: "#1E40AF",
-  accentBlueSubtle: "#EFF6FF",
-};
 
 // ── Visual System Token Resolution ──────────────────────────────────────────
 
@@ -94,8 +90,8 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingBottom: 70,
     paddingHorizontal: 40,
-    backgroundColor: COLORS.bgSurface,
-    color: COLORS.textPrimary,
+    backgroundColor: BG_SURFACE,
+    color: TEXT_PRIMARY,
   },
 
   // ── Header band ──
@@ -106,7 +102,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     paddingBottom: 16,
     borderBottomWidth: 2,
-    borderBottomColor: COLORS.accentBlue,
+    borderBottomColor: ACCENT_BLUE,
   },
   headerLeft: {
     flex: 1,
@@ -115,19 +111,19 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: BODY,
     fontWeight: "bold",
-    color: COLORS.textPrimary,
+    color: TEXT_PRIMARY,
     marginBottom: 4,
   },
   companyName: {
     fontSize: 12,
     fontFamily: BODY,
     fontWeight: "bold",
-    color: COLORS.textSecondary,
+    color: TEXT_SECONDARY,
     marginBottom: 2,
   },
   companyDetail: {
     fontSize: 8,
-    color: COLORS.textSecondary,
+    color: TEXT_SECONDARY,
     lineHeight: 1.5,
   },
   headerRight: {
@@ -136,12 +132,12 @@ const styles = StyleSheet.create({
   docId: {
     fontSize: 9,
     fontFamily: MONO,
-    color: COLORS.textSecondary,
+    color: TEXT_SECONDARY,
     marginBottom: 2,
   },
   docDate: {
     fontSize: 8.5,
-    color: COLORS.textMuted,
+    color: TEXT_MUTED,
   },
 
   // ── Info cards ──
@@ -152,27 +148,27 @@ const styles = StyleSheet.create({
   },
   infoCard: {
     flex: 1,
-    backgroundColor: COLORS.bgSurfaceRaised,
+    backgroundColor: BG_SURFACE_RAISED,
     borderRadius: 6,
     padding: 12,
   },
   infoLabel: {
     fontSize: 7,
-    color: COLORS.textMuted,
+    color: TEXT_MUTED,
     textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: 6,
   },
   infoValue: {
     fontSize: 9.5,
-    color: COLORS.textPrimary,
+    color: TEXT_PRIMARY,
     lineHeight: 1.5,
   },
   infoValueBold: {
     fontSize: 10,
     fontFamily: BODY,
     fontWeight: "bold",
-    color: COLORS.textPrimary,
+    color: TEXT_PRIMARY,
     marginBottom: 2,
   },
 
@@ -185,13 +181,13 @@ const styles = StyleSheet.create({
   periodCard: {
     flex: 1,
     borderWidth: 1,
-    borderColor: COLORS.borderDefault,
+    borderColor: BORDER_DEFAULT,
     borderRadius: 6,
     padding: 10,
   },
   periodLabel: {
     fontSize: 7,
-    color: COLORS.textMuted,
+    color: TEXT_MUTED,
     textTransform: "uppercase",
     letterSpacing: 0.8,
     marginBottom: 3,
@@ -199,7 +195,7 @@ const styles = StyleSheet.create({
   periodValue: {
     fontSize: 10,
     fontFamily: MONO,
-    color: COLORS.textPrimary,
+    color: TEXT_PRIMARY,
   },
 
   // ── Content sections ──
@@ -210,17 +206,17 @@ const styles = StyleSheet.create({
     fontSize: 8,
     fontFamily: BODY,
     fontWeight: "bold",
-    color: COLORS.textSecondary,
+    color: TEXT_SECONDARY,
     textTransform: "uppercase",
     letterSpacing: 0.8,
     marginBottom: 6,
     paddingBottom: 4,
     borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.borderSubtle,
+    borderBottomColor: BORDER_SUBTLE,
   },
   sectionText: {
     fontSize: 9.5,
-    color: COLORS.textPrimary,
+    color: TEXT_PRIMARY,
     lineHeight: 1.6,
   },
 
@@ -230,11 +226,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingTop: 12,
     borderTopWidth: 0.5,
-    borderTopColor: COLORS.borderDefault,
+    borderTopColor: BORDER_DEFAULT,
   },
   legalText: {
     fontSize: 8,
-    color: COLORS.textSecondary,
+    color: TEXT_SECONDARY,
     lineHeight: 1.5,
   },
 
@@ -245,7 +241,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingTop: 16,
     borderTopWidth: 0.5,
-    borderTopColor: COLORS.borderDefault,
+    borderTopColor: BORDER_DEFAULT,
   },
   signatureBlock: {
     width: 160,
@@ -253,12 +249,12 @@ const styles = StyleSheet.create({
   },
   signatureLine: {
     fontSize: 8,
-    color: COLORS.textMuted,
+    color: TEXT_MUTED,
     marginBottom: 8,
   },
   signatureDots: {
     fontSize: 9,
-    color: COLORS.textMuted,
+    color: TEXT_MUTED,
   },
 
   // ── Footer ──
@@ -271,21 +267,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: COLORS.borderDefault,
+    borderTopColor: BORDER_DEFAULT,
     paddingTop: 8,
   },
   footerLeft: {
     fontSize: 7.5,
-    color: COLORS.textMuted,
+    color: TEXT_MUTED,
   },
   footerCenter: {
     fontSize: 7.5,
-    color: COLORS.textMuted,
+    color: TEXT_MUTED,
   },
   footerRight: {
     fontSize: 7.5,
     fontFamily: MONO,
-    color: COLORS.textMuted,
+    color: TEXT_MUTED,
   },
 });
 
