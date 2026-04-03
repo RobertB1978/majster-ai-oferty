@@ -59,15 +59,17 @@ import {
   BORDER_SUBTLE,
   STATE_SUCCESS,
   STATE_ERROR,
+  STATE_SUCCESS_BG,
+  STATE_ERROR_BG,
 } from "../_shared/pdf-tokens.ts";
 
 // ── Czcionki (rejestracja odbywa się w offerRenderer — moduł ładowany wcześniej) ─
 const BODY = getBodyFontFamily();
 const MONO = getMonoFontFamily();
 
-// ── Kolory statusów pozycji ──────────────────────────────────────────────────
-const ROW_ACCEPTED_BG = "#F0FDF4";
-const ROW_REJECTED_BG = "#FFF1F2";
+// ── Kolory statusów pozycji (z pdf-tokens.ts) ──────────────────────────────
+const ROW_ACCEPTED_BG = STATE_SUCCESS_BG;
+const ROW_REJECTED_BG = STATE_ERROR_BG;
 
 // ── Visual System Token Resolution ──────────────────────────────────────────
 

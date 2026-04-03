@@ -330,7 +330,7 @@ function warrantyClientFallback(
  *
  * @param payload - UnifiedDocumentPayload (schemaVersion: 2)
  * @returns Blob z zawartością PDF
- * @throws {PendingMigrationError} dla protocol/contract/inspection
+ * @throws {PendingMigrationError} dla contract/inspection
  *         (do czasu implementacji ich ścieżek w następnych PR)
  */
 export async function renderDocumentPdfV2(
