@@ -335,3 +335,90 @@ describe('brak regresji — renderPdfV2', () => {
     expect(typeof module.renderDocumentPdfV2).toBe('function');
   });
 });
+
+// ── 11. Ścieżka rozwiązywania tokenów renderera (aktywacja systemu wizualnego) ─
+
+describe('ścieżka tokenów renderera — symulacja resolveRendererTokens', () => {
+  /**
+   * Symulujemy logikę resolveRendererTokens z Edge Function renderera.
+   * Nie możemy importować kodu Deno bezpośrednio, ale logika jest identyczna
+   * z frontend canonical source (zweryfikowana w visual-system-parity.test.ts).
+   */
+  function resolveRendererTokens(trade?: string, planTier?: string) {
+    const safeTrade = (trade ?? 'general') as TradeType;
+    const safePlanTier = (planTier ?? 'basic') as PlanTier;
+
+    const variant = resolveTemplateVariant({
+      documentType: 'offer',
+      trade: safeTrade,
+      planTier: safePlanTier,
+    });
+
+    return getStyleTokens(variant);
+  }
+
+  it('brak trade/planTier → classic+general (domyślne tokeny amber)', () => {
+    const tokens = resolveRendererTokens();
+    // classic style
+    expect(tokens.headerBg).toBe('#111827');
+    // general accent = amber
+    expect(tokens.sectionAccent).toBe('#F59E0B');
+    expect(tokens.accentStripeBg).toBe('#FFFBEB');
+    expect(tokens.grossAccent).toBe('#B45309');
+    expect(tokens.tableAltRowBg).toBe('#F8FAFC');
+  });
+
+  it('trade=plumbing → niebieski akcent sekcji', () => {
+    const tokens = resolveRendererTokens('plumbing', 'basic');
+    expect(tokens.sectionAccent).toBe('#1D4ED8');
+    expect(tokens.accentStripeBg).toBe('#EFF6FF');
+    // classic style (basic plan)
+    expect(tokens.grossAccent).toBe('#B45309');
+  });
+
+  it('trade=roofing → ciemny łupek akcent sekcji', () => {
+    const tokens = resolveRendererTokens('roofing', 'pro');
+    expect(tokens.sectionAccent).toBe('#374151');
+    expect(tokens.accentStripeBg).toBe('#F9FAFB');
+    // premium style (pro plan + offer)
+    expect(tokens.grossAccent).toBe('#92400E');
+  });
+
+  it('trade=hvac, planTier=pro → premium+niebieski', () => {
+    const tokens = resolveRendererTokens('hvac', 'pro');
+    expect(tokens.sectionAccent).toBe('#1E40AF');
+    expect(tokens.accentStripeBg).toBe('#EFF6FF');
+    // premium style
+    expect(tokens.headerBg).toBe('#0F172A');
+  });
+
+  it('nieznana branża → fallback na general (amber)', () => {
+    const tokens = resolveRendererTokens('unknown_trade' as string, 'basic');
+    expect(tokens.sectionAccent).toBe('#F59E0B');
+  });
+
+  it('tokeny classic vs premium — różne headerBg i grossAccent', () => {
+    const classic = resolveRendererTokens('general', 'basic');
+    const premium = resolveRendererTokens('general', 'pro');
+
+    expect(classic.headerBg).toBe('#111827');
+    expect(premium.headerBg).toBe('#0F172A');
+
+    expect(classic.grossAccent).toBe('#B45309');
+    expect(premium.grossAccent).toBe('#92400E');
+  });
+
+  it('wszystkie 10 branż generują tokeny bez błędów', () => {
+    const trades: TradeType[] = [
+      'general', 'electrical', 'plumbing', 'tiling', 'painting',
+      'carpentry', 'roofing', 'hvac', 'masonry', 'flooring',
+    ];
+    for (const trade of trades) {
+      const tokens = resolveRendererTokens(trade, 'basic');
+      expect(tokens.sectionAccent).toBeTruthy();
+      expect(tokens.accentStripeBg).toBeTruthy();
+      expect(tokens.grossAccent).toBeTruthy();
+      expect(tokens.tableAltRowBg).toBeTruthy();
+    }
+  });
+});

@@ -43,6 +43,13 @@ import {
   getBodyFontFamily,
   getMonoFontFamily,
 } from "./font-config.ts";
+import {
+  resolveTemplateVariant,
+  getStyleTokens,
+  type TradeType,
+  type PlanTier,
+  type BaseStyleTokens,
+} from "../_shared/document-visual-system.ts";
 
 // ── Rejestracja polskich czcionek (wykonywana raz na poziomie modułu) ─────────
 //
@@ -73,6 +80,29 @@ const COLORS = {
   accentAmberSubtle: "#FEF3C7",
   stateSuccess: "#16A34A",
 };
+
+// ── Visual System Token Resolution ───────────────────────────────────────────
+
+/**
+ * Rozwiązuje tokeny systemu wizualnego z metadanych payloadu.
+ *
+ * Gdy trade/planTier nie są podane w payloadzie, używa bezpiecznych wartości
+ * domyślnych (general/basic → styl classic). Dzięki temu:
+ *   - Istniejące przepływy bez trade/planTier działają bez zmian
+ *   - Gdy dane są dostępne, system wizualny aktywuje się automatycznie
+ */
+export function resolveRendererTokens(payload: OfferPDFPayload): BaseStyleTokens {
+  const trade = (payload.trade as TradeType) ?? "general";
+  const planTier = (payload.planTier as PlanTier) ?? "basic";
+
+  const variant = resolveTemplateVariant({
+    documentType: "offer",
+    trade,
+    planTier,
+  });
+
+  return getStyleTokens(variant);
+}
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 //
@@ -531,7 +561,7 @@ function e(type: any, props: any, ...children: any[]): any {
 
 // ── Sub-components ───────────────────────────────────────────────────────────
 
-function buildHeader(payload: OfferPDFPayload) {
+function buildHeader(payload: OfferPDFPayload, tokens: BaseStyleTokens) {
   const { company, pdfConfig, documentId, projectName } = payload;
   const companyLines: string[] = [];
   if (company.nip) companyLines.push(`NIP: ${company.nip}`);
@@ -540,7 +570,7 @@ function buildHeader(payload: OfferPDFPayload) {
   if (company.phone) companyLines.push(`tel. ${company.phone}`);
   if (company.email) companyLines.push(company.email);
 
-  return e(View, { style: styles.headerBand },
+  return e(View, { style: [styles.headerBand, { borderBottomColor: tokens.sectionAccent }] },
     e(View, { style: styles.headerLeft },
       e(Text, { style: styles.companyName }, company.name),
       ...companyLines.map((line, i) =>
@@ -606,7 +636,7 @@ function buildOfferText(payload: OfferPDFPayload, labels: OfferPdfLabels) {
   );
 }
 
-function buildPositionsTable(quote: PDFQuoteData, label?: string, labels?: OfferPdfLabels, locale?: string) {
+function buildPositionsTable(quote: PDFQuoteData, label?: string, labels?: OfferPdfLabels, locale?: string, tokens?: BaseStyleTokens) {
   const L = labels ?? LABELS.pl;
   const header = e(View, { style: styles.tableHeader },
     e(Text, { style: { ...styles.tableHeaderText, width: 24 } }, L.colLp),
@@ -618,7 +648,9 @@ function buildPositionsTable(quote: PDFQuoteData, label?: string, labels?: Offer
   );
 
   const rows = quote.positions.map((pos, idx) => {
-    const rowStyle = idx % 2 === 1 ? styles.tableRowAlt : styles.tableRow;
+    const rowStyle = idx % 2 === 1
+      ? (tokens ? [styles.tableRowAlt, { backgroundColor: tokens.tableAltRowBg }] : styles.tableRowAlt)
+      : styles.tableRow;
     return e(View, { key: pos.id, style: rowStyle },
       e(Text, { style: styles.colLp }, String(idx + 1)),
       e(Text, { style: styles.colName }, pos.name),
@@ -643,7 +675,7 @@ function buildPositionsTable(quote: PDFQuoteData, label?: string, labels?: Offer
   return elements;
 }
 
-function buildTotals(quote: PDFQuoteData, labels: OfferPdfLabels, locale?: string) {
+function buildTotals(quote: PDFQuoteData, labels: OfferPdfLabels, locale?: string, tokens?: BaseStyleTokens) {
   return e(View, { style: styles.totalsContainer },
     e(View, { style: styles.totalsBox },
       // Materials subtotal
@@ -678,10 +710,10 @@ function buildTotals(quote: PDFQuoteData, labels: OfferPdfLabels, locale?: strin
             e(Text, { style: styles.totalValue }, formatPLN(quote.vatAmount, locale)),
           ),
     ),
-    // Grand total — amber highlight
-    e(View, { style: styles.grandTotalRow },
+    // Grand total — trade accent highlight
+    e(View, { style: tokens ? [styles.grandTotalRow, { backgroundColor: tokens.accentStripeBg }] : styles.grandTotalRow },
       e(Text, { style: styles.grandTotalLabel }, labels.totalGross),
-      e(Text, { style: styles.grandTotalValue }, formatPLN(quote.grossTotal, locale)),
+      e(Text, { style: tokens ? [styles.grandTotalValue, { color: tokens.grossAccent }] : styles.grandTotalValue }, formatPLN(quote.grossTotal, locale)),
     ),
   );
 }
@@ -694,10 +726,10 @@ function buildTerms(payload: OfferPDFPayload, labels: OfferPdfLabels) {
   );
 }
 
-function buildAcceptanceUrl(payload: OfferPDFPayload, labels: OfferPdfLabels) {
+function buildAcceptanceUrl(payload: OfferPDFPayload, labels: OfferPdfLabels, tokens?: BaseStyleTokens) {
   if (!payload.acceptanceUrl) return null;
-  return e(View, { style: styles.acceptanceSection },
-    e(Text, { style: styles.acceptanceLabel }, labels.onlineAcceptance),
+  return e(View, { style: tokens ? [styles.acceptanceSection, { borderColor: tokens.sectionAccent }] : styles.acceptanceSection },
+    e(Text, { style: tokens ? [styles.acceptanceLabel, { color: tokens.grossAccent }] : styles.acceptanceLabel }, labels.onlineAcceptance),
     e(Text, { style: styles.acceptanceUrl }, payload.acceptanceUrl),
   );
 }
@@ -722,10 +754,10 @@ function buildFooter(payload: OfferPDFPayload, labels: OfferPdfLabels) {
  * Returns a React element tree (no JSX — pure createElement calls).
  *
  * Prestige A4 template with design tokens from roadmap §3.1–3.4:
- * - Amber accent header band
+ * - Trade-aware accent colors via Document Visual System v2
  * - Info cards with raised background
- * - Alternating row colors in positions table
- * - Amber-highlighted grand total
+ * - Alternating row colors driven by style tokens
+ * - Grand total highlighted with trade accent
  * - Professional footer with page numbers
  * - Variant sections support
  * - NotoSans/NotoSansMono for full Polish Unicode support (PDF Platform v2)
@@ -735,8 +767,10 @@ export function buildPdfDocument(payload: OfferPDFPayload): unknown {
   const labels = getOfferLabels(payload.locale);
   const locale = payload.locale;
 
+  const tokens = resolveRendererTokens(payload);
+
   const pageContent: any[] = [
-    buildHeader(payload),
+    buildHeader(payload, tokens),
     buildInfoCards(payload, labels),
     buildDates(payload, labels),
     buildOfferText(payload, labels),
@@ -746,19 +780,19 @@ export function buildPdfDocument(payload: OfferPDFPayload): unknown {
   if (variantSections && variantSections.length > 0) {
     const sorted = [...variantSections].sort((a, b) => a.sort_order - b.sort_order);
     for (const variant of sorted) {
-      const tableElements = buildPositionsTable(variant.quote, variant.label, labels, locale);
+      const tableElements = buildPositionsTable(variant.quote, variant.label, labels, locale, tokens);
       pageContent.push(...tableElements);
-      pageContent.push(buildTotals(variant.quote, labels, locale));
+      pageContent.push(buildTotals(variant.quote, labels, locale, tokens));
     }
   } else if (quote) {
     // Single quote
-    const tableElements = buildPositionsTable(quote, undefined, labels, locale);
+    const tableElements = buildPositionsTable(quote, undefined, labels, locale, tokens);
     pageContent.push(...tableElements);
-    pageContent.push(buildTotals(quote, labels, locale));
+    pageContent.push(buildTotals(quote, labels, locale, tokens));
   }
 
   pageContent.push(buildTerms(payload, labels));
-  pageContent.push(buildAcceptanceUrl(payload, labels));
+  pageContent.push(buildAcceptanceUrl(payload, labels, tokens));
   pageContent.push(buildFooter(payload, labels));
 
   return e(Document, { title: `${payload.pdfConfig.title} — ${payload.documentId}` },
