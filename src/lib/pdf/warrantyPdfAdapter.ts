@@ -37,6 +37,12 @@ export interface WarrantyPayloadBuildCtx {
   companyPhone?: string;
   /** Miasto/adres firmy (opcjonalny) */
   companyCity?: string;
+  /** NIP firmy (opcjonalny) */
+  companyNip?: string;
+  /** REGON firmy (opcjonalny) */
+  companyRegon?: string;
+  /** KRS firmy (opcjonalny) */
+  companyKrs?: string;
   /** Branża wykonawcy — domyślnie 'general' */
   trade?: TradeType;
   /** Poziom planu — domyślnie 'basic' */
@@ -92,6 +98,9 @@ export function buildWarrantyUnifiedPayload(
     sourceProjectId: ctx.sourceProjectId ?? warranty.project_id,
     company: {
       name: ctx.companyName,
+      nip: ctx.companyNip,
+      regon: ctx.companyRegon,
+      krs: ctx.companyKrs,
       phone: ctx.companyPhone,
       city: ctx.companyCity,
     },

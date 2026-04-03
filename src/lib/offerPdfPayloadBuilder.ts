@@ -61,7 +61,13 @@ interface RawClient {
 
 interface RawProfile {
   company_name: string;
+  legal_form: string;
   nip: string | null;
+  regon: string | null;
+  krs: string | null;
+  owner_name: string | null;
+  representative_name: string | null;
+  representative_role: string | null;
   street: string | null;
   postal_code: string | null;
   city: string | null;
@@ -138,15 +144,28 @@ export async function buildOfferPdfPayloadFromOffer(
   // ── 5. Load profile (company info) ──────────────────────────────────────
   const { data: profileData } = await supabase
     .from('profiles')
-    .select('company_name, nip, street, postal_code, city, phone, email_for_offers, logo_url')
+    .select('company_name, legal_form, nip, regon, krs, owner_name, representative_name, representative_role, street, postal_code, city, phone, email_for_offers, logo_url')
     .eq('user_id', userId)
     .maybeSingle();
   const rawProfile = profileData as RawProfile | null;
 
   // ── 6. Build company info ────────────────────────────────────────────────
+  const legalForm = rawProfile?.legal_form || 'jdg';
+  const isJdg = legalForm === 'jdg';
+  const repName = isJdg
+    ? rawProfile?.owner_name
+    : rawProfile?.representative_name;
+  const repRole = isJdg
+    ? 'Właściciel'
+    : (rawProfile?.representative_role || 'Prezes Zarządu');
+
   const company: CompanyInfo = {
     name: rawProfile?.company_name || 'Majster.AI',
     nip: rawProfile?.nip ?? undefined,
+    regon: rawProfile?.regon ?? undefined,
+    krs: isJdg ? undefined : (rawProfile?.krs ?? undefined),
+    representativeName: repName ?? undefined,
+    representativeRole: repName ? repRole : undefined,
     street: rawProfile?.street ?? undefined,
     postalCode: rawProfile?.postal_code ?? undefined,
     city: rawProfile?.city ?? undefined,

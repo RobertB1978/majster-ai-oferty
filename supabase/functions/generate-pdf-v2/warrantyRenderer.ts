@@ -407,7 +407,11 @@ function buildHeader(
 ) {
   const { company, documentId } = payload;
   const companyLines: string[] = [];
-  if (company.nip) companyLines.push(`NIP: ${company.nip}`);
+  const regParts: string[] = [];
+  if (company.nip) regParts.push(`NIP: ${company.nip}`);
+  if (company.regon) regParts.push(`REGON: ${company.regon}`);
+  if (company.krs) regParts.push(`KRS: ${company.krs}`);
+  if (regParts.length > 0) companyLines.push(regParts.join(" · "));
   const address = [company.street, company.postalCode, company.city]
     .filter(Boolean)
     .join(", ");
