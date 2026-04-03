@@ -53,7 +53,6 @@ import {
   ACCENT_AMBER,
   ACCENT_AMBER_SUBTLE,
   AMBER_50,
-  AMBER_100,
   AMBER_700,
   BORDER_DEFAULT,
   FONT_SIZES,
@@ -67,6 +66,7 @@ import {
 import {
   resolveTemplateVariant,
   getStyleTokens,
+  type VisualFeatureFlags,
 } from './pdf/documentVisualSystem';
 import type { TradeType, PlanTier } from '@/types/unified-document-payload';
 
@@ -219,13 +219,16 @@ export async function generateOfferPdf(
 
   // Resolve template theme
   const templateId = payload.pdfConfig.templateId ?? 'classic';
-  const theme = TEMPLATE_THEMES[templateId];
+  let theme = TEMPLATE_THEMES[templateId];
 
-  // ── Trade accent resolution ─────────────────────────────────────────────
+  // ── Trade accent + visual system theme resolution ───────────────────────
   // When trade/planTier are present (v2 adapter path), resolve trade-specific
-  // accent colors from the visual system. Otherwise fall back to brand amber.
+  // accent colors and override the static theme with visual-system tokens.
+  // This makes premium (deep black + gold) and technical (blue-slate) styles
+  // visually distinct from the classic amber baseline.
   let accentRgb: [number, number, number] = ACCENT_AMBER;
   let accentSubtleRgb: [number, number, number] = ACCENT_AMBER_SUBTLE;
+  let visualFeatures: VisualFeatureFlags | null = null;
   if (payload.trade) {
     const safeTrade = (payload.trade as TradeType) ?? 'general';
     const safePlan = (payload.planTier as PlanTier) ?? 'basic';
@@ -237,6 +240,23 @@ export async function generateOfferPdf(
     const tokens = getStyleTokens(variant);
     accentRgb = hexToRgb(tokens.sectionAccent, ACCENT_AMBER);
     accentSubtleRgb = hexToRgb(tokens.accentStripeBg, ACCENT_AMBER_SUBTLE);
+    visualFeatures = variant.features;
+    // Derive jsPDF TemplateTheme from BaseStyleTokens — premium/technical
+    // now have distinct headerBg, tableTheme, summaryBg, grossAccent
+    theme = {
+      headerFill: hexToRgb(tokens.tableHeaderBg, TEXT_PRIMARY),
+      headerText: hexToRgb(tokens.tableHeaderText, WHITE),
+      accentColor: hexToRgb(tokens.sectionAccent, TEXT_PRIMARY),
+      tableTheme: tokens.tableTheme,
+      // Premium style gets the full band header (deep black #0F172A)
+      companyBg: variant.baseStyle === 'premium'
+        ? hexToRgb(tokens.headerBg, TEXT_PRIMARY)
+        : undefined,
+      companyBgLight: variant.baseStyle === 'premium' ? [30, 41, 59] : undefined, // slate-800 #1E293B
+      alternateRowFill: hexToRgb(tokens.tableAltRowBg, [248, 250, 252]),
+      summaryBg: hexToRgb(tokens.summaryBg, AMBER_50),
+      grossAccent: hexToRgb(tokens.grossAccent, AMBER_700),
+    };
   }
 
   // ── Logo embedding ──────────────────────────────────────────────────────
@@ -266,7 +286,7 @@ export async function generateOfferPdf(
   // ========================================
 
   if (theme.companyBg) {
-    // Modern template: full-width colored header band with logo placeholder
+    // Premium style: full-width colored band header (deep black #0F172A)
     const bandHeight = 50;
     doc.setFillColor(...theme.companyBg);
     doc.rect(0, 0, pageWidth, bandHeight, 'F');
@@ -346,17 +366,20 @@ export async function generateOfferPdf(
     yPosition = bandHeight + 6;
   } else {
     // Classic / Minimal template: text-only header with logo
-    // Logo on the left — real image or placeholder
-    if (logoImageData) {
-      try {
-        doc.addImage(logoImageData, margin, yPosition - 3, 14, 14);
-      } catch {
+    // Logo gated on feature flag (hidden for free tier)
+    const showLogo = visualFeatures?.showLogo !== false;
+    if (showLogo) {
+      if (logoImageData) {
+        try {
+          doc.addImage(logoImageData, margin, yPosition - 3, 14, 14);
+        } catch {
+          drawLogoPlaceholder(doc, margin, yPosition - 3, payload.company.name);
+        }
+      } else {
         drawLogoPlaceholder(doc, margin, yPosition - 3, payload.company.name);
       }
-    } else {
-      drawLogoPlaceholder(doc, margin, yPosition - 3, payload.company.name);
     }
-    const nameX = margin + 18; // after logo
+    const nameX = showLogo ? margin + 18 : margin; // offset only when logo present
 
     doc.setFontSize(FONT_SIZES.xl);
     doc.setFont(bodyFont, 'bold');
@@ -419,7 +442,7 @@ export async function generateOfferPdf(
   const QR_SIZE = 28;
   const qrX = pageWidth - margin - QR_SIZE;
   let qrPlaced = false;
-  if (payload.acceptanceUrl) {
+  if (payload.acceptanceUrl && visualFeatures?.showQrCode !== false) {
     try {
       const qrDataUrl = await QRCode.toDataURL(payload.acceptanceUrl, {
         width: 168,   // 28mm at 150dpi — clear and scannable
@@ -438,7 +461,7 @@ export async function generateOfferPdf(
       // Label below QR
       doc.setFontSize(FONT_SIZES.xs);
       doc.setFont(bodyFont, 'bold');
-      doc.setTextColor(...AMBER_700);
+      doc.setTextColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
       doc.text(t ? t('offerPdf.onlineLabel') : 'OFERTA ONLINE', qrX + QR_SIZE / 2, yPosition + QR_SIZE + 3, { align: 'center' });
       doc.setTextColor(...TEXT_PRIMARY);
       qrPlaced = true;
@@ -665,8 +688,8 @@ export async function generateOfferPdf(
     doc.setFont(bodyFont, 'normal');
 
     if (quote.isVatExempt) {
-      // Amber highlight band behind the total row
-      doc.setFillColor(...AMBER_100);
+      // Trade-aware highlight band behind the total row
+      doc.setFillColor(...accentSubtleRgb);
       doc.rect(summaryX - 4, yPosition - 1, summaryBoxWidth, 10, 'F');
 
       doc.setFontSize(FONT_SIZES.lg);
@@ -701,11 +724,11 @@ export async function generateOfferPdf(
         doc.setTextColor(...TEXT_PRIMARY);
         yPosition += 6;
       }
-      // Amber highlight band behind the gross total row
-      doc.setFillColor(...AMBER_100);
+      // Trade-aware highlight band behind the gross total row
+      doc.setFillColor(...accentSubtleRgb);
       doc.rect(summaryX - 4, yPosition - 1, summaryBoxWidth, 11, 'F');
-      // Separator line above gross total
-      doc.setDrawColor(...ACCENT_AMBER);
+      // Trade-aware separator line above gross total
+      doc.setDrawColor(...accentRgb);
       doc.setLineWidth(0.8);
       doc.line(summaryX - 2, yPosition - 1, pageWidth - margin + 2, yPosition - 1);
       doc.setLineWidth(0.2);
@@ -845,6 +868,22 @@ export async function generateOfferPdf(
   // ========================================
 
   const totalPages = doc.getNumberOfPages();
+
+  // ── Watermark (free tier) ──────────────────────────────────────────────────
+  // "WERSJA TESTOWA" wyświetlane po przekątnej na każdej stronie.
+  // Renderowane przed stopką, żeby tekst stopki był na wierzchu.
+  if (visualFeatures?.showWatermark) {
+    for (let p = 1; p <= totalPages; p++) {
+      doc.setPage(p);
+      doc.setFontSize(52);
+      doc.setTextColor(220, 220, 220);
+      doc.text('WERSJA TESTOWA', pageWidth / 2, pageHeight / 2, {
+        align: 'center',
+        angle: 45,
+      });
+    }
+  }
+
   const footerY = doc.internal.pageSize.getHeight() - 10;
   const validUntilStr = formatDate(payload.validUntil, locale);
   const generatedStr = payload.generatedAt.toLocaleString(locale);

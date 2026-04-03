@@ -31,6 +31,7 @@ import {
 import {
   resolveTemplateVariant,
   getStyleTokens,
+  type VisualFeatureFlags,
 } from '@/lib/pdf/documentVisualSystem';
 import type { TradeType, PlanTier } from '@/types/unified-document-payload';
 
@@ -93,8 +94,9 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const bodyFont = registerNotoSans(doc);
 
-  // ── Resolve trade-aware header accent ─────────────────────────────────────
+  // ── Resolve trade-aware header accent + feature flags ─────────────────────
   let headerAccent: [number, number, number] = ACCENT_BLUE;
+  let visualFeatures: VisualFeatureFlags | null = null;
   if (ctx.trade) {
     const safeTrade = (ctx.trade as TradeType) ?? 'general';
     const safePlan = (ctx.planTier as PlanTier) ?? 'basic';
@@ -105,6 +107,7 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
     });
     const tokens = getStyleTokens(variant);
     headerAccent = hexToRgb(tokens.headerBg, ACCENT_BLUE);
+    visualFeatures = variant.features;
   }
 
   // ── Header ───────────────────────────────────────────────────────────────────
@@ -207,6 +210,17 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   doc.setFontSize(7);
   doc.setTextColor(...TEXT_FOOTER);
   doc.text(`Majster.AI — ${t('warranty.pdf.footerGenerated')} ${formatDate(new Date(), locale)}`, 105, 290, { align: 'center' });
+
+  // ── Watermark (free tier) ────────────────────────────────────────────────────
+  if (visualFeatures?.showWatermark) {
+    const wPageCount = doc.getNumberOfPages();
+    for (let p = 1; p <= wPageCount; p++) {
+      doc.setPage(p);
+      doc.setFontSize(52);
+      doc.setTextColor(220, 220, 220);
+      doc.text('WERSJA TESTOWA', 105, 148, { align: 'center', angle: 45 });
+    }
+  }
 
   return doc.output('blob');
 }

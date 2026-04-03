@@ -590,4 +590,70 @@ When working on this project:
 
 ---
 
+## 🏆 Protokół Jakości Enterprise (OBOWIĄZKOWY)
+
+### Zasada 100% + 2× Sprawdzenie
+
+**KAŻDE zadanie musi być:**
+1. Wykonane w 100% — bez pominięć, bez "zrobimy później"
+2. Sprawdzone dwukrotnie przed zamknięciem — osobny pass code-review
+
+### Obowiązkowa Lista Kontrolna (DoD — Definition of Done)
+
+Przed każdym commitem Claude MUSI potwierdzić każdy punkt:
+
+#### Pass #1 — Weryfikacja implementacji
+- [ ] Przeczytałem KAŻDY plik który modyfikuję (przed zmianami)
+- [ ] Wszystkie punkty z zadania są zaimplementowane
+- [ ] Żadnych hardcoded wartości które powinny być dynamiczne
+- [ ] Importy są poprawne (brak nieużywanych, brak brakujących)
+- [ ] Komentarze w kodzie są aktualne (nie opisują starego zachowania)
+- [ ] Backward compatibility zachowana (stare wywołania działają)
+- [ ] Brak niepotrzebnych console.log / debug artefaktów
+
+#### Pass #2 — Weryfikacja kompletności
+- [ ] Czy pominąłem jakiś plik z listy "FILES TO MODIFY"?
+- [ ] Czy wszystkie edge case'y są obsługiwane?
+- [ ] Czy flagi/warunki mają poprawne defaulty (null-safety)?
+- [ ] Czy hardcoded wartości zostały zastąpione przez tokeny/zmienne?
+- [ ] Sprawdziłem pliki POWIĄZANE (nie tylko bezpośrednio zmienione)
+- [ ] Uruchomiłem testy — 0 błędów
+- [ ] Uruchomiłem tsc — 0 błędów
+- [ ] Uruchomiłem lint — 0 nowych błędów
+- [ ] Uruchomiłem build — sukces
+
+#### Raport na końcu zadania
+Każde zakończone zadanie MUSI zawierać:
+```
+## Wyniki weryfikacji
+- Testy: X passed, 0 failed
+- TypeScript: 0 errors
+- Lint: 0 new errors
+- Build: ✅ sukces
+
+## Status
+- PDF VISUAL SYSTEM COMPLETE / PARTIAL / BLOCKED
+- Co zrobiono: [lista]
+- Co odroczone: [lista + powód]
+- Ryzyka: [lista]
+```
+
+### Pułapki Jakościowe — Najczęstsze Błędy
+
+1. **Hardcoded kolory** zamiast tokenów z design systemu
+2. **Zdezaktualizowane komentarze** opisujące stare zachowanie
+3. **Nieużywane importy** po refaktorze
+4. **Pominięte pliki powiązane** (np. zmieniono frontend, zapomniano Deno mirror)
+5. **Feature flags bez enforcement** — flagi zdefiniowane ale nie sprawdzane
+6. **Fallback bez null-safety** — brak `?? default` przy opcjonalnych polach
+7. **Brak testów dla nowego zachowania** (gdy istniejące testy nie pokrywają)
+
+### Priorytet zadań gdy budżet LOC jest ograniczony
+1. Zawsze zrealizuj najpierw zadania o najwyższym wpływie biznesowym
+2. Dokumentuj co zostało odroczone i DLACZEGO
+3. Nigdy nie zostawiaj kodu w stanie połowicznym — commit tylko kompletnych zmian
+4. Jeśli zadanie jest za duże na 1 PR — podziel je i zaznacz wyraźnie granicę
+
+---
+
 **This document is your guide to working effectively on Majster.AI. When in doubt, ask the owner!**
