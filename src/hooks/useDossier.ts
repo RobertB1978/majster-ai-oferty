@@ -94,8 +94,9 @@ async function getSignedUrl(filePath: string): Promise<string> {
       continue;
     }
     logger.error('[Dossier] signed URL failed after retry', error);
+    throw new Error(`Signed URL generation failed for ${filePath}: ${error?.message ?? 'unknown error'}`);
   }
-  return '';
+  return ''; // unreachable but satisfies TS
 }
 
 /**
@@ -175,12 +176,15 @@ export function useDossierItems(projectId: string | undefined) {
 
       if (error) throw error;
 
-      // Fetch signed URLs in parallel
+      // Fetch signed URLs in parallel — errors per-file don't block others
       const items = await Promise.all(
-        (data ?? []).map(async (row) => ({
-          ...row,
-          signed_url: await getSignedUrl(row.file_path),
-        }))
+        (data ?? []).map(async (row) => {
+          try {
+            return { ...row, signed_url: await getSignedUrl(row.file_path) };
+          } catch {
+            return { ...row, signed_url: '' };
+          }
+        })
       );
 
       return items as DossierItem[];

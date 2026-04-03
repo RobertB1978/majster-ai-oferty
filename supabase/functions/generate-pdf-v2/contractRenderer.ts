@@ -416,7 +416,8 @@ function formatCurrency(value: number): string {
 
 function calculateGross(value: number, vatRate: number | null): number {
   if (vatRate === null) return value;
-  return value * (1 + vatRate / 100);
+  const clampedRate = Math.max(0, Math.min(vatRate, 100));
+  return value * (1 + clampedRate / 100);
 }
 
 function e(type: any, props: any, ...children: any[]): any {

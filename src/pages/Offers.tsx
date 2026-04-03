@@ -74,7 +74,7 @@ const PROJECT_BADGE_I18N: Record<ProjectStatus, string> = {
   ACTIVE:    'offersList.projectBadgeActive',
   COMPLETED: 'offersList.projectBadgeCompleted',
   ON_HOLD:   'offersList.projectBadgeOnHold',
-  CANCELLED: 'offersList.projectBadgeOnHold',
+  CANCELLED: 'offersList.projectBadgeCancelled',
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
