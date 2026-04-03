@@ -59,30 +59,18 @@ export function useCreateAcceptanceLink(offerId: string) {
     mutationFn: async (): Promise<AcceptanceLink> => {
       if (!user) throw new Error('Not authenticated');
 
-      // Delete any existing link first.
-      // This handles two cases safely:
-      //   1. No link exists → DELETE is a no-op, INSERT creates fresh link.
-      //   2. Expired link exists → DELETE removes it, INSERT creates new link
-      //      with a fresh token (UUID) and new 30-day expiry via DB defaults.
-      // Note: the "Create link" button is only shown when no link or link is
-      // expired, so this never invalidates a live, non-expired client session.
-      await supabase
-        .from('acceptance_links')
-        .delete()
-        .eq('offer_id', offerId);
-
-      const { data, error } = await supabase
-        .from('acceptance_links')
-        .insert({
-          user_id: user.id,
-          offer_id: offerId,
-          // token and expires_at use DB defaults (gen_random_uuid, now+30d)
-        })
-        .select('id, offer_id, token, expires_at, created_at')
-        .single();
+      // Atomic UPSERT via RPC — eliminates race condition where DELETE
+      // succeeds but INSERT fails, leaving the offer without a link.
+      // Uses ON CONFLICT (offer_id) to create or refresh the link in
+      // a single statement with a fresh token and 30-day expiry.
+      const { data, error } = await supabase.rpc('upsert_acceptance_link', {
+        p_offer_id: offerId,
+        p_user_id: user.id,
+      });
 
       if (error) throw error;
-      return data as AcceptanceLink;
+      if (!data) throw new Error('upsert_acceptance_link returned no data');
+      return data as unknown as AcceptanceLink;
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: acceptanceLinkKeys(offerId) });

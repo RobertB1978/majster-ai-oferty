@@ -93,6 +93,7 @@ const { mockSupabase, builderQueue } = vi.hoisted(() => {
       if (!b) throw new Error('[test] No builder queued for this from() call');
       return b;
     }),
+    rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
   };
 
   return { mockSupabase: supabaseMock, builderQueue: queue, makeBuilder };
@@ -197,6 +198,7 @@ describe('useQuickEstimateDraft', () => {
       data: { user: { id: 'user-123' } },
       error: null,
     });
+    mockSupabase.rpc.mockResolvedValue({ data: null, error: null });
   });
 
   /* ── loadDraft ──────────────────────────────────────────────── */
@@ -292,10 +294,7 @@ describe('useQuickEstimateDraft', () => {
     it('creates a new offer record on first save and sets saveStatus to saved', async () => {
       // from('offers').insert(...).select('id').single() → new offer
       builderQueue.push(makeBuilder({ terminal: { data: { id: 'new-offer-id' }, error: null } }));
-      // from('offer_items').delete().eq(...) → success
-      builderQueue.push(makeBuilder({ deleteEqResolved: { data: null, error: null } }));
-      // from('offer_items').insert(...) → success
-      builderQueue.push(makeBuilder({ insertResolved: { data: null, error: null } }));
+      // rpc('replace_offer_items_quick', ...) → success (uses mockSupabase.rpc default)
 
       const { result } = renderHook(() => useQuickEstimateDraft());
 
@@ -311,6 +310,11 @@ describe('useQuickEstimateDraft', () => {
       expect(result.current.draftOfferId).toBe('new-offer-id');
       expect(result.current.saveStatus).toBe('saved');
       expect(result.current.lastSavedAt).not.toBeNull();
+      // Verify RPC was called with correct function name and offer id
+      expect(mockSupabase.rpc).toHaveBeenCalledWith('replace_offer_items_quick', expect.objectContaining({
+        p_offer_id: 'new-offer-id',
+        p_user_id: 'user-123',
+      }));
     });
 
     it('sets saveStatus to error when offer insert fails', async () => {
@@ -331,13 +335,8 @@ describe('useQuickEstimateDraft', () => {
       expect(result.current.saveStatus).toBe('error');
     });
 
-    it('does not include blank items in the insert payload', async () => {
+    it('does not include blank items in the RPC payload', async () => {
       builderQueue.push(makeBuilder({ terminal: { data: { id: 'offer-999' }, error: null } }));
-      builderQueue.push(makeBuilder({ deleteEqResolved: { data: null, error: null } }));
-
-      // Capture what gets passed to insert
-      const itemInsertBuilder = makeBuilder({ insertResolved: { data: null, error: null } });
-      builderQueue.push(itemInsertBuilder);
 
       const { result } = renderHook(() => useQuickEstimateDraft());
 
@@ -354,12 +353,12 @@ describe('useQuickEstimateDraft', () => {
       });
 
       expect(result.current.saveStatus).toBe('saved');
-      // Verify insert was called with only the named item
-      const insertCall = itemInsertBuilder.insert.mock.calls[0]?.[0] as Array<{ name: string }>;
-      expect(insertCall).toBeDefined();
-      expect(insertCall.every((i) => i.name.trim() !== '')).toBe(true);
-      expect(insertCall).toHaveLength(1);
-      expect(insertCall[0].name).toBe('Malowanie');
+      // Verify RPC was called with only the named item (blank filtered out)
+      const rpcCall = mockSupabase.rpc.mock.calls[0];
+      expect(rpcCall[0]).toBe('replace_offer_items_quick');
+      const items = rpcCall[1].p_items as Array<{ name: string }>;
+      expect(items).toHaveLength(1);
+      expect(items[0].name).toBe('Malowanie');
     });
   });
 
@@ -367,12 +366,10 @@ describe('useQuickEstimateDraft', () => {
 
   describe('concurrent-save guard', () => {
     it('does not start a second save while one is already in flight', async () => {
-      // Provide builders for ONE save cycle only (insert + delete + insert).
+      // Provide builders for ONE save cycle only (offers insert).
       // If the guard is absent, the second concurrent call would also call from()
       // and exhaust the queue — causing the mock to throw.
       builderQueue.push(makeBuilder({ terminal: { data: { id: 'offer-race' }, error: null } }));
-      builderQueue.push(makeBuilder({ deleteEqResolved: { data: null, error: null } }));
-      builderQueue.push(makeBuilder({ insertResolved: { data: null, error: null } }));
 
       const { result } = renderHook(() => useQuickEstimateDraft());
 
@@ -391,10 +388,37 @@ describe('useQuickEstimateDraft', () => {
         ]);
       });
 
-      // Guard maintained: exactly one offer insert (from() called exactly 3 times:
-      // offers-insert, offer_items-delete, offer_items-insert).
-      expect(mockSupabase.from).toHaveBeenCalledTimes(3);
+      // Guard maintained: exactly one offer insert via from(), plus one RPC call.
+      expect(mockSupabase.from).toHaveBeenCalledTimes(1);
+      expect(mockSupabase.rpc).toHaveBeenCalledTimes(1);
       expect(result.current.saveStatus).toBe('saved');
+    });
+  });
+
+  /* ── atomic replace regression ──────────────────────────────── */
+
+  describe('atomic replace_offer_items_quick', () => {
+    it('sets saveStatus to error when RPC fails (no partial state)', async () => {
+      // Offer insert succeeds
+      builderQueue.push(makeBuilder({ terminal: { data: { id: 'offer-rpc-fail' }, error: null } }));
+      // RPC fails — items should NOT be in a half-deleted state
+      mockSupabase.rpc.mockResolvedValueOnce({ data: null, error: { message: 'RPC failed' } });
+
+      const { result } = renderHook(() => useQuickEstimateDraft());
+
+      await act(async () => {
+        await result.current.saveDraftNow({
+          projectName: 'RPC fail test',
+          clientId: '',
+          vatEnabled: true,
+          items: [makeItem()],
+        });
+      });
+
+      expect(result.current.saveStatus).toBe('error');
+      expect(mockSupabase.rpc).toHaveBeenCalledWith('replace_offer_items_quick', expect.objectContaining({
+        p_offer_id: 'offer-rpc-fail',
+      }));
     });
   });
 
