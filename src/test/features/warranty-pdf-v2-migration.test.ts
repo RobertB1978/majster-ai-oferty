@@ -44,6 +44,12 @@ vi.mock('@/lib/offerPdfGenerator', () => ({
   ),
 }));
 
+vi.mock('@/lib/warrantyPdfGenerator', () => ({
+  generateWarrantyPdfBlob: vi.fn().mockReturnValue(
+    new Blob(['jspdf-warranty-fallback-blob'], { type: 'application/pdf' }),
+  ),
+}));
+
 vi.mock('@/lib/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
@@ -361,38 +367,50 @@ describe('buildWarrantyUnifiedPayload', () => {
   });
 });
 
-// ── Test regresji: renderDocumentPdfV2 nadal rzuca PendingMigrationError ──────
+// ── Test: renderDocumentPdfV2 — warranty canonical + fallback ─────────────────
 
-describe('regresja: renderDocumentPdfV2 + payload warranty', () => {
-  it('renderDocumentPdfV2 rzuca PendingMigrationError dla warranty gdy Edge Function niedostępna', async () => {
+describe('renderDocumentPdfV2 + payload warranty', () => {
+  it('renderDocumentPdfV2 zwraca PDF z Edge Function gdy serwer odpowiada (canonical path)', async () => {
     const { supabase } = await import('@/integrations/supabase/client');
+    const serverBlob = new Blob(['server-warranty-pdf'], { type: 'application/pdf' });
     vi.mocked(supabase.functions.invoke).mockResolvedValue({
-      data: null,
-      error: { message: 'Function error', name: 'FunctionsError', context: {} as unknown },
+      data: serverBlob,
+      error: null,
     });
 
-    const { renderDocumentPdfV2, PendingMigrationError } = await import('@/lib/pdf/renderPdfV2');
+    const { renderDocumentPdfV2 } = await import('@/lib/pdf/renderPdfV2');
 
     const payload = buildWarrantyUnifiedPayload(makeWarranty(), makeCtx());
-    await expect(renderDocumentPdfV2(payload)).rejects.toThrow(PendingMigrationError);
+    const result = await renderDocumentPdfV2(payload);
+
+    expect(result).toBe(serverBlob);
   });
 
-  it('renderDocumentPdfV2 rzuca PendingMigrationError z documentType warranty', async () => {
+  it('renderDocumentPdfV2 odpada na jsPDF fallback gdy Edge Function zwraca błąd', async () => {
     const { supabase } = await import('@/integrations/supabase/client');
     vi.mocked(supabase.functions.invoke).mockResolvedValue({
       data: null,
       error: { message: 'Function error', name: 'FunctionsError', context: {} as unknown },
     });
 
-    const { renderDocumentPdfV2, PendingMigrationError } = await import('@/lib/pdf/renderPdfV2');
+    const { renderDocumentPdfV2 } = await import('@/lib/pdf/renderPdfV2');
 
     const payload = buildWarrantyUnifiedPayload(makeWarranty(), makeCtx());
-    try {
-      await renderDocumentPdfV2(payload);
-      expect.fail('Powinien rzucić PendingMigrationError');
-    } catch (err) {
-      expect(err).toBeInstanceOf(PendingMigrationError);
-      expect((err as PendingMigrationError).documentType).toBe('warranty');
-    }
+    const result = await renderDocumentPdfV2(payload);
+
+    // Fallback jsPDF zwraca Blob (nie rzuca PendingMigrationError)
+    expect(result).toBeInstanceOf(Blob);
+  });
+
+  it('renderDocumentPdfV2 odpada na jsPDF fallback przy błędzie sieciowym', async () => {
+    const { supabase } = await import('@/integrations/supabase/client');
+    vi.mocked(supabase.functions.invoke).mockRejectedValue(new Error('Network timeout'));
+
+    const { renderDocumentPdfV2 } = await import('@/lib/pdf/renderPdfV2');
+
+    const payload = buildWarrantyUnifiedPayload(makeWarranty(), makeCtx());
+    const result = await renderDocumentPdfV2(payload);
+
+    expect(result).toBeInstanceOf(Blob);
   });
 });

@@ -28,10 +28,10 @@
  *
  * ── Obsługiwane typy dokumentów ───────────────────────────────────────────────
  *   ZAIMPLEMENTOWANE:
- *     'offer' — deleguje do renderera @react-pdf/renderer przez adapter v2→v1
+ *     'offer'    — deleguje do renderera @react-pdf/renderer przez adapter v2→v1
+ *     'warranty' — bezpośredni renderer @react-pdf/renderer (warrantyRenderer.ts)
  *
  *   OCZEKUJĄCE MIGRACJI (zwracają 501):
- *     'warranty'   — aktualnie obsługiwane przez jsPDF warrantyPdfGenerator (frontend)
  *     'protocol'   — aktualnie obsługiwane przez jsPDF templatePdfGenerator (frontend)
  *     'contract'   — jeszcze niezaimplementowane
  *     'inspection' — jeszcze niezaimplementowane
@@ -49,6 +49,7 @@ import {
   type UnifiedDocumentPayload,
 } from "../_shared/unified-document-payload.ts";
 import { renderOfferFromV2Payload } from "./offerRenderer.ts";
+import { renderWarrantyFromV2Payload } from "./warrantyRenderer.ts";
 
 // ── Handler ───────────────────────────────────────────────────────────────────
 
@@ -111,6 +112,22 @@ serve(async (req: Request): Promise<Response> => {
         });
       }
 
+      // ── ZAIMPLEMENTOWANE: warranty ────────────────────────────────────────
+      case "warranty": {
+        const pdfBytes = await renderWarrantyFromV2Payload(payload);
+        const filename = `${payload.documentId.replace(/\//g, "-")}.pdf`;
+
+        return new Response(pdfBytes, {
+          status: 200,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename="${filename}"`,
+            "Content-Length": String(pdfBytes.byteLength),
+          },
+        });
+      }
+
       // ── OCZEKUJĄCE MIGRACJI ──────────────────────────────────────────────
       //
       // Zwracamy 501 z flagą pendingMigration: true.
@@ -118,12 +135,10 @@ serve(async (req: Request): Promise<Response> => {
       // przekierowuje do odpowiedniego generatora jsPDF jako fallback.
       //
       // Kolejność migracji (następne PR):
-      //   1. warranty  — największa wartość; stosunkowo prosta sekcja
-      //   2. protocol  — wymaga integracji z templatePdfGenerator
-      //   3. contract  — nowy typ, wymaga nowego generatora
-      //   4. inspection — wymaga obsługi zdjęć w @react-pdf/renderer
+      //   1. protocol  — wymaga integracji z templatePdfGenerator
+      //   2. contract  — nowy typ, wymaga nowego generatora
+      //   3. inspection — wymaga obsługi zdjęć w @react-pdf/renderer
 
-      case "warranty":
       case "protocol":
       case "contract":
       case "inspection":

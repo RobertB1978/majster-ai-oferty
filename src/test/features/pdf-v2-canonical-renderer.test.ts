@@ -33,6 +33,12 @@ vi.mock('@/lib/offerPdfGenerator', () => ({
   ),
 }));
 
+vi.mock('@/lib/warrantyPdfGenerator', () => ({
+  generateWarrantyPdfBlob: vi.fn().mockReturnValue(
+    new Blob(['jspdf-warranty-fallback-blob'], { type: 'application/pdf' }),
+  ),
+}));
+
 vi.mock('@/lib/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
@@ -257,7 +263,7 @@ describe('PDF Platform v2 — renderDocumentPdfV2', () => {
   // ── 3. PendingMigrationError dla typów bez fallbacku ─────────────────────
 
   describe('PendingMigrationError — typy oczekujące migracji', () => {
-    const pendingTypes: DocumentType[] = ['warranty', 'protocol', 'contract', 'inspection'];
+    const pendingTypes: DocumentType[] = ['protocol', 'contract', 'inspection'];
 
     it.each(pendingTypes)(
       'rzuca PendingMigrationError dla documentType: %s gdy Edge Function zwraca błąd',
@@ -267,9 +273,7 @@ describe('PDF Platform v2 — renderDocumentPdfV2', () => {
           error: { message: 'Function error', name: 'FunctionsError', context: {} as unknown },
         });
 
-        // Budujemy payload z odpowiednią sekcją
         const sectionMap: Record<string, unknown> = {
-          warranty: { type: 'warranty', warrantyMonths: 12, startDate: '2026-01-01T00:00:00.000Z', endDate: '2027-01-01T00:00:00.000Z' },
           protocol: { type: 'protocol' },
           contract: { type: 'contract', subject: 'Remont', value: 5000, vatRate: 23, startDate: '2026-01-01T00:00:00.000Z' },
           inspection: { type: 'inspection' },
@@ -295,33 +299,38 @@ describe('PDF Platform v2 — renderDocumentPdfV2', () => {
       },
     );
 
-    it('PendingMigrationError zawiera poprawny documentType', async () => {
-      vi.mocked(supabase.functions.invoke).mockResolvedValue({
-        data: null,
-        error: { message: 'error', name: 'FunctionsError', context: {} as unknown },
-      });
-
-      try {
-        await renderDocumentPdfV2(makeWarrantyPayload());
-        expect.fail('Powinien rzucić PendingMigrationError');
-      } catch (err) {
-        expect(err).toBeInstanceOf(PendingMigrationError);
-        expect((err as PendingMigrationError).documentType).toBe('warranty');
-      }
-    });
-
     it('PendingMigrationError ma poprawną nazwę (dla instanceof check)', () => {
-      const err = new PendingMigrationError('warranty');
+      const err = new PendingMigrationError('protocol');
       expect(err.name).toBe('PendingMigrationError');
-      expect(err.message).toContain('warranty');
-      expect(err.message).toContain('warrantyPdfGenerator');
+      expect(err.message).toContain('protocol');
     });
   });
 
-  // ── 4. pendingMigration response z Edge Function (501) ────────────────────
+  // ── 3b. Warranty — canonical + fallback (nie rzuca PendingMigrationError) ──
 
-  describe('obsługa odpowiedzi pendingMigration (501) z Edge Function', () => {
-    it('rzuca PendingMigrationError gdy Edge Function zwraca pendingMigration dla warranty', async () => {
+  describe('warranty — canonical path z jsPDF fallback', () => {
+    it('zwraca PDF z Edge Function gdy serwer odpowiada', async () => {
+      const serverBlob = new Blob(['server-warranty-pdf'], { type: 'application/pdf' });
+      vi.mocked(supabase.functions.invoke).mockResolvedValue({
+        data: serverBlob,
+        error: null,
+      });
+
+      const result = await renderDocumentPdfV2(makeWarrantyPayload());
+      expect(result).toBe(serverBlob);
+    });
+
+    it('odpada na jsPDF fallback gdy Edge Function zwraca błąd', async () => {
+      vi.mocked(supabase.functions.invoke).mockResolvedValue({
+        data: null,
+        error: { message: 'Function error', name: 'FunctionsError', context: {} as unknown },
+      });
+
+      const result = await renderDocumentPdfV2(makeWarrantyPayload());
+      expect(result).toBeInstanceOf(Blob);
+    });
+
+    it('odpada na jsPDF fallback przy pendingMigration response', async () => {
       vi.mocked(supabase.functions.invoke).mockResolvedValue({
         data: {
           pendingMigration: true,
@@ -331,7 +340,40 @@ describe('PDF Platform v2 — renderDocumentPdfV2', () => {
         error: { message: 'Function returned error', name: 'FunctionsError', context: {} as unknown },
       });
 
-      await expect(renderDocumentPdfV2(makeWarrantyPayload())).rejects.toThrow(
+      const result = await renderDocumentPdfV2(makeWarrantyPayload());
+      expect(result).toBeInstanceOf(Blob);
+    });
+  });
+
+  // ── 4. pendingMigration response z Edge Function (501) ────────────────────
+
+  describe('obsługa odpowiedzi pendingMigration (501) — typy bez fallbacku', () => {
+    it('rzuca PendingMigrationError gdy Edge Function zwraca pendingMigration dla protocol', async () => {
+      vi.mocked(supabase.functions.invoke).mockResolvedValue({
+        data: {
+          pendingMigration: true,
+          documentType: 'protocol',
+          error: "documentType 'protocol' oczekuje na migrację",
+        },
+        error: { message: 'Function returned error', name: 'FunctionsError', context: {} as unknown },
+      });
+
+      const protocolPayload: UnifiedDocumentPayload = {
+        schemaVersion: 2,
+        documentType: 'protocol',
+        trade: 'general',
+        planTier: 'basic',
+        locale: 'pl-PL',
+        documentId: 'PROT/2026/TEST',
+        generatedAt: '2026-04-01T10:00:00.000Z',
+        issuedAt: '2026-04-01T09:00:00.000Z',
+        validUntil: null,
+        company: { name: 'Test Firma' },
+        client: null,
+        section: { type: 'protocol' },
+      };
+
+      await expect(renderDocumentPdfV2(protocolPayload)).rejects.toThrow(
         PendingMigrationError,
       );
     });
