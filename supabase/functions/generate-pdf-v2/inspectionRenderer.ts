@@ -392,12 +392,16 @@ function e(type: any, props: any, ...children: any[]): any {
  * Waliduje dostępność URL zdjęcia via HEAD request.
  * Zwraca false jeśli URL jest pusty, fetch rzuci wyjątek lub odpowiedź nie jest ok.
  */
-async function validatePhotoUrl(url: string): Promise<boolean> {
+async function validatePhotoUrl(url: string, timeoutMs = 3000): Promise<boolean> {
   if (!url) return false;
   try {
-    const resp = await fetch(url, { method: "HEAD" });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    const resp = await fetch(url, { method: "HEAD", signal: controller.signal });
+    clearTimeout(timeoutId);
     return resp.ok;
-  } catch {
+  } catch (err) {
+    console.warn(`[inspectionRenderer] Photo validation failed for ${url}:`, err);
     return false;
   }
 }
