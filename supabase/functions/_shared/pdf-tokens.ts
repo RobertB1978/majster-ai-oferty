@@ -54,6 +54,12 @@ export const STATE_SUCCESS = "#16A34A";
 /** Stan błędu */
 export const STATE_ERROR = "#DC2626";
 
+/** Tło wiersza sukcesu (green-50) — np. pozycja przyjęta w protokole */
+export const STATE_SUCCESS_BG = "#F0FDF4";
+
+/** Tło wiersza błędu (rose-50) — np. pozycja odrzucona w protokole */
+export const STATE_ERROR_BG = "#FFF1F2";
+
 // ── Skala amber — PDF summary highlights ─────────────────────────────────────
 
 /** amber-50 */

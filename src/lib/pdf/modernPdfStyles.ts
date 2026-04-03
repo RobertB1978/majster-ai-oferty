@@ -66,6 +66,12 @@ export const STATE_SUCCESS: [number, number, number] = [22, 163, 74]; // #16A34A
 /** Error state */
 export const STATE_ERROR: [number, number, number] = [220, 38, 38]; // #DC2626
 
+/** Success state background (green-50) — e.g. accepted row in protocol */
+export const STATE_SUCCESS_BG: [number, number, number] = [240, 253, 244]; // #F0FDF4
+
+/** Error state background (rose-50) — e.g. rejected row in protocol */
+export const STATE_ERROR_BG: [number, number, number] = [255, 241, 242]; // #FFF1F2
+
 /** Pure white — header text on dark backgrounds, logo placeholders */
 export const WHITE: [number, number, number] = [255, 255, 255]; // #FFFFFF
 
