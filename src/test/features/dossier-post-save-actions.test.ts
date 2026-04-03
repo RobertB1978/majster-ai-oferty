@@ -68,7 +68,7 @@ describe('downloadDossierFile', () => {
 
   it('calls createSignedUrl with download option and triggers anchor click', async () => {
     const { supabase } = await import('@/integrations/supabase/client');
-    const mockAnchor = { href: '', click: vi.fn(), remove: vi.fn() };
+    const mockAnchor = { href: '', download: '', style: { display: '' }, click: vi.fn(), remove: vi.fn() };
     vi.spyOn(document, 'createElement').mockReturnValue(
       mockAnchor as unknown as HTMLAnchorElement
     );
@@ -83,12 +83,13 @@ describe('downloadDossierFile', () => {
       { download: 'contract.pdf' }
     );
     expect(mockAnchor.href).toBe(MOCK_SIGNED_DOWNLOAD_URL);
+    expect(mockAnchor.download).toBe('contract.pdf');
     expect(mockAnchor.click).toHaveBeenCalledTimes(1);
     expect(mockAnchor.remove).toHaveBeenCalledTimes(1);
   });
 
   it('works with Polish filenames (special characters)', async () => {
-    const mockAnchor = { href: '', click: vi.fn(), remove: vi.fn() };
+    const mockAnchor = { href: '', download: '', style: { display: '' }, click: vi.fn(), remove: vi.fn() };
     vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as unknown as HTMLAnchorElement);
     vi.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
 
@@ -117,7 +118,7 @@ describe('downloadDossierFile', () => {
   });
 
   it('does not call fetch (uses Supabase signed URL, not blob fetch)', async () => {
-    const mockAnchor = { href: '', click: vi.fn(), remove: vi.fn() };
+    const mockAnchor = { href: '', download: '', style: { display: '' }, click: vi.fn(), remove: vi.fn() };
     vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as unknown as HTMLAnchorElement);
     vi.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
     const fetchSpy = vi.fn();

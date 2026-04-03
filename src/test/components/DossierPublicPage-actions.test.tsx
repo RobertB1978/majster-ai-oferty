@@ -200,4 +200,30 @@ describe('DossierPublicPage — PublicFileActions', () => {
       expect(downloadEl.closest('a')).toBeNull();
     });
   });
+
+  it('shows error page (not crash) when RPC returns null data', async () => {
+    const { supabase } = await import('@/integrations/supabase/client');
+    vi.mocked(supabase.rpc).mockResolvedValueOnce({
+      data: null,
+      error: null,
+    } as ReturnType<typeof supabase.rpc> extends Promise<infer R> ? R : never);
+
+    renderPublicPage('null-token');
+    await waitFor(() => {
+      expect(screen.getByText(i18n.t('dossier.public.notFoundTitle'))).toBeInTheDocument();
+    });
+  });
+
+  it('shows error page when RPC returns server error', async () => {
+    const { supabase } = await import('@/integrations/supabase/client');
+    vi.mocked(supabase.rpc).mockResolvedValueOnce({
+      data: null,
+      error: { message: 'function not found', details: '', hint: '', code: '404' },
+    } as ReturnType<typeof supabase.rpc> extends Promise<infer R> ? R : never);
+
+    renderPublicPage('error-token');
+    await waitFor(() => {
+      expect(screen.getByText(i18n.t('dossier.public.notFoundTitle'))).toBeInTheDocument();
+    });
+  });
 });

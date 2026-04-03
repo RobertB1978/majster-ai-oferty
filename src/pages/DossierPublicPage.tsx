@@ -22,6 +22,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/formatters';
+import { logger } from '@/lib/logger';
 import { DOSSIER_BUCKET, downloadDossierFile, type DossierCategory } from '@/hooks/useDossier';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -166,24 +167,33 @@ export default function DossierPublicPage() {
         });
 
         if (error) {
+          logger.error('[DossierPublic] RPC error', error);
           setLoad({ state: 'error', code: 'server_error' });
+          return;
+        }
+
+        // Null-safe: if the function returned NULL or unexpected shape, treat as not_found
+        if (!data || typeof data !== 'object') {
+          logger.error('[DossierPublic] unexpected RPC result', data);
+          setLoad({ state: 'error', code: 'not_found' });
           return;
         }
 
         const result = data as { error?: string } & PublicDossierData;
 
-        if (result?.error === 'not_found') {
+        if (result.error === 'not_found') {
           setLoad({ state: 'error', code: 'not_found' });
           return;
         }
-        if (result?.error === 'expired') {
+        if (result.error === 'expired') {
           setLoad({ state: 'error', code: 'expired' });
           return;
         }
 
         // Fetch signed URLs for all items in parallel
+        const items = Array.isArray(result.items) ? result.items : [];
         const itemsWithUrls = await Promise.all(
-          (result.items ?? []).map(async (item) => ({
+          items.map(async (item) => ({
             ...item,
             signed_url: await fetchSignedUrl(item.file_path),
           }))
@@ -191,9 +201,18 @@ export default function DossierPublicPage() {
 
         setLoad({
           state: 'ok',
-          dossier: { ...result, items: itemsWithUrls },
+          dossier: {
+            project_title: result.project_title ?? '',
+            project_status: result.project_status ?? '',
+            allowed_categories: Array.isArray(result.allowed_categories)
+              ? result.allowed_categories
+              : [],
+            expires_at: result.expires_at ?? new Date().toISOString(),
+            items: itemsWithUrls,
+          },
         });
-      } catch {
+      } catch (err) {
+        logger.error('[DossierPublic] unexpected error', err);
         setLoad({ state: 'error', code: 'server_error' });
       }
     })();
