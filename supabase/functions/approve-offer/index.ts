@@ -20,6 +20,7 @@ import {
 import { checkRateLimit, createRateLimitResponse, getIdentifier } from "../_shared/rate-limiter.ts";
 import { sanitizeUserInput } from "../_shared/sanitization.ts";
 import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
+import { ERROR_CODES, errorResponse } from "../_shared/error-codes.ts";
 
 // ── Acceptance Bridge helper ─────────────────────────────────────────────────
 // Tworzy wpis w v2_projects z danych legacy projektu i zapisuje ID w offer_approvals.
@@ -150,20 +151,12 @@ serve(async (req) => {
       .single();
 
     if (fetchError || !approval) {
-      return new Response(JSON.stringify({ error: "Oferta nie została znaleziona" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(ERROR_CODES.OFFER_NOT_FOUND, 404, corsHeaders);
     }
 
     // Token-level expiry check (link itself expired)
     if (approval.expires_at && new Date(approval.expires_at) < new Date()) {
-      return new Response(JSON.stringify({
-        error: "Link do akceptacji wygasł. Skontaktuj się z wykonawcą w celu uzyskania nowego linku."
-      }), {
-        status: 410,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(ERROR_CODES.LINK_EXPIRED, 410, corsHeaders);
     }
 
     // valid_until check — offer validity (auto-expire)
@@ -184,13 +177,10 @@ serve(async (req) => {
           action_url: `/app/projects/${approval.project_id}`,
         });
       }
-      return new Response(JSON.stringify({
-        error: "Oferta wygasła. Skontaktuj się z wykonawcą, aby uzyskać nową wycenę.",
-        status: 'expired',
-      }), {
-        status: 410,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: { code: ERROR_CODES.OFFER_EXPIRED, detail: ERROR_CODES.OFFER_EXPIRED }, status: 'expired' }),
+        { status: 410, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
     }
 
     if (req.method === 'GET') {
@@ -262,26 +252,17 @@ serve(async (req) => {
       if (action === 'cancel_accept') {
         const isAccepted = ['accepted', 'approved'].includes(approval.status);
         if (!isAccepted) {
-          return new Response(JSON.stringify({ error: "Oferta nie jest zaakceptowana" }), {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+          return errorResponse(ERROR_CODES.OFFER_NOT_ACCEPTED, 400, corsHeaders);
         }
 
         const acceptedTs = approval.accepted_at ?? approval.approved_at;
         if (!acceptedTs) {
-          return new Response(JSON.stringify({ error: "Nie można ustalić czasu akceptacji" }), {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+          return errorResponse(ERROR_CODES.ACCEPTANCE_TIME_UNKNOWN, 400, corsHeaders);
         }
 
         const diffMs = Date.now() - new Date(acceptedTs).getTime();
         if (diffMs > 600_000) {
-          return new Response(JSON.stringify({ error: "Minął 10-minutowy czas na cofnięcie akceptacji" }), {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+          return errorResponse(ERROR_CODES.ACCEPTANCE_WINDOW_EXPIRED, 400, corsHeaders);
         }
 
         await supabase
@@ -362,10 +343,7 @@ serve(async (req) => {
       // For 1-click accept: validate accept_token
       if (action === 'approve' && accepted_via === 'email_1click') {
         if (!acceptToken || String(acceptToken) !== String(approval.accept_token)) {
-          return new Response(JSON.stringify({ error: "Nieprawidłowy token akceptacji" }), {
-            status: 403,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+          return errorResponse(ERROR_CODES.INVALID_ACCEPTANCE_TOKEN, 403, corsHeaders);
         }
       }
 

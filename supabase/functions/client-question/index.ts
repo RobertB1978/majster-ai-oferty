@@ -18,6 +18,7 @@ import {
 } from "../_shared/rate-limiter.ts";
 import { sanitizeUserInput } from "../_shared/sanitization.ts";
 import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
+import { ERROR_CODES, errorResponse } from "../_shared/error-codes.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -89,21 +90,12 @@ serve(async (req) => {
       .single();
 
     if (fetchError || !approval) {
-      return new Response(
-        JSON.stringify({ error: "Oferta nie została znaleziona" }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      return errorResponse(ERROR_CODES.OFFER_NOT_FOUND, 404, corsHeaders);
     }
 
     // Token-level expiry check
     if (approval.expires_at && new Date(approval.expires_at) < new Date()) {
-      return new Response(JSON.stringify({ error: "Link wygasł" }), {
-        status: 410,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(ERROR_CODES.LINK_EXPIRED, 410, corsHeaders);
     }
 
     // Reject questions on terminal-state offers
@@ -115,13 +107,7 @@ serve(async (req) => {
       "rejected",
     ];
     if (terminalStatuses.includes(approval.status)) {
-      return new Response(
-        JSON.stringify({ error: "Oferta jest już zakończona" }),
-        {
-          status: 409,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      return errorResponse(ERROR_CODES.OFFER_ALREADY_COMPLETED, 409, corsHeaders);
     }
 
     const safeQuestion = sanitizeUserInput(String(questionText), 2000);
