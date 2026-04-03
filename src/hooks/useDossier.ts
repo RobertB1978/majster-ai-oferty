@@ -120,16 +120,29 @@ async function getSignedUrl(filePath: string): Promise<string> {
 export async function downloadDossierFile(filePath: string, fileName: string): Promise<void> {
   if (!filePath) throw new Error('Download failed: missing file path');
 
-  const { data, error } = await supabase.storage
-    .from(DOSSIER_BUCKET)
-    .createSignedUrl(filePath, 60, { download: fileName });
+  // Retry once on transient failure
+  let signedUrl: string | undefined;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const { data, error } = await supabase.storage
+      .from(DOSSIER_BUCKET)
+      .createSignedUrl(filePath, 60, { download: fileName });
+    if (data?.signedUrl) {
+      signedUrl = data.signedUrl;
+      break;
+    }
+    if (attempt === 0) {
+      logger.warn('[Dossier] download URL attempt 1 failed, retrying', error);
+      continue;
+    }
+    logger.error('[Dossier] download URL failed after retry', error);
+  }
 
-  if (error || !data?.signedUrl) {
+  if (!signedUrl) {
     throw new Error('Download failed: could not generate download URL');
   }
 
   const a = document.createElement('a');
-  a.href = data.signedUrl;
+  a.href = signedUrl;
   a.download = fileName;          // explicit download hint for the browser
   a.style.display = 'none';
   document.body.appendChild(a);
