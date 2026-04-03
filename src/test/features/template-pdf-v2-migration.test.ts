@@ -11,7 +11,7 @@
  *   7. Obsługa brakujących opcjonalnych pól (client null, puste formData)
  *   8. Wartości domyślne (trade, planTier, locale)
  *   9. Brak regresji: renderDocumentPdfV2 rzuca PendingMigrationError
- *      dla protocol/inspection/contract gdy Edge Function niedostępna
+ *      dla protocol/inspection/contract gdy Edge Function jest niedostępna (brak klient-side fallbacku)
  *  10. TemplateEditor fallback path (symulacja)
  *
  * Zakres: templatePayloadAdapter + integracja z walidatorem payloadu.
@@ -464,10 +464,10 @@ describe('buildTemplatePayload — polskie znaki diakrytyczne', () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 8: Brak regresji — renderDocumentPdfV2 rzuca PendingMigrationError
-//    dla protocol/inspection/contract (501 z Edge Function)
+//    dla protocol/inspection/contract gdy Edge Function jest niedostępna
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe('renderDocumentPdfV2 — brak regresji dla typów oczekujących migracji', () => {
+describe('renderDocumentPdfV2 — PendingMigrationError gdy Edge Function niedostępna', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -484,14 +484,14 @@ describe('renderDocumentPdfV2 — brak regresji dla typów oczekujących migracj
     });
   }
 
-  const pendingTypes: Array<{ category: TemplateCategory; expectedType: string }> = [
+  const typesWithoutClientFallback: Array<{ category: TemplateCategory; expectedType: string }> = [
     { category: 'PROTOCOLS',  expectedType: 'protocol' },
     { category: 'COMPLIANCE', expectedType: 'inspection' },
     { category: 'CONTRACTS',  expectedType: 'contract' },
     { category: 'ANNEXES',    expectedType: 'contract' },
   ];
 
-  for (const { category, expectedType } of pendingTypes) {
+  for (const { category, expectedType } of typesWithoutClientFallback) {
     it(`rzuca PendingMigrationError dla kategorii ${category} (documentType: ${expectedType})`, async () => {
       mockPendingMigrationResponse(expectedType);
 

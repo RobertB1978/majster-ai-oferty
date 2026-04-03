@@ -8,27 +8,22 @@
  * ── Strategia renderowania ─────────────────────────────────────────────────
  *   1. Próba serwer-first: Edge Function generate-pdf-v2 (@react-pdf/renderer)
  *      → Wyższa jakość, polskie czcionki, serwer-side rendering
+ *      → Obsługuje WSZYSTKIE 5 typów: offer, warranty, protocol, contract, inspection
  *   2. Fallback klient-side (dla 'offer' i 'warranty'):
- *      → jsPDF (offerPdfGenerator / warrantyPdfGenerator) — zawsze dostępny
- *   3. Dla typów oczekujących migracji (protocol, contract, inspection):
- *      → rzuca PendingMigrationError — wywołujący musi obsłużyć
+ *      → jsPDF (offerPdfGenerator / warrantyPdfGenerator) — gdy Edge Function niedostępna
+ *   3. Dla typów bez klient-side fallbacku (protocol, contract, inspection):
+ *      → rzuca PendingMigrationError gdy Edge Function jest niedostępna
  *      → Istniejące UI komponentów używają bezpośrednio generatorów jsPDF
- *        (templatePdfGenerator) — nie ma regresji
+ *        (templatePdfGenerator) jako fallback
  *
  * ── Klasyfikacja ścieżek renderowania ─────────────────────────────────────
  *   CANONICAL  : generate-pdf-v2 (Edge Function, @react-pdf/renderer)
- *                Obsługuje: 'offer', 'warranty'
+ *                Obsługuje: wszystkie 5 typów dokumentów
  *   FALLBACK   : offerPdfGenerator.ts (jsPDF, 'offer')
  *                warrantyPdfGenerator.ts (jsPDF, 'warranty')
  *   LEGACY     : generateServerPdf.ts (OfferPDFPayload v1 → generate-offer-pdf)
  *   STANDALONE : templatePdfGenerator.ts
- *                (jsPDF, poza v2 — oczekuje migracji)
- *
- * ── Przyszłe rozszerzenia (bez resetu architektury) ───────────────────────
- *   - documentType-based routing: już w miejscu (switch po documentType)
- *   - trade-aware styling: planTier/trade w UnifiedDocumentPayload → v2 renderer
- *   - plan-tier differentiation: pdfConfig.version='premium' dla pro/enterprise
- *   - protocol/contract/inspection: migracja w następnych PR
+ *                (jsPDF, fallback dla protocol/contract/inspection gdy Edge Function niedostępna)
  *
  * Roadmap: PDF Platform v2 — Canonical Renderer.
  */
@@ -55,12 +50,13 @@ import {
 // ── Typy błędów ───────────────────────────────────────────────────────────────
 
 /**
- * Rzucany gdy documentType oczekuje na migrację do v2 renderera.
- * Wywołujący powinien albo obsłużyć ten błąd, albo użyć bezpośrednio
- * odpowiedniego generatora jsPDF (warrantyPdfGenerator, templatePdfGenerator).
+ * Rzucany gdy Edge Function generate-pdf-v2 jest niedostępna
+ * i dany documentType nie ma klient-side jsPDF fallbacku.
  *
- * Znaczenie: typ dokumentu jest znany systemowi v2, ale nie ma jeszcze
- * pełnej ścieżki renderowania end-to-end — ani server, ani client-side fallback.
+ * Dotyczy: protocol, contract, inspection — typy obsługiwane server-side,
+ * ale bez klient-side generatora jsPDF jako fallback.
+ * Wywołujący (np. TemplateEditor) powinien obsłużyć ten błąd
+ * i użyć generateTemplatePdf (jsPDF) jako alternatywy.
  */
 export class PendingMigrationError extends Error {
   constructor(
@@ -326,12 +322,10 @@ function warrantyClientFallback(
  * Strategia:
  *   1. Zawsze próbuje Edge Function generate-pdf-v2 (serwer-first)
  *   2. Dla 'offer' i 'warranty': fallback na jsPDF gdy Edge Function zawiedzie
- *   3. Dla typów oczekujących migracji: rzuca PendingMigrationError
+ *   3. Wszystkie 5 typów dokumentów obsługiwane server-side
  *
  * @param payload - UnifiedDocumentPayload (schemaVersion: 2)
  * @returns Blob z zawartością PDF
- * @throws {PendingMigrationError} dla contract/inspection
- *         (do czasu implementacji ich ścieżek w następnych PR)
  */
 export async function renderDocumentPdfV2(
   payload: UnifiedDocumentPayload,
@@ -367,8 +361,8 @@ export async function renderDocumentPdfV2(
       return warrantyClientFallback(payload);
     }
 
-    // Dla innych typów: nie ma klient-side fallback → rzuć PendingMigrationError
-    // z oryginalnym błędem jako przyczyną
+    // Dla protocol/contract/inspection: nie ma klient-side jsPDF fallback
+    // → rzuć PendingMigrationError z oryginalnym błędem jako przyczyną
     throw new PendingMigrationError(payload.documentType, serverErr);
   }
 }

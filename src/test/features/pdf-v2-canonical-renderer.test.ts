@@ -8,7 +8,7 @@
  *   4. offerClientFallback — wywołanie jsPDF gdy Edge Function zawiedzie
  *   5. Brak regresji: oryginalna ścieżka v1 (generateOfferPdfWithServer) działa niezależnie
  *   6. adaptToOfferPdfPayload — poprawne mapowanie UnifiedDocumentPayload → OfferPdfPayload
- *   7. Typy oczekujące migracji (warranty, protocol, contract, inspection)
+ *   7. Fallback behavior — PendingMigrationError gdy Edge Function niedostępna
  *
  * Zakres: wyłącznie logika koordynatora i wybór ścieżki.
  * Renderowanie PDF (jsPDF, @react-pdf/renderer) mockowane.
@@ -262,11 +262,11 @@ describe('PDF Platform v2 — renderDocumentPdfV2', () => {
 
   // ── 3. PendingMigrationError dla typów bez fallbacku ─────────────────────
 
-  describe('PendingMigrationError — typy oczekujące migracji', () => {
-    const pendingTypes: DocumentType[] = ['protocol', 'contract', 'inspection'];
+  describe('PendingMigrationError — typy bez klient-side fallbacku', () => {
+    const typesWithoutFallback: DocumentType[] = ['protocol', 'contract', 'inspection'];
 
-    it.each(pendingTypes)(
-      'rzuca PendingMigrationError dla documentType: %s gdy Edge Function zwraca błąd',
+    it.each(typesWithoutFallback)(
+      'rzuca PendingMigrationError dla documentType: %s gdy Edge Function jest niedostępna',
       async (docType) => {
         vi.mocked(supabase.functions.invoke).mockResolvedValue({
           data: null,
@@ -347,7 +347,7 @@ describe('PDF Platform v2 — renderDocumentPdfV2', () => {
 
   // ── 4. pendingMigration response z Edge Function (501) ────────────────────
 
-  describe('obsługa odpowiedzi pendingMigration (501) — typy bez fallbacku', () => {
+  describe('obsługa odpowiedzi pendingMigration (501) — protocol bez klient-side fallbacku', () => {
     it('rzuca PendingMigrationError gdy Edge Function zwraca pendingMigration dla protocol', async () => {
       vi.mocked(supabase.functions.invoke).mockResolvedValue({
         data: {
