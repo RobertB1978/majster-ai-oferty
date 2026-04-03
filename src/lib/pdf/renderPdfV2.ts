@@ -310,6 +310,8 @@ function warrantyClientFallback(
     companyPhone: payload.company.phone,
     t,
     locale: payload.locale,
+    trade: payload.trade,
+    planTier: payload.planTier,
   };
 
   logger.warn('[renderPdfV2] Fallback na jsPDF dla gwarancji');

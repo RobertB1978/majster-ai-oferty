@@ -400,6 +400,18 @@ function e(type: any, props: any, ...children: any[]): any {
 
 // ── Sub-components ──────────────────────────────────────────────────────────
 
+function buildSectionLabelWithAccent(
+  text: string,
+  tokens: BaseStyleTokens,
+) {
+  return e(Text, {
+    style: [
+      styles.sectionLabel,
+      { borderBottomColor: tokens.sectionAccent },
+    ],
+  }, text);
+}
+
 function buildHeader(
   payload: UnifiedDocumentPayload,
   labels: WarrantyLabels,
@@ -524,12 +536,13 @@ function buildPeriodCards(
 function buildScopeSection(
   section: WarrantyDocumentSection,
   labels: WarrantyLabels,
+  tokens: BaseStyleTokens,
 ) {
   if (!section.scopeOfWork) return null;
   return e(
     View,
     { style: styles.sectionContainer },
-    e(Text, { style: styles.sectionLabel }, labels.scopeOfWork),
+    buildSectionLabelWithAccent(labels.scopeOfWork, tokens),
     e(Text, { style: styles.sectionText }, section.scopeOfWork),
   );
 }
@@ -537,21 +550,22 @@ function buildScopeSection(
 function buildExclusionsSection(
   section: WarrantyDocumentSection,
   labels: WarrantyLabels,
+  tokens: BaseStyleTokens,
 ) {
   if (!section.exclusions) return null;
   return e(
     View,
     { style: styles.sectionContainer },
-    e(Text, { style: styles.sectionLabel }, labels.exclusions),
+    buildSectionLabelWithAccent(labels.exclusions, tokens),
     e(Text, { style: styles.sectionText }, section.exclusions),
   );
 }
 
-function buildLegalSection(labels: WarrantyLabels) {
+function buildLegalSection(labels: WarrantyLabels, tokens: BaseStyleTokens) {
   return e(
     View,
-    { style: styles.legalSection },
-    e(Text, { style: styles.sectionLabel }, labels.legalBasis),
+    { style: [styles.legalSection, { borderTopColor: tokens.sectionAccent }] },
+    buildSectionLabelWithAccent(labels.legalBasis, tokens),
     e(Text, { style: styles.legalText }, labels.legalText),
   );
 }
@@ -578,11 +592,12 @@ function buildSignatures(labels: WarrantyLabels) {
 function buildFooter(
   payload: UnifiedDocumentPayload,
   labels: WarrantyLabels,
+  tokens: BaseStyleTokens,
 ) {
   const locale = payload.locale;
   return e(
     View,
-    { style: styles.footer, fixed: true },
+    { style: [styles.footer, { borderTopColor: tokens.sectionAccent }], fixed: true },
     e(Text, { style: styles.footerLeft }, payload.company.name),
     e(
       Text,
@@ -610,11 +625,11 @@ export function buildWarrantyDocument(
     buildHeader(payload, labels, tokens),
     buildInfoCards(payload, labels),
     buildPeriodCards(section, labels, payload.locale),
-    buildScopeSection(section, labels),
-    buildExclusionsSection(section, labels),
-    buildLegalSection(labels),
+    buildScopeSection(section, labels, tokens),
+    buildExclusionsSection(section, labels, tokens),
+    buildLegalSection(labels, tokens),
     buildSignatures(labels),
-    buildFooter(payload, labels),
+    buildFooter(payload, labels, tokens),
   ];
 
   return e(

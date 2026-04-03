@@ -62,7 +62,13 @@ import {
   TEXT_HEADER_SUBTITLE,
   TABLE_GRID_LINE,
   drawLogoPlaceholder,
+  hexToRgb,
 } from './pdf/modernPdfStyles';
+import {
+  resolveTemplateVariant,
+  getStyleTokens,
+} from './pdf/documentVisualSystem';
+import type { TradeType, PlanTier } from '@/types/unified-document-payload';
 
 // ---------------------------------------------------------------------------
 // JetBrains Mono font registration
@@ -215,6 +221,46 @@ export async function generateOfferPdf(
   const templateId = payload.pdfConfig.templateId ?? 'classic';
   const theme = TEMPLATE_THEMES[templateId];
 
+  // ── Trade accent resolution ─────────────────────────────────────────────
+  // When trade/planTier are present (v2 adapter path), resolve trade-specific
+  // accent colors from the visual system. Otherwise fall back to brand amber.
+  let accentRgb: [number, number, number] = ACCENT_AMBER;
+  let accentSubtleRgb: [number, number, number] = ACCENT_AMBER_SUBTLE;
+  if (payload.trade) {
+    const safeTrade = (payload.trade as TradeType) ?? 'general';
+    const safePlan = (payload.planTier as PlanTier) ?? 'basic';
+    const variant = resolveTemplateVariant({
+      documentType: 'offer',
+      trade: safeTrade,
+      planTier: safePlan,
+    });
+    const tokens = getStyleTokens(variant);
+    accentRgb = hexToRgb(tokens.sectionAccent, ACCENT_AMBER);
+    accentSubtleRgb = hexToRgb(tokens.accentStripeBg, ACCENT_AMBER_SUBTLE);
+  }
+
+  // ── Logo embedding ──────────────────────────────────────────────────────
+  // Try to fetch and embed the real company logo when logoUrl is available.
+  let logoImageData: string | null = null;
+  if (payload.company.logoUrl) {
+    try {
+      const response = await fetch(payload.company.logoUrl);
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.type.startsWith('image/') && blob.size < 2_000_000) {
+          logoImageData = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch {
+      // Logo fetch failure is non-fatal — fall back to placeholder
+    }
+  }
+
   // ========================================
   // HEADER SECTION
   // ========================================
@@ -231,26 +277,41 @@ export async function generateOfferPdf(
       doc.rect(0, 0, pageWidth, 3, 'F');
     }
 
-    // Amber accent bar at the bottom of the header band
-    doc.setFillColor(...ACCENT_AMBER);
+    // Trade-aware accent bar at the bottom of the header band
+    doc.setFillColor(...accentRgb);
     doc.rect(0, bandHeight - 2, pageWidth, 2, 'F');
 
     // "OFERTA" label right-aligned in header
     doc.setFontSize(FONT_SIZES.sm);
     doc.setFont(bodyFont, 'bold');
-    doc.setTextColor(...ACCENT_AMBER);
+    doc.setTextColor(...accentRgb);
     doc.text(t ? t('offerPdf.label') : 'OFERTA', pageWidth - margin, 12, { align: 'right' });
 
-    // Logo placeholder (white rounded square with initial) in the header band
+    // Logo in the header band — real image or placeholder
     const logoY = 14;
     const logoSize = 12;
-    doc.setFillColor(...WHITE);
-    doc.roundedRect(margin, logoY, logoSize, logoSize, 2, 2, 'F');
-    const initial = payload.company.name.trim().charAt(0).toUpperCase() || 'M';
-    doc.setFontSize(logoSize * 0.55);
-    doc.setFont(bodyFont, 'bold');
-    doc.setTextColor(...theme.companyBg);
-    doc.text(initial, margin + logoSize / 2, logoY + logoSize * 0.68, { align: 'center' });
+    if (logoImageData) {
+      try {
+        doc.addImage(logoImageData, margin, logoY, logoSize, logoSize);
+      } catch {
+        // Image embed failure — fall back to placeholder
+        doc.setFillColor(...WHITE);
+        doc.roundedRect(margin, logoY, logoSize, logoSize, 2, 2, 'F');
+        const initial = payload.company.name.trim().charAt(0).toUpperCase() || 'M';
+        doc.setFontSize(logoSize * 0.55);
+        doc.setFont(bodyFont, 'bold');
+        doc.setTextColor(...(theme.companyBg ?? TEXT_PRIMARY));
+        doc.text(initial, margin + logoSize / 2, logoY + logoSize * 0.68, { align: 'center' });
+      }
+    } else {
+      doc.setFillColor(...WHITE);
+      doc.roundedRect(margin, logoY, logoSize, logoSize, 2, 2, 'F');
+      const initial = payload.company.name.trim().charAt(0).toUpperCase() || 'M';
+      doc.setFontSize(logoSize * 0.55);
+      doc.setFont(bodyFont, 'bold');
+      doc.setTextColor(...(theme.companyBg ?? TEXT_PRIMARY));
+      doc.text(initial, margin + logoSize / 2, logoY + logoSize * 0.68, { align: 'center' });
+    }
 
     // Company name in white — next to logo
     const nameX = margin + logoSize + 4;
@@ -284,10 +345,18 @@ export async function generateOfferPdf(
     doc.setTextColor(...TEXT_PRIMARY);
     yPosition = bandHeight + 6;
   } else {
-    // Classic / Minimal template: text-only header with logo placeholder
-    // Logo placeholder on the left
-    drawLogoPlaceholder(doc, margin, yPosition - 3, payload.company.name);
-    const nameX = margin + 18; // after logo placeholder
+    // Classic / Minimal template: text-only header with logo
+    // Logo on the left — real image or placeholder
+    if (logoImageData) {
+      try {
+        doc.addImage(logoImageData, margin, yPosition - 3, 14, 14);
+      } catch {
+        drawLogoPlaceholder(doc, margin, yPosition - 3, payload.company.name);
+      }
+    } else {
+      drawLogoPlaceholder(doc, margin, yPosition - 3, payload.company.name);
+    }
+    const nameX = margin + 18; // after logo
 
     doc.setFontSize(FONT_SIZES.xl);
     doc.setFont(bodyFont, 'bold');
@@ -331,11 +400,11 @@ export async function generateOfferPdf(
 
     yPosition += 5;
 
-    // Separator line with amber accent
+    // Separator line with trade-aware accent
     doc.setDrawColor(...BORDER_DEFAULT);
     doc.line(margin, yPosition, pageWidth - margin, yPosition);
-    // Amber accent segment (first 40mm)
-    doc.setDrawColor(...ACCENT_AMBER);
+    // Accent segment (first 40mm)
+    doc.setDrawColor(...accentRgb);
     doc.setLineWidth(0.8);
     doc.line(margin, yPosition, margin + 40, yPosition);
     doc.setLineWidth(0.2);
@@ -358,10 +427,10 @@ export async function generateOfferPdf(
         errorCorrectionLevel: 'Q',
         color: { dark: '#111827', light: '#FFFFFF' },
       });
-      // Amber-accented frame around QR code
-      doc.setFillColor(...ACCENT_AMBER_SUBTLE);
+      // Trade-accented frame around QR code
+      doc.setFillColor(...accentSubtleRgb);
       doc.roundedRect(qrX - 2, yPosition - 4, QR_SIZE + 4, QR_SIZE + 12, 2, 2, 'F');
-      doc.setDrawColor(...ACCENT_AMBER);
+      doc.setDrawColor(...accentRgb);
       doc.setLineWidth(0.4);
       doc.roundedRect(qrX - 2, yPosition - 4, QR_SIZE + 4, QR_SIZE + 12, 2, 2, 'S');
       doc.setLineWidth(0.2);
@@ -493,8 +562,8 @@ export async function generateOfferPdf(
     doc.setFont(bodyFont, 'bold');
     doc.setTextColor(...theme.accentColor);
     doc.text(sectionLabel ?? (t ? t('offerPdf.positionsHeading') : 'Pozycje wyceny:'), margin, yPosition);
-    // Amber underline accent
-    doc.setDrawColor(...ACCENT_AMBER);
+    // Trade-aware underline accent
+    doc.setDrawColor(...accentRgb);
     doc.setLineWidth(0.8);
     doc.line(margin, yPosition + 1.5, margin + 50, yPosition + 1.5);
     doc.setLineWidth(0.2);
@@ -789,8 +858,8 @@ export async function generateOfferPdf(
     doc.setDrawColor(...BORDER_DEFAULT);
     doc.setLineWidth(0.2);
     doc.line(margin, footerY - 7, pageWidth - margin, footerY - 7);
-    // Amber accent on first 30mm
-    doc.setDrawColor(...ACCENT_AMBER);
+    // Trade-aware accent on first 30mm
+    doc.setDrawColor(...accentRgb);
     doc.setLineWidth(0.5);
     doc.line(margin, footerY - 7, margin + 30, footerY - 7);
     doc.setLineWidth(0.2);
