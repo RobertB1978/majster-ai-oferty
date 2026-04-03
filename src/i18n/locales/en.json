@@ -1964,7 +1964,11 @@
       "emailSubjectMaxLength": "Subject max {{max}} characters",
       "emailGreetingMaxLength": "Greeting max {{max}} characters",
       "emailSignatureMaxLength": "Signature max {{max}} characters",
-      "websiteInvalid": "Website must start with http:// or https://"
+      "websiteInvalid": "Website must start with http:// or https://",
+      "regonFormat": "REGON must have 9 or 14 digits",
+      "krsFormat": "KRS must have 10 digits",
+      "representativeNameMaxLength": "Representative name max {{max}} characters",
+      "representativeRoleMaxLength": "Representative role max {{max}} characters"
     },
     "password": {
       "minLength": "Password must be at least {{min}} characters",
@@ -3013,7 +3017,24 @@
     "postalCodePlaceholder": "e.g. 00-001",
     "phonePlaceholder": "+48 123 456 789",
     "emailForOffersPlaceholder": "contact@company.com",
-    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000"
+    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000",
+    "registrationSection": "Registration data",
+    "registrationDesc": "Legal form, REGON, KRS and company representative",
+    "legalFormLabel": "Legal form *",
+    "legalFormJdg": "Sole Proprietorship (JDG)",
+    "legalFormSpZoo": "Limited Liability Company (sp. z o.o.)",
+    "legalFormSpolkaCywilna": "Civil Partnership",
+    "legalFormInne": "Other",
+    "regonLabel": "REGON",
+    "regonPlaceholder": "e.g. 123456789",
+    "krsLabel": "KRS",
+    "krsPlaceholder": "e.g. 0000123456",
+    "representativeNameLabel": "Company representative",
+    "representativeNamePlaceholder": "e.g. John Smith",
+    "representativeRoleLabel": "Position / role",
+    "representativeRolePlaceholder": "e.g. CEO",
+    "representativeHintJdg": "For sole proprietorship, the document signer is the owner",
+    "representativeHintSpZoo": "For LLC, you must provide the authorized representative and KRS number"
   },
   "marketplacePage": {
     "addSubcontractor": "Add subcontractor",

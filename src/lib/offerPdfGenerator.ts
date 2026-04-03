@@ -266,16 +266,20 @@ export async function generateOfferPdf(
 
     const addrParts: string[] = [];
     if (payload.company.nip) addrParts.push(`NIP: ${payload.company.nip}`);
-    if (payload.company.street) addrParts.push(payload.company.street);
-    if (payload.company.postalCode || payload.company.city) {
-      addrParts.push([payload.company.postalCode, payload.company.city].filter(Boolean).join(' '));
-    }
+    if (payload.company.regon) addrParts.push(`REGON: ${payload.company.regon}`);
+    if (payload.company.krs) addrParts.push(`KRS: ${payload.company.krs}`);
     if (addrParts.length > 0) doc.text(addrParts.join('  ·  '), nameX, 30);
 
+    const addrLine2Parts: string[] = [];
+    if (payload.company.street) addrLine2Parts.push(payload.company.street);
+    if (payload.company.postalCode || payload.company.city) {
+      addrLine2Parts.push([payload.company.postalCode, payload.company.city].filter(Boolean).join(' '));
+    }
     const contactParts: string[] = [];
     if (payload.company.phone) contactParts.push(`Tel: ${payload.company.phone}`);
     if (payload.company.email) contactParts.push(`Email: ${payload.company.email}`);
-    if (contactParts.length > 0) doc.text(contactParts.join('  ·  '), nameX, 38);
+    const line2 = [...addrLine2Parts, ...contactParts].join('  ·  ');
+    if (line2) doc.text(line2, nameX, 38);
 
     doc.setTextColor(...TEXT_PRIMARY);
     yPosition = bandHeight + 6;
@@ -296,7 +300,10 @@ export async function generateOfferPdf(
     doc.setTextColor(...TEXT_SECONDARY);
 
     if (payload.company.nip) {
-      doc.text(`NIP: ${payload.company.nip}`, nameX, yPosition);
+      const regParts = [`NIP: ${payload.company.nip}`];
+      if (payload.company.regon) regParts.push(`REGON: ${payload.company.regon}`);
+      if (payload.company.krs) regParts.push(`KRS: ${payload.company.krs}`);
+      doc.text(regParts.join('  ·  '), nameX, yPosition);
       yPosition += 5;
     }
 
@@ -724,13 +731,28 @@ export async function generateOfferPdf(
   const rightSigX = margin + sigColWidth + 10;
   const sigLineY = yPosition + 18;
 
-  // Contractor name label
+  // Contractor — representative name + role + company
   doc.setFontSize(FONT_SIZES.sm);
   doc.setFont(bodyFont, 'bold');
   doc.setTextColor(...TEXT_PRIMARY);
-  doc.text(payload.company.name, margin, yPosition);
+  if (payload.company.representativeName) {
+    doc.text(payload.company.representativeName, margin, yPosition);
+    doc.setFontSize(FONT_SIZES.xs);
+    doc.setFont(bodyFont, 'normal');
+    doc.setTextColor(...TEXT_SECONDARY);
+    if (payload.company.representativeRole) {
+      doc.text(payload.company.representativeRole, margin, yPosition + 4);
+    }
+    doc.text(payload.company.name, margin, yPosition + (payload.company.representativeRole ? 8 : 4));
+    doc.setTextColor(...TEXT_PRIMARY);
+  } else {
+    doc.text(payload.company.name, margin, yPosition);
+  }
 
   // Client name label
+  doc.setFontSize(FONT_SIZES.sm);
+  doc.setFont(bodyFont, 'bold');
+  doc.setTextColor(...TEXT_PRIMARY);
   const clientName = payload.client?.name ?? (t ? t('offerPdf.defaultClientName') : 'Klient');
   doc.text(clientName, rightSigX, yPosition);
 

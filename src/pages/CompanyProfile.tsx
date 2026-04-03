@@ -9,7 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Building2, Upload, Loader2, Save, User, Phone, Mail, MapPin, CreditCard, FileText, MessageSquare, ChevronDown, Image, Globe } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Building2, Upload, Loader2, Save, User, Phone, Mail, MapPin, CreditCard, FileText, MessageSquare, ChevronDown, Image, Globe, Scale } from 'lucide-react';
+import type { LegalForm } from '@/hooks/useProfile';
 import { toast } from 'sonner';
 import { BiometricSetup } from '@/components/auth/BiometricSetup';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
@@ -32,9 +34,14 @@ export default function CompanyProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<ProfileFormData>({
+    legal_form: 'jdg',
     company_name: '',
     owner_name: '',
     nip: '',
+    regon: '',
+    krs: '',
+    representative_name: '',
+    representative_role: '',
     street: '',
     address_line2: '',
     city: '',
@@ -52,6 +59,7 @@ export default function CompanyProfile() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [openSections, setOpenSections] = useState({
     basics: true,
+    registration: false,
     address: false,
     contact: false,
     bank: false,
@@ -61,9 +69,14 @@ export default function CompanyProfile() {
   useEffect(() => {
     if (profile) {
       setFormData({
+        legal_form: (profile.legal_form as LegalForm) || 'jdg',
         company_name: profile.company_name || '',
         owner_name: profile.owner_name || '',
         nip: profile.nip || '',
+        regon: profile.regon || '',
+        krs: profile.krs || '',
+        representative_name: profile.representative_name || '',
+        representative_role: profile.representative_role || '',
         street: profile.street || '',
         address_line2: profile.address_line2 || '',
         city: profile.city || '',
@@ -313,7 +326,132 @@ export default function CompanyProfile() {
               </Card>
             </Collapsible>
 
-            {/* Sekcja 2: Adres */}
+            {/* Sekcja 2: Dane rejestrowe */}
+            <Collapsible
+              open={openSections.registration}
+              onOpenChange={(open) => setOpenSections(prev => ({ ...prev, registration: open }))}
+              className="mt-4"
+            >
+              <Card>
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Scale className="h-5 w-5" />
+                          {t('companyProfile.registrationSection')}
+                        </CardTitle>
+                        <CardDescription>
+                          {t('companyProfile.registrationDesc')}
+                        </CardDescription>
+                      </div>
+                      <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${openSections.registration ? 'rotate-180' : ''}`} />
+                    </div>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent className="pt-0">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2 sm:col-span-2">
+                        <Label htmlFor="legal_form" className="flex items-center gap-2">
+                          <Scale className="h-4 w-4" />
+                          {t('companyProfile.legalFormLabel')}
+                        </Label>
+                        <Select
+                          value={formData.legal_form}
+                          onValueChange={(value) => setFormData({ ...formData, legal_form: value as LegalForm })}
+                        >
+                          <SelectTrigger id="legal_form">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="jdg">{t('companyProfile.legalFormJdg')}</SelectItem>
+                            <SelectItem value="sp_z_oo">{t('companyProfile.legalFormSpZoo')}</SelectItem>
+                            <SelectItem value="spolka_cywilna">{t('companyProfile.legalFormSpolkaCywilna')}</SelectItem>
+                            <SelectItem value="inne">{t('companyProfile.legalFormInne')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="regon">{t('companyProfile.regonLabel')}</Label>
+                        <Input
+                          id="regon"
+                          value={formData.regon}
+                          onChange={(e) => setFormData({ ...formData, regon: e.target.value })}
+                          placeholder={t('companyProfile.regonPlaceholder')}
+                          className={errors.regon ? 'border-destructive' : ''}
+                        />
+                        {errors.regon && (
+                          <p className="text-sm text-destructive">{errors.regon}</p>
+                        )}
+                      </div>
+
+                      {/* KRS — visible only for sp. z o.o. and inne */}
+                      {(formData.legal_form === 'sp_z_oo' || formData.legal_form === 'inne') && (
+                        <div className="space-y-2">
+                          <Label htmlFor="krs">{t('companyProfile.krsLabel')}</Label>
+                          <Input
+                            id="krs"
+                            value={formData.krs}
+                            onChange={(e) => setFormData({ ...formData, krs: e.target.value })}
+                            placeholder={t('companyProfile.krsPlaceholder')}
+                            className={errors.krs ? 'border-destructive' : ''}
+                          />
+                          {errors.krs && (
+                            <p className="text-sm text-destructive">{errors.krs}</p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Representative — visible only for sp. z o.o. and inne */}
+                      {(formData.legal_form === 'sp_z_oo' || formData.legal_form === 'inne') && (
+                        <>
+                          <div className="space-y-2">
+                            <Label htmlFor="representative_name">{t('companyProfile.representativeNameLabel')}</Label>
+                            <Input
+                              id="representative_name"
+                              value={formData.representative_name}
+                              onChange={(e) => setFormData({ ...formData, representative_name: e.target.value })}
+                              placeholder={t('companyProfile.representativeNamePlaceholder')}
+                              className={errors.representative_name ? 'border-destructive' : ''}
+                            />
+                            {errors.representative_name && (
+                              <p className="text-sm text-destructive">{errors.representative_name}</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="representative_role">{t('companyProfile.representativeRoleLabel')}</Label>
+                            <Input
+                              id="representative_role"
+                              value={formData.representative_role}
+                              onChange={(e) => setFormData({ ...formData, representative_role: e.target.value })}
+                              placeholder={t('companyProfile.representativeRolePlaceholder')}
+                              className={errors.representative_role ? 'border-destructive' : ''}
+                            />
+                            {errors.representative_role && (
+                              <p className="text-sm text-destructive">{errors.representative_role}</p>
+                            )}
+                          </div>
+                        </>
+                      )}
+
+                      {/* Contextual hint */}
+                      <div className="sm:col-span-2">
+                        <p className="text-xs text-muted-foreground">
+                          {formData.legal_form === 'sp_z_oo'
+                            ? t('companyProfile.representativeHintSpZoo')
+                            : t('companyProfile.representativeHintJdg')}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
+
+            {/* Sekcja 3: Adres */}
             <Collapsible
               open={openSections.address}
               onOpenChange={(open) => setOpenSections(prev => ({ ...prev, address: open }))}

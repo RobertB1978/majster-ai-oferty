@@ -74,8 +74,13 @@ export const quoteSchema = z.object({
 
 export type QuoteFormData = z.infer<typeof quoteSchema>;
 
+// Legal form type (matches DB constraint)
+export const LEGAL_FORMS = ['jdg', 'sp_z_oo', 'spolka_cywilna', 'inne'] as const;
+export type LegalFormValue = typeof LEGAL_FORMS[number];
+
 // Profile validation
 export const profileSchema = z.object({
+  legal_form: z.enum(LEGAL_FORMS).default('jdg'),
   company_name: z.string()
     .min(1, i18n.t('validations.profile.companyNameRequired'))
     .max(100, i18n.t('validations.profile.companyNameMaxLength', { max: 100 })),
@@ -87,6 +92,22 @@ export const profileSchema = z.object({
     .refine(val => !val || /^\d{10}$/.test(val.replace(/\D/g, '')), {
       message: i18n.t('validations.profile.nipFormat', { digits: 10 }),
     }),
+  regon: z.string()
+    .optional()
+    .refine(val => !val || /^\d{9}(\d{5})?$/.test(val.replace(/\D/g, '')), {
+      message: i18n.t('validations.profile.regonFormat'),
+    }),
+  krs: z.string()
+    .optional()
+    .refine(val => !val || /^\d{10}$/.test(val.replace(/\D/g, '')), {
+      message: i18n.t('validations.profile.krsFormat'),
+    }),
+  representative_name: z.string()
+    .max(150, i18n.t('validations.profile.representativeNameMaxLength', { max: 150 }))
+    .optional(),
+  representative_role: z.string()
+    .max(100, i18n.t('validations.profile.representativeRoleMaxLength', { max: 100 }))
+    .optional(),
   street: z.string()
     .max(100, i18n.t('validations.profile.streetMaxLength', { max: 100 }))
     .optional(),

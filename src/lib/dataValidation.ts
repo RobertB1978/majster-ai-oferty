@@ -194,8 +194,13 @@ export function normalizeQuotePosition(position: QuotePositionInput): Normalized
  */
 export interface ProfileInput {
   company_name?: string;
+  legal_form?: string;
   owner_name?: string;
   nip?: string;
+  regon?: string;
+  krs?: string;
+  representative_name?: string;
+  representative_role?: string;
   phone?: string;
   email_for_offers?: string;
   street?: string;
@@ -209,8 +214,13 @@ export interface ProfileInput {
 
 export interface NormalizedProfile {
   company_name?: string;
+  legal_form?: string;
   owner_name?: string;
   nip?: string;
+  regon?: string;
+  krs?: string;
+  representative_name?: string;
+  representative_role?: string;
   phone?: string;
   email_for_offers?: string;
   street?: string;
@@ -233,8 +243,28 @@ export function normalizeProfileData(profile: ProfileInput): NormalizedProfile {
     normalized.owner_name = normalizeString(profile.owner_name, '', 200);
   }
 
+  if (profile.legal_form !== undefined) {
+    normalized.legal_form = normalizeString(profile.legal_form, 'jdg', 20);
+  }
+
   if (profile.nip !== undefined) {
     normalized.nip = normalizeString(profile.nip, '', 20).replace(/\D/g, '');
+  }
+
+  if (profile.regon !== undefined) {
+    normalized.regon = normalizeString(profile.regon, '', 20).replace(/\D/g, '');
+  }
+
+  if (profile.krs !== undefined) {
+    normalized.krs = normalizeString(profile.krs, '', 20).replace(/\D/g, '');
+  }
+
+  if (profile.representative_name !== undefined) {
+    normalized.representative_name = normalizeString(profile.representative_name, '', 150);
+  }
+
+  if (profile.representative_role !== undefined) {
+    normalized.representative_role = normalizeString(profile.representative_role, '', 100);
   }
 
   if (profile.phone !== undefined) {

@@ -38,6 +38,10 @@ export interface OfferPosition {
 export interface CompanyInfo {
   name: string;
   nip?: string;
+  regon?: string;
+  krs?: string;
+  representativeName?: string;
+  representativeRole?: string;
   street?: string;
   postalCode?: string;
   city?: string;
@@ -176,7 +180,13 @@ export function buildOfferData(params: {
   projectName: string;
   profile?: {
     company_name?: string;
+    legal_form?: string;
     nip?: string;
+    regon?: string;
+    krs?: string;
+    owner_name?: string;
+    representative_name?: string;
+    representative_role?: string;
     street?: string;
     postal_code?: string;
     city?: string;
@@ -219,10 +229,23 @@ export function buildOfferData(params: {
 }): OfferPdfPayload {
   const t = params.t;
 
-  // Company info
+  // Company info — resolve representative based on legal form
+  const legalForm = params.profile?.legal_form || 'jdg';
+  const isJdg = legalForm === 'jdg';
+  const representativeName = isJdg
+    ? params.profile?.owner_name
+    : params.profile?.representative_name;
+  const representativeRole = isJdg
+    ? 'Właściciel'
+    : (params.profile?.representative_role || 'Prezes Zarządu');
+
   const company: CompanyInfo = {
     name: params.profile?.company_name || 'Majster.AI',
     nip: params.profile?.nip,
+    regon: params.profile?.regon || undefined,
+    krs: isJdg ? undefined : (params.profile?.krs || undefined),
+    representativeName: representativeName || undefined,
+    representativeRole: representativeName ? representativeRole : undefined,
     street: params.profile?.street,
     postalCode: params.profile?.postal_code,
     city: params.profile?.city,
