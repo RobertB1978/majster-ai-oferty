@@ -148,7 +148,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    console.log(`[send-offer-email] Sending offer email to: ${to.substring(0, 3)}***@***, subject: ${subject.substring(0, 30)}...`);
+    console.log(`[send-offer-email] Sending offer email to: ${to.substring(0, 3)}***@***, locale: ${locale ?? 'pl(fallback)'}, subject: ${subject.substring(0, 30)}...`);
 
     // Create dependencies for email handler
     const deps: EmailDeps = {
