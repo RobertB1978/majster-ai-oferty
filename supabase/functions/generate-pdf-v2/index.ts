@@ -30,9 +30,9 @@
  *   ZAIMPLEMENTOWANE:
  *     'offer'    — deleguje do renderera @react-pdf/renderer przez adapter v2→v1
  *     'warranty' — bezpośredni renderer @react-pdf/renderer (warrantyRenderer.ts)
+ *     'protocol' — bezpośredni renderer @react-pdf/renderer (protocolRenderer.ts)
  *
  *   OCZEKUJĄCE MIGRACJI (zwracają 501):
- *     'protocol'   — aktualnie obsługiwane przez jsPDF templatePdfGenerator (frontend)
  *     'contract'   — jeszcze niezaimplementowane
  *     'inspection' — jeszcze niezaimplementowane
  *
@@ -50,6 +50,7 @@ import {
 } from "../_shared/unified-document-payload.ts";
 import { renderOfferFromV2Payload } from "./offerRenderer.ts";
 import { renderWarrantyFromV2Payload } from "./warrantyRenderer.ts";
+import { renderProtocolFromV2Payload } from "./protocolRenderer.ts";
 
 // ── Handler ───────────────────────────────────────────────────────────────────
 
@@ -128,6 +129,22 @@ serve(async (req: Request): Promise<Response> => {
         });
       }
 
+      // ── ZAIMPLEMENTOWANE: protocol ───────────────────────────────────────
+      case "protocol": {
+        const pdfBytes = await renderProtocolFromV2Payload(payload);
+        const filename = `${payload.documentId.replace(/\//g, "-")}.pdf`;
+
+        return new Response(pdfBytes, {
+          status: 200,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename="${filename}"`,
+            "Content-Length": String(pdfBytes.byteLength),
+          },
+        });
+      }
+
       // ── OCZEKUJĄCE MIGRACJI ──────────────────────────────────────────────
       //
       // Zwracamy 501 z flagą pendingMigration: true.
@@ -135,11 +152,9 @@ serve(async (req: Request): Promise<Response> => {
       // przekierowuje do odpowiedniego generatora jsPDF jako fallback.
       //
       // Kolejność migracji (następne PR):
-      //   1. protocol  — wymaga integracji z templatePdfGenerator
-      //   2. contract  — nowy typ, wymaga nowego generatora
-      //   3. inspection — wymaga obsługi zdjęć w @react-pdf/renderer
+      //   1. contract   — nowy typ, wymaga nowego generatora
+      //   2. inspection — wymaga obsługi zdjęć w @react-pdf/renderer
 
-      case "protocol":
       case "contract":
       case "inspection":
         return new Response(
