@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@/test/utils';
+import { render, screen, fireEvent } from '@/test/utils';
 import * as useProjectsV2Hook from '@/hooks/useProjectsV2';
 import * as useOffersHook from '@/hooks/useOffers';
 import ProjectHub from '@/pages/ProjectHub';
@@ -49,6 +49,9 @@ vi.mock('@/components/documents/DossierPanel', () => ({
 }));
 vi.mock('@/components/documents/WarrantySection', () => ({
   WarrantySection: () => <div data-testid="warranty" />,
+}));
+vi.mock('@/components/documents/InspectionSection', () => ({
+  InspectionSection: () => <div data-testid="inspection-section" />,
 }));
 
 // ── Fabryki danych testowych ───────────────────────────────────────────────────
@@ -208,5 +211,45 @@ describe('ProjectHub — relacja Oferta → Projekt', () => {
     render(<ProjectHub />);
 
     expect(screen.queryByText(/Powstał z oferty/i)).toBeNull();
+  });
+});
+
+// ── Testy: Sekcja Przeglądy techniczne w accordion ────────────────────────────
+
+describe('ProjectHub — sekcja Przeglądy techniczne', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('wyświetla nagłówek sekcji "Przeglądy techniczne" w accordion', () => {
+    const project = makeProject();
+    mockProjectHook(project);
+
+    vi.spyOn(useOffersHook, 'useSourceOffer').mockReturnValue({
+      data: null,
+      isLoading: false,
+    } as never);
+
+    render(<ProjectHub />);
+
+    expect(screen.getByText('Przeglądy techniczne')).toBeDefined();
+  });
+
+  it('renderuje InspectionSection po rozwinięciu accordion', () => {
+    const project = makeProject();
+    mockProjectHook(project);
+
+    vi.spyOn(useOffersHook, 'useSourceOffer').mockReturnValue({
+      data: null,
+      isLoading: false,
+    } as never);
+
+    render(<ProjectHub />);
+
+    // Kliknij nagłówek sekcji "Przeglądy techniczne"
+    const header = screen.getByText('Przeglądy techniczne');
+    fireEvent.click(header);
+
+    expect(screen.getByTestId('inspection-section')).toBeDefined();
   });
 });
