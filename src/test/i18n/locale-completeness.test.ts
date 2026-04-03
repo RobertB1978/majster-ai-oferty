@@ -333,4 +333,89 @@ describe('i18n Locale Completeness', () => {
       expect(i18n.t('clients.confirmDelete')).toBe('Ви впевнені, що хочете видалити цього клієнта?');
     });
   });
+
+  // ── Offer email locale — QA regression guard ──────────────────────────────
+  // These tests protect the keys that generate the actual subject line and message
+  // body of offer emails sent to clients.  A translation accident that deletes or
+  // copies PL values to EN/UK would be invisible to the user in the UI but would
+  // silently deliver Polish-language emails to EN/UK users.
+  describe('Offer email locale — QA regression guard', () => {
+    it('sendOffer.auto* keys are present and non-empty in all three locales', () => {
+      const autoKeys = [
+        'sendOffer.autoSubject',
+        'sendOffer.autoMessage',
+        'sendOffer.autoSubjectNoTitle',
+      ];
+      for (const key of autoKeys) {
+        for (const lang of ['pl', 'en', 'uk']) {
+          i18n.changeLanguage(lang);
+          const val = i18n.t(key, { title: 'Test', amount: '100', currency: 'PLN' });
+          expect(val, `${lang}:${key} must be translated (not raw key)`).not.toBe(key);
+          expect(val, `${lang}:${key} must not be empty`).toBeTruthy();
+        }
+      }
+    });
+
+    it('EN offer-email subject and message are distinct from PL (no accidental copy)', () => {
+      i18n.changeLanguage('pl');
+      const plSubject = i18n.t('sendOffer.autoSubject', { title: 'X' });
+      const plMessage = i18n.t('sendOffer.autoMessage', { amount: '100', currency: 'PLN' });
+      const plNoTitle = i18n.t('sendOffer.autoSubjectNoTitle');
+
+      i18n.changeLanguage('en');
+      expect(i18n.t('sendOffer.autoSubject', { title: 'X' }), 'EN subject ≠ PL').not.toBe(plSubject);
+      expect(i18n.t('sendOffer.autoMessage', { amount: '100', currency: 'PLN' }), 'EN message ≠ PL').not.toBe(plMessage);
+      expect(i18n.t('sendOffer.autoSubjectNoTitle'), 'EN noTitle ≠ PL').not.toBe(plNoTitle);
+    });
+
+    it('UK offer-email subject and message are distinct from PL (no accidental copy)', () => {
+      i18n.changeLanguage('pl');
+      const plSubject = i18n.t('sendOffer.autoSubject', { title: 'X' });
+      const plMessage = i18n.t('sendOffer.autoMessage', { amount: '100', currency: 'PLN' });
+      const plNoTitle = i18n.t('sendOffer.autoSubjectNoTitle');
+
+      i18n.changeLanguage('uk');
+      expect(i18n.t('sendOffer.autoSubject', { title: 'X' }), 'UK subject ≠ PL').not.toBe(plSubject);
+      expect(i18n.t('sendOffer.autoMessage', { amount: '100', currency: 'PLN' }), 'UK message ≠ PL').not.toBe(plMessage);
+      expect(i18n.t('sendOffer.autoSubjectNoTitle'), 'UK noTitle ≠ PL').not.toBe(plNoTitle);
+    });
+
+    it('PL offer-email subject uses "Oferta:" prefix', () => {
+      i18n.changeLanguage('pl');
+      expect(i18n.t('sendOffer.autoSubject', { title: 'Remont dachu' })).toContain('Oferta');
+      expect(i18n.t('sendOffer.autoSubject', { title: 'Remont dachu' })).toContain('Remont dachu');
+    });
+
+    it('EN offer-email subject uses "Quote:" prefix and preserves user title', () => {
+      i18n.changeLanguage('en');
+      const subject = i18n.t('sendOffer.autoSubject', { title: 'Roof Repair' });
+      expect(subject).toContain('Quote');
+      expect(subject).toContain('Roof Repair');
+      expect(subject).not.toContain('Oferta');
+    });
+
+    it('UK offer-email subject uses "Пропозиція:" prefix and preserves user title', () => {
+      i18n.changeLanguage('uk');
+      const subject = i18n.t('sendOffer.autoSubject', { title: 'Remont dachu' });
+      expect(subject).toContain('Пропозиція');
+      expect(subject).toContain('Remont dachu');
+      expect(subject).not.toContain('Oferta');
+    });
+
+    it('EN offer-email message contains English-language wording', () => {
+      i18n.changeLanguage('en');
+      const message = i18n.t('sendOffer.autoMessage', { amount: '1500', currency: 'PLN' });
+      expect(message).toContain('1500');
+      expect(message).toContain('PLN');
+      expect(message).not.toContain('Przesyłamy');
+    });
+
+    it('UK offer-email message contains Ukrainian-language wording', () => {
+      i18n.changeLanguage('uk');
+      const message = i18n.t('sendOffer.autoMessage', { amount: '1500', currency: 'PLN' });
+      expect(message).toContain('1500');
+      expect(message).toContain('PLN');
+      expect(message).not.toContain('Przesyłamy');
+    });
+  });
 });

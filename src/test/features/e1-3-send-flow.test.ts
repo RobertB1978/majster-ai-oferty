@@ -244,6 +244,46 @@ describe('useSendOffer — locale propagation into send-offer-email', () => {
     const source = readSrc('src/hooks/useSendOffer.ts');
     expect(source).toContain('locale: i18n.language');
   });
+
+  it('source code uses t(sendOffer.autoSubject) for subject — locale-aware, not hardcoded', () => {
+    const source = readSrc('src/hooks/useSendOffer.ts');
+    expect(source).toContain("t('sendOffer.autoSubject'");
+  });
+
+  it('source code uses t(sendOffer.autoMessage) for message — locale-aware, not hardcoded', () => {
+    const source = readSrc('src/hooks/useSendOffer.ts');
+    expect(source).toContain("t('sendOffer.autoMessage'");
+  });
+});
+
+// ── 9c. Locale files — offer-email keys completeness check ─────────────────
+// Structural: verify that all three locale JSON files contain the keys used to
+// build the auto-generated email subject and message body.  This guards against
+// a translator accidentally removing keys from EN or UK without a CI failure.
+
+describe('Locale files — offer-email auto keys exist in PL / EN / UK', () => {
+  const localeFiles = [
+    { lang: 'pl', path: 'src/i18n/locales/pl.json' },
+    { lang: 'en', path: 'src/i18n/locales/en.json' },
+    { lang: 'uk', path: 'src/i18n/locales/uk.json' },
+  ];
+
+  for (const { lang, path } of localeFiles) {
+    it(`${lang}: sendOffer.autoSubject key exists in locale file`, () => {
+      const source = readSrc(path);
+      expect(source, `${lang} locale must contain autoSubject key`).toContain('"autoSubject"');
+    });
+
+    it(`${lang}: sendOffer.autoMessage key exists in locale file`, () => {
+      const source = readSrc(path);
+      expect(source, `${lang} locale must contain autoMessage key`).toContain('"autoMessage"');
+    });
+
+    it(`${lang}: sendOffer.autoSubjectNoTitle key exists in locale file`, () => {
+      const source = readSrc(path);
+      expect(source, `${lang} locale must contain autoSubjectNoTitle key`).toContain('"autoSubjectNoTitle"');
+    });
+  }
 });
 
 // ── 10. Horizontal scroll prevention — max-w constraints ────────────────────
