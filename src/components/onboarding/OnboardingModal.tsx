@@ -7,19 +7,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Building2, FileText, Phone, Upload, CheckCircle, Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Building2, FileText, Phone, Upload, CheckCircle, Loader2, Scale } from 'lucide-react';
+import type { LegalForm } from '@/hooks/useProfile';
 import { toast } from 'sonner';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 import { logger } from '@/lib/logger';
 
 const STEPS = {
   COMPANY_NAME: 0,
-  NIP: 1,
-  CONTACT: 2,
-  LOGO: 3,
+  LEGAL_FORM: 1,
+  NIP: 2,
+  CONTACT: 3,
+  LOGO: 4,
 } as const;
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 interface OnboardingModalProps {
   /** When false the modal will not open (e.g. while trade onboarding is still active). */
@@ -38,6 +41,7 @@ export function OnboardingModal({ enabled = true }: OnboardingModalProps) {
   const [skipped, setSkipped] = useState(false);
 
   const [companyName, setCompanyName] = useState('');
+  const [legalForm, setLegalForm] = useState<LegalForm>('jdg');
   const [nip, setNip] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -72,6 +76,9 @@ export function OnboardingModal({ enabled = true }: OnboardingModalProps) {
           return;
         }
         await updateProfile.mutateAsync({ company_name: companyName });
+        setStep(STEPS.LEGAL_FORM);
+      } else if (step === STEPS.LEGAL_FORM) {
+        await updateProfile.mutateAsync({ legal_form: legalForm });
         setStep(STEPS.NIP);
       } else if (step === STEPS.NIP) {
         if (nip.trim()) {
@@ -149,6 +156,35 @@ export function OnboardingModal({ enabled = true }: OnboardingModalProps) {
                 />
                 <p className="mt-1 text-xs text-muted-foreground">
                   {t('onboarding.companyNameHint')}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {step === STEPS.LEGAL_FORM && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-primary">
+                <Scale className="h-5 w-5" />
+                <h3 className="font-semibold">{t('onboarding.legalForm')}</h3>
+              </div>
+              <div>
+                <Label htmlFor="legal_form">{t('onboarding.legalFormQuestion')}</Label>
+                <Select
+                  value={legalForm}
+                  onValueChange={(value) => setLegalForm(value as LegalForm)}
+                >
+                  <SelectTrigger id="legal_form" className="mt-2">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="jdg">{t('companyProfile.legalFormJdg')}</SelectItem>
+                    <SelectItem value="sp_z_oo">{t('companyProfile.legalFormSpZoo')}</SelectItem>
+                    <SelectItem value="spolka_cywilna">{t('companyProfile.legalFormSpolkaCywilna')}</SelectItem>
+                    <SelectItem value="inne">{t('companyProfile.legalFormInne')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t('onboarding.legalFormHint')}
                 </p>
               </div>
             </div>
