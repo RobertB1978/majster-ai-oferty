@@ -65,11 +65,18 @@ const CATEGORY_I18N_KEYS: Record<string, string> = {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 async function fetchSignedUrl(filePath: string): Promise<string> {
-  const { data, error } = await supabase.storage
-    .from(DOSSIER_BUCKET)
-    .createSignedUrl(filePath, 3600);
-  if (error || !data?.signedUrl) return '';
-  return data.signedUrl;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const { data, error } = await supabase.storage
+      .from(DOSSIER_BUCKET)
+      .createSignedUrl(filePath, 3600);
+    if (data?.signedUrl) return data.signedUrl;
+    if (attempt === 0) {
+      logger.warn('[DossierPublic] signed URL attempt 1 failed, retrying', error);
+      continue;
+    }
+    logger.error('[DossierPublic] signed URL failed after retry', filePath, error);
+  }
+  return '';
 }
 
 function formatBytes(bytes: number | null): string {
@@ -342,8 +349,8 @@ export default function DossierPublicPage() {
                           isImage={!!item.mime_type?.startsWith('image/')}
                         />
                       ) : (
-                        <span className="text-xs text-muted-foreground">
-                          {t('dossier.public.linkUnavailable')}
+                        <span className="text-xs text-orange-500 dark:text-orange-400 italic">
+                          {t('dossier.public.linkUnavailable', { defaultValue: 'Plik tymczasowo niedostępny' })}
                         </span>
                       )}
                     </div>

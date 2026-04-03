@@ -206,7 +206,7 @@ function FileRow({ item, onDelete }: FileRowProps) {
         </p>
       </div>
 
-      {item.signed_url && (
+      {item.signed_url ? (
         <>
           <a
             href={item.signed_url}
@@ -243,6 +243,10 @@ function FileRow({ item, onDelete }: FileRowProps) {
             )}
           </button>
         </>
+      ) : (
+        <span className="text-xs text-muted-foreground italic">
+          {t('dossier.urlUnavailable', { defaultValue: 'URL niedostępny' })}
+        </span>
       )}
 
       <button

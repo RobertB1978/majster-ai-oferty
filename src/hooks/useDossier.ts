@@ -84,14 +84,18 @@ export interface CreateDossierTokenInput {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 async function getSignedUrl(filePath: string): Promise<string> {
-  const { data, error } = await supabase.storage
-    .from(DOSSIER_BUCKET)
-    .createSignedUrl(filePath, 3600); // 1 hour TTL
-  if (error || !data?.signedUrl) {
-    logger.error('[Dossier] signed URL error', error);
-    return '';
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const { data, error } = await supabase.storage
+      .from(DOSSIER_BUCKET)
+      .createSignedUrl(filePath, 3600); // 1 hour TTL
+    if (data?.signedUrl) return data.signedUrl;
+    if (attempt === 0) {
+      logger.warn('[Dossier] signed URL attempt 1 failed, retrying', error);
+      continue;
+    }
+    logger.error('[Dossier] signed URL failed after retry', error);
   }
-  return data.signedUrl;
+  return '';
 }
 
 /**
@@ -246,13 +250,15 @@ export function useDeleteDossierItem() {
 
       if (dbError) throw dbError;
 
-      // Delete from storage (best effort)
-      const { error: storageError } = await supabase.storage
-        .from(DOSSIER_BUCKET)
-        .remove([item.file_path]);
-
-      if (storageError) {
-        logger.warn('[Dossier] storage delete failed (orphan)', storageError);
+      // Delete from storage (best effort, 1 retry)
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const { error: storageError } = await supabase.storage
+          .from(DOSSIER_BUCKET)
+          .remove([item.file_path]);
+        if (!storageError) break;
+        if (attempt === 1) {
+          logger.warn('[Dossier] storage delete failed after retry (orphan)', storageError);
+        }
       }
     },
     onSuccess: (_data, vars) => {
