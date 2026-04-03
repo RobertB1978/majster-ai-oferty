@@ -53,7 +53,6 @@ import {
   ACCENT_AMBER,
   ACCENT_AMBER_SUBTLE,
   AMBER_50,
-  AMBER_100,
   AMBER_700,
   BORDER_DEFAULT,
   FONT_SIZES,
@@ -253,7 +252,7 @@ export async function generateOfferPdf(
       companyBg: variant.baseStyle === 'premium'
         ? hexToRgb(tokens.headerBg, TEXT_PRIMARY)
         : undefined,
-      companyBgLight: variant.baseStyle === 'premium' ? [31, 41, 55] : undefined,
+      companyBgLight: variant.baseStyle === 'premium' ? [30, 41, 59] : undefined, // slate-800 #1E293B
       alternateRowFill: hexToRgb(tokens.tableAltRowBg, [248, 250, 252]),
       summaryBg: hexToRgb(tokens.summaryBg, AMBER_50),
       grossAccent: hexToRgb(tokens.grossAccent, AMBER_700),
@@ -287,7 +286,7 @@ export async function generateOfferPdf(
   // ========================================
 
   if (theme.companyBg) {
-    // Modern template: full-width colored header band with logo placeholder
+    // Premium style: full-width colored band header (deep black #0F172A)
     const bandHeight = 50;
     doc.setFillColor(...theme.companyBg);
     doc.rect(0, 0, pageWidth, bandHeight, 'F');
@@ -462,7 +461,7 @@ export async function generateOfferPdf(
       // Label below QR
       doc.setFontSize(FONT_SIZES.xs);
       doc.setFont(bodyFont, 'bold');
-      doc.setTextColor(...AMBER_700);
+      doc.setTextColor(theme.grossAccent[0], theme.grossAccent[1], theme.grossAccent[2]);
       doc.text(t ? t('offerPdf.onlineLabel') : 'OFERTA ONLINE', qrX + QR_SIZE / 2, yPosition + QR_SIZE + 3, { align: 'center' });
       doc.setTextColor(...TEXT_PRIMARY);
       qrPlaced = true;
@@ -689,8 +688,8 @@ export async function generateOfferPdf(
     doc.setFont(bodyFont, 'normal');
 
     if (quote.isVatExempt) {
-      // Amber highlight band behind the total row
-      doc.setFillColor(...AMBER_100);
+      // Trade-aware highlight band behind the total row
+      doc.setFillColor(...accentSubtleRgb);
       doc.rect(summaryX - 4, yPosition - 1, summaryBoxWidth, 10, 'F');
 
       doc.setFontSize(FONT_SIZES.lg);
@@ -725,11 +724,11 @@ export async function generateOfferPdf(
         doc.setTextColor(...TEXT_PRIMARY);
         yPosition += 6;
       }
-      // Amber highlight band behind the gross total row
-      doc.setFillColor(...AMBER_100);
+      // Trade-aware highlight band behind the gross total row
+      doc.setFillColor(...accentSubtleRgb);
       doc.rect(summaryX - 4, yPosition - 1, summaryBoxWidth, 11, 'F');
-      // Separator line above gross total
-      doc.setDrawColor(...ACCENT_AMBER);
+      // Trade-aware separator line above gross total
+      doc.setDrawColor(...accentRgb);
       doc.setLineWidth(0.8);
       doc.line(summaryX - 2, yPosition - 1, pageWidth - margin + 2, yPosition - 1);
       doc.setLineWidth(0.2);
