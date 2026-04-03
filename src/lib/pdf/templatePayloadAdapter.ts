@@ -10,13 +10,10 @@
  * ── Jak to działa ──────────────────────────────────────────────────────────────
  *   TemplateEditor.tsx (UI)
  *     → buildTemplatePayload()      ← ten moduł
- *     → renderDocumentPdfV2()       ← koordynator v2 (próbuje Edge Function)
- *     → PendingMigrationError (501) ← Edge Function jeszcze nie obsługuje protocol/inspection/contract
+ *     → renderDocumentPdfV2()       ← koordynator v2 (Edge Function)
+ *     → PDF renderowany server-side (protocol, inspection, contract — ZAIMPLEMENTOWANE)
+ *     → PendingMigrationError       ← TYLKO gdy Edge Function jest niedostępna
  *     → TemplateEditor catch        ← fallback na generateTemplatePdf (jsPDF)
- *
- * Gdy Edge Function 'generate-pdf-v2' zostanie rozszerzona o obsługę
- * 'protocol', 'inspection', 'contract', TemplateEditor automatycznie
- * zacznie korzystać z renderowania serwerowego — bez zmian w logice UI.
  *
  * ── Mapowanie kategorii → documentType ────────────────────────────────────────
  *   PROTOCOLS  → 'protocol'
@@ -28,9 +25,9 @@
  * ── Nota o sekcjach v2 ────────────────────────────────────────────────────────
  * Sekcje UnifiedDocumentPayload (ProtocolDocumentSection, InspectionDocumentSection,
  * ContractDocumentSection) zawierają wybrane pola z formData — mapowanie
- * jest addytywne. Faktyczne renderowanie PDF nadal odbywa się przez
- * generateTemplatePdf (jsPDF) dopóki Edge Function nie implementuje tych typów.
- * Sekcja v2 przygotowuje infrastrukturę dla przyszłego renderowania serwerowego.
+ * jest addytywne. Renderowanie PDF odbywa się server-side przez Edge Function
+ * generate-pdf-v2. Gdy Edge Function jest niedostępna, TemplateEditor odpada
+ * na generateTemplatePdf (jsPDF) jako fallback.
  *
  * ── Zakres tego pliku ──────────────────────────────────────────────────────────
  *   TYLKO budowanie payloadu. Nie renderuje. Nie wywołuje API.
