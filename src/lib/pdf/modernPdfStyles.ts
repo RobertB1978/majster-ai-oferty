@@ -152,6 +152,24 @@ export const SPACING = {
 } as const;
 
 // ---------------------------------------------------------------------------
+// Hex → RGB conversion (for visual system integration with jsPDF)
+// ---------------------------------------------------------------------------
+
+/**
+ * Converts a hex color string (#RRGGBB) to an RGB tuple [R, G, B].
+ * Used to bridge the hex-based visual system tokens with jsPDF's RGB format.
+ * Returns fallback color on invalid input.
+ */
+export function hexToRgb(
+  hex: string,
+  fallback: [number, number, number] = ACCENT_AMBER,
+): [number, number, number] {
+  const match = /^#?([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$/.exec(hex);
+  if (!match) return fallback;
+  return [parseInt(match[1], 16), parseInt(match[2], 16), parseInt(match[3], 16)];
+}
+
+// ---------------------------------------------------------------------------
 // Logo placeholder
 // ---------------------------------------------------------------------------
 

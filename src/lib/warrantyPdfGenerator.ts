@@ -26,7 +26,13 @@ import { registerNotoSans } from '@/lib/pdf/registerNotoSansJsPDF';
 import {
   ACCENT_BLUE, TEXT_SECONDARY, TEXT_PRIMARY, WHITE,
   BORDER_LINE, TEXT_FOOTER, TEXT_HEADER_META,
+  hexToRgb,
 } from '@/lib/pdf/modernPdfStyles';
+import {
+  resolveTemplateVariant,
+  getStyleTokens,
+} from '@/lib/pdf/documentVisualSystem';
+import type { TradeType, PlanTier } from '@/types/unified-document-payload';
 
 export interface WarrantyPdfContext {
   warranty: ProjectWarranty;
@@ -39,6 +45,10 @@ export interface WarrantyPdfContext {
   companyKrs?: string;
   t: (key: string) => string;
   locale?: string;
+  /** Trade type for visual system accent colors */
+  trade?: string;
+  /** Plan tier for visual system styling */
+  planTier?: string;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -83,8 +93,22 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const bodyFont = registerNotoSans(doc);
 
+  // ── Resolve trade-aware header accent ─────────────────────────────────────
+  let headerAccent: [number, number, number] = ACCENT_BLUE;
+  if (ctx.trade) {
+    const safeTrade = (ctx.trade as TradeType) ?? 'general';
+    const safePlan = (ctx.planTier as PlanTier) ?? 'basic';
+    const variant = resolveTemplateVariant({
+      documentType: 'warranty',
+      trade: safeTrade,
+      planTier: safePlan,
+    });
+    const tokens = getStyleTokens(variant);
+    headerAccent = hexToRgb(tokens.headerBg, ACCENT_BLUE);
+  }
+
   // ── Header ───────────────────────────────────────────────────────────────────
-  doc.setFillColor(...ACCENT_BLUE);
+  doc.setFillColor(...headerAccent);
   doc.rect(0, 0, 210, 30, 'F');
 
   doc.setFontSize(18);
