@@ -122,6 +122,10 @@ export async function renderOfferFromV2Payload(
     company: {
       name: payload.company.name,
       nip: payload.company.nip,
+      regon: payload.company.regon,
+      krs: payload.company.krs,
+      representativeName: payload.company.representativeName,
+      representativeRole: payload.company.representativeRole,
       street: payload.company.street,
       postalCode: payload.company.postalCode,
       city: payload.company.city,

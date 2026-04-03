@@ -229,7 +229,7 @@ serve(async (req) => {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('company_name, owner_name, phone, contact_email, email_for_offers, street, city, postal_code, logo_url')
+        .select('company_name, legal_form, owner_name, nip, regon, krs, representative_name, representative_role, phone, contact_email, email_for_offers, street, city, postal_code, logo_url')
         .eq('user_id', approval.user_id)
         .single();
 

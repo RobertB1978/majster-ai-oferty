@@ -34,6 +34,9 @@ export interface WarrantyPdfContext {
   companyName: string;
   companyAddress?: string;
   companyPhone?: string;
+  companyNip?: string;
+  companyRegon?: string;
+  companyKrs?: string;
   t: (key: string) => string;
   locale?: string;
 }
@@ -75,7 +78,7 @@ function field(doc: jsPDF, font: string, label: string, value: string, y: number
 // ── Main generator ────────────────────────────────────────────────────────────
 
 export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
-  const { warranty, projectTitle, companyName, companyAddress, companyPhone, t, locale } = ctx;
+  const { warranty, projectTitle, companyName, companyAddress, companyPhone, companyNip, companyRegon, companyKrs, t, locale } = ctx;
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const bodyFont = registerNotoSans(doc);
@@ -92,7 +95,12 @@ export function generateWarrantyPdfBlob(ctx: WarrantyPdfContext): Blob {
   doc.setFontSize(9);
   doc.setFont(bodyFont, 'normal');
   doc.text(companyName, 15, 20);
-  if (companyAddress) doc.text(companyAddress, 15, 25);
+  const regParts: string[] = [];
+  if (companyNip) regParts.push(`NIP: ${companyNip}`);
+  if (companyRegon) regParts.push(`REGON: ${companyRegon}`);
+  if (companyKrs) regParts.push(`KRS: ${companyKrs}`);
+  if (regParts.length > 0) doc.text(regParts.join(' · '), 15, 25);
+  if (companyAddress) doc.text(companyAddress, 15, regParts.length > 0 ? 30 : 25);
 
   // ── Document number + date ───────────────────────────────────────────────────
   const docNum = `GWR/${new Date().getFullYear()}/${Math.random().toString(36).slice(2, 6).toUpperCase()}`;

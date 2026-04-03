@@ -1946,7 +1946,11 @@
       "emailSubjectMaxLength": "Тема макс {{max}} символів",
       "emailGreetingMaxLength": "Привітання макс {{max}} символів",
       "emailSignatureMaxLength": "Підпис макс {{max}} символів",
-      "websiteInvalid": "Адреса сайту має починатись з http:// або https://"
+      "websiteInvalid": "Адреса сайту має починатись з http:// або https://",
+      "regonFormat": "REGON повинен мати 9 або 14 цифр",
+      "krsFormat": "KRS повинен мати 10 цифр",
+      "representativeNameMaxLength": "Ім'я представника макс {{max}} символів",
+      "representativeRoleMaxLength": "Посада представника макс {{max}} символів"
     },
     "password": {
       "minLength": "Пароль повинен містити щонайменше {{min}} символів",
@@ -2079,6 +2083,9 @@
     "provideCompanyName": "Вкажіть назву компанії",
     "profileConfigured": "Профіль компанії налаштовано!",
     "completeProfileAnytime": "Ви можете заповнити профіль компанії в будь-який час у налаштуваннях",
+    "legalForm": "Правова форма",
+    "legalFormQuestion": "Яка правова форма вашої діяльності?",
+    "legalFormHint": "Це визначає, які реєстраційні дані будуть потрібні",
     "wizardTitle": "Майстер налаштування Majster.AI",
     "congratsTitle": "Вітаємо!",
     "congratsDesc": "Ви завершили налаштування Majster.AI. Ви готові створювати професійні кошториси та керувати проектами.",
@@ -3013,7 +3020,24 @@
     "postalCodePlaceholder": "напр. 00-001",
     "phonePlaceholder": "+48 123 456 789",
     "emailForOffersPlaceholder": "kontakt@firma.pl",
-    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000"
+    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000",
+    "registrationSection": "Реєстраційні дані",
+    "registrationDesc": "Правова форма, REGON, KRS та представник",
+    "legalFormLabel": "Правова форма діяльності",
+    "legalFormJdg": "Фізична особа-підприємець (ФОП)",
+    "legalFormSpZoo": "Товариство з обмеженою відповідальністю",
+    "legalFormSpolkaCywilna": "Цивільне товариство",
+    "legalFormInne": "Інша",
+    "regonLabel": "REGON",
+    "regonPlaceholder": "напр. 123456789",
+    "krsLabel": "KRS",
+    "krsPlaceholder": "напр. 0000123456",
+    "representativeNameLabel": "Ім'я та прізвище представника",
+    "representativeNamePlaceholder": "Іван Коваль",
+    "representativeRoleLabel": "Посада представника",
+    "representativeRolePlaceholder": "напр. Член правління",
+    "representativeHintJdg": "Для ФОП представником є власник — дані беруться з поля \"Ім'я та прізвище власника\" вище",
+    "representativeHintSpZoo": "Вкажіть особу, уповноважену підписувати документи від імені компанії"
   },
   "marketplacePage": {
     "addSubcontractor": "Додати субпідрядника",

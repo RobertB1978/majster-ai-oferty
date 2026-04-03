@@ -508,7 +508,11 @@ export default function OfferPublicAccept() {
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm">{data.company.company_name}</p>
                     {data.company.nip && (
-                      <p className="text-xs text-muted-foreground">NIP: {data.company.nip}</p>
+                      <p className="text-xs text-muted-foreground">
+                        NIP: {data.company.nip}
+                        {data.company.regon && ` · REGON: ${data.company.regon}`}
+                        {data.company.krs && ` · KRS: ${data.company.krs}`}
+                      </p>
                     )}
                     {(data.company.street || data.company.city) && (
                       <p className="text-xs text-muted-foreground truncate">

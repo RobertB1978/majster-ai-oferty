@@ -72,6 +72,10 @@ export type PlanTier = 'free' | 'basic' | 'pro' | 'enterprise';
 export interface UnifiedCompanyInfo {
   name: string;
   nip?: string;
+  regon?: string;
+  krs?: string;
+  representativeName?: string;
+  representativeRole?: string;
   street?: string;
   postalCode?: string;
   city?: string;

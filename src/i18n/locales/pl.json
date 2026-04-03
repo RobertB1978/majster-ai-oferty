@@ -1964,7 +1964,11 @@
       "emailSubjectMaxLength": "Temat max {{max}} znaków",
       "emailGreetingMaxLength": "Powitanie max {{max}} znaków",
       "emailSignatureMaxLength": "Podpis max {{max}} znaków",
-      "websiteInvalid": "Adres strony musi zaczynać się od http:// lub https://"
+      "websiteInvalid": "Adres strony musi zaczynać się od http:// lub https://",
+      "regonFormat": "REGON musi mieć 9 lub 14 cyfr",
+      "krsFormat": "KRS musi mieć 10 cyfr",
+      "representativeNameMaxLength": "Imię i nazwisko reprezentanta max {{max}} znaków",
+      "representativeRoleMaxLength": "Rola reprezentanta max {{max}} znaków"
     },
     "password": {
       "minLength": "Hasło musi mieć minimum {{min}} znaków",
@@ -2057,6 +2061,9 @@
     "companyNameQuestion": "Jak nazywa się Twoja firma? *",
     "companyNamePlaceholder": "np. Remonty Kowalski",
     "companyNameHint": "Nazwa będzie widoczna na ofertach PDF",
+    "legalForm": "Forma prawna",
+    "legalFormQuestion": "Jaka jest forma prawna Twojej firmy?",
+    "legalFormHint": "Wpływa na dane wymagane na dokumentach (KRS, osoba reprezentująca). Możesz zmienić później.",
     "nip": "NIP",
     "nipOptional": "NIP firmy (opcjonalnie)",
     "nipPlaceholder": "1234567890",
@@ -3013,7 +3020,24 @@
     "postalCodePlaceholder": "np. 00-001",
     "phonePlaceholder": "+48 123 456 789",
     "emailForOffersPlaceholder": "kontakt@firma.pl",
-    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000"
+    "bankAccountPlaceholder": "PL00 0000 0000 0000 0000 0000 0000",
+    "registrationSection": "Dane rejestrowe",
+    "registrationDesc": "Forma prawna, REGON, KRS i osoba reprezentująca",
+    "legalFormLabel": "Forma prawna *",
+    "legalFormJdg": "Jednoosobowa Działalność Gospodarcza (JDG)",
+    "legalFormSpZoo": "Spółka z o.o.",
+    "legalFormSpolkaCywilna": "Spółka cywilna",
+    "legalFormInne": "Inna",
+    "regonLabel": "REGON",
+    "regonPlaceholder": "np. 123456789",
+    "krsLabel": "KRS",
+    "krsPlaceholder": "np. 0000123456",
+    "representativeNameLabel": "Osoba reprezentująca firmę",
+    "representativeNamePlaceholder": "np. Jan Kowalski",
+    "representativeRoleLabel": "Stanowisko / rola",
+    "representativeRolePlaceholder": "np. Prezes Zarządu",
+    "representativeHintJdg": "Dla JDG osoba podpisująca dokumenty to właściciel",
+    "representativeHintSpZoo": "Dla sp. z o.o. wymagane jest podanie osoby uprawnionej do reprezentacji i numeru KRS"
   },
   "marketplacePage": {
     "addSubcontractor": "Dodaj podwykonawcę",

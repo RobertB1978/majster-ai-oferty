@@ -677,11 +677,16 @@ export type Database = {
           email_signature: string | null
           email_subject_template: string | null
           id: string
+          krs: string | null
+          legal_form: string
           logo_url: string | null
           nip: string | null
           owner_name: string | null
           phone: string | null
           postal_code: string | null
+          regon: string | null
+          representative_name: string | null
+          representative_role: string | null
           street: string | null
           updated_at: string
           user_id: string
@@ -696,11 +701,16 @@ export type Database = {
           email_signature?: string | null
           email_subject_template?: string | null
           id?: string
+          krs?: string | null
+          legal_form?: string
           logo_url?: string | null
           nip?: string | null
           owner_name?: string | null
           phone?: string | null
           postal_code?: string | null
+          regon?: string | null
+          representative_name?: string | null
+          representative_role?: string | null
           street?: string | null
           updated_at?: string
           user_id: string
@@ -715,11 +725,16 @@ export type Database = {
           email_signature?: string | null
           email_subject_template?: string | null
           id?: string
+          krs?: string | null
+          legal_form?: string
           logo_url?: string | null
           nip?: string | null
           owner_name?: string | null
           phone?: string | null
           postal_code?: string | null
+          regon?: string | null
+          representative_name?: string | null
+          representative_role?: string | null
           street?: string | null
           updated_at?: string
           user_id?: string

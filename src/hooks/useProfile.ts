@@ -7,12 +7,19 @@ import { logger } from '@/lib/logger';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 import { normalizeProfileData } from '@/lib/dataValidation';
 
+export type LegalForm = 'jdg' | 'sp_z_oo' | 'spolka_cywilna' | 'inne';
+
 export interface Profile {
   id: string;
   user_id: string;
   company_name: string;
+  legal_form: LegalForm;
   owner_name: string | null;
   nip: string | null;
+  regon: string | null;
+  krs: string | null;
+  representative_name: string | null;
+  representative_role: string | null;
   street: string | null;
   address_line2: string | null;
   city: string | null;
@@ -46,7 +53,7 @@ export function useProfile() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, user_id, company_name, owner_name, nip, street, address_line2, city, postal_code, country, phone, email_for_offers, bank_account, website, logo_url, email_subject_template, email_greeting, email_signature, contact_email, contact_email_verified, contact_email_verified_at, contact_email_verification_token, contact_email_verification_sent_at, created_at, updated_at')
+        .select('id, user_id, company_name, legal_form, owner_name, nip, regon, krs, representative_name, representative_role, street, address_line2, city, postal_code, country, phone, email_for_offers, bank_account, website, logo_url, email_subject_template, email_greeting, email_signature, contact_email, contact_email_verified, contact_email_verified_at, contact_email_verification_token, contact_email_verification_sent_at, created_at, updated_at')
         .eq('user_id', user.id)
         .maybeSingle();
 

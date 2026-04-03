@@ -139,6 +139,35 @@ describe('Validation Schemas', () => {
       const result = profileSchema.safeParse(invalidProfile);
       expect(result.success).toBe(false);
     });
+
+    it('validates REGON format (9 or 14 digits)', () => {
+      expect(profileSchema.safeParse({ company_name: 'T', regon: '123456789' }).success).toBe(true);
+      expect(profileSchema.safeParse({ company_name: 'T', regon: '12345678901234' }).success).toBe(true);
+      expect(profileSchema.safeParse({ company_name: 'T', regon: '12345' }).success).toBe(false);
+      expect(profileSchema.safeParse({ company_name: 'T', regon: '12345678' }).success).toBe(false);
+    });
+
+    it('validates KRS format (10 digits)', () => {
+      expect(profileSchema.safeParse({ company_name: 'T', krs: '0000123456' }).success).toBe(true);
+      expect(profileSchema.safeParse({ company_name: 'T', krs: '12345' }).success).toBe(false);
+      expect(profileSchema.safeParse({ company_name: 'T', krs: '00001234567' }).success).toBe(false);
+    });
+
+    it('validates legal_form enum values', () => {
+      expect(profileSchema.safeParse({ company_name: 'T', legal_form: 'jdg' }).success).toBe(true);
+      expect(profileSchema.safeParse({ company_name: 'T', legal_form: 'sp_z_oo' }).success).toBe(true);
+      expect(profileSchema.safeParse({ company_name: 'T', legal_form: 'spolka_cywilna' }).success).toBe(true);
+      expect(profileSchema.safeParse({ company_name: 'T', legal_form: 'inne' }).success).toBe(true);
+      expect(profileSchema.safeParse({ company_name: 'T', legal_form: 'invalid' }).success).toBe(false);
+    });
+
+    it('defaults legal_form to jdg when not provided', () => {
+      const result = profileSchema.safeParse({ company_name: 'Test' });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.legal_form).toBe('jdg');
+      }
+    });
   });
 
   describe('loginSchema', () => {

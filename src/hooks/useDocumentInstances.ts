@@ -57,6 +57,10 @@ export interface AutofillContext {
   company?: {
     name?: string;
     nip?: string;
+    regon?: string;
+    krs?: string;
+    representativeName?: string;
+    representativeRole?: string;
     address?: string;
     phone?: string;
     email?: string;
@@ -107,7 +111,7 @@ export function useAutofillContext(opts: {
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('company_name, nip, street, postal_code, city, phone, email_for_offers')
+          .select('company_name, legal_form, nip, regon, krs, owner_name, representative_name, representative_role, street, postal_code, city, phone, email_for_offers')
           .eq('user_id', user.id)
           .maybeSingle();
 
@@ -117,9 +121,21 @@ export function useAutofillContext(opts: {
             profile.postal_code,
             profile.city,
           ].filter(Boolean);
+          const lf = (profile as Record<string, unknown>).legal_form as string || 'jdg';
+          const isJdg = lf === 'jdg';
+          const repName = isJdg
+            ? ((profile as Record<string, unknown>).owner_name as string | null)
+            : ((profile as Record<string, unknown>).representative_name as string | null);
+          const repRole = isJdg
+            ? 'Właściciel'
+            : (((profile as Record<string, unknown>).representative_role as string | null) || 'Prezes Zarządu');
           ctx.company = {
             name: profile.company_name ?? undefined,
             nip: profile.nip ?? undefined,
+            regon: ((profile as Record<string, unknown>).regon as string | null) ?? undefined,
+            krs: isJdg ? undefined : (((profile as Record<string, unknown>).krs as string | null) ?? undefined),
+            representativeName: repName ?? undefined,
+            representativeRole: repName ? repRole : undefined,
             address: addrParts.join(', ') || undefined,
             phone: profile.phone ?? undefined,
             email: profile.email_for_offers ?? undefined,

@@ -254,7 +254,7 @@ function WarrantyCard({
     try {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('company_name, city')
+        .select('company_name, city, nip, regon, krs')
         .maybeSingle();
 
       const companyName = profile?.company_name ?? 'Majster';
@@ -267,6 +267,9 @@ function WarrantyCard({
           projectTitle,
           companyName,
           companyCity,
+          companyNip: (profile as Record<string, unknown>)?.nip as string | undefined,
+          companyRegon: (profile as Record<string, unknown>)?.regon as string | undefined,
+          companyKrs: (profile as Record<string, unknown>)?.krs as string | undefined,
           locale: i18n.language,
           sourceProjectId: projectId,
         });
@@ -279,6 +282,9 @@ function WarrantyCard({
             projectTitle,
             companyName,
             companyAddress: companyCity,
+            companyNip: (profile as Record<string, unknown>)?.nip as string | undefined,
+            companyRegon: (profile as Record<string, unknown>)?.regon as string | undefined,
+            companyKrs: (profile as Record<string, unknown>)?.krs as string | undefined,
             t,
             locale: i18n.language,
           });
@@ -305,7 +311,7 @@ function WarrantyCard({
     try {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('company_name, city')
+        .select('company_name, city, nip, regon, krs')
         .maybeSingle();
 
       const companyName = profile?.company_name ?? 'Majster';
@@ -318,6 +324,9 @@ function WarrantyCard({
           projectTitle,
           companyName,
           companyCity,
+          companyNip: (profile as Record<string, unknown>)?.nip as string | undefined,
+          companyRegon: (profile as Record<string, unknown>)?.regon as string | undefined,
+          companyKrs: (profile as Record<string, unknown>)?.krs as string | undefined,
           locale: i18n.language,
           sourceProjectId: projectId,
         });
@@ -330,6 +339,9 @@ function WarrantyCard({
             projectTitle,
             companyName,
             companyAddress: companyCity,
+            companyNip: (profile as Record<string, unknown>)?.nip as string | undefined,
+            companyRegon: (profile as Record<string, unknown>)?.regon as string | undefined,
+            companyKrs: (profile as Record<string, unknown>)?.krs as string | undefined,
             t,
             locale: i18n.language,
           });
@@ -357,7 +369,7 @@ function WarrantyCard({
     try {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('company_name, city')
+        .select('company_name, city, nip, regon, krs')
         .maybeSingle();
 
       const companyName = profile?.company_name ?? 'Majster';
@@ -370,6 +382,9 @@ function WarrantyCard({
           projectTitle,
           companyName,
           companyCity,
+          companyNip: (profile as Record<string, unknown>)?.nip as string | undefined,
+          companyRegon: (profile as Record<string, unknown>)?.regon as string | undefined,
+          companyKrs: (profile as Record<string, unknown>)?.krs as string | undefined,
           locale: i18n.language,
           sourceProjectId: projectId,
         });
@@ -382,6 +397,9 @@ function WarrantyCard({
             projectTitle,
             companyName,
             companyAddress: companyCity,
+            companyNip: (profile as Record<string, unknown>)?.nip as string | undefined,
+            companyRegon: (profile as Record<string, unknown>)?.regon as string | undefined,
+            companyKrs: (profile as Record<string, unknown>)?.krs as string | undefined,
             t,
             locale: i18n.language,
           });

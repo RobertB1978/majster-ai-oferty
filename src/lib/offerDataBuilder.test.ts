@@ -56,6 +56,75 @@ describe('offerDataBuilder', () => {
       expect(result.pdfConfig.version).toBe('premium');
     });
 
+    it('should resolve representative as owner for JDG', () => {
+      const result = buildOfferData({
+        projectId: 'proj-123',
+        projectName: 'Test',
+        profile: {
+          company_name: 'Firma JDG',
+          legal_form: 'jdg',
+          owner_name: 'Jan Nowak',
+          nip: '1234567890',
+        },
+      });
+
+      expect(result.company.representativeName).toBe('Jan Nowak');
+      expect(result.company.representativeRole).toBe('Właściciel');
+      expect(result.company.krs).toBeUndefined();
+    });
+
+    it('should resolve representative from representative_name for sp. z o.o.', () => {
+      const result = buildOfferData({
+        projectId: 'proj-123',
+        projectName: 'Test',
+        profile: {
+          company_name: 'Firma sp. z o.o.',
+          legal_form: 'sp_z_oo',
+          owner_name: 'Jan Właściciel',
+          representative_name: 'Anna Prezes',
+          representative_role: 'Prezes Zarządu',
+          krs: '0000123456',
+          regon: '123456789',
+          nip: '1234567890',
+        },
+      });
+
+      expect(result.company.representativeName).toBe('Anna Prezes');
+      expect(result.company.representativeRole).toBe('Prezes Zarządu');
+      expect(result.company.krs).toBe('0000123456');
+      expect(result.company.regon).toBe('123456789');
+    });
+
+    it('should default to JDG when legal_form is not set', () => {
+      const result = buildOfferData({
+        projectId: 'proj-123',
+        projectName: 'Test',
+        profile: {
+          company_name: 'Firma',
+          owner_name: 'Jan Nowak',
+        },
+      });
+
+      expect(result.company.representativeName).toBe('Jan Nowak');
+      expect(result.company.representativeRole).toBe('Właściciel');
+      expect(result.company.krs).toBeUndefined();
+    });
+
+    it('should hide KRS for JDG even if set in profile', () => {
+      const result = buildOfferData({
+        projectId: 'proj-123',
+        projectName: 'Test',
+        profile: {
+          company_name: 'Firma',
+          legal_form: 'jdg',
+          krs: '0000123456',
+          owner_name: 'Jan Nowak',
+        },
+      });
+
+      expect(result.company.krs).toBeUndefined();
+    });
+
     it('should use default company name when profile is missing', () => {
       const result = buildOfferData({
         projectId: 'proj-123',
