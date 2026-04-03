@@ -126,6 +126,8 @@ export async function downloadDossierFile(filePath: string, fileName: string): P
 
   const a = document.createElement('a');
   a.href = data.signedUrl;
+  a.download = fileName;          // explicit download hint for the browser
+  a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
   a.remove();
