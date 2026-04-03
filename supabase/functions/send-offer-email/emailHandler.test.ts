@@ -188,6 +188,14 @@ describe('generateOfferEmailHtml locale support', () => {
     // System labels follow EN locale, not user content locale
     expect(html).toContain('ACCEPT (1 click)');
   });
+
+  it('renders Ukrainian footer and fallback for locale "uk"', () => {
+    const html = generateOfferEmailHtml('Проект', 'Повідомлення', { ...baseOpts, locale: 'uk' });
+    expect(html).toContain('Це повідомлення надіслано через');
+    expect(html).not.toContain('Ta wiadomość');
+    expect(html).toContain('Не можете натиснути кнопку?');
+    expect(html).not.toContain("Can't click the button");
+  });
 });
 
 describe('handleSendOfferEmail', () => {
@@ -339,6 +347,44 @@ describe('handleSendOfferEmail', () => {
       // Both operations were attempted
       expect(mockDeps.sendEmail).toHaveBeenCalledOnce();
       expect(mockDeps.updateOfferSend).toHaveBeenCalledOnce();
+    });
+  });
+
+  // ── QA verifiability: locale flows through to the email HTML ───────────────
+  // These tests confirm that the `locale` field in the payload is passed to
+  // generateOfferEmailHtml so that system-generated labels (buttons, footer,
+  // html lang attribute) are rendered in the correct language.
+  describe('Locale propagation', () => {
+    it('email HTML contains lang="en" when locale is "en"', async () => {
+      const payload = { ...validPayload, locale: 'en' };
+      await handleSendOfferEmail(payload, mockDeps);
+      expect(mockDeps.sendEmail).toHaveBeenCalledWith(
+        expect.objectContaining({ html: expect.stringContaining('lang="en"') })
+      );
+    });
+
+    it('email HTML contains lang="uk" when locale is "uk"', async () => {
+      const payload = { ...validPayload, locale: 'uk' };
+      await handleSendOfferEmail(payload, mockDeps);
+      expect(mockDeps.sendEmail).toHaveBeenCalledWith(
+        expect.objectContaining({ html: expect.stringContaining('lang="uk"') })
+      );
+    });
+
+    it('email HTML contains lang="pl" when locale is "pl"', async () => {
+      const payload = { ...validPayload, locale: 'pl' };
+      await handleSendOfferEmail(payload, mockDeps);
+      expect(mockDeps.sendEmail).toHaveBeenCalledWith(
+        expect.objectContaining({ html: expect.stringContaining('lang="pl"') })
+      );
+    });
+
+    it('email HTML falls back to lang="pl" when locale is omitted', async () => {
+      const payload = { ...validPayload, locale: undefined };
+      await handleSendOfferEmail(payload, mockDeps);
+      expect(mockDeps.sendEmail).toHaveBeenCalledWith(
+        expect.objectContaining({ html: expect.stringContaining('lang="pl"') })
+      );
     });
   });
 

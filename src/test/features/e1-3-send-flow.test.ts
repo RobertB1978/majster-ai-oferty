@@ -234,6 +234,18 @@ describe('useSendOffer — email includes publicToken', () => {
   });
 });
 
+// ── 9b. useSendOffer — locale propagation (QA verifiability) ───────────────
+// PRIMARY BUSINESS RULE: system-generated email content must follow the active
+// locale (PL / EN / UK). This test verifies the structural contract: the locale
+// field from i18next is explicitly included in the Edge Function invocation body.
+
+describe('useSendOffer — locale propagation into send-offer-email', () => {
+  it('source code passes locale: i18n.language in send-offer-email invocation body', () => {
+    const source = readSrc('src/hooks/useSendOffer.ts');
+    expect(source).toContain('locale: i18n.language');
+  });
+});
+
 // ── 10. Horizontal scroll prevention — max-w constraints ────────────────────
 
 describe('Horizontal scroll prevention on 390px', () => {
