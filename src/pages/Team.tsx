@@ -18,12 +18,14 @@ import {
   UserCheck
 } from 'lucide-react';
 import { TeamLocationMap } from '@/components/map/TeamLocationMap';
-import { 
-  useTeamMembers, 
-  useAddTeamMember, 
-  useUpdateTeamMember, 
+import {
+  useTeamMembers,
+  useAddTeamMember,
+  useUpdateTeamMember,
   useDeleteTeamMember,
-  useRecordLocation 
+  useRecordLocation,
+  useTeamLocations,
+  type TeamLocation,
 } from '@/hooks/useTeamMembers';
 import {
   Dialog,
@@ -55,7 +57,16 @@ export default function Team() {
   const updateMember = useUpdateTeamMember();
   const deleteMember = useDeleteTeamMember();
   const recordLocation = useRecordLocation();
-  
+  const { data: locations = [] } = useTeamLocations();
+
+  // Build a map of latest status per team member from location data
+  const latestStatusMap = new Map<string, TeamLocation['status']>();
+  (locations as Array<TeamLocation & { team_members?: { name: string } }>).forEach((loc) => {
+    if (!latestStatusMap.has(loc.team_member_id)) {
+      latestStatusMap.set(loc.team_member_id, loc.status);
+    }
+  });
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newMember, setNewMember] = useState({
     name: '',
@@ -105,7 +116,9 @@ export default function Team() {
             longitude: position.coords.longitude,
             status,
           });
-          toast.success(`${t('common.status')}: ${statusLabels[status]}`);
+          toast.success(`${t('common.status')}: ${statusLabels[status]}`, {
+            id: 'team-status-update',
+          });
         },
         (_error) => {
           toast.error(t('errors.geolocationDenied'));
@@ -269,9 +282,21 @@ export default function Team() {
                     )}
                     
                     <div className="flex items-center gap-2 pt-2 border-t">
-                      <Badge variant={member.is_active ? 'default' : 'secondary'}>
-                        {member.is_active ? t('common.active') : t('common.inactive')}
-                      </Badge>
+                      {(() => {
+                        const workStatus = latestStatusMap.get(member.id);
+                        if (workStatus && member.is_active) {
+                          return (
+                            <Badge variant="default">
+                              {statusLabels[workStatus]}
+                            </Badge>
+                          );
+                        }
+                        return (
+                          <Badge variant={member.is_active ? 'outline' : 'secondary'}>
+                            {member.is_active ? t('common.active') : t('common.inactive')}
+                          </Badge>
+                        );
+                      })()}
                     </div>
 
                     <div className="flex gap-2 pt-2">
