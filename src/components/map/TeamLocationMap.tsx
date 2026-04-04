@@ -177,13 +177,10 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         </div>
       </CardHeader>
       <CardContent>
-        {/* Outer wrapper owns the visual rounding + clipping.
-            The inner div is the clean Leaflet container — no border-radius
-            here prevents the overflow:hidden+border-radius compositor-layer
-            conflict that hides tiles on Android WebView/Blink. */}
-        <div className="h-[400px] rounded-lg border border-border overflow-hidden">
-          <div ref={mapContainer} className="h-full w-full" />
-        </div>
+        {/* Single div — Leaflet container gets visual styling directly.
+            Avoids the parent overflow:hidden+border-radius compositor-layer
+            conflict that hides tile images on Blink/WebView. */}
+        <div ref={mapContainer} className="h-[400px] rounded-lg border border-border" />
         
         {/* Status legend */}
         <div className="mt-4 flex flex-wrap gap-3">
