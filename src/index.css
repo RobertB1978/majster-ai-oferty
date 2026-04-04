@@ -50,8 +50,14 @@
   max-width: none !important;
   max-height: none !important;
 }
-.leaflet-container .leaflet-tile-pane {
-  z-index: 1;
+/* Force GPU compositing layer on the Leaflet container.
+   Without this, on Android WebView/Blink the tile <img> elements
+   (positioned via transform:translate3d) can fail to composite correctly
+   when a parent has overflow:hidden + border-radius — causing the tile
+   pane to be invisible while div-based markers remain visible. */
+.leaflet-container {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 @layer base {
