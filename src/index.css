@@ -45,6 +45,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fix Leaflet tiles broken by Tailwind Preflight (img max-width: 100%) */
+.leaflet-container img {
+  max-width: none !important;
+  max-height: none !important;
+}
+.leaflet-container .leaflet-tile-pane {
+  z-index: 1;
+}
+
 @layer base {
   :root {
     /* === ROADMAP SECTION 3.1 — Light mode token values === */
