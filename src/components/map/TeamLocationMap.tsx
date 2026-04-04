@@ -67,8 +67,16 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       mapRef.current?.invalidateSize();
     }, 100);
 
+    // Re-calculate map size whenever the container is resized (e.g. after tab switch
+    // that hides the element via display:none — Leaflet misses the layout change)
+    const resizeObserver = new ResizeObserver(() => {
+      mapRef.current?.invalidateSize();
+    });
+    resizeObserver.observe(mapContainer.current);
+
     return () => {
       clearTimeout(sizeTimer);
+      resizeObserver.disconnect();
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
