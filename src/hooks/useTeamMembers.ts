@@ -68,10 +68,10 @@ export function useAddTeamMember() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team_members'] });
-      toast.success(t('team.toast.added'));
+      toast.success(t('team.toast.added'), { id: 'team-member-added' });
     },
     onError: () => {
-      toast.error(t('team.toast.addError'));
+      toast.error(t('team.toast.addError'), { id: 'team-member-add-error' });
     },
   });
 }
@@ -94,7 +94,7 @@ export function useUpdateTeamMember() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team_members'] });
-      toast.success(t('team.toast.updated'));
+      toast.success(t('team.toast.updated'), { id: 'team-member-updated' });
     },
   });
 }
@@ -114,7 +114,7 @@ export function useDeleteTeamMember() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team_members'] });
-      toast.success(t('team.toast.deleted'));
+      toast.success(t('team.toast.deleted'), { id: 'team-member-deleted' });
     },
   });
 }
