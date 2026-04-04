@@ -59,14 +59,14 @@ const TOKEN_SOURCES = {
   new: 'acceptance_links.token',
 } as const;
 
-/** DB funkcje nowego flow */
-const NEW_FLOW_DB_FUNCTIONS = {
+/** DB funkcje nowego flow (dokumentacja kontraktu — prefix _ = intentionally unused) */
+const _NEW_FLOW_DB_FUNCTIONS = {
   read: 'resolve_offer_acceptance_link',
   write: 'process_offer_acceptance_action',
 } as const;
 
-/** Edge Function legacy flow */
-const LEGACY_EDGE_FUNCTION = 'approve-offer' as const;
+/** Edge Function legacy flow (dokumentacja kontraktu — prefix _ = intentionally unused) */
+const _LEGACY_EDGE_FUNCTION = 'approve-offer' as const;
 
 // ════════════════════════════════════════════════════════════════════════════════
 // SEKCJA 1 — TESTY REALNE
