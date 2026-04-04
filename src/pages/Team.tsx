@@ -210,9 +210,7 @@ export default function Team() {
           </TabsList>
 
           <TabsContent value="map" className="mt-4">
-            <Card className="overflow-hidden">
-              <TeamLocationMap />
-            </Card>
+            <TeamLocationMap />
           </TabsContent>
 
           <TabsContent value="list" className="mt-4">

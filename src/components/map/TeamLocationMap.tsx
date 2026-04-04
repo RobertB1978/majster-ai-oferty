@@ -61,6 +61,10 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(mapRef.current);
 
+    // Force recalculate size after render (fixes gray tiles in tabs/hidden containers)
+    const map = mapRef.current;
+    setTimeout(() => map.invalidateSize(), 100);
+
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
