@@ -35,6 +35,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { getCorsHeaders, getCorsPreflightHeaders } from "../_shared/cors.ts";
+import { ERROR_CODES, errorResponse } from "../_shared/error-codes.ts";
 import {
   validateUnifiedPayload,
   type UnifiedDocumentPayload,
@@ -68,10 +69,7 @@ serve(async (req: Request): Promise<Response> => {
   try {
     body = await req.json();
   } catch {
-    return new Response(
-      JSON.stringify({ error: "Nieprawidłowe ciało żądania — oczekiwano JSON." }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return errorResponse(ERROR_CODES.INVALID_REQUEST_BODY, 400, corsHeaders);
   }
 
   // ── Walidacja UnifiedDocumentPayload v2 ────────────────────────────────────
@@ -173,19 +171,13 @@ serve(async (req: Request): Promise<Response> => {
       // ── TypeScript exhaustive check ──────────────────────────────────────
       default: {
         const _exhaustive: never = payload.documentType;
-        return new Response(
-          JSON.stringify({ error: `Nieznany documentType: ${String(_exhaustive)}` }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
+        return errorResponse(ERROR_CODES.UNKNOWN_DOCUMENT_TYPE, 400, corsHeaders, String(_exhaustive));
       }
     }
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Wewnętrzny błąd renderowania PDF.";
-    console.error("[generate-pdf-v2] błąd renderowania:", message);
+    const message = err instanceof Error ? err.message : "Unknown PDF rendering error";
+    console.error("[generate-pdf-v2] rendering error:", message);
 
-    return new Response(
-      JSON.stringify({ error: "Generowanie PDF nie powiodło się.", detail: message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return errorResponse(ERROR_CODES.PDF_GENERATION_FAILED, 500, corsHeaders, message);
   }
 });

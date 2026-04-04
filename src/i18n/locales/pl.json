@@ -1633,6 +1633,24 @@
     "details": "Szczegóły",
     "invite": "Zaproś"
   },
+  "apiErrors": {
+    "INVALID_REQUEST_BODY": "Nieprawidłowe dane żądania",
+    "UNKNOWN_DOCUMENT_TYPE": "Nieznany typ dokumentu",
+    "PDF_GENERATION_FAILED": "Generowanie PDF nie powiodło się",
+    "OFFER_NOT_FOUND": "Oferta nie została znaleziona",
+    "OFFER_NOT_ACCEPTED": "Oferta nie jest zaakceptowana",
+    "OFFER_EXPIRED": "Oferta wygasła. Skontaktuj się z wykonawcą, aby uzyskać nową wycenę.",
+    "OFFER_ALREADY_COMPLETED": "Oferta jest już zakończona",
+    "ACCEPTANCE_WINDOW_EXPIRED": "Minął 10-minutowy czas na cofnięcie akceptacji",
+    "ACCEPTANCE_TIME_UNKNOWN": "Nie można ustalić czasu akceptacji",
+    "INVALID_ACCEPTANCE_TOKEN": "Nieprawidłowy token akceptacji",
+    "LINK_EXPIRED": "Link wygasł. Skontaktuj się z wykonawcą w celu uzyskania nowego linku.",
+    "AI_RATE_LIMIT": "Zbyt wiele zapytań. Poczekaj chwilę i spróbuj ponownie.",
+    "AI_QUOTA_EXHAUSTED": "Limit zapytań AI wyczerpany. Skontaktuj się z administratorem.",
+    "AI_NOT_CONFIGURED": "Asystent AI nie jest jeszcze skonfigurowany. Skontaktuj się z administratorem.",
+    "AI_ERROR": "Wystąpił błąd AI. Spróbuj ponownie.",
+    "UNKNOWN_SERVER_ERROR": "Nieznany błąd serwera"
+  },
   "errors": {
     "required": "To pole jest wymagane",
     "invalidEmail": "Nieprawidłowy email",

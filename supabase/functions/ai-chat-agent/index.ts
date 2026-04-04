@@ -195,7 +195,7 @@ serve(async (req) => {
     }
     console.error('Error in ai-chat-agent:', error);
     return new Response(
-      JSON.stringify({ error: 'Nieznany błąd serwera' }),
+      JSON.stringify({ error: { code: 'UNKNOWN_SERVER_ERROR', detail: 'UNKNOWN_SERVER_ERROR' } }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

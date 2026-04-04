@@ -415,14 +415,14 @@ export function handleAIError(error: Error, corsHeaders?: Record<string, string>
 
   if (error.message === 'RATE_LIMIT_EXCEEDED') {
     return new Response(
-      JSON.stringify({ error: 'Zbyt wiele zapytań. Poczekaj chwilę i spróbuj ponownie.' }),
+      JSON.stringify({ error: { code: 'AI_RATE_LIMIT', detail: 'AI_RATE_LIMIT' } }),
       { status: 429, headers: { ...headers, 'Content-Type': 'application/json' } }
     );
   }
 
   if (error.message === 'PAYMENT_REQUIRED') {
     return new Response(
-      JSON.stringify({ error: 'Limit zapytań AI wyczerpany. Skontaktuj się z administratorem.' }),
+      JSON.stringify({ error: { code: 'AI_QUOTA_EXHAUSTED', detail: 'AI_QUOTA_EXHAUSTED' } }),
       { status: 402, headers: { ...headers, 'Content-Type': 'application/json' } }
     );
   }
@@ -430,17 +430,14 @@ export function handleAIError(error: Error, corsHeaders?: Record<string, string>
   // No AI provider configured — guide the operator to set an API key
   if (error.message.includes('No AI API key configured') || error.message.includes('OPENAI_API_KEY') || error.message.includes('ANTHROPIC_API_KEY') || error.message.includes('GEMINI_API_KEY')) {
     return new Response(
-      JSON.stringify({
-        error: 'AI_NOT_CONFIGURED',
-        message: 'Asystent AI nie jest jeszcze skonfigurowany. Administrator musi ustawić klucz API (OPENAI_API_KEY, ANTHROPIC_API_KEY lub GEMINI_API_KEY) w ustawieniach Supabase Edge Functions.',
-      }),
+      JSON.stringify({ error: { code: 'AI_NOT_CONFIGURED', detail: 'AI_NOT_CONFIGURED' } }),
       { status: 503, headers: { ...headers, 'Content-Type': 'application/json' } }
     );
   }
 
   console.error('AI error:', error);
   return new Response(
-    JSON.stringify({ error: `Błąd AI: ${error.message}` }),
+    JSON.stringify({ error: { code: 'AI_ERROR', detail: error.message } }),
     { status: 500, headers: { ...headers, 'Content-Type': 'application/json' } }
   );
 }

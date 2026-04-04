@@ -1631,6 +1631,24 @@
       "document_delete": "Document deleted"
     }
   },
+  "apiErrors": {
+    "INVALID_REQUEST_BODY": "Invalid request data",
+    "UNKNOWN_DOCUMENT_TYPE": "Unknown document type",
+    "PDF_GENERATION_FAILED": "PDF generation failed",
+    "OFFER_NOT_FOUND": "Offer not found",
+    "OFFER_NOT_ACCEPTED": "Offer is not accepted",
+    "OFFER_EXPIRED": "Offer has expired. Contact the contractor for a new quote.",
+    "OFFER_ALREADY_COMPLETED": "Offer is already completed",
+    "ACCEPTANCE_WINDOW_EXPIRED": "The 10-minute acceptance cancellation window has expired",
+    "ACCEPTANCE_TIME_UNKNOWN": "Unable to determine acceptance time",
+    "INVALID_ACCEPTANCE_TOKEN": "Invalid acceptance token",
+    "LINK_EXPIRED": "Link has expired. Contact the contractor for a new link.",
+    "AI_RATE_LIMIT": "Too many requests. Please wait a moment and try again.",
+    "AI_QUOTA_EXHAUSTED": "AI request quota exhausted. Contact the administrator.",
+    "AI_NOT_CONFIGURED": "AI assistant is not yet configured. Contact the administrator.",
+    "AI_ERROR": "An AI error occurred. Please try again.",
+    "UNKNOWN_SERVER_ERROR": "Unknown server error"
+  },
   "errors": {
     "required": "This field is required",
     "invalidEmail": "Invalid email address",
