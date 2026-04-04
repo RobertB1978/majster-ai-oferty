@@ -31,7 +31,7 @@ const statusLabels: Record<string, string> = {
   break: 'Przerwa',
 };
 
-const TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
 // --- Debug overlay types (used only when ?mapDebug=1) ---
 interface MapDebugInfo {
