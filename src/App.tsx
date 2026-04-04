@@ -18,15 +18,17 @@ const NewShellLayout = lazy(() => import("@/components/layout/NewShellLayout").t
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { FF_NEW_SHELL } from "@/config/featureFlags";
 import { PageLoader } from "@/components/layout/PageLoader";
-import { InstallPrompt } from "@/components/pwa/InstallPrompt";
-import { OfflineBanner } from "@/components/pwa/OfflineBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { CookieConsent } from "@/components/legal/CookieConsent";
 
-// === ZONE 1: PUBLIC (loaded immediately - auth flow) ===
-import AuthCallback from "./pages/AuthCallback";
-import NotFound from "./pages/NotFound";
-import EnvCheck from "./pages/EnvCheck";
+// Non-critical wrappers — lazy-loaded to reduce entry chunk
+const InstallPrompt = lazy(() => import("@/components/pwa/InstallPrompt").then(m => ({ default: m.InstallPrompt })));
+const OfflineBanner = lazy(() => import("@/components/pwa/OfflineBanner").then(m => ({ default: m.OfflineBanner })));
+const CookieConsent = lazy(() => import("@/components/legal/CookieConsent").then(m => ({ default: m.CookieConsent })));
+
+// === ZONE 1: PUBLIC (lazy — not needed on every page) ===
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const EnvCheck = lazy(() => import("./pages/EnvCheck"));
 
 // === ZONE 1: PUBLIC (lazy) ===
 const Login = lazy(() => import("./pages/Login"));
@@ -219,9 +221,9 @@ const App = () => (
               <ScrollRestoration />
               <Sonner />
               {/* PR-19: maly baner zamiast pelnoekranowego blokera — uzytkownik widzi dane z cache */}
-              <OfflineBanner />
-              <InstallPrompt />
-              <CookieConsent />
+              <Suspense fallback={null}><OfflineBanner /></Suspense>
+              <Suspense fallback={null}><InstallPrompt /></Suspense>
+              <Suspense fallback={null}><CookieConsent /></Suspense>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   {/* ============================================

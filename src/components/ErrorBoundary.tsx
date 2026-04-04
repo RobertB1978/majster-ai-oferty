@@ -3,7 +3,13 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { logError } from '@/lib/sentry';
+// Sentry loaded dynamically to keep it out of the main entry chunk.
+// logError is only called on error, so lazy loading is safe here.
+const logErrorLazy = (error: Error, context?: Record<string, unknown>) => {
+  import('@/lib/sentry').then(m => m.logError(error, context)).catch(() => {
+    console.error('Sentry unavailable, error:', error, context);
+  });
+};
 import i18n from '@/i18n';
 import { formatError, type FormattedError } from '@/lib/errors/formatError';
 
@@ -31,7 +37,7 @@ export class PanelErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     logger.error('PanelErrorBoundary caught an error:', error, errorInfo);
-    logError(error, {
+    logErrorLazy(error, {
       componentStack: errorInfo.componentStack,
       boundary: 'PanelErrorBoundary',
     });
@@ -66,7 +72,7 @@ export class ErrorBoundary extends Component<Props, State> {
     logger.error('ErrorBoundary caught an error:', error, errorInfo);
     const { formattedError } = this.state;
 
-    logError(error, {
+    logErrorLazy(error, {
       componentStack: errorInfo.componentStack,
       boundary: 'RootErrorBoundary',
       domain_code: formattedError?.code,
