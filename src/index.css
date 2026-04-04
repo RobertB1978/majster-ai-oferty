@@ -50,13 +50,9 @@
   max-width: none !important;
   max-height: none !important;
 }
-/* Fix: overflow:hidden + border-radius on .leaflet-container creates a new
-   compositing layer in Blink/WebKit that hides translate3d-positioned tiles.
-   overflow:clip provides the same visual clipping without creating a
-   compositing layer, so tiles remain visible while border-radius still works. */
-.leaflet-container {
-  overflow: clip !important;
-}
+/* No overflow override needed — border-radius lives on the outer wrapper now,
+   not on .leaflet-container, so Leaflet's native overflow:hidden works correctly
+   on all browsers including Android Chrome/WebView. */
 
 @layer base {
   :root {

@@ -302,11 +302,12 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         </div>
       </CardHeader>
       <CardContent>
-        {/* Single div — Leaflet container gets visual styling directly.
-            Avoids the parent overflow:hidden+border-radius compositor-layer
-            conflict that hides tile images on Blink/WebView. */}
-        <div style={{ position: 'relative' }}>
-          <div ref={mapContainer} className="h-[400px] rounded-lg border border-border" />
+        {/* Outer wrapper owns all visual styling (rounded corners, border, overflow).
+            Leaflet container is plain — no border-radius on it, so Leaflet's own
+            overflow:hidden works correctly on Android Chrome/WebView without
+            triggering the translate3d compositing-layer bug. */}
+        <div className="h-[400px] rounded-lg border border-border overflow-hidden" style={{ position: 'relative' }}>
+          <div ref={mapContainer} className="absolute inset-0" />
 
           {/* Debug overlay — widoczny TYLKO przy ?mapDebug=1, niewidoczny dla zwykłego użytkownika */}
           {debugMode && (
