@@ -110,15 +110,21 @@ export default function Team() {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          recordLocation.mutate({
-            teamMemberId: memberId,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            status,
-          });
-          toast.success(`${t('common.status')}: ${statusLabels[status]}`, {
-            id: 'team-status-update',
-          });
+          recordLocation.mutate(
+            {
+              teamMemberId: memberId,
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              status,
+            },
+            {
+              onSuccess: () => {
+                toast.success(`${t('common.status')}: ${statusLabels[status]}`, {
+                  id: 'team-status-update',
+                });
+              },
+            },
+          );
         },
         (_error) => {
           toast.error(t('errors.geolocationDenied'));
@@ -300,26 +306,29 @@ export default function Team() {
                     </div>
 
                     <div className="flex gap-2 pt-2">
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="outline"
                         onClick={() => handleStartWork(member.id, 'working')}
+                        disabled={recordLocation.isPending}
                       >
                         <Play className="h-3 w-3 mr-1" />
                         {t('team.startWork')}
                       </Button>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="outline"
                         onClick={() => handleStartWork(member.id, 'traveling')}
+                        disabled={recordLocation.isPending}
                       >
                         <MapPin className="h-3 w-3 mr-1" />
                         {t('team.traveling')}
                       </Button>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="outline"
                         onClick={() => handleStartWork(member.id, 'break')}
+                        disabled={recordLocation.isPending}
                       >
                         <Coffee className="h-3 w-3 mr-1" />
                         {t('team.onBreak')}
