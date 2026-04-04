@@ -50,15 +50,11 @@
   max-width: none !important;
   max-height: none !important;
 }
-/* Force GPU compositing layer on the Leaflet container.
-   Without this, on Android WebView/Blink the tile <img> elements
-   (positioned via transform:translate3d) can fail to composite correctly
-   when a parent has overflow:hidden + border-radius — causing the tile
-   pane to be invisible while div-based markers remain visible. */
-.leaflet-container {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-}
+/* Leaflet note: the old translateZ(0) hack on .leaflet-container was removed.
+   It was meant to fix tile rendering under a parent with overflow:hidden +
+   border-radius, but that parent wrapper has been removed (TeamLocationMap).
+   Adding transform to the container can interfere with Leaflet's own
+   transform-based tile positioning, making tiles invisible. */
 
 @layer base {
   :root {
