@@ -1654,6 +1654,8 @@
     "invalidEmail": "Invalid email address",
     "passwordMismatch": "Passwords do not match",
     "networkError": "Network error. Please try again.",
+    "geolocationDenied": "Location access denied. Check browser permissions.",
+    "geolocationUnavailable": "Geolocation is unavailable in this browser or device.",
     "unauthorized": "Unauthorized. Please log in.",
     "notFound": "Resource not found",
     "serverError": "Server error. Please try again later.",

@@ -1659,6 +1659,8 @@
     "maxLength": "Maksimum {{count}} znaków",
     "generic": "Wystąpił błąd",
     "networkError": "Błąd połączenia",
+    "geolocationDenied": "Brak dostępu do lokalizacji. Sprawdź uprawnienia przeglądarki.",
+    "geolocationUnavailable": "Geolokalizacja jest niedostępna w tej przeglądarce lub urządzeniu.",
     "unauthorized": "Brak autoryzacji",
     "notFound": "Nie znaleziono",
     "serverError": "Błąd serwera",

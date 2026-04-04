@@ -108,11 +108,11 @@ export default function Team() {
           toast.success(`${t('common.status')}: ${statusLabels[status]}`);
         },
         (_error) => {
-          toast.error(t('errors.networkError'));
+          toast.error(t('errors.geolocationDenied'));
         }
       );
     } else {
-      toast.error(t('errors.networkError'));
+      toast.error(t('errors.geolocationUnavailable'));
     }
   };
 
