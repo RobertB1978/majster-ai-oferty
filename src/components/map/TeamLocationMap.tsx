@@ -59,13 +59,16 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
     }).addTo(mapRef.current);
 
-    // Force recalculate size after render (fixes gray tiles in tabs/hidden containers)
-    const map = mapRef.current;
-    setTimeout(() => map.invalidateSize(), 100);
+    // Force tile redraw after layout settles (fixes blank tiles on first render)
+    const sizeTimer = setTimeout(() => {
+      mapRef.current?.invalidateSize();
+    }, 100);
 
     return () => {
+      clearTimeout(sizeTimer);
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
