@@ -53,10 +53,16 @@ interface MapDebugInfo {
 }
 
 function computeVerdict(info: MapDebugInfo): string {
+  if (!info.mapInitialized) return 'mapa nie zainicjalizowana';
   if (!info.tileLayerAdded) return 'TileLayer nie został dodany';
+  if (info.containerW === 0 || info.containerH === 0) return 'kontener mapy ma zerowe wymiary';
+  if (!info.tilePaneExists) return 'brak .leaflet-tile-pane w DOM';
   if (info.tileerrorCount > 0) return 'tileerror występuje';
   if (info.tileloadstartCount === 0) return 'brak requestów tiles';
-  if (info.tileImgCount > 0 && info.tileloadCount === 0) return 'tiles w DOM, ale niewidoczne';
+  if (info.visibilityStyle === 'hidden' || info.opacityStyle === '0') return 'tiles ukryte przez CSS';
+  if (info.tileloadstartCount > 0 && info.tileloadCount === 0 && info.tileerrorCount === 0)
+    return 'tiles żądane, brak odpowiedzi (sieć / CSP?)';
+  if (info.tileImgCount > 0 && info.tileloadCount === 0) return 'tiles w DOM, ale niewidoczne (CSS?)';
   if (info.tileloadCount > 0) return 'tiles ładują się poprawnie';
   return 'UNKNOWN';
 }
