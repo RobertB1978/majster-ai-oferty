@@ -47,9 +47,14 @@ interface MapDebugInfo {
   containerH: number;
   tilePaneExists: boolean;
   tileImgCount: number;
+  tilesWithContent: number;
   overflowStyle: string;
   visibilityStyle: string;
   opacityStyle: string;
+  tilePaneOverflow: string;
+  tilePaneVisibility: string;
+  tilePaneOpacity: string;
+  tilePaneTransform: string;
 }
 
 function computeVerdict(info: MapDebugInfo): string {
@@ -62,8 +67,15 @@ function computeVerdict(info: MapDebugInfo): string {
   if (info.visibilityStyle === 'hidden' || info.opacityStyle === '0') return 'tiles ukryte przez CSS';
   if (info.tileloadstartCount > 0 && info.tileloadCount === 0 && info.tileerrorCount === 0)
     return 'tiles żądane, brak odpowiedzi (sieć / CSP?)';
+  if (info.tilePaneVisibility === 'hidden' || info.tilePaneOpacity === '0')
+    return 'tile-pane ukryty przez CSS (visibility/opacity)';
+  if (info.tilePaneOverflow === 'hidden' && info.tileImgCount > 0 && info.tilesWithContent === 0)
+    return 'tile-pane overflow:hidden + tiles bez contentu';
   if (info.tileImgCount > 0 && info.tileloadCount === 0) return 'tiles w DOM, ale niewidoczne (CSS?)';
-  if (info.tileloadCount > 0) return 'tiles ładują się poprawnie';
+  if (info.tileloadCount > 0 && info.tilesWithContent === 0)
+    return 'tiles załadowane wg eventów, ale img bez pikseli (crossOrigin / CSP?)';
+  if (info.tileloadCount > 0 && info.tilesWithContent > 0) return 'tiles ładują się poprawnie ✓';
+  if (info.tileloadCount > 0) return 'tiles ładują się (sprawdź wizualnie)';
   return 'UNKNOWN';
 }
 // --- end debug types ---
@@ -109,9 +121,14 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     containerH: 0,
     tilePaneExists: false,
     tileImgCount: 0,
+    tilesWithContent: 0,
     overflowStyle: '',
     visibilityStyle: '',
     opacityStyle: '',
+    tilePaneOverflow: '',
+    tilePaneVisibility: '',
+    tilePaneOpacity: '',
+    tilePaneTransform: '',
   });
 
   const { data: locations = [], refetch } = useTeamLocations(projectId);
@@ -183,9 +200,17 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       const container = mapContainer.current;
       const rect = container?.getBoundingClientRect();
       const computed = container ? window.getComputedStyle(container) : null;
-      const tilePaneEl = container?.querySelector('.leaflet-tile-pane');
+      const tilePaneEl = container?.querySelector('.leaflet-tile-pane') as HTMLElement | null;
       const tileImgs = container?.querySelectorAll('img.leaflet-tile') ?? [];
+      const tilePaneComputed = tilePaneEl ? window.getComputedStyle(tilePaneEl) : null;
       const c = debugCountersRef.current;
+
+      // Count tiles that actually loaded pixel data
+      let tilesWithContent = 0;
+      tileImgs.forEach((img) => {
+        const imgEl = img as HTMLImageElement;
+        if (imgEl.complete && imgEl.naturalWidth > 0) tilesWithContent++;
+      });
 
       setDebugInfo({
         mapInitialized: mapRef.current !== null,
@@ -200,9 +225,14 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         containerH: rect?.height ?? 0,
         tilePaneExists: !!tilePaneEl,
         tileImgCount: tileImgs.length,
+        tilesWithContent,
         overflowStyle: computed?.overflow ?? '',
         visibilityStyle: computed?.visibility ?? '',
         opacityStyle: computed?.opacity ?? '',
+        tilePaneOverflow: tilePaneComputed?.overflow ?? '',
+        tilePaneVisibility: tilePaneComputed?.visibility ?? '',
+        tilePaneOpacity: tilePaneComputed?.opacity ?? '',
+        tilePaneTransform: tilePaneComputed?.transform ?? '',
       });
     }, 1000);
 
@@ -355,9 +385,18 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
               </div>
               <div>tilePaneExists: {debugInfo.tilePaneExists ? '✓' : '✗'}</div>
               <div>img.leaflet-tile: {debugInfo.tileImgCount}</div>
+              <div>tilesWithPixels: {debugInfo.tilesWithContent}</div>
+              <div style={{ color: '#aaa', fontSize: 10, marginTop: 4 }}>— container —</div>
               <div>overflow: {debugInfo.overflowStyle || '—'}</div>
               <div>visibility: {debugInfo.visibilityStyle || '—'}</div>
               <div>opacity: {debugInfo.opacityStyle || '—'}</div>
+              <div style={{ color: '#aaa', fontSize: 10, marginTop: 4 }}>— tile-pane —</div>
+              <div>overflow: {debugInfo.tilePaneOverflow || '—'}</div>
+              <div>visibility: {debugInfo.tilePaneVisibility || '—'}</div>
+              <div>opacity: {debugInfo.tilePaneOpacity || '—'}</div>
+              <div style={{ fontSize: 9, color: '#aaa', wordBreak: 'break-all' }}>
+                transform: {debugInfo.tilePaneTransform || '—'}
+              </div>
               <div
                 style={{
                   marginTop: 6,
