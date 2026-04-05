@@ -32,6 +32,14 @@ const config: CapacitorConfig = {
     ],
   },
   plugins: {
+    // Route HTTP requests through the native HTTP stack instead of WebView.
+    // This bypasses WebView restrictions (CORS, blocked User-Agent, CSP)
+    // that can prevent map tile images from loading.  When enabled,
+    // Capacitor patches window.fetch and XMLHttpRequest so all network
+    // traffic goes through the native Android/iOS networking layer.
+    CapacitorHttp: {
+      enabled: true,
+    },
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert']
     },
