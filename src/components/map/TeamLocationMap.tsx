@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Navigation, RefreshCw, Users } from 'lucide-react';
 import { useTeamLocations, TeamLocation } from '@/hooks/useTeamMembers';
 import { formatDateTime } from '@/lib/formatters';
+import { useEffect, useState } from 'react';
 
-// Fix Leaflet default marker icons
+// Fix Leaflet default marker icons (webpack/vite bundler issue)
 delete (L.Icon.Default.prototype as Record<string, unknown>)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
@@ -31,28 +33,60 @@ const statusLabels: Record<string, string> = {
   break: 'Przerwa',
 };
 
-// OpenStreetMap tile URL — the most universally reliable tile source.
-// OSM tiles are never blocked by ad-blockers or privacy extensions (unlike
-// CartoDB/Carto whose domains can appear on tracking block-lists).
-// No API key required, no retina {r} parameter needed.
-const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+// Multiple tile sources as fallback chain.
+// Primary: OpenStreetMap canonical URL (no API key, ad-blocker safe).
+// Fallback: OSM Germany mirror (same tiles, different CDN).
+const TILE_SOURCES = [
+  {
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+  {
+    url: 'https://tile.openstreetmap.de/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+];
 
 interface TeamLocationMapProps {
   projectId?: string;
   className?: string;
 }
 
+// Helper component to auto-fit map bounds when markers change
+function FitBounds({ bounds }: { bounds: L.LatLngBoundsExpression | null }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (bounds) {
+      map.fitBounds(bounds, { padding: [50, 50] });
+    }
+  }, [map, bounds]);
+
+  return null;
+}
+
+// Helper component to trigger invalidateSize after mount for correct sizing
+function InvalidateSizeOnMount() {
+  const map = useMap();
+
+  useEffect(() => {
+    // Staggered invalidateSize to handle delayed layout on mobile
+    const timers = [100, 300, 600, 1200].map((delay) =>
+      setTimeout(() => map.invalidateSize({ animate: false }), delay),
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [map]);
+
+  return null;
+}
+
 export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) {
   const { i18n } = useTranslation();
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<L.Map | null>(null);
-  const markersRef = useRef<L.Marker[]>([]);
-  const tileLayerRef = useRef<L.TileLayer | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [tileSourceIndex, setTileSourceIndex] = useState(0);
+  const [tileErrorCount, setTileErrorCount] = useState(0);
 
   const { data: locations = [], refetch } = useTeamLocations(projectId);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -60,174 +94,43 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
+  // Switch to fallback tile source after multiple consecutive failures
   useEffect(() => {
-    if (!mapContainer.current || mapRef.current) return;
+    if (tileErrorCount >= 6 && tileSourceIndex < TILE_SOURCES.length - 1) {
+      setTileSourceIndex((prev) => prev + 1);
+      setTileErrorCount(0);
+    }
+  }, [tileErrorCount, tileSourceIndex]);
 
-    // Collect cleanup resources inside refs so the outer cleanup can reach them
-    // even if they were created inside the requestAnimationFrame callback.
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    let resizeObserver: ResizeObserver | null = null;
-
-    // Defer Leaflet initialization to the NEXT animation frame.
-    // This guarantees the browser has finished at least one layout pass and
-    // Leaflet can read real pixel dimensions from the container.
-    const rafId = requestAnimationFrame(() => {
-      const container = mapContainer.current;
-      if (!container || mapRef.current) return;
-
-      // Guard: if Leaflet already owns this DOM node (React Strict-Mode
-      // double-effect, or remount), skip re-initialization to avoid the
-      // "Map container is already initialized" error.
-      if ((container as HTMLDivElement & { _leaflet_id?: number })._leaflet_id) {
-        return;
-      }
-
-      // --- Create the Leaflet map ---
-      mapRef.current = L.map(container, {
-        // Disable the tile fade-in animation.
-        // On Android Chrome the CSS opacity transition can get stuck at 0
-        // when tiles are rendered inside a GPU-composited layer stack —
-        // disabling fade makes tiles appear immediately and reliably.
-        fadeAnimation: false,
-        // Keep zoom animation enabled; it does not trigger the same bug.
-        zoomAnimation: true,
-      }).setView([52.0693, 19.4803], 6);
-
-      const tl = L.tileLayer(TILE_URL, {
-        attribution: TILE_ATTRIBUTION,
-        maxZoom: 19,
-        crossOrigin: 'anonymous',
-      }).addTo(mapRef.current);
-
-      // Retry failed tiles up to 2 times with exponential back-off.
-      // This handles transient CDN glitches without showing broken-image icons.
-      tl.on('tileerror', (error) => {
-        const img = error.tile as HTMLImageElement;
-        const retries = parseInt(img.dataset.tileRetries ?? '0', 10);
-        if (retries < 2) {
-          img.dataset.tileRetries = String(retries + 1);
-          setTimeout(() => {
-            // Append a cache-busting param so the browser re-fetches.
-            const base = img.src.split('?')[0];
-            img.src = `${base}?r=${Date.now()}`;
-          }, (retries + 1) * 1500);
-        }
-      });
-
-      tileLayerRef.current = tl;
-
-      // Staggered invalidateSize calls.
-      // On Android Chrome the reported container size can be incorrect right
-      // after mount (e.g. because parent elements are still reflowing).
-      // Calling invalidateSize multiple times with increasing delays ensures
-      // Leaflet eventually gets the correct size and requests the right tiles.
-      [50, 200, 500, 1000, 2000].forEach((delay) => {
-        timers.push(
-          setTimeout(() => {
-            mapRef.current?.invalidateSize({ animate: false });
-          }, delay),
-        );
-      });
-
-      // ResizeObserver: re-sync map size whenever the container is resized.
-      // This covers tab switches (display:none → block), device rotation, etc.
-      resizeObserver = new ResizeObserver(() => {
-        mapRef.current?.invalidateSize({ animate: false });
-      });
-      resizeObserver.observe(container);
-    });
-
-    // Cleanup: runs on unmount
-    return () => {
-      cancelAnimationFrame(rafId);
-      timers.forEach(clearTimeout);
-      resizeObserver?.disconnect();
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
-      tileLayerRef.current = null;
-    };
-  }, []);
-
-  // Dark mode is handled via CSS filter on .leaflet-tile-pane in index.css.
-  // No tile layer swap needed — same OSM tiles are used in both modes.
-
-  // --- Markers effect ---
-  useEffect(() => {
-    if (!mapRef.current) return;
-
-    // Clear existing markers
-    markersRef.current.forEach((marker) => marker.remove());
-    markersRef.current = [];
-
-    if (locations.length === 0) return;
-
-    // Group locations by team member — keep only the latest record per member
-    const latestLocations = new Map<string, TeamLocation>();
+  // Deduplicate locations — keep only latest per team member
+  const latestLocations = useMemo(() => {
+    const map = new Map<string, TeamLocation>();
     locations.forEach((loc: TeamLocation) => {
-      const existing = latestLocations.get(loc.team_member_id);
+      const existing = map.get(loc.team_member_id);
       if (!existing || new Date(loc.recorded_at) > new Date(existing.recorded_at)) {
-        latestLocations.set(loc.team_member_id, loc);
+        map.set(loc.team_member_id, loc);
       }
     });
+    return Array.from(map.values());
+  }, [locations]);
 
-    // Place a marker for each team member with a known position
-    const bounds: L.LatLngExpression[] = [];
+  // Compute bounds for auto-fit
+  const bounds = useMemo(() => {
+    const validPoints: L.LatLngTuple[] = [];
     latestLocations.forEach((loc) => {
       const lat = Number(loc.latitude);
       const lng = Number(loc.longitude);
-
-      if (isNaN(lat) || isNaN(lng)) return;
-
-      const memberName = loc.team_members?.name || 'Nieznany pracownik';
-      const status = loc.status || 'idle';
-
-      const customIcon = L.divIcon({
-        className: 'custom-marker',
-        html: `
-          <div style="
-            background-color: ${statusColors[status]};
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-          ">
-            ${memberName.charAt(0).toUpperCase()}
-          </div>
-        `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18],
-      });
-
-      const marker = L.marker([lat, lng], { icon: customIcon })
-        .addTo(mapRef.current!)
-        .bindPopup(`
-          <div style="min-width: 150px;">
-            <strong>${memberName}</strong><br/>
-            <span style="color: ${statusColors[status]};">● ${statusLabels[status]}</span><br/>
-            <small>Ostatnia aktualizacja: ${formatDateTime(loc.recorded_at, i18n.language)}</small>
-          </div>
-        `);
-
-      markersRef.current.push(marker);
-      bounds.push([lat, lng]);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        validPoints.push([lat, lng]);
+      }
     });
-
-    // Fit map to show all markers
-    if (bounds.length > 0) {
-      mapRef.current.fitBounds(bounds as L.LatLngBoundsExpression, { padding: [50, 50] });
-    }
-  }, [locations, i18n.language]);
+    if (validPoints.length === 0) return null;
+    return L.latLngBounds(validPoints);
+  }, [latestLocations]);
 
   const activeWorkers = new Set(locations.map((l: TeamLocation) => l.team_member_id)).size;
+
+  const currentTileSource = TILE_SOURCES[tileSourceIndex];
 
   return (
     <Card className={className}>
@@ -247,35 +150,97 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         </div>
       </CardHeader>
       <CardContent>
-        {/*
-          Map container structure — engineered to avoid the Android Chrome
-          GPU-compositing bug that prevents Leaflet tiles from rendering:
+        <div className="h-[400px] relative">
+          <MapContainer
+            center={[52.0693, 19.4803]}
+            zoom={6}
+            fadeAnimation={false}
+            zoomAnimation={true}
+            // Disable tap emulation — modern Android Chrome handles touch
+            // natively; Leaflet's tap handler can conflict and block events.
+            tap={false}
+            style={{ position: 'absolute', inset: 0, zIndex: 0 }}
+          >
+            <TileLayer
+              key={tileSourceIndex}
+              url={currentTileSource.url}
+              attribution={currentTileSource.attribution}
+              maxZoom={19}
+              // updateWhenIdle defaults to true on mobile — known to cause
+              // grey tiles during pinch-zoom (Leaflet #3683).
+              updateWhenIdle={false}
+              updateWhenZooming={false}
+              // Extra tile buffer around viewport — reduces grey edges
+              // when panning quickly on mobile.
+              keepBuffer={4}
+              eventHandlers={{
+                tileerror: () => {
+                  setTileErrorCount((c) => c + 1);
+                },
+                tileload: () => {
+                  // Reset error count on successful loads
+                  setTileErrorCount(0);
+                },
+              }}
+            />
 
-          ROOT CAUSE: When ANY ancestor of the Leaflet container has both
-          `overflow:hidden/clip` AND `border-radius`, Chrome on Android can
-          fail to show GPU-accelerated tile images (translate3d layers) — the
-          tiles are present in the DOM and loaded but never painted on screen.
+            {latestLocations.map((loc) => {
+              const lat = Number(loc.latitude);
+              const lng = Number(loc.longitude);
+              if (isNaN(lat) || isNaN(lng)) return null;
 
-          SOLUTION: The outer wrapper has NO overflow property whatsoever.
-          A thin overlay <div> (pointer-events:none, z-index above Leaflet
-          controls) is painted on top to draw the visual rounded border without
-          creating any clip stencil that could interfere with tile compositing.
-        */}
-        <div
-          className="h-[400px]"
-          style={{ position: 'relative' }}
-        >
-          {/* Leaflet mounts here — rectangular, no clipping on this element or its ancestors */}
+              const memberName = loc.team_members?.name || 'Nieznany pracownik';
+              const status = loc.status || 'idle';
+
+              const customIcon = L.divIcon({
+                className: 'custom-marker',
+                html: `
+                  <div style="
+                    background-color: ${statusColors[status]};
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    border: 3px solid white;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-weight: bold;
+                    font-size: 14px;
+                  ">
+                    ${memberName.charAt(0).toUpperCase()}
+                  </div>
+                `,
+                iconSize: [36, 36],
+                iconAnchor: [18, 18],
+              });
+
+              return (
+                <Marker key={loc.team_member_id} position={[lat, lng]} icon={customIcon}>
+                  <Popup>
+                    <div style={{ minWidth: 150 }}>
+                      <strong>{memberName}</strong><br />
+                      <span style={{ color: statusColors[status] }}>
+                        ● {statusLabels[status]}
+                      </span><br />
+                      <small>
+                        Ostatnia aktualizacja: {formatDateTime(loc.recorded_at, i18n.language)}
+                      </small>
+                    </div>
+                  </Popup>
+                </Marker>
+              );
+            })}
+
+            <FitBounds bounds={bounds} />
+            <InvalidateSizeOnMount />
+          </MapContainer>
+
+          {/* Visual rounded border overlay — no clipping, just a border on top */}
           <div
-            ref={mapContainer}
-            style={{ position: 'absolute', inset: 0 }}
-          />
-
-          {/* Visual overlay: rounded border drawn ON TOP of tiles.
-              pointer-events:none passes all interactions through to the map. */}
-          <div
-            className="absolute inset-0 rounded-lg border border-border"
-            style={{ pointerEvents: 'none', zIndex: 1000 }}
+            className="absolute inset-0 rounded-lg border border-border pointer-events-none"
+            style={{ zIndex: 1000 }}
           />
         </div>
 

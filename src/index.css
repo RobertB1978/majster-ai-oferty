@@ -53,6 +53,19 @@
   max-height: none !important;
 }
 
+/* Prevent CSS containment from hiding tile layers on mobile browsers.
+   Some parent components set `contain: content/layout` which can clip
+   absolutely-positioned Leaflet tile layers. */
+.leaflet-container {
+  contain: none !important;
+  overflow: visible !important;
+}
+
+/* Ensure tile pane is always rendered (not optimised away by browser) */
+.leaflet-tile-pane {
+  transform: translate3d(0, 0, 0);
+}
+
 /* Disable Leaflet's built-in tile fade animation.
    On Android Chrome the opacity transition can stay stuck at 0 due to a
    GPU compositing conflict with the surrounding layout.  Showing tiles
@@ -67,6 +80,19 @@
 img.leaflet-tile {
   opacity: 1 !important;
   visibility: visible !important;
+}
+
+/* CRITICAL FIX: Disable backdrop-filter on shell chrome when a Leaflet map
+   is present on the page.  On Android Chrome, backdrop-filter creates a GPU
+   compositing context that prevents descendant translate3d layers (i.e.
+   Leaflet tiles) from painting.  The page containing the map adds
+   [data-has-leaflet-map] on its root; this selector disables blur on the
+   sticky header and fixed bottom nav so tiles render correctly. */
+[data-has-leaflet-map] .shell-header,
+[data-has-leaflet-map] .shell-bottom-nav {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: var(--card) !important;
 }
 
 /* Dark mode: invert OSM tiles to create a dark basemap.

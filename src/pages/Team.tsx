@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -134,6 +134,14 @@ export default function Team() {
       toast.error(t('errors.geolocationUnavailable'));
     }
   };
+
+  // Signal to CSS that a Leaflet map is on this page.
+  // This disables backdrop-filter on shell chrome (header/nav) which
+  // creates GPU compositing conflicts with Leaflet tiles on Android Chrome.
+  useEffect(() => {
+    document.body.setAttribute('data-has-leaflet-map', 'true');
+    return () => document.body.removeAttribute('data-has-leaflet-map');
+  }, []);
 
   return (
     <>
