@@ -43,13 +43,21 @@ interface MapDebugInfo {
   tileerrorCount: number;
   lastTileUrl: string | null;
   lastTileError: string | null;
+  lastTileErrorStatus: string | null;
   containerW: number;
   containerH: number;
   tilePaneExists: boolean;
   tileImgCount: number;
+  tilesWithContentCount: number;
   overflowStyle: string;
   visibilityStyle: string;
   opacityStyle: string;
+  displayStyle: string;
+  tilePaneOverflow: string;
+  tilePaneVisibility: string;
+  tilePaneOpacity: string;
+  tilePaneDisplay: string;
+  directProbe: 'pending' | 'success' | 'error' | 'timeout';
 }
 
 function computeVerdict(info: MapDebugInfo): string {
@@ -57,14 +65,19 @@ function computeVerdict(info: MapDebugInfo): string {
   if (!info.tileLayerAdded) return 'TileLayer nie został dodany';
   if (info.containerW === 0 || info.containerH === 0) return 'kontener mapy ma zerowe wymiary';
   if (!info.tilePaneExists) return 'brak .leaflet-tile-pane w DOM';
-  if (info.tileerrorCount > 0) return 'tileerror występuje';
-  if (info.tileloadstartCount === 0) return 'brak requestów tiles';
-  if (info.visibilityStyle === 'hidden' || info.opacityStyle === '0') return 'tiles ukryte przez CSS';
+  if (info.directProbe === 'error' || info.directProbe === 'timeout') return 'direct probe failed — provider/sieć/CSP';
+  if (info.tileloadstartCount === 0) return 'tiles never requested';
+  if (info.tileerrorCount > 0 && info.tileloadCount === 0) return 'tiles requested but failed';
+  if (info.tileloadCount > 0 && info.tilesWithContentCount === 0) return 'tiles loaded but hidden (CSS?)';
+  if (info.tileloadCount > 0 && info.tilesWithContentCount > 0) {
+    const paneHidden = info.tilePaneVisibility === 'hidden' || info.tilePaneOpacity === '0' || info.tilePaneDisplay === 'none';
+    const containerHidden = info.visibilityStyle === 'hidden' || info.opacityStyle === '0' || info.displayStyle === 'none';
+    if (paneHidden || containerHidden) return 'tiles loaded but hidden (CSS kontener/pane)';
+    return 'tiles ładują się poprawnie ✓';
+  }
   if (info.tileloadstartCount > 0 && info.tileloadCount === 0 && info.tileerrorCount === 0)
-    return 'tiles żądane, brak odpowiedzi (sieć / CSP?)';
-  if (info.tileImgCount > 0 && info.tileloadCount === 0) return 'tiles w DOM, ale niewidoczne (CSS?)';
-  if (info.tileloadCount > 0) return 'tiles ładują się poprawnie';
-  return 'UNKNOWN';
+    return 'tiles requested, brak odpowiedzi (sieć / CSP?)';
+  return 'unknown';
 }
 // --- end debug types ---
 
@@ -94,6 +107,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     tileerror: 0,
     lastTileUrl: null as string | null,
     lastTileError: null as string | null,
+    lastTileErrorStatus: null as string | null,
   });
 
   const [debugInfo, setDebugInfo] = useState<MapDebugInfo>({
@@ -105,13 +119,21 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     tileerrorCount: 0,
     lastTileUrl: null,
     lastTileError: null,
+    lastTileErrorStatus: null,
     containerW: 0,
     containerH: 0,
     tilePaneExists: false,
     tileImgCount: 0,
+    tilesWithContentCount: 0,
     overflowStyle: '',
     visibilityStyle: '',
     opacityStyle: '',
+    displayStyle: '',
+    tilePaneOverflow: '',
+    tilePaneVisibility: '',
+    tilePaneOpacity: '',
+    tilePaneDisplay: '',
+    directProbe: 'pending',
   });
 
   const { data: locations = [], refetch } = useTeamLocations(projectId);
@@ -145,7 +167,11 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     });
     tl.on('tileerror', (e: L.TileErrorEvent) => {
       debugCountersRef.current.tileerror++;
-      debugCountersRef.current.lastTileError = (e.tile as HTMLImageElement).src;
+      const tile = e.tile as HTMLImageElement;
+      debugCountersRef.current.lastTileError = tile.src;
+      // Capture any available error context
+      debugCountersRef.current.lastTileErrorStatus =
+        (e as unknown as Record<string, unknown>).error?.toString?.() ?? 'unknown';
     });
 
     if (debugMode) {
@@ -175,6 +201,29 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     };
   }, []);
 
+  // Direct image probe — uruchamiana raz przy ?mapDebug=1
+  const directProbeRef = useRef<'pending' | 'success' | 'error' | 'timeout'>('pending');
+  useEffect(() => {
+    if (!debugMode) return;
+
+    const img = new Image();
+    const timer = setTimeout(() => {
+      directProbeRef.current = 'timeout';
+    }, 8000);
+
+    img.onload = () => {
+      clearTimeout(timer);
+      directProbeRef.current = 'success';
+    };
+    img.onerror = () => {
+      clearTimeout(timer);
+      directProbeRef.current = 'error';
+    };
+    img.src = 'https://tile.openstreetmap.org/0/0/0.png';
+
+    return () => clearTimeout(timer);
+  }, [debugMode]);
+
   // Debug polling: odświeża snapshot DOM co sekundę — działa tylko przy ?mapDebug=1
   useEffect(() => {
     if (!debugMode) return;
@@ -183,8 +232,13 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       const container = mapContainer.current;
       const rect = container?.getBoundingClientRect();
       const computed = container ? window.getComputedStyle(container) : null;
-      const tilePaneEl = container?.querySelector('.leaflet-tile-pane');
+      const tilePaneEl = container?.querySelector('.leaflet-tile-pane') as HTMLElement | null;
+      const tilePaneComputed = tilePaneEl ? window.getComputedStyle(tilePaneEl) : null;
       const tileImgs = container?.querySelectorAll('img.leaflet-tile') ?? [];
+      let tilesWithContent = 0;
+      tileImgs.forEach((img) => {
+        if ((img as HTMLImageElement).naturalWidth > 0) tilesWithContent++;
+      });
       const c = debugCountersRef.current;
 
       setDebugInfo({
@@ -196,13 +250,21 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         tileerrorCount: c.tileerror,
         lastTileUrl: c.lastTileUrl,
         lastTileError: c.lastTileError,
+        lastTileErrorStatus: c.lastTileErrorStatus,
         containerW: rect?.width ?? 0,
         containerH: rect?.height ?? 0,
         tilePaneExists: !!tilePaneEl,
         tileImgCount: tileImgs.length,
+        tilesWithContentCount: tilesWithContent,
         overflowStyle: computed?.overflow ?? '',
         visibilityStyle: computed?.visibility ?? '',
         opacityStyle: computed?.opacity ?? '',
+        displayStyle: computed?.display ?? '',
+        tilePaneOverflow: tilePaneComputed?.overflow ?? '',
+        tilePaneVisibility: tilePaneComputed?.visibility ?? '',
+        tilePaneOpacity: tilePaneComputed?.opacity ?? '',
+        tilePaneDisplay: tilePaneComputed?.display ?? '',
+        directProbe: directProbeRef.current,
       });
     }, 1000);
 
@@ -350,14 +412,41 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
                   lastErr: …{debugInfo.lastTileError.slice(-38)}
                 </div>
               )}
+              {debugInfo.lastTileErrorStatus && (
+                <div style={{ color: '#ff4444', fontSize: 9 }}>
+                  errStatus: {debugInfo.lastTileErrorStatus}
+                </div>
+              )}
               <div>
                 container: {debugInfo.containerW.toFixed(0)}×{debugInfo.containerH.toFixed(0)} px
               </div>
               <div>tilePaneExists: {debugInfo.tilePaneExists ? '✓' : '✗'}</div>
               <div>img.leaflet-tile: {debugInfo.tileImgCount}</div>
+              <div>tiles naturalWidth&gt;0: {debugInfo.tilesWithContentCount}</div>
+              <div style={{ marginTop: 4, color: '#88aaff', fontSize: 10, fontWeight: 'bold' }}>
+                — container CSS —
+              </div>
               <div>overflow: {debugInfo.overflowStyle || '—'}</div>
               <div>visibility: {debugInfo.visibilityStyle || '—'}</div>
               <div>opacity: {debugInfo.opacityStyle || '—'}</div>
+              <div>display: {debugInfo.displayStyle || '—'}</div>
+              <div style={{ marginTop: 4, color: '#88aaff', fontSize: 10, fontWeight: 'bold' }}>
+                — tile-pane CSS —
+              </div>
+              <div>overflow: {debugInfo.tilePaneOverflow || '—'}</div>
+              <div>visibility: {debugInfo.tilePaneVisibility || '—'}</div>
+              <div>opacity: {debugInfo.tilePaneOpacity || '—'}</div>
+              <div>display: {debugInfo.tilePaneDisplay || '—'}</div>
+              <div style={{ marginTop: 4, color: '#88aaff', fontSize: 10, fontWeight: 'bold' }}>
+                — direct probe —
+              </div>
+              <div style={{
+                color: debugInfo.directProbe === 'success' ? '#00ff88'
+                  : debugInfo.directProbe === 'pending' ? '#aaa'
+                  : '#ff4444',
+              }}>
+                tile.osm.org/0/0/0: {debugInfo.directProbe}
+              </div>
               <div
                 style={{
                   marginTop: 6,
