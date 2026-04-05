@@ -156,6 +156,9 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
             zoom={6}
             fadeAnimation={false}
             zoomAnimation={true}
+            // Disable tap emulation — modern Android Chrome handles touch
+            // natively; Leaflet's tap handler can conflict and block events.
+            tap={false}
             style={{ position: 'absolute', inset: 0, zIndex: 0 }}
           >
             <TileLayer
@@ -163,6 +166,13 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
               url={currentTileSource.url}
               attribution={currentTileSource.attribution}
               maxZoom={19}
+              // updateWhenIdle defaults to true on mobile — known to cause
+              // grey tiles during pinch-zoom (Leaflet #3683).
+              updateWhenIdle={false}
+              updateWhenZooming={false}
+              // Extra tile buffer around viewport — reduces grey edges
+              // when panning quickly on mobile.
+              keepBuffer={4}
               eventHandlers={{
                 tileerror: () => {
                   setTileErrorCount((c) => c + 1);
