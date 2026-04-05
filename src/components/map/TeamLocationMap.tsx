@@ -105,10 +105,13 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       const tl = L.tileLayer(tileUrl, {
         attribution: TILE_ATTRIBUTION,
         maxZoom: 19,
-        // crossOrigin: 'anonymous' ensures the browser sends a CORS request for
-        // each tile image.  Required when tiles are used with canvas (WebGL) and
-        // also fixes certain blank-tile rendering bugs in Android WebViews.
-        crossOrigin: 'anonymous',
+        // Do NOT set crossOrigin here.
+        // With crossOrigin:'anonymous' the browser sends an Origin header and
+        // requires Access-Control-Allow-Origin in the response.  CDN caches
+        // (CartoDB uses Fastly) can return a cached response that was stored
+        // without CORS headers, causing every affected tile to show as a broken
+        // image.  We only need tiles to DISPLAY — no canvas pixel-access needed —
+        // so no-cors loading (the browser default) is the right choice.
         // Keep a larger buffer of off-screen tiles to reduce blank areas when
         // panning on a slow connection.
         keepBuffer: 4,
