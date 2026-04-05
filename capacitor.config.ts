@@ -19,10 +19,16 @@ const config: CapacitorConfig = {
     // servers.  Without this, the WebView may silently block image loads
     // from external domains, causing grey/broken tiles on the map.
     androidScheme: 'https',
+    // Identify this app to tile servers.  OSM Tile Usage Policy requires
+    // a custom User-Agent; without it, OSM may return 403 Forbidden.
+    appendUserAgent: 'MajsterAI/1.0 (https://majsterai.com)',
     allowNavigation: [
+      // CartoDB (primary tile provider)
+      'basemaps.cartocdn.com',
+      '*.basemaps.cartocdn.com',
+      // OSM (fallback)
       'tile.openstreetmap.org',
       '*.tile.openstreetmap.org',
-      'tile.openstreetmap.de',
     ],
   },
   plugins: {
