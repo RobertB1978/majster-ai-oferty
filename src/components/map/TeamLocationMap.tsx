@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -31,12 +31,13 @@ const statusLabels: Record<string, string> = {
   break: 'Przerwa',
 };
 
-// CartoDB tiles: fast global CDN, light and dark variants, free for reasonable usage.
-// Attribution required by CARTO terms of service.
-const TILE_URL_LIGHT = 'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
-const TILE_URL_DARK  = 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
+// OpenStreetMap tiles: the most reliable free tile provider, no API key required.
+// Uses 3 subdomains (a/b/c) for load distribution across OSM's CDN.
+// Attribution required by OpenStreetMap terms of service.
+const TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const TILE_SUBDOMAINS: string[] = ['a', 'b', 'c'];
 const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 interface TeamLocationMapProps {
   projectId?: string;
@@ -50,14 +51,6 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
   const markersRef = useRef<L.Marker[]>([]);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // Detect dark mode to select the matching tile theme.
-  // Computed once on mount — theme-switching remounts the component via key change
-  // or the user would need to reload anyway.
-  const isDark = useMemo(
-    () => document.documentElement.classList.contains('dark'),
-    [],
-  );
 
   const { data: locations = [], refetch } = useTeamLocations(projectId);
 
@@ -100,18 +93,11 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         zoomAnimation: true,
       }).setView([52.0693, 19.4803], 6);
 
-      const tileUrl = isDark ? TILE_URL_DARK : TILE_URL_LIGHT;
-
-      const tl = L.tileLayer(tileUrl, {
+      const tl = L.tileLayer(TILE_URL, {
         attribution: TILE_ATTRIBUTION,
+        // Rotate requests across 3 OSM CDN endpoints to stay within fair-use limits.
+        subdomains: TILE_SUBDOMAINS,
         maxZoom: 19,
-        // Do NOT set crossOrigin here.
-        // With crossOrigin:'anonymous' the browser sends an Origin header and
-        // requires Access-Control-Allow-Origin in the response.  CDN caches
-        // (CartoDB uses Fastly) can return a cached response that was stored
-        // without CORS headers, causing every affected tile to show as a broken
-        // image.  We only need tiles to DISPLAY — no canvas pixel-access needed —
-        // so no-cors loading (the browser default) is the right choice.
         // Keep a larger buffer of off-screen tiles to reduce blank areas when
         // panning on a slow connection.
         keepBuffer: 4,
@@ -119,6 +105,21 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         updateWhenIdle: false,
         updateWhenZooming: false,
       }).addTo(mapRef.current);
+
+      // Retry failed tiles up to 2 times with exponential back-off.
+      // This handles transient CDN glitches without showing broken-image icons.
+      tl.on('tileerror', (error) => {
+        const img = error.tile as HTMLImageElement;
+        const retries = parseInt(img.dataset.tileRetries ?? '0', 10);
+        if (retries < 2) {
+          img.dataset.tileRetries = String(retries + 1);
+          setTimeout(() => {
+            // Append a cache-busting param so the browser re-fetches.
+            const base = img.src.split('?')[0];
+            img.src = `${base}?r=${Date.now()}`;
+          }, (retries + 1) * 1500);
+        }
+      });
 
       tileLayerRef.current = tl;
 
@@ -143,7 +144,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       resizeObserver.observe(container);
     });
 
-    // Cleanup: runs on unmount or when isDark changes
+    // Cleanup: runs on unmount
     return () => {
       cancelAnimationFrame(rafId);
       timers.forEach(clearTimeout);
@@ -154,7 +155,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       }
       tileLayerRef.current = null;
     };
-  }, [isDark]);
+  }, []);
 
   // --- Markers effect ---
   useEffect(() => {
