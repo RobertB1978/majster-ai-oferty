@@ -9,9 +9,6 @@ import { NewShellTopBar } from './NewShellTopBar';
 import { NewShellDesktopSidebar } from './NewShellDesktopSidebar';
 import { PageTransition } from './PageTransition';
 
-const NewShellOnboarding = lazy(
-  () => import('@/components/onboarding/NewShellOnboarding').then(m => ({ default: m.NewShellOnboarding }))
-);
 const OnboardingModal = lazy(
   () => import('@/components/onboarding/OnboardingModal').then(m => ({ default: m.OnboardingModal }))
 );
@@ -78,10 +75,6 @@ export function NewShellLayout() {
         <OnboardingModal />
       </Suspense>
 
-      {/* Lekki onboarding UI przy pierwszym uruchomieniu */}
-      <Suspense fallback={null}>
-        <NewShellOnboarding />
-      </Suspense>
     </div>
   );
 }
