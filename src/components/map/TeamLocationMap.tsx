@@ -72,14 +72,13 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
 
     // Collect cleanup resources inside refs so the outer cleanup can reach them
     // even if they were created inside the requestAnimationFrame callback.
-    let rafId: number;
     const timers: ReturnType<typeof setTimeout>[] = [];
     let resizeObserver: ResizeObserver | null = null;
 
     // Defer Leaflet initialization to the NEXT animation frame.
     // This guarantees the browser has finished at least one layout pass and
     // Leaflet can read real pixel dimensions from the container.
-    rafId = requestAnimationFrame(() => {
+    const rafId = requestAnimationFrame(() => {
       const container = mapContainer.current;
       if (!container || mapRef.current) return;
 
