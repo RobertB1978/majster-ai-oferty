@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Navigation, RefreshCw, Users } from 'lucide-react';
 import { useTeamLocations, TeamLocation } from '@/hooks/useTeamMembers';
 import { formatDateTime } from '@/lib/formatters';
+import { useTheme } from '@/hooks/useTheme';
 
 // Fix Leaflet default marker icons
 delete (L.Icon.Default.prototype as Record<string, unknown>)._getIconUrl;
@@ -31,13 +32,16 @@ const statusLabels: Record<string, string> = {
   break: 'Przerwa',
 };
 
-// OpenStreetMap tiles: the most reliable free tile provider, no API key required.
-// Uses 3 subdomains (a/b/c) for load distribution across OSM's CDN.
-// Attribution required by OpenStreetMap terms of service.
-const TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-const TILE_SUBDOMAINS: string[] = ['a', 'b', 'c'];
+// CartoDB tile URLs — production-grade, free, no API key required.
+// Positron = clean light basemap; Dark Matter = dark basemap.
+// Using CartoDB instead of OSM because CartoDB provides native dark/light variants,
+// eliminating the need for CSS filters that can make tiles invisible in dark mode.
+// Subdomains a/b/c/d distribute load across CartoDB's CDN.
+const TILE_URL_LIGHT = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+const TILE_URL_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const TILE_SUBDOMAINS: string[] = ['a', 'b', 'c', 'd'];
 const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 interface TeamLocationMapProps {
   projectId?: string;
@@ -46,6 +50,7 @@ interface TeamLocationMapProps {
 
 export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) {
   const { i18n } = useTranslation();
+  const { isDark } = useTheme();
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
@@ -93,17 +98,16 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         zoomAnimation: true,
       }).setView([52.0693, 19.4803], 6);
 
-      const tl = L.tileLayer(TILE_URL, {
+      const tileUrl = isDark ? TILE_URL_DARK : TILE_URL_LIGHT;
+      const tl = L.tileLayer(tileUrl, {
         attribution: TILE_ATTRIBUTION,
-        // Rotate requests across 3 OSM CDN endpoints to stay within fair-use limits.
         subdomains: TILE_SUBDOMAINS,
         maxZoom: 19,
-        // Keep a larger buffer of off-screen tiles to reduce blank areas when
-        // panning on a slow connection.
         keepBuffer: 4,
-        // Load tiles immediately — do not wait for the map to be idle.
         updateWhenIdle: false,
         updateWhenZooming: false,
+        // Required by CartoDB: identify the app per their usage policy
+        // (no API key needed, but attribution is mandatory)
       }).addTo(mapRef.current);
 
       // Retry failed tiles up to 2 times with exponential back-off.
@@ -155,7 +159,29 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       }
       tileLayerRef.current = null;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- isDark is intentionally captured once at mount; theme swaps are handled by the effect below
   }, []);
+
+  // --- Theme change effect: swap tile layer when dark/light mode changes ---
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const newUrl = isDark ? TILE_URL_DARK : TILE_URL_LIGHT;
+
+    // Remove old tile layer and add a new one with the correct URL
+    if (tileLayerRef.current) {
+      tileLayerRef.current.remove();
+    }
+    tileLayerRef.current = L.tileLayer(newUrl, {
+      attribution: TILE_ATTRIBUTION,
+      subdomains: TILE_SUBDOMAINS,
+      maxZoom: 19,
+      keepBuffer: 4,
+      updateWhenIdle: false,
+      updateWhenZooming: false,
+    }).addTo(map);
+  }, [isDark]);
 
   // --- Markers effect ---
   useEffect(() => {
