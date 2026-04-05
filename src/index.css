@@ -69,23 +69,10 @@ img.leaflet-tile {
   visibility: visible !important;
 }
 
-/* Dark mode: reset Leaflet container background to avoid the dark-themed
-   app background bleeding through while tiles are loading. */
+/* Dark mode: match Leaflet container background to CartoDB Dark Matter background
+   so there's no flash of wrong colour while tiles load. */
 .dark .leaflet-container {
-  background: #1e293b;
-}
-
-/* Dark mode: invert OSM tiles to approximate a dark basemap.
-   hue-rotate(180deg) corrects the colour inversion so land/water stay
-   recognisable.  Applied to the tile pane only — not marker/shadow panes. */
-.dark .leaflet-tile-pane {
-  filter: invert(100%) hue-rotate(180deg) brightness(90%) contrast(85%);
-}
-
-/* Undo the tile-pane filter for broken-image placeholders so they don't
-   get double-inverted and look confusing while a tile retries. */
-.dark img.leaflet-tile[src=""] {
-  filter: none !important;
+  background: #1a1a2e;
 }
 
 @layer base {
