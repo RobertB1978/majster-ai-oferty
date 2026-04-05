@@ -69,7 +69,14 @@ img.leaflet-tile {
   visibility: visible !important;
 }
 
-/* Dark mode: match Leaflet container background to CartoDB Dark Matter background
+/* Dark mode: invert OSM tiles to create a dark basemap.
+   This well-known technique inverts colors and rotates hue to preserve
+   natural map colors (water stays blue, parks stay green). */
+.dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(1.5) contrast(0.85);
+}
+
+/* Dark mode: match Leaflet container background to dark basemap background
    so there's no flash of wrong colour while tiles load. */
 .dark .leaflet-container {
   background: #1a1a2e;
