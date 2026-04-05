@@ -50,9 +50,9 @@
   max-width: none !important;
   max-height: none !important;
 }
-/* No overflow override needed — border-radius lives on the outer wrapper now,
-   not on .leaflet-container, so Leaflet's native overflow:hidden works correctly
-   on all browsers including Android Chrome/WebView. */
+/* Outer wrapper uses overflow:clip (not overflow:hidden) + border-radius.
+   overflow:clip does not create a GPU compositing layer, avoiding the Android
+   Chrome bug where translate3d tile images vanish inside a rounded clip context. */
 
 @layer base {
   :root {
