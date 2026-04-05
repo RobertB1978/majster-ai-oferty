@@ -53,6 +53,19 @@
   max-height: none !important;
 }
 
+/* Prevent CSS containment from hiding tile layers on mobile browsers.
+   Some parent components set `contain: content/layout` which can clip
+   absolutely-positioned Leaflet tile layers. */
+.leaflet-container {
+  contain: none !important;
+  overflow: visible !important;
+}
+
+/* Ensure tile pane is always rendered (not optimised away by browser) */
+.leaflet-tile-pane {
+  transform: translate3d(0, 0, 0);
+}
+
 /* Disable Leaflet's built-in tile fade animation.
    On Android Chrome the opacity transition can stay stuck at 0 due to a
    GPU compositing conflict with the surrounding layout.  Showing tiles
