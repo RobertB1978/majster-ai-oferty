@@ -82,6 +82,16 @@ img.leaflet-tile {
   visibility: visible !important;
 }
 
+/* Hide broken-image icon for tiles that failed to load.
+   Without this, the browser shows a small "broken image" placeholder which
+   looks broken even though the tile provider simply returned an error.
+   The empty alt="" on Leaflet tiles means no alt-text box appears either. */
+img.leaflet-tile:-moz-broken,
+img.leaflet-tile[src=""],
+img.leaflet-tile:not([src]) {
+  visibility: hidden !important;
+}
+
 /* CRITICAL FIX: Disable backdrop-filter on shell chrome when a Leaflet map
    is present on the page.  On Android Chrome, backdrop-filter creates a GPU
    compositing context that prevents descendant translate3d layers (i.e.
