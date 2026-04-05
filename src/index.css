@@ -45,14 +45,41 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fix Leaflet tiles broken by Tailwind Preflight (img max-width: 100%) */
+/* ── Leaflet tile fixes ───────────────────────────────────────────────────── */
+
+/* Tailwind Preflight sets `img { max-width: 100% }` which breaks tile sizing */
 .leaflet-container img {
   max-width: none !important;
   max-height: none !important;
 }
-/* Outer wrapper uses overflow:clip (not overflow:hidden) + border-radius.
-   overflow:clip does not create a GPU compositing layer, avoiding the Android
-   Chrome bug where translate3d tile images vanish inside a rounded clip context. */
+
+/* Disable Leaflet's built-in tile fade animation.
+   On Android Chrome the opacity transition can stay stuck at 0 due to a
+   GPU compositing conflict with the surrounding layout.  Showing tiles
+   instantly is more reliable and barely noticeable on mobile. */
+.leaflet-fade-anim .leaflet-tile,
+.leaflet-zoom-anim .leaflet-zoom-animated {
+  will-change: auto !important;
+  transition: none !important;
+}
+
+/* Ensure tiles are always fully opaque regardless of animation state */
+img.leaflet-tile {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Dark mode: reset Leaflet container background to avoid the dark-themed
+   app background bleeding through while tiles are loading. */
+.dark .leaflet-container {
+  background: #1e293b;
+}
+
+/* Prevent global dark-mode selectors from dimming tile images */
+.dark .leaflet-tile-pane img,
+.dark img.leaflet-tile {
+  filter: none !important;
+}
 
 @layer base {
   :root {
