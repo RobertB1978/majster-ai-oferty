@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -9,14 +9,24 @@ import { Badge } from '@/components/ui/badge';
 import { Navigation, RefreshCw, Users } from 'lucide-react';
 import { useTeamLocations, TeamLocation } from '@/hooks/useTeamMembers';
 import { formatDateTime } from '@/lib/formatters';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-// Fix Leaflet default marker icons (webpack/vite bundler issue)
+// ---------------------------------------------------------------------------
+// Marker icon fix — use local assets bundled by Vite instead of CDN.
+// CDN URLs (cdnjs.cloudflare.com) can be blocked by ad-blockers and privacy
+// extensions on Android, causing broken-image icons on the map.
+// Leaflet ships its own images in node_modules/leaflet/dist/images/ — Vite
+// resolves them via ?url imports and inlines them into the build output.
+// ---------------------------------------------------------------------------
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
 delete (L.Icon.Default.prototype as Record<string, unknown>)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
 });
 
 const statusColors: Record<string, string> = {
@@ -33,12 +43,21 @@ const statusLabels: Record<string, string> = {
   break: 'Przerwa',
 };
 
-// Multiple tile sources as fallback chain.
-// Primary: OpenStreetMap canonical URL (no API key, ad-blocker safe).
-// Fallback: OSM Germany mirror (same tiles, different CDN).
+// ---------------------------------------------------------------------------
+// Tile sources — ordered by reliability.
+//
+// IMPORTANT: We do NOT use {s} subdomain sharding for the primary source.
+// Reason: subdomain sharding (a/b/c.tile.openstreetmap.org) can trigger
+// ADDITIONAL DNS lookups + TLS handshakes on mobile, and some corporate
+// proxies / restrictive DNS resolvers block wildcard subdomains.
+// HTTP/2 multiplexing on the canonical domain already provides parallel
+// tile loading without subdomain tricks.
+//
+// Fallback: OSM Germany mirror (different CDN, no subdomain sharding either).
+// ---------------------------------------------------------------------------
 const TILE_SOURCES = [
   {
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
   {
@@ -52,7 +71,7 @@ interface TeamLocationMapProps {
   className?: string;
 }
 
-// Helper component to auto-fit map bounds when markers change
+// Helper: auto-fit map bounds when markers change
 function FitBounds({ bounds }: { bounds: L.LatLngBoundsExpression | null }) {
   const map = useMap();
 
@@ -65,12 +84,11 @@ function FitBounds({ bounds }: { bounds: L.LatLngBoundsExpression | null }) {
   return null;
 }
 
-// Helper component to trigger invalidateSize after mount for correct sizing
+// Helper: trigger invalidateSize after mount for correct sizing
 function InvalidateSizeOnMount() {
   const map = useMap();
 
   useEffect(() => {
-    // Staggered invalidateSize to handle delayed layout on mobile
     const timers = [100, 300, 600, 1200].map((delay) =>
       setTimeout(() => map.invalidateSize({ animate: false }), delay),
     );
@@ -83,7 +101,8 @@ function InvalidateSizeOnMount() {
 export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) {
   const { i18n } = useTranslation();
   const [tileSourceIndex, setTileSourceIndex] = useState(0);
-  const [tileErrorCount, setTileErrorCount] = useState(0);
+  const tileErrorCount = useRef(0);
+  const tileLoadedOnce = useRef(false);
 
   const { data: locations = [], refetch } = useTeamLocations(projectId);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -94,13 +113,24 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
-  // Switch to fallback tile source after multiple consecutive failures
-  useEffect(() => {
-    if (tileErrorCount >= 6 && tileSourceIndex < TILE_SOURCES.length - 1) {
+  // Switch to fallback tile source after consecutive failures
+  // (only if no tile has EVER loaded successfully from this source)
+  const handleTileError = useCallback(() => {
+    tileErrorCount.current += 1;
+    if (
+      tileErrorCount.current >= 6 &&
+      !tileLoadedOnce.current &&
+      tileSourceIndex < TILE_SOURCES.length - 1
+    ) {
       setTileSourceIndex((prev) => prev + 1);
-      setTileErrorCount(0);
+      tileErrorCount.current = 0;
     }
-  }, [tileErrorCount, tileSourceIndex]);
+  }, [tileSourceIndex]);
+
+  const handleTileLoad = useCallback(() => {
+    tileLoadedOnce.current = true;
+    tileErrorCount.current = 0;
+  }, []);
 
   // Deduplicate locations — keep only latest per team member
   const latestLocations = useMemo(() => {
@@ -129,7 +159,6 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
   }, [latestLocations]);
 
   const activeWorkers = new Set(locations.map((l: TeamLocation) => l.team_member_id)).size;
-
   const currentTileSource = TILE_SOURCES[tileSourceIndex];
 
   return (
@@ -156,8 +185,6 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
             zoom={6}
             fadeAnimation={false}
             zoomAnimation={true}
-            // Disable tap emulation — modern Android Chrome handles touch
-            // natively; Leaflet's tap handler can conflict and block events.
             tap={false}
             style={{ position: 'absolute', inset: 0, zIndex: 0 }}
           >
@@ -166,21 +193,16 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
               url={currentTileSource.url}
               attribution={currentTileSource.attribution}
               maxZoom={19}
-              // updateWhenIdle defaults to true on mobile — known to cause
-              // grey tiles during pinch-zoom (Leaflet #3683).
               updateWhenIdle={false}
               updateWhenZooming={false}
-              // Extra tile buffer around viewport — reduces grey edges
-              // when panning quickly on mobile.
               keepBuffer={4}
+              // Do NOT set crossOrigin — it forces CORS preflight which can
+              // fail on mobile when intermediary proxies strip CORS headers.
+              // Tiles are loaded as <img> elements; CORS is only needed when
+              // reading pixel data from canvas, which we never do.
               eventHandlers={{
-                tileerror: () => {
-                  setTileErrorCount((c) => c + 1);
-                },
-                tileload: () => {
-                  // Reset error count on successful loads
-                  setTileErrorCount(0);
-                },
+                tileerror: handleTileError,
+                tileload: handleTileLoad,
               }}
             />
 

@@ -14,6 +14,17 @@ const config: CapacitorConfig = {
   appId: 'ai.majster.app',
   appName: 'Majster.AI',
   webDir: 'dist',
+  server: {
+    // Required for Android WebView to allow cross-origin requests to tile
+    // servers.  Without this, the WebView may silently block image loads
+    // from external domains, causing grey/broken tiles on the map.
+    androidScheme: 'https',
+    allowNavigation: [
+      'tile.openstreetmap.org',
+      '*.tile.openstreetmap.org',
+      'tile.openstreetmap.de',
+    ],
+  },
   plugins: {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert']
