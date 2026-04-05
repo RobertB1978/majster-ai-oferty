@@ -302,11 +302,12 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         </div>
       </CardHeader>
       <CardContent>
-        {/* Outer wrapper owns all visual styling (rounded corners, border, overflow).
-            Leaflet container is plain — no border-radius on it, so Leaflet's own
-            overflow:hidden works correctly on Android Chrome/WebView without
-            triggering the translate3d compositing-layer bug. */}
-        <div className="h-[400px] rounded-lg border border-border overflow-hidden" style={{ position: 'relative' }}>
+        {/* Outer wrapper: overflow-clip (NOT overflow-hidden!) + rounded-lg.
+            overflow:clip clips to border-radius like overflow:hidden but does NOT
+            create a GPU compositing layer — this avoids the Android Chrome bug
+            where translate3d-positioned tile images become invisible inside a
+            rounded clip-stencil context. */}
+        <div className="h-[400px] rounded-lg border border-border overflow-clip" style={{ position: 'relative' }}>
           <div ref={mapContainer} className="absolute inset-0" />
 
           {/* Debug overlay — widoczny TYLKO przy ?mapDebug=1, niewidoczny dla zwykłego użytkownika */}
