@@ -31,42 +31,12 @@ const statusLabels: Record<string, string> = {
   break: 'Przerwa',
 };
 
-const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-
-// --- Debug overlay types (used only when ?mapDebug=1) ---
-interface MapDebugInfo {
-  mapInitialized: boolean;
-  tileLayerAdded: boolean;
-  tileUrl: string;
-  tileloadstartCount: number;
-  tileloadCount: number;
-  tileerrorCount: number;
-  lastTileUrl: string | null;
-  lastTileError: string | null;
-  containerW: number;
-  containerH: number;
-  tilePaneExists: boolean;
-  tileImgCount: number;
-  overflowStyle: string;
-  visibilityStyle: string;
-  opacityStyle: string;
-}
-
-function computeVerdict(info: MapDebugInfo): string {
-  if (!info.mapInitialized) return 'mapa nie zainicjalizowana';
-  if (!info.tileLayerAdded) return 'TileLayer nie został dodany';
-  if (info.containerW === 0 || info.containerH === 0) return 'kontener mapy ma zerowe wymiary';
-  if (!info.tilePaneExists) return 'brak .leaflet-tile-pane w DOM';
-  if (info.tileerrorCount > 0) return 'tileerror występuje';
-  if (info.tileloadstartCount === 0) return 'brak requestów tiles';
-  if (info.visibilityStyle === 'hidden' || info.opacityStyle === '0') return 'tiles ukryte przez CSS';
-  if (info.tileloadstartCount > 0 && info.tileloadCount === 0 && info.tileerrorCount === 0)
-    return 'tiles żądane, brak odpowiedzi (sieć / CSP?)';
-  if (info.tileImgCount > 0 && info.tileloadCount === 0) return 'tiles w DOM, ale niewidoczne (CSS?)';
-  if (info.tileloadCount > 0) return 'tiles ładują się poprawnie';
-  return 'UNKNOWN';
-}
-// --- end debug types ---
+// CartoDB tiles: fast global CDN, light and dark variants, free for reasonable usage.
+// Attribution required by CARTO terms of service.
+const TILE_URL_LIGHT = 'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+const TILE_URL_DARK  = 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
+const TILE_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 interface TeamLocationMapProps {
   projectId?: string;
@@ -81,38 +51,13 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Debug mode: aktywowany wyłącznie przez ?mapDebug=1 — bez tego parametru nic się nie zmienia
-  const debugMode = useMemo(
-    () => new URLSearchParams(window.location.search).get('mapDebug') === '1',
-    []
+  // Detect dark mode to select the matching tile theme.
+  // Computed once on mount — theme-switching remounts the component via key change
+  // or the user would need to reload anyway.
+  const isDark = useMemo(
+    () => document.documentElement.classList.contains('dark'),
+    [],
   );
-
-  // Liczniki eventów tiles — refs żeby nie powodować re-renderów podczas ładowania kafelków
-  const debugCountersRef = useRef({
-    tileloadstart: 0,
-    tileload: 0,
-    tileerror: 0,
-    lastTileUrl: null as string | null,
-    lastTileError: null as string | null,
-  });
-
-  const [debugInfo, setDebugInfo] = useState<MapDebugInfo>({
-    mapInitialized: false,
-    tileLayerAdded: false,
-    tileUrl: TILE_URL,
-    tileloadstartCount: 0,
-    tileloadCount: 0,
-    tileerrorCount: 0,
-    lastTileUrl: null,
-    lastTileError: null,
-    containerW: 0,
-    containerH: 0,
-    tilePaneExists: false,
-    tileImgCount: 0,
-    overflowStyle: '',
-    visibilityStyle: '',
-    opacityStyle: '',
-  });
 
   const { data: locations = [], refetch } = useTeamLocations(projectId);
 
@@ -125,90 +70,90 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return;
 
-    // Initialize map centered on Poland
-    mapRef.current = L.map(mapContainer.current).setView([52.0693, 19.4803], 6);
+    // Collect cleanup resources inside refs so the outer cleanup can reach them
+    // even if they were created inside the requestAnimationFrame callback.
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    let resizeObserver: ResizeObserver | null = null;
 
-    const tl = L.tileLayer(TILE_URL, {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19,
-    }).addTo(mapRef.current);
+    // Defer Leaflet initialization to the NEXT animation frame.
+    // This guarantees the browser has finished at least one layout pass and
+    // Leaflet can read real pixel dimensions from the container.
+    const rafId = requestAnimationFrame(() => {
+      const container = mapContainer.current;
+      if (!container || mapRef.current) return;
 
-    tileLayerRef.current = tl;
+      // Guard: if Leaflet already owns this DOM node (React Strict-Mode
+      // double-effect, or remount), skip re-initialization to avoid the
+      // "Map container is already initialized" error.
+      if ((container as HTMLDivElement & { _leaflet_id?: number })._leaflet_id) {
+        return;
+      }
 
-    // Tile event listeners — overhead pomijalny, działają niezależnie od trybu debug
-    tl.on('tileloadstart', (e: L.TileEvent) => {
-      debugCountersRef.current.tileloadstart++;
-      debugCountersRef.current.lastTileUrl = (e.tile as HTMLImageElement).src;
+      // --- Create the Leaflet map ---
+      mapRef.current = L.map(container, {
+        // Disable the tile fade-in animation.
+        // On Android Chrome the CSS opacity transition can get stuck at 0
+        // when tiles are rendered inside a GPU-composited layer stack —
+        // disabling fade makes tiles appear immediately and reliably.
+        fadeAnimation: false,
+        // Keep zoom animation enabled; it does not trigger the same bug.
+        zoomAnimation: true,
+      }).setView([52.0693, 19.4803], 6);
+
+      const tileUrl = isDark ? TILE_URL_DARK : TILE_URL_LIGHT;
+
+      const tl = L.tileLayer(tileUrl, {
+        attribution: TILE_ATTRIBUTION,
+        maxZoom: 19,
+        // crossOrigin: 'anonymous' ensures the browser sends a CORS request for
+        // each tile image.  Required when tiles are used with canvas (WebGL) and
+        // also fixes certain blank-tile rendering bugs in Android WebViews.
+        crossOrigin: 'anonymous',
+        // Keep a larger buffer of off-screen tiles to reduce blank areas when
+        // panning on a slow connection.
+        keepBuffer: 4,
+        // Load tiles immediately — do not wait for the map to be idle.
+        updateWhenIdle: false,
+        updateWhenZooming: false,
+      }).addTo(mapRef.current);
+
+      tileLayerRef.current = tl;
+
+      // Staggered invalidateSize calls.
+      // On Android Chrome the reported container size can be incorrect right
+      // after mount (e.g. because parent elements are still reflowing).
+      // Calling invalidateSize multiple times with increasing delays ensures
+      // Leaflet eventually gets the correct size and requests the right tiles.
+      [50, 200, 500, 1000, 2000].forEach((delay) => {
+        timers.push(
+          setTimeout(() => {
+            mapRef.current?.invalidateSize({ animate: false });
+          }, delay),
+        );
+      });
+
+      // ResizeObserver: re-sync map size whenever the container is resized.
+      // This covers tab switches (display:none → block), device rotation, etc.
+      resizeObserver = new ResizeObserver(() => {
+        mapRef.current?.invalidateSize({ animate: false });
+      });
+      resizeObserver.observe(container);
     });
-    tl.on('tileload', () => {
-      debugCountersRef.current.tileload++;
-    });
-    tl.on('tileerror', (e: L.TileErrorEvent) => {
-      debugCountersRef.current.tileerror++;
-      debugCountersRef.current.lastTileError = (e.tile as HTMLImageElement).src;
-    });
 
-    if (debugMode) {
-      setDebugInfo(prev => ({ ...prev, mapInitialized: true, tileLayerAdded: true }));
-    }
-
-    // Force tile redraw after layout settles (fixes blank tiles on first render)
-    const sizeTimer = setTimeout(() => {
-      mapRef.current?.invalidateSize();
-    }, 100);
-
-    // Re-calculate map size whenever the container is resized (e.g. after tab switch
-    // that hides the element via display:none — Leaflet misses the layout change)
-    const resizeObserver = new ResizeObserver(() => {
-      mapRef.current?.invalidateSize();
-    });
-    resizeObserver.observe(mapContainer.current);
-
+    // Cleanup: runs on unmount or when isDark changes
     return () => {
-      clearTimeout(sizeTimer);
-      resizeObserver.disconnect();
+      cancelAnimationFrame(rafId);
+      timers.forEach(clearTimeout);
+      resizeObserver?.disconnect();
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
       tileLayerRef.current = null;
     };
-  }, []);
+  }, [isDark]);
 
-  // Debug polling: odświeża snapshot DOM co sekundę — działa tylko przy ?mapDebug=1
-  useEffect(() => {
-    if (!debugMode) return;
-
-    const interval = setInterval(() => {
-      const container = mapContainer.current;
-      const rect = container?.getBoundingClientRect();
-      const computed = container ? window.getComputedStyle(container) : null;
-      const tilePaneEl = container?.querySelector('.leaflet-tile-pane');
-      const tileImgs = container?.querySelectorAll('img.leaflet-tile') ?? [];
-      const c = debugCountersRef.current;
-
-      setDebugInfo({
-        mapInitialized: mapRef.current !== null,
-        tileLayerAdded: tileLayerRef.current !== null,
-        tileUrl: TILE_URL,
-        tileloadstartCount: c.tileloadstart,
-        tileloadCount: c.tileload,
-        tileerrorCount: c.tileerror,
-        lastTileUrl: c.lastTileUrl,
-        lastTileError: c.lastTileError,
-        containerW: rect?.width ?? 0,
-        containerH: rect?.height ?? 0,
-        tilePaneExists: !!tilePaneEl,
-        tileImgCount: tileImgs.length,
-        overflowStyle: computed?.overflow ?? '',
-        visibilityStyle: computed?.visibility ?? '',
-        opacityStyle: computed?.opacity ?? '',
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [debugMode]);
-
+  // --- Markers effect ---
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -218,7 +163,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
 
     if (locations.length === 0) return;
 
-    // Group locations by team member (get latest for each)
+    // Group locations by team member — keep only the latest record per member
     const latestLocations = new Map<string, TeamLocation>();
     locations.forEach((loc: TeamLocation) => {
       const existing = latestLocations.get(loc.team_member_id);
@@ -227,7 +172,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       }
     });
 
-    // Add markers for each team member
+    // Place a marker for each team member with a known position
     const bounds: L.LatLngExpression[] = [];
     latestLocations.forEach((loc) => {
       const lat = Number(loc.latitude);
@@ -280,7 +225,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     if (bounds.length > 0) {
       mapRef.current.fitBounds(bounds as L.LatLngBoundsExpression, { padding: [50, 50] });
     }
-  }, [locations]);
+  }, [locations, i18n.language]);
 
   const activeWorkers = new Set(locations.map((l: TeamLocation) => l.team_member_id)).size;
 
@@ -302,77 +247,36 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         </div>
       </CardHeader>
       <CardContent>
-        {/* Outer wrapper: overflow-clip (NOT overflow-hidden!) + rounded-lg.
-            overflow:clip clips to border-radius like overflow:hidden but does NOT
-            create a GPU compositing layer — this avoids the Android Chrome bug
-            where translate3d-positioned tile images become invisible inside a
-            rounded clip-stencil context. */}
-        <div className="h-[400px] rounded-lg border border-border overflow-clip" style={{ position: 'relative' }}>
-          <div ref={mapContainer} className="absolute inset-0" />
+        {/*
+          Map container structure — engineered to avoid the Android Chrome
+          GPU-compositing bug that prevents Leaflet tiles from rendering:
 
-          {/* Debug overlay — widoczny TYLKO przy ?mapDebug=1, niewidoczny dla zwykłego użytkownika */}
-          {debugMode && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                zIndex: 1000,
-                background: 'rgba(0,0,0,0.88)',
-                color: '#00ff88',
-                fontFamily: 'monospace',
-                fontSize: 11,
-                padding: '8px 10px',
-                borderRadius: 6,
-                maxWidth: 290,
-                lineHeight: 1.7,
-                pointerEvents: 'none',
-                userSelect: 'none',
-              }}
-            >
-              <div style={{ fontWeight: 'bold', marginBottom: 4, color: '#fff', fontSize: 12 }}>
-                MAP DEBUG
-              </div>
-              <div>mapInit: {debugInfo.mapInitialized ? '✓' : '✗'}</div>
-              <div>tileLayer: {debugInfo.tileLayerAdded ? '✓' : '✗'}</div>
-              <div style={{ color: '#aaa', fontSize: 9, wordBreak: 'break-all' }}>
-                url: {debugInfo.tileUrl}
-              </div>
-              <div>tileloadstart: {debugInfo.tileloadstartCount}</div>
-              <div>tileload: {debugInfo.tileloadCount}</div>
-              <div style={{ color: debugInfo.tileerrorCount > 0 ? '#ff4444' : 'inherit' }}>
-                tileerror: {debugInfo.tileerrorCount}
-              </div>
-              <div style={{ color: '#aaa', fontSize: 9, wordBreak: 'break-all' }}>
-                lastTile: {debugInfo.lastTileUrl ? '…' + debugInfo.lastTileUrl.slice(-38) : '—'}
-              </div>
-              {debugInfo.lastTileError && (
-                <div style={{ color: '#ff4444', fontSize: 9, wordBreak: 'break-all' }}>
-                  lastErr: …{debugInfo.lastTileError.slice(-38)}
-                </div>
-              )}
-              <div>
-                container: {debugInfo.containerW.toFixed(0)}×{debugInfo.containerH.toFixed(0)} px
-              </div>
-              <div>tilePaneExists: {debugInfo.tilePaneExists ? '✓' : '✗'}</div>
-              <div>img.leaflet-tile: {debugInfo.tileImgCount}</div>
-              <div>overflow: {debugInfo.overflowStyle || '—'}</div>
-              <div>visibility: {debugInfo.visibilityStyle || '—'}</div>
-              <div>opacity: {debugInfo.opacityStyle || '—'}</div>
-              <div
-                style={{
-                  marginTop: 6,
-                  paddingTop: 6,
-                  borderTop: '1px solid #333',
-                  color: '#ffcc00',
-                  fontWeight: 'bold',
-                  fontSize: 11,
-                }}
-              >
-                → {computeVerdict(debugInfo)}
-              </div>
-            </div>
-          )}
+          ROOT CAUSE: When ANY ancestor of the Leaflet container has both
+          `overflow:hidden/clip` AND `border-radius`, Chrome on Android can
+          fail to show GPU-accelerated tile images (translate3d layers) — the
+          tiles are present in the DOM and loaded but never painted on screen.
+
+          SOLUTION: The outer wrapper has NO overflow property whatsoever.
+          A thin overlay <div> (pointer-events:none, z-index above Leaflet
+          controls) is painted on top to draw the visual rounded border without
+          creating any clip stencil that could interfere with tile compositing.
+        */}
+        <div
+          className="h-[400px]"
+          style={{ position: 'relative' }}
+        >
+          {/* Leaflet mounts here — rectangular, no clipping on this element or its ancestors */}
+          <div
+            ref={mapContainer}
+            style={{ position: 'absolute', inset: 0 }}
+          />
+
+          {/* Visual overlay: rounded border drawn ON TOP of tiles.
+              pointer-events:none passes all interactions through to the map. */}
+          <div
+            className="absolute inset-0 rounded-lg border border-border"
+            style={{ pointerEvents: 'none', zIndex: 1000 }}
+          />
         </div>
 
         {/* Status legend */}
