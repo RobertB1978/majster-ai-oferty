@@ -127,9 +127,11 @@ export interface DocumentInstanceModeBFields {
 
 /**
  * Dane potrzebne do utworzenia instancji dokumentu w Trybie B.
- * Używane przez (przyszłe) hooki PR-02+.
+ * Używane przez hooki PR-03+.
  */
 export interface CreateModeBInstanceInput {
+  /** Klucz szablonu z document_master_templates.template_key — wymagany przez document_instances.template_key NOT NULL. */
+  templateKey: string;
   masterTemplateId: string;
   masterTemplateVersion: string;
   projectId?: string | null;
