@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 // logError is only called on error, so lazy loading is safe here.
 const logErrorLazy = (error: Error, context?: Record<string, unknown>) => {
   import('@/lib/sentry').then(m => m.logError(error, context)).catch(() => {
-    console.error('Sentry unavailable, error:', error, context);
+    logger.error('Sentry unavailable, error:', error, context);
   });
 };
 import i18n from '@/i18n';

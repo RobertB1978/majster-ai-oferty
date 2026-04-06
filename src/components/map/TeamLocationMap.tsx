@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Navigation, RefreshCw, Users, AlertTriangle } from 'lucide-react';
 import { useTeamLocations, TeamLocation } from '@/hooks/useTeamMembers';
 import { formatDateTime } from '@/lib/formatters';
+import { logger } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
 // Marker icon fix — use local assets bundled by Vite instead of CDN.
@@ -274,14 +275,14 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       if (cancelled) return;
 
       // Log diagnostics for debugging
-      console.warn('[MapTiles] Probe results:', results);
+      logger.warn('[MapTiles] Probe results:', results);
       setProbeDiagnostics(results);
 
       if (workingIndex >= 0) {
         setTileSourceIndex(workingIndex);
-        console.warn(`[MapTiles] Probe: source ${workingIndex} works (${TILE_SOURCES[workingIndex].testUrl})`);
+        logger.warn(`[MapTiles] Probe: source ${workingIndex} works (${TILE_SOURCES[workingIndex].testUrl})`);
       } else {
-        console.error('[MapTiles] Probe: ALL sources failed!', results);
+        logger.error('[MapTiles] Probe: ALL sources failed!', results);
         setTilesFailed(true);
       }
       setProbeComplete(true);
@@ -299,7 +300,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     setProbeDiagnostics([]);
 
     probeTileSources().then(({ workingIndex, results }) => {
-      console.warn('[MapTiles] Retry probe results:', results);
+      logger.warn('[MapTiles] Retry probe results:', results);
       setProbeDiagnostics(results);
       if (workingIndex >= 0) {
         setTileSourceIndex(workingIndex);
@@ -335,7 +336,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       // Log detailed error for diagnostics
       if (import.meta.env.DEV || tileErrorCount.current <= 3) {
         const tile = e.tile as HTMLImageElement;
-        console.warn(
+        logger.warn(
           `[MapTiles] Error #${tileErrorCount.current} loading tile:`,
           {
             src: tile?.src?.substring(0, 120),
@@ -350,7 +351,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         // never a stale closure value.
         setTileSourceIndex((prev) => {
           if (prev < TILE_SOURCES.length - 1) {
-            console.warn(`[MapTiles] Switching from source ${prev} to ${prev + 1}`);
+            logger.warn(`[MapTiles] Switching from source ${prev} to ${prev + 1}`);
             return prev + 1;
           }
           return prev; // already at last source — don't go out of bounds
@@ -370,7 +371,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         // Auto-retry after delay — mobile networks can recover quickly
         clearTimeout(retryTimerRef.current);
         retryTimerRef.current = setTimeout(() => {
-          console.warn('[MapTiles] Auto-retrying after all sources exhausted');
+          logger.warn('[MapTiles] Auto-retrying after all sources exhausted');
           tileErrorCount.current = 0;
           totalTileErrorCount.current = 0;
           setTilesFailed(false);
