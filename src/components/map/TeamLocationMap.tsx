@@ -61,6 +61,68 @@ interface TileSource {
   urlDark: string;
   attribution: string;
   maxNativeZoom: number;
+  testUrl: string;
+}
+
+// ---------------------------------------------------------------------------
+// Tile probe — test each source by loading a single tile as <img>.
+// This replicates EXACTLY what Leaflet does internally and lets us detect
+// which sources work before the map even renders.
+// Returns: index of first working source, or -1 if all fail.
+// Also returns diagnostic info for each source.
+// ---------------------------------------------------------------------------
+interface ProbeResult {
+  sourceIndex: number;
+  success: boolean;
+  error?: string;
+  durationMs: number;
+}
+
+function probeTileSources(): Promise<{ workingIndex: number; results: ProbeResult[] }> {
+  return new Promise((resolve) => {
+    const results: ProbeResult[] = [];
+    let resolved = false;
+
+    // Test all sources in parallel
+    TILE_SOURCES.forEach((source, index) => {
+      const start = Date.now();
+      const img = new Image();
+
+      const finish = (success: boolean, error?: string) => {
+        const result: ProbeResult = {
+          sourceIndex: index,
+          success,
+          error,
+          durationMs: Date.now() - start,
+        };
+        results.push(result);
+
+        // First successful source — resolve immediately
+        if (success && !resolved) {
+          resolved = true;
+          resolve({ workingIndex: index, results });
+        }
+
+        // All done — resolve with best result
+        if (results.length === TILE_SOURCES.length && !resolved) {
+          resolved = true;
+          resolve({ workingIndex: -1, results });
+        }
+      };
+
+      img.onload = () => finish(true);
+      img.onerror = () => finish(false, 'Image load failed');
+
+      // Timeout after 8s
+      setTimeout(() => {
+        if (!results.some((r) => r.sourceIndex === index)) {
+          finish(false, 'Timeout (8s)');
+        }
+      }, 8000);
+
+      img.src = source.testUrl;
+    });
+  });
 }
 
 const TILE_SOURCES: TileSource[] = [
@@ -71,6 +133,18 @@ const TILE_SOURCES: TileSource[] = [
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     maxNativeZoom: 20,
+    testUrl: 'https://basemaps.cartocdn.com/rastertiles/voyager/6/35/21.png',
+  },
+  {
+    // Esri World Street Map — completely different CDN, very reliable,
+    // free for non-commercial / limited commercial use with attribution.
+    // NOTE: Esri uses {z}/{y}/{x} order (y before x).
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    urlDark: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution:
+      '&copy; <a href="https://www.esri.com/">Esri</a>, DeLorme, NAVTEQ',
+    maxNativeZoom: 19,
+    testUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/6/21/35',
   },
   {
     // CartoDB Voyager — with subdomain sharding as fallback
@@ -79,6 +153,7 @@ const TILE_SOURCES: TileSource[] = [
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     maxNativeZoom: 20,
+    testUrl: 'https://a.basemaps.cartocdn.com/rastertiles/voyager/6/35/21.png',
   },
   {
     // OSM — canonical URL, no subdomain sharding
@@ -87,6 +162,7 @@ const TILE_SOURCES: TileSource[] = [
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxNativeZoom: 19,
+    testUrl: 'https://tile.openstreetmap.org/6/35/21.png',
   },
 ];
 
@@ -179,21 +255,59 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     return () => observer.disconnect();
   }, []);
 
-  // Tile source management
+  // Tile source management — probe-first strategy:
+  // Before rendering the map, we test each tile source by loading a single tile.
+  // This tells us EXACTLY which sources work on this device/network.
   const [tileSourceIndex, setTileSourceIndex] = useState(0);
-  const tileErrorCount = useRef(0);        // resets to 0 after each source switch
-  const totalTileErrorCount = useRef(0);   // cumulative, never reset — detects all-sources-failed
+  const [probeComplete, setProbeComplete] = useState(false);
+  const [probeDiagnostics, setProbeDiagnostics] = useState<ProbeResult[]>([]);
+  const tileErrorCount = useRef(0);
+  const totalTileErrorCount = useRef(0);
   const tileLoadedOnce = useRef(false);
   const [tilesFailed, setTilesFailed] = useState(false);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  // Manual retry handler — resets all error state and starts from source 0
+  // Run tile probe on mount
+  useEffect(() => {
+    let cancelled = false;
+    probeTileSources().then(({ workingIndex, results }) => {
+      if (cancelled) return;
+
+      // Log diagnostics for debugging
+      console.warn('[MapTiles] Probe results:', results);
+      setProbeDiagnostics(results);
+
+      if (workingIndex >= 0) {
+        setTileSourceIndex(workingIndex);
+        console.warn(`[MapTiles] Probe: source ${workingIndex} works (${TILE_SOURCES[workingIndex].testUrl})`);
+      } else {
+        console.error('[MapTiles] Probe: ALL sources failed!', results);
+        setTilesFailed(true);
+      }
+      setProbeComplete(true);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Manual retry handler — re-runs probe from scratch
   const handleRetry = useCallback(() => {
     tileErrorCount.current = 0;
     totalTileErrorCount.current = 0;
     tileLoadedOnce.current = false;
     setTilesFailed(false);
-    setTileSourceIndex(0);
+    setProbeComplete(false);
+    setProbeDiagnostics([]);
+
+    probeTileSources().then(({ workingIndex, results }) => {
+      console.warn('[MapTiles] Retry probe results:', results);
+      setProbeDiagnostics(results);
+      if (workingIndex >= 0) {
+        setTileSourceIndex(workingIndex);
+      } else {
+        setTilesFailed(true);
+      }
+      setProbeComplete(true);
+    });
   }, []);
 
   const { data: locations = [], refetch } = useTeamLocations(projectId);
@@ -342,28 +456,26 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
             tap={false}
             style={{ height: '100%', width: '100%', zIndex: 0 }}
           >
-            <TileLayer
-              key={`${tileSourceIndex}-${isDark ? 'dark' : 'light'}`}
-              url={tileUrl}
-              attribution={currentSource.attribution}
-              maxZoom={currentSource.maxNativeZoom}
-              maxNativeZoom={currentSource.maxNativeZoom}
-              tileSize={256}
-              updateWhenIdle={false}
-              updateWhenZooming={false}
-              keepBuffer={4}
-              // detectRetina disabled — on Android retina screens it requests
-              // @2x tiles at zoom+1 which can 404 and rapidly exhaust all
-              // tile sources, causing the "failed to load" overlay.
-              detectRetina={false}
-              // Do NOT set crossOrigin — it forces CORS preflight which can
-              // fail on mobile when intermediary proxies strip CORS headers.
-              // CartoDB and OSM tiles load fine as plain <img> elements.
-              eventHandlers={{
-                tileerror: handleTileError,
-                tileload: handleTileLoad,
-              }}
-            />
+            {/* Only render TileLayer after probe completes — avoids wasting
+                error budget on a source the probe already proved broken */}
+            {probeComplete && !tilesFailed && (
+              <TileLayer
+                key={`${tileSourceIndex}-${isDark ? 'dark' : 'light'}`}
+                url={tileUrl}
+                attribution={currentSource.attribution}
+                maxZoom={currentSource.maxNativeZoom}
+                maxNativeZoom={currentSource.maxNativeZoom}
+                tileSize={256}
+                updateWhenIdle={false}
+                updateWhenZooming={false}
+                keepBuffer={4}
+                detectRetina={false}
+                eventHandlers={{
+                  tileerror: handleTileError,
+                  tileload: handleTileLoad,
+                }}
+              />
+            )}
 
             {latestLocations.map((loc) => {
               const lat = Number(loc.latitude);
@@ -424,8 +536,21 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
             style={{ zIndex: 1000 }}
           />
 
-          {/* Tile loading error overlay — now dismissible with retry button */}
-          {tilesFailed && (
+          {/* Loading state while probe runs */}
+          {!probeComplete && (
+            <div
+              className="absolute inset-0 flex flex-col items-center justify-center bg-muted/60 rounded-lg"
+              style={{ zIndex: 999 }}
+            >
+              <RefreshCw className="h-6 w-6 text-muted-foreground animate-spin mb-2" />
+              <p className="text-sm text-muted-foreground">
+                Testowanie źródeł mapy...
+              </p>
+            </div>
+          )}
+
+          {/* Tile loading error overlay with diagnostics */}
+          {tilesFailed && probeComplete && (
             <div
               className="absolute inset-0 flex flex-col items-center justify-center bg-muted/80 rounded-lg"
               style={{ zIndex: 999 }}
@@ -435,8 +560,26 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
                 Nie udało się załadować mapy
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Sprawdź połączenie z internetem
+                Żadne źródło kafli nie odpowiada
               </p>
+
+              {/* Diagnostic details — helps identify WHY tiles fail */}
+              {probeDiagnostics.length > 0 && (
+                <div className="mt-2 text-[10px] text-muted-foreground bg-muted p-2 rounded max-w-[280px]">
+                  {probeDiagnostics.map((d) => (
+                    <div key={d.sourceIndex} className="flex gap-1">
+                      <span>{d.success ? '✓' : '✗'}</span>
+                      <span className="truncate">
+                        {TILE_SOURCES[d.sourceIndex]?.testUrl.replace('https://', '').substring(0, 35)}...
+                      </span>
+                      <span className="ml-auto whitespace-nowrap">
+                        {d.success ? `${d.durationMs}ms` : d.error}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <Button
                 variant="outline"
                 size="sm"
