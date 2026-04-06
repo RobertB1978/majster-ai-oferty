@@ -41,7 +41,7 @@ export const DEFAULT_CONFIG: AppConfig = {
       { id: 'finance', label: 'Finanse', path: '/app/finance', icon: 'Wallet', visible: true, comingSoon: false, requiredPlan: 'free', order: 5 },
       { id: 'templates', label: 'Szablony', path: '/app/templates', icon: 'Package', visible: true, comingSoon: false, requiredPlan: 'free', order: 6 },
       { id: 'team', label: 'Zespół', path: '/app/team', icon: 'UserPlus', visible: true, comingSoon: false, requiredPlan: 'pro', order: 7 },
-      { id: 'marketplace', label: 'Marketplace', path: '/app/marketplace', icon: 'Store', visible: true, comingSoon: false, requiredPlan: 'business', order: 8 },
+      { id: 'marketplace', label: 'Marketplace', path: '/app/marketplace', icon: 'Store', visible: false, comingSoon: false, requiredPlan: 'business', order: 8 },
       { id: 'analytics', label: 'Analityka', path: '/app/analytics', icon: 'BarChart3', visible: false, comingSoon: true, requiredPlan: 'business', order: 9 },
       { id: 'plan', label: 'Mój plan', path: '/app/plan', icon: 'CreditCard', visible: true, comingSoon: false, requiredPlan: 'free', order: 10 },
     ],
