@@ -6,7 +6,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Navigation, RefreshCw, Users, AlertTriangle } from 'lucide-react';
+import { Navigation, RefreshCw, Users, AlertTriangle, RotateCcw } from 'lucide-react';
 import { useTeamLocations, TeamLocation } from '@/hooks/useTeamMembers';
 import { formatDateTime } from '@/lib/formatters';
 
@@ -43,17 +43,13 @@ const statusLabels: Record<string, string> = {
 // ---------------------------------------------------------------------------
 // Tile sources — ordered by reliability for web & mobile WebView.
 //
-// 1. CartoDB Voyager — free, permissive CORS headers, no strict usage policy,
-//    designed for embedding in apps.  Does NOT use {s} subdomain sharding
-//    to avoid extra DNS lookups on mobile.
-// 2. CartoDB Voyager with subdomain — fallback if the canonical CDN fails.
-// 3. OSM — last resort.  Has strict usage policy that can block WebView
-//    requests without proper User-Agent or Referer.
+// All use explicit full URLs without {r} retina placeholder.  detectRetina
+// is disabled because on some Android devices the @2x tile request fails
+// silently (the CDN returns 200 but the image is corrupt or the browser
+// rejects it due to GPU memory limits on high-DPI screens).  Regular 256px
+// tiles render correctly everywhere and are visually acceptable.
 //
-// Dark mode: CartoDB Dark Matter (dedicated dark tiles) instead of CSS
-// filter inversion.  CSS filter: invert() on the tile pane causes severe
-// GPU compositing issues on mobile browsers and can completely prevent
-// tile rendering.
+// Dark mode: CartoDB Dark Matter (dedicated dark tiles).
 // ---------------------------------------------------------------------------
 
 interface TileSource {
@@ -65,17 +61,17 @@ interface TileSource {
 
 const TILE_SOURCES: TileSource[] = [
   {
-    // CartoDB Voyager — no subdomain sharding
-    url: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    urlDark: 'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    // CartoDB Voyager — no subdomain sharding, no retina
+    url: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+    urlDark: 'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     maxNativeZoom: 20,
   },
   {
     // CartoDB Voyager — with subdomain sharding as fallback
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    urlDark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+    urlDark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     maxNativeZoom: 20,
@@ -90,8 +86,17 @@ const TILE_SOURCES: TileSource[] = [
   },
 ];
 
-// Maximum consecutive tile errors before switching to next source
-const MAX_ERRORS_BEFORE_SWITCH = 4;
+// Maximum consecutive tile errors before switching to next source.
+// A typical map view loads ~15 tiles so the threshold must be high enough
+// that transient failures (slow DNS, single 503) don't trigger a premature
+// switch.
+const MAX_ERRORS_BEFORE_SWITCH = 8;
+
+// Maximum automatic retries (full cycle through all sources)
+const MAX_AUTO_RETRIES = 2;
+
+// Delay between auto-retries in ms
+const AUTO_RETRY_DELAY_MS = 3000;
 
 interface TeamLocationMapProps {
   projectId?: string;
@@ -112,22 +117,16 @@ function FitBounds({ bounds }: { bounds: L.LatLngBoundsExpression | null }) {
 }
 
 // Helper: trigger invalidateSize after mount and on visibility change.
-// This is critical for:
-// 1. Correct sizing after lazy-load/Suspense mount
-// 2. Correct sizing after tab switch (Radix TabsContent)
-// 3. WebView layout quirks on Android
 function InvalidateSizeOnMount() {
   const map = useMap();
 
   useEffect(() => {
-    // Initial invalidation cascade with increasing delays
     const timers = [0, 100, 300, 600, 1200, 2500].map((delay) =>
       setTimeout(() => {
         map.invalidateSize({ animate: false });
       }, delay),
     );
 
-    // Also invalidate when the document becomes visible (tab switch, app resume)
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         setTimeout(() => map.invalidateSize({ animate: false }), 100);
@@ -135,7 +134,6 @@ function InvalidateSizeOnMount() {
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // ResizeObserver for container size changes
     const container = map.getContainer();
     let resizeTimer: ReturnType<typeof setTimeout>;
     const ro = new ResizeObserver(() => {
@@ -158,7 +156,7 @@ function InvalidateSizeOnMount() {
 export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) {
   const { i18n } = useTranslation();
 
-  // Dark mode detection — read from document class (set by theme provider)
+  // Dark mode detection
   const [isDark, setIsDark] = useState(() =>
     document.documentElement.classList.contains('dark'),
   );
@@ -176,13 +174,24 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
 
   // Tile source management
   const [tileSourceIndex, setTileSourceIndex] = useState(0);
-  const tileErrorCount = useRef(0);        // resets to 0 after each source switch
-  const totalTileErrorCount = useRef(0);   // cumulative, never reset — detects all-sources-failed
+  // Bump this to force TileLayer remount (retry)
+  const [retryGeneration, setRetryGeneration] = useState(0);
+  const tileErrorCount = useRef(0);
+  const totalTileErrorCount = useRef(0);
   const tileLoadedOnce = useRef(false);
   const [tilesFailed, setTilesFailed] = useState(false);
+  const autoRetryCount = useRef(0);
+  const autoRetryTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const { data: locations = [], refetch } = useTeamLocations(projectId);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Cleanup auto-retry timer on unmount
+  useEffect(() => {
+    return () => {
+      if (autoRetryTimer.current) clearTimeout(autoRetryTimer.current);
+    };
+  }, []);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -190,22 +199,47 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
-  // Switch to fallback tile source after consecutive failures.
-  // ROOT-CAUSE FIX (MAJ-UNK-001 crash): the guard is now inside the state
-  // updater function, NOT in the outer closure.  This prevents the stale-
-  // closure race where tileSourceIndex captured at callback-creation time
-  // was stale (e.g. 0) while the actual state had already advanced (e.g. 2),
-  // allowing `setTileSourceIndex(prev => prev + 1)` to push the index to 3,
-  // which is out of bounds for TILE_SOURCES (length 3, indices 0-2).
-  // With the guard inside the updater, `prev` is always the current state.
+  // Reset all tile error state and restart from first source
+  const resetTileState = useCallback(() => {
+    tileErrorCount.current = 0;
+    totalTileErrorCount.current = 0;
+    tileLoadedOnce.current = false;
+    setTilesFailed(false);
+    setTileSourceIndex(0);
+    setRetryGeneration((g) => g + 1);
+  }, []);
+
+  // Manual retry (from button) — also resets auto-retry counter
+  const handleManualRetry = useCallback(() => {
+    autoRetryCount.current = 0;
+    resetTileState();
+  }, [resetTileState]);
+
+  // Schedule an automatic retry after a delay
+  const scheduleAutoRetry = useCallback(() => {
+    if (autoRetryCount.current >= MAX_AUTO_RETRIES) return;
+    autoRetryCount.current += 1;
+
+    if (autoRetryTimer.current) clearTimeout(autoRetryTimer.current);
+    autoRetryTimer.current = setTimeout(() => {
+      resetTileState();
+    }, AUTO_RETRY_DELAY_MS);
+  }, [resetTileState]);
+
   const handleTileError = useCallback(
     (e: L.TileErrorEvent) => {
       tileErrorCount.current += 1;
       totalTileErrorCount.current += 1;
 
-      // Log detailed error for diagnostics
+      // Hide the broken-image icon immediately on the failed tile.
+      // CSS :moz-broken works only in Firefox; for Chrome/Safari we must
+      // hide via JS.
+      const tile = e.tile as HTMLImageElement;
+      if (tile) {
+        tile.style.visibility = 'hidden';
+      }
+
       if (import.meta.env.DEV || tileErrorCount.current <= 3) {
-        const tile = e.tile as HTMLImageElement;
         console.warn(
           `[MapTiles] Error #${tileErrorCount.current} loading tile:`,
           {
@@ -217,37 +251,34 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       }
 
       if (tileErrorCount.current >= MAX_ERRORS_BEFORE_SWITCH && !tileLoadedOnce.current) {
-        // Move guard inside updater so it always reads the CURRENT state (prev),
-        // never a stale closure value.
         setTileSourceIndex((prev) => {
           if (prev < TILE_SOURCES.length - 1) {
             console.warn(`[MapTiles] Switching from source ${prev} to ${prev + 1}`);
             return prev + 1;
           }
-          return prev; // already at last source — don't go out of bounds
+          return prev;
         });
         tileErrorCount.current = 0;
       }
 
-      // Separately detect when all sources have been exhausted.
-      // Use totalTileErrorCount (never reset) so this check is not affected
-      // by the per-source counter reset above.
-      if (
-        totalTileErrorCount.current >= MAX_ERRORS_BEFORE_SWITCH * TILE_SOURCES.length &&
-        !tileLoadedOnce.current
-      ) {
+      // All sources exhausted
+      const allSourcesExhausted =
+        totalTileErrorCount.current >= MAX_ERRORS_BEFORE_SWITCH * TILE_SOURCES.length;
+
+      if (allSourcesExhausted && !tileLoadedOnce.current) {
         setTilesFailed(true);
+        scheduleAutoRetry();
       }
     },
-    // No dependency on tileSourceIndex — guard uses `prev` inside the setter
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [scheduleAutoRetry],
   );
 
   const handleTileLoad = useCallback(() => {
     tileLoadedOnce.current = true;
     tileErrorCount.current = 0;
     totalTileErrorCount.current = 0;
+    autoRetryCount.current = 0;
+    if (autoRetryTimer.current) clearTimeout(autoRetryTimer.current);
     if (tilesFailed) setTilesFailed(false);
   }, [tilesFailed]);
 
@@ -278,8 +309,6 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
   }, [latestLocations]);
 
   const activeWorkers = new Set(locations.map((l: TeamLocation) => l.team_member_id)).size;
-  // Safety clamp: ensure index never goes out of bounds (belt-and-suspenders
-  // on top of the guard inside handleTileError's state updater).
   const safeIndex = Math.min(tileSourceIndex, TILE_SOURCES.length - 1);
   const currentSource = TILE_SOURCES[safeIndex];
   const tileUrl = isDark ? currentSource.urlDark : currentSource.url;
@@ -313,19 +342,16 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
             style={{ height: '100%', width: '100%', zIndex: 0 }}
           >
             <TileLayer
-              key={`${tileSourceIndex}-${isDark ? 'dark' : 'light'}`}
+              key={`${safeIndex}-${isDark ? 'dark' : 'light'}-${retryGeneration}`}
               url={tileUrl}
               attribution={currentSource.attribution}
               maxZoom={currentSource.maxNativeZoom}
               maxNativeZoom={currentSource.maxNativeZoom}
               tileSize={256}
+              detectRetina={false}
               updateWhenIdle={false}
               updateWhenZooming={false}
               keepBuffer={4}
-              detectRetina={true}
-              // Do NOT set crossOrigin — it forces CORS preflight which can
-              // fail on mobile when intermediary proxies strip CORS headers.
-              // CartoDB and OSM tiles load fine as plain <img> elements.
               eventHandlers={{
                 tileerror: handleTileError,
                 tileload: handleTileLoad,
@@ -385,25 +411,34 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
             <InvalidateSizeOnMount />
           </MapContainer>
 
-          {/* Visual rounded border overlay — no clipping, just a border on top */}
+          {/* Visual rounded border overlay */}
           <div
             className="absolute inset-0 rounded-lg border border-border pointer-events-none"
             style={{ zIndex: 1000 }}
           />
 
-          {/* Tile loading error overlay */}
+          {/* Tile loading error overlay with retry button */}
           {tilesFailed && (
             <div
-              className="absolute inset-0 flex flex-col items-center justify-center bg-muted/80 rounded-lg pointer-events-none"
+              className="absolute inset-0 flex flex-col items-center justify-center bg-muted/80 rounded-lg"
               style={{ zIndex: 999 }}
             >
               <AlertTriangle className="h-8 w-8 text-destructive mb-2" />
               <p className="text-sm font-medium text-destructive">
                 Nie udało się załadować mapy
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Sprawdź połączenie z internetem
+              <p className="text-xs text-muted-foreground mt-1 mb-3">
+                Problem z wczytywaniem kafelków mapy
               </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleManualRetry}
+                className="gap-1.5"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Spróbuj ponownie
+              </Button>
             </div>
           )}
         </div>

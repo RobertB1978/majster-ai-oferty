@@ -83,13 +83,20 @@ img.leaflet-tile {
 }
 
 /* Hide broken-image icon for tiles that failed to load.
-   Without this, the browser shows a small "broken image" placeholder which
-   looks broken even though the tile provider simply returned an error.
-   The empty alt="" on Leaflet tiles means no alt-text box appears either. */
+   The :moz-broken pseudo-class works only in Firefox.  For Chrome/Safari
+   the JS error handler in TeamLocationMap sets visibility:hidden directly.
+   Additionally, hide tiles with empty/missing src. */
 img.leaflet-tile:-moz-broken,
 img.leaflet-tile[src=""],
 img.leaflet-tile:not([src]) {
   visibility: hidden !important;
+}
+
+/* Prevent broken-image alt text and outline from showing in any browser.
+   Leaflet tiles have alt="" but Chrome still shows a small icon. */
+img.leaflet-tile {
+  color: transparent;
+  font-size: 0;
 }
 
 /* CRITICAL FIX: Disable backdrop-filter on shell chrome when a Leaflet map
