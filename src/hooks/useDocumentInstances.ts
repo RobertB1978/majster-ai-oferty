@@ -12,10 +12,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { logger } from '@/lib/logger';
 import type { AutofillSource, DocumentTemplate } from '@/data/documentTemplates';
+import type { DocumentInstanceModeBFields } from '@/types/document-mode-b';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-export interface DocumentInstance {
+export interface DocumentInstance extends DocumentInstanceModeBFields {
   id: string;
   user_id: string;
   project_id: string | null;
@@ -27,6 +28,7 @@ export interface DocumentInstance {
   title: string | null;
   data_json: Record<string, string>;
   references_json: Array<{ text: string; url?: string }>;
+  /** Ścieżka do finalnego PDF w bucket 'dossier'. Reużywana przez Tryb A i Tryb B. */
   pdf_path: string | null;
   dossier_item_id: string | null;
   created_at: string;
@@ -212,7 +214,7 @@ export function useDocumentInstances(projectId?: string | null) {
     queryFn: async (): Promise<DocumentInstance[]> => {
       let q = supabase
         .from('document_instances')
-        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at')
+        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at, source_mode, status, master_template_id, master_template_version, file_docx, version_number, edited_at, sent_at')
         .eq('user_id', user!.id)
         .order('created_at', { ascending: false });
 
@@ -236,7 +238,7 @@ export function useDocumentInstance(id: string | undefined) {
     queryFn: async (): Promise<DocumentInstance | null> => {
       const { data, error } = await supabase
         .from('document_instances')
-        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at')
+        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at, source_mode, status, master_template_id, master_template_version, file_docx, version_number, edited_at, sent_at')
         .eq('id', id!)
         .maybeSingle();
 
@@ -270,7 +272,7 @@ export function useCreateDocumentInstance() {
           data_json: input.dataJson,
           references_json: input.template.references,
         })
-        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at')
+        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at, source_mode, status, master_template_id, master_template_version, file_docx, version_number, edited_at, sent_at')
         .single();
 
       if (error) throw error;
@@ -304,7 +306,7 @@ export function useUpdateDocumentInstance() {
         .from('document_instances')
         .update(updatePayload)
         .eq('id', input.id)
-        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at')
+        .select('id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at, source_mode, status, master_template_id, master_template_version, file_docx, version_number, edited_at, sent_at')
         .single();
 
       if (error) throw error;
