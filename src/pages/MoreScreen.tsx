@@ -9,7 +9,6 @@ import {
   BookOpen,
   Camera,
   ChevronRight,
-  Store,
   UserPlus,
   type LucideIcon,
 } from 'lucide-react';
@@ -48,7 +47,7 @@ const MORE_GROUPS: MoreGroup[] = [
       { id: 'photos',             labelKey: 'newShell.more.photos',            icon: Camera,       route: '/app/photos' },
       { id: 'clients',            labelKey: 'newShell.more.clients',           icon: Users,        route: '/app/customers' },
       { id: 'team',               labelKey: 'nav.team',                        icon: UserPlus,     route: '/app/team' },
-      { id: 'marketplace',        labelKey: 'nav.marketplace',                 icon: Store,        route: '/app/marketplace' },
+      // { id: 'marketplace',        labelKey: 'nav.marketplace',                 icon: Store,        route: '/app/marketplace' }, // hidden temporarily
     ],
   },
   {
