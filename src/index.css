@@ -55,10 +55,11 @@
 
 /* Prevent CSS containment from hiding tile layers on mobile browsers.
    Some parent components set `contain: content/layout` which can clip
-   absolutely-positioned Leaflet tile layers. */
+   absolutely-positioned Leaflet tile layers.
+   NOTE: Do NOT set overflow: visible — Leaflet NEEDS overflow: hidden
+   to clip tiles at the container boundary. */
 .leaflet-container {
   contain: none !important;
-  overflow: visible !important;
 }
 
 /* Ensure tile pane is always rendered (not optimised away by browser) */

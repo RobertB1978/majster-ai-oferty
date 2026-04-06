@@ -87,8 +87,12 @@ function probeTileSources(): Promise<{ workingIndex: number; results: ProbeResul
     TILE_SOURCES.forEach((source, index) => {
       const start = Date.now();
       const img = new Image();
+      let finished = false; // guard against double-fire (onload+timeout or onerror+timeout)
 
       const finish = (success: boolean, error?: string) => {
+        if (finished) return;
+        finished = true;
+
         const result: ProbeResult = {
           sourceIndex: index,
           success,
@@ -100,13 +104,13 @@ function probeTileSources(): Promise<{ workingIndex: number; results: ProbeResul
         // First successful source — resolve immediately
         if (success && !resolved) {
           resolved = true;
-          resolve({ workingIndex: index, results });
+          resolve({ workingIndex: index, results: [...results] });
         }
 
         // All done — resolve with best result
         if (results.length === TILE_SOURCES.length && !resolved) {
           resolved = true;
-          resolve({ workingIndex: -1, results });
+          resolve({ workingIndex: -1, results: [...results] });
         }
       };
 
@@ -114,11 +118,7 @@ function probeTileSources(): Promise<{ workingIndex: number; results: ProbeResul
       img.onerror = () => finish(false, 'Image load failed');
 
       // Timeout after 8s
-      setTimeout(() => {
-        if (!results.some((r) => r.sourceIndex === index)) {
-          finish(false, 'Timeout (8s)');
-        }
-      }, 8000);
+      setTimeout(() => finish(false, 'Timeout (8s)'), 8000);
 
       img.src = source.testUrl;
     });
@@ -127,17 +127,8 @@ function probeTileSources(): Promise<{ workingIndex: number; results: ProbeResul
 
 const TILE_SOURCES: TileSource[] = [
   {
-    // CartoDB Voyager — no subdomain sharding
-    url: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-    urlDark: 'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    maxNativeZoom: 20,
-    testUrl: 'https://basemaps.cartocdn.com/rastertiles/voyager/6/35/21.png',
-  },
-  {
-    // Esri World Street Map — completely different CDN, very reliable,
-    // free for non-commercial / limited commercial use with attribution.
+    // Esri World Street Map — most reliable on mobile Android.
+    // Different CDN infrastructure from CartoDB/OSM.
     // NOTE: Esri uses {z}/{y}/{x} order (y before x).
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
     urlDark: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
@@ -145,6 +136,15 @@ const TILE_SOURCES: TileSource[] = [
       '&copy; <a href="https://www.esri.com/">Esri</a>, DeLorme, NAVTEQ',
     maxNativeZoom: 19,
     testUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/6/21/35',
+  },
+  {
+    // CartoDB Voyager — no subdomain sharding
+    url: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+    urlDark: 'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxNativeZoom: 20,
+    testUrl: 'https://basemaps.cartocdn.com/rastertiles/voyager/6/35/21.png',
   },
   {
     // CartoDB Voyager — with subdomain sharding as fallback
@@ -156,7 +156,7 @@ const TILE_SOURCES: TileSource[] = [
     testUrl: 'https://a.basemaps.cartocdn.com/rastertiles/voyager/6/35/21.png',
   },
   {
-    // OSM — canonical URL, no subdomain sharding
+    // OSM — last resort
     url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     urlDark: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     attribution:
@@ -446,8 +446,9 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         </div>
       </CardHeader>
       <CardContent>
-        {/* Fixed pixel height — NEVER use % or flex for Leaflet containers */}
-        <div className="relative" style={{ height: 400, width: '100%' }}>
+        {/* Fixed pixel height — NEVER use % or flex for Leaflet containers.
+            overflow: hidden clips tiles at container boundary (critical fix). */}
+        <div className="relative rounded-lg" style={{ height: 400, width: '100%', overflow: 'hidden' }}>
           <MapContainer
             center={[52.0693, 19.4803]}
             zoom={6}

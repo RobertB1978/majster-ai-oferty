@@ -36,15 +36,12 @@
     <link rel="preconnect" href="https://xwxvqhhnozfrjcjmcltv.supabase.co" crossorigin />
     <link rel="dns-prefetch" href="https://xwxvqhhnozfrjcjmcltv.supabase.co" />
 
-    <!-- CartoDB tile CDN — primary map tile source (no crossorigin to match
-         plain <img> loading mode used by Leaflet; crossorigin on preconnect
-         creates a CORS connection pool that cannot be reused for non-CORS img
-         requests, wasting the preconnect entirely) -->
-    <link rel="preconnect" href="https://basemaps.cartocdn.com" />
+    <!-- Esri tile CDN — primary map tile source (most reliable on mobile) -->
+    <link rel="preconnect" href="https://server.arcgisonline.com" />
+    <link rel="dns-prefetch" href="https://server.arcgisonline.com" />
+    <!-- CartoDB tile CDN — fallback -->
     <link rel="dns-prefetch" href="https://basemaps.cartocdn.com" />
-    <!-- Subdomain variant (fallback) -->
     <link rel="dns-prefetch" href="https://a.basemaps.cartocdn.com" />
-    <link rel="dns-prefetch" href="https://b.basemaps.cartocdn.com" />
     <!-- OSM as last-resort fallback -->
     <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
