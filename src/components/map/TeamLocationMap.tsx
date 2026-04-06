@@ -176,7 +176,8 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
 
   // Tile source management
   const [tileSourceIndex, setTileSourceIndex] = useState(0);
-  const tileErrorCount = useRef(0);
+  const tileErrorCount = useRef(0);        // resets to 0 after each source switch
+  const totalTileErrorCount = useRef(0);   // cumulative, never reset — detects all-sources-failed
   const tileLoadedOnce = useRef(false);
   const [tilesFailed, setTilesFailed] = useState(false);
 
@@ -189,16 +190,24 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
-  // Switch to fallback tile source after consecutive failures
+  // Switch to fallback tile source after consecutive failures.
+  // ROOT-CAUSE FIX (MAJ-UNK-001 crash): the guard is now inside the state
+  // updater function, NOT in the outer closure.  This prevents the stale-
+  // closure race where tileSourceIndex captured at callback-creation time
+  // was stale (e.g. 0) while the actual state had already advanced (e.g. 2),
+  // allowing `setTileSourceIndex(prev => prev + 1)` to push the index to 3,
+  // which is out of bounds for TILE_SOURCES (length 3, indices 0-2).
+  // With the guard inside the updater, `prev` is always the current state.
   const handleTileError = useCallback(
     (e: L.TileErrorEvent) => {
       tileErrorCount.current += 1;
+      totalTileErrorCount.current += 1;
 
       // Log detailed error for diagnostics
       if (import.meta.env.DEV || tileErrorCount.current <= 3) {
         const tile = e.tile as HTMLImageElement;
         console.warn(
-          `[MapTiles] Error #${tileErrorCount.current} loading tile from source ${tileSourceIndex}:`,
+          `[MapTiles] Error #${tileErrorCount.current} loading tile:`,
           {
             src: tile?.src?.substring(0, 120),
             coords: e.coords,
@@ -207,30 +216,38 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         );
       }
 
-      if (
-        tileErrorCount.current >= MAX_ERRORS_BEFORE_SWITCH &&
-        !tileLoadedOnce.current &&
-        tileSourceIndex < TILE_SOURCES.length - 1
-      ) {
-        console.warn(
-          `[MapTiles] Switching from source ${tileSourceIndex} to ${tileSourceIndex + 1} after ${tileErrorCount.current} errors`,
-        );
-        setTileSourceIndex((prev) => prev + 1);
+      if (tileErrorCount.current >= MAX_ERRORS_BEFORE_SWITCH && !tileLoadedOnce.current) {
+        // Move guard inside updater so it always reads the CURRENT state (prev),
+        // never a stale closure value.
+        setTileSourceIndex((prev) => {
+          if (prev < TILE_SOURCES.length - 1) {
+            console.warn(`[MapTiles] Switching from source ${prev} to ${prev + 1}`);
+            return prev + 1;
+          }
+          return prev; // already at last source — don't go out of bounds
+        });
         tileErrorCount.current = 0;
-      } else if (
-        tileErrorCount.current >= MAX_ERRORS_BEFORE_SWITCH * TILE_SOURCES.length &&
+      }
+
+      // Separately detect when all sources have been exhausted.
+      // Use totalTileErrorCount (never reset) so this check is not affected
+      // by the per-source counter reset above.
+      if (
+        totalTileErrorCount.current >= MAX_ERRORS_BEFORE_SWITCH * TILE_SOURCES.length &&
         !tileLoadedOnce.current
       ) {
-        // All sources failed — show error message to user
         setTilesFailed(true);
       }
     },
-    [tileSourceIndex],
+    // No dependency on tileSourceIndex — guard uses `prev` inside the setter
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
 
   const handleTileLoad = useCallback(() => {
     tileLoadedOnce.current = true;
     tileErrorCount.current = 0;
+    totalTileErrorCount.current = 0;
     if (tilesFailed) setTilesFailed(false);
   }, [tilesFailed]);
 
@@ -261,7 +278,10 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
   }, [latestLocations]);
 
   const activeWorkers = new Set(locations.map((l: TeamLocation) => l.team_member_id)).size;
-  const currentSource = TILE_SOURCES[tileSourceIndex];
+  // Safety clamp: ensure index never goes out of bounds (belt-and-suspenders
+  // on top of the guard inside handleTileError's state updater).
+  const safeIndex = Math.min(tileSourceIndex, TILE_SOURCES.length - 1);
+  const currentSource = TILE_SOURCES[safeIndex];
   const tileUrl = isDark ? currentSource.urlDark : currentSource.url;
 
   return (
