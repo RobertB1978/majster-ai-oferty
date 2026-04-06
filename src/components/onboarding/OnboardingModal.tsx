@@ -56,8 +56,13 @@ export function OnboardingModal({ enabled = true }: OnboardingModalProps) {
     // Check if user has skipped onboarding in this session
     const hasSkippedOnboarding = sessionStorage.getItem('onboarding_skipped') === 'true';
 
-    if (!hasCompletedOnboarding && !hasSkippedOnboarding && !skipped) {
+    // Check if the modal has already been shown in this session
+    const hasBeenShown = sessionStorage.getItem('onboarding_shown') === 'true';
+
+    if (!hasCompletedOnboarding && !hasSkippedOnboarding && !hasBeenShown && !skipped) {
       setOpen(true);
+      // Mark that the modal has been shown
+      sessionStorage.setItem('onboarding_shown', 'true');
     }
   }, [profile, isLoading, user, skipped, enabled]);
 
