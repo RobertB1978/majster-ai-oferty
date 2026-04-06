@@ -77,3 +77,26 @@ export const CANONICAL_HOME = '/app/dashboard';
 //   FF_NEW_SHELL — controls UI shell layout (AppLayout vs NewShellLayout).
 //                  Pure UI/UX flag. Safe to gate via localStorage.
 //                  No billing, permission, or plan implications.
+//
+//   FF_MODE_B_DOCX_ENABLED — ukrywa Tryb B (DOCX-based documents) do czasu
+//                  stabilizacji pilota (PR-02+). Domyślnie false w PR-01
+//                  (fundament danych gotowy, pilot DOCX jeszcze nie istnieje).
+//                  Włącz lokalnie: localStorage.setItem('FF_MODE_B_DOCX_ENABLED', 'true')
+//                  LUB: VITE_FF_MODE_B_DOCX_ENABLED=true (build-time)
+//                  UWAGA: flag kontroluje tylko widoczność UI. Tabele DB istnieją
+//                  niezależnie od flagi — bezpiecznie dla backward-compatibility.
+
+/**
+ * FF_MODE_B_DOCX_ENABLED — PR-01 (Mode B Foundation)
+ *
+ * false (domyślnie): Tryb B ukryty — widoczny tylko Tryb A (istniejący przepływ)
+ * true:              Tryb B widoczny — aktywuje pilot DOCX-based documents (PR-02+)
+ *
+ * W PR-01 zawsze false — fundament danych jest gotowy, ale brak pilota DOCX.
+ * Zmiana na true nastąpi w PR-02 po dostarczeniu end-to-end pilota.
+ */
+export const FF_MODE_B_DOCX_ENABLED: boolean = resolveFlag(
+  import.meta.env.VITE_FF_MODE_B_DOCX_ENABLED,
+  'FF_MODE_B_DOCX_ENABLED',
+  false, // domyślnie OFF — pilot DOCX nie istnieje w PR-01
+);
