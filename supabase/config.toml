@@ -69,3 +69,8 @@ verify_jwt = true
 # Requires authenticated user; renders offer, routes warranty/protocol/contract/inspection
 # with 501+pendingMigration for not-yet-migrated types (frontend falls back to jsPDF).
 verify_jwt = true
+
+[functions.generate-mode-b-docx]
+# Mode B DOCX pilot (PR-02) — generuje kopię roboczą DOCX z npm:docx.
+# Wymaga zalogowanego użytkownika; aktualizuje document_instances.
+verify_jwt = true
