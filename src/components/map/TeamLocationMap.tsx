@@ -66,16 +66,16 @@ interface TileSource {
 const TILE_SOURCES: TileSource[] = [
   {
     // CartoDB Voyager — no subdomain sharding
-    url: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    urlDark: 'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    url: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+    urlDark: 'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     maxNativeZoom: 20,
   },
   {
     // CartoDB Voyager — with subdomain sharding as fallback
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    urlDark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+    urlDark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     maxNativeZoom: 20,
@@ -90,8 +90,13 @@ const TILE_SOURCES: TileSource[] = [
   },
 ];
 
-// Maximum consecutive tile errors before switching to next source
-const MAX_ERRORS_BEFORE_SWITCH = 4;
+// Maximum consecutive tile errors before switching to next source.
+// Raised from 4 → 8 to tolerate transient mobile network failures
+// without prematurely exhausting all sources.
+const MAX_ERRORS_BEFORE_SWITCH = 8;
+
+// Auto-retry delay (ms) after all sources are exhausted
+const AUTO_RETRY_DELAY = 5000;
 
 interface TeamLocationMapProps {
   projectId?: string;
@@ -180,6 +185,16 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
   const totalTileErrorCount = useRef(0);   // cumulative, never reset — detects all-sources-failed
   const tileLoadedOnce = useRef(false);
   const [tilesFailed, setTilesFailed] = useState(false);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Manual retry handler — resets all error state and starts from source 0
+  const handleRetry = useCallback(() => {
+    tileErrorCount.current = 0;
+    totalTileErrorCount.current = 0;
+    tileLoadedOnce.current = false;
+    setTilesFailed(false);
+    setTileSourceIndex(0);
+  }, []);
 
   const { data: locations = [], refetch } = useTeamLocations(projectId);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -237,12 +252,27 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
         !tileLoadedOnce.current
       ) {
         setTilesFailed(true);
+
+        // Auto-retry after delay — mobile networks can recover quickly
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = setTimeout(() => {
+          console.warn('[MapTiles] Auto-retrying after all sources exhausted');
+          tileErrorCount.current = 0;
+          totalTileErrorCount.current = 0;
+          setTilesFailed(false);
+          setTileSourceIndex(0);
+        }, AUTO_RETRY_DELAY);
       }
     },
     // No dependency on tileSourceIndex — guard uses `prev` inside the setter
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
+
+  // Cleanup auto-retry timer on unmount
+  useEffect(() => {
+    return () => clearTimeout(retryTimerRef.current);
+  }, []);
 
   const handleTileLoad = useCallback(() => {
     tileLoadedOnce.current = true;
@@ -322,7 +352,10 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
               updateWhenIdle={false}
               updateWhenZooming={false}
               keepBuffer={4}
-              detectRetina={true}
+              // detectRetina disabled — on Android retina screens it requests
+              // @2x tiles at zoom+1 which can 404 and rapidly exhaust all
+              // tile sources, causing the "failed to load" overlay.
+              detectRetina={false}
               // Do NOT set crossOrigin — it forces CORS preflight which can
               // fail on mobile when intermediary proxies strip CORS headers.
               // CartoDB and OSM tiles load fine as plain <img> elements.
@@ -391,10 +424,10 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
             style={{ zIndex: 1000 }}
           />
 
-          {/* Tile loading error overlay */}
+          {/* Tile loading error overlay — now dismissible with retry button */}
           {tilesFailed && (
             <div
-              className="absolute inset-0 flex flex-col items-center justify-center bg-muted/80 rounded-lg pointer-events-none"
+              className="absolute inset-0 flex flex-col items-center justify-center bg-muted/80 rounded-lg"
               style={{ zIndex: 999 }}
             >
               <AlertTriangle className="h-8 w-8 text-destructive mb-2" />
@@ -404,6 +437,15 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
               <p className="text-xs text-muted-foreground mt-1">
                 Sprawdź połączenie z internetem
               </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3"
+                onClick={handleRetry}
+              >
+                <RefreshCw className="h-4 w-4 mr-1" />
+                Spróbuj ponownie
+              </Button>
             </div>
           )}
         </div>
