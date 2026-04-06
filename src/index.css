@@ -105,15 +105,12 @@ img.leaflet-tile:not([src]) {
   background: var(--card) !important;
 }
 
-/* Dark mode: invert OSM tiles to create a dark basemap.
-   This well-known technique inverts colors and rotates hue to preserve
-   natural map colors (water stays blue, parks stay green). */
-.dark .leaflet-tile-pane {
-  filter: invert(1) hue-rotate(180deg) brightness(1.5) contrast(0.85);
-}
-
-/* Dark mode: match Leaflet container background to dark basemap background
-   so there's no flash of wrong colour while tiles load. */
+/* Dark mode: use CartoDB Dark Matter tiles instead of CSS filter inversion.
+   CSS filter: invert() on the tile pane forces the GPU to composite every
+   tile through a filter pipeline.  On mobile GPUs this can completely
+   prevent tiles from rendering (Android Chrome WebView is especially
+   affected).  The dark tile variant is loaded directly via TileLayer URL
+   in TeamLocationMap.tsx. */
 .dark .leaflet-container {
   background: #1a1a2e;
 }
