@@ -123,7 +123,7 @@ Wszystkie poniższe kryteria muszą być spełnione łącznie. Brak któregokolw
 | S6 | Sekcje warunkowe | Sekcje obecne/nieobecne w zależności od danych wejściowych renderują się poprawnie |
 | S7 | End-to-end flow pobrania | Użytkownik (w środowisku testowym) klika „Pobierz DOCX", plik jest pobierany i otwarty jako poprawny dokument |
 | S8 | Disclaimer | Wygenerowany dokument zawiera wymagany disclaimer „Wzór do dostosowania i weryfikacji prawnej przed użyciem." |
-| S9 | Runtime — brak timeout | Edge Function kończy się w czasie < 10 sekund dla dokumentu pilotowego |
+| S9 | Runtime — akceptowalny czas | Edge Function kończy się w czasie < 25 sekund dla dokumentu pilotowego (wewnętrzny target jakościowy pilota; faktyczny limit timeout platformy Supabase Edge do zweryfikowania w PR-02 — nie jest to limit platformy, tylko target użyteczności) |
 | S10 | Runtime — brak błędów krytycznych | Brak wyjątków runtime w logach Supabase Edge podczas generowania |
 
 ---
@@ -217,7 +217,7 @@ Przy decyzji NO-GO **żaden PR-03, PR-04, PR-05x nie może startować** dopóki 
 | R1 | `docxtemplater`+`pizzip` niekompatybilne z Deno Edge runtime | Średnie | Wysoki (blokuje Plan A) | Pilot PR-02 jako obowiązkowy etap weryfikacji |
 | R2 | Rozmiar bundla Edge Function przekracza limit po dodaniu bibliotek DOCX | Niskie-Średnie | Wysoki (blokuje deployment) | Zmierzyć w PR-02 przed wdrożeniem prod |
 | R3 | Plan B (Node runtime) wymaga dodatkowego kosztu infrastrukturalnego | Niskie | Średni | Ocenić opcje darmowe/tanie przy uruchamianiu Planu B |
-| R4 | Złożone dokumenty (duże tabele, wiele sekcji) powodują timeout Edge Function | Niskie | Wysoki | Pilot PR-02 testuje reprezentatywny dokument; limit 10s zdefiniowany w S9 |
+| R4 | Złożone dokumenty (duże tabele, wiele sekcji) przekraczają timeout platformy lub powodują nieakceptowalny czas odpowiedzi | Niskie | Wysoki | Pilot PR-02 mierzy realny czas generowania; faktyczny limit timeout platformy Supabase Edge do zweryfikowania w trakcie pilota |
 | R5 | Nieznane niezgodności formatowania DOCX między Word a LibreOffice | Niskie | Średni | Kryterium S3 wymaga testu w obu aplikacjach |
 
 ### 9.3 Co blokuje dalsze PR-y
@@ -232,17 +232,18 @@ Przy decyzji NO-GO **żaden PR-03, PR-04, PR-05x nie może startować** dopóki 
 
 ## 10. Zakres kolejnych PR-ów po PR-00
 
-### PR-01 — Infrastruktura feature flag i master template pilotowy
+### PR-01 — Fundament: model danych, typy, feature flaga
 **Scope:**
 - Implementacja feature flagi `mode_b_docx_enabled` (domyślnie `false`)
+- Definicja interfejsów TypeScript dla danych wejściowych generatora (model danych)
+- Definicja struktury registry master templates (typy / model — bez plików DOCX)
+
+**Zakaz:** Brak pliku DOCX pilota. Brak instalacji bibliotek DOCX. Brak kodu generatora. Brak UI. Brak uploadu do Storage.
+
+### PR-02 — Pilot techniczny: master DOCX + generator w Edge Function
+**Scope:**
 - Stworzenie master DOCX template „Protokół odbioru końcowego" z placeholderami
 - Upload template do Supabase Storage bucket `docx-templates`
-- Definicja struktury danych (interfejsy TypeScript) dla danych wejściowych generatora
-
-**Zakaz:** Brak instalacji bibliotek DOCX. Brak kodu generatora. Brak UI.
-
-### PR-02 — Pilot techniczny: generator DOCX w Edge Function
-**Scope:**
 - Instalacja `docxtemplater` + `pizzip` w Edge Function
 - Implementacja Edge Function `generate-docx-mode-b` (minimalny flow)
 - Test end-to-end z dokumentem „Protokół odbioru końcowego"
