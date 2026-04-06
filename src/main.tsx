@@ -29,7 +29,16 @@ function renderApp() {
     if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
     const root = document.getElementById("root");
     if (root) {
-      root.innerHTML = '<div style="padding:2rem;text-align:center"><h1>Majster.AI</h1><p>Wystąpił błąd podczas uruchamiania aplikacji. Odśwież stronę.</p></div>';
+      root.textContent = '';
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding:2rem;text-align:center';
+      const h1 = document.createElement('h1');
+      h1.textContent = 'Majster.AI';
+      const p = document.createElement('p');
+      p.textContent = 'Wystąpił błąd podczas uruchamiania aplikacji. Odśwież stronę.';
+      wrapper.appendChild(h1);
+      wrapper.appendChild(p);
+      root.appendChild(wrapper);
     }
   }
 }
