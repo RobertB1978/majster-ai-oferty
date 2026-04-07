@@ -62,6 +62,8 @@ interface ModeBTemplateSelectorProps {
   projectId?: string | null;
   clientId?: string | null;
   offerId?: string | null;
+  /** Opcjonalne zawężenie do konkretnej kategorii — używane przez /app/ready-documents (PR-B2) */
+  category?: MasterTemplateCategory;
   /** Wywołane po pomyślnym utworzeniu instancji — przekazuje nowe instanceId */
   onInstanceCreated: (instanceId: string) => void;
 }
@@ -112,10 +114,11 @@ export function ModeBTemplateSelector({
   projectId,
   clientId,
   offerId,
+  category,
   onInstanceCreated,
 }: ModeBTemplateSelectorProps) {
   const { toast } = useToast();
-  const { data: templates = [], isLoading, isError } = useModeBMasterTemplates();
+  const { data: templates = [], isLoading, isError } = useModeBMasterTemplates(category);
   const createInstance = useCreateModeBInstance();
 
   async function handleSelect(template: DocumentMasterTemplate) {

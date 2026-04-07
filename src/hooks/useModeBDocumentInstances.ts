@@ -23,6 +23,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
+import type { DocumentInstance } from '@/hooks/useDocumentInstances';
 import {
   createWorkingCopyRecord,
   saveWorkingCopy,
@@ -38,6 +39,35 @@ import type { CreateModeBInstanceInput } from '@/types/document-mode-b';
 import type { WorkingCopyRecord, SaveWorkingCopyInput } from '@/lib/modeBFileFlow';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
+
+// ── useModeBInstances ─────────────────────────────────────────────────────────
+
+/**
+ * Pobiera wszystkie instancje dokumentów użytkownika z Trybu B.
+ * Filtruje wyłącznie rekordy source_mode = 'mode_b'.
+ * Używane przez /app/ready-documents (PR-B2).
+ */
+export function useModeBInstances() {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['document_instances', 'mode_b', user?.id],
+    enabled: !!user,
+    queryFn: async (): Promise<DocumentInstance[]> => {
+      const { data, error } = await supabase
+        .from('document_instances')
+        .select(
+          'id, user_id, project_id, client_id, offer_id, template_key, template_version, locale, title, data_json, references_json, pdf_path, dossier_item_id, created_at, updated_at, source_mode, status, master_template_id, master_template_version, file_docx, version_number, edited_at, sent_at',
+        )
+        .eq('user_id', user!.id)
+        .eq('source_mode', 'mode_b')
+        .order('created_at', { ascending: false });
+
+      if (error) throw new Error(`Błąd pobierania dokumentów Trybu B: ${error.message}`);
+      return (data ?? []) as DocumentInstance[];
+    },
+  });
+}
 
 // ── useCreateModeBInstance ────────────────────────────────────────────────────
 
