@@ -69,3 +69,8 @@ verify_jwt = true
 # Requires authenticated user; renders offer, routes warranty/protocol/contract/inspection
 # with 501+pendingMigration for not-yet-migrated types (frontend falls back to jsPDF).
 verify_jwt = true
+
+[functions.generate-docx-mode-b]
+# Mode B DOCX generator — builds contract DOCX from TypeScript template definitions (npm:docx).
+# PR-05a. Requires authenticated user.
+verify_jwt = true

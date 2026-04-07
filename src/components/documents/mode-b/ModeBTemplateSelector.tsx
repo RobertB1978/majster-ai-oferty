@@ -28,6 +28,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useModeBMasterTemplates } from '@/hooks/useModeBMasterTemplates';
 import { useCreateModeBInstance } from '@/hooks/useModeBDocumentInstances';
+import { useGenerateModeBDocx } from '@/hooks/useGenerateModeBDocx';
 import { useToast } from '@/hooks/use-toast';
 import type { DocumentMasterTemplate, MasterTemplateCategory, QualityTier } from '@/types/document-mode-b';
 import { cn } from '@/lib/utils';
@@ -117,9 +118,12 @@ export function ModeBTemplateSelector({
   const { toast } = useToast();
   const { data: templates = [], isLoading, isError } = useModeBMasterTemplates();
   const createInstance = useCreateModeBInstance();
+  const generateDocx = useGenerateModeBDocx();
 
   async function handleSelect(template: DocumentMasterTemplate) {
+    let instanceId: string | null = null;
     try {
+      // Krok 1 — utwórz rekord draft (file_docx = null)
       const instance = await createInstance.mutateAsync({
         templateKey: template.template_key,
         masterTemplateId: template.id,
@@ -130,10 +134,25 @@ export function ModeBTemplateSelector({
         title: template.name,
         qualityTier: template.quality_tier,
       });
-      toast({ title: `Dokument "${template.name}" utworzony jako szkic` });
+      instanceId = instance.id;
+
+      // Krok 2 — wygeneruj DOCX przez Edge Function
+      await generateDocx.mutateAsync({
+        instanceId: instance.id,
+        templateKey: template.template_key,
+      });
+
+      toast({ title: `Dokument "${template.name}" gotowy do pobrania` });
       onInstanceCreated(instance.id);
     } catch {
-      toast({ variant: 'destructive', title: 'Nie udało się utworzyć dokumentu' });
+      // Jeśli instancja została utworzona ale generacja DOCX nie powiodła się,
+      // przekazujemy instanceId — użytkownik widzi draft z wyłączonym przyciskiem pobierania.
+      toast({
+        variant: 'destructive',
+        title: 'Błąd generowania DOCX',
+        description: 'Szkic dokumentu został utworzony, ale plik DOCX nie jest jeszcze dostępny.',
+      });
+      if (instanceId) onInstanceCreated(instanceId);
     }
   }
 
@@ -206,7 +225,7 @@ export function ModeBTemplateSelector({
                 key={tmpl.id}
                 template={tmpl}
                 onSelect={handleSelect}
-                isPending={createInstance.isPending}
+                isPending={createInstance.isPending || generateDocx.isPending}
               />
             ))}
           </div>
