@@ -390,6 +390,13 @@ export default function ReadyDocuments() {
     return counts;
   }, [allTemplates]);
 
+  // PR-B5: stable Set of publish-safe template_keys — passed to OwnerDiagnosticPanel.
+  // Memoized so OwnerDiagnosticPanel's internal useMemo gets a stable reference.
+  const publishSafeTemplateKeys = useMemo(
+    () => new Set(allTemplates.map((tmpl) => tmpl.template_key)),
+    [allTemplates],
+  );
+
   // IDs of templates in the active category
   const categoryTemplateIds = useMemo(
     () => new Set(categoryTemplates.map((tmpl) => tmpl.id)),
@@ -577,9 +584,7 @@ export default function ReadyDocuments() {
           {FF_OWNER_DIAGNOSTIC && (
             <div className="px-0 pb-4 shrink-0">
               <OwnerDiagnosticPanel
-                publishSafeTemplateKeys={
-                  new Set(allTemplates.map((t) => t.template_key))
-                }
+                publishSafeTemplateKeys={publishSafeTemplateKeys}
                 isLoading={allTemplatesLoading}
               />
             </div>
