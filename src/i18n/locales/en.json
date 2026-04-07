@@ -5429,7 +5429,8 @@
         "title": "Select a document",
         "description": "Click a document from the list on the left to view its details and take action."
       },
-      "backToList": "Back to list"
+      "backToList": "Back to list",
+      "templateUnavailableDesc": "The template this document is based on is no longer active or the DOCX file has not been uploaded yet. Existing document files are still available."
     },
     "docInfo": {
       "title": "Document information",
