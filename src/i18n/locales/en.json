@@ -5413,6 +5413,22 @@
     "emptyState": {
       "title": "Premium documents coming soon",
       "description": "Professional DOCX document templates will appear here once the module launches. Preparations are underway."
+    },
+    "newDocument": {
+      "title": "New document"
+    },
+    "instances": {
+      "title": "Your documents",
+      "loading": "Loading documents…",
+      "empty": {
+        "description": "No documents in this category. Create a new one using a template above."
+      }
+    },
+    "workspace": {
+      "empty": {
+        "title": "Select a document",
+        "description": "Click a document from the list on the left to view its details and take action."
+      }
     }
   }
 }

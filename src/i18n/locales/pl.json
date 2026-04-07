@@ -5413,6 +5413,22 @@
     "emptyState": {
       "title": "Dokumenty premium wkrótce",
       "description": "Profesjonalne wzory dokumentów DOCX pojawią się tutaj po uruchomieniu modułu. Trwają przygotowania."
+    },
+    "newDocument": {
+      "title": "Nowy dokument"
+    },
+    "instances": {
+      "title": "Twoje dokumenty",
+      "loading": "Ładowanie dokumentów…",
+      "empty": {
+        "description": "Brak dokumentów w tej kategorii. Utwórz nowy używając szablonu powyżej."
+      }
+    },
+    "workspace": {
+      "empty": {
+        "title": "Wybierz dokument",
+        "description": "Kliknij dokument z listy po lewej, aby zobaczyć szczegóły i podjąć działania."
+      }
     }
   }
 }
