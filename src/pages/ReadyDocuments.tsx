@@ -1,24 +1,30 @@
 /**
- * ReadyDocuments page — PR-B2 (wire Mode B infrastructure)
+ * ReadyDocuments page — PR-B3 (premium workspace: selection, mobile detail flow, doc info block)
  *
  * Route: /app/ready-documents
  *
- * Premium workspace for ready-made DOCX documents.
  * PR-B1: shell — category nav, layout structure.
  * PR-B2: real Mode B wiring — templates, instances, cards, split layout.
+ * PR-B3: workspace panel — URL-stable selected-document state, mobile detail flow,
+ *        document info/summary block, honest disabled states, stale-selection guard.
  *
  * Desktop: split layout — left panel (320px) + right workspace
- * Mobile: full-width stacked layout
+ * Mobile: single-panel pattern — list view OR detail view (back button to return to list)
+ *
+ * Selected document: persisted in URL search param ?doc=<id> for refresh stability.
+ * Stale-selection guard: if selected instance disappears (deleted), selection is cleared.
  *
  * Safety rules enforced here:
  *   - only source_mode='mode_b' instances shown
  *   - only is_active=true master templates (enforced in useModeBMasterTemplates via RLS + query)
  *   - archived instances excluded from the list
  *   - no fake actions, no dead buttons — ModeBDocumentCard handles this internally
+ *   - no fake editor/preview — DocInfoBlock shows honest file-availability state
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import {
   FileCheck,
   FileText,
@@ -28,14 +34,19 @@ import {
   MoreHorizontal,
   FileX,
   PanelRight,
+  ArrowLeft,
+  FolderOpen,
+  CheckCircle2,
+  Clock,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ModeBTemplateSelector } from '@/components/documents/mode-b/ModeBTemplateSelector';
 import { ModeBDocumentCard } from '@/components/documents/mode-b/ModeBDocumentCard';
 import { ModeBStatusBadge } from '@/components/documents/mode-b/ModeBStatusBadge';
 import { useModeBInstances } from '@/hooks/useModeBDocumentInstances';
 import { useModeBMasterTemplates } from '@/hooks/useModeBMasterTemplates';
-import type { MasterTemplateCategory } from '@/types/document-mode-b';
+import type { MasterTemplateCategory, DocumentMasterTemplate } from '@/types/document-mode-b';
 import type { DocumentInstance } from '@/hooks/useDocumentInstances';
 
 // ── Category definitions ──────────────────────────────────────────────────────
@@ -54,6 +65,14 @@ const CATEGORIES: CategoryMeta[] = [
   { id: 'OTHER',      labelKey: 'readyDocs.categories.other',      icon: MoreHorizontal },
 ];
 
+const CATEGORY_LABEL_KEY: Record<MasterTemplateCategory, string> = {
+  CONTRACTS:  'readyDocs.categories.contracts',
+  PROTOCOLS:  'readyDocs.categories.protocols',
+  ANNEXES:    'readyDocs.categories.annexes',
+  COMPLIANCE: 'readyDocs.categories.compliance',
+  OTHER:      'readyDocs.categories.other',
+};
+
 // ── InstanceListItem ──────────────────────────────────────────────────────────
 
 interface InstanceListItemProps {
@@ -70,7 +89,7 @@ function InstanceListItem({ instance, templateName, isSelected, onClick }: Insta
     <button
       onClick={onClick}
       className={cn(
-        'w-full text-left rounded-md px-3 py-2.5 transition-all duration-150 group',
+        'w-full text-left rounded-md px-3 py-2.5 transition-all duration-150',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-1',
         'min-h-[44px]',
         isSelected
@@ -116,37 +135,152 @@ function WorkspaceEmpty({ t }: { t: (key: string) => string }) {
   );
 }
 
+// ── DocInfoBlock ──────────────────────────────────────────────────────────────
+// Document info/summary block — shows template metadata and honest file availability.
+// No fake preview, no fake editing UI.
+
+interface DocInfoBlockProps {
+  instance: DocumentInstance;
+  template: DocumentMasterTemplate | undefined;
+  t: (key: string) => string;
+}
+
+function DocInfoBlock({ instance, template, t }: DocInfoBlockProps) {
+  const hasDocx = !!instance.file_docx;
+  const hasPdf = !!instance.pdf_path;
+
+  return (
+    <div className="border rounded-lg p-4 bg-muted/20 space-y-3 mt-4">
+      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+        {t('readyDocs.docInfo.title')}
+      </h3>
+
+      <dl className="space-y-2">
+        {/* Category */}
+        {template && (
+          <div className="flex items-center gap-2">
+            <FolderOpen className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <dt className="text-xs text-muted-foreground w-32 shrink-0">
+              {t('readyDocs.docInfo.category')}
+            </dt>
+            <dd className="text-xs font-medium truncate">
+              {t(CATEGORY_LABEL_KEY[template.category])}
+            </dd>
+          </div>
+        )}
+
+        {/* Template key */}
+        <div className="flex items-center gap-2">
+          <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+          <dt className="text-xs text-muted-foreground w-32 shrink-0">
+            {t('readyDocs.docInfo.templateKey')}
+          </dt>
+          <dd className="text-xs font-mono text-muted-foreground truncate">
+            {instance.template_key}
+          </dd>
+        </div>
+
+        {/* Template version locked at creation */}
+        {instance.master_template_version && (
+          <div className="flex items-center gap-2">
+            <Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <dt className="text-xs text-muted-foreground w-32 shrink-0">
+              {t('readyDocs.docInfo.templateVersion')}
+            </dt>
+            <dd className="text-xs text-muted-foreground">
+              v{instance.master_template_version}
+            </dd>
+          </div>
+        )}
+
+        {/* DOCX file — honest availability */}
+        <div className="flex items-center gap-2">
+          <CheckCircle2
+            className={cn(
+              'w-3.5 h-3.5 shrink-0',
+              hasDocx ? 'text-green-600 dark:text-green-500' : 'text-muted-foreground/40',
+            )}
+          />
+          <dt className="text-xs text-muted-foreground w-32 shrink-0">
+            {t('readyDocs.docInfo.docxFile')}
+          </dt>
+          <dd className={cn(
+            'text-xs font-medium',
+            hasDocx ? 'text-green-600 dark:text-green-500' : 'text-muted-foreground',
+          )}>
+            {hasDocx ? t('readyDocs.docInfo.available') : t('readyDocs.docInfo.notAvailable')}
+          </dd>
+        </div>
+
+        {/* PDF file — honest availability */}
+        <div className="flex items-center gap-2">
+          <CheckCircle2
+            className={cn(
+              'w-3.5 h-3.5 shrink-0',
+              hasPdf ? 'text-green-600 dark:text-green-500' : 'text-muted-foreground/40',
+            )}
+          />
+          <dt className="text-xs text-muted-foreground w-32 shrink-0">
+            {t('readyDocs.docInfo.pdfFile')}
+          </dt>
+          <dd className={cn(
+            'text-xs font-medium',
+            hasPdf ? 'text-green-600 dark:text-green-500' : 'text-muted-foreground',
+          )}>
+            {hasPdf ? t('readyDocs.docInfo.available') : t('readyDocs.docInfo.notAvailable')}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  );
+}
+
 // ── ReadyDocuments ────────────────────────────────────────────────────────────
 
 export default function ReadyDocuments() {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState<MasterTemplateCategory>('CONTRACTS');
-  const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(null);
+
+  /**
+   * Mobile view mode: on small screens (below lg) we show either the list panel OR the
+   * detail/workspace panel — never both stacked. Desktop always shows both side by side.
+   *
+   * Choosing a document on mobile switches to 'detail'. The back button returns to 'list'.
+   */
+  const [mobileView, setMobileView] = useState<'list' | 'detail'>('list');
+
+  // Selected instance ID — persisted in URL ?doc=<id> for refresh stability.
+  const selectedInstanceId = searchParams.get('doc') ?? null;
 
   // All mode_b instances for the current user (source_mode='mode_b' filter is in hook)
   const { data: allInstances = [], isLoading: instancesLoading } = useModeBInstances();
 
-  // Master templates for the active category (is_active=true filter is in hook + RLS)
+  // Master templates for the active category (is_active=true via RLS + query)
   const { data: categoryTemplates = [] } = useModeBMasterTemplates(activeCategory);
 
-  // Build a lookup map: master_template_id → template name
-  // Fetched without category filter to cover all instances regardless of current tab
+  // All templates fetched without category filter — used for name lookup and DocInfoBlock.
   const { data: allTemplates = [] } = useModeBMasterTemplates();
+
   const templateNameMap = useMemo(() => {
     const map = new Map<string, string>();
-    for (const tmpl of allTemplates) {
-      map.set(tmpl.id, tmpl.name);
-    }
+    for (const tmpl of allTemplates) map.set(tmpl.id, tmpl.name);
+    return map;
+  }, [allTemplates]);
+
+  const templateById = useMemo(() => {
+    const map = new Map<string, DocumentMasterTemplate>();
+    for (const tmpl of allTemplates) map.set(tmpl.id, tmpl);
     return map;
   }, [allTemplates]);
 
   // IDs of templates in the active category
   const categoryTemplateIds = useMemo(
-    () => new Set(categoryTemplates.map((t) => t.id)),
+    () => new Set(categoryTemplates.map((tmpl) => tmpl.id)),
     [categoryTemplates],
   );
 
-  // Filter instances: only those belonging to this category, exclude archived
+  // Instances for the active category, excluding archived
   const categoryInstances = useMemo(
     () =>
       allInstances.filter(
@@ -158,33 +292,73 @@ export default function ReadyDocuments() {
     [allInstances, categoryTemplateIds],
   );
 
-  // The selected instance (full object for ModeBDocumentCard)
+  // Selected instance object
   const selectedInstance = useMemo(
     () => allInstances.find((i) => i.id === selectedInstanceId) ?? null,
     [allInstances, selectedInstanceId],
   );
 
-  // When a new instance is created, auto-select it
-  function handleInstanceCreated(instanceId: string) {
-    setSelectedInstanceId(instanceId);
+  // Master template for the selected instance (needed by DocInfoBlock)
+  const selectedTemplate = useMemo(
+    () =>
+      selectedInstance?.master_template_id
+        ? templateById.get(selectedInstance.master_template_id)
+        : undefined,
+    [selectedInstance, templateById],
+  );
+
+  // Stale-selection guard: if the selected instance no longer exists (was deleted),
+  // clear the URL param and return mobile to list view.
+  useEffect(() => {
+    if (selectedInstanceId && allInstances.length > 0 && !selectedInstance) {
+      setSearchParams((prev) => { prev.delete('doc'); return prev; }, { replace: true });
+      setMobileView('list');
+    }
+  }, [selectedInstanceId, allInstances, selectedInstance, setSearchParams]);
+
+  function handleSelectInstance(id: string) {
+    setSearchParams((prev) => { prev.set('doc', id); return prev; }, { replace: true });
+    setMobileView('detail');
   }
 
-  // When category changes, clear selection if the selected instance is not in new category
+  function clearSelection() {
+    setSearchParams((prev) => { prev.delete('doc'); return prev; }, { replace: true });
+    setMobileView('list');
+  }
+
+  function handleBackToList() {
+    setMobileView('list');
+  }
+
+  function handleInstanceCreated(instanceId: string) {
+    handleSelectInstance(instanceId);
+  }
+
   function handleCategoryChange(cat: MasterTemplateCategory) {
     setActiveCategory(cat);
-    if (selectedInstance?.master_template_id && !categoryTemplateIds.has(selectedInstance.master_template_id)) {
-      // Will be re-evaluated after categoryTemplateIds updates, but safe to clear now
-      setSelectedInstanceId(null);
+    // Clear selection when the currently selected instance is not in the new category
+    if (
+      selectedInstance?.master_template_id &&
+      !categoryTemplateIds.has(selectedInstance.master_template_id)
+    ) {
+      clearSelection();
     }
   }
 
   return (
     <div className="h-full min-h-[calc(100vh-4rem)]">
-      {/* ── Desktop: split layout ─────────────────────────────────────────── */}
+      {/* ── Desktop: split layout / Mobile: single-panel ─────────────────── */}
       <div className="lg:grid lg:grid-cols-[320px_1fr] lg:h-full">
 
-        {/* ── Left panel — category nav + template selector + instances ── */}
-        <div className="flex flex-col border-r border-border bg-muted/20 lg:h-full lg:overflow-y-auto">
+        {/* ── Left panel — category nav + template selector + instance list ── */}
+        {/*
+          Desktop: always visible (lg:flex).
+          Mobile: visible only when mobileView === 'list' — hidden when detail is shown.
+        */}
+        <div className={cn(
+          'flex-col border-r border-border bg-muted/20 lg:h-full lg:overflow-y-auto',
+          mobileView === 'list' ? 'flex' : 'hidden lg:flex',
+        )}>
 
           {/* Page header */}
           <div className="flex items-center gap-3 px-4 py-5 border-b border-border shrink-0">
@@ -224,7 +398,7 @@ export default function ReadyDocuments() {
           {/* Divider */}
           <div className="border-t border-border mx-3" />
 
-          {/* Template selector — create new document */}
+          {/* Template selector — create a new document from a master template */}
           <div className="px-4 py-4 border-b border-border shrink-0">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
               {t('readyDocs.newDocument.title')}
@@ -235,7 +409,7 @@ export default function ReadyDocuments() {
             />
           </div>
 
-          {/* Instances list — existing documents in this category */}
+          {/* Instance list — existing documents in the active category */}
           <div className="flex-1 px-4 py-4">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
               {t('readyDocs.instances.title')}
@@ -264,7 +438,7 @@ export default function ReadyDocuments() {
                         : undefined
                     }
                     isSelected={selectedInstanceId === inst.id}
-                    onClick={() => setSelectedInstanceId(inst.id)}
+                    onClick={() => handleSelectInstance(inst.id)}
                   />
                 ))}
               </div>
@@ -272,10 +446,32 @@ export default function ReadyDocuments() {
           </div>
         </div>
 
-        {/* ── Right panel — selected document workspace ──────────────────── */}
-        <div className="lg:h-full lg:overflow-y-auto">
+        {/* ── Right panel — workspace ────────────────────────────────────── */}
+        {/*
+          Desktop: always visible (lg:block).
+          Mobile: visible only when mobileView === 'detail'.
+        */}
+        <div className={cn(
+          'lg:h-full lg:overflow-y-auto',
+          mobileView === 'detail' ? 'block' : 'hidden lg:block',
+        )}>
           {selectedInstance ? (
-            <div className="p-6 max-w-2xl">
+            <div className="p-4 lg:p-6 max-w-2xl">
+
+              {/* Mobile: back button — only rendered on small screens (lg:hidden) */}
+              <div className="lg:hidden mb-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleBackToList}
+                  className="gap-1.5 -ml-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  {t('readyDocs.workspace.backToList')}
+                </Button>
+              </div>
+
+              {/* Document card — actions + status (ModeBDocumentCard owns all action logic) */}
               <ModeBDocumentCard
                 instance={selectedInstance}
                 templateName={
@@ -284,6 +480,14 @@ export default function ReadyDocuments() {
                     : undefined
                 }
               />
+
+              {/* Document info/summary block — template metadata + honest file availability */}
+              <DocInfoBlock
+                instance={selectedInstance}
+                template={selectedTemplate}
+                t={t}
+              />
+
             </div>
           ) : (
             <WorkspaceEmpty t={t} />

@@ -5428,7 +5428,18 @@
       "empty": {
         "title": "Wybierz dokument",
         "description": "Kliknij dokument z listy po lewej, aby zobaczyć szczegóły i podjąć działania."
-      }
+      },
+      "backToList": "Wróć do listy"
+    },
+    "docInfo": {
+      "title": "Informacje o dokumencie",
+      "category": "Kategoria",
+      "templateKey": "Klucz szablonu",
+      "templateVersion": "Wersja szablonu",
+      "docxFile": "Plik DOCX",
+      "pdfFile": "Plik PDF",
+      "available": "Dostępny",
+      "notAvailable": "Niedostępny"
     }
   }
 }

@@ -5428,7 +5428,18 @@
       "empty": {
         "title": "Select a document",
         "description": "Click a document from the list on the left to view its details and take action."
-      }
+      },
+      "backToList": "Back to list"
+    },
+    "docInfo": {
+      "title": "Document information",
+      "category": "Category",
+      "templateKey": "Template key",
+      "templateVersion": "Template version",
+      "docxFile": "DOCX file",
+      "pdfFile": "PDF file",
+      "available": "Available",
+      "notAvailable": "Not available"
     }
   }
 }
