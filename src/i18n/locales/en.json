@@ -3644,6 +3644,7 @@
       "customers": "Clients",
       "calendar": "Calendar",
       "documents": "Document Templates",
+      "readyDocuments": "Ready Documents",
       "finance": "Finance",
       "settings": "Settings",
       "more": "More",
@@ -5396,5 +5397,22 @@
     "offers": "Offers",
     "clients": "Clients",
     "projects": "Projects"
+  },
+  "readyDocs": {
+    "page": {
+      "title": "Ready Documents",
+      "subtitle": "Professional DOCX templates ready to download and fill in"
+    },
+    "categories": {
+      "contracts": "Contracts",
+      "protocols": "Protocols",
+      "annexes": "Annexes",
+      "compliance": "Compliance",
+      "other": "Other"
+    },
+    "emptyState": {
+      "title": "Premium documents coming soon",
+      "description": "Professional DOCX document templates will appear here once the module launches. Preparations are underway."
+    }
   }
 }

@@ -3644,6 +3644,7 @@
       "customers": "Klienci",
       "calendar": "Kalendarz",
       "documents": "Wzory dokumentów",
+      "readyDocuments": "Gotowe dokumenty",
       "finance": "Finanse",
       "settings": "Ustawienia",
       "more": "Więcej",
@@ -5396,5 +5397,22 @@
     "offers": "Oferty",
     "clients": "Klienci",
     "projects": "Projekty"
+  },
+  "readyDocs": {
+    "page": {
+      "title": "Gotowe dokumenty",
+      "subtitle": "Profesjonalne wzory DOCX do pobrania i wypełnienia"
+    },
+    "categories": {
+      "contracts": "Umowy",
+      "protocols": "Protokoły",
+      "annexes": "Załączniki",
+      "compliance": "Przeglądy techniczne",
+      "other": "Inne"
+    },
+    "emptyState": {
+      "title": "Dokumenty premium wkrótce",
+      "description": "Profesjonalne wzory dokumentów DOCX pojawią się tutaj po uruchomieniu modułu. Trwają przygotowania."
+    }
   }
 }

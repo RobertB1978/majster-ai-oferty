@@ -2,6 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   Home,
   FileText,
+  FileCheck,
   FolderKanban,
   Users,
   CalendarDays,
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { FF_READY_DOCUMENTS_ENABLED } from '@/config/featureFlags';
 
 interface NavItem {
   id: string;
@@ -51,6 +53,10 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { id: 'calendar',  path: '/app/calendar',           icon: CalendarDays, labelKey: 'newShell.nav.calendar' },
       { id: 'documents', path: '/app/document-templates', icon: BookOpen,     labelKey: 'newShell.nav.documents' },
+      ...(FF_READY_DOCUMENTS_ENABLED
+        ? [{ id: 'ready-documents', path: '/app/ready-documents', icon: FileCheck, labelKey: 'newShell.nav.readyDocuments' } as NavItem]
+        : []
+      ),
       { id: 'finance',   path: '/app/finance',            icon: TrendingUp,   labelKey: 'newShell.nav.finance' },
       { id: 'photos',    path: '/app/photos',             icon: Camera,       labelKey: 'newShell.nav.photos' },
     ],
