@@ -1,18 +1,20 @@
 /**
- * useModeBMasterTemplates — PR-04 (Mode B UI Flow)
+ * useModeBMasterTemplates — PR-04 (Mode B UI Flow) + PR-B4 (Publish Gate)
  *
- * TanStack Query hook pobierający aktywne master templates z tabeli
+ * TanStack Query hook pobierający publish-safe master templates z tabeli
  * document_master_templates (dodanej w PR-01).
  *
  * Użytkownicy mają wyłącznie SELECT na aktywne szablony (RLS).
  * INSERT/UPDATE/DELETE wyłącznie przez service_role (Edge Functions).
  *
- * Zwraca:
- *   - listę aktywnych DocumentMasterTemplate
- *   - loading/error stany
+ * Publish-safe rule (PR-B4) — szablon jest zwracany tylko gdy:
+ *   1. is_active = true         (RLS + filtr zapytania)
+ *   2. docx_master_path IS NOT NULL (filtr zapytania — brak ścieżki = brak pliku)
  *
- * Jeśli tabela jest pusta (seed dopiero w PR-05), zwraca pustą tablicę —
- * komponent wyświetla honest fallback bez breaking change.
+ * Konwencja: właściciel ustawia is_active=true dopiero po przesłaniu DOCX.
+ * Jeśli brak szablonów, zwraca pustą tablicę — komponent pokazuje honest fallback.
+ *
+ * Szczegóły: docs/MODE_B_PUBLISH_GATE.md
  */
 
 import { useQuery } from '@tanstack/react-query';
@@ -32,6 +34,9 @@ export function useModeBMasterTemplates(category?: MasterTemplateCategory) {
         .from('document_master_templates')
         .select('id, template_key, name, category, quality_tier, docx_master_path, preview_pdf_path, version, is_active, created_at, updated_at')
         .eq('is_active', true)
+        // PR-B4 publish gate: only templates with a recorded DOCX path are surfaced.
+        // Relies on the convention that is_active is set to true only after DOCX upload.
+        .not('docx_master_path', 'is', null)
         .order('category', { ascending: true })
         .order('name', { ascending: true });
 

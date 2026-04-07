@@ -5429,7 +5429,8 @@
         "title": "Wybierz dokument",
         "description": "Kliknij dokument z listy po lewej, aby zobaczyć szczegóły i podjąć działania."
       },
-      "backToList": "Wróć do listy"
+      "backToList": "Wróć do listy",
+      "templateUnavailableDesc": "Szablon, na którym oparty jest ten dokument, nie jest już aktywny lub plik DOCX nie został jeszcze przesłany. Istniejące pliki dokumentu są nadal dostępne."
     },
     "docInfo": {
       "title": "Informacje o dokumencie",

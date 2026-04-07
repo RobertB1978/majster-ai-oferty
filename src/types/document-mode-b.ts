@@ -170,3 +170,26 @@ export function isModeBInstance(
 export function isValidQualityTier(value: unknown): value is QualityTier {
   return value === 'short_form' || value === 'standard' || value === 'premium';
 }
+
+// ── Publish-safety gate (PR-B4) ───────────────────────────────────────────────
+
+/**
+ * Determines if a master template is publish-safe — visible and usable in /app/ready-documents.
+ *
+ * A template is publish-safe when ALL conditions are true:
+ *   1. is_active = true        — owner explicitly enabled it
+ *   2. docx_master_path is a non-empty string — file path recorded in DB
+ *
+ * What this check does NOT guarantee:
+ *   - That the DOCX file physically exists in Supabase Storage (no live network check).
+ *   - Convention enforced by ops: owner only sets is_active=true AFTER uploading the DOCX.
+ *
+ * See docs/MODE_B_PUBLISH_GATE.md for the full lifecycle and owner instructions.
+ */
+export function isPublishSafe(template: DocumentMasterTemplate): boolean {
+  return (
+    template.is_active &&
+    typeof template.docx_master_path === 'string' &&
+    template.docx_master_path.trim().length > 0
+  );
+}

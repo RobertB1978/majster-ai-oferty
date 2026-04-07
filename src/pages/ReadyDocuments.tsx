@@ -1,5 +1,5 @@
 /**
- * ReadyDocuments page — PR-B3 (premium workspace: selection, mobile detail flow, doc info block)
+ * ReadyDocuments page — PR-B3 + PR-B4 (publish gate)
  *
  * Route: /app/ready-documents
  *
@@ -7,6 +7,8 @@
  * PR-B2: real Mode B wiring — templates, instances, cards, split layout.
  * PR-B3: workspace panel — URL-stable selected-document state, mobile detail flow,
  *        document info/summary block, honest disabled states, stale-selection guard.
+ * PR-B4: publish gate — category counts from publish-safe templates only,
+ *        template-unavailable warning when instance's template is deactivated.
  *
  * Desktop: split layout — left panel (320px) + right workspace
  * Mobile: single-panel pattern — list view OR detail view (back button to return to list)
@@ -14,10 +16,13 @@
  * Selected document: persisted in URL search param ?doc=<id> for refresh stability.
  * Stale-selection guard: if selected instance disappears (deleted), selection is cleared.
  *
- * Safety rules enforced here:
+ * Safety rules enforced here (PR-B4):
  *   - only source_mode='mode_b' instances shown
- *   - only is_active=true master templates (enforced in useModeBMasterTemplates via RLS + query)
+ *   - only publish-safe templates (is_active=true + docx_master_path IS NOT NULL)
+ *     enforced in useModeBMasterTemplates (hook-level gate + RLS)
+ *   - category counts reflect only publish-safe templates
  *   - archived instances excluded from the list
+ *   - workspace warns when selected instance's template is no longer publish-safe
  *   - no fake actions, no dead buttons — ModeBDocumentCard handles this internally
  *   - no fake editor/preview — DocInfoBlock shows honest file-availability state
  */
@@ -38,6 +43,7 @@ import {
   FolderOpen,
   CheckCircle2,
   Clock,
+  AlertTriangle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -256,11 +262,11 @@ export default function ReadyDocuments() {
   // All mode_b instances for the current user (source_mode='mode_b' filter is in hook)
   const { data: allInstances = [], isLoading: instancesLoading } = useModeBInstances();
 
-  // Master templates for the active category (is_active=true via RLS + query)
+  // Master templates for the active category (publish-safe: is_active=true + docx_master_path NOT NULL)
   const { data: categoryTemplates = [] } = useModeBMasterTemplates(activeCategory);
 
-  // All templates fetched without category filter — used for name lookup and DocInfoBlock.
-  const { data: allTemplates = [] } = useModeBMasterTemplates();
+  // All publish-safe templates (no category filter) — for name lookup, DocInfoBlock and category counts.
+  const { data: allTemplates = [], isLoading: allTemplatesLoading } = useModeBMasterTemplates();
 
   const templateNameMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -272,6 +278,16 @@ export default function ReadyDocuments() {
     const map = new Map<string, DocumentMasterTemplate>();
     for (const tmpl of allTemplates) map.set(tmpl.id, tmpl);
     return map;
+  }, [allTemplates]);
+
+  // PR-B4: counts of publish-safe templates per category — drives the count badges in nav.
+  // Only counts templates returned by the hook (is_active=true + docx_master_path NOT NULL).
+  const categoryCounts = useMemo(() => {
+    const counts: Partial<Record<MasterTemplateCategory, number>> = {};
+    for (const tmpl of allTemplates) {
+      counts[tmpl.category] = (counts[tmpl.category] ?? 0) + 1;
+    }
+    return counts;
   }, [allTemplates]);
 
   // IDs of templates in the active category
@@ -371,11 +387,12 @@ export default function ReadyDocuments() {
             </div>
           </div>
 
-          {/* Category tabs */}
+          {/* Category tabs — count badges reflect only publish-safe templates (PR-B4) */}
           <nav className="px-3 py-3 space-y-0.5 shrink-0" aria-label={t('readyDocs.page.title')}>
             {CATEGORIES.map((cat) => {
               const Icon = cat.icon;
               const isActive = activeCategory === cat.id;
+              const count = categoryCounts[cat.id] ?? 0;
               return (
                 <button
                   key={cat.id}
@@ -389,7 +406,18 @@ export default function ReadyDocuments() {
                   )}
                 >
                   <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-primary' : 'text-muted-foreground')} />
-                  <span className="truncate">{t(cat.labelKey)}</span>
+                  <span className="truncate flex-1 text-left">{t(cat.labelKey)}</span>
+                  {/* Count badge — shown only when loading is done, 0 means no publish-safe templates */}
+                  {!allTemplatesLoading && (
+                    <span className={cn(
+                      'text-xs font-mono rounded px-1.5 py-0.5 min-w-[1.5rem] text-center shrink-0',
+                      count > 0
+                        ? (isActive ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground')
+                        : 'bg-muted/50 text-muted-foreground/50',
+                    )}>
+                      {count}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -470,6 +498,18 @@ export default function ReadyDocuments() {
                   {t('readyDocs.workspace.backToList')}
                 </Button>
               </div>
+
+              {/* PR-B4: template-unavailable warning — shown when the master template
+                  behind this instance is no longer publish-safe (deactivated or path removed).
+                  Card remains accessible for status/download actions on existing files. */}
+              {selectedInstance.master_template_id && !selectedTemplate && !allTemplatesLoading && (
+                <div className="flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800 px-3 py-2.5 mb-4">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+                    {t('readyDocs.workspace.templateUnavailableDesc')}
+                  </p>
+                </div>
+              )}
 
               {/* Document card — actions + status (ModeBDocumentCard owns all action logic) */}
               <ModeBDocumentCard
