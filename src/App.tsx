@@ -90,6 +90,8 @@ const ProjectPublicStatus = lazy(() => import("./pages/ProjectPublicStatus"));
 const DossierPublicPage = lazy(() => import("./pages/DossierPublicPage"));
 // === ZONE 2f: DOCUMENT TEMPLATES PR-17 ===
 const DocumentTemplates = lazy(() => import("./pages/DocumentTemplates"));
+// === ZONE 2g: READY DOCUMENTS PR-B1 ===
+const ReadyDocuments = lazy(() => import("./pages/ReadyDocuments"));
 
 // === ZONE 3: OWNER CONSOLE (lazy - admin only, separate chunk) ===
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
@@ -344,6 +346,8 @@ const App = () => (
                     <Route path="settings" element={<Settings />} />
                     {/* PR-17: Document Templates Library */}
                     <Route path="document-templates" element={<DocumentTemplates />} />
+                    {/* PR-B1: Ready Documents shell */}
+                    <Route path="ready-documents" element={<ReadyDocuments />} />
 
                     {/* Canonical redirects for legacy/wrong paths within /app */}
                     <Route path="clients" element={<Navigate to="/app/customers" replace />} />

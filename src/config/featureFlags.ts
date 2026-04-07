@@ -85,6 +85,12 @@ export const CANONICAL_HOME = '/app/dashboard';
 //                  LUB: VITE_FF_MODE_B_DOCX_ENABLED=true (build-time)
 //                  UWAGA: flag kontroluje tylko widoczność UI. Tabele DB istnieją
 //                  niezależnie od flagi — bezpiecznie dla backward-compatibility.
+//
+//   FF_READY_DOCUMENTS_ENABLED — ukrywa wpis nawigacyjny dla /app/ready-documents
+//                  do czasu gotowości modułu premium (PR-B2+). Domyślnie false.
+//                  Sama trasa jest zawsze zarejestrowana i obsługuje empty state.
+//                  Włącz lokalnie: localStorage.setItem('FF_READY_DOCUMENTS_ENABLED', 'true')
+//                  LUB: VITE_FF_READY_DOCUMENTS_ENABLED=true (build-time)
 
 /**
  * FF_MODE_B_DOCX_ENABLED — PR-01 (Mode B Foundation)
@@ -99,4 +105,19 @@ export const FF_MODE_B_DOCX_ENABLED: boolean = resolveFlag(
   import.meta.env.VITE_FF_MODE_B_DOCX_ENABLED,
   'FF_MODE_B_DOCX_ENABLED',
   false, // domyślnie OFF — pilot DOCX nie istnieje w PR-01
+);
+
+/**
+ * FF_READY_DOCUMENTS_ENABLED — PR-B1 (Variant B Shell)
+ *
+ * false (domyślnie): wpis "Gotowe dokumenty" ukryty w nawigacji
+ * true:              wpis widoczny w sidebarze desktopowym
+ *
+ * Trasa /app/ready-documents jest zawsze zarejestrowana — ukrywana jest TYLKO
+ * pozycja nawigacyjna. Strona obsługuje empty state samodzielnie bez danych.
+ */
+export const FF_READY_DOCUMENTS_ENABLED: boolean = resolveFlag(
+  import.meta.env.VITE_FF_READY_DOCUMENTS_ENABLED,
+  'FF_READY_DOCUMENTS_ENABLED',
+  false, // domyślnie OFF — moduł premium jeszcze bez treści
 );

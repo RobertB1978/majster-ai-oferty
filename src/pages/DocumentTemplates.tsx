@@ -1,14 +1,10 @@
 /**
- * DocumentTemplates page — PR-17 (Mode A) + PR-04 (Mode B UI)
+ * DocumentTemplates page — PR-17 (Mode A)
  *
  * Route: /app/document-templates
  *   (also accessible from /app/projects/:id for project-scoped use)
  *
- * Tryb A (domyślny): Szablony jako kod → formularz → PDF
- * Tryb B (FF_MODE_B_DOCX_ENABLED=true): Master DOCX → kopia robocza → pobieranie
- *
- * Mode switcher (tab) widoczny tylko gdy FF_MODE_B_DOCX_ENABLED=true.
- * Tryb A pozostaje nienaruszony i działa identycznie jak przed PR-04.
+ * Mode A: Szablony jako kod → formularz → PDF
  *
  * Works with FF_NEW_SHELL ON/OFF.
  *
@@ -21,15 +17,12 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { FileText, FolderOpen, CheckCircle2, AlertCircle, FilePlus2 } from 'lucide-react';
+import { FileText, FolderOpen, CheckCircle2, AlertCircle } from 'lucide-react';
 
 import type { DocumentTemplate } from '@/data/documentTemplates';
 import { TemplatesLibrary } from '@/components/documents/templates/TemplatesLibrary';
 import { TemplateEditor } from '@/components/documents/templates/TemplateEditor';
-import { ModeBTemplateSelector, ModeBDocumentCard } from '@/components/documents/mode-b';
 import { useProjectsV2List, type ProjectStatus } from '@/hooks/useProjectsV2';
-import { useDocumentInstances } from '@/hooks/useDocumentInstances';
-import { FF_MODE_B_DOCX_ENABLED } from '@/config/featureFlags';
 import {
   Select,
   SelectContent,
@@ -37,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -46,8 +38,6 @@ const STATUS_I18N_KEY: Partial<Record<ProjectStatus, string>> = {
   COMPLETED: 'projects.statusCompleted',
   ON_HOLD: 'projects.statusOnHold',
 };
-
-type ActiveMode = 'mode_a' | 'mode_b';
 
 // ── DocumentTemplates ─────────────────────────────────────────────────────────
 
@@ -75,22 +65,9 @@ export default function DocumentTemplates() {
   const clientId = urlClientId ?? pickedProject?.client_id ?? null;
   const offerId = urlOfferId ?? pickedProject?.source_offer_id ?? null;
 
-  // Mode A state
   const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplate | null>(null);
 
-  // Mode B state — widoczny tylko gdy FF ON
-  const [activeMode, setActiveMode] = useState<ActiveMode>('mode_a');
-  // ID nowo utworzonej instancji Mode B (po wyborze szablonu)
-  const [newModeBInstanceId, setNewModeBInstanceId] = useState<string | null>(null);
-
-  // Istniejące instancje Mode B (filtrowane z document_instances)
-  const { data: allInstances = [] } = useDocumentInstances(projectId ?? undefined);
-  const modeBInstances = useMemo(
-    () => allInstances.filter((inst) => inst.source_mode === 'mode_b'),
-    [allInstances],
-  );
-
-  // ── Mode A handlers ──────────────────────────────────────────────────────────
+  // ── Handlers ─────────────────────────────────────────────────────────────────
 
   const handleSelect = (template: DocumentTemplate) => {
     setSelectedTemplate(template);
@@ -104,7 +81,7 @@ export default function DocumentTemplates() {
     // Toast jest renderowany w TemplateEditor
   };
 
-  // ── Mode A — Editor view ─────────────────────────────────────────────────────
+  // ── Editor view ──────────────────────────────────────────────────────────────
   if (selectedTemplate) {
     return (
       <div className="h-full min-h-[calc(100vh-4rem)]">
@@ -120,7 +97,7 @@ export default function DocumentTemplates() {
     );
   }
 
-  // ── Library + Mode switcher view ─────────────────────────────────────────────
+  // ── Library view ─────────────────────────────────────────────────────────────
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
       {/* Page header */}
@@ -133,36 +110,6 @@ export default function DocumentTemplates() {
           <p className="text-sm text-muted-foreground">{t('docTemplates.page.subtitle')}</p>
         </div>
       </div>
-
-      {/* Mode switcher — tylko gdy FF_MODE_B_DOCX_ENABLED */}
-      {FF_MODE_B_DOCX_ENABLED && (
-        <div className="flex gap-1 rounded-lg border bg-muted/30 p-1">
-          <button
-            onClick={() => setActiveMode('mode_a')}
-            className={cn(
-              'flex-1 flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all',
-              activeMode === 'mode_a'
-                ? 'bg-background shadow-sm text-foreground'
-                : 'text-muted-foreground hover:text-foreground',
-            )}
-          >
-            <FileText className="w-4 h-4 shrink-0" />
-            <span>Tryb A — szybki PDF</span>
-          </button>
-          <button
-            onClick={() => setActiveMode('mode_b')}
-            className={cn(
-              'flex-1 flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all',
-              activeMode === 'mode_b'
-                ? 'bg-background shadow-sm text-foreground'
-                : 'text-muted-foreground hover:text-foreground',
-            )}
-          >
-            <FilePlus2 className="w-4 h-4 shrink-0" />
-            <span>Tryb B — pełny dokument</span>
-          </button>
-        </div>
-      )}
 
       {/* Project selector (when no projectId from URL) */}
       {!urlProjectId && (
@@ -233,65 +180,8 @@ export default function DocumentTemplates() {
         </div>
       )}
 
-      {/* ── Mode A: biblioteka szablonów (istniejący flow, nienaruszony) ────── */}
-      {(!FF_MODE_B_DOCX_ENABLED || activeMode === 'mode_a') && (
-        <TemplatesLibrary onSelectTemplate={handleSelect} />
-      )}
-
-      {/* ── Mode B: wybór szablonu DOCX + lista instancji (za FF) ───────────── */}
-      {FF_MODE_B_DOCX_ENABLED && activeMode === 'mode_b' && (
-        <div className="space-y-6">
-          {/* Informacja o trybie */}
-          <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 px-4 py-3">
-            <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
-              Tryb B — dokumenty DOCX
-            </p>
-            <p className="text-xs text-blue-700 dark:text-blue-400 mt-0.5">
-              Wybierz szablon, aby utworzyć pełny dokument Word. Po wygenerowaniu
-              możesz go pobrać, zatwierdzić i oznaczyć jako wysłany.
-            </p>
-          </div>
-
-          {/* Wybór nowego szablonu */}
-          <div>
-            <h2 className="text-sm font-semibold mb-3">Wybierz szablon</h2>
-            <ModeBTemplateSelector
-              projectId={projectId}
-              clientId={clientId}
-              offerId={offerId}
-              onInstanceCreated={(id) => {
-                setNewModeBInstanceId(id);
-              }}
-            />
-          </div>
-
-          {/* Istniejące dokumenty Mode B (w kontekście projektu lub wszystkie) */}
-          {modeBInstances.length > 0 && (
-            <div>
-              <h2 className="text-sm font-semibold mb-3">
-                Twoje dokumenty DOCX
-                {projectId && <span className="font-normal text-muted-foreground"> — tego projektu</span>}
-              </h2>
-              <div className="space-y-3">
-                {modeBInstances.map((inst) => (
-                  <ModeBDocumentCard
-                    key={inst.id}
-                    instance={inst}
-                    templateName={inst.title ?? undefined}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Highlight nowo utworzonej instancji — scroll hint */}
-          {newModeBInstanceId && modeBInstances.length === 0 && (
-            <p className="text-xs text-muted-foreground text-center">
-              Dokument został utworzony. Odśwież stronę, aby go zobaczyć na liście.
-            </p>
-          )}
-        </div>
-      )}
+      {/* Biblioteka szablonów (istniejący flow, nienaruszony) */}
+      <TemplatesLibrary onSelectTemplate={handleSelect} />
     </div>
   );
 }
