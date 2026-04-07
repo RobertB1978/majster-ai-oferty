@@ -91,6 +91,13 @@ export const CANONICAL_HOME = '/app/dashboard';
 //                  Sama trasa jest zawsze zarejestrowana i obsługuje empty state.
 //                  Włącz lokalnie: localStorage.setItem('FF_READY_DOCUMENTS_ENABLED', 'true')
 //                  LUB: VITE_FF_READY_DOCUMENTS_ENABLED=true (build-time)
+//
+//   FF_OWNER_DIAGNOSTIC — włącza panel diagnostyczny właściciela w /app/ready-documents.
+//                  Pokazuje stan inventory vs. publish-safe templates (PR-B5).
+//                  DOMYŚLNIE WYŁĄCZONE — panel diagnostyczny NIE jest widoczny dla
+//                  zwykłych użytkowników. Włącz tylko lokalnie lub na potrzeby debugowania.
+//                  Włącz lokalnie: localStorage.setItem('FF_OWNER_DIAGNOSTIC', 'true')
+//                  LUB: VITE_FF_OWNER_DIAGNOSTIC=true (build-time)
 
 /**
  * FF_MODE_B_DOCX_ENABLED — PR-01 (Mode B Foundation)
@@ -120,4 +127,28 @@ export const FF_READY_DOCUMENTS_ENABLED: boolean = resolveFlag(
   import.meta.env.VITE_FF_READY_DOCUMENTS_ENABLED,
   'FF_READY_DOCUMENTS_ENABLED',
   false, // domyślnie OFF — moduł premium jeszcze bez treści
+);
+
+/**
+ * FF_OWNER_DIAGNOSTIC — PR-B5 (Owner Content Pipeline)
+ *
+ * false (domyślnie): diagnostyka właściciela ukryta — widok standardowy dla użytkowników
+ * true:              panel diagnostyczny widoczny w /app/ready-documents
+ *
+ * Panel diagnostyczny pokazuje:
+ *   - Stan inventory (src/data/premiumTemplateInventory.ts) vs. publish-safe templates
+ *   - Które szablony czekają na upload DOCX lub aktywację
+ *   - Oczekiwane ścieżki Storage dla każdego brakującego szablonu
+ *
+ * WAŻNE: Ta flaga NIE zmienia żadnych danych, uprawnień ani zabezpieczeń.
+ * Panel diagnostyczny jest read-only i widoczny tylko lokalnie.
+ * NIGDY nie włączać produkcyjnie dla zwykłych użytkowników.
+ *
+ * Włącz lokalnie: localStorage.setItem('FF_OWNER_DIAGNOSTIC', 'true')
+ * LUB: VITE_FF_OWNER_DIAGNOSTIC=true (build-time)
+ */
+export const FF_OWNER_DIAGNOSTIC: boolean = resolveFlag(
+  import.meta.env.VITE_FF_OWNER_DIAGNOSTIC,
+  'FF_OWNER_DIAGNOSTIC',
+  false, // domyślnie OFF — panel diagnostyczny nie jest widoczny publicznie
 );

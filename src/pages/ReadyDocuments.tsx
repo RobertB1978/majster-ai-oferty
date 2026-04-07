@@ -9,6 +9,8 @@
  *        document info/summary block, honest disabled states, stale-selection guard.
  * PR-B4: publish gate — category counts from publish-safe templates only,
  *        template-unavailable warning when instance's template is deactivated.
+ * PR-B5: owner content pipeline — OwnerDiagnosticPanel (behind FF_OWNER_DIAGNOSTIC),
+ *        shows inventory vs publish-safe state so owner knows what to upload/activate.
  *
  * Desktop: split layout — left panel (320px) + right workspace
  * Mobile: single-panel pattern — list view OR detail view (back button to return to list)
@@ -25,6 +27,12 @@
  *   - workspace warns when selected instance's template is no longer publish-safe
  *   - no fake actions, no dead buttons — ModeBDocumentCard handles this internally
  *   - no fake editor/preview — DocInfoBlock shows honest file-availability state
+ *
+ * Owner diagnostic (PR-B5, FF_OWNER_DIAGNOSTIC=true only):
+ *   - OwnerDiagnosticPanel rendered at bottom of left panel
+ *   - Compares premiumTemplateInventory vs allTemplates (publish-safe)
+ *   - Shows pending templates with expected storage paths
+ *   - NEVER visible to regular users (flag defaults to false)
  */
 
 import { useState, useMemo, useEffect } from 'react';
@@ -44,6 +52,10 @@ import {
   CheckCircle2,
   Clock,
   AlertTriangle,
+  Wrench,
+  ChevronDown,
+  ChevronUp,
+  Upload,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -52,6 +64,11 @@ import { ModeBDocumentCard } from '@/components/documents/mode-b/ModeBDocumentCa
 import { ModeBStatusBadge } from '@/components/documents/mode-b/ModeBStatusBadge';
 import { useModeBInstances } from '@/hooks/useModeBDocumentInstances';
 import { useModeBMasterTemplates } from '@/hooks/useModeBMasterTemplates';
+import { FF_OWNER_DIAGNOSTIC } from '@/config/featureFlags';
+import {
+  PREMIUM_TEMPLATE_INVENTORY,
+  getPendingInventoryEntries,
+} from '@/data/premiumTemplateInventory';
 import type { MasterTemplateCategory, DocumentMasterTemplate } from '@/types/document-mode-b';
 import type { DocumentInstance } from '@/hooks/useDocumentInstances';
 
@@ -237,6 +254,89 @@ function DocInfoBlock({ instance, template, t }: DocInfoBlockProps) {
           </dd>
         </div>
       </dl>
+    </div>
+  );
+}
+
+// ── OwnerDiagnosticPanel ──────────────────────────────────────────────────────
+// Visible only when FF_OWNER_DIAGNOSTIC=true. Never rendered for regular users.
+// Shows inventory vs publish-safe state: which templates still need upload / activation.
+
+interface OwnerDiagnosticPanelProps {
+  publishSafeTemplateKeys: Set<string>;
+  isLoading: boolean;
+}
+
+function OwnerDiagnosticPanel({ publishSafeTemplateKeys, isLoading }: OwnerDiagnosticPanelProps) {
+  const [expanded, setExpanded] = useState(false);
+
+  const pendingEntries = useMemo(
+    () => getPendingInventoryEntries(publishSafeTemplateKeys),
+    [publishSafeTemplateKeys],
+  );
+
+  const totalInventory = PREMIUM_TEMPLATE_INVENTORY.length;
+  const publishSafeCount = publishSafeTemplateKeys.size;
+  const pendingCount = pendingEntries.length;
+
+  return (
+    <div className="border-t border-amber-200 dark:border-amber-800 mx-3 mt-2 pt-2">
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        className="w-full flex items-center gap-2 px-1 py-1.5 rounded text-left hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-400"
+      >
+        <Wrench className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+        <span className="text-xs font-semibold text-amber-700 dark:text-amber-300 flex-1">
+          Diagnostyka właściciela
+        </span>
+        <span className="text-xs font-mono text-amber-600 dark:text-amber-400 shrink-0">
+          {isLoading ? '…' : `${publishSafeCount}/${totalInventory}`}
+        </span>
+        {expanded
+          ? <ChevronUp className="w-3 h-3 text-amber-500 shrink-0" />
+          : <ChevronDown className="w-3 h-3 text-amber-500 shrink-0" />
+        }
+      </button>
+
+      {expanded && (
+        <div className="mt-2 mb-1 space-y-2 px-1">
+          {/* Summary line */}
+          <p className="text-xs text-amber-700 dark:text-amber-300">
+            {isLoading
+              ? 'Ładowanie stanu szablonów…'
+              : pendingCount === 0
+                ? `Wszystkie ${totalInventory} szablony są publish-safe. ✓`
+                : `${pendingCount} z ${totalInventory} szablonów czeka na upload/aktywację:`
+            }
+          </p>
+
+          {/* Pending templates list */}
+          {!isLoading && pendingEntries.map((entry) => (
+            <div
+              key={entry.templateKey}
+              className="rounded border border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-900/10 p-2 space-y-1"
+            >
+              <div className="flex items-start gap-1.5">
+                <Upload className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
+                <p className="text-xs font-medium text-amber-800 dark:text-amber-200 leading-tight">
+                  {entry.name}
+                </p>
+              </div>
+              <p className="text-xs font-mono text-amber-600 dark:text-amber-400 break-all leading-tight pl-4">
+                {entry.expectedStoragePath}
+              </p>
+              <p className="text-xs text-amber-600/70 dark:text-amber-500 pl-4 leading-tight">
+                {entry.contentNote}
+              </p>
+            </div>
+          ))}
+
+          {/* Help link */}
+          <p className="text-xs text-amber-600/70 dark:text-amber-500 pt-1 leading-relaxed">
+            Instrukcja: <span className="font-mono">docs/PREMIUM_DOCX_ONBOARDING.md</span>
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -472,6 +572,18 @@ export default function ReadyDocuments() {
               </div>
             )}
           </div>
+
+          {/* Owner diagnostic panel — FF_OWNER_DIAGNOSTIC=true only, never for regular users */}
+          {FF_OWNER_DIAGNOSTIC && (
+            <div className="px-0 pb-4 shrink-0">
+              <OwnerDiagnosticPanel
+                publishSafeTemplateKeys={
+                  new Set(allTemplates.map((t) => t.template_key))
+                }
+                isLoading={allTemplatesLoading}
+              />
+            </div>
+          )}
         </div>
 
         {/* ── Right panel — workspace ────────────────────────────────────── */}
