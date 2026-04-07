@@ -1,16 +1,17 @@
 /**
- * ModeBTemplateSelector — PR-04 (Mode B UI Flow)
+ * ModeBTemplateSelector — PR-04 (Mode B UI Flow) + PR-B4 (Publish Gate)
  *
- * Wyświetla dostępne master templates Trybu B z bazy danych.
+ * Wyświetla publish-safe master templates Trybu B z bazy danych.
  * Pozwala użytkownikowi wybrać szablon i zainicjować nowy dokument DOCX.
  *
- * Stan pusty (brak szablonów w DB):
- *   Honest fallback — szablony pojawią się w PR-05a/05b/05c.
+ * Publish-safe (PR-B4): hook zwraca tylko szablony z is_active=true i docx_master_path IS NOT NULL.
+ * Stan pusty (brak publish-safe szablonów):
+ *   Honest fallback — szablony pojawią się gdy właściciel prześle pliki DOCX i aktywuje rekordy.
  *   Nie tworzymy fake kart ani placeholder danych.
  *
  * Tworzenie instancji:
  *   Wywołuje useCreateModeBInstance — tworzy rekord draft w DB.
- *   file_docx = null (Edge Function DOCX dopiero w PR-02/05).
+ *   file_docx = null (kopia robocza DOCX po uruchomieniu silnika dokumentów).
  */
 
 import { type ComponentType } from 'react';
@@ -25,7 +26,6 @@ import {
   Loader2,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { useModeBMasterTemplates } from '@/hooks/useModeBMasterTemplates';
 import { useCreateModeBInstance } from '@/hooks/useModeBDocumentInstances';
 import { useToast } from '@/hooks/use-toast';
@@ -162,15 +162,12 @@ export function ModeBTemplateSelector({
       <div className="text-center py-10 space-y-3">
         <Package className="w-10 h-10 mx-auto text-muted-foreground opacity-40" />
         <div>
-          <p className="text-sm font-medium">Szablony dokumentów wkrótce</p>
+          <p className="text-sm font-medium">Brak gotowych szablonów</p>
           <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
-            Biblioteka szablonów DOCX (umowy, protokoły, aneksy) zostanie uzupełniona
-            w kolejnym etapie wdrożenia.
+            Szablony pojawią się tutaj gdy właściciel prześle pliki DOCX do systemu
+            i aktywuje odpowiednie rekordy. Trwają przygotowania.
           </p>
         </div>
-        <Button variant="outline" size="sm" disabled>
-          Sprawdź ponownie
-        </Button>
       </div>
     );
   }
