@@ -119,10 +119,10 @@ describe('NewShellDesktopSidebar — widoczność desktop', () => {
     expect(aside!.className).toContain('lg:flex');
   });
 
-  it('renderuje 10 linków nawigacyjnych (Home, Offers, Projects, Customers, Calendar, Documents, Finance, Photos, Company Profile, Settings)', () => {
+  it('renderuje 11 linków nawigacyjnych (Home, Offers, Projects, Customers, Calendar, Documents, Ready Documents, Finance, Photos, Company Profile, Settings)', () => {
     render(<NewShellDesktopSidebar />, { wrapper: Wrapper });
     const links = screen.getAllByRole('link');
-    expect(links.length).toBe(10);
+    expect(links.length).toBe(11);
   });
 
   it('zawiera bezpośredni link do Profilu firmy bez przechodzenia przez "Więcej"', () => {
