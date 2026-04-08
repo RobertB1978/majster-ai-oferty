@@ -86,11 +86,10 @@ export const CANONICAL_HOME = '/app/dashboard';
 //                  UWAGA: flag kontroluje tylko widoczność UI. Tabele DB istnieją
 //                  niezależnie od flagi — bezpiecznie dla backward-compatibility.
 //
-//   FF_READY_DOCUMENTS_ENABLED — ukrywa wpis nawigacyjny dla /app/ready-documents
-//                  do czasu gotowości modułu premium (PR-B2+). Domyślnie false.
-//                  Sama trasa jest zawsze zarejestrowana i obsługuje empty state.
-//                  Włącz lokalnie: localStorage.setItem('FF_READY_DOCUMENTS_ENABLED', 'true')
-//                  LUB: VITE_FF_READY_DOCUMENTS_ENABLED=true (build-time)
+//   FF_READY_DOCUMENTS_ENABLED — kontroluje widoczność wpisu nawigacyjnego /app/ready-documents.
+//                  Domyślnie true od PR-B6 — moduł gotowy do produkcji (PR-B1…PR-B5 merged).
+//                  Wyłącz lokalnie: localStorage.setItem('FF_READY_DOCUMENTS_ENABLED', 'false')
+//                  LUB: VITE_FF_READY_DOCUMENTS_ENABLED=false (build-time)
 //
 //   FF_OWNER_DIAGNOSTIC — włącza panel diagnostyczny właściciela w /app/ready-documents.
 //                  Pokazuje stan inventory vs. publish-safe templates (PR-B5).
@@ -117,16 +116,18 @@ export const FF_MODE_B_DOCX_ENABLED: boolean = resolveFlag(
 /**
  * FF_READY_DOCUMENTS_ENABLED — PR-B1 (Variant B Shell)
  *
- * false (domyślnie): wpis "Gotowe dokumenty" ukryty w nawigacji
- * true:              wpis widoczny w sidebarze desktopowym
+ * false: wpis "Gotowe dokumenty" ukryty w nawigacji
+ * true (domyślnie): wpis widoczny w sidebarze desktopowym
  *
  * Trasa /app/ready-documents jest zawsze zarejestrowana — ukrywana jest TYLKO
  * pozycja nawigacyjna. Strona obsługuje empty state samodzielnie bez danych.
+ *
+ * Włączone globalnie od PR-B6 (audit deploy) — moduł gotowy do produkcji.
  */
 export const FF_READY_DOCUMENTS_ENABLED: boolean = resolveFlag(
   import.meta.env.VITE_FF_READY_DOCUMENTS_ENABLED,
   'FF_READY_DOCUMENTS_ENABLED',
-  false, // domyślnie OFF — moduł premium jeszcze bez treści
+  true, // ON — moduł gotowych dokumentów aktywny w nawigacji
 );
 
 /**
