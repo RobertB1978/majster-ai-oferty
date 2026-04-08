@@ -7,12 +7,14 @@ import {
   Settings,
   CalendarDays,
   BookOpen,
+  FileCheck,
   Camera,
   ChevronRight,
   UserPlus,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { FF_READY_DOCUMENTS_ENABLED } from '@/config/featureFlags';
 
 interface MoreItem {
   id: string;
@@ -29,41 +31,50 @@ interface MoreGroup {
 }
 
 /**
- * Dwie grupy zamiast czterech rozproszonych elementów:
+ * Buduje grupy nawigacyjne dla ekranu "Więcej".
  *
  * "Narzędzia"      — operacyjne moduły (spójne z desktopowym sidebarem)
  * "Firma i konto"  — konfiguracja: profil + ustawienia
  *
  * Grupowanie jest celowe: Finanse i Klienci to narzędzia pracy, nie ustawienia.
  * Ustawienia i Profil firmy razem wyznaczają granicę "konfiguracja konta".
+ *
+ * Wywołane wewnątrz komponentu, by FF_READY_DOCUMENTS_ENABLED był czytany
+ * przy każdym renderze (potrzebne m.in. do testów z mockowaną flagą).
  */
-const MORE_GROUPS: MoreGroup[] = [
-  {
-    titleKey: 'newShell.more.groupTools',
-    items: [
-      { id: 'calendar',           labelKey: 'newShell.more.calendar',          icon: CalendarDays, route: '/app/calendar' },
-      { id: 'document-templates', labelKey: 'newShell.more.documentTemplates', icon: BookOpen,     route: '/app/document-templates' },
-      { id: 'finance',            labelKey: 'newShell.more.finance',           icon: TrendingUp,   route: '/app/finance' },
-      { id: 'photos',             labelKey: 'newShell.more.photos',            icon: Camera,       route: '/app/photos' },
-      { id: 'clients',            labelKey: 'newShell.more.clients',           icon: Users,        route: '/app/customers' },
-      { id: 'team',               labelKey: 'nav.team',                        icon: UserPlus,     route: '/app/team' },
-      // { id: 'marketplace',        labelKey: 'nav.marketplace',                 icon: Store,        route: '/app/marketplace' }, // hidden temporarily
-    ],
-  },
-  {
-    titleKey: 'newShell.more.groupAccount',
-    items: [
-      { id: 'profile',  labelKey: 'newShell.more.profile',  icon: Building2, route: '/app/profile' },
-      { id: 'settings', labelKey: 'newShell.more.settings', icon: Settings,  route: '/app/settings' },
-    ],
-  },
-];
+function buildMoreGroups(): MoreGroup[] {
+  return [
+    {
+      titleKey: 'newShell.more.groupTools',
+      items: [
+        { id: 'calendar',           labelKey: 'newShell.more.calendar',          icon: CalendarDays, route: '/app/calendar' },
+        { id: 'document-templates', labelKey: 'newShell.more.documentTemplates', icon: BookOpen,     route: '/app/document-templates' },
+        ...(FF_READY_DOCUMENTS_ENABLED
+          ? [{ id: 'ready-documents', labelKey: 'newShell.more.readyDocuments', icon: FileCheck, route: '/app/ready-documents' } as MoreItem]
+          : []
+        ),
+        { id: 'finance',            labelKey: 'newShell.more.finance',           icon: TrendingUp,   route: '/app/finance' },
+        { id: 'photos',             labelKey: 'newShell.more.photos',            icon: Camera,       route: '/app/photos' },
+        { id: 'clients',            labelKey: 'newShell.more.clients',           icon: Users,        route: '/app/customers' },
+        { id: 'team',               labelKey: 'nav.team',                        icon: UserPlus,     route: '/app/team' },
+        // { id: 'marketplace',        labelKey: 'nav.marketplace',                 icon: Store,        route: '/app/marketplace' }, // hidden temporarily
+      ],
+    },
+    {
+      titleKey: 'newShell.more.groupAccount',
+      items: [
+        { id: 'profile',  labelKey: 'newShell.more.profile',  icon: Building2, route: '/app/profile' },
+        { id: 'settings', labelKey: 'newShell.more.settings', icon: Settings,  route: '/app/settings' },
+      ],
+    },
+  ];
+}
 
 /**
  * MoreScreen — ekran "Więcej" nowego shella.
  *
  * Dwie celowe grupy:
- *  - Narzędzia: Kalendarz, Wzory dokumentów, Finanse, Klienci
+ *  - Narzędzia: Kalendarz, Wzory dokumentów, [Gotowe dokumenty — gdy FF_READY_DOCUMENTS_ENABLED], Finanse, Klienci
  *  - Firma i konto: Profil firmy, Ustawienia
  *
  * Ustawienia i Profil Firmy zawsze dostępne (PR-05).
@@ -71,6 +82,8 @@ const MORE_GROUPS: MoreGroup[] = [
 export default function MoreScreen() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const groups = buildMoreGroups();
 
   return (
     <div className="min-h-screen bg-background">
@@ -80,7 +93,7 @@ export default function MoreScreen() {
       </div>
 
       <div className="px-4 py-4 space-y-6">
-        {MORE_GROUPS.map((group) => (
+        {groups.map((group) => (
           <section key={group.titleKey} aria-labelledby={`group-${group.titleKey}`}>
             <h2
               id={`group-${group.titleKey}`}
