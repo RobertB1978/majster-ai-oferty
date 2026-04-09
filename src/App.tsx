@@ -327,11 +327,12 @@ const App = () => (
                     <Route path="jobs/:id/pdf" element={<JobsRedirect suffix="/pdf" />} />
                     {/* Legacy quick-est redirect → canonical szybka-wycena */}
                     <Route path="quick-est" element={<Navigate to="/app/szybka-wycena" replace />} />
+                    <Route path="quick-estimate-workspace" element={<Navigate to="/app/szybka-wycena" replace />} />
                     {/* Page-level boundary: keeps AppLayout nav functional when draft workspace crashes */}
                     <Route path="szybka-wycena" element={<ErrorBoundary><QuickEstimateWorkspace /></ErrorBoundary>} />
                     {/* Gate 1 Condition 1: Quick Mode — field data capture one-handed on mobile */}
                     <Route path="quick-mode" element={<QuickMode />} />
-                    <Route path="quick" element={<QuickMode />} />
+                    <Route path="quick" element={<Navigate to="/app/quick-mode" replace />} />
                     <Route path="photos" element={<Photos />} />
                     <Route path="calendar" element={<Calendar />} />
                     <Route path="team" element={<Team />} />
