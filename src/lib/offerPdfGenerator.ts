@@ -157,8 +157,10 @@ export function getPdfComplianceLines(payload: OfferPdfPayload, t?: OfferPdfTran
   const locale = payload.locale ?? 'pl-PL';
   const dateStr = formatDate(payload.issuedAt, locale);
   const validStr = formatDate(payload.validUntil, locale);
+  const versionLabel = payload.pdfConfig.version === 'premium' ? 'Premium' : 'Standard';
   return {
     documentIdLine: `Nr: ${payload.documentId}`,
+    documentVersionLine: `Wersja: ${versionLabel}`,
     issuedAtLine: t
       ? t('offerPdf.issuedAt', { date: dateStr })
       : `Data wystawienia: ${dateStr}`,
@@ -488,6 +490,8 @@ export async function generateOfferPdf(
   doc.setFont(monoFont, 'bold');
   doc.setTextColor(...TEXT_SECONDARY);
   doc.text(complianceLines.documentIdLine, complianceRightX, yPosition, { align: 'right' });
+  yPosition += 4;
+  doc.text(complianceLines.documentVersionLine, complianceRightX, yPosition, { align: 'right' });
   doc.setFont(bodyFont, 'normal');
   doc.setTextColor(...TEXT_SECONDARY);
   doc.text(complianceLines.issuedAtLine, margin, yPosition);

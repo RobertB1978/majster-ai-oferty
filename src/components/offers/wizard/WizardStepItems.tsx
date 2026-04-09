@@ -206,18 +206,12 @@ export function WizardStepItems({ form, onChange, errors }: Props) {
 
   const removeVariant = (localId: string) => {
     const next = form.variants.filter((v) => v.localId !== localId);
-    if (next.length === 0) {
-      // Revert to no-variant mode — move first variant's items back
-      const removed = form.variants.find((v) => v.localId !== localId);
-      const removedOther = form.variants.find((v) => v.localId === localId);
-      // Merge remaining variant's items into no-variant
-      const surviving = form.variants.filter((v) => v.localId !== localId);
-      const mergedItems = surviving.flatMap((v) => v.items);
-      // If we removed one of two, keep the other's items
-      const finalItems = removedOther ? surviving.flatMap((v) => v.items) : mergedItems;
+    if (next.length <= 1) {
+      // If only one variant remains, revert to no-variant mode.
+      // This keeps wizard/public behavior consistent: 1 option = no variant choice.
+      const finalItems = next.flatMap((v) => v.items);
       onChange({ variants: [], items: finalItems });
       setActiveVariantLocalId(null);
-      void removed;
     } else {
       onChange({ variants: next });
       if (activeVariantLocalId === localId) {

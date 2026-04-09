@@ -65,6 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(null, { headers: getCorsPreflightHeaders(req) });
   }
   const corsHeaders = getCorsHeaders(req);
+  let claimedEventId: string | null = null;
 
   try {
     // 1. Validate environment variables
@@ -141,6 +142,7 @@ const handler = async (req: Request): Promise<Response> => {
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+    claimedEventId = event.id;
 
     // 5. Handle different event types
     switch (event.type) {
@@ -197,12 +199,35 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error) {
     console.error("[stripe-webhook] Error:", error);
 
-    // Try to log error to database
+    // Fail-safe: if processing failed AFTER claiming idempotency row,
+    // release the claim so Stripe retry can process the event again.
+    // Without this, transient downstream failures could cause permanent drops.
     try {
       const supabaseUrl = Deno.env.get("SUPABASE_URL");
       const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
       if (supabaseUrl && supabaseServiceKey) {
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+        if (claimedEventId) {
+          const { error: releaseErr } = await supabase
+            .from("stripe_events")
+            .delete()
+            .eq("event_id", claimedEventId);
+
+          if (releaseErr) {
+            console.error(
+              "[stripe-webhook] Failed to release claimed event after error:",
+              claimedEventId,
+              releaseErr
+            );
+          } else {
+            console.log(
+              "[stripe-webhook] Released claimed event after error (retry allowed):",
+              claimedEventId
+            );
+          }
+        }
+
         await supabase.from("subscription_events").insert({
           event_type: "error",
           event_data: { error: error instanceof Error ? error.message : String(error) },

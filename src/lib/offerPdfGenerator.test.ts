@@ -188,6 +188,20 @@ describe('PDF compliance fields (Δ3)', () => {
     expect(lines.documentIdLine).toContain('OF/2024/TESTPR');
   });
 
+  it('should include document version text', () => {
+    const payload = createMockPayload({
+      pdfConfig: {
+        version: 'premium',
+        title: 'Oferta',
+        offerText: '',
+        terms: '',
+        deadlineText: '',
+      },
+    });
+    const lines = getPdfComplianceLines(payload);
+    expect(lines.documentVersionLine).toBe('Wersja: Premium');
+  });
+
   it('should include "Data wystawienia:" label in issued-at text', () => {
     const payload = createMockPayload({
       issuedAt: new Date('2024-01-15T10:00:00Z'),
