@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useOnboardingProgress, useCreateOnboardingProgress } from '@/hooks/useOnboarding';
 import { Button } from '@/components/ui/button';
-import { Plus, Sparkles, AlertTriangle, Clock } from 'lucide-react';
+import { Plus, Sparkles, AlertTriangle, Clock, Package } from 'lucide-react';
 // Clock retained for expiration alert icon above
 import { EmptyDashboard } from '@/components/dashboard/EmptyDashboard';
 import { DashboardStats } from '@/components/dashboard/DashboardStats';
@@ -167,7 +167,28 @@ export default function Dashboard() {
             className="shadow-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200"
           >
             <Plus className="mr-2 h-5 w-5" />
-            {t('quickActions.newOffer')}
+            {t('dashboard.mainCta')}
+          </Button>
+        </div>
+      </div>
+
+      {/* Trade onboarding + starter packs — explicit fast-path for new users */}
+      <div className="rounded-xl border bg-card p-4 sm:p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold flex items-center gap-2">
+              <Package className="h-4 w-4 text-primary" />
+              {t('dashboard.starterPacksTitle')}
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {t('dashboard.starterPacksSubtitle')}
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/app/szybka-wycena')}
+          >
+            {t('dashboard.starterPacksCta')}
           </Button>
         </div>
       </div>

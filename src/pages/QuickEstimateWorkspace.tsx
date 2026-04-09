@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,14 @@ import type { StarterPack } from '@/data/starterPacks';
 import { useQuickEstimateDraft } from '@/hooks/useQuickEstimateDraft';
 import { useDraftContext } from '@/contexts/DraftContext';
 import { findProjectBySourceOffer } from '@/hooks/useProjectsV2';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 
 export default function QuickEstimateWorkspace() {
   const { t } = useTranslation();
@@ -265,6 +273,19 @@ export default function QuickEstimateWorkspace() {
 
       {/* Main workspace — padded bottom on mobile for sticky bar */}
       <div className="max-w-5xl mx-auto space-y-5 animate-fade-in pb-28 lg:pb-6">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/app/dashboard">{t('dashboard.title')}</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{t('szybkaWycena.pageTitle')}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
         {/* ── Page header ──────────────────────────────────────── */}
         <div className="flex items-center gap-3">
