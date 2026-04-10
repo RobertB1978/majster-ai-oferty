@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
+    },
+    "supabase-dev": {
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp-server-supabase@latest"],
+      "env": {
+        "SUPABASE_URL": "${SUPABASE_DEV_URL}",
+        "SUPABASE_SERVICE_ROLE_KEY": "${SUPABASE_DEV_SERVICE_ROLE_KEY}"
+      }
+    }
+  }
+}

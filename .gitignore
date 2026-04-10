@@ -94,3 +94,6 @@ yarn-error.log*
 # Supabase Reality Check — generated reports (uploaded as CI artifacts)
 scripts/verify/reality-report.json
 scripts/verify/reality-report.md
+
+# Claude Code local settings (zawiera lokalne tokeny)
+.claude/settings.local.json
