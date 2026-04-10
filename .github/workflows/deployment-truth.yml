@@ -206,12 +206,14 @@ jobs:
       - name: Supabase deploy marker (PASS)
         if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && success() }}
         shell: bash
-        run: echo "SUPABASE_DEPLOY: PASS"
+        run: |
+          echo "SUPABASE_DEPLOY: PASS"
 
       - name: Supabase deploy marker (FAIL)
         if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && failure() }}
         shell: bash
-        run: echo "SUPABASE_DEPLOY: FAIL"
+        run: |
+          echo "SUPABASE_DEPLOY: FAIL"
 
   # ============================================================
   # JOB 2: Vercel — deploy frontendu (tylko push do main)
@@ -296,9 +298,11 @@ jobs:
       - name: Vercel deploy marker (SKIP — brak secrets)
         if: steps.vercel-check.outputs.skip == 'true'
         shell: bash
-        run: echo "VERCEL_DEPLOY: SKIP — skonfiguruj VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID w GitHub Secrets"
+        run: |
+          echo "VERCEL_DEPLOY: SKIP — skonfiguruj VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID w GitHub Secrets"
 
       - name: Vercel deploy marker (FAIL)
         if: ${{ always() && steps.vercel-check.outputs.skip != 'true' && failure() }}
         shell: bash
-        run: echo "VERCEL_DEPLOY: FAIL"
+        run: |
+          echo "VERCEL_DEPLOY: FAIL"
