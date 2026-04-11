@@ -16,6 +16,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Download, Send, CheckCircle2, Lock, Trash2, FileText, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -35,9 +36,16 @@ interface ModeBDocumentCardProps {
   templateName?: string;
 }
 
-function formatDate(iso: string | null | undefined): string {
+const LOCALE_MAP: Record<string, string> = {
+  pl: 'pl-PL',
+  en: 'en-GB',
+  uk: 'uk-UA',
+};
+
+function formatDate(iso: string | null | undefined, language: string): string {
   if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('pl-PL', {
+  const locale = LOCALE_MAP[language.split('-')[0]] ?? 'pl-PL';
+  return new Date(iso).toLocaleDateString(locale, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -47,6 +55,7 @@ function formatDate(iso: string | null | undefined): string {
 }
 
 export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardProps) {
+  const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
@@ -75,34 +84,34 @@ export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardP
       });
       window.open(url, '_blank');
     } catch {
-      toast({ variant: 'destructive', title: 'Błąd pobierania DOCX' });
+      toast({ variant: 'destructive', title: t('modeB.card.toasts.downloadError') });
     }
   }
 
   async function handleMarkReady() {
     try {
       await markReady.mutateAsync(instance.id);
-      toast({ title: 'Dokument oznaczony jako gotowy' });
+      toast({ title: t('modeB.card.toasts.markedReady') });
     } catch {
-      toast({ variant: 'destructive', title: 'Nie udało się zmienić statusu' });
+      toast({ variant: 'destructive', title: t('modeB.card.toasts.statusError') });
     }
   }
 
   async function handleMarkFinal() {
     try {
       await markFinal.mutateAsync(instance.id);
-      toast({ title: 'Dokument oznaczony jako finalny' });
+      toast({ title: t('modeB.card.toasts.markedFinal') });
     } catch {
-      toast({ variant: 'destructive', title: 'Nie udało się oznaczyć jako finalny' });
+      toast({ variant: 'destructive', title: t('modeB.card.toasts.markFinalError') });
     }
   }
 
   async function handleMarkSent() {
     try {
       await markSent.mutateAsync(instance.id);
-      toast({ title: 'Dokument oznaczony jako wysłany' });
+      toast({ title: t('modeB.card.toasts.markedSent') });
     } catch {
-      toast({ variant: 'destructive', title: 'Nie udało się oznaczyć jako wysłany' });
+      toast({ variant: 'destructive', title: t('modeB.card.toasts.markSentError') });
     }
   }
 
@@ -117,9 +126,9 @@ export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardP
         fileDocxPath: instance.file_docx,
         status: instance.status,
       });
-      toast({ title: 'Dokument usunięty' });
+      toast({ title: t('modeB.card.toasts.deleted') });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Nieznany błąd';
+      const msg = err instanceof Error ? err.message : t('modeB.card.toasts.deleteError');
       toast({ variant: 'destructive', title: msg });
     } finally {
       setDeleteConfirm(false);
@@ -146,21 +155,21 @@ export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardP
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
           <Clock className="w-3 h-3" />
-          Utworzono: {formatDate(instance.created_at)}
+          {t('modeB.card.createdAt', { date: formatDate(instance.created_at, i18n.language) })}
         </span>
         {instance.edited_at && (
-          <span>Edytowano: {formatDate(instance.edited_at)}</span>
+          <span>{t('modeB.card.editedAt', { date: formatDate(instance.edited_at, i18n.language) })}</span>
         )}
         {instance.sent_at && (
-          <span>Wysłano: {formatDate(instance.sent_at)}</span>
+          <span>{t('modeB.card.sentAt', { date: formatDate(instance.sent_at, i18n.language) })}</span>
         )}
-        <span>Wersja: {instance.version_number}</span>
+        <span>{t('modeB.card.version', { version: instance.version_number })}</span>
       </div>
 
       {/* No DOCX yet — informacja gdy Edge Function nie gotowa */}
       {!hasDocx && !isArchived && (
         <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded px-2 py-1.5">
-          Plik DOCX zostanie wygenerowany po uruchomieniu silnika dokumentów (wkrótce).
+          {t('modeB.card.docxPendingWarning')}
         </p>
       )}
 
@@ -172,10 +181,10 @@ export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardP
           variant="outline"
           disabled={!hasDocx || downloadDocx.isPending}
           onClick={handleDownloadDocx}
-          title={!hasDocx ? 'Plik DOCX nie jest jeszcze dostępny' : 'Pobierz plik DOCX'}
+          title={!hasDocx ? t('modeB.card.tooltips.docxUnavailable') : t('modeB.card.tooltips.downloadDocx')}
         >
           <Download className="w-3.5 h-3.5 mr-1.5" />
-          Pobierz DOCX
+          {t('modeB.card.actions.downloadDocx')}
         </Button>
 
         {/* Pobierz PDF — disabled do PR-05 (renderowanie PDF) */}
@@ -183,10 +192,10 @@ export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardP
           size="sm"
           variant="outline"
           disabled={!hasPdf}
-          title={!hasPdf ? 'PDF będzie dostępny po renderowaniu (wkrótce)' : 'Pobierz PDF'}
+          title={!hasPdf ? t('modeB.card.tooltips.pdfUnavailable') : t('modeB.card.tooltips.downloadPdf')}
         >
           <Download className="w-3.5 h-3.5 mr-1.5" />
-          Pobierz PDF
+          {t('modeB.card.actions.downloadPdf')}
         </Button>
 
         {/* Oznacz jako gotowy */}
@@ -196,10 +205,10 @@ export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardP
             variant="outline"
             disabled={!canMarkReady || markReady.isPending}
             onClick={handleMarkReady}
-            title={!canMarkReady ? 'Dokument musi mieć wygenerowany plik DOCX' : 'Oznacz jako gotowy do wysłania'}
+            title={!canMarkReady ? t('modeB.card.tooltips.needsDocx') : t('modeB.card.tooltips.markReady')}
           >
             <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-            Oznacz jako gotowy
+            {t('modeB.card.actions.markReady')}
           </Button>
         )}
 
@@ -210,10 +219,10 @@ export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardP
             variant="outline"
             disabled={!canSend || markSent.isPending}
             onClick={handleMarkSent}
-            title={!canSend ? 'Dokument musi być w statusie "gotowy"' : 'Oznacz jako wysłany do klienta'}
+            title={!canSend ? t('modeB.card.tooltips.mustBeReady') : t('modeB.card.tooltips.markSent')}
           >
             <Send className="w-3.5 h-3.5 mr-1.5" />
-            {instance.status === 'sent' ? 'Ponownie wysłany' : 'Wyślij'}
+            {instance.status === 'sent' ? t('modeB.card.actions.resend') : t('modeB.card.actions.send')}
           </Button>
         )}
 
@@ -224,10 +233,10 @@ export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardP
             variant="outline"
             disabled={markFinal.isPending}
             onClick={handleMarkFinal}
-            title="Zatwierdź jako wersję finalną (zaakceptowaną przez klienta)"
+            title={t('modeB.card.tooltips.markFinal')}
           >
             <Lock className="w-3.5 h-3.5 mr-1.5" />
-            Oznacz jako finalny
+            {t('modeB.card.actions.markFinal')}
           </Button>
         )}
 
@@ -239,11 +248,11 @@ export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardP
             disabled={deleteInstance.isPending}
             onClick={handleDelete}
             onBlur={() => setDeleteConfirm(false)}
-            title={isFinal ? 'Dokumentów finalnych nie można usunąć' : 'Usuń roboczy dokument'}
+            title={isFinal ? t('modeB.card.tooltips.cannotDeleteFinal') : t('modeB.card.tooltips.deleteDraft')}
             className="ml-auto"
           >
             <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-            {deleteConfirm ? 'Potwierdź usunięcie' : 'Usuń'}
+            {deleteConfirm ? t('modeB.card.actions.deleteConfirm') : t('modeB.card.actions.delete')}
           </Button>
         )}
       </div>

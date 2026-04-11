@@ -4698,6 +4698,70 @@
       }
     }
   },
+  "modeB": {
+    "qualityTier": {
+      "short_form": "Simplified",
+      "standard": "Standard",
+      "premium": "Premium"
+    },
+    "status": {
+      "draft": "Draft",
+      "ready": "Ready",
+      "sent": "Sent",
+      "final": "Final",
+      "archived": "Archived"
+    },
+    "templateSelector": {
+      "createDocumentAriaLabel": "Create document: {{name}}",
+      "createSuccess": "Document \"{{name}}\" created as draft",
+      "createError": "Failed to create document",
+      "loading": "Loading templates…",
+      "loadError": "Failed to load templates. Please refresh the page.",
+      "emptyTitle": "No ready-made templates",
+      "emptyDesc": "Templates will appear here once the owner uploads DOCX files and activates the corresponding records. Preparation in progress."
+    },
+    "card": {
+      "createdAt": "Created: {{date}}",
+      "editedAt": "Edited: {{date}}",
+      "sentAt": "Sent: {{date}}",
+      "version": "Version: {{version}}",
+      "docxPendingWarning": "The DOCX file will be generated once the document engine is live (coming soon).",
+      "actions": {
+        "downloadDocx": "Download DOCX",
+        "downloadPdf": "Download PDF",
+        "markReady": "Mark as ready",
+        "send": "Send",
+        "resend": "Resent",
+        "markFinal": "Mark as final",
+        "delete": "Delete",
+        "deleteConfirm": "Confirm delete"
+      },
+      "tooltips": {
+        "docxUnavailable": "The DOCX file is not yet available (document engine in progress)",
+        "downloadDocx": "Download the editable DOCX file",
+        "pdfUnavailable": "PDF will be available once rendering is live (coming soon)",
+        "downloadPdf": "Download the final PDF",
+        "needsDocx": "The document needs a generated DOCX file first",
+        "markReady": "Mark as ready to send to the client",
+        "mustBeReady": "The document must be in 'Ready' status",
+        "markSent": "Mark as sent to the client",
+        "markFinal": "Approve as the final version (accepted by the client)",
+        "cannotDeleteFinal": "Final documents cannot be deleted",
+        "deleteDraft": "Delete the draft document"
+      },
+      "toasts": {
+        "downloadError": "Failed to download DOCX",
+        "markedReady": "Document marked as ready",
+        "markedFinal": "Document marked as final",
+        "markedSent": "Document marked as sent",
+        "statusError": "Failed to change status",
+        "markFinalError": "Failed to mark as final",
+        "markSentError": "Failed to mark as sent",
+        "deleted": "Document deleted",
+        "deleteError": "Failed to delete document"
+      }
+    }
+  },
   "warranty": {
     "sectionTitle": "Warranty",
     "noWarranty": "No warranty card",
