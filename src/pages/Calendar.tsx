@@ -51,6 +51,9 @@ export default function Calendar() {
   const monthEnd = endOfMonth(currentDate);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
   const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+  // String keys for stable useMemo dependencies (Date objects are new refs every render)
+  const calendarStartStr = format(calendarStart, 'yyyy-MM-dd');
+  const calendarEndStr = format(calendarEnd, 'yyyy-MM-dd');
   const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
@@ -125,7 +128,9 @@ export default function Calendar() {
       });
     });
     return map;
-  }, [events, calendarStart, calendarEnd]);
+  // calendarStartStr/EndStr are stable string deps — avoid Date object reference churn
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events, calendarStartStr, calendarEndStr]);
 
   const handleNavigate = useCallback((direction: 'prev' | 'next' | 'today') => {
     if (direction === 'today') {

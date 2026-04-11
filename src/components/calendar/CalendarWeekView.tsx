@@ -80,20 +80,27 @@ export function CalendarWeekView({ weekDays, eventsByDate, openEventDialog, date
             const allDayEvents = (eventsByDate[dateKey] || []).filter(e => !e.event_time);
             return (
               <div key={`allday-${dateKey}`} className="border-r last:border-r-0 p-1 space-y-0.5">
-                {allDayEvents.map(event => (
-                  <div
-                    key={event.id}
-                    onClick={e => { e.stopPropagation(); openEventDialog(day, event); }}
-                    className={cn(
-                      'text-xs px-1.5 py-0.5 rounded truncate cursor-pointer hover:opacity-80 transition-opacity',
-                      eventTypeColors[event.event_type]?.bg || eventTypeColors.other.bg,
-                      'border',
-                      eventTypeColors[event.event_type]?.border || eventTypeColors.other.border
-                    )}
-                  >
-                    {event.title}
-                  </div>
-                ))}
+                {allDayEvents.map(event => {
+                  const isCompleted = event.status === 'completed';
+                  return (
+                    <div
+                      key={event.id}
+                      onClick={e => { e.stopPropagation(); openEventDialog(day, event); }}
+                      className={cn(
+                        'text-xs px-1.5 py-0.5 rounded truncate cursor-pointer hover:opacity-80 transition-opacity',
+                        isCompleted
+                          ? 'bg-muted/40 border-muted line-through opacity-60'
+                          : cn(
+                              eventTypeColors[event.event_type]?.bg || eventTypeColors.other.bg,
+                              'border',
+                              eventTypeColors[event.event_type]?.border || eventTypeColors.other.border
+                            )
+                      )}
+                    >
+                      {event.title}
+                    </div>
+                  );
+                })}
               </div>
             );
           })}

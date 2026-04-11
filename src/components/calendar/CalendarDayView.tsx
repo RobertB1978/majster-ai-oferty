@@ -64,21 +64,31 @@ export function CalendarDayView({ selectedDate, eventsByDate, openEventDialog, d
             {t('calendar.allDay')}
           </div>
           <div className="space-y-1">
-            {allDayEvents.map(event => (
-              <div
-                key={event.id}
-                onClick={e => { e.stopPropagation(); openEventDialog(selectedDate, event); }}
-                className={cn(
-                  'p-2 rounded-md cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-2',
-                  eventTypeColors[event.event_type]?.bg || eventTypeColors.other.bg,
-                  'border',
-                  eventTypeColors[event.event_type]?.border || eventTypeColors.other.border
-                )}
-              >
-                <div className={cn('w-2 h-2 rounded-full flex-shrink-0', eventTypeColors[event.event_type]?.dot)} />
-                <span className="text-sm font-medium truncate">{event.title}</span>
-              </div>
-            ))}
+            {allDayEvents.map(event => {
+              const isCompleted = event.status === 'completed';
+              return (
+                <div
+                  key={event.id}
+                  onClick={e => { e.stopPropagation(); openEventDialog(selectedDate, event); }}
+                  className={cn(
+                    'p-2 rounded-md cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-2',
+                    isCompleted
+                      ? 'bg-muted/30 border-muted opacity-60'
+                      : cn(
+                          eventTypeColors[event.event_type]?.bg || eventTypeColors.other.bg,
+                          'border',
+                          eventTypeColors[event.event_type]?.border || eventTypeColors.other.border
+                        )
+                  )}
+                >
+                  <div className={cn(
+                    'w-2 h-2 rounded-full flex-shrink-0',
+                    isCompleted ? 'bg-green-500' : eventTypeColors[event.event_type]?.dot
+                  )} />
+                  <span className={cn('text-sm font-medium truncate', isCompleted && 'line-through')}>{event.title}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
