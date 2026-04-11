@@ -63,7 +63,6 @@ vi.mock('@/contexts/ConfigContext', () => ({
 }));
 
 // Stub Settings sub-components
-vi.mock('@/pages/CompanyProfile', () => ({ default: () => <div data-testid="company-profile" /> }));
 vi.mock('@/components/settings/LanguageSwitcher', () => ({ LanguageSwitcher: () => <div /> }));
 vi.mock('@/components/settings/ContactEmailSettings', () => ({ ContactEmailSettings: () => <div /> }));
 vi.mock('@/components/settings/DeleteAccountSection', () => ({ DeleteAccountSection: () => <div /> }));
@@ -72,6 +71,9 @@ vi.mock('@/components/documents/CompanyDocuments', () => ({ CompanyDocuments: ()
 vi.mock('@/components/notifications/PushNotificationSettings', () => ({ PushNotificationSettings: () => <div /> }));
 vi.mock('@/components/settings/BiometricSettings', () => ({ BiometricSettings: () => <div /> }));
 vi.mock('@/components/billing/SubscriptionSection', () => ({ SubscriptionSection: () => <div /> }));
+vi.mock('@/hooks/useDenseMode', () => ({
+  useDenseMode: () => ({ dense: false, toggleDense: vi.fn() }),
+}));
 
 // ─── Importy ────────────────────────────────────────────────────────────────
 
@@ -102,7 +104,6 @@ describe('Settings — BETA-CAL-01: zakładka kalendarza ukryta', () => {
   it('renderuje pozostałe wymagane sekcje ustawień', () => {
     renderSettings();
     const requiredSections = [
-      'settings-mobile-nav-company',
       'settings-mobile-nav-general',
       'settings-mobile-nav-documents',
       'settings-mobile-nav-email',
