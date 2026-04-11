@@ -448,7 +448,8 @@
     "sortNameDesc": "Nazwa Z-A",
     "totalCount": "Łącznie: {{count}} klientów",
     "deleteConfirmDesc": "Czy na pewno chcesz usunąć klienta \"{{name}}\"? Tej operacji nie można cofnąć.",
-    "delete": "Usuń"
+    "delete": "Usuń",
+    "addedOn": "Dodano: {{date}}"
   },
   "calendar": {
     "title": "Kalendarz",

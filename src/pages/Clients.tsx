@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
+import { formatDate } from '@/lib/formatters';
 import { useClientsPaginated, useAddClient, useUpdateClient, useDeleteClient, Client } from '@/hooks/useClients';
 import { useDebounce } from '@/hooks/useDebounce';
 import { clientSchema } from '@/lib/validations';
@@ -42,7 +43,7 @@ function getInitials(name: string): string {
 }
 
 export default function Clients() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -392,9 +393,20 @@ export default function Clients() {
                     </a>
                   )}
                   {client.address && (
-                    <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <a
+                      href={`https://maps.google.com/?q=${encodeURIComponent(client.address)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
                       <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
                       <span className="line-clamp-2">{client.address}</span>
+                    </a>
+                  )}
+                  {/* Data dodania */}
+                  {client.created_at && (
+                    <div className="flex items-center gap-1 pt-1 text-xs text-muted-foreground/60">
+                      <span>{t('clients.addedOn', { date: formatDate(client.created_at, i18n.language) })}</span>
                     </div>
                   )}
                   {/* Nawigacja relacyjna: oferty i projekty tego klienta */}

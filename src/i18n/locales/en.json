@@ -448,7 +448,8 @@
     "sortNameDesc": "Name Z-A",
     "totalCount": "Total: {{count}} clients",
     "deleteConfirmDesc": "Are you sure you want to delete client \"{{name}}\"? This action cannot be undone.",
-    "delete": "Delete"
+    "delete": "Delete",
+    "addedOn": "Added: {{date}}"
   },
   "calendar": {
     "title": "Calendar",

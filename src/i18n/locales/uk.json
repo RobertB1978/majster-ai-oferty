@@ -448,7 +448,8 @@
     "sortNameDesc": "Назва Я-А",
     "totalCount": "Всього: {{count}} клієнтів",
     "deleteConfirmDesc": "Ви впевнені, що хочете видалити клієнта \"{{name}}\"? Цю дію не можна скасувати.",
-    "delete": "Видалити"
+    "delete": "Видалити",
+    "addedOn": "Додано: {{date}}"
   },
   "calendar": {
     "title": "Календар",
