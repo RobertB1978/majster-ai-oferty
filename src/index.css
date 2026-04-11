@@ -157,6 +157,13 @@ img.leaflet-tile:not([src]) {
     --info: 220 82% 53%;           /* #2563EB — state-info */
     --info-foreground: 0 0% 100%;
 
+    /* Categorical label token — NON-semantic, for distinguishable category chips.
+       Used by document category = PROTOCOL, Mode B instance status = 'sent',
+       and estimate line item type = 'service'. Distinct from state colors
+       (info / warning / success / destructive) so categorical UI never collides
+       with semantic meaning. */
+    --category-protocol: 271 81% 53%; /* purple-600 equivalent */
+
     --border: 36 15% 88%;          /* #E8E4DC — border-default */
     --input: 36 15% 88%;
     --ring: 38 92% 50%;            /* #F59E0B — accent-amber focus ring */
@@ -299,6 +306,9 @@ img.leaflet-tile:not([src]) {
     --info: 220 82% 53%;
     --info-foreground: 0 0% 100%;
 
+    /* Categorical label token — dark variant (purple-400 equivalent) */
+    --category-protocol: 270 95% 75%;
+
     --border: 215 28% 17%;         /* #1F2937 — border-default dark */
     --input: 218 19% 27%;          /* #374151 — border-subtle dark */
     --ring: 38 92% 50%;            /* #F59E0B — accent-amber */
@@ -393,6 +403,28 @@ img.leaflet-tile:not([src]) {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* ============================================
+     Categorical label utilities — DS token: --category-protocol
+     Mirrors the shape of bg-warning/10 / text-warning / border-warning/30
+     but without exposing a slash-opacity API (kept as plain class names so
+     Tailwind JIT can always resolve them from source).
+     ============================================ */
+  .bg-category-protocol {
+    background-color: hsl(var(--category-protocol) / 0.10);
+  }
+  .bg-category-protocol-strong {
+    background-color: hsl(var(--category-protocol) / 0.20);
+  }
+  .text-category-protocol {
+    color: hsl(var(--category-protocol));
+  }
+  .border-category-protocol {
+    border-color: hsl(var(--category-protocol) / 0.30);
+  }
+  .ring-category-protocol {
+    --tw-ring-color: hsl(var(--category-protocol));
   }
 }
 

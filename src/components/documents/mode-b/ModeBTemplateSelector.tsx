@@ -43,9 +43,10 @@ const CATEGORY_ICON: Record<MasterTemplateCategory, ComponentType<{ className?: 
   OTHER:      MoreHorizontal,
 };
 
+// PROTOCOLS uses the DS --category-protocol token (see src/index.css).
 const CATEGORY_COLOR: Record<MasterTemplateCategory, string> = {
   CONTRACTS:  'bg-info/10 text-info border-info/30 dark:bg-info/20',
-  PROTOCOLS:  'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800', // purple = no DS token, needs revision
+  PROTOCOLS:  'bg-category-protocol text-category-protocol border-category-protocol dark:bg-category-protocol-strong',
   ANNEXES:    'bg-warning/10 text-warning border-warning/30 dark:bg-warning/20',
   COMPLIANCE: 'bg-success/10 text-success border-success/30 dark:bg-success/20',
   OTHER:      'bg-muted text-muted-foreground border-border',

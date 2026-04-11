@@ -107,10 +107,11 @@ const DEFAULT_COLS: ColsVisible = {
 
 /* ── Item type display ──────────────────────────────────────────── */
 
+// 'service' uses the DS --category-protocol token (see src/index.css).
 const TYPE_COLORS: Record<ItemType, string> = {
   labor: 'bg-info/10 text-info dark:bg-info/20',
   material: 'bg-success/10 text-success dark:bg-success/20',
-  service: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300', // intentional categorical — no DS token
+  service: 'bg-category-protocol text-category-protocol dark:bg-category-protocol-strong',
   travel: 'bg-warning/10 text-warning dark:bg-warning/20',
   lump_sum: 'bg-muted text-muted-foreground',
 };

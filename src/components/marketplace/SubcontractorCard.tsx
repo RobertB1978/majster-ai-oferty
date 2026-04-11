@@ -41,8 +41,8 @@ export function SubcontractorCard({ subcontractor, onViewDetails, onInvite }: Su
           </div>
           
           {subcontractor.rating > 0 && (
-            <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 px-2 py-1 rounded">
-              <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+            <div className="flex items-center gap-1 bg-warning/10 dark:bg-warning/20 px-2 py-1 rounded">
+              <Star className="h-4 w-4 fill-warning text-warning" />
               <span className="font-medium">{subcontractor.rating.toFixed(1)}</span>
               <span className="text-xs text-muted-foreground">({subcontractor.review_count})</span>
             </div>

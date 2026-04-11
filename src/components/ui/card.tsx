@@ -59,9 +59,13 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardHeader.displayName = "CardHeader";
 
+// CardTitle renders an <h3>. Font-weight, line-height and tracking come from
+// the global heading hierarchy defined in src/index.css (h3 = 600 / 1.2 / -0.015em).
+// We only set the font-size here so the element aligns with the design-system
+// heading scale instead of drifting via hardcoded magic values.
 const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("text-xl font-bold leading-none tracking-[-0.018em]", className)} {...props} />
+    <h3 ref={ref} className={cn("text-xl font-semibold leading-tight tracking-tight", className)} {...props} />
   ),
 );
 CardTitle.displayName = "CardTitle";

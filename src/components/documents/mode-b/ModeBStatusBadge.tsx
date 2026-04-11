@@ -16,13 +16,14 @@ interface ModeBStatusBadgeProps {
   className?: string;
 }
 
+// 'sent' uses the DS --category-protocol token (see src/index.css).
 const STATUS_CLASSES: Record<DocumentInstanceStatus, string> = {
   draft:
     'bg-muted text-muted-foreground border-border dark:bg-muted dark:text-muted-foreground dark:border-border',
   ready:
     'bg-info/10 text-info border-info/30 dark:bg-info/20 dark:text-info dark:border-info/40',
   sent:
-    'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800', // purple = no DS token, needs revision
+    'bg-category-protocol text-category-protocol border-category-protocol dark:bg-category-protocol-strong',
   final:
     'bg-success/10 text-success border-success/30 dark:bg-success/20 dark:text-success dark:border-success/40',
   archived:
