@@ -70,7 +70,7 @@ export function CalendarMonthView({
                 if (e.key === 'Enter') openEventDialog(day);
                 if (e.key === ' ') { e.preventDefault(); setSelectedDate(day); }
               }}
-              aria-label={`${format(day, 'd MMMM yyyy', { locale: dateLocale })}${isSelected ? `, ${t('calendar.selectedTapAgainToAdd')}` : ''}${isTodayDate ? `, ${t('calendar.today')}` : ''}`}
+              aria-label={`${format(day, 'd MMMM yyyy', { locale: dateLocale })}${isTodayDate ? `, ${t('calendar.today')}` : ''}${isSelected ? `, ${t('calendar.selectedTapAgainToAdd')}` : ''}`}
               aria-selected={isSelected}
               className={cn(
                 'group min-h-[100px] sm:min-h-[120px] p-1 sm:p-2 border-r border-b cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset',
@@ -88,22 +88,27 @@ export function CalendarMonthView({
                   {format(day, 'd')}
                 </div>
                 {/* Visible affordance for adding an event — especially important on touch
-                    devices where onDoubleClick is unreliable. Shows on selected cell or on hover. */}
+                    devices where onDoubleClick is unreliable. Shows on selected cell or on hover.
+                    - Touch target: 36×36px on mobile (w-9 h-9), 28×28px on desktop hover (sm:w-7 sm:h-7).
+                    - When hidden, also pointer-events-none so mobile users can't accidentally hit it. */}
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); openEventDialog(day); }}
+                  tabIndex={isSelected ? 0 : -1}
+                  aria-hidden={!isSelected}
                   aria-label={t('calendar.tapToAddHint')}
                   title={t('calendar.tapToAddHint')}
                   className={cn(
-                    'flex items-center justify-center w-6 h-6 rounded-full text-primary',
+                    'flex items-center justify-center rounded-full text-primary',
+                    'w-9 h-9 sm:w-7 sm:h-7',
                     'bg-primary/10 hover:bg-primary/20 active:bg-primary/30 transition-opacity',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                     isSelected
                       ? 'opacity-100'
-                      : 'opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
+                      : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'
                   )}
                 >
-                  <Plus className="h-3.5 w-3.5" />
+                  <Plus className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                 </button>
               </div>
               <div className="space-y-0.5 overflow-hidden">

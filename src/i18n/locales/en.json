@@ -457,7 +457,7 @@
     "noEvents": "No events on this day",
     "noEventsHint": "No events yet. Tap a day to select it, then tap again to add your first event.",
     "selectedTapAgainToAdd": "selected — tap again to add an event",
-    "tapToAddHint": "Add event",
+    "tapToAddHint": "Add entry on this day",
     "noEventsForDay": "No events — click any slot to add one",
     "today": "Today",
     "month": "Month",
