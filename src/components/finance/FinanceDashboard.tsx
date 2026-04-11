@@ -9,11 +9,14 @@ import { EmptyState } from '@/components/ui/empty-state';
 import {
   TrendingUp, TrendingDown, DollarSign, Receipt,
   BarChart3, Sparkles, AlertTriangle, Lightbulb,
-  ArrowUpRight, ArrowDownRight, PiggyBank, Lock, Zap
+  ArrowUpRight, ArrowDownRight, PiggyBank, Lock, Zap, FolderOpen
 } from 'lucide-react';
 import { useFinancialSummary, useAIFinancialAnalysis } from '@/hooks/useFinancialReports';
 import { usePlanGate } from '@/hooks/usePlanGate';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, BarChart, Bar, Legend
+} from 'recharts';
 import { LoadingCard } from '@/components/ui/loading-screen';
 
 interface PricingRecommendation {
@@ -23,17 +26,25 @@ interface PricingRecommendation {
   reason: string;
 }
 
+interface CashflowForecast {
+  nextMonth: number;
+  trend: 'up' | 'down' | 'stable';
+}
+
 // Kształt odpowiedzi z edge function finance-ai-analysis (supabase/functions/finance-ai-analysis/index.ts)
 interface AIAnalysisResult {
   keyInsights?: string[];
   actionItems?: string[];
   pricingRecommendations?: PricingRecommendation[];
   riskFactors?: string[];
+  profitableProjectTypes?: string[];
+  losingAreas?: string[];
+  cashflowForecast?: CashflowForecast;
 }
 
 export function FinanceDashboard() {
   const { t } = useTranslation();
-  const { data: summary, isLoading } = useFinancialSummary();
+  const { data: summary, isLoading, isError } = useFinancialSummary();
   const aiAnalysis = useAIFinancialAnalysis();
   const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
   const navigate = useNavigate();
@@ -41,11 +52,15 @@ export function FinanceDashboard() {
   const canUseAiAnalysis = canUseFeature('ai');
 
   const handleRunAnalysis = async () => {
-    const result = await aiAnalysis.mutateAsync();
-    setAnalysisResult(result);
+    try {
+      const result = await aiAnalysis.mutateAsync();
+      setAnalysisResult(result);
+    } catch {
+      // Error toast is already handled by onError in useAIFinancialAnalysis
+    }
   };
 
-  if (isLoading || !summary) {
+  if (isLoading || (!summary && !isError)) {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -61,7 +76,22 @@ export function FinanceDashboard() {
     );
   }
 
-  if (!summary.monthly.length) {
+  if (isError) {
+    return (
+      <EmptyState
+        icon={AlertTriangle}
+        title={t('finance.loadError')}
+        description={t('finance.loadErrorDesc')}
+        action={{
+          label: t('common.refresh'),
+          onClick: () => window.location.reload(),
+        }}
+        className="min-h-[400px]"
+      />
+    );
+  }
+
+  if (!summary?.monthly.length) {
     return (
       <EmptyState
         icon={TrendingUp}
@@ -85,7 +115,6 @@ export function FinanceDashboard() {
       label: t('finance.revenue'),
       value: summary.totalRevenue,
       icon: DollarSign,
-      gradient: 'from-emerald-500 to-green-600',
       bgGradient: 'from-emerald-500/10 to-green-500/5',
       iconBg: 'bg-success',
     },
@@ -93,7 +122,6 @@ export function FinanceDashboard() {
       label: t('finance.costs'),
       value: summary.totalCosts,
       icon: Receipt,
-      gradient: 'from-rose-500 to-red-600',
       bgGradient: 'from-rose-500/10 to-red-500/5',
       iconBg: 'bg-destructive',
     },
@@ -101,7 +129,6 @@ export function FinanceDashboard() {
       label: t('finance.grossMargin'),
       value: summary.grossMargin,
       icon: marginTrend >= 0 ? TrendingUp : TrendingDown,
-      gradient: 'from-primary to-primary',
       bgGradient: 'from-primary/10 to-primary/5',
       iconBg: 'bg-info',
       trend: marginTrend,
@@ -111,16 +138,41 @@ export function FinanceDashboard() {
       value: summary.marginPercent,
       isPercent: true,
       icon: PiggyBank,
-      gradient: 'from-primary to-primary',
       bgGradient: 'from-primary/10 to-primary/5',
       iconBg: 'bg-primary',
     },
+    {
+      label: t('finance.projectCount'),
+      value: summary.projectCount,
+      isCount: true,
+      icon: FolderOpen,
+      bgGradient: 'from-blue-500/10 to-sky-500/5',
+      iconBg: 'bg-blue-600',
+    },
   ];
+
+  const trendColor = (trend: 'up' | 'down' | 'stable') => {
+    if (trend === 'up') return 'text-emerald-500';
+    if (trend === 'down') return 'text-rose-500';
+    return 'text-muted-foreground';
+  };
+
+  const trendLabel = (trend: 'up' | 'down' | 'stable') => {
+    if (trend === 'up') return t('finance.trendUp');
+    if (trend === 'down') return t('finance.trendDown');
+    return t('finance.trendStable');
+  };
+
+  const trendIcon = (trend: 'up' | 'down' | 'stable') => {
+    if (trend === 'up') return <TrendingUp className="h-5 w-5 text-emerald-500" />;
+    if (trend === 'down') return <TrendingDown className="h-5 w-5 text-rose-500" />;
+    return <BarChart3 className="h-5 w-5 text-muted-foreground" />;
+  };
 
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {kpiCards.map((card, index) => (
           <Card
             key={card.label}
@@ -134,7 +186,9 @@ export function FinanceDashboard() {
                   <p className="text-2xl sm:text-3xl font-bold tracking-tight">
                     {card.isPercent
                       ? `${card.value.toFixed(1)}%`
-                      : `${card.value.toLocaleString()} zł`
+                      : card.isCount
+                        ? card.value
+                        : `${card.value.toLocaleString()} zł`
                     }
                   </p>
                   {card.trend !== undefined && (
@@ -196,7 +250,7 @@ export function FinanceDashboard() {
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <Tooltip
-                  formatter={(value: number) => [`${value.toLocaleString()} zł`]}
+                  formatter={(value: number, name: string) => [`${value.toLocaleString()} zł`, name]}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
                   itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                   contentStyle={{
@@ -206,6 +260,7 @@ export function FinanceDashboard() {
                     boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)',
                   }}
                 />
+                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '12px' }} />
                 <Area
                   type="monotone"
                   dataKey="revenue"
@@ -258,7 +313,7 @@ export function FinanceDashboard() {
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <Tooltip
-                  formatter={(value: number) => [`${value.toLocaleString()} zł`]}
+                  formatter={(value: number, name: string) => [`${value.toLocaleString()} zł`, name]}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
                   itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                   contentStyle={{
@@ -268,6 +323,7 @@ export function FinanceDashboard() {
                     boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)',
                   }}
                 />
+                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '12px' }} />
                 <Bar
                   dataKey="margin"
                   fill="url(#barGradient)"
@@ -308,21 +364,22 @@ export function FinanceDashboard() {
                 <TabsTrigger value="insights">{t('finance.insights')}</TabsTrigger>
                 <TabsTrigger value="pricing">{t('finance.pricingTab')}</TabsTrigger>
                 <TabsTrigger value="risks">{t('finance.risks')}</TabsTrigger>
+                <TabsTrigger value="forecast">{t('finance.forecastTab')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="insights" className="space-y-4 mt-4">
                 {analysisResult.keyInsights?.map((insight: string, i: number) => (
                   <div key={i} className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-                    <Lightbulb className="h-5 w-5 text-yellow-500 mt-0.5" />
+                    <Lightbulb className="h-5 w-5 text-yellow-500 mt-0.5 shrink-0" />
                     <p>{insight}</p>
                   </div>
                 ))}
 
-                {analysisResult.actionItems?.length > 0 && (
+                {(analysisResult.actionItems?.length ?? 0) > 0 && (
                   <div className="mt-4">
                     <h4 className="font-medium mb-2">{t('finance.actionItems')}</h4>
                     <ul className="space-y-2">
-                      {analysisResult.actionItems.map((action: string, i: number) => (
+                      {analysisResult.actionItems!.map((action: string, i: number) => (
                         <li key={i} className="flex items-center gap-2 text-sm">
                           <Badge variant="outline">{i + 1}</Badge>
                           {action}
@@ -355,10 +412,62 @@ export function FinanceDashboard() {
               <TabsContent value="risks" className="space-y-4 mt-4">
                 {analysisResult.riskFactors?.map((risk: string, i: number) => (
                   <div key={i} className="flex items-start gap-3 p-3 bg-destructive/10 rounded-lg">
-                    <AlertTriangle className="h-5 w-5 text-destructive mt-0.5" />
+                    <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
                     <p>{risk}</p>
                   </div>
                 ))}
+              </TabsContent>
+
+              <TabsContent value="forecast" className="space-y-6 mt-4">
+                {analysisResult.cashflowForecast ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-4 bg-muted rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">{t('finance.nextMonth')}</p>
+                      <p className="text-2xl font-bold">
+                        {analysisResult.cashflowForecast.nextMonth.toLocaleString()} zł
+                      </p>
+                    </div>
+                    <div className="p-4 bg-muted rounded-lg flex items-center gap-3">
+                      {trendIcon(analysisResult.cashflowForecast.trend)}
+                      <div>
+                        <p className="text-sm text-muted-foreground">{t('finance.trend')}</p>
+                        <p className={`font-medium ${trendColor(analysisResult.cashflowForecast.trend)}`}>
+                          {trendLabel(analysisResult.cashflowForecast.trend)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-center py-4">{t('finance.noForecastData')}</p>
+                )}
+
+                {(analysisResult.profitableProjectTypes?.length ?? 0) > 0 && (
+                  <div>
+                    <h4 className="font-medium mb-3">{t('finance.profitableTypes')}</h4>
+                    <ul className="space-y-2">
+                      {analysisResult.profitableProjectTypes!.map((type, i) => (
+                        <li key={i} className="flex items-center gap-2 p-2 bg-emerald-500/10 rounded-lg text-sm">
+                          <TrendingUp className="h-4 w-4 text-emerald-500 shrink-0" />
+                          {type}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {(analysisResult.losingAreas?.length ?? 0) > 0 && (
+                  <div>
+                    <h4 className="font-medium mb-3">{t('finance.losingAreas')}</h4>
+                    <ul className="space-y-2">
+                      {analysisResult.losingAreas!.map((area, i) => (
+                        <li key={i} className="flex items-center gap-2 p-2 bg-rose-500/10 rounded-lg text-sm">
+                          <TrendingDown className="h-4 w-4 text-rose-500 shrink-0" />
+                          {area}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           ) : (

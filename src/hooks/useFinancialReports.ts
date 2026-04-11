@@ -16,6 +16,10 @@ export interface FinancialReport {
   created_at: string;
 }
 
+/**
+ * @deprecated Not used in any component. The `financial_reports` table is a legacy
+ * reporting table. Use `useFinancialSummary` for live aggregated financial data.
+ */
 export function useFinancialReports() {
   const { user } = useAuth();
 
@@ -46,22 +50,28 @@ export function useFinancialSummary() {
     gcTime: 1000 * 60 * 15, // 15 minutes
     queryFn: async () => {
       // Get all quotes (revenue)
-      const { data: quotes } = await supabase
+      const { data: quotes, error: quotesError } = await supabase
         .from('quotes')
         .select('total, created_at, project_id')
         .eq('user_id', user!.id);
 
+      if (quotesError) throw quotesError;
+
       // Get all purchase costs
-      const { data: costs } = await supabase
+      const { data: costs, error: costsError } = await supabase
         .from('purchase_costs')
         .select('gross_amount, created_at, project_id')
         .eq('user_id', user!.id);
 
+      if (costsError) throw costsError;
+
       // Get projects from v2_projects — RLS enforces user isolation
       // v2_projects uses `title` (not legacy `project_name`)
-      const { data: projects } = await supabase
+      const { data: projects, error: projectsError } = await supabase
         .from('v2_projects')
         .select('id, title, status, created_at');
+
+      if (projectsError) throw projectsError;
 
       const totalRevenue = (quotes || []).reduce((sum, q) => sum + Number(q.total), 0);
       const totalCosts = (costs || []).reduce((sum, c) => sum + Number(c.gross_amount), 0);
