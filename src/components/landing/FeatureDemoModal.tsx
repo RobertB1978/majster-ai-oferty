@@ -125,9 +125,9 @@ function ClientsSample() {
 function ProjectsSample() {
   const { t } = useTranslation();
   const projects = [
-    { name: t('landing.demo.projects.project1'), status: t('landing.demo.projects.statusInProgress'), pct: 65, color: 'bg-blue-500' },
-    { name: t('landing.demo.projects.project2'), status: t('landing.demo.projects.statusCompleted'), pct: 100, color: 'bg-green-500' },
-    { name: t('landing.demo.projects.project3'), status: t('landing.demo.projects.statusPlanned'), pct: 20, color: 'bg-amber-500' },
+    { name: t('landing.demo.projects.project1'), status: t('landing.demo.projects.statusInProgress'), pct: 65, color: 'bg-primary' },
+    { name: t('landing.demo.projects.project2'), status: t('landing.demo.projects.statusCompleted'), pct: 100, color: 'bg-success' },
+    { name: t('landing.demo.projects.project3'), status: t('landing.demo.projects.statusPlanned'), pct: 20, color: 'bg-info' },
   ];
   return (
     <div className="rounded-xl border bg-card divide-y divide-border text-sm overflow-hidden">

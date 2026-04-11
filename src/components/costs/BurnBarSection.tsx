@@ -230,7 +230,7 @@ export function BurnBarSection({ project }: BurnBarSectionProps) {
     pct >= 100
       ? 'bg-destructive'
       : pct >= 80
-      ? 'bg-amber-500'
+      ? 'bg-warning'
       : 'bg-primary';
 
   if (isLoading) {

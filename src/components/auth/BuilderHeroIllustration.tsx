@@ -38,13 +38,13 @@ export function BuilderHeroIllustration() {
         <line key={`v${i}`} x1={80 + i * 48} y1="160" x2={80 + i * 48} y2="380" stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="4 4" />
       ))}
 
-      {/* Roof */}
-      <polygon points="40,165 240,60 440,165" fill="rgba(245,158,11,0.85)" />
-      <polygon points="40,165 240,60 440,165" fill="none" stroke="rgba(245,158,11,1)" strokeWidth="2" />
+      {/* Roof — uses --accent-amber brand token */}
+      <polygon points="40,165 240,60 440,165" style={{ fill: 'var(--accent-amber)' }} fillOpacity={0.85} />
+      <polygon points="40,165 240,60 440,165" fill="none" stroke="var(--accent-amber)" strokeWidth="2" />
 
       {/* Door */}
-      <rect x="190" y="285" width="60" height="95" rx="30" fill="rgba(245,158,11,0.3)" stroke="rgba(245,158,11,0.8)" strokeWidth="2" />
-      <circle cx="220" cy="335" r="5" fill="rgba(245,158,11,0.9)" />
+      <rect x="190" y="285" width="60" height="95" rx="30" style={{ fill: 'var(--accent-amber)' }} fillOpacity={0.3} stroke="var(--accent-amber)" strokeOpacity={0.8} strokeWidth="2" />
+      <circle cx="220" cy="335" r="5" style={{ fill: 'var(--accent-amber)' }} fillOpacity={0.9} />
 
       {/* Windows */}
       <rect x="90" y="200" width="80" height="60" rx="4" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
@@ -64,8 +64,8 @@ export function BuilderHeroIllustration() {
         <circle cx="58" cy="30" r="3" fill="#92400E" />
         <path d="M 42 40 Q 50 47 58 40" stroke="#92400E" strokeWidth="2" fill="none" strokeLinecap="round" />
         <rect x="25" y="55" width="50" height="65" rx="8" fill="#1E3A5F" />
-        <polygon points="50,55 25,70 35,120 65,120 75,70" fill="rgba(245,158,11,0.35)" />
-        <rect x="44" y="55" width="12" height="65" fill="rgba(245,158,11,0.35)" />
+        <polygon points="50,55 25,70 35,120 65,120 75,70" style={{ fill: 'var(--accent-amber)' }} fillOpacity={0.35} />
+        <rect x="44" y="55" width="12" height="65" style={{ fill: 'var(--accent-amber)' }} fillOpacity={0.35} />
         <rect x="5" y="58" width="20" height="45" rx="8" fill="#1E3A5F" />
         <rect x="75" y="58" width="20" height="45" rx="8" fill="#1E3A5F" />
         <rect x="75" y="62" width="30" height="22" rx="3" fill="#0F172A" />
@@ -86,7 +86,7 @@ export function BuilderHeroIllustration() {
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
       >
         <rect x="20" y="90" width="130" height="52" rx="10" fill="rgba(255,255,255,0.95)" />
-        <circle cx="42" cy="116" r="14" fill="rgba(245,158,11,0.15)" />
+        <circle cx="42" cy="116" r="14" style={{ fill: 'var(--accent-amber)' }} fillOpacity={0.15} />
         <text x="42" y="120" textAnchor="middle" fontSize="14" fill="#D97706">{'\u2713'}</text>
         <text x="62" y="110" fontSize="10" fill="#374151" fontWeight="600">{S1_TITLE}</text>
         <text x="62" y="124" fontSize="9" fill="#6B7280">{S1_SUB}</text>
@@ -97,7 +97,7 @@ export function BuilderHeroIllustration() {
         transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
       >
         <rect x="330" y="95" width="130" height="52" rx="10" fill="rgba(255,255,255,0.95)" />
-        <circle cx="352" cy="121" r="14" fill="rgba(34,197,94,0.15)" />
+        <circle cx="352" cy="121" r="14" style={{ fill: 'var(--state-success)' }} fillOpacity={0.15} />
         <text x="352" y="125" textAnchor="middle" fontSize="12" fill="#16A34A">{'\u2191'}</text>
         <text x="372" y="115" fontSize="10" fill="#374151" fontWeight="600">{S2_TITLE}</text>
         <text x="372" y="129" fontSize="9" fill="#16A34A">{S2_SUB}</text>
@@ -108,7 +108,7 @@ export function BuilderHeroIllustration() {
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
       >
         <rect x="330" y="280" width="130" height="52" rx="10" fill="rgba(255,255,255,0.95)" />
-        <circle cx="352" cy="306" r="14" fill="rgba(59,130,246,0.15)" />
+        <circle cx="352" cy="306" r="14" style={{ fill: 'var(--state-info)' }} fillOpacity={0.15} />
         <text x="352" y="310" textAnchor="middle" fontSize="12" fill="#2563EB">{'\u2605'}</text>
         <text x="372" y="300" fontSize="10" fill="#374151" fontWeight="600">{S3_TITLE}</text>
         <text x="372" y="314" fontSize="9" fill="#2563EB">{S3_SUB}</text>

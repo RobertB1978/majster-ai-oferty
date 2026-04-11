@@ -15,23 +15,23 @@ export function TestimonialsSection() {
     {
       key: 'time',
       icon: Clock,
-      color: 'text-amber-500',
-      bgColor: 'bg-amber-500/10',
-      borderColor: 'border-amber-500/20',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10',
+      borderColor: 'border-primary/20',
     },
     {
       key: 'quality',
       icon: FileText,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-500/10',
-      borderColor: 'border-blue-500/20',
+      color: 'text-info',
+      bgColor: 'bg-info/10',
+      borderColor: 'border-info/20',
     },
     {
       key: 'control',
       icon: TrendingUp,
-      color: 'text-emerald-500',
-      bgColor: 'bg-emerald-500/10',
-      borderColor: 'border-emerald-500/20',
+      color: 'text-success',
+      bgColor: 'bg-success/10',
+      borderColor: 'border-success/20',
     },
   ];
 

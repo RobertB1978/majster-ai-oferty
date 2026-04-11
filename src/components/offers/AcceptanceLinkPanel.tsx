@@ -79,15 +79,15 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
   // ── ACCEPTED state ──────────────────────────────────────────────────────────
   if (isAccepted) {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20 p-4 space-y-3">
+      <div className="rounded-lg border border-success/30 bg-success/5 dark:border-success/40 dark:bg-success/10 p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
-          <p className="font-semibold text-green-700 dark:text-green-400">
+          <CheckCircle2 className="h-5 w-5 text-success shrink-0" />
+          <p className="font-semibold text-success">
             {t('acceptanceLink.statusAccepted')}
           </p>
         </div>
         {acceptedAt && (
-          <p className="text-sm text-green-600 dark:text-green-500">
+          <p className="text-sm text-success/80">
             {t('acceptanceLink.acceptedAt', { date: formatDateTime(acceptedAt, i18n.language) })}
           </p>
         )}
@@ -110,7 +110,7 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
           ) : (
             // No project yet — offer creation
             <>
-              <p className="text-xs text-green-600 dark:text-green-500 mb-2">
+              <p className="text-xs text-success/80 mb-2">
                 {t('acceptanceLink.createProjectHint')}
               </p>
               <Button

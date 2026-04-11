@@ -13,12 +13,12 @@ import { ChevronLeft, ChevronRight, Loader2, FolderOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
-/** Map V2 status values → colour classes */
+/** Map V2 status values → semantic colour classes */
 const STATUS_COLOR: Record<string, string> = {
-  'ACTIVE':    'bg-blue-500',
-  'ON_HOLD':   'bg-amber-500',
-  'CANCELLED': 'bg-gray-500',
-  'COMPLETED': 'bg-emerald-500',
+  'ACTIVE':    'bg-primary',           // --primary amber (#F59E0B)
+  'ON_HOLD':   'bg-warning',           // --state-warning (#D97706)
+  'CANCELLED': 'bg-muted-foreground',  // neutral grey (#5E646E)
+  'COMPLETED': 'bg-success',           // --state-success (#16A34A)
 };
 
 /** Map V2 status → full i18n key */

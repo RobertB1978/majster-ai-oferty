@@ -73,8 +73,8 @@ const getPlans = (t: (key: string) => string): PricingPlan[] => [
     description: t('billing.plans.business.description'),
     icon: <Crown className="h-6 w-6" />,
     popular: true,
-    gradient: 'from-amber-500/10 to-orange-500/5',
-    iconGradient: 'from-amber-500 to-orange-600',
+    gradient: 'from-primary/10 to-warning/5',
+    iconGradient: 'from-primary to-warning',
     features: [
       t('billing.plans.business.features.unlimitedProjects'),
       t('billing.plans.business.features.unlimitedClients'),
@@ -126,7 +126,7 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
             'relative overflow-hidden transition-all duration-500 hover:shadow-2xl group',
             `bg-gradient-to-br ${plan.gradient}`,
             plan.popular && 'ring-2 ring-primary shadow-xl scale-[1.02] z-10',
-            currentPlan === plan.id && 'ring-2 ring-green-500'
+            currentPlan === plan.id && 'ring-2 ring-success'
           )}
           style={{ animationDelay: `${index * 100}ms` }}
         >

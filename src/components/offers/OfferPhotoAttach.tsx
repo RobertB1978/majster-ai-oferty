@@ -174,7 +174,7 @@ export function OfferPhotoAttach({ offerId, readOnly = false }: Props) {
                         className={cn(
                           'rounded p-1 text-xs transition-colors',
                           photo.show_in_public
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-primary text-white'
                             : 'bg-white/20 text-white hover:bg-white/30',
                         )}
                         title={t('offerPhotos.togglePublic')}

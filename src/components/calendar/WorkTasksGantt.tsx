@@ -16,9 +16,9 @@ import { useProjectsV2List } from '@/hooks/useProjectsV2';
 import { cn } from '@/lib/utils';
 
 const statusColors: Record<string, string> = {
-  planned: 'bg-blue-500',
-  in_progress: 'bg-amber-500',
-  done: 'bg-emerald-500',
+  planned:     'bg-info',      // --state-info (#2563EB)
+  in_progress: 'bg-warning',   // --state-warning (#D97706)
+  done:        'bg-success',   // --state-success (#16A34A)
 };
 
 interface WorkTasksGanttProps {

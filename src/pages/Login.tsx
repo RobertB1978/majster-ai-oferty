@@ -196,7 +196,7 @@ export default function Login() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative flex-col items-center justify-center overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, hsl(222 47% 11%) 0%, hsl(217 33% 17%) 50%, hsl(30 90% 20%) 100%)',
+            background: 'linear-gradient(135deg, hsl(var(--chrome)) 0%, hsl(var(--accent)) 50%, hsl(var(--sidebar-primary)) 100%)',
           }}
         >
           {/* Background dot pattern */}
@@ -211,7 +211,7 @@ export default function Login() {
           {/* Amber glow orb */}
           <div
             className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full opacity-20 blur-3xl"
-            style={{ background: 'hsl(30 90% 32%)' }}
+            style={{ background: 'hsl(var(--sidebar-primary))' }}
           />
 
           <div className="relative z-10 flex flex-col items-center text-center px-12 max-w-lg">
@@ -224,7 +224,7 @@ export default function Login() {
             >
               <div
                 className="flex h-12 w-12 items-center justify-center rounded-2xl shadow-xl"
-                style={{ background: 'hsl(30 90% 32%)' }}
+                style={{ background: 'hsl(var(--sidebar-primary))' }}
               >
                 <Wrench className="h-6 w-6 text-white" aria-hidden="true" />
               </div>
@@ -269,9 +269,9 @@ export default function Login() {
                   key={pill.text}
                   className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium"
                   style={{
-                    background: 'rgba(255,255,255,0.1)',
-                    color: 'rgba(255,255,255,0.85)',
-                    border: '1px solid rgba(255,255,255,0.15)',
+                    background: 'hsl(var(--chrome-foreground) / 0.1)',
+                    color: 'hsl(var(--chrome-foreground) / 0.85)',
+                    border: '1px solid hsl(var(--chrome-foreground) / 0.15)',
                   }}
                 >
                   <span style={{ color: 'var(--accent-amber)' }} aria-hidden="true">{pill.icon}</span>

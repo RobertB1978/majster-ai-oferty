@@ -137,7 +137,7 @@ export function CookieConsent() {
 
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-2">
-                  <Megaphone className="h-4 w-4 text-orange-500" />
+                  <Megaphone className="h-4 w-4 text-warning" />
                   <Label className="font-medium">{t('cookies.marketing')}</Label>
                 </div>
                 <Switch
