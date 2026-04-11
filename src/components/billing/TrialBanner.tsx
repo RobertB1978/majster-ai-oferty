@@ -51,16 +51,16 @@ export function TrialBanner() {
   if (daysLeft > 7) return null;
 
   return (
-    <Alert className="border-amber-400 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-700">
-      <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+    <Alert className="border-warning bg-warning/5 dark:bg-warning/10 dark:border-warning/70">
+      <Clock className="h-4 w-4 text-warning" />
       <AlertDescription className="flex items-center justify-between flex-wrap gap-2">
-        <span className="text-sm text-amber-800 dark:text-amber-300">
+        <span className="text-sm text-warning">
           <span className="font-semibold">
             {t('billing.trialDaysRemaining', { count: daysLeft })}
           </span>{' '}
           {t('billing.upgradeToMaintainAccess')}
         </span>
-        <Button size="sm" variant="outline" onClick={() => navigate('/app/plan')} className="shrink-0 border-amber-400 text-amber-700 hover:bg-amber-100 dark:text-amber-300">
+        <Button size="sm" variant="outline" onClick={() => navigate('/app/plan')} className="shrink-0 border-warning text-warning hover:bg-warning/10">
           {t('billing.selectPlan')}
         </Button>
       </AlertDescription>

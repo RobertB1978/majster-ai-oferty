@@ -295,7 +295,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
                       className={cn(
                         "h-2",
                         usagePercent > 100 && "[&>div]:bg-destructive",
-                        usagePercent > 80 && usagePercent <= 100 && "[&>div]:bg-amber-500"
+                        usagePercent > 80 && usagePercent <= 100 && "[&>div]:bg-warning"
                       )}
                     />
                   </div>

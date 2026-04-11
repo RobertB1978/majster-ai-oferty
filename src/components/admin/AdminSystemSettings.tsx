@@ -159,7 +159,7 @@ export function AdminSystemSettings() {
             {/* Maintenance Mode */}
             <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-full ${displaySettings.maintenance_mode ? 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]' : 'bg-green-100 text-green-600'}`}>
+                <div className={`p-2 rounded-full ${displaySettings.maintenance_mode ? 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]' : 'bg-success/10 text-success'}`}>
                   {displaySettings.maintenance_mode ? <AlertTriangle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5" />}
                 </div>
                 <div>

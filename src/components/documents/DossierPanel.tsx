@@ -50,6 +50,7 @@ const CATEGORY_ICON: Record<DossierCategory, React.ComponentType<{ className?: s
   OTHER:     MoreHorizontal,
 };
 
+// Intentional categorical colours — distinct palette needed for visual separation
 const CATEGORY_COLOR: Record<DossierCategory, string> = {
   CONTRACT:  'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
   PROTOCOL:  'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
@@ -254,7 +255,7 @@ function FileRow({ item, onDelete }: FileRowProps) {
           'flex items-center justify-center gap-1 p-1.5 rounded transition-colors min-h-[44px]',
           confirmDelete ? 'px-2' : 'min-w-[44px]',
           confirmDelete
-            ? 'bg-red-100 text-red-600 dark:bg-red-900/30'
+            ? 'bg-destructive/10 text-destructive dark:bg-destructive/20'
             : 'hover:bg-muted text-muted-foreground hover:text-destructive'
         )}
         onClick={handleDelete}

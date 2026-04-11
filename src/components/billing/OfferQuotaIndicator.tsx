@@ -40,7 +40,7 @@ export function OfferQuotaIndicator({ className }: OfferQuotaIndicatorProps) {
         isAtLimit
           ? 'bg-destructive/10 text-destructive'
           : isNearLimit
-            ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400'
+            ? 'bg-warning/10 text-warning dark:bg-warning/20'
             : 'bg-muted text-muted-foreground',
         className
       )}

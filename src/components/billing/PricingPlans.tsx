@@ -149,7 +149,7 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
           )}
           {currentPlan === plan.id && (
             <div className="absolute top-3 left-3">
-              <Badge className="bg-green-500 text-white">
+              <Badge className="bg-success text-success-foreground">
                 {t('billing.active')}
               </Badge>
             </div>
@@ -182,8 +182,8 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
             <ul className="space-y-2.5">
               {plan.features.map((feature, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm">
-                  <div className="h-5 w-5 rounded-full bg-green-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="h-3 w-3 text-green-500" />
+                  <div className="h-5 w-5 rounded-full bg-success/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="h-3 w-3 text-success" />
                   </div>
                   <span>{feature}</span>
                 </li>

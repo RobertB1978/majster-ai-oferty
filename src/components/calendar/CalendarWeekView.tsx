@@ -166,8 +166,8 @@ export function CalendarWeekView({ weekDays, eventsByDate, openEventDialog, date
                       className="absolute left-0 right-0 pointer-events-none z-10 flex items-center"
                       style={{ top: `${(nowMinutes / 60) * HOUR_HEIGHT}px` }}
                     >
-                      <div className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 -ml-1" />
-                      <div className="flex-1 h-0.5 bg-red-500/80" />
+                      <div className="w-2 h-2 rounded-full bg-destructive flex-shrink-0 -ml-1" />
+                      <div className="flex-1 h-0.5 bg-destructive/80" />
                     </div>
                   )}
                 </div>

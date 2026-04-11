@@ -129,9 +129,9 @@ export function AddOnModal({ open, onClose, limitType }: AddOnModalProps) {
 
         <Separator />
 
-        <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800">
-          <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-          <AlertDescription className="text-blue-800 dark:text-blue-300 text-sm">
+        <Alert className="border-info/30 bg-info/5 dark:bg-info/10 dark:border-info/40">
+          <Info className="h-4 w-4 text-info" />
+          <AlertDescription className="text-info text-sm">
             {t('addons.comingSoon')}
           </AlertDescription>
         </Alert>
