@@ -15,6 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { SignatureCanvas } from '@/components/offers/SignatureCanvas';
@@ -353,26 +354,26 @@ export default function OfferPublicPage() {
                   <div className="mt-4">
                     <h3 className="font-medium mb-3 text-sm">{t('offerPublicPage.scopeTitle')}</h3>
                     <div className="border rounded-lg overflow-hidden">
-                      <table className="w-full text-sm">
-                        <thead className="bg-muted">
-                          <tr>
-                            <th className="text-left p-3 font-medium">{t('offerPublicPage.colName')}</th>
-                            <th className="text-right p-3 font-medium">{t('offerPublicPage.colQty')}</th>
-                            <th className="text-right p-3 font-medium">{t('offerPublicPage.colPrice')}</th>
-                            <th className="text-right p-3 font-medium">{t('offerPublicPage.colTotal')}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-muted hover:bg-muted">
+                            <TableHead className="p-3 h-auto">{t('offerPublicPage.colName')}</TableHead>
+                            <TableHead className="p-3 h-auto text-right">{t('offerPublicPage.colQty')}</TableHead>
+                            <TableHead className="p-3 h-auto text-right">{t('offerPublicPage.colPrice')}</TableHead>
+                            <TableHead className="p-3 h-auto text-right">{t('offerPublicPage.colTotal')}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
                           {positions.map((pos: PublicOfferPosition, i: number) => (
-                            <tr key={i} className={i % 2 === 0 ? 'bg-background' : 'bg-muted/30'}>
-                              <td className="p-3">{pos.name}</td>
-                              <td className="text-right p-3 whitespace-nowrap">{pos.qty} {pos.unit}</td>
-                              <td className="text-right p-3 whitespace-nowrap">{formatCurrency(pos.price)}</td>
-                              <td className="text-right p-3 font-medium whitespace-nowrap">{formatCurrency(pos.qty * pos.price)}</td>
-                            </tr>
+                            <TableRow key={i} className={i % 2 === 0 ? 'bg-background' : 'bg-muted/30'}>
+                              <TableCell className="p-3">{pos.name}</TableCell>
+                              <TableCell className="p-3 text-right whitespace-nowrap">{pos.qty} {pos.unit}</TableCell>
+                              <TableCell className="p-3 text-right whitespace-nowrap">{formatCurrency(pos.price)}</TableCell>
+                              <TableCell className="p-3 text-right font-medium whitespace-nowrap">{formatCurrency(pos.qty * pos.price)}</TableCell>
+                            </TableRow>
                           ))}
-                        </tbody>
-                      </table>
+                        </TableBody>
+                      </Table>
                     </div>
                   </div>
                 )}
