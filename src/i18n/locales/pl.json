@@ -627,7 +627,9 @@
       "added": "Pracownik dodany",
       "addError": "Błąd podczas dodawania pracownika",
       "updated": "Pracownik zaktualizowany",
-      "deleted": "Pracownik usunięty"
+      "deleted": "Pracownik usunięty",
+      "updateError": "Błąd podczas aktualizacji pracownika",
+      "deleteError": "Błąd podczas usuwania pracownika"
     },
     "memberOptions": "Opcje",
     "members": {

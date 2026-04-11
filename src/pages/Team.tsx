@@ -181,25 +181,28 @@ export default function Team() {
       return;
     }
 
-    if (editingMember) {
-      await updateMember.mutateAsync({
-        id: editingMember.id,
-        name: formData.name,
-        phone: formData.phone || null,
-        email: formData.email || null,
-        role: formData.role,
-      });
-    } else {
-      await addMember.mutateAsync({
-        name: formData.name,
-        phone: formData.phone || null,
-        email: formData.email || null,
-        role: formData.role,
-        is_active: true,
-      });
+    try {
+      if (editingMember) {
+        await updateMember.mutateAsync({
+          id: editingMember.id,
+          name: formData.name,
+          phone: formData.phone || null,
+          email: formData.email || null,
+          role: formData.role,
+        });
+      } else {
+        await addMember.mutateAsync({
+          name: formData.name,
+          phone: formData.phone || null,
+          email: formData.email || null,
+          role: formData.role,
+          is_active: true,
+        });
+      }
+      setIsDialogOpen(false);
+    } catch {
+      // Error toast shown by mutation onError callback — dialog stays open for retry
     }
-
-    setIsDialogOpen(false);
   };
 
   // Delete confirmation

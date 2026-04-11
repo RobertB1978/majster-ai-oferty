@@ -627,7 +627,9 @@
       "added": "Team member added",
       "addError": "Error adding team member",
       "updated": "Team member updated",
-      "deleted": "Team member deleted"
+      "deleted": "Team member deleted",
+      "updateError": "Error updating team member",
+      "deleteError": "Error removing team member"
     },
     "memberOptions": "Options",
     "members": {
