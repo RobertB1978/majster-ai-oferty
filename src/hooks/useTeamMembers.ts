@@ -96,6 +96,9 @@ export function useUpdateTeamMember() {
       queryClient.invalidateQueries({ queryKey: ['team_members'] });
       toast.success(t('team.toast.updated'), { id: 'team-member-updated' });
     },
+    onError: () => {
+      toast.error(t('team.toast.updateError'), { id: 'team-member-update-error' });
+    },
   });
 }
 
@@ -115,6 +118,9 @@ export function useDeleteTeamMember() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team_members'] });
       toast.success(t('team.toast.deleted'), { id: 'team-member-deleted' });
+    },
+    onError: () => {
+      toast.error(t('team.toast.deleteError'), { id: 'team-member-delete-error' });
     },
   });
 }

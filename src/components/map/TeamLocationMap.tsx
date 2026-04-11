@@ -34,12 +34,7 @@ const statusColors: Record<string, string> = {
   break: '#f59e0b',
 };
 
-const statusLabels: Record<string, string> = {
-  idle: 'Bezczynny',
-  traveling: 'W drodze',
-  working: 'Pracuje',
-  break: 'Przerwa',
-};
+// statusLabels used in map popup — populated via useTranslation() inside component
 
 // ---------------------------------------------------------------------------
 // Tile sources — ordered by reliability for web & mobile WebView.
@@ -238,7 +233,14 @@ function InvalidateSizeOnMount() {
 }
 
 export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const statusLabels: Record<string, string> = {
+    idle: t('team.statuses.idle'),
+    traveling: t('team.statuses.traveling'),
+    working: t('team.statuses.working'),
+    break: t('team.statuses.break'),
+  };
 
   // Dark mode detection — read from document class (set by theme provider)
   const [isDark, setIsDark] = useState(() =>
@@ -434,12 +436,12 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="flex items-center gap-2">
           <Navigation className="h-5 w-5" />
-          Lokalizacja ekip
+          {t('team.map.locationTitle')}
         </CardTitle>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="flex items-center gap-1">
             <Users className="h-3 w-3" />
-            {activeWorkers} aktywnych
+            {t('team.map.activeWorkers_other', { count: activeWorkers })}
           </Badge>
           <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshing}>
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -484,7 +486,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
               const lng = Number(loc.longitude);
               if (isNaN(lat) || isNaN(lng)) return null;
 
-              const memberName = loc.team_members?.name || 'Nieznany pracownik';
+              const memberName = loc.team_members?.name || t('team.map.unknownWorker');
               const status = loc.status || 'idle';
 
               const customIcon = L.divIcon({
@@ -520,7 +522,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
                         ● {statusLabels[status]}
                       </span><br />
                       <small>
-                        Ostatnia aktualizacja: {formatDateTime(loc.recorded_at, i18n.language)}
+                        {t('team.map.lastUpdate')}: {formatDateTime(loc.recorded_at, i18n.language)}
                       </small>
                     </div>
                   </Popup>
@@ -546,7 +548,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
             >
               <RefreshCw className="h-6 w-6 text-muted-foreground animate-spin mb-2" />
               <p className="text-sm text-muted-foreground">
-                Testowanie źródeł mapy...
+                {t('team.map.probing')}
               </p>
             </div>
           )}
@@ -559,10 +561,10 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
             >
               <AlertTriangle className="h-8 w-8 text-destructive mb-2" />
               <p className="text-sm font-medium text-destructive">
-                Nie udało się załadować mapy
+                {t('team.map.loadFailed')}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Żadne źródło kafli nie odpowiada
+                {t('team.map.noSources')}
               </p>
 
               {/* Diagnostic details — helps identify WHY tiles fail */}
@@ -589,7 +591,7 @@ export function TeamLocationMap({ projectId, className }: TeamLocationMapProps) 
                 onClick={handleRetry}
               >
                 <RefreshCw className="h-4 w-4 mr-1" />
-                Spróbuj ponownie
+                {t('team.map.retry')}
               </Button>
             </div>
           )}

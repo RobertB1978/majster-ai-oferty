@@ -636,7 +636,9 @@
       "added": "Pracownik dodany",
       "addError": "Błąd podczas dodawania pracownika",
       "updated": "Pracownik zaktualizowany",
-      "deleted": "Pracownik usunięty"
+      "deleted": "Pracownik usunięty",
+      "updateError": "Błąd podczas aktualizacji pracownika",
+      "deleteError": "Błąd podczas usuwania pracownika"
     },
     "memberOptions": "Opcje",
     "members": {
@@ -658,7 +660,31 @@
     },
     "namePlaceholder": "Jan Kowalski",
     "phonePlaceholder": "+48 123 456 789",
-    "emailPlaceholder": "jan@example.com"
+    "emailPlaceholder": "jan@example.com",
+    "editMember": "Edytuj pracownika",
+    "deleteConfirmTitle": "Usuń pracownika",
+    "deleteConfirmDesc": "Czy na pewno chcesz usunąć {{name}} z zespołu? Tej operacji nie można cofnąć.",
+    "deleteConfirm": "Usuń",
+    "saveChanges": "Zapisz zmiany",
+    "searchPlaceholder": "Szukaj pracownika...",
+    "stopWork": "Zakończ pracę",
+    "stats": {
+      "total": "Wszyscy",
+      "active": "Aktywni",
+      "working": "Pracujący",
+      "onBreak": "Na przerwie"
+    },
+    "map": {
+      "locationTitle": "Lokalizacja ekip",
+      "activeWorkers_one": "{{count}} aktywny",
+      "activeWorkers_other": "{{count}} aktywnych",
+      "probing": "Testowanie źródeł mapy...",
+      "loadFailed": "Nie udało się załadować mapy",
+      "noSources": "Żadne źródło kafli nie odpowiada",
+      "retry": "Spróbuj ponownie",
+      "lastUpdate": "Ostatnia aktualizacja",
+      "unknownWorker": "Nieznany pracownik"
+    }
   },
   "templates": {
     "title": "Mój cennik",

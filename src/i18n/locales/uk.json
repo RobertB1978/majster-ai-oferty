@@ -636,7 +636,9 @@
       "added": "Працівника додано",
       "addError": "Помилка додавання працівника",
       "updated": "Працівника оновлено",
-      "deleted": "Працівника видалено"
+      "deleted": "Працівника видалено",
+      "updateError": "Помилка оновлення працівника",
+      "deleteError": "Помилка видалення працівника"
     },
     "memberOptions": "Параметри",
     "members": {
@@ -658,7 +660,31 @@
     },
     "namePlaceholder": "Іван Коваль",
     "phonePlaceholder": "+48 123 456 789",
-    "emailPlaceholder": "ivan@example.com"
+    "emailPlaceholder": "ivan@example.com",
+    "editMember": "Редагувати учасника",
+    "deleteConfirmTitle": "Видалити учасника",
+    "deleteConfirmDesc": "Ви впевнені, що хочете видалити {{name}} з команди? Цю дію неможливо скасувати.",
+    "deleteConfirm": "Видалити",
+    "saveChanges": "Зберегти зміни",
+    "searchPlaceholder": "Пошук учасника...",
+    "stopWork": "Завершити роботу",
+    "stats": {
+      "total": "Всього",
+      "active": "Активні",
+      "working": "Працюють",
+      "onBreak": "На перерві"
+    },
+    "map": {
+      "locationTitle": "Локація команди",
+      "activeWorkers_one": "{{count}} активний",
+      "activeWorkers_other": "{{count}} активних",
+      "probing": "Тестування джерел карти...",
+      "loadFailed": "Не вдалося завантажити карту",
+      "noSources": "Жодне джерело тайлів не відповідає",
+      "retry": "Спробувати знову",
+      "lastUpdate": "Останнє оновлення",
+      "unknownWorker": "Невідомий працівник"
+    }
   },
   "templates": {
     "title": "Мій прайс-лист",
