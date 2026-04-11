@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isWithinInterval } from 'date-fns';
+import { format, parseISO, isValid, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isWithinInterval } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { enUS } from 'date-fns/locale';
 import { uk } from 'date-fns/locale';
@@ -56,10 +56,17 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
 
     tasks.forEach(task => {
       if (!task.assigned_team_member_id) return;
-      const start = parseISO(task.start_date);
-      const end = parseISO(task.end_date);
+      if (!task.start_date || !task.end_date) return;
+      let start: Date, end: Date;
+      try {
+        start = parseISO(task.start_date);
+        end = parseISO(task.end_date);
+      } catch {
+        return;
+      }
+      if (!isValid(start) || !isValid(end) || start > end) return;
       const days = differenceInDays(end, start) + 1;
-      
+
       if (capacity[task.assigned_team_member_id]) {
         capacity[task.assigned_team_member_id].used += days * 8;
       }
@@ -71,9 +78,16 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
   // Filter tasks that overlap with current month
   const visibleTasks = useMemo(() => {
     return tasks.filter(task => {
-      const start = parseISO(task.start_date);
-      const end = parseISO(task.end_date);
-      
+      if (!task.start_date || !task.end_date) return false;
+      let start: Date, end: Date;
+      try {
+        start = parseISO(task.start_date);
+        end = parseISO(task.end_date);
+      } catch {
+        return false;
+      }
+      if (!isValid(start) || !isValid(end) || start > end) return false;
+
       return (
         isWithinInterval(start, { start: monthStart, end: monthEnd }) ||
         isWithinInterval(end, { start: monthStart, end: monthEnd }) ||
