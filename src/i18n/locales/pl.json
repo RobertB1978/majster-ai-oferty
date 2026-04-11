@@ -510,7 +510,10 @@
     "eventDeleteError": "Nie udało się usunąć wydarzenia",
     "loadError": "Nie udało się załadować kalendarza",
     "loadErrorHint": "Sprawdź połączenie z internetem i odśwież stronę",
-    "selectedDate": "Wybrana data"
+    "selectedDate": "Wybrana data",
+    "allDay": "Cały dzień",
+    "confirmDelete": "Potwierdź usunięcie",
+    "eventsList": "wydarzeń"
   },
   "finance": {
     "title": "Finanse",

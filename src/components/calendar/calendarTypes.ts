@@ -5,7 +5,6 @@ export interface EventFormData {
   description: string;
   event_type: string;
   event_time: string;
-  end_time: string;
   project_id: string;
 }
 
@@ -14,7 +13,6 @@ export const initialEventData: EventFormData = {
   description: '',
   event_type: 'deadline',
   event_time: '',
-  end_time: '',
   project_id: '',
 };
 

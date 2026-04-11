@@ -125,7 +125,6 @@ export default function Calendar() {
         description: event.description || '',
         event_type: event.event_type,
         event_time: event.event_time?.slice(0, 5) || '',
-        end_time: '',
         project_id: event.project_id || '',
       });
     } else {

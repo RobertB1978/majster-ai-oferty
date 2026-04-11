@@ -1,4 +1,4 @@
-import { format, isToday } from 'date-fns';
+import { format, isToday, parseISO } from 'date-fns';
 import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Calendar as CalendarIcon, Clock } from 'lucide-react';
@@ -28,7 +28,8 @@ export function CalendarAgendaView({ eventsByDate, openEventDialog, dateLocale }
         ) : (
           sortedDates.map(dateKey => {
             const dayEvents = eventsByDate[dateKey] || [];
-            const date = new Date(dateKey);
+            const [y, m, d] = dateKey.split('-').map(Number);
+            const date = new Date(y, m - 1, d);
             const isTodayDate = isToday(date);
 
             return (

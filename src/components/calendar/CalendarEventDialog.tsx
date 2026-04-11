@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Trash2, Loader2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Trash2, Loader2, AlertTriangle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,6 +42,26 @@ export function CalendarEventDialog({
   isSaving,
 }: CalendarEventDialogProps) {
   const { t } = useTranslation();
+  const [pendingDelete, setPendingDelete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setPendingDelete(false);
+      setIsDeleting(false);
+    }
+  }, [isOpen]);
+
+  const handleConfirmedDelete = async () => {
+    if (!editingEvent) return;
+    setIsDeleting(true);
+    try {
+      await onDelete(editingEvent.id);
+      onOpenChange(false);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -115,22 +136,28 @@ export function CalendarEventDialog({
           </p>
         </div>
         <DialogFooter className="flex gap-2">
-          {editingEvent && (
-            <Button
-              variant="destructive"
-              onClick={() => {
-                void onDelete(editingEvent.id);
-                onOpenChange(false);
-              }}
-            >
+          {editingEvent && !pendingDelete && (
+            <Button variant="destructive" onClick={() => setPendingDelete(true)}>
               <Trash2 className="h-4 w-4 mr-2" />
               {t('common.delete')}
+            </Button>
+          )}
+          {editingEvent && pendingDelete && (
+            <Button
+              variant="destructive"
+              disabled={isDeleting}
+              onClick={() => { void handleConfirmedDelete(); }}
+            >
+              {isDeleting
+                ? <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                : <AlertTriangle className="h-4 w-4 mr-2" />}
+              {t('calendar.confirmDelete')}
             </Button>
           )}
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={onSave} disabled={isSaving}>
+          <Button onClick={onSave} disabled={isSaving || isDeleting}>
             {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {t('common.save')}
           </Button>

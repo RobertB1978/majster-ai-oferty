@@ -510,7 +510,10 @@
     },
     "loadError": "Failed to load calendar",
     "loadErrorHint": "Check your internet connection and refresh the page",
-    "selectedDate": "Selected date"
+    "selectedDate": "Selected date",
+    "allDay": "All day",
+    "confirmDelete": "Confirm delete",
+    "eventsList": "events"
   },
   "finance": {
     "title": "Finance",
