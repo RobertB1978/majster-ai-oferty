@@ -30,6 +30,11 @@ verify_jwt = true
 [functions.send-expiring-offer-reminders]
 verify_jwt = false
 
+[functions.send-calendar-reminders]
+# Cron job — no JWT available; function validates CRON_SECRET internally
+# Schedule: every day at 07:00 UTC via Supabase Dashboard → Database → Scheduled tasks
+verify_jwt = false
+
 # --- Functions added by PR#01.5 (previously missing from config) ---
 
 [functions.healthcheck]

@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isWithinInterval } from 'date-fns';
+import { format, parseISO, isValid, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isWithinInterval } from 'date-fns';
 import { pl } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
+import { uk } from 'date-fns/locale';
+import type { Locale } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,8 +25,17 @@ interface WorkTasksGanttProps {
   projectId?: string;
 }
 
+function getDateLocale(lang: string): Locale {
+  switch (lang) {
+    case 'uk': return uk;
+    case 'en': return enUS;
+    default: return pl;
+  }
+}
+
 export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = getDateLocale(i18n.language);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const { data: tasks = [], isLoading: tasksLoading } = useWorkTasks(projectId);
   const { data: teamMembers = [] } = useTeamMembers();
@@ -44,10 +56,17 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
 
     tasks.forEach(task => {
       if (!task.assigned_team_member_id) return;
-      const start = parseISO(task.start_date);
-      const end = parseISO(task.end_date);
+      if (!task.start_date || !task.end_date) return;
+      let start: Date, end: Date;
+      try {
+        start = parseISO(task.start_date);
+        end = parseISO(task.end_date);
+      } catch {
+        return;
+      }
+      if (!isValid(start) || !isValid(end) || start > end) return;
       const days = differenceInDays(end, start) + 1;
-      
+
       if (capacity[task.assigned_team_member_id]) {
         capacity[task.assigned_team_member_id].used += days * 8;
       }
@@ -56,43 +75,56 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
     return capacity;
   }, [tasks, teamMembers, totalDays]);
 
-  // Filter tasks that overlap with current month
+  // Filter tasks that overlap with current month and pre-compute bar metrics.
+  // Uses reduce to parse dates only once per task (no double-parseISO).
   const visibleTasks = useMemo(() => {
-    return tasks.filter(task => {
-      const start = parseISO(task.start_date);
-      const end = parseISO(task.end_date);
-      
-      return (
+    type VisibleTask = typeof tasks[number] & {
+      projectName: string;
+      memberName: string | undefined;
+      leftPercent: number;
+      widthPercent: number;
+      startsBeforeMonth: boolean;
+      endsAfterMonth: boolean;
+    };
+
+    return tasks.reduce<VisibleTask[]>((acc, task) => {
+      if (!task.start_date || !task.end_date) return acc;
+      let start: Date, end: Date;
+      try {
+        start = parseISO(task.start_date);
+        end = parseISO(task.end_date);
+      } catch {
+        return acc;
+      }
+      if (!isValid(start) || !isValid(end) || start > end) return acc;
+
+      const overlaps = (
         isWithinInterval(start, { start: monthStart, end: monthEnd }) ||
         isWithinInterval(end, { start: monthStart, end: monthEnd }) ||
         (start <= monthStart && end >= monthEnd)
       );
-    }).map(task => {
-      const start = parseISO(task.start_date);
-      const end = parseISO(task.end_date);
-      
+      if (!overlaps) return acc;
+
       const barStart = start < monthStart ? monthStart : start;
       const barEnd = end > monthEnd ? monthEnd : end;
-      
+
       const startDay = differenceInDays(barStart, monthStart);
       const duration = differenceInDays(barEnd, barStart) + 1;
-      
-      const leftPercent = (startDay / totalDays) * 100;
-      const widthPercent = (duration / totalDays) * 100;
-      
+
       const project = projects.find(p => p.id === task.project_id);
       const member = teamMembers.find(m => m.id === task.assigned_team_member_id);
-      
-      return {
+
+      acc.push({
         ...task,
         projectName: project?.title || t('workTasks.unknownProject'),
         memberName: member?.name,
-        leftPercent,
-        widthPercent,
+        leftPercent: (startDay / totalDays) * 100,
+        widthPercent: (duration / totalDays) * 100,
         startsBeforeMonth: start < monthStart,
         endsAfterMonth: end > monthEnd,
-      };
-    });
+      });
+      return acc;
+    }, []);
   }, [tasks, projects, teamMembers, monthStart, monthEnd, totalDays, t]);
 
   // Week markers
@@ -100,7 +132,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
     const markers: { day: number; label: string }[] = [];
     daysInMonth.forEach((day, index) => {
       if (day.getDay() === 1 || index === 0) {
-        markers.push({ day: index, label: format(day, 'd', { locale: pl }) });
+        markers.push({ day: index, label: format(day, 'd', { locale: dateLocale }) });
       }
     });
     return markers;
@@ -123,7 +155,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            {t('workTasks.schedule')} - {format(currentMonth, 'LLLL yyyy', { locale: pl })}
+            {t('workTasks.schedule')} - {format(currentMonth, 'LLLL yyyy', { locale: dateLocale })}
           </CardTitle>
           <div className="flex gap-1">
             <Button variant="outline" size="icon" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>

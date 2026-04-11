@@ -419,8 +419,11 @@ export default function Offers() {
       event_type: 'follow_up',
       event_date: followupDate,
       event_time: null,
+      end_time: null,
       project_id: null,
       status: 'pending',
+      recurrence_rule: 'none',
+      recurrence_end_date: null,
     });
   };
 

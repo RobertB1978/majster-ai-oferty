@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addMonths, subMonths } from 'date-fns';
+import { format, parseISO, isValid, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addMonths, subMonths } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { enUS } from 'date-fns/locale';
 import { uk } from 'date-fns/locale';
@@ -59,18 +59,33 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
   // Filter projects that have dates and overlap with current month.
   // Exclude CANCELLED (soft-deleted) projects — they are not visible in ProjectsList either.
   const timelineProjects = useMemo(() => {
+    type ProjectRow = (typeof projects)[number] & {
+      clientName: string;
+      startDate: Date | null;
+      endDate: Date | null;
+      leftPercent: number;
+      widthPercent: number;
+      startsBeforeMonth: boolean;
+      endsAfterMonth: boolean;
+    };
+
     return projects
       .filter(p => p.status !== 'CANCELLED' && (p.start_date || p.end_date))
-      .map(p => {
+      .reduce<ProjectRow[]>((acc, p) => {
         const startDate = p.start_date ? parseISO(p.start_date) : null;
         const endDate = p.end_date ? parseISO(p.end_date) : null;
+
+        // Guard against invalid parsed dates (e.g. empty string / corrupted data)
+        if (startDate && !isValid(startDate)) return acc;
+        if (endDate && !isValid(endDate)) return acc;
+
         const client = clients.find(c => c.id === p.client_id);
 
-        // Check if project overlaps with current month
+        // Use whichever date is available as the range boundary
         const projectStart = startDate || endDate;
         const projectEnd = endDate || startDate;
 
-        if (!projectStart || !projectEnd) return null;
+        if (!projectStart || !projectEnd) return acc;
 
         const overlapsMonth = (
           isWithinInterval(projectStart, { start: monthStart, end: monthEnd }) ||
@@ -78,7 +93,7 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
           (projectStart <= monthStart && projectEnd >= monthEnd)
         );
 
-        if (!overlapsMonth) return null;
+        if (!overlapsMonth) return acc;
 
         // Calculate bar position and width
         const barStart = projectStart < monthStart ? monthStart : projectStart;
@@ -90,7 +105,7 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
         const leftPercent = (startDay / totalDays) * 100;
         const widthPercent = (duration / totalDays) * 100;
 
-        return {
+        acc.push({
           ...p,
           clientName: client?.name || t('projectTimeline.unknownClient'),
           startDate,
@@ -99,9 +114,9 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
           widthPercent,
           startsBeforeMonth: projectStart < monthStart,
           endsAfterMonth: projectEnd > monthEnd,
-        };
-      })
-      .filter(Boolean);
+        });
+        return acc;
+      }, []);
   }, [projects, clients, monthStart, monthEnd, totalDays, t]);
 
   // Week markers
@@ -192,13 +207,13 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
           <div className="space-y-2">
             {timelineProjects.map((project) => (
               <div
-                key={project!.id}
+                key={project.id}
                 className="relative h-14 group"
               >
                 {/* Project label */}
                 <div className="absolute left-0 top-0 w-48 pr-2 h-full flex flex-col justify-center z-10">
-                  <p className="text-sm font-medium truncate">{project!.title}</p>
-                  <p className="text-xs text-muted-foreground truncate">{project!.clientName}</p>
+                  <p className="text-sm font-medium truncate">{project.title}</p>
+                  <p className="text-xs text-muted-foreground truncate">{project.clientName}</p>
                 </div>
 
                 {/* Timeline bar area */}
@@ -208,28 +223,28 @@ export function ProjectTimeline({ currentMonth, onMonthChange }: ProjectTimeline
 
                   {/* Project bar */}
                   <button
-                    onClick={() => navigate(`/app/projects/${project!.id}`)}
+                    onClick={() => navigate(`/app/projects/${project.id}`)}
                     className={cn(
                       'absolute top-2 h-10 rounded transition-all cursor-pointer',
                       'hover:brightness-110 hover:shadow-md',
                       'flex items-center px-2 gap-2 overflow-hidden',
-                      STATUS_COLOR[project!.status] || 'bg-muted',
-                      project!.startsBeforeMonth && 'rounded-l-none',
-                      project!.endsAfterMonth && 'rounded-r-none'
+                      STATUS_COLOR[project.status] || 'bg-muted',
+                      project.startsBeforeMonth && 'rounded-l-none',
+                      project.endsAfterMonth && 'rounded-r-none'
                     )}
                     style={{
-                      left: `${project!.leftPercent}%`,
-                      width: `${Math.max(project!.widthPercent, 5)}%`,
+                      left: `${project.leftPercent}%`,
+                      width: `${Math.max(project.widthPercent, 5)}%`,
                     }}
                   >
                     <span className="text-xs text-white font-medium truncate">
-                      {project!.title}
+                      {project.title}
                     </span>
                     <Badge
                       variant="secondary"
                       className="text-[10px] px-1 py-0 shrink-0 bg-white/20 text-white border-0"
                     >
-                      {getStatusLabel(project!.status)}
+                      {getStatusLabel(project.status)}
                     </Badge>
                   </button>
                 </div>

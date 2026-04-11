@@ -460,6 +460,8 @@
     "tapToAddHint": "Додати запис на цей день",
     "noEventsForDay": "Немає подій — натисніть будь-який слот, щоб додати",
     "today": "Сьогодні",
+    "prevPeriod": "Попередній",
+    "nextPeriod": "Наступний",
     "month": "Місяць",
     "week": "Тиждень",
     "day": "День",
@@ -525,7 +527,8 @@
     "recurrenceWeekly": "Щотижня",
     "recurrenceMonthly": "Щомісяця",
     "recurrenceYearly": "Щороку",
-    "recurrenceEndDate": "Повторювати до"
+    "recurrenceEndDate": "Повторювати до",
+    "endTimeBeforeStart": "Час завершення повинен бути пізніше часу початку"
   },
   "finance": {
     "title": "Фінанси",

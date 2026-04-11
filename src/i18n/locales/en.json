@@ -460,6 +460,8 @@
     "tapToAddHint": "Add entry on this day",
     "noEventsForDay": "No events — click any slot to add one",
     "today": "Today",
+    "prevPeriod": "Previous",
+    "nextPeriod": "Next",
     "month": "Month",
     "week": "Week",
     "day": "Day",
@@ -525,7 +527,8 @@
     "recurrenceWeekly": "Weekly",
     "recurrenceMonthly": "Monthly",
     "recurrenceYearly": "Yearly",
-    "recurrenceEndDate": "Repeat until"
+    "recurrenceEndDate": "Repeat until",
+    "endTimeBeforeStart": "End time must be later than start time"
   },
   "finance": {
     "title": "Finance",

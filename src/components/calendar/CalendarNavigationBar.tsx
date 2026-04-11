@@ -23,13 +23,13 @@ export function CalendarNavigationBar({
     <Card className="p-4">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={() => onNavigate('prev')}>
+          <Button variant="outline" size="icon" onClick={() => onNavigate('prev')} aria-label={t('calendar.prevPeriod', 'Poprzedni')}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <Button variant="outline" onClick={() => onNavigate('today')}>
             {t('calendar.today')}
           </Button>
-          <Button variant="outline" size="icon" onClick={() => onNavigate('next')}>
+          <Button variant="outline" size="icon" onClick={() => onNavigate('next')} aria-label={t('calendar.nextPeriod', 'Następny')}>
             <ChevronRight className="h-4 w-4" />
           </Button>
           <h2 className="text-lg font-semibold ml-2 capitalize">{navigationTitle}</h2>

@@ -27,9 +27,13 @@ export function useCalendarEvents(startDate?: string, endDate?: string) {
   return useQuery({
     queryKey: ['calendar_events', user?.id, startDate, endDate],
     queryFn: async () => {
+      // select('*') is intentional: avoids a 400 error when newer columns
+      // (end_time, recurrence_rule, recurrence_end_date — migration 20260411120000)
+      // haven't been applied to the production DB yet. Explicit column lists would
+      // cause PostgREST to return an error for non-existent columns.
       let query = supabase
         .from('calendar_events')
-        .select('id, user_id, project_id, title, description, event_date, event_time, end_time, event_type, status, recurrence_rule, recurrence_end_date, created_at')
+        .select('*')
         .eq('user_id', user!.id)
         .order('event_date', { ascending: true });
 
@@ -42,7 +46,17 @@ export function useCalendarEvents(startDate?: string, endDate?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data ?? []) as CalendarEvent[];
+
+      // Normalize: provide safe defaults for columns that may not exist yet
+      // in older DB schemas (before migration 20260411120000_calendar_end_time_recurrence)
+      type RawRow = Record<string, unknown>;
+      const rows = (data ?? []) as RawRow[];
+      return rows.map(row => ({
+        ...row,
+        end_time: (row['end_time'] as string | null | undefined) ?? null,
+        recurrence_rule: (row['recurrence_rule'] as string | undefined) ?? 'none',
+        recurrence_end_date: (row['recurrence_end_date'] as string | null | undefined) ?? null,
+      })) as CalendarEvent[];
     },
     enabled: !!user,
   });

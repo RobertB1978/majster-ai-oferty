@@ -468,6 +468,8 @@
     "tapToAddHint": "Dodaj wpis na ten dzień",
     "noEventsForDay": "Brak wydarzeń — kliknij dowolny slot, aby dodać",
     "today": "Dzisiaj",
+    "prevPeriod": "Poprzedni",
+    "nextPeriod": "Następny",
     "month": "Miesiąc",
     "week": "Tydzień",
     "day": "Dzień",
@@ -525,7 +527,8 @@
     "recurrenceWeekly": "Co tydzień",
     "recurrenceMonthly": "Co miesiąc",
     "recurrenceYearly": "Co rok",
-    "recurrenceEndDate": "Powtarzaj do"
+    "recurrenceEndDate": "Powtarzaj do",
+    "endTimeBeforeStart": "Godzina zakończenia musi być późniejsza niż godzina rozpoczęcia"
   },
   "finance": {
     "title": "Finanse",
