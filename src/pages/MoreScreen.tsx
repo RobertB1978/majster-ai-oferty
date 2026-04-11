@@ -19,7 +19,11 @@ import { FF_READY_DOCUMENTS_ENABLED } from '@/config/featureFlags';
 interface MoreItem {
   id: string;
   labelKey: string;
+  /** Optional subtitle translation key */
+  descKey?: string;
   icon: LucideIcon;
+  /** Tailwind classes for icon wrapper (bg + text color) */
+  iconStyle: string;
   route?: string;
   placeholder?: boolean;
   destructive?: boolean;
@@ -36,9 +40,6 @@ interface MoreGroup {
  * "Narzędzia"      — operacyjne moduły (spójne z desktopowym sidebarem)
  * "Firma i konto"  — konfiguracja: profil + ustawienia
  *
- * Grupowanie jest celowe: Finanse i Klienci to narzędzia pracy, nie ustawienia.
- * Ustawienia i Profil firmy razem wyznaczają granicę "konfiguracja konta".
- *
  * Wywołane wewnątrz komponentu, by FF_READY_DOCUMENTS_ENABLED był czytany
  * przy każdym renderze (potrzebne m.in. do testów z mockowaną flagą).
  */
@@ -47,24 +48,78 @@ function buildMoreGroups(): MoreGroup[] {
     {
       titleKey: 'newShell.more.groupTools',
       items: [
-        { id: 'calendar',           labelKey: 'newShell.more.calendar',          icon: CalendarDays, route: '/app/calendar' },
-        { id: 'document-templates', labelKey: 'newShell.more.documentTemplates', icon: BookOpen,     route: '/app/document-templates' },
+        {
+          id: 'calendar',
+          labelKey: 'newShell.more.calendar',
+          icon: CalendarDays,
+          iconStyle: 'bg-blue-500/12 text-blue-600 dark:text-blue-400',
+          route: '/app/calendar',
+        },
+        {
+          id: 'document-templates',
+          labelKey: 'newShell.more.documentTemplates',
+          icon: BookOpen,
+          iconStyle: 'bg-violet-500/12 text-violet-600 dark:text-violet-400',
+          route: '/app/document-templates',
+        },
         ...(FF_READY_DOCUMENTS_ENABLED
-          ? [{ id: 'ready-documents', labelKey: 'newShell.more.readyDocuments', icon: FileCheck, route: '/app/ready-documents' } as MoreItem]
+          ? [{
+              id: 'ready-documents',
+              labelKey: 'newShell.more.readyDocuments',
+              icon: FileCheck,
+              iconStyle: 'bg-teal-500/12 text-teal-600 dark:text-teal-400',
+              route: '/app/ready-documents',
+            } as MoreItem]
           : []
         ),
-        { id: 'finance',            labelKey: 'newShell.more.finance',           icon: TrendingUp,   route: '/app/finance' },
-        { id: 'photos',             labelKey: 'newShell.more.photos',            icon: Camera,       route: '/app/photos' },
-        { id: 'clients',            labelKey: 'newShell.more.clients',           icon: Users,        route: '/app/customers' },
-        { id: 'team',               labelKey: 'nav.team',                        icon: UserPlus,     route: '/app/team' },
-        // { id: 'marketplace',        labelKey: 'nav.marketplace',                 icon: Store,        route: '/app/marketplace' }, // hidden temporarily
+        {
+          id: 'finance',
+          labelKey: 'newShell.more.finance',
+          icon: TrendingUp,
+          iconStyle: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400',
+          route: '/app/finance',
+        },
+        {
+          id: 'photos',
+          labelKey: 'newShell.more.photos',
+          icon: Camera,
+          iconStyle: 'bg-amber-500/12 text-amber-600 dark:text-amber-400',
+          route: '/app/photos',
+        },
+        {
+          id: 'clients',
+          labelKey: 'newShell.more.clients',
+          icon: Users,
+          iconStyle: 'bg-sky-500/12 text-sky-600 dark:text-sky-400',
+          route: '/app/customers',
+        },
+        {
+          id: 'team',
+          labelKey: 'nav.team',
+          icon: UserPlus,
+          iconStyle: 'bg-indigo-500/12 text-indigo-600 dark:text-indigo-400',
+          route: '/app/team',
+        },
+        // { id: 'marketplace', labelKey: 'nav.marketplace', icon: Store, iconStyle: '...', route: '/app/marketplace' }, // hidden temporarily
       ],
     },
     {
       titleKey: 'newShell.more.groupAccount',
       items: [
-        { id: 'profile',  labelKey: 'newShell.more.profile',  icon: Building2, route: '/app/profile' },
-        { id: 'settings', labelKey: 'newShell.more.settings', icon: Settings,  route: '/app/settings' },
+        {
+          id: 'profile',
+          labelKey: 'newShell.more.profile',
+          icon: Building2,
+          iconStyle: 'bg-orange-500/12 text-orange-600 dark:text-orange-400',
+          route: '/app/profile',
+        },
+        {
+          id: 'settings',
+          labelKey: 'newShell.more.settings',
+          icon: Settings,
+          iconStyle: 'bg-slate-500/12 text-slate-600 dark:text-slate-400',
+          route: '/app/settings',
+        },
       ],
     },
   ];
@@ -74,10 +129,11 @@ function buildMoreGroups(): MoreGroup[] {
  * MoreScreen — ekran "Więcej" nowego shella.
  *
  * Dwie celowe grupy:
- *  - Narzędzia: Kalendarz, Wzory dokumentów, [Gotowe dokumenty — gdy FF_READY_DOCUMENTS_ENABLED], Finanse, Klienci
+ *  - Narzędzia: Kalendarz, Wzory dokumentów, [Gotowe dokumenty — gdy FF_READY_DOCUMENTS_ENABLED], Finanse, Zdjęcia, Klienci, Zespół
  *  - Firma i konto: Profil firmy, Ustawienia
  *
- * Ustawienia i Profil Firmy zawsze dostępne (PR-05).
+ * Profil firmy i Ustawienia zawsze dostępne (PR-05).
+ * Design: kolorowe ikony w zaokrąglonych kwadratach (enterprise/iOS-style).
  */
 export default function MoreScreen() {
   const { t } = useTranslation();
@@ -97,11 +153,11 @@ export default function MoreScreen() {
           <section key={group.titleKey} aria-labelledby={`group-${group.titleKey}`}>
             <h2
               id={`group-${group.titleKey}`}
-              className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 px-1"
+              className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest mb-2 px-1"
             >
               {t(group.titleKey)}
             </h2>
-            <div className="bg-card border border-border rounded-xl overflow-hidden divide-y divide-border">
+            <div className="bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm divide-y divide-border/50">
               {group.items.map((item) => (
                 <MoreItemRow
                   key={item.id}
@@ -136,7 +192,7 @@ function MoreItemRow({
       onClick={onClick}
       disabled={item.placeholder}
       className={cn(
-        'w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors',
+        'w-full flex items-center gap-3.5 px-4 py-3 text-left transition-all duration-150 active:scale-[0.99]',
         item.placeholder
           ? 'opacity-50 cursor-default'
           : item.destructive
@@ -144,19 +200,31 @@ function MoreItemRow({
             : 'text-foreground hover:bg-secondary/50 active:bg-secondary'
       )}
     >
-      <item.icon
+      {/* Colored icon badge */}
+      <div
         className={cn(
-          'h-5 w-5 shrink-0',
-          item.destructive ? 'text-destructive' : 'text-muted-foreground'
+          'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl',
+          item.destructive ? 'bg-destructive/10 text-destructive' : item.iconStyle
         )}
-      />
-      <span className="flex-1 text-sm font-medium">{t(item.labelKey)}</span>
+      >
+        <item.icon className="h-5 w-5" />
+      </div>
+
+      {/* Label (+ optional desc) */}
+      <div className="flex-1 min-w-0">
+        <span className="block text-sm font-medium leading-snug">{t(item.labelKey)}</span>
+        {item.descKey && (
+          <span className="block text-xs text-muted-foreground truncate">{t(item.descKey)}</span>
+        )}
+      </div>
+
+      {/* Right side */}
       {item.placeholder ? (
-        <span className="text-[11px] font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
+        <span className="text-[10px] font-semibold text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded-full shrink-0">
           {t('nav.comingSoon')}
         </span>
       ) : (
-        <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+        <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
       )}
     </button>
   );
