@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { FileText, Building, Calendar, DollarSign, Clock, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCurrency } from '@/lib/formatters';
 import type { OfferData, QuotePosition } from './offerApprovalTypes';
 
@@ -61,26 +62,26 @@ export function OfferDetailsCard({ offer }: OfferDetailsCardProps) {
           <div className="mt-6">
             <h3 className="font-medium mb-3">{t('offerApproval.positions.title')}</h3>
             <div className="border rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="text-left p-3">{t('offerApproval.positions.item')}</th>
-                    <th className="text-right p-3">{t('offerApproval.positions.quantity')}</th>
-                    <th className="text-right p-3">{t('offerApproval.positions.price')}</th>
-                    <th className="text-right p-3">{t('offerApproval.positions.value')}</th>
-                  </tr>
-                </thead>
-                <tbody>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted hover:bg-muted">
+                    <TableHead className="p-3 h-auto">{t('offerApproval.positions.item')}</TableHead>
+                    <TableHead className="p-3 h-auto text-right">{t('offerApproval.positions.quantity')}</TableHead>
+                    <TableHead className="p-3 h-auto text-right">{t('offerApproval.positions.price')}</TableHead>
+                    <TableHead className="p-3 h-auto text-right">{t('offerApproval.positions.value')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {offer.quote.positions.map((pos: QuotePosition, idx: number) => (
-                    <tr key={idx} className="border-t">
-                      <td className="p-3">{pos.name}</td>
-                      <td className="text-right p-3">{pos.qty} {pos.unit}</td>
-                      <td className="text-right p-3">{formatCurrency(pos.price)}</td>
-                      <td className="text-right p-3 font-medium">{formatCurrency(pos.qty * pos.price)}</td>
-                    </tr>
+                    <TableRow key={idx}>
+                      <TableCell className="p-3">{pos.name}</TableCell>
+                      <TableCell className="p-3 text-right">{pos.qty} {pos.unit}</TableCell>
+                      <TableCell className="p-3 text-right">{formatCurrency(pos.price)}</TableCell>
+                      <TableCell className="p-3 text-right font-medium">{formatCurrency(pos.qty * pos.price)}</TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </div>
         )}

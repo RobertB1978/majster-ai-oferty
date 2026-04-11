@@ -48,6 +48,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { formatNumber, formatDate } from '@/lib/formatters';
 
@@ -175,50 +176,48 @@ function ItemsTable({ items, currency, t, locale }: ItemsTableProps) {
     return <p className="text-muted-foreground text-xs">{t('publicOffer.noItems')}</p>;
   }
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-xs border-collapse">
-        <thead>
-          <tr className="bg-muted">
-            <th className="border border-border px-2 py-1.5 text-left font-medium">
-              {t('publicOffer.itemName')}
-            </th>
-            <th className="border border-border px-2 py-1.5 text-right font-medium w-14">
-              {t('publicOffer.itemQty')}
-            </th>
-            <th className="border border-border px-2 py-1.5 text-center font-medium w-14">
-              {t('publicOffer.itemUnit')}
-            </th>
-            <th className="border border-border px-2 py-1.5 text-right font-medium w-24">
-              {t('publicOffer.itemPrice')}
-            </th>
-            <th className="border border-border px-2 py-1.5 text-right font-medium w-16">
-              {t('publicOffer.itemVat')}
-            </th>
-            <th className="border border-border px-2 py-1.5 text-right font-medium w-24">
-              {t('publicOffer.itemTotal')}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item, idx) => (
-            <tr key={item.id} className={idx % 2 === 0 ? '' : 'bg-muted/40'}>
-              <td className="border border-border px-2 py-1.5">{item.name}</td>
-              <td className="border border-border px-2 py-1.5 text-right">{Number(item.qty)}</td>
-              <td className="border border-border px-2 py-1.5 text-center">{item.unit || '—'}</td>
-              <td className="border border-border px-2 py-1.5 text-right">
-                {fmt(Number(item.unit_price_net), currency, locale)}
-              </td>
-              <td className="border border-border px-2 py-1.5 text-right">
-                {item.vat_rate !== null ? `${item.vat_rate}%` : '—'}
-              </td>
-              <td className="border border-border px-2 py-1.5 text-right font-medium">
-                {fmt(Number(item.line_total_net), currency, locale)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table className="text-xs">
+      <TableHeader>
+        <TableRow className="bg-muted hover:bg-muted">
+          <TableHead className="px-2 py-1.5 h-auto">
+            {t('publicOffer.itemName')}
+          </TableHead>
+          <TableHead className="px-2 py-1.5 h-auto text-right w-14">
+            {t('publicOffer.itemQty')}
+          </TableHead>
+          <TableHead className="px-2 py-1.5 h-auto text-center w-14">
+            {t('publicOffer.itemUnit')}
+          </TableHead>
+          <TableHead className="px-2 py-1.5 h-auto text-right w-24">
+            {t('publicOffer.itemPrice')}
+          </TableHead>
+          <TableHead className="px-2 py-1.5 h-auto text-right w-16">
+            {t('publicOffer.itemVat')}
+          </TableHead>
+          <TableHead className="px-2 py-1.5 h-auto text-right w-24">
+            {t('publicOffer.itemTotal')}
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {items.map((item, idx) => (
+          <TableRow key={item.id} className={idx % 2 === 0 ? '' : 'bg-muted/40'}>
+            <TableCell className="px-2 py-1.5">{item.name}</TableCell>
+            <TableCell className="px-2 py-1.5 text-right">{Number(item.qty)}</TableCell>
+            <TableCell className="px-2 py-1.5 text-center">{item.unit || '—'}</TableCell>
+            <TableCell className="px-2 py-1.5 text-right">
+              {fmt(Number(item.unit_price_net), currency, locale)}
+            </TableCell>
+            <TableCell className="px-2 py-1.5 text-right">
+              {item.vat_rate !== null ? `${item.vat_rate}%` : '—'}
+            </TableCell>
+            <TableCell className="px-2 py-1.5 text-right font-medium">
+              {fmt(Number(item.line_total_net), currency, locale)}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
 
