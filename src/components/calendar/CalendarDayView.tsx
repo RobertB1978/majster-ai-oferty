@@ -104,29 +104,42 @@ export function CalendarDayView({ selectedDate, eventsByDate, openEventDialog, d
                 onClick={() => openEventDialog(selectedDate)}
                 className="flex-1 p-1 hover:bg-accent/30 cursor-pointer relative"
               >
-                {hourEvents.map(event => (
-                  <div
-                    key={event.id}
-                    onClick={e => { e.stopPropagation(); openEventDialog(selectedDate, event); }}
-                    className={cn(
-                      'p-2 rounded mb-1 cursor-pointer',
-                      eventTypeColors[event.event_type]?.bg || eventTypeColors.other.bg,
-                      'border',
-                      eventTypeColors[event.event_type]?.border || eventTypeColors.other.border
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className={cn('w-2 h-2 rounded-full flex-shrink-0', eventTypeColors[event.event_type]?.dot)} />
-                      <span className="font-medium text-sm">{event.title}</span>
-                      {event.event_time && (
-                        <span className="text-xs text-muted-foreground ml-auto">{event.event_time.slice(0, 5)}</span>
+                {hourEvents.map(event => {
+                  const isCompleted = event.status === 'completed';
+                  return (
+                    <div
+                      key={event.id}
+                      onClick={e => { e.stopPropagation(); openEventDialog(selectedDate, event); }}
+                      className={cn(
+                        'p-2 rounded mb-1 cursor-pointer transition-opacity',
+                        isCompleted
+                          ? 'bg-muted/30 border-muted opacity-60'
+                          : cn(
+                              eventTypeColors[event.event_type]?.bg || eventTypeColors.other.bg,
+                              'border',
+                              eventTypeColors[event.event_type]?.border || eventTypeColors.other.border
+                            )
+                      )}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className={cn(
+                          'w-2 h-2 rounded-full flex-shrink-0',
+                          isCompleted ? 'bg-green-500' : eventTypeColors[event.event_type]?.dot
+                        )} />
+                        <span className={cn('font-medium text-sm', isCompleted && 'line-through')}>{event.title}</span>
+                        {event.event_time && (
+                          <span className="text-xs text-muted-foreground ml-auto">
+                            {event.event_time.slice(0, 5)}
+                            {event.end_time && ` – ${event.end_time.slice(0, 5)}`}
+                          </span>
+                        )}
+                      </div>
+                      {event.description && (
+                        <p className="text-xs text-muted-foreground mt-1 pl-4 truncate">{event.description}</p>
                       )}
                     </div>
-                    {event.description && (
-                      <p className="text-xs text-muted-foreground mt-1 pl-4 truncate">{event.description}</p>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
 
                 {/* Current time indicator */}
                 {isCurrentHour && (

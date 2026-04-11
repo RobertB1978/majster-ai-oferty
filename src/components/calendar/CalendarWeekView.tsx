@@ -130,21 +130,28 @@ export function CalendarWeekView({ weekDays, eventsByDate, openEventDialog, date
                     isTodayCol && 'bg-primary/[0.02]'
                   )}
                 >
-                  {hourEvents.map(event => (
-                    <div
-                      key={event.id}
-                      onClick={e => { e.stopPropagation(); openEventDialog(day, event); }}
-                      className={cn(
-                        'text-xs px-1 py-0.5 rounded truncate cursor-pointer mb-0.5 hover:opacity-80 transition-opacity',
-                        eventTypeColors[event.event_type]?.bg || eventTypeColors.other.bg,
-                        'border',
-                        eventTypeColors[event.event_type]?.border || eventTypeColors.other.border
-                      )}
-                    >
-                      <span className="font-medium mr-1 opacity-70">{event.event_time!.slice(0, 5)}</span>
-                      {event.title}
-                    </div>
-                  ))}
+                  {hourEvents.map(event => {
+                    const isCompleted = event.status === 'completed';
+                    return (
+                      <div
+                        key={event.id}
+                        onClick={e => { e.stopPropagation(); openEventDialog(day, event); }}
+                        className={cn(
+                          'text-xs px-1 py-0.5 rounded truncate cursor-pointer mb-0.5 hover:opacity-80 transition-opacity',
+                          isCompleted
+                            ? 'bg-muted/40 border-muted line-through opacity-60'
+                            : cn(
+                                eventTypeColors[event.event_type]?.bg || eventTypeColors.other.bg,
+                                'border',
+                                eventTypeColors[event.event_type]?.border || eventTypeColors.other.border
+                              )
+                        )}
+                      >
+                        <span className="font-medium mr-1 opacity-70">{event.event_time!.slice(0, 5)}</span>
+                        {event.title}
+                      </div>
+                    );
+                  })}
 
                   {/* Current time indicator */}
                   {isCurrentHour && (

@@ -1,11 +1,17 @@
 export type ViewMode = 'month' | 'week' | 'day' | 'agenda';
 
+export type RecurrenceRule = 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly';
+
 export interface EventFormData {
   title: string;
   description: string;
   event_type: string;
   event_time: string;
+  end_time: string;
   project_id: string;
+  status: string;
+  recurrence_rule: RecurrenceRule;
+  recurrence_end_date: string;
 }
 
 export const initialEventData: EventFormData = {
@@ -13,7 +19,11 @@ export const initialEventData: EventFormData = {
   description: '',
   event_type: 'deadline',
   event_time: '',
+  end_time: '',
   project_id: '',
+  status: 'pending',
+  recurrence_rule: 'none',
+  recurrence_end_date: '',
 };
 
 export const eventTypeColors: Record<string, { bg: string; dot: string; border: string }> = {

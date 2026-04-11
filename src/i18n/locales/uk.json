@@ -513,7 +513,17 @@
     "selectedDate": "Вибрана дата",
     "allDay": "Весь день",
     "confirmDelete": "Підтвердити видалення",
-    "eventsList": "подій"
+    "eventsList": "подій",
+    "endTime": "Час завершення",
+    "statusPending": "Очікує",
+    "statusCompleted": "Виконано",
+    "recurrence": "Повторення",
+    "recurrenceNone": "Немає",
+    "recurrenceDaily": "Щодня",
+    "recurrenceWeekly": "Щотижня",
+    "recurrenceMonthly": "Щомісяця",
+    "recurrenceYearly": "Щороку",
+    "recurrenceEndDate": "Повторювати до"
   },
   "finance": {
     "title": "Фінанси",

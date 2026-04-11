@@ -513,7 +513,17 @@
     "selectedDate": "Wybrana data",
     "allDay": "Cały dzień",
     "confirmDelete": "Potwierdź usunięcie",
-    "eventsList": "wydarzeń"
+    "eventsList": "wydarzeń",
+    "endTime": "Godzina zakończenia",
+    "statusPending": "Oczekujące",
+    "statusCompleted": "Ukończone",
+    "recurrence": "Powtarzanie",
+    "recurrenceNone": "Brak",
+    "recurrenceDaily": "Codziennie",
+    "recurrenceWeekly": "Co tydzień",
+    "recurrenceMonthly": "Co miesiąc",
+    "recurrenceYearly": "Co rok",
+    "recurrenceEndDate": "Powtarzaj do"
   },
   "finance": {
     "title": "Finanse",

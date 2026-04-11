@@ -513,7 +513,17 @@
     "selectedDate": "Selected date",
     "allDay": "All day",
     "confirmDelete": "Confirm delete",
-    "eventsList": "events"
+    "eventsList": "events",
+    "endTime": "End time",
+    "statusPending": "Pending",
+    "statusCompleted": "Completed",
+    "recurrence": "Recurrence",
+    "recurrenceNone": "None",
+    "recurrenceDaily": "Daily",
+    "recurrenceWeekly": "Weekly",
+    "recurrenceMonthly": "Monthly",
+    "recurrenceYearly": "Yearly",
+    "recurrenceEndDate": "Repeat until"
   },
   "finance": {
     "title": "Finance",
