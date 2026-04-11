@@ -113,7 +113,7 @@ img.leaflet-tile:not([src]) {
    affected).  The dark tile variant is loaded directly via TileLayer URL
    in TeamLocationMap.tsx. */
 .dark .leaflet-container {
-  background: #1a1a2e;
+  background: var(--bg-base);
 }
 
 @layer base {

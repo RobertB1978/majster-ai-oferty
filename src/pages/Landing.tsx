@@ -143,7 +143,7 @@ export default function Landing() {
         ))}
       </Helmet>
 
-      <div className="min-h-screen bg-white dark:bg-[#0F0F0F]">
+      <div className="min-h-screen bg-white dark:bg-brand-dark">
         {/* Sticky header — fixed position, not in page flow */}
         <LandingHeader />
 

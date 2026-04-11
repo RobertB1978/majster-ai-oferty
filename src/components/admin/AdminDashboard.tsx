@@ -21,12 +21,17 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { AdminCronManager } from './AdminCronManager';
 import { supabase } from '@/integrations/supabase/client';
 
-// Plan colours for pie chart
+// Plan colours for Recharts pie chart.
+// Design-system mapping (src/index.css / tailwind.config.ts):
+//   free       → slate-400   (--text-muted range)
+//   starter    → blue-500    (--state-info adjacent)
+//   business   → violet-500  (no direct DS token — intentionally distinct)
+//   enterprise → #F59E0B     (--accent-amber exact match)
 const PLAN_COLORS: Record<string, string> = {
-  free: '#94a3b8',
-  starter: '#3b82f6',
-  business: '#8b5cf6',
-  enterprise: '#f59e0b',
+  free:       '#94a3b8',   // slate-400
+  starter:    '#3b82f6',   // blue-500
+  business:   '#8b5cf6',   // violet-500
+  enterprise: '#f59e0b',   // --accent-amber (#F59E0B)
 };
 
 function UnavailableCard({ label, reason }: { label: string; reason: string }) {

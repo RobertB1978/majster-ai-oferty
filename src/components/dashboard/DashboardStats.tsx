@@ -119,30 +119,37 @@ interface StatsCardProps {
   delay?: number;
 }
 
+// spark values are resolved HSL strings — SVG presentation attributes cannot
+// use CSS custom properties, so we hard-code values that match the design tokens
+// defined in src/index.css exactly:
+//   primary  → --primary:  38 92% 50%
+//   accent   → --accent-blue: #1E40AF ≈ hsl(224 64% 40%) — lightened for SVG visibility
+//   success  → --success:  142 76% 36%
+//   warning  → --warning:  33 95% 44%
 const colorConfig = {
   primary: {
     bg: 'bg-primary/8',
     iconBg: 'bg-primary',
     text: 'text-primary',
-    spark: 'hsl(30 90% 42%)',
+    spark: 'hsl(38 92% 50%)',   // --primary exact
   },
   accent: {
     bg: 'bg-ds-accent-blue-subtle dark:bg-muted/50',
     iconBg: 'bg-ds-accent-blue',
     text: 'text-ds-accent-blue',
-    spark: 'hsl(217 33% 40%)',
+    spark: 'hsl(224 64% 50%)',  // --accent-blue lightened for sparkline readability
   },
   success: {
     bg: 'bg-success/8',
     iconBg: 'bg-success',
     text: 'text-success',
-    spark: 'hsl(152 76% 36%)',
+    spark: 'hsl(142 76% 36%)',  // --success exact
   },
   warning: {
     bg: 'bg-warning/8',
     iconBg: 'bg-warning',
     text: 'text-warning',
-    spark: 'hsl(38 92% 44%)',
+    spark: 'hsl(33 95% 44%)',   // --warning exact
   },
 } as const;
 
