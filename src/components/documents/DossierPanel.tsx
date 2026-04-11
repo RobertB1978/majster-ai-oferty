@@ -50,10 +50,11 @@ const CATEGORY_ICON: Record<DossierCategory, React.ComponentType<{ className?: s
   OTHER:     MoreHorizontal,
 };
 
-// Categorical badge colours for document types — each needs distinct visual identity
+// Categorical badge colours for document types — each needs distinct visual identity.
+// PROTOCOL uses the DS --category-protocol token (see src/index.css).
 const CATEGORY_COLOR: Record<DossierCategory, string> = {
   CONTRACT:  'bg-info/10 text-info dark:bg-info/20',
-  PROTOCOL:  'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400', // intentional categorical — no DS token
+  PROTOCOL:  'bg-category-protocol text-category-protocol dark:bg-category-protocol-strong',
   RECEIPT:   'bg-warning/10 text-warning dark:bg-warning/20',
   PHOTO:     'bg-success/10 text-success dark:bg-success/20',
   GUARANTEE: 'bg-destructive/10 text-destructive dark:bg-destructive/20',
