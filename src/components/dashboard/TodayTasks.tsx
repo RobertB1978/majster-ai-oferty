@@ -129,11 +129,11 @@ export const TodayTasks = React.memo(function TodayTasks() {
   if (isLoading || tasks.length === 0) return null;
 
   return (
-    <Card className="border-l-4 border-l-amber-400 dark:border-l-amber-500 shadow-sm">
+    <Card className="border-l-4 border-l-accent-amber shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <ClipboardList className="h-4 w-4 text-amber-500" />
+            <ClipboardList className="h-4 w-4 text-accent-amber" />
             {t('dashboard.todayTasks')}
           </CardTitle>
           <Badge

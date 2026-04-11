@@ -47,7 +47,7 @@ export default function AdminDiagnosticsPage() {
             </CardHeader>
             <CardContent className="flex items-center gap-2">
               {online ? (
-                <><Wifi className="h-5 w-5 text-green-600" /><span className="font-medium">{t('adminDiag.online')}</span></>
+                <><Wifi className="h-5 w-5 text-success" /><span className="font-medium">{t('adminDiag.online')}</span></>
               ) : (
                 <><WifiOff className="h-5 w-5 text-destructive" /><span className="font-medium">{t('adminDiag.offline')}</span></>
               )}

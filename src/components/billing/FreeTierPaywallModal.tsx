@@ -63,15 +63,15 @@ export function FreeTierPaywallModal({ open, onOpenChange }: FreeTierPaywallModa
           <p className="text-sm font-medium">{t('paywall.retentionTitle')}</p>
           <ul className="space-y-1.5 text-sm text-muted-foreground">
             <li className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
               {t('paywall.retentionCrm')}
             </li>
             <li className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
               {t('paywall.retentionHistory')}
             </li>
             <li className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
               {t('paywall.retentionDrafts')}
             </li>
           </ul>

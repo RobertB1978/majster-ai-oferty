@@ -268,7 +268,7 @@ export function OnboardingModal({ enabled = true }: OnboardingModalProps) {
                 </p>
               </div>
               {logoFile && (
-                <div className="flex items-center gap-2 text-sm text-green-600">
+                <div className="flex items-center gap-2 text-sm text-success">
                   <CheckCircle className="h-4 w-4" />
                   <span>{t('onboarding.selected', { filename: logoFile.name })}</span>
                 </div>

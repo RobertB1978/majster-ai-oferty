@@ -44,14 +44,14 @@ export function LandingFooter() {
           {/* Brand */}
           <div>
             <div className="text-xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">
-              Majster<span className="text-amber-500">.</span>AI
+              Majster<span className="text-accent-amber">.</span>AI
             </div>
             <p className="text-sm text-gray-500 dark:text-neutral-400 leading-relaxed mb-3">
               {t('landing.footer.brand_desc')}
             </p>
             <a
               href="mailto:kontakt@majster.ai"
-              className="text-sm text-gray-500 dark:text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+              className="text-sm text-gray-500 dark:text-neutral-400 hover:text-accent-amber transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber rounded"
             >
               kontakt@majster.ai
             </a>
@@ -67,7 +67,7 @@ export function LandingFooter() {
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-sm text-gray-500 dark:text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+                    className="text-sm text-gray-500 dark:text-neutral-400 hover:text-accent-amber transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber rounded"
                   >
                     {link.label}
                   </Link>
@@ -86,7 +86,7 @@ export function LandingFooter() {
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-sm text-gray-500 dark:text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+                    className="text-sm text-gray-500 dark:text-neutral-400 hover:text-accent-amber transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber rounded"
                   >
                     {link.label}
                   </Link>

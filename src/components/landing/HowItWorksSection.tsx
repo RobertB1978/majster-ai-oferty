@@ -77,11 +77,11 @@ export function HowItWorksSection() {
 
                 {/* Icon badge with step number */}
                 <div className="relative inline-block mb-5">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mx-auto shadow-lg shadow-amber-500/25">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-amber to-accent-amber-hover flex items-center justify-center mx-auto shadow-lg shadow-accent-amber/25">
                     <step.icon className="w-6 h-6 text-white" aria-hidden="true" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white dark:bg-brand-dark border-2 border-amber-500 flex items-center justify-center shadow-sm">
-                    <span className="text-amber-500 text-xs font-bold">{step.number}</span>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white dark:bg-brand-dark border-2 border-accent-amber flex items-center justify-center shadow-sm">
+                    <span className="text-accent-amber text-xs font-bold">{step.number}</span>
                   </div>
                 </div>
 
@@ -90,7 +90,7 @@ export function HowItWorksSection() {
               </div>
               {idx < STEPS.length - 1 && (
                 <div
-                  className="shrink-0 mt-20 w-12 border-t-2 border-dashed border-amber-500/30"
+                  className="shrink-0 mt-20 w-12 border-t-2 border-dashed border-accent-amber/30"
                   aria-hidden="true"
                 />
               )}
@@ -103,18 +103,18 @@ export function HowItWorksSection() {
           {STEPS.map((step, idx) => (
             <div key={step.number} className="flex gap-4">
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shrink-0 shadow-md shadow-amber-500/20">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-amber to-accent-amber-hover flex items-center justify-center shrink-0 shadow-md shadow-accent-amber/20">
                   <step.icon className="w-5 h-5 text-white" aria-hidden="true" />
                 </div>
                 {idx < STEPS.length - 1 && (
-                  <div className="w-0.5 flex-1 mt-2 mb-2 bg-amber-500/20" aria-hidden="true" />
+                  <div className="w-0.5 flex-1 mt-2 mb-2 bg-accent-amber/20" aria-hidden="true" />
                 )}
               </div>
               <div className="flex-1 pb-6">
                 <div className="flex items-center gap-3 mb-2">
                   <step.illustration size={56} animated={false} className="shrink-0" />
                   <div>
-                    <div className="text-amber-500 text-xs font-bold mb-0.5">
+                    <div className="text-accent-amber text-xs font-bold mb-0.5">
                       {t('landing.how.step')} {step.number}
                     </div>
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white">{step.title}</h3>

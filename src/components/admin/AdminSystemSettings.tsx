@@ -118,7 +118,7 @@ export function AdminSystemSettings() {
   if (error || !displaySettings) {
     return (
       <Card>
-        <CardContent className="pt-6 text-red-600">
+        <CardContent className="pt-6 text-destructive">
           {t('adminSettings.errorLoadingSettings')} {error?.message || t('adminSettings.unknownError')}
         </CardContent>
       </Card>
@@ -139,7 +139,7 @@ export function AdminSystemSettings() {
             </CardDescription>
           </div>
           {(hasChanges || error) && (
-            <Badge variant="outline" className={`${error ? 'text-red-600 border-red-600' : 'text-[hsl(var(--warning))] border-[hsl(var(--warning))]'}`}>
+            <Badge variant="outline" className={`${error ? 'text-destructive border-destructive' : 'text-warning border-warning'}`}>
               {error ? t('adminSettings.error') : t('adminSettings.unsavedChanges')}
             </Badge>
           )}

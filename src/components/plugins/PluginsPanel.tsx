@@ -158,7 +158,7 @@ export function PluginsPanel() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-amber-500">
+              <p className="text-3xl font-bold text-accent-amber">
                 {plugins.filter(p => p.premium).length}
               </p>
               <p className="text-sm text-muted-foreground">{t('plugins.premiumCount')}</p>

@@ -48,14 +48,14 @@ export function PricingSection() {
               key={plan.slug}
               className={`relative bg-white dark:bg-brand-card rounded-2xl p-6 flex flex-col gap-5 transition-all duration-300 ${
                 plan.highlighted
-                  ? 'border-2 border-amber-500 shadow-lg shadow-amber-500/10 ring-1 ring-amber-500/20'
-                  : 'border border-gray-200 dark:border-brand-border hover:border-amber-500/40 hover:shadow-md hover:shadow-gray-200/50 dark:hover:shadow-black/30'
+                  ? 'border-2 border-accent-amber shadow-lg shadow-accent-amber/10 ring-1 ring-accent-amber/20'
+                  : 'border border-gray-200 dark:border-brand-border hover:border-accent-amber/40 hover:shadow-md hover:shadow-gray-200/50 dark:hover:shadow-black/30'
               }`}
             >
               {/* Popular badge */}
               {plan.highlighted && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="bg-gradient-to-r from-amber-500 to-amber-400 text-black text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap shadow-sm shadow-amber-500/30">
+                  <span className="bg-gradient-to-r from-accent-amber to-accent-amber-hover text-black text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap shadow-sm shadow-accent-amber/30">
                     {t('landing.pricing.badge')}
                   </span>
                 </div>
@@ -86,7 +86,7 @@ export function PricingSection() {
                   return (
                     <li key={featureKey} className="flex items-start gap-2 text-sm">
                       <Check
-                        className="w-4 h-4 text-amber-500 shrink-0 mt-0.5"
+                        className="w-4 h-4 text-accent-amber shrink-0 mt-0.5"
                         aria-hidden="true"
                       />
                       <span className={isPrep ? 'text-gray-500 dark:text-neutral-500' : 'text-gray-600 dark:text-neutral-400'}>
@@ -105,10 +105,10 @@ export function PricingSection() {
               {/* CTA */}
               <Link
                 to={CTA_ROUTE}
-                className={`block text-center py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[44px] flex items-center justify-center ${
+                className={`block text-center py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[44px] flex items-center justify-center ${
                   plan.highlighted
-                    ? 'bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black shadow-md shadow-amber-500/20 hover:shadow-lg hover:shadow-amber-500/25'
-                    : 'border border-gray-200 dark:border-brand-border hover:border-amber-500/60 text-gray-900 dark:text-white hover:text-amber-500 dark:hover:text-amber-400'
+                    ? 'bg-accent-amber hover:bg-accent-amber-hover active:bg-accent-amber text-black shadow-md shadow-accent-amber/20 hover:shadow-lg hover:shadow-accent-amber/25'
+                    : 'border border-gray-200 dark:border-brand-border hover:border-accent-amber/60 text-gray-900 dark:text-white hover:text-accent-amber'
                 }`}
               >
                 {plan.pricePLN === 0
@@ -127,7 +127,7 @@ export function PricingSection() {
           {t('landing.pricing.enterpriseNote')}{' '}
           <a
             href="mailto:kontakt@majster.ai"
-            className="underline text-gray-600 dark:text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors duration-200"
+            className="underline text-gray-600 dark:text-gray-400 hover:text-accent-amber transition-colors duration-200"
           >
             {t('landing.pricing.enterpriseContact')}
           </a>

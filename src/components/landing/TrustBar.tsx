@@ -72,12 +72,12 @@ export function TrustBar() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {visible.map((item) => (
             <div key={item.labelDefault} className="flex items-center gap-3 justify-center md:justify-start">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
-                <item.icon className="w-5 h-5 text-amber-500" aria-hidden="true" />
+              <div className="w-10 h-10 rounded-xl bg-accent-amber/10 flex items-center justify-center shrink-0">
+                <item.icon className="w-5 h-5 text-accent-amber" aria-hidden="true" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-baseline gap-1.5">
-                  <span className="text-lg font-bold text-amber-500">
+                  <span className="text-lg font-bold text-accent-amber">
                     {item.value}
                   </span>
                   <span className="text-sm font-semibold text-gray-900 dark:text-white leading-tight truncate">

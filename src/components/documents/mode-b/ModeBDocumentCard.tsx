@@ -138,7 +138,7 @@ export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardP
   return (
     <div className={cn(
       'border rounded-lg p-4 space-y-3 bg-card',
-      isFinal && 'border-green-300 dark:border-green-800',
+      isFinal && 'border-success/40 dark:border-success/50',
     )}>
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
@@ -168,7 +168,7 @@ export function ModeBDocumentCard({ instance, templateName }: ModeBDocumentCardP
 
       {/* No DOCX yet — informacja gdy Edge Function nie gotowa */}
       {!hasDocx && !isArchived && (
-        <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded px-2 py-1.5">
+        <p className="text-xs text-warning dark:text-warning bg-warning/5 dark:bg-warning/10 rounded px-2 py-1.5">
           {t('modeB.card.docxPendingWarning')}
         </p>
       )}

@@ -78,7 +78,7 @@ export function CalendarAgendaView({ eventsByDate, openEventDialog, dateLocale }
                       >
                         <div className="flex items-center gap-2 flex-wrap">
                           {isCompleted
-                            ? <CheckCircle2 className="h-3 w-3 text-green-500 flex-shrink-0" />
+                            ? <CheckCircle2 className="h-3 w-3 text-success flex-shrink-0" />
                             : <div className={cn('w-2 h-2 rounded-full flex-shrink-0', eventTypeColors[event.event_type]?.dot)} />}
                           <span className={cn('font-medium', isCompleted && 'line-through')}>{event.title}</span>
                           {event.event_time && (

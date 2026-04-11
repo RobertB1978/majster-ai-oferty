@@ -97,7 +97,7 @@ export function WizardStepClient({ form, onChange, errors }: Props) {
           </div>
 
           {selectedClient && (
-            <p className="text-sm text-green-600 dark:text-green-400">
+            <p className="text-sm text-success">
               {t('offerWizard.clientStep.selected', { name: selectedClient.name })}
             </p>
           )}

@@ -151,7 +151,7 @@ export function OfferPhotoAttach({ offerId, readOnly = false }: Props) {
                     </span>
                   )}
                   {photo.show_in_public && (
-                    <span className="bg-blue-600/80 text-white text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                    <span className="bg-info text-white text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5">
                       <Eye className="h-2.5 w-2.5" />
                       {t('offerPhotos.visibilityPublic')}
                     </span>

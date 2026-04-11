@@ -18,15 +18,15 @@ interface ModeBStatusBadgeProps {
 
 const STATUS_CLASSES: Record<DocumentInstanceStatus, string> = {
   draft:
-    'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700',
+    'bg-muted text-muted-foreground border-border dark:bg-muted dark:text-muted-foreground dark:border-border',
   ready:
-    'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
+    'bg-info/10 text-info border-info/30 dark:bg-info/20 dark:text-info dark:border-info/40',
   sent:
-    'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800',
+    'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800', // purple = no DS token, needs revision
   final:
-    'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
+    'bg-success/10 text-success border-success/30 dark:bg-success/20 dark:text-success dark:border-success/40',
   archived:
-    'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
+    'bg-warning/10 text-warning border-warning/30 dark:bg-warning/20 dark:text-warning dark:border-warning/40',
 };
 
 export function ModeBStatusBadge({ status, className }: ModeBStatusBadgeProps) {

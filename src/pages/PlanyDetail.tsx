@@ -91,7 +91,7 @@ export default function PlanyDetail() {
               <ul className="space-y-3">
                 {plan.featuresKeys.map((key) => (
                   <li key={key} className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                    <CheckCircle2 className="h-5 w-5 text-success shrink-0" />
                     <span>{t(key)}</span>
                   </li>
                 ))}

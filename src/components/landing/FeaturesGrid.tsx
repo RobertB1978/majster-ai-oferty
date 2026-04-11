@@ -76,7 +76,7 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
 
   return (
     <div
-      className={`group bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-amber-500/40 hover:shadow-lg hover:shadow-amber-500/5 ${
+      className={`group bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-accent-amber/40 hover:shadow-lg hover:shadow-accent-amber/5 ${
         hasDemo ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-brand-card' : ''
       }`}
       onClick={hasDemo ? handleDemo : undefined}
@@ -97,12 +97,12 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
       )}
 
       <div className="flex items-center justify-between">
-        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-400/5 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:from-amber-500/20 group-hover:to-amber-400/10 group-hover:shadow-sm group-hover:shadow-amber-500/10">
-          <Icon className="w-5 h-5 text-amber-500" aria-hidden="true" />
+        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-accent-amber/10 to-accent-amber/5 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:from-accent-amber/20 group-hover:to-accent-amber/10 group-hover:shadow-sm group-hover:shadow-accent-amber/10">
+          <Icon className="w-5 h-5 text-accent-amber" aria-hidden="true" />
         </div>
         {hasDemo && (
           <ExternalLink
-            className="w-4 h-4 text-gray-300 dark:text-neutral-600 group-hover:text-amber-500/60 transition-colors duration-300"
+            className="w-4 h-4 text-gray-300 dark:text-neutral-600 group-hover:text-accent-amber/60 transition-colors duration-300"
             aria-hidden="true"
           />
         )}
@@ -118,7 +118,7 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
       </div>
 
       {hasDemo && (
-        <div className="text-xs font-medium text-gray-400 dark:text-neutral-600 group-hover:text-amber-400 transition-colors duration-200">
+        <div className="text-xs font-medium text-gray-400 dark:text-neutral-600 group-hover:text-accent-amber transition-colors duration-200">
           {t('landing.features.demoTitle')} →
         </div>
       )}
@@ -153,7 +153,7 @@ export function FeaturesGrid() {
 
         {liveFeatures.length < 3 ? (
           <div className="text-center py-12 px-6 rounded-2xl border border-dashed border-gray-200 dark:border-brand-border">
-            <div className="text-amber-500 mb-3 flex justify-center">
+            <div className="text-accent-amber mb-3 flex justify-center">
               <Rocket className="w-10 h-10" aria-hidden="true" />
             </div>
             <h3 className="text-gray-900 dark:text-white font-semibold text-xl mb-2">{t('landing.features.mvpTitle')}</h3>

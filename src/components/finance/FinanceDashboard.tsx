@@ -466,7 +466,7 @@ export function FinanceDashboard() {
                         <span className="text-muted-foreground line-through">
                           {rec.currentAvgPrice} zł
                         </span>
-                        <span className="text-green-600 font-medium">
+                        <span className="text-success font-medium">
                           → {rec.recommendedPrice} zł
                         </span>
                       </div>

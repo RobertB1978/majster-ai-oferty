@@ -66,10 +66,10 @@ function ExpiryBadge({ endDate }: { endDate: string }) {
     : t('warranty.expiresIn', { days });
 
   const cls = days < 0
-    ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+    ? 'bg-destructive/10 text-destructive dark:bg-destructive/20'
     : days < 30
-    ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-    : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+    ? 'bg-warning/10 text-warning dark:bg-warning/20'
+    : 'bg-success/10 text-success dark:bg-success/20';
 
   return (
     <span className={cn('text-[11px] font-semibold px-2 py-0.5 rounded-full', cls)}>

@@ -318,17 +318,17 @@ export default function Login() {
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30"
+                  className="mb-6 rounded-lg border border-warning/30 bg-warning/5 p-4 dark:border-warning/40 dark:bg-warning/10"
                   role="alert"
                   data-testid="unconfirmed-email-banner"
                 >
                   <div className="flex items-start gap-3">
-                    <MailCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                    <MailCheck className="mt-0.5 h-5 w-5 shrink-0 text-warning" aria-hidden="true" />
                     <div className="flex-1 space-y-2">
-                      <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                      <p className="text-sm font-medium text-warning">
                         {t('auth.errors.emailNotConfirmedTitle')}
                       </p>
-                      <p className="text-xs text-amber-700 dark:text-amber-400">
+                      <p className="text-xs text-warning/80">
                         {t('auth.errors.emailNotConfirmedHint')}{' '}
                         <span className="font-medium break-all">{unconfirmedEmail}</span>
                       </p>
@@ -336,7 +336,7 @@ export default function Login() {
                         type="button"
                         size="sm"
                         variant="outline"
-                        className="mt-1 border-amber-300 bg-white text-amber-800 hover:bg-amber-50 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                        className="mt-1 border-warning/40 bg-background text-warning hover:bg-warning/5"
                         onClick={handleResendVerification}
                         disabled={isResending || resendCooldown > 0}
                         data-testid="resend-from-login-btn"

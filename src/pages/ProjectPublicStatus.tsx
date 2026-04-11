@@ -171,7 +171,7 @@ export default function ProjectPublicStatus() {
               {stages.map((stage, idx) => (
                 <li key={idx} className="flex items-center gap-2.5 text-sm">
                   {stage.is_done ? (
-                    <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                    <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
                   ) : (
                     <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
                   )}

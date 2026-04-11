@@ -209,7 +209,7 @@ function MeasurementRow({
           'h-10 w-10 shrink-0 rounded-[var(--radius-sm)]',
           'flex items-center justify-center',
           'text-[var(--text-secondary)]',
-          'hover:text-[var(--state-error)] hover:bg-red-50 dark:hover:bg-red-950/20',
+          'hover:text-[var(--state-error)] hover:bg-destructive/5',
           'focus-visible:outline-none focus-visible:ring-2',
           'focus-visible:ring-[var(--accent-amber)] focus-visible:ring-offset-2',
           'transition-colors duration-[var(--motion-fast)]',

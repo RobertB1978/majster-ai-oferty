@@ -40,7 +40,7 @@ export function FieldSafetyBanner() {
     <div
       role="status"
       aria-live="polite"
-      className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-amber-500/10 border-b border-amber-500/20 text-amber-700 dark:text-amber-400"
+      className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-accent-amber/10 border-b border-accent-amber/20 text-accent-amber"
     >
       {batterySaver && <Battery className="h-4 w-4 shrink-0" aria-hidden="true" />}
       {highGlare && !batterySaver && <Sun className="h-4 w-4 shrink-0" aria-hidden="true" />}
@@ -51,7 +51,7 @@ export function FieldSafetyBanner() {
       </span>
       <button
         onClick={handleDismiss}
-        className="ml-auto shrink-0 p-1 rounded hover:bg-amber-500/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+        className="ml-auto shrink-0 p-1 rounded hover:bg-accent-amber/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
         aria-label={t('common.dismiss', 'Zamknij')}
       >
         <X className="h-3.5 w-3.5" aria-hidden="true" />

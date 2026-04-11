@@ -240,9 +240,9 @@ export function AdminUsersManager() {
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                             {role === 'admin' ? (
-                              <Crown className="h-5 w-5 text-yellow-600" />
+                              <Crown className="h-5 w-5 text-accent-amber" />
                             ) : role === 'moderator' ? (
-                              <Shield className="h-5 w-5 text-blue-600" />
+                              <Shield className="h-5 w-5 text-info" />
                             ) : (
                               <Users className="h-5 w-5 text-muted-foreground" />
                             )}
@@ -342,7 +342,7 @@ export function AdminUsersManager() {
                     role: 'admin' as const
                   })}
                 >
-                  <Crown className="h-6 w-6 text-yellow-600" />
+                  <Crown className="h-6 w-6 text-accent-amber" />
                   <span>Admin</span>
                 </Button>
                 <Button
@@ -353,7 +353,7 @@ export function AdminUsersManager() {
                     role: 'moderator' as const
                   })}
                 >
-                  <Shield className="h-6 w-6 text-blue-600" />
+                  <Shield className="h-6 w-6 text-info" />
                   <span>Moderator</span>
                 </Button>
                 <Button
@@ -377,7 +377,7 @@ export function AdminUsersManager() {
               
               {selectedUser && getUserRole(selectedUser.user_id) && (
                 <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-success" />
                   <span>{t('admin.usersManager.currentRole')}<strong>{getUserRole(selectedUser.user_id)}</strong></span>
                 </div>
               )}

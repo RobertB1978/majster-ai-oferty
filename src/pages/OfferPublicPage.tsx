@@ -179,7 +179,7 @@ export default function OfferPublicPage() {
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="max-w-md w-full">
           <CardContent className="flex flex-col items-center py-12 text-center">
-            <Clock className="h-16 w-16 text-amber-500 mb-4" />
+            <Clock className="h-16 w-16 text-accent-amber mb-4" />
             <h1 className="text-xl font-bold mb-2">{t('offerPublicPage.expiredTitle')}</h1>
             <p className="text-muted-foreground">
               {offer.valid_until
@@ -245,13 +245,13 @@ export default function OfferPublicPage() {
           <div className="flex items-center gap-4 px-4 py-3">
             <div className="flex-1 min-w-0">
               <p className="text-xs text-muted-foreground">{t('offerPublicPage.totalLabel')}</p>
-              <p className="text-xl font-bold text-amber-600 font-mono leading-tight">
+              <p className="text-xl font-bold text-accent-amber font-mono leading-tight">
                 {formatCurrency(total)}
               </p>
             </div>
             <Button
               onClick={scrollToAcceptForm}
-              className="bg-amber-500 hover:bg-amber-400 text-black font-semibold min-h-[48px] px-6 shadow-lg shadow-amber-500/25"
+              className="bg-accent-amber hover:bg-accent-amber-hover text-black font-semibold min-h-[48px] px-6 shadow-lg shadow-accent-amber/25"
             >
               <CheckCircle className="h-5 w-5 mr-2" />
               {t('offerPublicPage.acceptButton')}
@@ -285,16 +285,16 @@ export default function OfferPublicPage() {
 
             {/* ─── Accepted banner ─────────────────────────────── */}
             {isOfferAccepted && (
-              <Card className={`border-green-500 bg-green-50 dark:bg-green-950/20 ${accepted ? 'animate-[celebration_0.6s_ease-in-out]' : ''}`}>
+              <Card className={`border-success bg-success/5 dark:bg-success/10 ${accepted ? 'animate-[celebration_0.6s_ease-in-out]' : ''}`}>
                 <CardContent className="py-6">
                   <div className="flex items-center gap-3">
-                    <CheckCircle className={`h-8 w-8 text-green-600 shrink-0 ${accepted ? 'animate-bounce' : ''}`} />
+                    <CheckCircle className={`h-8 w-8 text-success shrink-0 ${accepted ? 'animate-bounce' : ''}`} />
                     <div>
-                      <p className="font-semibold text-green-700 dark:text-green-400 text-lg">
+                      <p className="font-semibold text-success text-lg">
                         {accepted ? t('offerPublicPage.justAccepted') : t('offerPublicPage.acceptedBanner')}
                       </p>
                       {(offer.accepted_at ?? offer.approved_at) && (
-                        <p className="text-sm text-green-600 dark:text-green-500">
+                        <p className="text-sm text-success/80">
                           {new Date(offer.accepted_at ?? offer.approved_at!).toLocaleString()}
                         </p>
                       )}
@@ -336,10 +336,10 @@ export default function OfferPublicPage() {
                     const isWarning = daysLeft > 3 && daysLeft <= 7;
                     return (
                       <div className="flex items-start gap-3">
-                        <Clock className={`h-5 w-5 mt-0.5 shrink-0 ${isUrgent ? 'text-red-500' : isWarning ? 'text-amber-500' : 'text-muted-foreground'}`} />
+                        <Clock className={`h-5 w-5 mt-0.5 shrink-0 ${isUrgent ? 'text-destructive' : isWarning ? 'text-warning' : 'text-muted-foreground'}`} />
                         <div>
                           <p className="text-sm text-muted-foreground">{t('offerPublicPage.validUntilLabel')}</p>
-                          <p className={`font-medium ${isUrgent ? 'text-red-600' : isWarning ? 'text-amber-600' : ''}`}>
+                          <p className={`font-medium ${isUrgent ? 'text-destructive' : isWarning ? 'text-warning' : ''}`}>
                             {new Date(offer.valid_until).toLocaleDateString()}
                           </p>
                         </div>
@@ -429,7 +429,7 @@ export default function OfferPublicPage() {
 
                   <Button
                     onClick={handleAccept}
-                    className="w-full min-h-[52px] text-base bg-amber-500 hover:bg-amber-400 text-black font-semibold shadow-lg shadow-amber-500/25"
+                    className="w-full min-h-[52px] text-base bg-accent-amber hover:bg-accent-amber-hover text-black font-semibold shadow-lg shadow-accent-amber/25"
                     disabled={isAccepting}
                   >
                     {isAccepting ? (
@@ -461,7 +461,7 @@ export default function OfferPublicPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {questionSent ? (
-                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400 py-2">
+                    <div className="flex items-center gap-2 text-success py-2">
                       <CheckCircle className="h-5 w-5 shrink-0" />
                       <p className="text-sm font-medium">{t('offerPublicPage.questionSentConfirm')}</p>
                     </div>
@@ -509,7 +509,7 @@ export default function OfferPublicPage() {
             <div className="flex flex-col items-center gap-1.5 pb-4">
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
-                  <Shield className="h-3 w-3 text-green-500" />
+                  <Shield className="h-3 w-3 text-success" />
                   {t('publicOffer.secureConnection')}
                 </span>
                 <span aria-hidden>·</span>
@@ -554,7 +554,7 @@ export default function OfferPublicPage() {
                   const isWarning = daysLeft > 3 && daysLeft <= 7;
                   if (daysLeft < 0) return null;
                   return (
-                    <div className={`rounded-lg px-3 py-2 text-sm ${isUrgent ? 'bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400' : isWarning ? 'bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400' : 'bg-muted text-muted-foreground'}`}>
+                    <div className={`rounded-lg px-3 py-2 text-sm ${isUrgent ? 'bg-destructive/5 text-destructive' : isWarning ? 'bg-warning/5 text-warning' : 'bg-muted text-muted-foreground'}`}>
                       <Clock className="h-3.5 w-3.5 inline mr-1.5 -mt-0.5" />
                       {t('offerPublicPage.validUntilLabel')}: {new Date(offer.valid_until).toLocaleDateString()}
                       {isUrgent && <span className="block text-xs font-medium mt-0.5">{t('offerPublicPage.expiresInDays', { count: daysLeft })}</span>}
@@ -565,7 +565,7 @@ export default function OfferPublicPage() {
                 {/* Total — amber, JetBrains Mono */}
                 <div className="border-t border-border pt-4">
                   <p className="text-xs text-muted-foreground mb-1">{t('offerPublicPage.totalLabel')}</p>
-                  <p className="text-3xl font-bold text-amber-600 font-mono tracking-tight">
+                  <p className="text-3xl font-bold text-accent-amber font-mono tracking-tight">
                     {formatCurrency(total)}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">{t('offerPublicPage.vatNote')}</p>
@@ -575,7 +575,7 @@ export default function OfferPublicPage() {
                 {canAct && (
                   <Button
                     onClick={scrollToAcceptForm}
-                    className="w-full min-h-[52px] text-base bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-black font-semibold shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30"
+                    className="w-full min-h-[52px] text-base bg-accent-amber hover:bg-accent-amber-hover active:bg-accent-amber text-black font-semibold shadow-lg shadow-accent-amber/25 hover:shadow-xl hover:shadow-accent-amber/30"
                   >
                     <CheckCircle className="h-5 w-5 mr-2" />
                     {t('offerPublicPage.acceptButton')}
@@ -583,7 +583,7 @@ export default function OfferPublicPage() {
                 )}
 
                 {isOfferAccepted && (
-                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <div className="flex items-center gap-2 text-success">
                     <CheckCircle className="h-5 w-5 shrink-0" />
                     <p className="text-sm font-medium">{t('offerPublicPage.acceptedBanner')}</p>
                   </div>
@@ -592,7 +592,7 @@ export default function OfferPublicPage() {
                 {/* Trust signals */}
                 <div className="border-t border-border pt-4 space-y-2">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Shield className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                    <Shield className="h-3.5 w-3.5 text-success shrink-0" />
                     {t('publicOffer.secureConnection')}
                   </div>
                   {offer.company?.phone && (

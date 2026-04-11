@@ -173,7 +173,7 @@ export function AdminDashboard() {
                 <p className="text-xs text-muted-foreground mt-1">{t('admin.dashboard.totalInDb')}</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-info/10 dark:bg-info/20 flex items-center justify-center">
-                <Database className="h-6 w-6 text-blue-600" />
+                <Database className="h-6 w-6 text-info" />
               </div>
             </div>
           </CardContent>
@@ -346,8 +346,8 @@ export function AdminDashboard() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="rounded-lg border border-warning/30 bg-warning/5 dark:bg-warning/10 p-3 flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
-                  <p className="text-sm text-amber-700 dark:text-amber-400">
+                  <AlertCircle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
+                  <p className="text-sm text-warning">
                     {t('admin.dashboard.statusUnknownNote')}
                   </p>
                 </div>

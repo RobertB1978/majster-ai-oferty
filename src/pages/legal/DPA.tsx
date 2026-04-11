@@ -76,8 +76,8 @@ export default function DPA() {
           </div>
 
           {i18n.language !== 'pl' && t('legal.plVersionPrevails') && (
-            <div className="mb-6 p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20">
-              <p className="text-sm text-amber-700 dark:text-amber-400">{t('legal.plVersionPrevails')}</p>
+            <div className="mb-6 p-4 rounded-lg border border-warning/30 bg-warning/5 dark:border-warning/40 dark:bg-warning/10">
+              <p className="text-sm text-warning">{t('legal.plVersionPrevails')}</p>
             </div>
           )}
 

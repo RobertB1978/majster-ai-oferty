@@ -113,7 +113,7 @@ function PreviewTable({ rows }: { rows: ParsedRow[] }) {
         </thead>
         <tbody>
           {rows.map((row, idx) => (
-            <tr key={idx} className={row.error ? 'bg-red-50 dark:bg-red-900/10' : ''}>
+            <tr key={idx} className={row.error ? 'bg-destructive/5 dark:bg-destructive/10' : ''}>
               <td className="border border-border px-2 py-1.5">{row.name || '—'}</td>
               <td className="border border-border px-2 py-1.5 text-right">{row.error ? '—' : row.qty}</td>
               <td className="border border-border px-2 py-1.5 text-center">{row.error ? '—' : row.unit}</td>
@@ -122,12 +122,12 @@ function PreviewTable({ rows }: { rows: ParsedRow[] }) {
               </td>
               <td className="border border-border px-2 py-1.5 text-center">
                 {row.error ? (
-                  <span className="flex items-center justify-center gap-1 text-red-600">
+                  <span className="flex items-center justify-center gap-1 text-destructive">
                     <AlertCircle className="h-3 w-3" />
                     {row.error}
                   </span>
                 ) : (
-                  <span className="flex items-center justify-center gap-1 text-green-600">
+                  <span className="flex items-center justify-center gap-1 text-success">
                     <CheckCircle2 className="h-3 w-3" />
                     {t('bulkAdd.statusOk')}
                   </span>

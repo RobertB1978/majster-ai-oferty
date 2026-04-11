@@ -46,7 +46,7 @@ export function BeforeAfterSection() {
             </div>
             <div className="w-px h-full bg-gray-200 dark:bg-brand-border" aria-hidden="true" />
             <div className="p-4 md:p-5 text-center">
-              <span className="text-sm font-semibold text-amber-500 uppercase tracking-wide">
+              <span className="text-sm font-semibold text-accent-amber uppercase tracking-wide">
                 Majster.AI
               </span>
             </div>
@@ -62,7 +62,7 @@ export function BeforeAfterSection() {
             >
               {/* Before */}
               <div className="p-4 md:p-5 flex items-start gap-3">
-                <X className="w-4 h-4 text-red-400 shrink-0 mt-0.5" aria-hidden="true" />
+                <X className="w-4 h-4 text-destructive/70 shrink-0 mt-0.5" aria-hidden="true" />
                 <span className="text-sm text-gray-500 dark:text-neutral-400">
                   {t(`landing.beforeAfter.${item.key}.before`)}
                 </span>
@@ -70,12 +70,12 @@ export function BeforeAfterSection() {
 
               {/* Divider with arrow */}
               <div className="flex items-center justify-center px-2">
-                <ArrowRight className="w-4 h-4 text-amber-500/40" aria-hidden="true" />
+                <ArrowRight className="w-4 h-4 text-accent-amber/40" aria-hidden="true" />
               </div>
 
               {/* After */}
               <div className="p-4 md:p-5 flex items-start gap-3">
-                <Check className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" aria-hidden="true" />
+                <Check className="w-4 h-4 text-accent-amber shrink-0 mt-0.5" aria-hidden="true" />
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {t(`landing.beforeAfter.${item.key}.after`)}
                 </span>

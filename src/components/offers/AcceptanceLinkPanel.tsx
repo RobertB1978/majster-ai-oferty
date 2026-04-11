@@ -148,15 +148,15 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
   // ── REJECTED state ──────────────────────────────────────────────────────────
   if (isRejected) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 p-4">
+      <div className="rounded-lg border border-destructive/30 bg-destructive/5 dark:border-destructive/40 dark:bg-destructive/10 p-4">
         <div className="flex items-center gap-2">
-          <XCircle className="h-5 w-5 text-red-600 shrink-0" />
-          <p className="font-semibold text-red-700 dark:text-red-400">
+          <XCircle className="h-5 w-5 text-destructive shrink-0" />
+          <p className="font-semibold text-destructive">
             {t('acceptanceLink.statusRejected')}
           </p>
         </div>
         {rejectedAt && (
-          <p className="text-sm text-red-600 dark:text-red-500 mt-1">
+          <p className="text-sm text-destructive/80 mt-1">
             {t('acceptanceLink.rejectedAt', { date: formatDateTime(rejectedAt, i18n.language) })}
           </p>
         )}
@@ -205,7 +205,7 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
               aria-label={t('acceptanceLink.copyLink')}
             >
               {copied ? (
-                <Check className="h-3.5 w-3.5 text-green-600" />
+                <Check className="h-3.5 w-3.5 text-success" />
               ) : (
                 <Copy className="h-3.5 w-3.5" />
               )}
@@ -218,7 +218,7 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
             className="gap-2"
           >
             {copied ? (
-              <Check className="h-4 w-4 text-green-600" />
+              <Check className="h-4 w-4 text-success" />
             ) : (
               <Copy className="h-4 w-4" />
             )}

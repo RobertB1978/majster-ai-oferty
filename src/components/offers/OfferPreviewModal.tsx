@@ -312,7 +312,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
               <>
                 {/* Quota warning for free plan */}
                 {!isSent && offerQuota.plan === 'free' && !offerQuota.isLoading && (
-                  <Alert className={`mt-4 ${!offerQuota.canSend ? 'border-destructive/50 bg-destructive/10' : 'border-amber-300 bg-amber-50 dark:bg-amber-900/20'}`}>
+                  <Alert className={`mt-4 ${!offerQuota.canSend ? 'border-destructive/50 bg-destructive/10' : 'border-warning/30 bg-warning/5 dark:bg-warning/10'}`}>
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription className="text-sm">
                       {offerQuota.canSend
@@ -327,9 +327,9 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
 
                 {/* Company profile incomplete warning */}
                 {!data.company?.company_name && (
-                  <Alert className="mt-4 border-amber-300 bg-amber-50 dark:bg-amber-900/20">
-                    <AlertCircle className="h-4 w-4 text-amber-600" />
-                    <AlertDescription className="text-sm text-amber-800 dark:text-amber-200">
+                  <Alert className="mt-4 border-warning/30 bg-warning/5 dark:bg-warning/10">
+                    <AlertCircle className="h-4 w-4 text-warning" />
+                    <AlertDescription className="text-sm text-warning">
                       {t('offerPreview.missingCompanyAlert')}
                     </AlertDescription>
                   </Alert>
@@ -512,7 +512,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                             onClick={handleCopyLink}
                           >
                             {linkCopied ? (
-                              <Check className="mr-2 h-4 w-4 text-green-600" />
+                              <Check className="mr-2 h-4 w-4 text-success" />
                             ) : (
                               <Copy className="mr-2 h-4 w-4" />
                             )}

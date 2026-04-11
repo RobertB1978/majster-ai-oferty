@@ -84,7 +84,7 @@ function PdfSample() {
           <div className="font-bold text-base">{t('landing.demo.pdf.company')}</div>
           <div className="text-muted-foreground text-xs">NIP: 123-456-78-90 · Warszawa</div>
         </div>
-        <Badge variant="outline" className="text-green-700 border-green-400">{t('landing.demo.pdf.pdfReady')}</Badge>
+        <Badge variant="outline" className="text-success border-success/60">{t('landing.demo.pdf.pdfReady')}</Badge>
       </div>
       <div className="rounded-lg bg-muted/50 p-3 text-xs space-y-1">
         <div className="flex justify-between"><span>{t('landing.demo.pdf.labelClient')}</span><span className="font-medium">Jan Nowak</span></div>
@@ -173,8 +173,8 @@ function FinanceSample() {
     <div className="rounded-xl border bg-card p-4 space-y-3 text-sm">
       <div className="grid grid-cols-3 gap-2 text-center">
         {[
-          { label: t('landing.demo.finance.revenue'), value: '18 400 zł', color: 'text-green-600' },
-          { label: t('landing.demo.finance.costs'), value: '7 200 zł', color: 'text-red-500' },
+          { label: t('landing.demo.finance.revenue'), value: '18 400 zł', color: 'text-success' },
+          { label: t('landing.demo.finance.costs'), value: '7 200 zł', color: 'text-destructive' },
           { label: t('landing.demo.finance.profit'), value: '11 200 zł', color: 'text-primary' },
         ].map((s) => (
           <div key={s.label} className="rounded-lg bg-muted/50 p-2">
@@ -232,7 +232,7 @@ function AnalyticsSample() {
       </div>
       <div className="mt-3 flex justify-between text-xs">
         <span className="text-muted-foreground">{t('landing.demo.analytics.momGrowth')}</span>
-        <span className="font-bold text-green-600">+70%</span>
+        <span className="font-bold text-success">+70%</span>
       </div>
     </div>
   );
@@ -262,9 +262,9 @@ function MobileSample() {
 function PhotosSample() {
   const { t } = useTranslation();
   const photos = [
-    { label: t('landing.demo.photos.before'), bg: 'bg-amber-100 dark:bg-amber-900/40' },
-    { label: t('landing.demo.photos.aiDetected'), bg: 'bg-blue-100 dark:bg-blue-900/40' },
-    { label: t('landing.demo.photos.after'), bg: 'bg-green-100 dark:bg-green-900/40' },
+    { label: t('landing.demo.photos.before'), bg: 'bg-warning/10 dark:bg-warning/20' },
+    { label: t('landing.demo.photos.aiDetected'), bg: 'bg-info/10 dark:bg-info/20' },
+    { label: t('landing.demo.photos.after'), bg: 'bg-success/10 dark:bg-success/20' },
   ];
   return (
     <div className="grid grid-cols-3 gap-2 text-xs">
@@ -282,7 +282,7 @@ function BillingSample() {
   return (
     <div className="rounded-xl border bg-card divide-y divide-border text-sm overflow-hidden">
       {[
-        { name: 'Majster.AI Pro', amount: '49 zł/mies.', status: t('landing.demo.billing.statusActive'), color: 'text-green-600' },
+        { name: 'Majster.AI Pro', amount: '49 zł/mies.', status: t('landing.demo.billing.statusActive'), color: 'text-success' },
         { name: 'FV/2025/002', amount: '49 zł', status: t('landing.demo.billing.statusPaid'), color: 'text-muted-foreground' },
         { name: 'FV/2025/001', amount: '49 zł', status: t('landing.demo.billing.statusPaid'), color: 'text-muted-foreground' },
       ].map((b) => (
@@ -311,7 +311,7 @@ function SecuritySample() {
     <div className="rounded-xl border bg-card p-4 space-y-2 text-sm">
       {checks.map((c) => (
         <div key={c.label} className="flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+          <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
           <span>{c.label}</span>
         </div>
       ))}

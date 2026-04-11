@@ -104,7 +104,7 @@ export function AdminThemeEditor() {
   if (error) {
     return (
       <Card>
-        <CardContent className="pt-6 text-red-600">
+        <CardContent className="pt-6 text-destructive">
           {t('admin.themeLoadError', { message: error?.message || t('admin.unknownError') })}
         </CardContent>
       </Card>
