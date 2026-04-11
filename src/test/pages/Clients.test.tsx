@@ -50,17 +50,23 @@ describe('Clients', () => {
     data: [
       {
         id: 'client-1',
+        user_id: 'user-1',
         name: 'John Doe',
         email: 'john@example.com',
         phone: '+48 123 456 789',
         address: 'ul. Testowa 1, Warszawa',
+        nip: null,
+        created_at: '2025-01-15T10:00:00Z',
       },
       {
         id: 'client-2',
+        user_id: 'user-1',
         name: 'Jane Smith',
         email: 'jane@example.com',
         phone: '+48 987 654 321',
         address: 'ul. Próbna 2, Kraków',
+        nip: null,
+        created_at: '2025-02-20T12:00:00Z',
       },
     ],
     totalPages: 1,
@@ -298,22 +304,46 @@ describe('Clients', () => {
       });
     });
 
-    it('should call deleteClient when delete is confirmed', async () => {
-      // Mock window.confirm
-      global.confirm = vi.fn(() => true);
-
+    it('should call deleteClient when delete is confirmed via AlertDialog', async () => {
       mockDeleteClient.mutateAsync.mockResolvedValue(undefined);
 
       render(<Clients />);
 
-      // Find delete button by looking for the red/destructive text button in client cards
+      // Find delete button (trash icon, styled with text-destructive)
       const deleteButtons = document.querySelectorAll('button.text-destructive');
       expect(deleteButtons.length).toBeGreaterThan(0);
 
+      // Click delete — opens AlertDialog (no longer uses window.confirm)
       fireEvent.click(deleteButtons[0]);
+
+      // Wait for AlertDialog to appear
+      const dialog = await screen.findByRole('alertdialog');
+      expect(dialog).toBeDefined();
+
+      // Click the "Usuń" confirm button inside the dialog
+      const confirmButton = screen.getByRole('button', { name: /^usuń$/i });
+      fireEvent.click(confirmButton);
 
       await waitFor(() => {
         expect(mockDeleteClient.mutateAsync).toHaveBeenCalledWith('client-1');
+      });
+    });
+
+    it('should NOT call deleteClient when AlertDialog is cancelled', async () => {
+      render(<Clients />);
+
+      const deleteButtons = document.querySelectorAll('button.text-destructive');
+      fireEvent.click(deleteButtons[0]);
+
+      // Wait for AlertDialog
+      await screen.findByRole('alertdialog');
+
+      // Click "Anuluj"
+      const cancelButton = screen.getByRole('button', { name: /anuluj/i });
+      fireEvent.click(cancelButton);
+
+      await waitFor(() => {
+        expect(mockDeleteClient.mutateAsync).not.toHaveBeenCalled();
       });
     });
   });

@@ -1,17 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
+import { formatDate } from '@/lib/formatters';
 import { useClientsPaginated, useAddClient, useUpdateClient, useDeleteClient, Client } from '@/hooks/useClients';
 import { useDebounce } from '@/hooks/useDebounce';
 import { clientSchema } from '@/lib/validations';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { SearchInput } from '@/components/ui/search-input';
 import { PaginationControls } from '@/components/ui/pagination-controls';
-import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Users, Loader2, FileText, FolderKanban } from 'lucide-react';
+import { Plus, Phone, Mail, MapPin, Pencil, Trash2, Users, Loader2, FileText, FolderKanban, ArrowUpDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ClientsGridSkeleton } from '@/components/ui/skeleton-screens';
 import { toast } from 'sonner';
@@ -25,18 +29,30 @@ interface ClientFormData {
   address: string;
 }
 
+type SortBy = 'newest' | 'oldest' | 'name_asc' | 'name_desc';
+
 const PAGE_SIZE = 20;
 
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map(w => w[0] ?? '')
+    .join('')
+    .toUpperCase() || '?';
+}
+
 export default function Clients() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<SortBy>('newest');
 
   // Debounce search to avoid excessive API calls
   const debouncedSearch = useDebounce(searchQuery, 300);
 
-  // Paginated query with server-side search
+  // Paginated query with server-side search and sort
   const {
     data: paginatedResult,
     isLoading
@@ -44,6 +60,7 @@ export default function Clients() {
     page,
     pageSize: PAGE_SIZE,
     search: debouncedSearch,
+    sortBy,
   });
 
   const addClient = useAddClient();
@@ -52,6 +69,7 @@ export default function Clients() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
   const [formData, setFormData] = useState<ClientFormData>({
     name: '',
     nip: '',
@@ -74,9 +92,14 @@ export default function Clients() {
     }
   }, [searchParams, setSearchParams]);
 
-  // Reset to page 1 when search changes
+  // Reset to page 1 when search or sort changes
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
+    setPage(1);
+  };
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value as SortBy);
     setPage(1);
   };
 
@@ -142,10 +165,10 @@ export default function Clients() {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (confirm(`${t('clients.confirmDelete')} "${name}"?`)) {
-      await deleteClient.mutateAsync(id);
-    }
+  const handleDeleteConfirm = async () => {
+    if (!clientToDelete) return;
+    await deleteClient.mutateAsync(clientToDelete.id);
+    setClientToDelete(null);
   };
 
   const showEmptyState = !isLoading && totalCount === 0 && !searchQuery;
@@ -249,16 +272,39 @@ export default function Clients() {
         </Dialog>
       </div>
 
-      {/* Search */}
+      {/* Search + Sort toolbar */}
       {!showEmptyState && (
-        <div className="max-w-md">
-          <SearchInput
-            placeholder={t('clients.searchPlaceholder')}
-            value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            onClear={() => handleSearchChange('')}
-          />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="max-w-md flex-1">
+            <SearchInput
+              placeholder={t('clients.searchPlaceholder')}
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onClear={() => handleSearchChange('')}
+            />
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+            <Select value={sortBy} onValueChange={handleSortChange}>
+              <SelectTrigger className="w-[160px] h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">{t('clients.sortNewest')}</SelectItem>
+                <SelectItem value="oldest">{t('clients.sortOldest')}</SelectItem>
+                <SelectItem value="name_asc">{t('clients.sortNameAsc')}</SelectItem>
+                <SelectItem value="name_desc">{t('clients.sortNameDesc')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+      )}
+
+      {/* Total count */}
+      {!showEmptyState && !isLoading && totalCount > 0 && (
+        <p className="text-sm text-muted-foreground">
+          {t('clients.totalCount', { count: totalCount })}
+        </p>
       )}
 
       {isLoading ? (
@@ -290,9 +336,16 @@ export default function Clients() {
             {clients.map((client, index) => (
               <Card key={client.id} className="group hover:shadow-card-hover motion-safe:hover:-translate-y-1 transition-all duration-300" style={{ animationDelay: `${index * 50}ms` }}>
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-start justify-between text-lg">
-                    <span className="line-clamp-2">{client.name}</span>
-                    <div className="flex gap-1">
+                  <CardTitle className="flex items-start justify-between text-lg gap-2">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Avatar className="h-10 w-10 shrink-0">
+                        <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+                          {getInitials(client.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="line-clamp-2 leading-tight">{client.name}</span>
+                    </div>
+                    <div className="flex gap-1 shrink-0">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -306,8 +359,8 @@ export default function Clients() {
                         variant="ghost"
                         size="icon"
                         className="h-11 w-11 min-h-[44px] min-w-[44px] text-destructive hover:text-destructive"
-                        onClick={() => handleDelete(client.id, client.name)}
-                        aria-label={t('clients.deleteClient', { name: client.name })}
+                        onClick={() => setClientToDelete(client)}
+                        aria-label={t('clients.deleteClient')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -322,21 +375,38 @@ export default function Clients() {
                     </div>
                   )}
                   {client.phone && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Phone className="h-4 w-4" />
+                    <a
+                      href={`tel:${client.phone.replace(/\s/g, '')}`}
+                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Phone className="h-4 w-4 shrink-0" />
                       <span>{client.phone}</span>
-                    </div>
+                    </a>
                   )}
                   {client.email && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-4 w-4" />
+                    <a
+                      href={`mailto:${client.email}`}
+                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Mail className="h-4 w-4 shrink-0" />
                       <span className="truncate">{client.email}</span>
-                    </div>
+                    </a>
                   )}
                   {client.address && (
-                    <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <a
+                      href={`https://maps.google.com/?q=${encodeURIComponent(client.address)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
                       <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
                       <span className="line-clamp-2">{client.address}</span>
+                    </a>
+                  )}
+                  {/* Data dodania */}
+                  {client.created_at && (
+                    <div className="flex items-center gap-1 pt-1 text-xs text-muted-foreground/60">
+                      <span>{t('clients.addedOn', { date: formatDate(client.created_at, i18n.language) })}</span>
                     </div>
                   )}
                   {/* Nawigacja relacyjna: oferty i projekty tego klienta */}
@@ -369,6 +439,29 @@ export default function Clients() {
           />
         </>
       )}
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={!!clientToDelete} onOpenChange={(open) => { if (!open) setClientToDelete(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('clients.deleteClient')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('clients.deleteConfirmDesc', { name: clientToDelete?.name ?? '' })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              className={buttonVariants({ variant: 'destructive' })}
+              onClick={handleDeleteConfirm}
+              disabled={deleteClient.isPending}
+            >
+              {deleteClient.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('clients.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

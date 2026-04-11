@@ -441,7 +441,15 @@
       "deleteError": "Błąd przy usuwaniu klienta"
     },
     "nip": "NIP",
-    "nipPlaceholder": "1234567890"
+    "nipPlaceholder": "1234567890",
+    "sortNewest": "Najnowsze",
+    "sortOldest": "Najstarsze",
+    "sortNameAsc": "Nazwa A-Z",
+    "sortNameDesc": "Nazwa Z-A",
+    "totalCount": "Łącznie: {{count}} klientów",
+    "deleteConfirmDesc": "Czy na pewno chcesz usunąć klienta \"{{name}}\"? Tej operacji nie można cofnąć.",
+    "delete": "Usuń",
+    "addedOn": "Dodano: {{date}}"
   },
   "calendar": {
     "title": "Kalendarz",

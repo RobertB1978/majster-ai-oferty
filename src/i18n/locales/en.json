@@ -441,7 +441,15 @@
       "deleteError": "Error deleting client"
     },
     "nip": "Tax ID (NIP)",
-    "nipPlaceholder": "1234567890"
+    "nipPlaceholder": "1234567890",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortNameAsc": "Name A-Z",
+    "sortNameDesc": "Name Z-A",
+    "totalCount": "Total: {{count}} clients",
+    "deleteConfirmDesc": "Are you sure you want to delete client \"{{name}}\"? This action cannot be undone.",
+    "delete": "Delete",
+    "addedOn": "Added: {{date}}"
   },
   "calendar": {
     "title": "Calendar",

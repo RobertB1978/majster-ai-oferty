@@ -20,6 +20,7 @@ interface ClientsQueryParams {
   page?: number;
   pageSize?: number;
   search?: string;
+  sortBy?: 'newest' | 'oldest' | 'name_asc' | 'name_desc';
 }
 
 interface ClientsQueryResult {
@@ -45,7 +46,7 @@ export const clientsKeys = {
  * Optimized: Only fetches necessary columns, supports server-side filtering
  */
 export function useClientsPaginated(params: ClientsQueryParams = {}) {
-  const { page = 1, pageSize = 20, search } = params;
+  const { page = 1, pageSize = 20, search, sortBy = 'newest' } = params;
   const { user } = useAuth();
 
   return useQuery({
@@ -53,8 +54,8 @@ export function useClientsPaginated(params: ClientsQueryParams = {}) {
     queryFn: async (): Promise<ClientsQueryResult> => {
       let query = supabase
         .from('clients')
-        // Only select columns needed for list view (not SELECT *)
-        .select('id, name, nip, email, phone, created_at', { count: 'exact' });
+        // Include address so list cards can display it (bug fix: was missing)
+        .select('id, name, nip, email, phone, address, created_at', { count: 'exact' });
 
       // Server-side search filter (sanitize to prevent PostgREST filter injection)
       if (search?.trim()) {
@@ -68,8 +69,11 @@ export function useClientsPaginated(params: ClientsQueryParams = {}) {
       const from = (page - 1) * pageSize;
       const to = from + pageSize - 1;
 
+      const sortField = (sortBy === 'name_asc' || sortBy === 'name_desc') ? 'name' : 'created_at';
+      const ascending = sortBy === 'name_asc' || sortBy === 'oldest';
+
       const { data, error, count } = await query
-        .order('created_at', { ascending: false })
+        .order(sortField, { ascending })
         .range(from, to);
 
       if (error) throw error;
