@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings as SettingsIcon, Globe, FileText, Scale, Mail, UserX, CreditCard, ShieldCheck, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Settings as SettingsIcon, Globe, FileText, Scale, Mail, UserX, CreditCard, ShieldCheck, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,8 @@ import { ContactEmailSettings } from '@/components/settings/ContactEmailSettings
 import { DeleteAccountSection } from '@/components/settings/DeleteAccountSection';
 import { CompanyDocuments } from '@/components/documents/CompanyDocuments';
 import { SubscriptionSection } from '@/components/billing/SubscriptionSection';
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface SettingsSection {
   id: string;
@@ -171,9 +173,9 @@ export default function Settings() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('general');
   /**
-   * Mobile two-level navigation state.
-   * null  → show section list (top level)
-   * string → show that section's content with back button
+   * Mobile section panel state.
+   * null   → Sheet closed, section list visible
+   * string → Sheet open, showing that section's content
    */
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const { dense, toggleDense } = useDenseMode();
@@ -188,8 +190,8 @@ export default function Settings() {
       </Helmet>
 
       <div className="space-y-6 animate-fade-in">
-        {/* ── MOBILE: hide page header when drill-down is open ── */}
-        <div className={cn(mobileSection !== null && 'sm:block hidden')}>
+        {/* Page header — always visible */}
+        <div>
           <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
             <SettingsIcon className="h-6 w-6" />
             {t('settings.title')}
@@ -198,10 +200,9 @@ export default function Settings() {
         </div>
 
         {/* ══════════════════════════════════════════
-            MOBILE — two-level navigation (iOS-style)
+            MOBILE — section list (always visible)
+            Tap a row → opens the section Sheet panel
             ══════════════════════════════════════════ */}
-
-        {/* Level 1: Section list */}
         {/*
           Uses DS <Button variant="outline"> instead of raw <button>. The Button
           base styles auto-size any descendant SVG to 16px via [&_svg]:size-4,
@@ -209,66 +210,66 @@ export default function Settings() {
           the 36x36 wrapper (keeps the original visual weight). The trailing
           ChevronRight keeps the default 16px.
         */}
-        {mobileSection === null && (
-          <nav className="sm:hidden space-y-1.5" aria-label={t('settings.title')}>
-            {SETTINGS_SECTIONS.map(({ id, icon: Icon, labelKey, descKey, iconStyle }) => (
-              <Button
-                key={id}
-                type="button"
-                variant="outline"
-                onClick={() => setMobileSection(id)}
-                data-testid={`settings-mobile-nav-${id}`}
-                className="w-full h-auto justify-start items-center gap-3 rounded-xl px-4 py-3.5 text-left bg-card border-border/60 shadow-sm hover:bg-muted/50 active:scale-[0.99] transition-all duration-150 [&>div>svg]:!size-5"
-              >
-                <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', iconStyle || 'bg-muted')}>
-                  <Icon />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="block text-sm font-medium text-foreground">{t(labelKey)}</span>
-                  {descKey && (
-                    <span className="block text-xs text-muted-foreground truncate font-normal">{t(descKey)}</span>
-                  )}
-                </div>
-                <ChevronRight className="text-muted-foreground shrink-0" />
-              </Button>
-            ))}
-          </nav>
-        )}
+        <nav className="sm:hidden space-y-1.5" aria-label={t('settings.title')}>
+          {SETTINGS_SECTIONS.map(({ id, icon: Icon, labelKey, descKey, iconStyle }) => (
+            <Button
+              key={id}
+              type="button"
+              variant="outline"
+              onClick={() => setMobileSection(id)}
+              data-testid={`settings-mobile-nav-${id}`}
+              className="w-full h-auto justify-start items-center gap-3 rounded-xl px-4 py-3.5 text-left bg-card border-border/60 shadow-sm hover:bg-muted/50 active:scale-[0.99] transition-all duration-150 [&>div>svg]:!size-5"
+            >
+              <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', iconStyle || 'bg-muted')}>
+                <Icon />
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="block text-sm font-medium text-foreground">{t(labelKey)}</span>
+                {descKey && (
+                  <span className="block text-xs text-muted-foreground truncate font-normal">{t(descKey)}</span>
+                )}
+              </div>
+              <ChevronRight className="text-muted-foreground shrink-0" />
+            </Button>
+          ))}
+        </nav>
 
-        {/* Level 2: Section content with back button */}
-        {mobileSection !== null && (
-          <div className="sm:hidden space-y-4">
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setMobileSection(null)}
-                className="-ml-2 h-auto gap-1 px-2 py-1 text-sm font-medium text-primary hover:bg-transparent hover:opacity-80"
-                aria-label={t('settings.title')}
-              >
-                <ChevronLeft />
-                {t('settings.title')}
-              </Button>
-            </div>
-
-            {activeSectionMeta && (
-              <div className="flex items-center gap-3 pb-2 border-b border-border/60">
-                <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', activeSectionMeta.iconStyle || 'bg-muted')}>
+        {/* ══════════════════════════════════════════
+            MOBILE — section Sheet panel (DS pattern)
+            Slides in from the right; close via X or
+            backdrop tap. ScrollArea handles long content.
+            ══════════════════════════════════════════ */}
+        <Sheet open={mobileSection !== null} onOpenChange={(open) => { if (!open) setMobileSection(null); }}>
+          <SheetContent side="right" className="flex flex-col p-0">
+            {/* Panel header with section icon and title */}
+            <div className="flex items-center gap-3 px-4 pt-5 pb-4 pr-12 border-b border-border/60">
+              {activeSectionMeta && (
+                <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', activeSectionMeta.iconStyle || 'bg-muted')}>
                   <activeSectionMeta.icon className="h-5 w-5" />
                 </div>
-                <div>
-                  <h2 className="text-lg font-semibold text-foreground">{t(activeSectionMeta.labelKey)}</h2>
-                  {activeSectionMeta.descKey && (
-                    <p className="text-sm text-muted-foreground">{t(activeSectionMeta.descKey)}</p>
-                  )}
-                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <SheetTitle className="text-base leading-tight">
+                  {activeSectionMeta ? t(activeSectionMeta.labelKey) : t('settings.title')}
+                </SheetTitle>
+                {activeSectionMeta?.descKey && (
+                  <SheetDescription className="text-xs mt-0.5 leading-snug">
+                    {t(activeSectionMeta.descKey)}
+                  </SheetDescription>
+                )}
               </div>
-            )}
+            </div>
 
-            <SectionContent sectionId={mobileSection} dense={dense} toggleDense={toggleDense} t={t} />
-          </div>
-        )}
+            {/* Scrollable section content */}
+            <ScrollArea className="flex-1">
+              <div className="p-4">
+                {mobileSection && (
+                  <SectionContent sectionId={mobileSection} dense={dense} toggleDense={toggleDense} t={t} />
+                )}
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
 
         {/* ══════════════════════════════════════════
             DESKTOP — horizontal tabs (sm+)
