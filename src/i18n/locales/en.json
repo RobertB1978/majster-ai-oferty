@@ -525,7 +525,8 @@
     "recurrenceWeekly": "Weekly",
     "recurrenceMonthly": "Monthly",
     "recurrenceYearly": "Yearly",
-    "recurrenceEndDate": "Repeat until"
+    "recurrenceEndDate": "Repeat until",
+    "endTimeBeforeStart": "End time must be later than start time"
   },
   "finance": {
     "title": "Finance",

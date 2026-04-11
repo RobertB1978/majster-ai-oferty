@@ -9,7 +9,7 @@ import { eventTypeColors, HOURS } from './calendarTypes';
 interface CalendarDayViewProps {
   selectedDate: Date;
   eventsByDate: Record<string, CalendarEvent[]>;
-  openEventDialog: (date?: Date, event?: CalendarEvent) => void;
+  openEventDialog: (date?: Date, event?: CalendarEvent, prefilledTime?: string) => void;
   dateLocale: Locale;
 }
 
@@ -111,7 +111,7 @@ export function CalendarDayView({ selectedDate, eventsByDate, openEventDialog, d
 
               {/* Event slot */}
               <div
-                onClick={() => openEventDialog(selectedDate)}
+                onClick={() => openEventDialog(selectedDate, undefined, `${hour.toString().padStart(2, '0')}:00`)}
                 className="flex-1 p-1 hover:bg-accent/30 cursor-pointer relative"
               >
                 {hourEvents.map(event => {

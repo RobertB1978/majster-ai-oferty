@@ -2,6 +2,9 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isWithinInterval } from 'date-fns';
 import { pl } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
+import { uk } from 'date-fns/locale';
+import type { Locale } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,8 +25,17 @@ interface WorkTasksGanttProps {
   projectId?: string;
 }
 
+function getDateLocale(lang: string): Locale {
+  switch (lang) {
+    case 'uk': return uk;
+    case 'en': return enUS;
+    default: return pl;
+  }
+}
+
 export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = getDateLocale(i18n.language);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const { data: tasks = [], isLoading: tasksLoading } = useWorkTasks(projectId);
   const { data: teamMembers = [] } = useTeamMembers();
@@ -100,7 +112,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
     const markers: { day: number; label: string }[] = [];
     daysInMonth.forEach((day, index) => {
       if (day.getDay() === 1 || index === 0) {
-        markers.push({ day: index, label: format(day, 'd', { locale: pl }) });
+        markers.push({ day: index, label: format(day, 'd', { locale: dateLocale }) });
       }
     });
     return markers;
@@ -123,7 +135,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            {t('workTasks.schedule')} - {format(currentMonth, 'LLLL yyyy', { locale: pl })}
+            {t('workTasks.schedule')} - {format(currentMonth, 'LLLL yyyy', { locale: dateLocale })}
           </CardTitle>
           <div className="flex gap-1">
             <Button variant="outline" size="icon" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>

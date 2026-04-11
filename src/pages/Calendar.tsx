@@ -138,22 +138,23 @@ export default function Calendar() {
       setSelectedDate(new Date());
       return;
     }
-    const multiplier = direction === 'prev' ? -1 : 1;
+    const delta = direction === 'prev' ? -1 : 1;
     switch (viewMode) {
       case 'month':
+      case 'agenda':
         setCurrentDate(prev => direction === 'prev' ? subMonths(prev, 1) : addMonths(prev, 1));
         break;
       case 'week':
         setCurrentDate(prev => direction === 'prev' ? subWeeks(prev, 1) : addWeeks(prev, 1));
         break;
       case 'day':
-        setCurrentDate(prev => addDays(prev, multiplier));
-        setSelectedDate(prev => addDays(prev, multiplier));
+        setCurrentDate(prev => addDays(prev, delta));
+        setSelectedDate(prev => addDays(prev, delta));
         break;
     }
   }, [viewMode]);
 
-  const openEventDialog = (date?: Date, event?: CalendarEvent) => {
+  const openEventDialog = (date?: Date, event?: CalendarEvent, prefilledTime?: string) => {
     if (event) {
       // For recurring virtual instances, always edit the base event (same id)
       setEditingEvent(event);
@@ -170,7 +171,7 @@ export default function Calendar() {
       });
     } else {
       setEditingEvent(null);
-      setEventData(initialEventData);
+      setEventData({ ...initialEventData, event_time: prefilledTime || '' });
     }
     if (date) setSelectedDate(date);
     setIsEventDialogOpen(true);
@@ -179,6 +180,10 @@ export default function Calendar() {
   const handleSaveEvent = async () => {
     if (!eventData.title.trim()) {
       toast.error(t('errors.required'));
+      return;
+    }
+    if (eventData.event_time && eventData.end_time && eventData.end_time <= eventData.event_time) {
+      toast.error(t('calendar.endTimeBeforeStart'));
       return;
     }
     try {

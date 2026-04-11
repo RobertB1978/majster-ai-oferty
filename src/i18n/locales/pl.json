@@ -525,7 +525,8 @@
     "recurrenceWeekly": "Co tydzień",
     "recurrenceMonthly": "Co miesiąc",
     "recurrenceYearly": "Co rok",
-    "recurrenceEndDate": "Powtarzaj do"
+    "recurrenceEndDate": "Powtarzaj do",
+    "endTimeBeforeStart": "Godzina zakończenia musi być późniejsza niż godzina rozpoczęcia"
   },
   "finance": {
     "title": "Finanse",

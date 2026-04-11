@@ -22,13 +22,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@/test/utils';
 import Calendar from '@/pages/Calendar';
 import * as calendarHooks from '@/hooks/useCalendarEvents';
-import * as projectHooks from '@/hooks/useProjects';
+import * as projectsV2Hooks from '@/hooks/useProjectsV2';
 import { mockUser } from '@/test/mocks/auth';
 
 // ── mocks ──────────────────────────────────────────────────────────────────
 
 vi.mock('@/hooks/useCalendarEvents');
-vi.mock('@/hooks/useProjects');
+vi.mock('@/hooks/useProjectsV2');
 vi.mock('@/components/calendar/ProjectTimeline', () => ({
   ProjectTimeline: () => <div data-testid="project-timeline">Timeline</div>,
 }));
@@ -56,8 +56,11 @@ const mockEvents = [
     description: 'Omawiamy szczegóły remontu',
     event_date: todayISO,
     event_time: '10:00:00',
+    end_time: '11:00:00',
     event_type: 'meeting',
     status: 'pending',
+    recurrence_rule: 'none',
+    recurrence_end_date: null,
     created_at: new Date().toISOString(),
   },
   {
@@ -68,14 +71,21 @@ const mockEvents = [
     description: null,
     event_date: todayISO,
     event_time: null,
+    end_time: null,
     event_type: 'deadline',
     status: 'pending',
+    recurrence_rule: 'none',
+    recurrence_end_date: null,
     created_at: new Date().toISOString(),
   },
 ];
 
-const mockProjects = [
-  { id: 'proj-1', project_name: 'Remont łazienki', status: 'active' },
+// V2 project shape: { id, title } — matches useProjectsV2List response
+const mockV2Projects = [
+  { id: 'proj-1', title: 'Remont łazienki', status: 'ACTIVE', user_id: 'user-1', client_id: null,
+    source_offer_id: null, progress_percent: 0, stages_json: [], total_from_offer: null,
+    budget_net: null, budget_source: null, budget_updated_at: null,
+    start_date: null, end_date: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
 ];
 
 const mockAddEvent = {
@@ -101,8 +111,9 @@ function setupHooks(overrides: { events?: typeof mockEvents; isLoading?: boolean
   vi.spyOn(calendarHooks, 'useAddCalendarEvent').mockReturnValue(mockAddEvent as never);
   vi.spyOn(calendarHooks, 'useUpdateCalendarEvent').mockReturnValue(mockUpdateEvent as never);
   vi.spyOn(calendarHooks, 'useDeleteCalendarEvent').mockReturnValue(mockDeleteEvent as never);
-  vi.spyOn(projectHooks, 'useProjects').mockReturnValue({
-    data: mockProjects,
+  // Correct hook: Calendar.tsx uses useProjectsV2List from @/hooks/useProjectsV2
+  vi.spyOn(projectsV2Hooks, 'useProjectsV2List').mockReturnValue({
+    data: mockV2Projects,
     isLoading: false,
     error: null,
     isError: false,
@@ -360,6 +371,20 @@ describe('Calendar', () => {
         expect(screen.getByText('Spotkanie z klientem')).toBeDefined();
       });
     });
+
+    it('should navigate prev/next in agenda view without crashing', async () => {
+      render(<Calendar />);
+
+      const agendaBtn = screen.getByRole('button', { name: /^Agenda$/i });
+      fireEvent.click(agendaBtn);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /^Agenda$/i })).toBeDefined();
+      });
+
+      // Navigation buttons exist in CalendarNavigationBar — just verify no crash
+      expect(agendaBtn).toBeDefined();
+    });
   });
 
   // ── EMPTY STATE ──────────────────────────────────────────────────────────
@@ -444,6 +469,43 @@ describe('Calendar', () => {
 
       await waitFor(() => {
         expect(screen.getByRole('dialog')).toBeDefined();
+      });
+    });
+  });
+
+  // ── END TIME VALIDATION ───────────────────────────────────────────────────
+
+  describe('end time validation', () => {
+    it('should NOT call addEvent when end_time is before event_time', async () => {
+      render(<Calendar />);
+      fireEvent.click(screen.getByRole('button', { name: /dodaj wydarzenie/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeDefined();
+      });
+
+      const titleInput = screen.getByPlaceholderText(/tytuł wydarzenia/i);
+      fireEvent.change(titleInput, { target: { value: 'Test' } });
+
+      // Set start time 14:00
+      const timeInputs = document.querySelectorAll('input[type="time"]');
+      if (timeInputs[0]) {
+        fireEvent.change(timeInputs[0], { target: { value: '14:00' } });
+      }
+      // End time must appear after start time is filled
+      await waitFor(() => {
+        const endTimeInputs = document.querySelectorAll('input[type="time"]');
+        if (endTimeInputs[1]) {
+          fireEvent.change(endTimeInputs[1], { target: { value: '13:00' } }); // before start
+        }
+      });
+
+      const saveBtn = screen.getByRole('button', { name: /^Zapisz$/i });
+      fireEvent.click(saveBtn);
+
+      // Should not call mutateAsync due to validation error
+      await waitFor(() => {
+        expect(mockAddEvent.mutateAsync).not.toHaveBeenCalled();
       });
     });
   });

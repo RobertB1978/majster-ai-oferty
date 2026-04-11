@@ -9,7 +9,7 @@ import { eventTypeColors, HOURS } from './calendarTypes';
 interface CalendarWeekViewProps {
   weekDays: Date[];
   eventsByDate: Record<string, CalendarEvent[]>;
-  openEventDialog: (date?: Date, event?: CalendarEvent) => void;
+  openEventDialog: (date?: Date, event?: CalendarEvent, prefilledTime?: string) => void;
   dateLocale: Locale;
 }
 
@@ -131,7 +131,7 @@ export function CalendarWeekView({ weekDays, eventsByDate, openEventDialog, date
               return (
                 <div
                   key={`${dateKey}-${hour}`}
-                  onClick={() => openEventDialog(day)}
+                  onClick={() => openEventDialog(day, undefined, `${hour.toString().padStart(2, '0')}:00`)}
                   className={cn(
                     'border-r last:border-r-0 p-1 hover:bg-accent/30 cursor-pointer relative',
                     isTodayCol && 'bg-primary/[0.02]'

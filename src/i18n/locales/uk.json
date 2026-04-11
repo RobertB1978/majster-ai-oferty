@@ -525,7 +525,8 @@
     "recurrenceWeekly": "Щотижня",
     "recurrenceMonthly": "Щомісяця",
     "recurrenceYearly": "Щороку",
-    "recurrenceEndDate": "Повторювати до"
+    "recurrenceEndDate": "Повторювати до",
+    "endTimeBeforeStart": "Час завершення повинен бути пізніше часу початку"
   },
   "finance": {
     "title": "Фінанси",
