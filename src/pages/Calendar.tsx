@@ -212,23 +212,15 @@ export default function Calendar() {
       setIsEventDialogOpen(false);
       setEventData(initialEventData);
       setEditingEvent(null);
-      toast.success(editingEvent
-        ? t('calendar.eventUpdated')
-        : t('calendar.eventAdded'));
-    } catch (error) {
-      const message = error instanceof Error ? error.message : t('errors.generic');
-      toast.error(t('calendar.eventSaveError') + ': ' + message);
+      // Toast is shown by the mutation hook's onSuccess — no duplicate here
+    } catch {
+      // Toast is shown by the mutation hook's onError — no duplicate here
     }
   };
 
   const handleDeleteEvent = async (eventId: string) => {
-    try {
-      await deleteEvent.mutateAsync(eventId);
-      toast.success(t('calendar.eventDeleted'));
-    } catch (error) {
-      const message = error instanceof Error ? error.message : t('errors.generic');
-      toast.error(t('calendar.eventDeleteError') + ': ' + message);
-    }
+    await deleteEvent.mutateAsync(eventId);
+    // Toast is shown by the mutation hook's onSuccess/onError
   };
 
   const getNavigationTitle = () => {

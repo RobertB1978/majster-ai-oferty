@@ -13,6 +13,13 @@ interface CalendarAgendaViewProps {
   dateLocale: Locale;
 }
 
+const RECURRENCE_KEYS: Record<string, string> = {
+  daily:   'calendar.recurrenceDaily',
+  weekly:  'calendar.recurrenceWeekly',
+  monthly: 'calendar.recurrenceMonthly',
+  yearly:  'calendar.recurrenceYearly',
+};
+
 export function CalendarAgendaView({ eventsByDate, openEventDialog, dateLocale }: CalendarAgendaViewProps) {
   const { t } = useTranslation();
   const sortedDates = Object.keys(eventsByDate).sort();
@@ -84,7 +91,9 @@ export function CalendarAgendaView({ eventsByDate, openEventDialog, dateLocale }
                           {hasRecurrence && (
                             <Badge variant="outline" className="text-xs gap-1">
                               <RefreshCw className="h-2.5 w-2.5" />
-                              {event.recurrence_rule}
+                              {RECURRENCE_KEYS[event.recurrence_rule]
+                                ? t(RECURRENCE_KEYS[event.recurrence_rule])
+                                : event.recurrence_rule}
                             </Badge>
                           )}
                         </div>
