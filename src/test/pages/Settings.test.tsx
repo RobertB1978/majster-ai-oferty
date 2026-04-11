@@ -15,9 +15,6 @@ vi.mock('react-helmet-async', () => ({
 }));
 
 // Stub every imported settings sub-component with a simple div
-vi.mock('@/pages/CompanyProfile', () => ({
-  default: () => <div data-testid="company-profile" />,
-}));
 vi.mock('@/components/settings/LanguageSwitcher', () => ({
   LanguageSwitcher: () => <div data-testid="language-switcher" />,
 }));
@@ -42,6 +39,9 @@ vi.mock('@/components/settings/BiometricSettings', () => ({
 vi.mock('@/components/billing/SubscriptionSection', () => ({
   SubscriptionSection: () => <div data-testid="subscription-section" />,
 }));
+vi.mock('@/hooks/useDenseMode', () => ({
+  useDenseMode: () => ({ dense: false, toggleDense: vi.fn() }),
+}));
 
 import Settings from '@/pages/Settings';
 
@@ -53,12 +53,12 @@ const renderSettings = () =>
   );
 
 describe('Settings — mobile navigation', () => {
-  it('renderuje mobilne pozycje nawigacyjne dla aktywnych sekcji (bez kalendarza w beta)', () => {
+  it('renderuje mobilne pozycje nawigacyjne dla aktywnych sekcji (bez kalendarza w beta, bez zakładki firmy)', () => {
     renderSettings();
 
+    // Company Profile tab was removed from Settings — it lives at /app/profile (no duplication)
     // BETA-CAL-01: calendar tab is hidden (CALENDAR_SYNC_SETTINGS_VISIBLE = false)
     const sections = [
-      'settings-mobile-nav-company',
       'settings-mobile-nav-general',
       'settings-mobile-nav-documents',
       'settings-mobile-nav-email',
@@ -72,22 +72,28 @@ describe('Settings — mobile navigation', () => {
     }
   });
 
+  it('nie renderuje zakładki firmy w ustawieniach — profil firmy dostępny pod /app/profile', () => {
+    renderSettings();
+
+    // Company Profile was deduplicated: it's only accessible via MoreScreen → /app/profile
+    expect(screen.queryByTestId('settings-mobile-nav-company')).toBeNull();
+  });
+
   it('nie renderuje zakładki kalendarza w ustawieniach (BETA-CAL-01: zero działających dostawców)', () => {
     renderSettings();
     // BETA-CAL-01: CalendarSync tab hidden — all OAuth providers are "coming soon"
-    // Showing a dead-end tab erodes beta user trust
     expect(screen.queryByTestId('settings-mobile-nav-calendar')).toBeNull();
   });
 
-  it('domyślnie aktywna sekcja to "company"', () => {
+  it('domyślnie pokazuje listę sekcji (level 1 — żadna sekcja nie jest otwarta)', () => {
     renderSettings();
 
-    const companyBtn = screen.getByTestId('settings-mobile-nav-company');
-    // Active button gets bg-primary/10 class via conditional join
-    expect(companyBtn.className).toContain('bg-primary/10');
+    // All section buttons are visible in the list view (mobileSection === null)
+    expect(screen.getByTestId('settings-mobile-nav-general')).toBeDefined();
+    expect(screen.getByTestId('settings-mobile-nav-account')).toBeDefined();
   });
 
-  it('kliknięcie w "subscription" wyświetla sekcję subskrypcji', () => {
+  it('kliknięcie w "subscription" wyświetla sekcję subskrypcji (level 2 drill-down)', () => {
     renderSettings();
 
     fireEvent.click(screen.getByTestId('settings-mobile-nav-subscription'));
@@ -95,12 +101,22 @@ describe('Settings — mobile navigation', () => {
     expect(screen.getByTestId('subscription-section')).toBeDefined();
   });
 
-  it('kliknięcie w "account" wyświetla sekcję konta', () => {
+  it('kliknięcie w "account" wyświetla sekcję konta (level 2 drill-down)', () => {
     renderSettings();
 
     fireEvent.click(screen.getByTestId('settings-mobile-nav-account'));
 
     expect(screen.getByTestId('delete-account-section')).toBeDefined();
+  });
+
+  it('po wejściu w drill-down lista sekcji jest ukryta', () => {
+    renderSettings();
+
+    fireEvent.click(screen.getByTestId('settings-mobile-nav-subscription'));
+
+    // Section list buttons should no longer be in the DOM (conditional render)
+    expect(screen.queryByTestId('settings-mobile-nav-general')).toBeNull();
+    expect(screen.queryByTestId('settings-mobile-nav-account')).toBeNull();
   });
 
   it('mobilna nawigacja nie zawiera poziomego paska przewijania', () => {
