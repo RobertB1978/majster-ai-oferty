@@ -649,7 +649,31 @@
     },
     "namePlaceholder": "John Smith",
     "phonePlaceholder": "+48 123 456 789",
-    "emailPlaceholder": "john@example.com"
+    "emailPlaceholder": "john@example.com",
+    "editMember": "Edit member",
+    "deleteConfirmTitle": "Remove member",
+    "deleteConfirmDesc": "Are you sure you want to remove {{name}} from the team? This action cannot be undone.",
+    "deleteConfirm": "Remove",
+    "saveChanges": "Save changes",
+    "searchPlaceholder": "Search member...",
+    "stopWork": "Stop work",
+    "stats": {
+      "total": "Total",
+      "active": "Active",
+      "working": "Working",
+      "onBreak": "On break"
+    },
+    "map": {
+      "locationTitle": "Team location",
+      "activeWorkers_one": "{{count}} active",
+      "activeWorkers_other": "{{count}} active",
+      "probing": "Testing map sources...",
+      "loadFailed": "Failed to load map",
+      "noSources": "No tile sources responding",
+      "retry": "Try again",
+      "lastUpdate": "Last update",
+      "unknownWorker": "Unknown worker"
+    }
   },
   "templates": {
     "title": "My Price Book",
