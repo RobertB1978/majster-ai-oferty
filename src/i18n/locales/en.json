@@ -585,7 +585,12 @@
     "date": "Date",
     "status": "Status",
     "exportComingSoon": "Export will be available soon",
-    "comingSoon": "Soon"
+    "comingSoon": "Soon",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "clearFilter": "Clear",
+    "exportSuccess": "Export completed successfully",
+    "exportError": "Export failed. Please try again."
   },
   "team": {
     "title": "Team",

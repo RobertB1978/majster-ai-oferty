@@ -585,7 +585,12 @@
     "date": "Дата",
     "status": "Статус",
     "exportComingSoon": "Експорт буде доступний незабаром",
-    "comingSoon": "Незабаром"
+    "comingSoon": "Незабаром",
+    "dateFrom": "Дата від",
+    "dateTo": "Дата до",
+    "clearFilter": "Очистити",
+    "exportSuccess": "Експорт завершено успішно",
+    "exportError": "Помилка експорту. Спробуйте ще раз."
   },
   "team": {
     "title": "Команда",

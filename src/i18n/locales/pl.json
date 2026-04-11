@@ -585,7 +585,12 @@
     "date": "Data",
     "status": "Status",
     "exportComingSoon": "Eksport będzie dostępny wkrótce",
-    "comingSoon": "Wkrótce"
+    "comingSoon": "Wkrótce",
+    "dateFrom": "Data od",
+    "dateTo": "Data do",
+    "clearFilter": "Wyczyść",
+    "exportSuccess": "Eksport zakończony pomyślnie",
+    "exportError": "Błąd eksportu. Spróbuj ponownie."
   },
   "team": {
     "title": "Zespół",
