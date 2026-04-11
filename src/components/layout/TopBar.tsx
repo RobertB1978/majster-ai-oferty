@@ -1,8 +1,9 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { LogOut, HelpCircle, Globe, ChevronDown, Moon, Sun, Shield, Wifi, WifiOff } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { LogOut, HelpCircle, Globe, ChevronDown, Moon, Sun, Shield, Wifi, WifiOff, ArrowLeft } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useBackNavigation } from '@/hooks/useBackNavigation';
 import { PlanBadge } from '@/components/billing/PlanBadge';
 import { Logo } from '@/components/branding/Logo';
 import { useAdminRole } from '@/hooks/useAdminRole';
@@ -33,6 +34,7 @@ export function TopBar() {
   const { user, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { backTo, backLabel } = useBackNavigation();
   const queryClient = useQueryClient();
   const { isAdmin } = useAdminRole();
   const [isDark, setIsDark] = useState(() => {
@@ -93,7 +95,17 @@ export function TopBar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-card shadow-sm">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {backTo && (
+            <Link
+              to={backTo}
+              className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={`${t('common.back')}: ${backLabel}`}
+            >
+              <ArrowLeft className="h-4 w-4 shrink-0" />
+              <span className="hidden sm:inline">{backLabel}</span>
+            </Link>
+          )}
           <Logo size="md" />
           {/* Online/offline indicator */}
           <div className="hidden sm:flex items-center gap-1.5 text-xs" aria-live="polite">
