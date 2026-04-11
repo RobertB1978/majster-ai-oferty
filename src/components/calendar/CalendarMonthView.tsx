@@ -87,9 +87,13 @@ export function CalendarMonthView({
                     aria-label={`${event.title}${event.event_time ? `, ${event.event_time.slice(0, 5)}` : ''}`}
                     className={cn(
                       'text-xs px-1.5 py-0.5 rounded truncate cursor-pointer hover:opacity-80 transition-opacity',
-                      eventTypeColors[event.event_type]?.bg || eventTypeColors.other.bg,
-                      'border',
-                      eventTypeColors[event.event_type]?.border || eventTypeColors.other.border
+                      event.status === 'completed'
+                        ? 'bg-muted/50 border-muted line-through opacity-60'
+                        : cn(
+                            eventTypeColors[event.event_type]?.bg || eventTypeColors.other.bg,
+                            'border',
+                            eventTypeColors[event.event_type]?.border || eventTypeColors.other.border
+                          )
                     )}
                   >
                     {event.event_time && (

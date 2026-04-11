@@ -13,8 +13,11 @@ export interface CalendarEvent {
   description: string | null;
   event_date: string;
   event_time: string | null;
+  end_time: string | null;
   event_type: string;
   status: string;
+  recurrence_rule: string;
+  recurrence_end_date: string | null;
   created_at: string;
 }
 
@@ -26,7 +29,7 @@ export function useCalendarEvents(startDate?: string, endDate?: string) {
     queryFn: async () => {
       let query = supabase
         .from('calendar_events')
-        .select('id, user_id, project_id, title, description, event_date, event_time, event_type, status, created_at')
+        .select('id, user_id, project_id, title, description, event_date, event_time, end_time, event_type, status, recurrence_rule, recurrence_end_date, created_at')
         .eq('user_id', user!.id)
         .order('event_date', { ascending: true });
 

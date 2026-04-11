@@ -2,11 +2,11 @@ import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import {
-  format,
+  format, parseISO, isAfter, isBefore,
   startOfMonth, endOfMonth, eachDayOfInterval,
   addMonths, subMonths,
   startOfWeek, endOfWeek, addWeeks, subWeeks,
-  addDays,
+  addDays, addYears,
 } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { enUS } from 'date-fns/locale';
@@ -25,7 +25,7 @@ import { CalendarDayView } from '@/components/calendar/CalendarDayView';
 import { CalendarAgendaView } from '@/components/calendar/CalendarAgendaView';
 import { CalendarEventDialog } from '@/components/calendar/CalendarEventDialog';
 import { CalendarNavigationBar } from '@/components/calendar/CalendarNavigationBar';
-import { type ViewMode, type EventFormData, initialEventData } from '@/components/calendar/calendarTypes';
+import { type ViewMode, type EventFormData, type RecurrenceRule, initialEventData } from '@/components/calendar/calendarTypes';
 
 function getDateLocale(lang: string): Locale {
   switch (lang) {
@@ -51,6 +51,9 @@ export default function Calendar() {
   const monthEnd = endOfMonth(currentDate);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
   const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+  // String keys for stable useMemo dependencies (Date objects are new refs every render)
+  const calendarStartStr = format(calendarStart, 'yyyy-MM-dd');
+  const calendarEndStr = format(calendarEnd, 'yyyy-MM-dd');
   const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
@@ -80,12 +83,43 @@ export default function Calendar() {
   ];
 
   const eventsByDate = useMemo(() => {
+    function nextRecurrenceDate(date: Date, rule: string): Date {
+      switch (rule) {
+        case 'daily':   return addDays(date, 1);
+        case 'weekly':  return addWeeks(date, 1);
+        case 'monthly': return addMonths(date, 1);
+        case 'yearly':  return addYears(date, 1);
+        default:        return date;
+      }
+    }
+
     const map: Record<string, CalendarEvent[]> = {};
     events.forEach(event => {
-      const dateKey = event.event_date;
-      if (!map[dateKey]) map[dateKey] = [];
-      map[dateKey].push(event);
+      // Base occurrence
+      const baseKey = event.event_date;
+      if (!map[baseKey]) map[baseKey] = [];
+      map[baseKey].push(event);
+
+      // Expand recurring instances within the current calendar range
+      if (event.recurrence_rule && event.recurrence_rule !== 'none') {
+        const baseDate = parseISO(event.event_date);
+        const maxEnd = event.recurrence_end_date ? parseISO(event.recurrence_end_date) : calendarEnd;
+        const effectiveEnd = isBefore(maxEnd, calendarEnd) ? maxEnd : calendarEnd;
+
+        let next = nextRecurrenceDate(baseDate, event.recurrence_rule);
+        let safety = 0;
+        while (!isAfter(next, effectiveEnd) && safety < 500) {
+          safety++;
+          if (!isBefore(next, calendarStart)) {
+            const dateKey = format(next, 'yyyy-MM-dd');
+            if (!map[dateKey]) map[dateKey] = [];
+            map[dateKey].push({ ...event, event_date: dateKey });
+          }
+          next = nextRecurrenceDate(next, event.recurrence_rule);
+        }
+      }
     });
+
     Object.keys(map).forEach(key => {
       map[key].sort((a, b) => {
         if (!a.event_time) return 1;
@@ -94,7 +128,9 @@ export default function Calendar() {
       });
     });
     return map;
-  }, [events]);
+  // calendarStartStr/EndStr are stable string deps — avoid Date object reference churn
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events, calendarStartStr, calendarEndStr]);
 
   const handleNavigate = useCallback((direction: 'prev' | 'next' | 'today') => {
     if (direction === 'today') {
@@ -119,14 +155,18 @@ export default function Calendar() {
 
   const openEventDialog = (date?: Date, event?: CalendarEvent) => {
     if (event) {
+      // For recurring virtual instances, always edit the base event (same id)
       setEditingEvent(event);
       setEventData({
         title: event.title,
         description: event.description || '',
         event_type: event.event_type,
         event_time: event.event_time?.slice(0, 5) || '',
-        end_time: '',
+        end_time: event.end_time?.slice(0, 5) || '',
         project_id: event.project_id || '',
+        status: event.status || 'pending',
+        recurrence_rule: (event.recurrence_rule as RecurrenceRule) || 'none',
+        recurrence_end_date: event.recurrence_end_date || '',
       });
     } else {
       setEditingEvent(null);
@@ -149,7 +189,11 @@ export default function Calendar() {
           description: eventData.description,
           event_type: eventData.event_type,
           event_time: eventData.event_time || null,
+          end_time: eventData.end_time || null,
           project_id: eventData.project_id || null,
+          status: eventData.status,
+          recurrence_rule: eventData.recurrence_rule,
+          recurrence_end_date: eventData.recurrence_end_date || null,
         });
       } else {
         await addEvent.mutateAsync({
@@ -157,31 +201,26 @@ export default function Calendar() {
           description: eventData.description,
           event_date: format(selectedDate, 'yyyy-MM-dd'),
           event_time: eventData.event_time || null,
+          end_time: eventData.end_time || null,
           event_type: eventData.event_type,
           project_id: eventData.project_id || null,
-          status: 'pending',
+          status: eventData.status,
+          recurrence_rule: eventData.recurrence_rule,
+          recurrence_end_date: eventData.recurrence_end_date || null,
         });
       }
       setIsEventDialogOpen(false);
       setEventData(initialEventData);
       setEditingEvent(null);
-      toast.success(editingEvent
-        ? t('calendar.eventUpdated')
-        : t('calendar.eventAdded'));
-    } catch (error) {
-      const message = error instanceof Error ? error.message : t('errors.generic');
-      toast.error(t('calendar.eventSaveError') + ': ' + message);
+      // Toast is shown by the mutation hook's onSuccess — no duplicate here
+    } catch {
+      // Toast is shown by the mutation hook's onError — no duplicate here
     }
   };
 
   const handleDeleteEvent = async (eventId: string) => {
-    try {
-      await deleteEvent.mutateAsync(eventId);
-      toast.success(t('calendar.eventDeleted'));
-    } catch (error) {
-      const message = error instanceof Error ? error.message : t('errors.generic');
-      toast.error(t('calendar.eventDeleteError') + ': ' + message);
-    }
+    await deleteEvent.mutateAsync(eventId);
+    // Toast is shown by the mutation hook's onSuccess/onError
   };
 
   const getNavigationTitle = () => {

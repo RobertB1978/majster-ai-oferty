@@ -308,9 +308,15 @@ describe('Calendar', () => {
         expect(screen.getByRole('dialog')).toBeDefined();
       });
 
-      // "Usuń" button only visible in edit dialog
+      // First click — shows confirmation button (2-click safety pattern)
       const deleteBtn = screen.getByRole('button', { name: /^Usuń$/i });
       fireEvent.click(deleteBtn);
+
+      // Second click — confirms deletion ("Potwierdź usunięcie")
+      const confirmBtn = await waitFor(() =>
+        screen.getByRole('button', { name: /Potwierdź usunięcie/i })
+      );
+      fireEvent.click(confirmBtn);
 
       await waitFor(() => {
         expect(mockDeleteEvent.mutateAsync).toHaveBeenCalledWith('event-1');
