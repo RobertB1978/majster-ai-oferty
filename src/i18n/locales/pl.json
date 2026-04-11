@@ -4696,6 +4696,70 @@
       }
     }
   },
+  "modeB": {
+    "qualityTier": {
+      "short_form": "Uproszczony",
+      "standard": "Standardowy",
+      "premium": "Premium"
+    },
+    "status": {
+      "draft": "Szkic",
+      "ready": "Gotowy",
+      "sent": "Wysłany",
+      "final": "Finalny",
+      "archived": "Archiwum"
+    },
+    "templateSelector": {
+      "createDocumentAriaLabel": "Utwórz dokument: {{name}}",
+      "createSuccess": "Dokument „{{name}}\" utworzony jako szkic",
+      "createError": "Nie udało się utworzyć dokumentu",
+      "loading": "Ładowanie szablonów…",
+      "loadError": "Błąd pobierania szablonów. Odśwież stronę.",
+      "emptyTitle": "Brak gotowych szablonów",
+      "emptyDesc": "Szablony pojawią się tutaj, gdy właściciel prześle pliki DOCX do systemu i aktywuje odpowiednie rekordy. Trwają przygotowania."
+    },
+    "card": {
+      "createdAt": "Utworzono: {{date}}",
+      "editedAt": "Edytowano: {{date}}",
+      "sentAt": "Wysłano: {{date}}",
+      "version": "Wersja: {{version}}",
+      "docxPendingWarning": "Plik DOCX zostanie wygenerowany po uruchomieniu silnika dokumentów (wkrótce).",
+      "actions": {
+        "downloadDocx": "Pobierz DOCX",
+        "downloadPdf": "Pobierz PDF",
+        "markReady": "Oznacz jako gotowy",
+        "send": "Wyślij",
+        "resend": "Wysłany ponownie",
+        "markFinal": "Oznacz jako finalny",
+        "delete": "Usuń",
+        "deleteConfirm": "Potwierdź usunięcie"
+      },
+      "tooltips": {
+        "docxUnavailable": "Plik DOCX nie jest jeszcze dostępny (silnik dokumentów w przygotowaniu)",
+        "downloadDocx": "Pobierz edytowalny plik DOCX",
+        "pdfUnavailable": "PDF będzie dostępny po uruchomieniu renderowania (wkrótce)",
+        "downloadPdf": "Pobierz gotowy PDF",
+        "needsDocx": "Dokument musi mieć wygenerowany plik DOCX",
+        "markReady": "Oznacz jako gotowy do wysłania do klienta",
+        "mustBeReady": "Dokument musi być w statusie „Gotowy\"",
+        "markSent": "Oznacz jako wysłany do klienta",
+        "markFinal": "Zatwierdź jako wersję finalną (zaakceptowaną przez klienta)",
+        "cannotDeleteFinal": "Dokumentów finalnych nie można usunąć",
+        "deleteDraft": "Usuń dokument roboczy"
+      },
+      "toasts": {
+        "downloadError": "Błąd pobierania DOCX",
+        "markedReady": "Dokument oznaczony jako gotowy",
+        "markedFinal": "Dokument oznaczony jako finalny",
+        "markedSent": "Dokument oznaczony jako wysłany",
+        "statusError": "Nie udało się zmienić statusu",
+        "markFinalError": "Nie udało się oznaczyć jako finalny",
+        "markSentError": "Nie udało się oznaczyć jako wysłany",
+        "deleted": "Dokument usunięty",
+        "deleteError": "Nie udało się usunąć dokumentu"
+      }
+    }
+  },
   "warranty": {
     "sectionTitle": "Gwarancja",
     "noWarranty": "Brak karty gwarancyjnej",

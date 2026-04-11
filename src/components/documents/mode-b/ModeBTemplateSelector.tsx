@@ -15,6 +15,7 @@
  */
 
 import { type ComponentType } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   FileText,
   ClipboardList,
@@ -29,7 +30,7 @@ import { Badge } from '@/components/ui/badge';
 import { useModeBMasterTemplates } from '@/hooks/useModeBMasterTemplates';
 import { useCreateModeBInstance } from '@/hooks/useModeBDocumentInstances';
 import { useToast } from '@/hooks/use-toast';
-import type { DocumentMasterTemplate, MasterTemplateCategory, QualityTier } from '@/types/document-mode-b';
+import type { DocumentMasterTemplate, MasterTemplateCategory } from '@/types/document-mode-b';
 import { cn } from '@/lib/utils';
 
 // ── Metadata wizualna ──────────────────────────────────────────────────────────
@@ -48,12 +49,6 @@ const CATEGORY_COLOR: Record<MasterTemplateCategory, string> = {
   ANNEXES:    'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800',
   COMPLIANCE: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
   OTHER:      'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700',
-};
-
-const QUALITY_LABEL: Record<QualityTier, string> = {
-  short_form: 'Uproszczony',
-  standard:   'Standardowy',
-  premium:    'Premium',
 };
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -77,6 +72,7 @@ interface TemplateMasterCardProps {
 }
 
 function TemplateMasterCard({ template, onSelect, isPending }: TemplateMasterCardProps) {
+  const { t } = useTranslation();
   const Icon = CATEGORY_ICON[template.category];
   const colorCls = CATEGORY_COLOR[template.category];
 
@@ -85,7 +81,7 @@ function TemplateMasterCard({ template, onSelect, isPending }: TemplateMasterCar
       className="w-full text-left border rounded-lg p-4 hover:bg-muted/40 hover:border-primary/30 transition-all duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60 disabled:cursor-not-allowed"
       onClick={() => onSelect(template)}
       disabled={isPending}
-      aria-label={`Utwórz dokument: ${template.name}`}
+      aria-label={t('modeB.templateSelector.createDocumentAriaLabel', { name: template.name })}
     >
       <div className="flex items-start gap-3">
         <div className={cn('p-2 rounded-md border shrink-0 mt-0.5', colorCls)}>
@@ -97,7 +93,7 @@ function TemplateMasterCard({ template, onSelect, isPending }: TemplateMasterCar
           </p>
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
             <Badge variant="secondary" className="text-xs h-5 px-1.5">
-              {QUALITY_LABEL[template.quality_tier]}
+              {t(`modeB.qualityTier.${template.quality_tier}`)}
             </Badge>
             <span className="text-xs text-muted-foreground">v{template.version}</span>
           </div>
@@ -117,6 +113,7 @@ export function ModeBTemplateSelector({
   category,
   onInstanceCreated,
 }: ModeBTemplateSelectorProps) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { data: templates = [], isLoading, isError } = useModeBMasterTemplates(category);
   const createInstance = useCreateModeBInstance();
@@ -133,10 +130,10 @@ export function ModeBTemplateSelector({
         title: template.name,
         qualityTier: template.quality_tier,
       });
-      toast({ title: `Dokument "${template.name}" utworzony jako szkic` });
+      toast({ title: t('modeB.templateSelector.createSuccess', { name: template.name }) });
       onInstanceCreated(instance.id);
     } catch {
-      toast({ variant: 'destructive', title: 'Nie udało się utworzyć dokumentu' });
+      toast({ variant: 'destructive', title: t('modeB.templateSelector.createError') });
     }
   }
 
@@ -144,7 +141,7 @@ export function ModeBTemplateSelector({
     return (
       <div className="flex items-center gap-2 py-8 justify-center text-muted-foreground">
         <Loader2 className="w-4 h-4 animate-spin" />
-        <span className="text-sm">Ładowanie szablonów…</span>
+        <span className="text-sm">{t('modeB.templateSelector.loading')}</span>
       </div>
     );
   }
@@ -152,7 +149,7 @@ export function ModeBTemplateSelector({
   if (isError) {
     return (
       <div className="text-center py-8 text-sm text-destructive">
-        Błąd pobierania szablonów. Odśwież stronę.
+        {t('modeB.templateSelector.loadError')}
       </div>
     );
   }
@@ -162,10 +159,9 @@ export function ModeBTemplateSelector({
       <div className="text-center py-10 space-y-3">
         <Package className="w-10 h-10 mx-auto text-muted-foreground opacity-40" />
         <div>
-          <p className="text-sm font-medium">Brak gotowych szablonów</p>
+          <p className="text-sm font-medium">{t('modeB.templateSelector.emptyTitle')}</p>
           <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
-            Szablony pojawią się tutaj gdy właściciel prześle pliki DOCX do systemu
-            i aktywuje odpowiednie rekordy. Trwają przygotowania.
+            {t('modeB.templateSelector.emptyDesc')}
           </p>
         </div>
       </div>
@@ -197,7 +193,7 @@ export function ModeBTemplateSelector({
                 </span>
               );
             })()}
-            <h3 className="text-sm font-semibold capitalize">{cat.toLowerCase()}</h3>
+            <h3 className="text-sm font-semibold">{t(`docTemplates.category.${cat}`)}</h3>
             <Badge variant="secondary" className="text-xs">{grouped[cat]!.length}</Badge>
           </div>
           <div className="grid gap-2 sm:grid-cols-2">
