@@ -441,7 +441,14 @@
       "deleteError": "Помилка видалення клієнта"
     },
     "nip": "ІПН (NIP)",
-    "nipPlaceholder": "1234567890"
+    "nipPlaceholder": "1234567890",
+    "sortNewest": "Найновіші",
+    "sortOldest": "Найстаріші",
+    "sortNameAsc": "Назва А-Я",
+    "sortNameDesc": "Назва Я-А",
+    "totalCount": "Всього: {{count}} клієнтів",
+    "deleteConfirmDesc": "Ви впевнені, що хочете видалити клієнта \"{{name}}\"? Цю дію не можна скасувати.",
+    "delete": "Видалити"
   },
   "calendar": {
     "title": "Календар",
