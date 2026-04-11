@@ -4,6 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+export interface DateRange {
+  from?: string; // YYYY-MM-DD
+  to?: string;   // YYYY-MM-DD
+}
+
 export interface FinancialReport {
   id: string;
   user_id: string;
@@ -37,25 +42,41 @@ export function useFinancialReports() {
   });
 }
 
-export function useFinancialSummary() {
+export function useFinancialSummary(dateRange?: DateRange) {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['financial_summary'],
+    queryKey: ['financial_summary', dateRange?.from ?? null, dateRange?.to ?? null],
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 15, // 15 minutes
     queryFn: async () => {
-      // Get all quotes (revenue)
-      const { data: quotes } = await supabase
+      // Get quotes (revenue) with optional date range filter
+      let quotesQuery = supabase
         .from('quotes')
         .select('total, created_at, project_id')
         .eq('user_id', user!.id);
 
-      // Get all purchase costs
-      const { data: costs } = await supabase
+      // Get purchase costs with optional date range filter
+      let costsQuery = supabase
         .from('purchase_costs')
         .select('gross_amount, created_at, project_id')
         .eq('user_id', user!.id);
+
+      if (dateRange?.from) {
+        quotesQuery = quotesQuery.gte('created_at', dateRange.from);
+        costsQuery = costsQuery.gte('created_at', dateRange.from);
+      }
+      if (dateRange?.to) {
+        // Add one day so the "to" date is fully included
+        const nextDay = new Date(dateRange.to);
+        nextDay.setDate(nextDay.getDate() + 1);
+        const nextDayStr = nextDay.toISOString().split('T')[0];
+        quotesQuery = quotesQuery.lt('created_at', nextDayStr);
+        costsQuery = costsQuery.lt('created_at', nextDayStr);
+      }
+
+      const { data: quotes } = await quotesQuery;
+      const { data: costs } = await costsQuery;
 
       // Get projects from v2_projects — RLS enforces user isolation
       // v2_projects uses `title` (not legacy `project_name`)

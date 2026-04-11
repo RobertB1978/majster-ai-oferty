@@ -1,20 +1,24 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EmptyState } from '@/components/ui/empty-state';
 import {
   TrendingUp, TrendingDown, DollarSign, Receipt,
   BarChart3, Sparkles, AlertTriangle, Lightbulb,
-  ArrowUpRight, ArrowDownRight, PiggyBank, Lock, Zap
+  ArrowUpRight, ArrowDownRight, PiggyBank, Lock, Zap,
+  Calendar, X, FileText, FileSpreadsheet
 } from 'lucide-react';
 import { useFinancialSummary, useAIFinancialAnalysis } from '@/hooks/useFinancialReports';
 import { usePlanGate } from '@/hooks/usePlanGate';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { LoadingCard } from '@/components/ui/loading-screen';
+import { exportFinanceToExcel, exportFinanceToPdf } from '@/lib/exportUtils';
+import { toast } from 'sonner';
 
 interface PricingRecommendation {
   category: string;
@@ -33,21 +37,135 @@ interface AIAnalysisResult {
 
 export function FinanceDashboard() {
   const { t } = useTranslation();
-  const { data: summary, isLoading } = useFinancialSummary();
-  const aiAnalysis = useAIFinancialAnalysis();
-  const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
   const navigate = useNavigate();
   const { canUseFeature } = usePlanGate();
   const canUseAiAnalysis = canUseFeature('ai');
+
+  const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
+
+  const dateRange = useMemo(
+    () => (dateFrom || dateTo ? { from: dateFrom || undefined, to: dateTo || undefined } : undefined),
+    [dateFrom, dateTo],
+  );
+
+  const { data: summary, isLoading } = useFinancialSummary(dateRange);
+  const aiAnalysis = useAIFinancialAnalysis();
 
   const handleRunAnalysis = async () => {
     const result = await aiAnalysis.mutateAsync();
     setAnalysisResult(result);
   };
 
+  const handleExportExcel = async () => {
+    if (!summary) return;
+    setIsExporting(true);
+    try {
+      await exportFinanceToExcel({
+        totalRevenue: summary.totalRevenue,
+        totalCosts: summary.totalCosts,
+        grossMargin: summary.grossMargin,
+        marginPercent: summary.marginPercent,
+        projectCount: summary.projectCount,
+        monthly: summary.monthly,
+        dateFrom: dateFrom || undefined,
+        dateTo: dateTo || undefined,
+      });
+      toast.success(t('finance.exportSuccess'));
+    } catch {
+      toast.error(t('finance.exportError'));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportPdf = async () => {
+    if (!summary) return;
+    setIsExporting(true);
+    try {
+      await exportFinanceToPdf({
+        totalRevenue: summary.totalRevenue,
+        totalCosts: summary.totalCosts,
+        grossMargin: summary.grossMargin,
+        marginPercent: summary.marginPercent,
+        projectCount: summary.projectCount,
+        monthly: summary.monthly,
+        dateFrom: dateFrom || undefined,
+        dateTo: dateTo || undefined,
+      });
+      toast.success(t('finance.exportSuccess'));
+    } catch {
+      toast.error(t('finance.exportError'));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const hasData = !!summary?.monthly.length;
+
+  const filterToolbar = (
+    <div className="flex flex-wrap items-center gap-3 p-4 bg-card border border-border/50 rounded-xl shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+        <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+        <span className="text-sm text-muted-foreground shrink-0">{t('finance.dateFrom')}:</span>
+        <Input
+          type="date"
+          value={dateFrom}
+          onChange={(e) => setDateFrom(e.target.value)}
+          className="h-8 w-36"
+          max={dateTo || undefined}
+        />
+        <span className="text-sm text-muted-foreground shrink-0">{t('finance.dateTo')}:</span>
+        <Input
+          type="date"
+          value={dateTo}
+          onChange={(e) => setDateTo(e.target.value)}
+          className="h-8 w-36"
+          min={dateFrom || undefined}
+        />
+        {(dateFrom || dateTo) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => { setDateFrom(''); setDateTo(''); }}
+            className="h-8 gap-1 px-2"
+          >
+            <X className="h-3 w-3" />
+            {t('finance.clearFilter')}
+          </Button>
+        )}
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExportPdf}
+          disabled={isExporting || !hasData}
+          className="h-8 gap-1.5"
+        >
+          <FileText className="h-4 w-4" />
+          {t('finance.exportPdf')}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExportExcel}
+          disabled={isExporting || !hasData}
+          className="h-8 gap-1.5"
+        >
+          <FileSpreadsheet className="h-4 w-4" />
+          {t('finance.exportExcel')}
+        </Button>
+      </div>
+    </div>
+  );
+
   if (isLoading || !summary) {
     return (
       <div className="space-y-6">
+        {filterToolbar}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <LoadingCard key={i} />
@@ -63,16 +181,19 @@ export function FinanceDashboard() {
 
   if (!summary.monthly.length) {
     return (
-      <EmptyState
-        icon={TrendingUp}
-        title={t('finance.noData')}
-        description={t('finance.noDataDesc')}
-        action={{
-          label: t('finance.createFirstProject'),
-          onClick: () => navigate('/app/projects/new'),
-        }}
-        className="min-h-[400px]"
-      />
+      <div className="space-y-6">
+        {filterToolbar}
+        <EmptyState
+          icon={TrendingUp}
+          title={t('finance.noData')}
+          description={t('finance.noDataDesc')}
+          action={{
+            label: t('finance.createFirstProject'),
+            onClick: () => navigate('/app/projects/new'),
+          }}
+          className="min-h-[400px]"
+        />
+      </div>
     );
   }
 
@@ -119,6 +240,9 @@ export function FinanceDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Date filter + Export toolbar */}
+      {filterToolbar}
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpiCards.map((card, index) => (
