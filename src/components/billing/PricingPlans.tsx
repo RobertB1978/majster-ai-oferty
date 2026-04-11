@@ -73,8 +73,8 @@ const getPlans = (t: (key: string) => string): PricingPlan[] => [
     description: t('billing.plans.business.description'),
     icon: <Crown className="h-6 w-6" />,
     popular: true,
-    gradient: 'from-amber-500/10 to-orange-500/5',
-    iconGradient: 'from-amber-500 to-orange-600',
+    gradient: 'from-primary/10 to-warning/5',
+    iconGradient: 'from-primary to-warning',
     features: [
       t('billing.plans.business.features.unlimitedProjects'),
       t('billing.plans.business.features.unlimitedClients'),
@@ -126,7 +126,7 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
             'relative overflow-hidden transition-all duration-500 hover:shadow-2xl group',
             `bg-gradient-to-br ${plan.gradient}`,
             plan.popular && 'ring-2 ring-primary shadow-xl scale-[1.02] z-10',
-            currentPlan === plan.id && 'ring-2 ring-green-500'
+            currentPlan === plan.id && 'ring-2 ring-success'
           )}
           style={{ animationDelay: `${index * 100}ms` }}
         >
@@ -149,7 +149,7 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
           )}
           {currentPlan === plan.id && (
             <div className="absolute top-3 left-3">
-              <Badge className="bg-green-500 text-white">
+              <Badge className="bg-success text-success-foreground">
                 {t('billing.active')}
               </Badge>
             </div>
@@ -182,8 +182,8 @@ export function PricingPlans({ currentPlan = 'free', onSelectPlan, isLoading }: 
             <ul className="space-y-2.5">
               {plan.features.map((feature, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm">
-                  <div className="h-5 w-5 rounded-full bg-green-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="h-3 w-3 text-green-500" />
+                  <div className="h-5 w-5 rounded-full bg-success/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="h-3 w-3 text-success" />
                   </div>
                   <span>{feature}</span>
                 </li>

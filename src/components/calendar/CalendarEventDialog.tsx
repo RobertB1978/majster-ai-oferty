@@ -85,7 +85,7 @@ export function CalendarEventDialog({
             className={cn(
               'w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors',
               isCompleted
-                ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-400'
+                ? 'bg-success/10 border-success/30 text-success'
                 : 'bg-muted/40 border-muted text-muted-foreground hover:bg-muted/70'
             )}
           >

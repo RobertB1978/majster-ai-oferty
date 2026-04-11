@@ -102,13 +102,13 @@ function TokenRow({ token, onRevoke }: TokenRowProps) {
           onClick={handleCopy}
           aria-label={t('dossier.share.copyLink')}
         >
-          {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
         </button>
         <button
           className={cn(
             'flex items-center justify-center p-1.5 rounded transition-colors min-h-[44px] min-w-[44px]',
             confirmRevoke
-              ? 'bg-red-100 text-red-600 dark:bg-red-900/30'
+              ? 'bg-destructive/10 text-destructive dark:bg-destructive/20'
               : 'hover:bg-muted text-muted-foreground hover:text-destructive'
           )}
           onClick={handleRevoke}
@@ -239,7 +239,7 @@ export function DossierShareModal({ projectId, projectTitle, onClose }: DossierS
                   className={cn(
                     'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors text-left',
                     selectedCats.has(cat)
-                      ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                      ? 'border-primary bg-primary/5 text-primary dark:bg-primary/10'
                       : 'border-border hover:bg-muted/50'
                   )}
                   onClick={() => toggleCat(cat)}
@@ -248,7 +248,7 @@ export function DossierShareModal({ projectId, projectTitle, onClose }: DossierS
                   <div className={cn(
                     'w-4 h-4 rounded border flex items-center justify-center shrink-0',
                     selectedCats.has(cat)
-                      ? 'bg-blue-500 border-blue-500'
+                      ? 'bg-primary border-primary'
                       : 'border-gray-300 dark:border-gray-600'
                   )}>
                     {selectedCats.has(cat) && <Check className="w-2.5 h-2.5 text-white" />}
@@ -293,8 +293,8 @@ export function DossierShareModal({ projectId, projectTitle, onClose }: DossierS
 
             {/* New token result */}
             {newTokenUrl && (
-              <div className="border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20 rounded-lg p-3 space-y-2">
-                <p className="text-xs font-medium text-green-700 dark:text-green-400">
+              <div className="border border-success/30 bg-success/5 dark:border-success/40 dark:bg-success/10 rounded-lg p-3 space-y-2">
+                <p className="text-xs font-medium text-success">
                   {t('dossier.share.linkReady')}
                 </p>
                 <code className="block text-xs bg-white dark:bg-black/20 rounded px-2 py-1.5 font-mono break-all">

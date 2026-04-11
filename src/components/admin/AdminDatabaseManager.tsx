@@ -137,7 +137,7 @@ export function AdminDatabaseManager() {
                   <p className="text-sm text-muted-foreground">{t('admin.db.activeTables')}</p>
                   <p className="text-2xl font-bold">{tableStats?.length || 0}</p>
                 </div>
-                <Table2 className="h-8 w-8 text-blue-500 opacity-50" />
+                <Table2 className="h-8 w-8 text-info opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -218,7 +218,7 @@ export function AdminDatabaseManager() {
             <HardDrive className="h-4 w-4 mr-2" />
             {t('admin.db.backup')}
           </Button>
-          <Button variant="outline" size="sm" className="text-orange-600 hover:text-orange-700">
+          <Button variant="outline" size="sm" className="text-warning hover:text-warning/80">
             <Trash2 className="h-4 w-4 mr-2" />
             {t('admin.db.clearOld')}
           </Button>

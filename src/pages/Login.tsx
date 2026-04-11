@@ -196,7 +196,7 @@ export default function Login() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative flex-col items-center justify-center overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, hsl(222 47% 11%) 0%, hsl(217 33% 17%) 50%, hsl(30 90% 20%) 100%)',
+            background: 'linear-gradient(135deg, hsl(var(--chrome)) 0%, hsl(var(--accent)) 50%, hsl(var(--sidebar-primary)) 100%)',
           }}
         >
           {/* Background dot pattern */}
@@ -211,7 +211,7 @@ export default function Login() {
           {/* Amber glow orb */}
           <div
             className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full opacity-20 blur-3xl"
-            style={{ background: 'hsl(30 90% 32%)' }}
+            style={{ background: 'hsl(var(--sidebar-primary))' }}
           />
 
           <div className="relative z-10 flex flex-col items-center text-center px-12 max-w-lg">
@@ -224,7 +224,7 @@ export default function Login() {
             >
               <div
                 className="flex h-12 w-12 items-center justify-center rounded-2xl shadow-xl"
-                style={{ background: 'hsl(30 90% 32%)' }}
+                style={{ background: 'hsl(var(--sidebar-primary))' }}
               >
                 <Wrench className="h-6 w-6 text-white" aria-hidden="true" />
               </div>
@@ -269,9 +269,9 @@ export default function Login() {
                   key={pill.text}
                   className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium"
                   style={{
-                    background: 'rgba(255,255,255,0.1)',
-                    color: 'rgba(255,255,255,0.85)',
-                    border: '1px solid rgba(255,255,255,0.15)',
+                    background: 'hsl(var(--chrome-foreground) / 0.1)',
+                    color: 'hsl(var(--chrome-foreground) / 0.85)',
+                    border: '1px solid hsl(var(--chrome-foreground) / 0.15)',
                   }}
                 >
                   <span style={{ color: 'var(--accent-amber)' }} aria-hidden="true">{pill.icon}</span>
@@ -318,17 +318,17 @@ export default function Login() {
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30"
+                  className="mb-6 rounded-lg border border-warning/30 bg-warning/5 p-4 dark:border-warning/40 dark:bg-warning/10"
                   role="alert"
                   data-testid="unconfirmed-email-banner"
                 >
                   <div className="flex items-start gap-3">
-                    <MailCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                    <MailCheck className="mt-0.5 h-5 w-5 shrink-0 text-warning" aria-hidden="true" />
                     <div className="flex-1 space-y-2">
-                      <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                      <p className="text-sm font-medium text-warning">
                         {t('auth.errors.emailNotConfirmedTitle')}
                       </p>
-                      <p className="text-xs text-amber-700 dark:text-amber-400">
+                      <p className="text-xs text-warning/80">
                         {t('auth.errors.emailNotConfirmedHint')}{' '}
                         <span className="font-medium break-all">{unconfirmedEmail}</span>
                       </p>
@@ -336,7 +336,7 @@ export default function Login() {
                         type="button"
                         size="sm"
                         variant="outline"
-                        className="mt-1 border-amber-300 bg-white text-amber-800 hover:bg-amber-50 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                        className="mt-1 border-warning/40 bg-background text-warning hover:bg-warning/5"
                         onClick={handleResendVerification}
                         disabled={isResending || resendCooldown > 0}
                         data-testid="resend-from-login-btn"

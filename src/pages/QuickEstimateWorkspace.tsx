@@ -311,7 +311,7 @@ export default function QuickEstimateWorkspace() {
               )}
               {saveStatus === 'saved' && lastSavedAt && (
                 <>
-                  <CheckCircle2 className="h-3 w-3 text-green-500" aria-hidden />
+                  <CheckCircle2 className="h-3 w-3 text-success" aria-hidden />
                   <span>
                     {t('szybkaWycena.draftSaved')}{' '}
                     {lastSavedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -332,12 +332,12 @@ export default function QuickEstimateWorkspace() {
         {/* Contains all Quick Mode captured data: client, note, photos, checklist. */}
         {quickContext && (
           <div
-            className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 p-3 space-y-1"
+            className="rounded-lg border border-warning/30 bg-warning/5 dark:bg-warning/10 dark:border-warning/40 p-3 space-y-1"
             data-testid="qm-context-panel"
             role="region"
             aria-label={t('quickMode.contextPanel.title')}
           >
-            <p className="text-sm font-semibold text-amber-800 dark:text-amber-200 flex items-center gap-1.5">
+            <p className="text-sm font-semibold text-warning flex items-center gap-1.5">
               <Zap className="h-3.5 w-3.5 shrink-0" aria-hidden />
               {t('quickMode.contextPanel.title')}
             </p>

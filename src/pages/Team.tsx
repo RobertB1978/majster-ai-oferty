@@ -65,13 +65,9 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { TEAM_STATUS_COLORS } from '@/lib/teamStatusColors';
 
-const STATUS_COLORS: Record<string, string> = {
-  working: '#22c55e',
-  traveling: '#3b82f6',
-  break: '#f59e0b',
-  idle: '#6b7280',
-};
+const STATUS_COLORS = TEAM_STATUS_COLORS;
 
 function MemberCardSkeleton() {
   return (

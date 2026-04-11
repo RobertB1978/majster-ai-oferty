@@ -151,7 +151,7 @@ export function OfferPhotoAttach({ offerId, readOnly = false }: Props) {
                     </span>
                   )}
                   {photo.show_in_public && (
-                    <span className="bg-blue-600/80 text-white text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                    <span className="bg-info text-white text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5">
                       <Eye className="h-2.5 w-2.5" />
                       {t('offerPhotos.visibilityPublic')}
                     </span>
@@ -174,7 +174,7 @@ export function OfferPhotoAttach({ offerId, readOnly = false }: Props) {
                         className={cn(
                           'rounded p-1 text-xs transition-colors',
                           photo.show_in_public
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-primary text-white'
                             : 'bg-white/20 text-white hover:bg-white/30',
                         )}
                         title={t('offerPhotos.togglePublic')}

@@ -63,9 +63,9 @@ function AuthDiagnosticsContent() {
 
   const getStatusIcon = (condition: boolean) => {
     return condition ? (
-      <CheckCircle2 className="h-4 w-4 text-green-500" />
+      <CheckCircle2 className="h-4 w-4 text-success" />
     ) : (
-      <XCircle className="h-4 w-4 text-red-500" />
+      <XCircle className="h-4 w-4 text-destructive" />
     );
   };
 

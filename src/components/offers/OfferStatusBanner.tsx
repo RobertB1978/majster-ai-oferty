@@ -27,25 +27,25 @@ export function OfferStatusBanner({
     <Card
       className={
         isAccepted
-          ? 'border-green-500 bg-green-50 dark:bg-green-950/20'
-          : 'border-red-500 bg-red-50 dark:bg-red-950/20'
+          ? 'border-success bg-success/5 dark:bg-success/10'
+          : 'border-destructive bg-destructive/5 dark:bg-destructive/10'
       }
     >
       <CardContent className="py-6">
         <div className="flex items-center gap-3">
           {isAccepted ? (
-            <CheckCircle className="h-8 w-8 text-green-600 shrink-0" />
+            <CheckCircle className="h-8 w-8 text-success shrink-0" />
           ) : (
-            <XCircle className="h-8 w-8 text-red-600 shrink-0" />
+            <XCircle className="h-8 w-8 text-destructive shrink-0" />
           )}
           <div>
-            <p className={`font-semibold ${isAccepted ? 'text-green-700' : 'text-red-700'}`}>
+            <p className={`font-semibold ${isAccepted ? 'text-success' : 'text-destructive'}`}>
               {isAccepted
                 ? t('offerApproval.status.approved')
                 : t('offerApproval.status.rejected')}
             </p>
             {acceptedAt && isAccepted && (
-              <p className="text-sm text-green-600">
+              <p className="text-sm text-success/80">
                 {new Date(acceptedAt).toLocaleString()}
                 {acceptedVia === 'email_1click' && ' (1-klik email)'}
               </p>
@@ -55,8 +55,8 @@ export function OfferStatusBanner({
 
         {/* 10-minute cancel window */}
         {isAccepted && canCancel(acceptedAt) && (
-          <div className="mt-4 pt-4 border-t border-green-200 dark:border-green-800">
-            <p className="text-sm text-green-700 dark:text-green-400 mb-2">
+          <div className="mt-4 pt-4 border-t border-success/20 dark:border-success/30">
+            <p className="text-sm text-success mb-2">
               {t('offerApproval.cancelWindow.timeLeft', { seconds: cancelCountdown })}
             </p>
             <Button
@@ -64,7 +64,7 @@ export function OfferStatusBanner({
               size="sm"
               onClick={onCancel}
               disabled={isSubmitting}
-              className="border-green-400 text-green-700 hover:bg-green-100 dark:text-green-400"
+              className="border-success/40 text-success hover:bg-success/10"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               {t('offerApproval.cancelWindow.buttonLabel')}

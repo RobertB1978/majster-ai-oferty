@@ -223,7 +223,7 @@ export default function OfferApproval() {
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="max-w-md w-full">
           <CardContent className="flex flex-col items-center py-12 text-center">
-            <Clock className="h-16 w-16 text-amber-500 mb-4" />
+            <Clock className="h-16 w-16 text-accent-amber mb-4" />
             <h1 className="text-xl font-bold mb-2">{t('offerApproval.expired.title')}</h1>
             <p className="text-muted-foreground">
               {expiredDate
@@ -310,7 +310,7 @@ export default function OfferApproval() {
 
           {/* Contractor contact (post-acceptance) */}
           {isAccepted && offer.company && (
-            <Card className="border-green-200 dark:border-green-800">
+            <Card className="border-success/30 dark:border-success/40">
               <CardContent className="space-y-2 pt-6">
                 <p className="font-semibold">{t('offerApproval.contractor.title')}</p>
                 {offer.company.company_name && <p className="font-medium">{offer.company.company_name}</p>}
@@ -353,7 +353,7 @@ export default function OfferApproval() {
           {submitted && !isAccepted && isRejected && (
             <Card className="border-dashed">
               <CardContent className="py-6 text-center text-muted-foreground">
-                <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-amber-500" />
+                <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-warning" />
                 <p className="text-sm">{t('offerApproval.readonly.alreadyRejected')}</p>
               </CardContent>
             </Card>

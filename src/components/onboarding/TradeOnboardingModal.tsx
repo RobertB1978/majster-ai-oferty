@@ -179,8 +179,8 @@ export function TradeOnboardingModal({ open, onDone }: TradeOnboardingModalProps
                 onClick={() => handleSelectMode('simple')}
                 className="flex flex-col items-start gap-3 p-5 rounded-xl border-2 border-border bg-card hover:border-primary hover:bg-primary/5 transition-all text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/30 group-hover:bg-green-200 dark:group-hover:bg-green-900/50 transition-colors">
-                  <Rocket className="h-6 w-6 text-green-600 dark:text-green-400" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10 dark:bg-success/20 group-hover:bg-success/20 dark:group-hover:bg-success/30 transition-colors">
+                  <Rocket className="h-6 w-6 text-success" />
                 </div>
                 <div>
                   <p className="font-semibold text-base">{t('tradeOnboarding.simpleTitle')}</p>

@@ -91,19 +91,19 @@ function ReminderItem({ reminder }: { reminder: ProjectReminder }) {
         'flex items-start gap-3 rounded-lg border p-3 transition-colors',
         overdue
           ? 'border-destructive/30 bg-destructive/5'
-          : 'border-amber-200 bg-amber-50 dark:border-amber-900/30 dark:bg-amber-900/10',
+          : 'border-warning/30 bg-warning/5 dark:border-warning/30 dark:bg-warning/10',
       )}
     >
       {/* Icon */}
       <div
         className={cn(
           'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full',
-          overdue ? 'bg-destructive/15' : 'bg-amber-100 dark:bg-amber-900/30',
+          overdue ? 'bg-destructive/15' : 'bg-warning/10 dark:bg-warning/20',
         )}
       >
         {isWarranty
-          ? <Shield className={cn('h-3.5 w-3.5', overdue ? 'text-destructive' : 'text-amber-600 dark:text-amber-400')} />
-          : <Wrench className={cn('h-3.5 w-3.5', overdue ? 'text-destructive' : 'text-amber-600 dark:text-amber-400')} />
+          ? <Shield className={cn('h-3.5 w-3.5', overdue ? 'text-destructive' : 'text-warning')} />
+          : <Wrench className={cn('h-3.5 w-3.5', overdue ? 'text-destructive' : 'text-warning')} />
         }
       </div>
 
@@ -111,7 +111,7 @@ function ReminderItem({ reminder }: { reminder: ProjectReminder }) {
       <div className="flex-1 min-w-0 space-y-0.5">
         <p className={cn(
           'text-sm font-medium leading-snug',
-          overdue ? 'text-destructive' : 'text-amber-800 dark:text-amber-200',
+          overdue ? 'text-destructive' : 'text-warning',
         )}>
           {resolveReminderLabel(reminder.label, isWarranty, t, i18n.language)}
         </p>

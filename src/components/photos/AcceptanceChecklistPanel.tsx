@@ -87,7 +87,7 @@ function ChecklistItems({
       {/* Progress */}
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span>{t('checklist.progress', { done: doneCount, total: items.length })}</span>
-        <span className={cn('font-medium', doneCount === items.length && 'text-green-600')}>
+        <span className={cn('font-medium', doneCount === items.length && 'text-success')}>
           {doneCount === items.length && items.length > 0 ? t('checklist.allDone') : ''}
         </span>
       </div>
@@ -100,7 +100,7 @@ function ChecklistItems({
               className={cn(
                 'flex items-center gap-2.5 w-full text-left px-3 py-2 rounded-md border text-sm transition-colors',
                 item.is_done
-                  ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
+                  ? 'bg-success/5 border-success/30 dark:bg-success/10 dark:border-success/40'
                   : 'bg-background border-border hover:bg-accent/30'
               )}
               aria-label={t('checklist.toggleItem', { label: t(item.label_key) })}
@@ -109,7 +109,7 @@ function ChecklistItems({
                 className={cn(
                   'h-4 w-4 shrink-0 rounded border-2 transition-colors',
                   item.is_done
-                    ? 'border-green-600 bg-green-600'
+                    ? 'border-success bg-success'
                     : 'border-muted-foreground'
                 )}
               >
@@ -238,7 +238,7 @@ export function AcceptanceChecklistPanel({ projectId }: AcceptanceChecklistPanel
             <PenLine className="h-4 w-4 text-muted-foreground" />
             <span>{t('signature.title')}</span>
             {acceptance?.signature_path && (
-              <span className="text-xs text-green-600 font-normal">{t('signature.alreadySigned')}</span>
+              <span className="text-xs text-success font-normal">{t('signature.alreadySigned')}</span>
             )}
           </div>
           {showSignature ? (
@@ -251,7 +251,7 @@ export function AcceptanceChecklistPanel({ projectId }: AcceptanceChecklistPanel
         {showSignature && (
           <div className="px-4 pb-4 pt-2 border-t">
             {!allDone && (
-              <p className="text-xs text-amber-600 mb-3">
+              <p className="text-xs text-warning mb-3">
                 {t('signature.completeChecklistFirst', { remaining: items.length - doneCount })}
               </p>
             )}

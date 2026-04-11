@@ -132,12 +132,12 @@ export function ContactEmailSettings() {
         {hasEmail && (
           <div className="flex items-center gap-2">
             {isVerified ? (
-              <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800 gap-1">
+              <Badge className="bg-success/10 text-success dark:bg-success/20 border-success/30 gap-1">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 {t('settings.contactEmail.verified')}
               </Badge>
             ) : (
-              <Badge variant="outline" className="text-amber-700 border-amber-300 dark:text-amber-400 dark:border-amber-700 gap-1 bg-amber-50 dark:bg-amber-900/20">
+              <Badge variant="outline" className="text-warning border-warning/40 gap-1 bg-warning/5 dark:bg-warning/10">
                 <AlertCircle className="h-3.5 w-3.5" />
                 {t('settings.contactEmail.unverified')}
               </Badge>
@@ -215,7 +215,7 @@ export function ContactEmailSettings() {
 
         {/* Info box */}
         {hasEmail && !isVerified && (
-          <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3 text-sm text-amber-800 dark:text-amber-300">
+          <div className="rounded-lg bg-warning/5 dark:bg-warning/10 border border-warning/30 dark:border-warning/40 p-3 text-sm text-warning">
             <div className="flex items-start gap-2">
               <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
               <p>

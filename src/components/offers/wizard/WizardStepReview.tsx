@@ -114,7 +114,7 @@ export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isS
       </div>
 
       {/* Draft info */}
-      <div className="flex items-start gap-2 rounded-md bg-blue-50 dark:bg-blue-900/20 p-3 text-sm text-blue-700 dark:text-blue-300">
+      <div className="flex items-start gap-2 rounded-md bg-info/5 dark:bg-info/10 p-3 text-sm text-info">
         <CheckCircle className="h-4 w-4 mt-0.5 shrink-0" />
         <p>{t('offerWizard.reviewStep.draftInfo')}</p>
       </div>

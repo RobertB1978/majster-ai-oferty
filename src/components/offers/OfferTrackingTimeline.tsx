@@ -30,7 +30,7 @@ export function OfferTrackingTimeline({ approval }: OfferTrackingTimelineProps) 
       label: t('offers.tracking.clientOpened'),
       timestamp: approval.viewed_at,
       icon: Eye,
-      colorClass: 'text-blue-500',
+      colorClass: 'text-info',
     });
   } else if (['sent', 'viewed', 'accepted', 'approved', 'rejected'].includes(approval.status)) {
     events.push({
@@ -51,7 +51,7 @@ export function OfferTrackingTimeline({ approval }: OfferTrackingTimelineProps) 
         : t('offers.tracking.accepted'),
       timestamp: acceptedAt,
       icon: CheckCircle,
-      colorClass: 'text-green-500',
+      colorClass: 'text-success',
     });
   }
 
@@ -83,7 +83,7 @@ export function OfferTrackingTimeline({ approval }: OfferTrackingTimelineProps) 
       label: t('offers.tracking.expired'),
       timestamp: expiredAt,
       icon: Clock,
-      colorClass: 'text-amber-500',
+      colorClass: 'text-warning',
     });
   }
 

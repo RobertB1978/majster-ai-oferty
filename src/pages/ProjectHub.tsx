@@ -64,9 +64,9 @@ const SECTIONS: AccordionSection[] = [
 ];
 
 const STATUS_BADGE: Record<string, string> = {
-  ACTIVE:    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  COMPLETED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  ON_HOLD:   'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  ACTIVE:    'bg-info/10 text-info dark:bg-info/20',
+  COMPLETED: 'bg-success/10 text-success dark:bg-success/20',
+  ON_HOLD:   'bg-warning/10 text-warning dark:bg-warning/20',
 };
 
 const STATUS_I18N: Record<string, string> = {
@@ -176,7 +176,7 @@ function StagesPanel({ stages, progress, projectId }: StagesPanelProps) {
                 className={cn(
                   'h-4 w-4 shrink-0 rounded border-2 transition-colors',
                   stage.is_done
-                    ? 'border-green-500 bg-green-500'
+                    ? 'border-success bg-success'
                     : 'border-muted-foreground'
                 )}
                 onClick={() => handleToggleStage(idx)}
@@ -279,13 +279,13 @@ function SourceOfferBanner({ sourceOfferId }: SourceOfferBannerProps) {
   const title = offer.title?.trim() || t('projectsV2.hub.sourceOfferFallbackTitle');
 
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/20 px-3 py-2.5 text-sm mb-4">
-      <FileText className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
+    <div className="flex items-center gap-2 rounded-lg border border-warning/30 bg-warning/5 dark:border-warning/40 dark:bg-warning/10 px-3 py-2.5 text-sm mb-4">
+      <FileText className="h-4 w-4 text-warning shrink-0" aria-hidden="true" />
       <span className="text-muted-foreground shrink-0">
         {t('projectsV2.hub.sourceOfferLabel')}
       </span>
       <button
-        className="flex-1 min-w-0 text-left font-medium text-amber-700 dark:text-amber-300 hover:underline truncate"
+        className="flex-1 min-w-0 text-left font-medium text-warning hover:underline truncate"
         onClick={() => navigate(`/app/offers/${sourceOfferId}`)}
         aria-label={t('projectsV2.hub.sourceOfferAriaLabel', { title })}
       >
@@ -346,12 +346,12 @@ function QrTokenPanel({ projectId }: { projectId: string }) {
           <div className="flex items-center gap-2 rounded-md border bg-background px-3 py-2">
             <span className="flex-1 text-xs text-muted-foreground truncate font-mono">{url}</span>
             <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px] shrink-0" onClick={handleCopy} aria-label={t('projectsV2.hub.qrCopy')}>
-              {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
             </Button>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={handleCopy} className="gap-1.5">
-              {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+              {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               {copied ? t('projectsV2.hub.qrLinkCopied') : t('projectsV2.hub.qrCopy')}
             </Button>
             <Button variant="ghost" size="sm" onClick={handleCreate} disabled={createToken.isPending} className="gap-1.5">

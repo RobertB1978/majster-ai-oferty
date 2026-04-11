@@ -52,7 +52,7 @@ function buildMoreGroups(): MoreGroup[] {
           id: 'calendar',
           labelKey: 'newShell.more.calendar',
           icon: CalendarDays,
-          iconStyle: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+          iconStyle: 'bg-info/10 text-info',
           route: '/app/calendar',
         },
         {
@@ -83,7 +83,7 @@ function buildMoreGroups(): MoreGroup[] {
           id: 'photos',
           labelKey: 'newShell.more.photos',
           icon: Camera,
-          iconStyle: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+          iconStyle: 'bg-accent-amber/10 text-accent-amber',
           route: '/app/photos',
         },
         {
@@ -110,7 +110,7 @@ function buildMoreGroups(): MoreGroup[] {
           id: 'profile',
           labelKey: 'newShell.more.profile',
           icon: Building2,
-          iconStyle: 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
+          iconStyle: 'bg-warning/10 text-warning',
           route: '/app/profile',
         },
         {

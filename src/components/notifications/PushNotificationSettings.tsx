@@ -115,8 +115,8 @@ export function PushNotificationSettings() {
         <div className="flex items-center justify-between p-4 rounded-lg bg-muted">
           <div className="flex items-center gap-3">
             {isSubscribed ? (
-              <div className="p-2 rounded-full bg-green-500/20">
-                <Check className="h-5 w-5 text-green-500" />
+              <div className="p-2 rounded-full bg-success/20">
+                <Check className="h-5 w-5 text-success" />
               </div>
             ) : (
               <div className="p-2 rounded-full bg-muted-foreground/20">

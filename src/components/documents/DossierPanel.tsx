@@ -50,13 +50,14 @@ const CATEGORY_ICON: Record<DossierCategory, React.ComponentType<{ className?: s
   OTHER:     MoreHorizontal,
 };
 
+// Categorical badge colours for document types — each needs distinct visual identity
 const CATEGORY_COLOR: Record<DossierCategory, string> = {
-  CONTRACT:  'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  PROTOCOL:  'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-  RECEIPT:   'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-  PHOTO:     'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  GUARANTEE: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  OTHER:     'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+  CONTRACT:  'bg-info/10 text-info dark:bg-info/20',
+  PROTOCOL:  'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400', // intentional categorical — no DS token
+  RECEIPT:   'bg-warning/10 text-warning dark:bg-warning/20',
+  PHOTO:     'bg-success/10 text-success dark:bg-success/20',
+  GUARANTEE: 'bg-destructive/10 text-destructive dark:bg-destructive/20',
+  OTHER:     'bg-muted text-muted-foreground',
 };
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -254,7 +255,7 @@ function FileRow({ item, onDelete }: FileRowProps) {
           'flex items-center justify-center gap-1 p-1.5 rounded transition-colors min-h-[44px]',
           confirmDelete ? 'px-2' : 'min-w-[44px]',
           confirmDelete
-            ? 'bg-red-100 text-red-600 dark:bg-red-900/30'
+            ? 'bg-destructive/10 text-destructive dark:bg-destructive/20'
             : 'hover:bg-muted text-muted-foreground hover:text-destructive'
         )}
         onClick={handleDelete}
@@ -359,7 +360,7 @@ export function DossierPanel({ projectId, projectTitle }: DossierPanelProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="gap-1.5 h-7 text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-900/20"
+              className="gap-1.5 h-7 text-warning hover:text-warning/80 hover:bg-warning/10 dark:text-warning dark:hover:bg-warning/20"
               onClick={() => refetch()}
             >
               <RefreshCw className="w-3 h-3" />

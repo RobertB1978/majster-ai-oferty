@@ -108,11 +108,11 @@ const DEFAULT_COLS: ColsVisible = {
 /* ── Item type display ──────────────────────────────────────────── */
 
 const TYPE_COLORS: Record<ItemType, string> = {
-  labor: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
-  material: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
-  service: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300',
-  travel: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300',
-  lump_sum: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+  labor: 'bg-info/10 text-info dark:bg-info/20',
+  material: 'bg-success/10 text-success dark:bg-success/20',
+  service: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300', // intentional categorical — no DS token
+  travel: 'bg-warning/10 text-warning dark:bg-warning/20',
+  lump_sum: 'bg-muted text-muted-foreground',
 };
 
 const TYPE_ORDER: ItemType[] = ['labor', 'material', 'service', 'travel', 'lump_sum'];
@@ -603,7 +603,7 @@ function SuggestionRow({ suggestion, onSelect }: SuggestionRowProps) {
           'text-[10px] rounded-full px-1.5 py-0.5 shrink-0',
           suggestion.source === 'price_book'
             ? 'bg-primary/10 text-primary'
-            : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+            : 'bg-warning/10 text-warning dark:bg-warning/20',
         )}
         data-testid={`suggestion-source-${suggestion.source}`}
       >
@@ -706,7 +706,7 @@ function NameFieldWithAutocomplete({
                   <span className="text-xs text-muted-foreground shrink-0">
                     {s.price.toFixed(0)} zł / {s.unit}
                   </span>
-                  <span className="text-[10px] rounded-full px-1.5 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 shrink-0">
+                  <span className="text-[10px] rounded-full px-1.5 py-0.5 bg-warning/10 text-warning dark:bg-warning/20 shrink-0">
                     {t('priceBook.sourceRecentlyUsed', { price: s.price.toFixed(0), unit: s.unit })}
                   </span>
                 </button>
@@ -917,7 +917,7 @@ function ItemRow({
                 className={cn(
                   'h-9 text-sm text-right pr-6',
                   marginInvalid && 'border-destructive',
-                  marginHidden && 'text-amber-600 dark:text-amber-400',
+                  marginHidden && 'text-warning',
                 )}
                 aria-invalid={marginInvalid}
                 title={
@@ -939,7 +939,7 @@ function ItemRow({
                 'w-7 h-7 shrink-0',
                 item.showMargin
                   ? 'text-muted-foreground hover:text-foreground'
-                  : 'text-amber-600 hover:text-amber-700 dark:text-amber-400',
+                  : 'text-warning hover:text-warning/80',
               )}
               onClick={() => onUpdate('showMargin', !item.showMargin)}
               title={
@@ -1098,7 +1098,7 @@ function ItemRow({
                     className={cn(
                       'h-8 text-sm text-right pr-5',
                       marginInvalid && 'border-destructive',
-                      marginHidden && 'text-amber-600 dark:text-amber-400',
+                      marginHidden && 'text-warning',
                     )}
                     placeholder={t('szybkaWycena.colMargin')}
                   />
@@ -1114,7 +1114,7 @@ function ItemRow({
                     'w-7 h-7',
                     item.showMargin
                       ? 'text-muted-foreground'
-                      : 'text-amber-600 dark:text-amber-400',
+                      : 'text-warning',
                   )}
                   onClick={() => onUpdate('showMargin', !item.showMargin)}
                   aria-label={item.showMargin ? t('szybkaWycena.hideMarginAriaLabel') : t('szybkaWycena.showMarginAriaLabel')}

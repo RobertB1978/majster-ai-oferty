@@ -59,9 +59,9 @@ export default function EnvCheck() {
           <CardHeader>
             <div className="flex items-center gap-4">
               {hasAllRequired ? (
-                <CheckCircle className="h-12 w-12 text-green-500" />
+                <CheckCircle className="h-12 w-12 text-success" />
               ) : (
-                <XCircle className="h-12 w-12 text-red-500" />
+                <XCircle className="h-12 w-12 text-destructive" />
               )}
               <div>
                 <CardTitle className="text-3xl">
@@ -82,7 +82,7 @@ export default function EnvCheck() {
               <div className="flex items-center justify-between">
                 <span className="font-semibold">Status:</span>
                 {hasAllRequired ? (
-                  <Badge className="bg-green-500">All Required Variables Set</Badge>
+                  <Badge className="bg-success">All Required Variables Set</Badge>
                 ) : (
                   <Badge variant="destructive">
                     {missingRequired.length} Missing Variables
@@ -93,20 +93,20 @@ export default function EnvCheck() {
 
             {/* Missing Variables Alert */}
             {!hasAllRequired && (
-              <div className="p-4 border-2 border-red-500 rounded-lg bg-red-50 dark:bg-red-950">
+              <div className="p-4 border-2 border-destructive/50 rounded-lg bg-destructive/5 dark:bg-destructive/10">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="h-6 w-6 text-red-500 mt-1" />
+                  <AlertTriangle className="h-6 w-6 text-destructive mt-1" />
                   <div className="flex-1">
-                    <h3 className="font-bold text-red-700 dark:text-red-400 mb-2">
+                    <h3 className="font-bold text-destructive mb-2">
                       WHITE SCREEN FIX REQUIRED
                     </h3>
-                    <p className="text-sm text-red-600 dark:text-red-300 mb-3">
+                    <p className="text-sm text-destructive mb-3">
                       Your application shows a white screen because these environment variables are missing:
                     </p>
-                    <ul className="list-disc list-inside space-y-1 text-sm text-red-600 dark:text-red-300">
+                    <ul className="list-disc list-inside space-y-1 text-sm text-destructive">
                       {missingRequired.map(check => (
                         <li key={check.name}>
-                          <code className="bg-red-100 dark:bg-red-900 px-2 py-1 rounded">
+                          <code className="bg-destructive/10 dark:bg-destructive/20 px-2 py-1 rounded">
                             {check.name}
                           </code>
                         </li>
@@ -129,9 +129,9 @@ export default function EnvCheck() {
                     key={check.name}
                     className={`p-4 rounded-lg border-2 ${
                       isMissing
-                        ? 'border-red-500 bg-red-50 dark:bg-red-950'
+                        ? 'border-destructive/50 bg-destructive/5 dark:bg-destructive/10'
                         : isSet
-                        ? 'border-green-500 bg-green-50 dark:bg-green-950'
+                        ? 'border-success/50 bg-success/5 dark:bg-success/10'
                         : 'border-[hsl(var(--warning))] bg-[hsl(var(--warning))]/10'
                     }`}
                   >
@@ -139,9 +139,9 @@ export default function EnvCheck() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           {isMissing ? (
-                            <XCircle className="h-5 w-5 text-red-500" />
+                            <XCircle className="h-5 w-5 text-destructive" />
                           ) : isSet ? (
-                            <CheckCircle className="h-5 w-5 text-green-500" />
+                            <CheckCircle className="h-5 w-5 text-success" />
                           ) : (
                             <AlertTriangle className="h-5 w-5 text-[hsl(var(--warning))]" />
                           )}
@@ -162,7 +162,7 @@ export default function EnvCheck() {
                               : check.value}
                           </div>
                         ) : (
-                          <div className="font-mono text-xs text-red-600 dark:text-red-400">
+                          <div className="font-mono text-xs text-destructive">
                             ❌ NOT SET
                           </div>
                         )}
@@ -175,9 +175,9 @@ export default function EnvCheck() {
 
             {/* Fix Instructions */}
             {!hasAllRequired && (
-              <div className="p-6 rounded-lg bg-blue-50 dark:bg-blue-950 border-2 border-blue-500">
+              <div className="p-6 rounded-lg bg-info/5 dark:bg-info/10 border-2 border-info">
                 <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                  <AlertTriangle className="h-6 w-6 text-blue-600" />
+                  <AlertTriangle className="h-6 w-6 text-info" />
                   How to Fix in Vercel:
                 </h3>
                 <ol className="list-decimal list-inside space-y-3 text-sm">
@@ -216,14 +216,14 @@ export default function EnvCheck() {
 
             {/* Success Message */}
             {hasAllRequired && (
-              <div className="p-6 rounded-lg bg-green-50 dark:bg-green-950 border-2 border-green-500">
+              <div className="p-6 rounded-lg bg-success/5 dark:bg-success/10 border-2 border-success">
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="h-8 w-8 text-green-500" />
+                  <CheckCircle className="h-8 w-8 text-success" />
                   <div>
-                    <h3 className="font-bold text-lg text-green-700 dark:text-green-400">
+                    <h3 className="font-bold text-lg text-success">
                       All Environment Variables Configured! 🎉
                     </h3>
-                    <p className="text-sm text-green-600 dark:text-green-300 mt-1">
+                    <p className="text-sm text-success mt-1">
                       Your application should work correctly now. You can navigate to the home page.
                     </p>
                   </div>

@@ -42,7 +42,7 @@ export default function EmptyProjects({
       <circle cx="120" cy="120" r="96" fill="hsl(var(--muted))" opacity="0.4" />
 
       {/* Blueprint paper */}
-      <rect x="68" y="82" width="104" height="86" rx="6" fill="hsl(var(--accent-blue-subtle, #DBEAFE))" opacity="0.6" stroke="hsl(var(--accent-blue, #1E40AF))" strokeWidth="1" opacity="0.3" />
+      <rect x="68" y="82" width="104" height="86" rx="6" fill="hsl(var(--accent-blue-subtle, #DBEAFE))" opacity="0.5" stroke="hsl(var(--accent-blue, #1E40AF))" strokeWidth="1" />
 
       {/* Blueprint grid lines */}
       {[96, 110, 124, 138, 152].map((y) => (

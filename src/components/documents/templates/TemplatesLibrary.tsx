@@ -44,19 +44,19 @@ const CATEGORY_ICON: Record<TemplateCategory, ComponentType<{ className?: string
 };
 
 const CATEGORY_COLOR: Record<TemplateCategory, string> = {
-  CONTRACTS:  'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
-  PROTOCOLS:  'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800',
-  ANNEXES:    'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800',
-  COMPLIANCE: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
-  OTHER:      'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700',
+  CONTRACTS:  'bg-info/10 text-info border-info/30 dark:bg-info/20',
+  PROTOCOLS:  'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800', // purple = no DS token, needs revision
+  ANNEXES:    'bg-warning/10 text-warning border-warning/30 dark:bg-warning/20',
+  COMPLIANCE: 'bg-success/10 text-success border-success/30 dark:bg-success/20',
+  OTHER:      'bg-muted text-muted-foreground border-border',
 };
 
 const CATEGORY_ACTIVE_COLOR: Record<TemplateCategory, string> = {
-  CONTRACTS:  'ring-blue-500 bg-blue-50 dark:bg-blue-900/20',
-  PROTOCOLS:  'ring-purple-500 bg-purple-50 dark:bg-purple-900/20',
-  ANNEXES:    'ring-orange-500 bg-orange-50 dark:bg-orange-900/20',
-  COMPLIANCE: 'ring-green-500 bg-green-50 dark:bg-green-900/20',
-  OTHER:      'ring-gray-400 bg-gray-50 dark:bg-gray-800',
+  CONTRACTS:  'ring-info bg-info/5',
+  PROTOCOLS:  'ring-purple-500 bg-purple-50 dark:bg-purple-900/20', // purple = no DS token, needs revision
+  ANNEXES:    'ring-warning bg-warning/5',
+  COMPLIANCE: 'ring-success bg-success/5',
+  OTHER:      'ring-border bg-muted',
 };
 
 // ── Props ─────────────────────────────────────────────────────────────────────

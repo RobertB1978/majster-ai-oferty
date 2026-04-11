@@ -189,19 +189,19 @@ describe('ProjectTimeline — V2 alignment', () => {
   });
 
   describe('V2 status rendering', () => {
-    it('should render an ACTIVE project (bg-blue-500 bar)', () => {
+    it('should render an ACTIVE project (bg-primary bar)', () => {
       setupHooks([mockV2Projects[0]]);
       render(<ProjectTimeline currentMonth={CURRENT_MONTH} onMonthChange={vi.fn()} />);
 
-      const bar = document.querySelector('.bg-blue-500');
+      const bar = document.querySelector('.bg-primary');
       expect(bar).not.toBeNull();
     });
 
-    it('should render a COMPLETED project (bg-emerald-500 bar)', () => {
+    it('should render a COMPLETED project (bg-success bar)', () => {
       setupHooks([mockV2Projects[1]]);
       render(<ProjectTimeline currentMonth={CURRENT_MONTH} onMonthChange={vi.fn()} />);
 
-      const bar = document.querySelector('.bg-emerald-500');
+      const bar = document.querySelector('.bg-success');
       expect(bar).not.toBeNull();
     });
   });

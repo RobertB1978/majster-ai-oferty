@@ -38,10 +38,10 @@ function calcPercent(spent: number, budget: number): number {
 }
 
 const COST_TYPE_BADGE: Record<CostType, string> = {
-  MATERIAL: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  LABOR:    'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-  TRAVEL:   'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-  OTHER:    'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-300',
+  MATERIAL: 'bg-info/10 text-info dark:bg-info/20',
+  LABOR:    'bg-primary/10 text-primary dark:bg-primary/20',
+  TRAVEL:   'bg-warning/10 text-warning dark:bg-warning/20',
+  OTHER:    'bg-muted text-muted-foreground',
 };
 
 // ── BudgetEditor ──────────────────────────────────────────────────────────────
@@ -102,7 +102,7 @@ function BudgetEditor({ projectId, currentBudget, budgetSource }: BudgetEditorPr
         <Button
           size="icon"
           variant="ghost"
-          className="h-8 w-8 text-green-600 hover:text-green-700"
+          className="h-8 w-8 text-success hover:text-success/80"
           onClick={handleSave}
           disabled={updateBudget.isPending}
           aria-label={t('burnBar.saveBudget')}
@@ -230,7 +230,7 @@ export function BurnBarSection({ project }: BurnBarSectionProps) {
     pct >= 100
       ? 'bg-destructive'
       : pct >= 80
-      ? 'bg-amber-500'
+      ? 'bg-warning'
       : 'bg-primary';
 
   if (isLoading) {
@@ -273,7 +273,7 @@ export function BurnBarSection({ project }: BurnBarSectionProps) {
             </div>
             <div className="rounded-md bg-muted/40 px-2 py-2">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{t('burnBar.spentPct')}</p>
-              <p className={cn('text-sm font-bold mt-0.5', pct >= 100 ? 'text-destructive' : pct >= 80 ? 'text-amber-600' : '')}>
+              <p className={cn('text-sm font-bold mt-0.5', pct >= 100 ? 'text-destructive' : pct >= 80 ? 'text-warning' : '')}>
                 {pct}%
               </p>
             </div>

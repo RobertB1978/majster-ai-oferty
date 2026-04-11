@@ -21,12 +21,17 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { AdminCronManager } from './AdminCronManager';
 import { supabase } from '@/integrations/supabase/client';
 
-// Plan colours for pie chart
+// Plan colours for Recharts pie chart.
+// Design-system mapping (src/index.css / tailwind.config.ts):
+//   free       → slate-400   (--text-muted range)
+//   starter    → blue-500    (--state-info adjacent)
+//   business   → violet-500  (no direct DS token — intentionally distinct)
+//   enterprise → #F59E0B     (--accent-amber exact match)
 const PLAN_COLORS: Record<string, string> = {
-  free: '#94a3b8',
-  starter: '#3b82f6',
-  business: '#8b5cf6',
-  enterprise: '#f59e0b',
+  free:       '#94a3b8',   // slate-400
+  starter:    '#3b82f6',   // blue-500
+  business:   '#8b5cf6',   // violet-500
+  enterprise: '#f59e0b',   // --accent-amber (#F59E0B)
 };
 
 function UnavailableCard({ label, reason }: { label: string; reason: string }) {
@@ -167,8 +172,8 @@ export function AdminDashboard() {
                 )}
                 <p className="text-xs text-muted-foreground mt-1">{t('admin.dashboard.totalInDb')}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                <Database className="h-6 w-6 text-blue-600" />
+              <div className="h-12 w-12 rounded-full bg-info/10 dark:bg-info/20 flex items-center justify-center">
+                <Database className="h-6 w-6 text-info" />
               </div>
             </div>
           </CardContent>
@@ -340,9 +345,9 @@ export function AdminDashboard() {
                 <CardTitle>{t('admin.dashboard.systemStatus')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 p-3 flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
-                  <p className="text-sm text-amber-700 dark:text-amber-400">
+                <div className="rounded-lg border border-warning/30 bg-warning/5 dark:bg-warning/10 p-3 flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
+                  <p className="text-sm text-warning">
                     {t('admin.dashboard.statusUnknownNote')}
                   </p>
                 </div>

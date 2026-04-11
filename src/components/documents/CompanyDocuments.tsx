@@ -36,11 +36,11 @@ interface CompanyDocument {
 }
 
 const documentTypeConfig = {
-  uprawnienia: { labelKey: 'companyDocs.docTypes.uprawnienia' as const, icon: Award, color: 'bg-blue-500' },
-  referencje: { labelKey: 'companyDocs.docTypes.referencje' as const, icon: FileCheck, color: 'bg-green-500' },
-  certyfikat: { labelKey: 'companyDocs.docTypes.certyfikat' as const, icon: Shield, color: 'bg-purple-500' },
-  polisa: { labelKey: 'companyDocs.docTypes.polisa' as const, icon: Shield, color: 'bg-orange-500' },
-  inne: { labelKey: 'companyDocs.docTypes.inne' as const, icon: FileText, color: 'bg-gray-500' },
+  uprawnienia: { labelKey: 'companyDocs.docTypes.uprawnienia' as const, icon: Award,      color: 'bg-primary' },          // --primary amber
+  referencje:  { labelKey: 'companyDocs.docTypes.referencje' as const,  icon: FileCheck,  color: 'bg-success' },          // --state-success green
+  certyfikat:  { labelKey: 'companyDocs.docTypes.certyfikat' as const,  icon: Shield,     color: 'bg-info' },             // --state-info blue
+  polisa:      { labelKey: 'companyDocs.docTypes.polisa' as const,      icon: Shield,     color: 'bg-warning' },          // --state-warning amber-dim
+  inne:        { labelKey: 'companyDocs.docTypes.inne' as const,        icon: FileText,   color: 'bg-muted-foreground' }, // neutral grey
 };
 
 export function CompanyDocuments() {

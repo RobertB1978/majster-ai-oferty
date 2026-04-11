@@ -206,16 +206,16 @@ export function FinanceDashboard() {
       label: t('finance.revenue'),
       value: summary.totalRevenue,
       icon: DollarSign,
-      gradient: 'from-emerald-500 to-green-600',
-      bgGradient: 'from-emerald-500/10 to-green-500/5',
+      gradient: 'from-success to-success',
+      bgGradient: 'from-success/10 to-success/5',
       iconBg: 'bg-success',
     },
     {
       label: t('finance.costs'),
       value: summary.totalCosts,
       icon: Receipt,
-      gradient: 'from-rose-500 to-red-600',
-      bgGradient: 'from-rose-500/10 to-red-500/5',
+      gradient: 'from-destructive to-destructive',
+      bgGradient: 'from-destructive/10 to-destructive/5',
       iconBg: 'bg-destructive',
     },
     {
@@ -466,7 +466,7 @@ export function FinanceDashboard() {
                         <span className="text-muted-foreground line-through">
                           {rec.currentAvgPrice} zł
                         </span>
-                        <span className="text-green-600 font-medium">
+                        <span className="text-success font-medium">
                           → {rec.recommendedPrice} zł
                         </span>
                       </div>

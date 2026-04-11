@@ -15,23 +15,23 @@ export function TestimonialsSection() {
     {
       key: 'time',
       icon: Clock,
-      color: 'text-amber-500',
-      bgColor: 'bg-amber-500/10',
-      borderColor: 'border-amber-500/20',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10',
+      borderColor: 'border-primary/20',
     },
     {
       key: 'quality',
       icon: FileText,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-500/10',
-      borderColor: 'border-blue-500/20',
+      color: 'text-info',
+      bgColor: 'bg-info/10',
+      borderColor: 'border-info/20',
     },
     {
       key: 'control',
       icon: TrendingUp,
-      color: 'text-emerald-500',
-      bgColor: 'bg-emerald-500/10',
-      borderColor: 'border-emerald-500/20',
+      color: 'text-success',
+      bgColor: 'bg-success/10',
+      borderColor: 'border-success/20',
     },
   ];
 
@@ -48,7 +48,7 @@ export function TestimonialsSection() {
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-sm font-medium text-amber-600 dark:text-amber-400 mb-6">
+          <div className="inline-flex items-center gap-2 rounded-full border border-accent-amber/30 bg-accent-amber/10 px-4 py-1.5 text-sm font-medium text-accent-amber dark:text-accent-amber mb-6">
             {t('landing.results.badge')}
           </div>
           <h2
@@ -67,7 +67,7 @@ export function TestimonialsSection() {
           {RESULTS.map((result) => (
             <div
               key={result.key}
-              className={`relative bg-gray-50 dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-amber-500/40 hover:shadow-lg hover:shadow-amber-500/5`}
+              className={`relative bg-gray-50 dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-accent-amber/40 hover:shadow-lg hover:shadow-accent-amber/5`}
             >
               {/* Icon */}
               <div className={`w-12 h-12 rounded-xl ${result.bgColor} flex items-center justify-center`}>
@@ -107,7 +107,7 @@ export function TestimonialsSection() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {PRINCIPLES.map((p) => (
               <div key={p.key} className="flex items-center gap-3 justify-center sm:justify-start">
-                <p.icon className="w-4 h-4 text-amber-500 shrink-0" aria-hidden="true" />
+                <p.icon className="w-4 h-4 text-accent-amber shrink-0" aria-hidden="true" />
                 <span className="text-sm text-gray-600 dark:text-neutral-400">
                   {t(`landing.results.principles.${p.key}`)}
                 </span>

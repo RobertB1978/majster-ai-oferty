@@ -184,8 +184,8 @@ export function StartChoicePanel({
                         <span
                           className={`text-xs rounded-full px-2 py-0.5 ${
                             template.category === 'Materiał'
-                              ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-                              : 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                              ? 'bg-info/10 text-info dark:bg-info/20'
+                              : 'bg-success/10 text-success dark:bg-success/20'
                           }`}
                         >
                           {template.category === 'Materiał'

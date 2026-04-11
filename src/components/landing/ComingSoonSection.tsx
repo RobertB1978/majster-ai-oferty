@@ -54,11 +54,11 @@ function ComingSoonCard({ feature }: ComingSoonCardProps) {
           <Icon className="w-5 h-5 text-neutral-600" aria-hidden="true" />
         </div>
         {isBeta ? (
-          <span className="text-xs font-bold bg-amber-500 text-black rounded-full px-2.5 py-0.5 uppercase tracking-wide">
+          <span className="text-xs font-bold bg-primary text-primary-foreground rounded-full px-2.5 py-0.5 uppercase tracking-wide">
             {t('landing.comingSoon.betaBadge')}
           </span>
         ) : (
-          <span className="text-xs font-semibold border border-amber-500 text-amber-500 rounded-full px-2.5 py-0.5 uppercase tracking-wide">
+          <span className="text-xs font-semibold border border-primary text-primary rounded-full px-2.5 py-0.5 uppercase tracking-wide">
             {t('landing.comingSoon.soonBadge')}
           </span>
         )}

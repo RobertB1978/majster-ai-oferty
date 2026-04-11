@@ -88,8 +88,8 @@ function RequirementItem({
 }) {
   const Icon = met ? CheckCircle : optional ? AlertCircle : XCircle;
   const colorClass = met 
-    ? 'text-green-500' 
-    : optional 
+    ? 'text-success'
+    : optional
       ? 'text-muted-foreground' 
       : 'text-destructive';
       

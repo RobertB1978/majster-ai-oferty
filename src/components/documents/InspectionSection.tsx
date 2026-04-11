@@ -70,17 +70,17 @@ function StatusBadge({ status }: { status: ProjectInspection['status'] }) {
   const map = {
     PLANNED: {
       label: t('inspection.status.planned'),
-      cls: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      cls: 'bg-info/10 text-info dark:bg-info/20',
       Icon: Clock,
     },
     DONE: {
       label: t('inspection.status.done'),
-      cls: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+      cls: 'bg-success/10 text-success dark:bg-success/20',
       Icon: CheckCircle2,
     },
     OVERDUE: {
       label: t('inspection.status.overdue'),
-      cls: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+      cls: 'bg-destructive/10 text-destructive dark:bg-destructive/20',
       Icon: AlertTriangle,
     },
   } as const;
@@ -481,7 +481,7 @@ export function InspectionSection({ projectId, projectTitle }: InspectionSection
             className="flex items-center gap-2 w-full text-left"
             onClick={() => setShowReminders(prev => !prev)}
           >
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <CheckCircle2 className="h-4 w-4 text-success" />
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex-1">
               {t('inspection.sections.done')} ({done.length})
             </span>

@@ -27,20 +27,20 @@ function FAQItem({ item, isOpen, onToggle }: FAQItemProps) {
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); }
         }}
-        className="w-full flex items-center justify-between gap-4 py-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset rounded"
+        className="w-full flex items-center justify-between gap-4 py-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber focus-visible:ring-inset rounded"
       >
         <span
           className={`font-semibold text-base transition-colors duration-200 ${
             isOpen
-              ? 'text-amber-500 dark:text-amber-400'
-              : 'text-gray-900 dark:text-white hover:text-amber-500 dark:hover:text-amber-400'
+              ? 'text-accent-amber dark:text-accent-amber'
+              : 'text-gray-900 dark:text-white hover:text-accent-amber dark:hover:text-accent-amber'
           }`}
         >
           {item.question}
         </span>
         <ChevronDown
           className={`w-5 h-5 shrink-0 transition-all duration-300 ${
-            isOpen ? 'rotate-180 text-amber-500' : 'text-gray-400 dark:text-neutral-400'
+            isOpen ? 'rotate-180 text-accent-amber' : 'text-gray-400 dark:text-neutral-400'
           }`}
           aria-hidden="true"
         />

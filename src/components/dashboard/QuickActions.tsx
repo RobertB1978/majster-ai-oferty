@@ -95,7 +95,7 @@ export function QuickActions() {
               )}
             >
               <div className={cn('flex h-9 w-9 items-center justify-center rounded-xl', cfg.icon)}>
-                <Icon className={cn(cfg.iconColor)} style={{ width: '18px', height: '18px' }} />
+                <Icon className={cn('h-5 w-5', cfg.iconColor)} />
               </div>
               <div>
                 <p className="text-sm font-semibold leading-tight">{action.label}</p>

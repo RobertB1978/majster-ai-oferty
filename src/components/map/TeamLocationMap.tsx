@@ -10,6 +10,7 @@ import { Navigation, RefreshCw, Users, AlertTriangle } from 'lucide-react';
 import { useTeamLocations, TeamLocation } from '@/hooks/useTeamMembers';
 import { formatDateTime } from '@/lib/formatters';
 import { logger } from '@/lib/logger';
+import { TEAM_STATUS_COLORS } from '@/lib/teamStatusColors';
 
 // ---------------------------------------------------------------------------
 // Marker icon fix — use local assets bundled by Vite instead of CDN.
@@ -27,12 +28,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-const statusColors: Record<string, string> = {
-  idle: '#6b7280',
-  traveling: '#3b82f6',
-  working: '#22c55e',
-  break: '#f59e0b',
-};
+const statusColors = TEAM_STATUS_COLORS;
 
 // statusLabels used in map popup — populated via useTranslation() inside component
 

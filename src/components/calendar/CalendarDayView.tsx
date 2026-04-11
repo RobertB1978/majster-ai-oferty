@@ -83,7 +83,7 @@ export function CalendarDayView({ selectedDate, eventsByDate, openEventDialog, d
                 >
                   <div className={cn(
                     'w-2 h-2 rounded-full flex-shrink-0',
-                    isCompleted ? 'bg-green-500' : eventTypeColors[event.event_type]?.dot
+                    isCompleted ? 'bg-success' : eventTypeColors[event.event_type]?.dot
                   )} />
                   <span className={cn('text-sm font-medium truncate', isCompleted && 'line-through')}>{event.title}</span>
                 </div>
@@ -134,7 +134,7 @@ export function CalendarDayView({ selectedDate, eventsByDate, openEventDialog, d
                       <div className="flex items-center gap-2">
                         <div className={cn(
                           'w-2 h-2 rounded-full flex-shrink-0',
-                          isCompleted ? 'bg-green-500' : eventTypeColors[event.event_type]?.dot
+                          isCompleted ? 'bg-success' : eventTypeColors[event.event_type]?.dot
                         )} />
                         <span className={cn('font-medium text-sm', isCompleted && 'line-through')}>{event.title}</span>
                         {event.event_time && (
@@ -157,8 +157,8 @@ export function CalendarDayView({ selectedDate, eventsByDate, openEventDialog, d
                     className="absolute left-0 right-0 pointer-events-none z-10 flex items-center"
                     style={{ top: `${(nowMinutes / 60) * HOUR_HEIGHT}px` }}
                   >
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0 -ml-1.5" />
-                    <div className="flex-1 h-0.5 bg-red-500" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-destructive flex-shrink-0 -ml-1.5" />
+                    <div className="flex-1 h-0.5 bg-destructive" />
                   </div>
                 )}
               </div>

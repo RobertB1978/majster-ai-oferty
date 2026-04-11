@@ -113,9 +113,9 @@ export function AdminContentEditor() {
       </CardHeader>
       <CardContent>
         {/* Honest notice: data stored in localStorage only, not synced to backend */}
-        <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 p-3">
-          <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
-          <p className="text-sm text-amber-700 dark:text-amber-400">
+        <div className="mb-4 flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/5 dark:bg-warning/10 p-3">
+          <AlertTriangle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
+          <p className="text-sm text-warning">
             {t('admin.contentEditorLocalOnly')}
           </p>
         </div>
