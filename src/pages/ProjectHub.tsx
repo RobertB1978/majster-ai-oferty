@@ -14,7 +14,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
-  ArrowLeft, ChevronDown, ChevronUp, QrCode,
+  ChevronDown, ChevronUp, QrCode,
   Copy, Check, Loader2, Plus, Trash2, RefreshCw, FileText, LayoutList,
 } from 'lucide-react';
 
@@ -381,7 +381,6 @@ function QrTokenPanel({ projectId }: { projectId: string }) {
 export default function ProjectHub() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const [openSection, setOpenSection] = useState<SectionId>('stages');
 
   const { data: project, isLoading, isError, refetch } = useProjectV2(id);
@@ -413,15 +412,6 @@ export default function ProjectHub() {
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
-      {/* Back button */}
-      <button
-        className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4 hover:text-foreground transition-colors"
-        onClick={() => navigate('/app/projects')}
-      >
-        <ArrowLeft className="h-4 w-4" />
-        {t('projectsV2.hub.back')}
-      </button>
-
       {/* Header */}
       <div className="flex items-start gap-3 mb-6">
         <div className="flex-1 min-w-0">

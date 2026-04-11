@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Moon, Sun, Plus, FileText, Users, DollarSign, CalendarPlus,
-  User, LogOut, Settings,
+  User, LogOut, Settings, ArrowLeft,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useBackNavigation } from '@/hooks/useBackNavigation';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -34,6 +35,7 @@ export function NewShellTopBar() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { backTo, backLabel } = useBackNavigation();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme');
@@ -68,8 +70,19 @@ export function NewShellTopBar() {
   return (
     <header className="sticky top-0 z-50 safe-area-top w-full shell-header bg-card/95 backdrop-blur-md supports-[backdrop-filter]:bg-card/85">
       <div className="flex h-12 items-center justify-between px-4">
-        {/* Logo po lewej */}
-        <Logo size="sm" />
+        {/* Logo + opcjonalny przycisk powrotu po lewej */}
+        <div className="flex items-center gap-1">
+          {backTo && (
+            <Link
+              to={backTo}
+              className="flex items-center justify-center h-9 w-9 rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={`${t('common.back')}: ${backLabel}`}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+          )}
+          <Logo size="sm" />
+        </div>
 
         {/* Przyciski po prawej */}
         <div className="flex items-center gap-0.5">

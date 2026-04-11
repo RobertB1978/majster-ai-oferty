@@ -241,11 +241,6 @@ export default function PdfGenerator() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <Button variant="ghost" onClick={() => navigate(`/app/projects/${id}`)}>
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        {t('pdfGenerator.backToProject')}
-      </Button>
-
       <div>
         <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
           {t('pdfGenerator.pageHeading', { projectName: project.project_name })}

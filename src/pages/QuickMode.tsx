@@ -20,7 +20,6 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import {
   AlertCircle,
-  ArrowLeft,
   ChevronRight,
   Loader2,
   Zap,
@@ -368,16 +367,6 @@ export default function QuickMode() {
 
         {/* ── Header ────────────────────────────────────────────────────── */}
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(-1)}
-            aria-label={t('common.back')}
-            className="min-h-[48px] min-w-[48px] shrink-0 p-0"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-
           <h1 className="flex items-center gap-2 text-lg font-bold leading-tight text-[var(--text-primary)]">
             <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-amber)]">
               <Zap className="h-3.5 w-3.5 text-white" aria-hidden />
