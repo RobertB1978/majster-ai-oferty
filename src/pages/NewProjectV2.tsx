@@ -13,7 +13,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, FolderKanban, Loader2, Info, Layers, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
+import { FolderKanban, Loader2, Info, Layers, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
 
 import { useCreateProjectV2 } from '@/hooks/useProjectsV2';
 import { useClients } from '@/hooks/useClients';
@@ -103,14 +103,9 @@ export default function NewProjectV2() {
       </Breadcrumb>
 
       {/* Nagłówek */}
-      <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/app/projects')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div className="flex items-center gap-2">
-          <FolderKanban className="h-5 w-5 text-primary" />
-          <h1 className="text-xl font-bold">{t('projectsV2.newProject')}</h1>
-        </div>
+      <div className="flex items-center gap-2 mb-6">
+        <FolderKanban className="h-5 w-5 text-primary" />
+        <h1 className="text-xl font-bold">{t('projectsV2.newProject')}</h1>
       </div>
 
       {/* Kontekst: ścieżka alternatywna */}

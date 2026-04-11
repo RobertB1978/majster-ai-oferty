@@ -2,10 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, CheckCircle2, Loader2, Zap } from 'lucide-react';
+import { CheckCircle2, Loader2, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { ClientPicker } from '@/components/quickEstimate/ClientPicker';
@@ -289,14 +288,6 @@ export default function QuickEstimateWorkspace() {
 
         {/* ── Page header ──────────────────────────────────────── */}
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/app/dashboard')}
-            aria-label={t('common.backToDashboard')}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
           <div className="flex-1 min-w-0">
             <h1 className="text-xl font-bold flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary shrink-0">
