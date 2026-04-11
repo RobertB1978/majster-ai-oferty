@@ -377,4 +377,74 @@ describe('Calendar', () => {
       });
     });
   });
+
+  // ── MONTH VIEW DAY-CELL CLICK (mobile-friendly two-step activation) ──────
+  // Regression: previously onDoubleClick was required to open the dialog, which
+  // doesn't work reliably on touch devices. Now a single tap selects the day
+  // and a second tap on the already-selected day opens the dialog.
+
+  describe('[REGRESSION] month view day-cell two-step activation', () => {
+    it('should NOT open dialog on first click on a non-selected day', async () => {
+      setupHooks({ events: [] });
+      render(<Calendar />);
+
+      // Find any grid cell that is not today (so it starts unselected).
+      // Today starts selected by default (initial selectedDate = new Date()).
+      const cells = screen.getAllByRole('gridcell');
+      const nonSelectedCell = cells.find(
+        (c) => c.getAttribute('aria-selected') !== 'true'
+      );
+      expect(nonSelectedCell).toBeDefined();
+
+      fireEvent.click(nonSelectedCell!);
+
+      // Dialog should NOT be open after a single click on a non-selected day.
+      expect(screen.queryByRole('dialog')).toBeNull();
+      // Cell should now be marked as selected.
+      await waitFor(() => {
+        expect(nonSelectedCell!.getAttribute('aria-selected')).toBe('true');
+      });
+    });
+
+    it('should open dialog on second click on an already-selected day', async () => {
+      setupHooks({ events: [] });
+      render(<Calendar />);
+
+      const cells = screen.getAllByRole('gridcell');
+      const nonSelectedCell = cells.find(
+        (c) => c.getAttribute('aria-selected') !== 'true'
+      );
+      expect(nonSelectedCell).toBeDefined();
+
+      // First click — select
+      fireEvent.click(nonSelectedCell!);
+      await waitFor(() => {
+        expect(nonSelectedCell!.getAttribute('aria-selected')).toBe('true');
+      });
+      expect(screen.queryByRole('dialog')).toBeNull();
+
+      // Second click on the same cell — open dialog
+      fireEvent.click(nonSelectedCell!);
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeDefined();
+      });
+    });
+
+    it('should still open dialog on double-click (desktop shortcut)', async () => {
+      setupHooks({ events: [] });
+      render(<Calendar />);
+
+      const cells = screen.getAllByRole('gridcell');
+      const nonSelectedCell = cells.find(
+        (c) => c.getAttribute('aria-selected') !== 'true'
+      );
+      expect(nonSelectedCell).toBeDefined();
+
+      fireEvent.doubleClick(nonSelectedCell!);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeDefined();
+      });
+    });
+  });
 });
