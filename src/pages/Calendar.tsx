@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import {
-  format, parseISO, isAfter, isBefore,
+  format, parseISO, isValid, isAfter, isBefore,
   startOfMonth, endOfMonth, eachDayOfInterval,
   addMonths, subMonths,
   startOfWeek, endOfWeek, addWeeks, subWeeks,
@@ -103,7 +103,9 @@ export default function Calendar() {
       // Expand recurring instances within the current calendar range
       if (event.recurrence_rule && event.recurrence_rule !== 'none') {
         const baseDate = parseISO(event.event_date);
-        const maxEnd = event.recurrence_end_date ? parseISO(event.recurrence_end_date) : calendarEnd;
+        if (!isValid(baseDate)) return; // skip events with corrupted/unparseable dates
+        const parsedRecEnd = event.recurrence_end_date ? parseISO(event.recurrence_end_date) : null;
+        const maxEnd = (parsedRecEnd && isValid(parsedRecEnd)) ? parsedRecEnd : calendarEnd;
         const effectiveEnd = isBefore(maxEnd, calendarEnd) ? maxEnd : calendarEnd;
 
         let next = nextRecurrenceDate(baseDate, event.recurrence_rule);

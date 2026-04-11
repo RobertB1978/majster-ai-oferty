@@ -460,6 +460,8 @@
     "tapToAddHint": "Add entry on this day",
     "noEventsForDay": "No events — click any slot to add one",
     "today": "Today",
+    "prevPeriod": "Previous",
+    "nextPeriod": "Next",
     "month": "Month",
     "week": "Week",
     "day": "Day",

@@ -468,6 +468,8 @@
     "tapToAddHint": "Dodaj wpis na ten dzień",
     "noEventsForDay": "Brak wydarzeń — kliknij dowolny slot, aby dodać",
     "today": "Dzisiaj",
+    "prevPeriod": "Poprzedni",
+    "nextPeriod": "Następny",
     "month": "Miesiąc",
     "week": "Tydzień",
     "day": "Dzień",

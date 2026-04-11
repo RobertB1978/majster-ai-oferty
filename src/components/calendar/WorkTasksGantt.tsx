@@ -75,50 +75,56 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
     return capacity;
   }, [tasks, teamMembers, totalDays]);
 
-  // Filter tasks that overlap with current month
+  // Filter tasks that overlap with current month and pre-compute bar metrics.
+  // Uses reduce to parse dates only once per task (no double-parseISO).
   const visibleTasks = useMemo(() => {
-    return tasks.filter(task => {
-      if (!task.start_date || !task.end_date) return false;
+    type VisibleTask = typeof tasks[number] & {
+      projectName: string;
+      memberName: string | undefined;
+      leftPercent: number;
+      widthPercent: number;
+      startsBeforeMonth: boolean;
+      endsAfterMonth: boolean;
+    };
+
+    return tasks.reduce<VisibleTask[]>((acc, task) => {
+      if (!task.start_date || !task.end_date) return acc;
       let start: Date, end: Date;
       try {
         start = parseISO(task.start_date);
         end = parseISO(task.end_date);
       } catch {
-        return false;
+        return acc;
       }
-      if (!isValid(start) || !isValid(end) || start > end) return false;
+      if (!isValid(start) || !isValid(end) || start > end) return acc;
 
-      return (
+      const overlaps = (
         isWithinInterval(start, { start: monthStart, end: monthEnd }) ||
         isWithinInterval(end, { start: monthStart, end: monthEnd }) ||
         (start <= monthStart && end >= monthEnd)
       );
-    }).map(task => {
-      const start = parseISO(task.start_date);
-      const end = parseISO(task.end_date);
-      
+      if (!overlaps) return acc;
+
       const barStart = start < monthStart ? monthStart : start;
       const barEnd = end > monthEnd ? monthEnd : end;
-      
+
       const startDay = differenceInDays(barStart, monthStart);
       const duration = differenceInDays(barEnd, barStart) + 1;
-      
-      const leftPercent = (startDay / totalDays) * 100;
-      const widthPercent = (duration / totalDays) * 100;
-      
+
       const project = projects.find(p => p.id === task.project_id);
       const member = teamMembers.find(m => m.id === task.assigned_team_member_id);
-      
-      return {
+
+      acc.push({
         ...task,
         projectName: project?.title || t('workTasks.unknownProject'),
         memberName: member?.name,
-        leftPercent,
-        widthPercent,
+        leftPercent: (startDay / totalDays) * 100,
+        widthPercent: (duration / totalDays) * 100,
         startsBeforeMonth: start < monthStart,
         endsAfterMonth: end > monthEnd,
-      };
-    });
+      });
+      return acc;
+    }, []);
   }, [tasks, projects, teamMembers, monthStart, monthEnd, totalDays, t]);
 
   // Week markers
