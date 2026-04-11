@@ -26,6 +26,7 @@ vi.mock('recharts', () => ({
   YAxis: () => null,
   CartesianGrid: () => null,
   Tooltip: () => null,
+  Legend: () => null,
 }));
 
 // Mock LoadingCard
@@ -94,6 +95,7 @@ describe('FinanceDashboard', () => {
     vi.mocked(useFinancialSummary).mockReturnValue({
       data: undefined,
       isLoading: true,
+      isError: false,
     } as ReturnType<typeof useFinancialSummary>);
 
     render(<FinanceDashboard />, { wrapper: TestWrapper });
@@ -102,10 +104,23 @@ describe('FinanceDashboard', () => {
     expect(loadingCards.length).toBe(4);
   });
 
+  it('wyświetla error state gdy zapytanie do bazy się nie powiedzie', () => {
+    vi.mocked(useFinancialSummary).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+    } as ReturnType<typeof useFinancialSummary>);
+
+    render(<FinanceDashboard />, { wrapper: TestWrapper });
+
+    expect(screen.getByText('Błąd ładowania danych')).toBeDefined();
+  });
+
   it('wyświetla empty state gdy brak danych finansowych', () => {
     vi.mocked(useFinancialSummary).mockReturnValue({
       data: mockSummaryEmpty,
       isLoading: false,
+      isError: false,
     } as ReturnType<typeof useFinancialSummary>);
 
     render(<FinanceDashboard />, { wrapper: TestWrapper });
@@ -121,6 +136,7 @@ describe('FinanceDashboard', () => {
     vi.mocked(useFinancialSummary).mockReturnValue({
       data: mockSummaryEmpty,
       isLoading: false,
+      isError: false,
     } as ReturnType<typeof useFinancialSummary>);
 
     render(<FinanceDashboard />, { wrapper: TestWrapper });
@@ -133,6 +149,7 @@ describe('FinanceDashboard', () => {
     vi.mocked(useFinancialSummary).mockReturnValue({
       data: mockSummaryWithData,
       isLoading: false,
+      isError: false,
     } as ReturnType<typeof useFinancialSummary>);
 
     render(<FinanceDashboard />, { wrapper: TestWrapper });
@@ -141,10 +158,11 @@ describe('FinanceDashboard', () => {
     expect(screen.getByTestId('bar-chart')).toBeDefined();
   });
 
-  it('wyświetla karty KPI z danymi finansowymi', () => {
+  it('wyświetla karty KPI z danymi finansowymi (5 kart)', () => {
     vi.mocked(useFinancialSummary).mockReturnValue({
       data: mockSummaryWithData,
       isLoading: false,
+      isError: false,
     } as ReturnType<typeof useFinancialSummary>);
 
     render(<FinanceDashboard />, { wrapper: TestWrapper });
@@ -153,12 +171,14 @@ describe('FinanceDashboard', () => {
     expect(screen.getByText('Koszty')).toBeDefined();
     expect(screen.getByText('Marża brutto')).toBeDefined();
     expect(screen.getByText('Marża %')).toBeDefined();
+    expect(screen.getByText('Projekty')).toBeDefined();
   });
 
   it('wyświetla sekcję analizy AI z przyciskiem uruchomienia', () => {
     vi.mocked(useFinancialSummary).mockReturnValue({
       data: mockSummaryWithData,
       isLoading: false,
+      isError: false,
     } as ReturnType<typeof useFinancialSummary>);
 
     render(<FinanceDashboard />, { wrapper: TestWrapper });

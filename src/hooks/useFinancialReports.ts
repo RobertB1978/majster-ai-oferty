@@ -16,6 +16,10 @@ export interface FinancialReport {
   created_at: string;
 }
 
+/**
+ * @deprecated Not used in any component. The `financial_reports` table is a legacy
+ * reporting table. Use `useFinancialSummary` for live aggregated financial data.
+ */
 export function useFinancialReports() {
   const { user } = useAuth();
 
