@@ -225,7 +225,7 @@
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Przegląd Twojej działalności",
-    "tagline": "Panel główny - przegląd projektów i szybkie akcje",
+    "tagline": "Panel główny — przegląd projektów i szybkie akcje",
     "welcome": "Witaj w Majster.AI",
     "mainCta": "Wyślij pierwszą ofertę",
     "starterPacksTitle": "Onboarding branżowy + starter packi",
@@ -1279,7 +1279,7 @@
       "offerAccepted": "Oferta zaakceptowana",
       "minutesAgo": "{{count}} min temu",
       "hoursAgo": "{{count}} godz. temu",
-      "mon": "Pon",
+      "mon": "Pn",
       "tue": "Wt",
       "wed": "Śr",
       "thu": "Cz",
@@ -1409,7 +1409,7 @@
     "unknownError": "Nieznany błąd",
     "colors": "Kolory",
     "effects": "Efekty",
-    "effectsComingSoon": "Efekty wizualne: animacje, cienie, gradienty - wkrótce dostępne",
+    "effectsComingSoon": "Efekty wizualne: animacje, cienie, gradienty — wkrótce dostępne",
     "previewOff": "Wyłącz podgląd",
     "saveTheme": "Zapisz motyw",
     "usersManager": {
@@ -1467,7 +1467,7 @@
     "toast": {
       "contentSaved": "Treści zapisane",
       "contentRestored": "Przywrócono domyślne treści",
-      "cronSkipped": "Zadanie pominięte - brak klucza {{key}}",
+      "cronSkipped": "Zadanie pominięte — brak klucza {{key}}",
       "cronSuccess": "Zadanie wykonane pomyślnie",
       "cronError": "Błąd: {{message}}",
       "statsRefreshed": "Statystyki odświeżone",
@@ -3421,9 +3421,9 @@
         "section3Title": "3. Plany i płatności",
         "section3Intro": "Dostępne plany subskrypcji:",
         "planFree": "bezpłatny przez pierwsze 30 dni, następnie z ograniczonymi funkcjami",
-        "planPro": "49 PLN/mies. - podstawowe funkcje bez reklam",
-        "planBusiness": "99 PLN/mies. - pełne funkcje + AI",
-        "planEnterprise": "199 PLN/mies. - wszystkie funkcje + priorytetowe wsparcie",
+        "planPro": "49 PLN/mies. — podstawowe funkcje bez reklam",
+        "planBusiness": "99 PLN/mies. — pełne funkcje + AI",
+        "planEnterprise": "199 PLN/mies. — wszystkie funkcje + priorytetowe wsparcie",
         "section3Text": "Płatności są przetwarzane przez bezpieczny system Stripe. Subskrypcję można anulować w dowolnym momencie.",
         "section4Title": "4. Ograniczenia i zakazy",
         "section4Intro": "Zabrania się:",
@@ -5057,10 +5057,10 @@
       "title": "Marketplace | Majster.AI"
     },
     "privacy": {
-      "description": "Polityka prywatności aplikacji Majster.AI - dowiedz się jak chronimy Twoje dane."
+      "description": "Polityka prywatności aplikacji Majster.AI — dowiedz się jak chronimy Twoje dane."
     },
     "terms": {
-      "description": "Regulamin korzystania z aplikacji Majster.AI - zasady i warunki użytkowania."
+      "description": "Regulamin korzystania z aplikacji Majster.AI — zasady i warunki użytkowania."
     },
     "planDetail": {
       "title": "Plan {{plan}} | Majster.AI",
@@ -5270,7 +5270,7 @@
     },
     "infakt": {
       "name": "Infakt",
-      "description": "Integracja z systemem księgowym Infakt - automatyczne faktury"
+      "description": "Integracja z systemem księgowym Infakt — automatyczne faktury"
     },
     "ifirma": {
       "name": "iFirma",
@@ -5278,7 +5278,7 @@
     },
     "castorama": {
       "name": "Castorama B2B",
-      "description": "Integracja z hurtownią Castorama - ceny i dostępność"
+      "description": "Integracja z hurtownią Castorama — ceny i dostępność"
     },
     "leroy": {
       "name": "Leroy Merlin",
@@ -5286,7 +5286,7 @@
     },
     "smsapi": {
       "name": "SMSAPI",
-      "description": "Wysyłaj SMS-y do klientów - przypomnienia i powiadomienia"
+      "description": "Wysyłaj SMS-y do klientów — przypomnienia i powiadomienia"
     },
     "przelewy24": {
       "name": "Przelewy24",
