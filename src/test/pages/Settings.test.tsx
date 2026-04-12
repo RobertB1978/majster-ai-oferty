@@ -109,14 +109,18 @@ describe('Settings — mobile navigation', () => {
     expect(screen.getByTestId('delete-account-section')).toBeDefined();
   });
 
-  it('po wejściu w drill-down lista sekcji jest ukryta', () => {
+  it('po wejściu w drill-down lista sekcji pozostaje w DOM (Sheet otwiera się jako overlay)', () => {
     renderSettings();
 
     fireEvent.click(screen.getByTestId('settings-mobile-nav-subscription'));
 
-    // Section list buttons should no longer be in the DOM (conditional render)
-    expect(screen.queryByTestId('settings-mobile-nav-general')).toBeNull();
-    expect(screen.queryByTestId('settings-mobile-nav-account')).toBeNull();
+    // With the Sheet pattern the section list is always mounted —
+    // the panel slides in on top rather than replacing the list in-place.
+    expect(screen.getByTestId('settings-mobile-nav-general')).toBeDefined();
+    expect(screen.getByTestId('settings-mobile-nav-account')).toBeDefined();
+
+    // The section content is rendered inside the open Sheet.
+    expect(screen.getByTestId('subscription-section')).toBeDefined();
   });
 
   it('mobilna nawigacja nie zawiera poziomego paska przewijania', () => {
