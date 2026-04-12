@@ -4,6 +4,7 @@ export { TrustBar } from './TrustBar';
 export { FeaturesGrid } from './FeaturesGrid';
 export { HowItWorksSection } from './HowItWorksSection';
 export { BeforeAfterSection } from './BeforeAfterSection';
+export { ProductScreenshotsSection } from './ProductScreenshotsSection';
 export { TestimonialsSection } from './TestimonialsSection';
 export { PricingSection } from './PricingSection';
 export { FAQSection } from './FAQSection';

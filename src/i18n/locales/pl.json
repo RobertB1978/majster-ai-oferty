@@ -2793,6 +2793,87 @@
       "link_dpa": "Umowa powierzenia",
       "link_gdpr": "RODO",
       "ariaLabel": "Stopka strony"
+    },
+    "screenshots": {
+      "badge": "Interfejs produktu",
+      "sectionTitle": "Tak wygląda Majster.AI",
+      "sectionSubtitle": "Pulpit, edytor ofert i podgląd PDF — trzy widoki, które fachowcy otwierają najczęściej.",
+      "dashboard": {
+        "tab": "Dashboard",
+        "caption": "Pulpit główny — projekty, statusy, wartości i terminy w jednym miejscu."
+      },
+      "editor": {
+        "tab": "Edytor ofert",
+        "caption": "Twórz profesjonalne wyceny w kilka minut — z pozycjami, VAT i gotowym podsumowaniem."
+      },
+      "pdf": {
+        "tab": "Podgląd PDF",
+        "caption": "Gotowa oferta PDF — z logo firmy, danymi klienta, zakresem prac i miejscem na podpis."
+      },
+      "mock": {
+        "nav": {
+          "dashboard": "Dashboard",
+          "projects": "Projekty",
+          "clients": "Klienci",
+          "offers": "Oferty",
+          "finance": "Finanse"
+        },
+        "welcome": "Witaj z powrotem, Marek",
+        "stats": {
+          "active": "Aktywne projekty",
+          "quotes": "Oferty w toku",
+          "revenue": "Przychód (mies.)"
+        },
+        "lastProjects": "Ostatnie projekty",
+        "col": {
+          "project": "Projekt",
+          "client": "Klient",
+          "status": "Status",
+          "value": "Wartość",
+          "deadline": "Termin",
+          "qty": "Ilość",
+          "unit": "J.m.",
+          "price": "Cena",
+          "total": "Wartość"
+        },
+        "status": {
+          "inProgress": "W toku",
+          "quote": "Wycena",
+          "accepted": "Zaakceptowany"
+        },
+        "summary": {
+          "subtotal": "Suma netto:",
+          "vat": "VAT (23%):",
+          "gross": "Razem brutto:",
+          "toPay": "Do zapłaty:"
+        },
+        "offer": {
+          "breadcrumb": "Nowa oferta",
+          "clientSection": "Dane klienta",
+          "clientPlaceholder": "Imię i nazwisko klienta",
+          "itemsSection": "Pozycje wyceny",
+          "colDesc": "Opis pracy / materiału",
+          "aiBtn": "Sugestie AI",
+          "generateBtn": "Generuj PDF i wyślij",
+          "previewTitle": "Podgląd szablonu"
+        },
+        "pdf": {
+          "docTitle": "WYCENA PRAC",
+          "docNumber": "Nr: 2026/04/031",
+          "contractor": "WYKONAWCA",
+          "client": "KLIENT",
+          "issued": "Data wystawienia:",
+          "validUntil": "Ważna do:",
+          "scope": "Szczegółowy zakres prac",
+          "colNo": "Lp.",
+          "notes": "Uwagi:",
+          "notesText": "Wycena obejmuje wskazane prace. Termin realizacji: ok. 5 dni od wpłaty zaliczki.",
+          "download": "Pobierz",
+          "signContractor": "Podpis wykonawcy",
+          "signClient": "Podpis klienta / pieczęć",
+          "footer": "Wygenerowano przez Majster.AI · app.majster.ai"
+        }
+      }
     }
   },
   "addons": {
