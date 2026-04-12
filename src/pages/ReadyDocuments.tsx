@@ -283,13 +283,13 @@ function OwnerDiagnosticPanel({ publishSafeTemplateKeys, isLoading }: OwnerDiagn
     <div className="border-t border-amber-200 dark:border-amber-800 mx-3 mt-2 pt-2">
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center gap-2 px-1 py-1.5 rounded text-left hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-400"
+        className="w-full flex items-center gap-2 px-1 py-1.5 rounded text-left hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-600"
       >
         <Wrench className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
         <span className="text-xs font-semibold text-amber-700 dark:text-amber-300 flex-1">
           Diagnostyka właściciela
         </span>
-        <span className="text-xs font-mono text-amber-600 dark:text-amber-400 shrink-0">
+        <span className="text-xs font-mono text-amber-700 dark:text-amber-400 shrink-0">
           {isLoading ? '…' : `${publishSafeCount}/${totalInventory}`}
         </span>
         {expanded
@@ -322,17 +322,17 @@ function OwnerDiagnosticPanel({ publishSafeTemplateKeys, isLoading }: OwnerDiagn
                   {entry.name}
                 </p>
               </div>
-              <p className="text-xs font-mono text-amber-600 dark:text-amber-400 break-all leading-tight pl-4">
+              <p className="text-xs font-mono text-amber-700 dark:text-amber-400 break-all leading-tight pl-4">
                 {entry.expectedStoragePath}
               </p>
-              <p className="text-xs text-amber-600/70 dark:text-amber-500 pl-4 leading-tight">
+              <p className="text-xs text-amber-700 dark:text-amber-500 pl-4 leading-tight">
                 {entry.contentNote}
               </p>
             </div>
           ))}
 
           {/* Help link */}
-          <p className="text-xs text-amber-600/70 dark:text-amber-500 pt-1 leading-relaxed">
+          <p className="text-xs text-amber-700 dark:text-amber-500 pt-1 leading-relaxed">
             Instrukcja: <span className="font-mono">docs/PREMIUM_DOCX_ONBOARDING.md</span>
           </p>
         </div>

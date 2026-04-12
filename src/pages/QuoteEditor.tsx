@@ -341,7 +341,7 @@ export default function QuoteEditor() {
           </span>
         )}
         {isDirty && (
-          <span className="inline-flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400">
+          <span className="inline-flex items-center gap-1.5 text-sm text-amber-700 dark:text-amber-400">
             {t('saveState.unsaved')}
           </span>
         )}
