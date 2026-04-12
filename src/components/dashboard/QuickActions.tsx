@@ -14,9 +14,9 @@ interface Action {
 
 const colorMap = {
   blue: {
-    card: 'bg-ds-accent-blue-subtle dark:bg-muted/40 hover:bg-muted text-foreground border-border',
-    icon: 'bg-ds-accent-blue-subtle dark:bg-muted',
-    iconColor: 'text-ds-accent-blue',
+    card: 'bg-ds-accent-blue-subtle hover:bg-muted dark:bg-ds-accent-blue-subtle dark:hover:bg-muted text-foreground border-border',
+    icon: 'bg-ds-accent-blue-subtle dark:bg-ds-accent-blue-subtle',
+    iconColor: 'text-ds-accent-blue dark:text-ds-accent-blue-light',
   },
   green: {
     card: 'bg-success/8 hover:bg-success/[0.12] dark:bg-success/10 dark:hover:bg-success/[0.15] text-foreground border-success/10',

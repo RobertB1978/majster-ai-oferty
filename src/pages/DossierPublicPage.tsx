@@ -104,9 +104,9 @@ function PublicFileActions({
 
   const btnCls = cn(
     'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium',
-    'bg-blue-50 text-blue-700 hover:bg-blue-100',
-    'dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50',
-    'transition-colors shrink-0 min-h-[44px]',
+    'bg-ds-accent-blue-subtle text-ds-accent-blue hover:opacity-90',
+    'dark:text-ds-accent-blue-light',
+    'transition-all shrink-0 min-h-[44px]',
   );
 
   return (
@@ -300,11 +300,11 @@ export default function DossierPublicPage() {
       <div className="bg-white dark:bg-gray-900 border-b shadow-sm">
         <div className="max-w-2xl mx-auto px-4 py-5">
           <div className="flex items-start gap-3">
-            <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 shrink-0">
-              <FolderOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="p-2.5 rounded-xl bg-ds-accent-blue-subtle shrink-0">
+              <FolderOpen className="w-6 h-6 text-ds-accent-blue dark:text-ds-accent-blue-light" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+              <p className="text-xs font-medium text-ds-accent-blue dark:text-ds-accent-blue-light uppercase tracking-wide">
                 {t('dossier.public.heading')}
               </p>
               <h1 className="text-xl font-bold mt-0.5 leading-tight">

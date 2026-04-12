@@ -65,6 +65,11 @@ export default {
           'amber-light':  "#FBBF24",   // amber-400 — hover (brighter)
           'amber-hover':  "#D97706",   // amber-600 — active (darker press)
           'amber-subtle': "#FEF3C7",   // amber-100 — subtle tint
+          // Blue secondary accent tokens — PR-F2-02: informational/supporting emphasis
+          blue:           'var(--accent-blue)',
+          'blue-light':   'var(--accent-blue-light)',
+          'blue-hover':   'var(--accent-blue-hover)',
+          'blue-subtle':  'var(--accent-blue-subtle)',
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -121,8 +126,10 @@ export default {
           'accent-amber-light': 'var(--accent-amber-light)',  /* PR-LP-01 */
           'accent-amber-hover': 'var(--accent-amber-hover)',
           'accent-amber-subtle':'var(--accent-amber-subtle)',
-          'accent-blue':       'var(--accent-blue)',
-          'accent-blue-subtle':'var(--accent-blue-subtle)',
+          'accent-blue':        'var(--accent-blue)',
+          'accent-blue-light':  'var(--accent-blue-light)',
+          'accent-blue-hover':  'var(--accent-blue-hover)',
+          'accent-blue-subtle': 'var(--accent-blue-subtle)',
           'state-success':     'var(--state-success)',
           'state-warning':     'var(--state-warning)',
           'state-error':       'var(--state-error)',
@@ -153,6 +160,8 @@ export default {
         'xs': 'var(--shadow-xs)',
         'amber': 'var(--shadow-amber)',
         'amber-lg': 'var(--shadow-amber-lg)',
+        'blue': 'var(--shadow-blue)',
+        'blue-lg': 'var(--shadow-blue-lg)',
       },
       // Premium gradient images — real amber gradients using CSS vars
       backgroundImage: {

@@ -230,7 +230,7 @@ function AttachToProjectDialog({ photo, onClose, onSuccess }: AttachToProjectDia
   }, [photo, selectedProjectId, selectedPhase, attachMutation, toast, t, onSuccess]);
 
   const phaseColors: Record<PhotoPhase, string> = {
-    BEFORE: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    BEFORE: 'bg-ds-accent-blue-subtle text-ds-accent-blue dark:text-ds-accent-blue-light',
     DURING: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
     AFTER: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
     ISSUE: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',

@@ -215,8 +215,10 @@ img.leaflet-tile:not([src]) {
     --accent-amber-light: #FBBF24;  /* amber-400 — CTA hover endpoint, gradient brightness — PR-LP-01 */
     --accent-amber-hover: #D97706;
     --accent-amber-subtle: #FEF3C7;
-    --accent-blue: #1E40AF;
-    --accent-blue-subtle: #DBEAFE;
+    --accent-blue: #1E40AF;          /* blue-800 — secondary accent base */
+    --accent-blue-light: #3B82F6;    /* blue-500 — hover/brightness */
+    --accent-blue-hover: #1D4ED8;    /* blue-700 — active/press */
+    --accent-blue-subtle: #DBEAFE;   /* blue-100 — subtle tint */
 
     /* Stany — roadmap section 3.1 */
     --state-success: #16A34A;
@@ -228,6 +230,8 @@ img.leaflet-tile:not([src]) {
     --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
     --shadow-amber: 0 4px 14px rgba(245,158,11,0.30);
     --shadow-amber-lg: 0 8px 24px rgba(245,158,11,0.25);
+    --shadow-blue: 0 4px 14px rgba(37,99,235,0.22);
+    --shadow-blue-lg: 0 8px 24px rgba(37,99,235,0.18);
 
     /* === ROADMAP SECTION 3.4 — Radius tokens === */
     --radius-sm: 6px;
@@ -347,6 +351,10 @@ img.leaflet-tile:not([src]) {
     --accent-amber: #F59E0B;
     --accent-amber-light: #FBBF24;  /* amber-400 — same value as light mode */
     --accent-amber-subtle: #292524;
+    --accent-blue: #60A5FA;          /* blue-400 — secondary accent on dark */
+    --accent-blue-light: #93C5FD;    /* blue-300 — hover on dark */
+    --accent-blue-hover: #3B82F6;    /* blue-500 — active on dark */
+    --accent-blue-subtle: #172554;   /* blue-950 — subtle bg on dark */
     --state-success: #22C55E;
     --state-error: #EF4444;
     /* state-warning i state-info — te same co light */

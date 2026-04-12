@@ -134,10 +134,10 @@ const colorConfig = {
     spark: 'hsl(38 92% 50%)',   // --primary exact
   },
   accent: {
-    bg: 'bg-ds-accent-blue-subtle dark:bg-muted/50',
+    bg: 'bg-ds-accent-blue-subtle',
     iconBg: 'bg-ds-accent-blue',
-    text: 'text-ds-accent-blue',
-    spark: 'hsl(224 64% 50%)',  // --accent-blue lightened for sparkline readability
+    text: 'text-ds-accent-blue dark:text-ds-accent-blue-light',
+    spark: 'hsl(224 64% 50%)',  // SVG can't use CSS vars; approx. --accent-blue (light) lightened
   },
   success: {
     bg: 'bg-success/8',

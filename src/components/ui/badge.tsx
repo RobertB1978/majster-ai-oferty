@@ -17,6 +17,10 @@ const badgeVariants = cva(
         success:     "border-[var(--state-success)]/25 bg-[var(--state-success)]/15 text-[var(--state-success)] hover:bg-[var(--state-success)]/20",
         warning:     "border-[var(--state-warning)]/25 bg-[var(--state-warning)]/15 text-[var(--state-warning)] hover:bg-[var(--state-warning)]/20",
         info:        "border-[var(--state-info)]/25 bg-[var(--state-info)]/15 text-[var(--state-info)] hover:bg-[var(--state-info)]/20",
+        // Secondary accent — blue family (PR-F2-02). Use for informational chips,
+        // supporting labels and non-semantic category emphasis. Distinct from `info`
+        // (which signals a semantic state). Resolves correctly in both light/dark mode.
+        accent:      "border-[var(--accent-blue)]/20 bg-[var(--accent-blue-subtle)] text-[var(--accent-blue)] hover:bg-[var(--accent-blue)]/20",
         premium:     "border-transparent bg-gradient-primary text-primary-foreground hover:opacity-90",
       },
     },

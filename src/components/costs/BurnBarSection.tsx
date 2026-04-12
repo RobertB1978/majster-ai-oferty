@@ -38,7 +38,7 @@ function calcPercent(spent: number, budget: number): number {
 }
 
 const COST_TYPE_BADGE: Record<CostType, string> = {
-  MATERIAL: 'bg-info/10 text-info dark:bg-info/20',
+  MATERIAL: 'bg-ds-accent-blue-subtle text-ds-accent-blue dark:text-ds-accent-blue-light',
   LABOR:    'bg-primary/10 text-primary dark:bg-primary/20',
   TRAVEL:   'bg-warning/10 text-warning dark:bg-warning/20',
   OTHER:    'bg-muted text-muted-foreground',
