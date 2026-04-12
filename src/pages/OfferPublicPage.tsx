@@ -35,7 +35,7 @@ import {
   Building2,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatCurrency } from '@/lib/formatters';
+import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { trackEvent } from '@/lib/analytics/track';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import {
@@ -296,7 +296,7 @@ export default function OfferPublicPage() {
                       </p>
                       {(offer.accepted_at ?? offer.approved_at) && (
                         <p className="text-sm text-success/80">
-                          {new Date(offer.accepted_at ?? offer.approved_at!).toLocaleString()}
+                          {formatDateTime(offer.accepted_at ?? offer.approved_at!)}
                         </p>
                       )}
                     </div>

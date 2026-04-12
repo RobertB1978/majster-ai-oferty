@@ -29,6 +29,7 @@ import {
 import { cn } from '@/lib/utils';
 import { isValidDecimal, parseDecimal } from '@/lib/numberParsing';
 import { itemLineTotal } from '@/lib/estimateCalc';
+import { formatNumber } from '@/lib/formatters';
 import { BulkAddModal } from './BulkAddModal';
 import { SaveToPriceBookButton } from '@/components/offers/SaveToPriceBookButton';
 import { useItemNameSuggestions } from '@/hooks/useItemNameSuggestions';
@@ -143,10 +144,7 @@ function initRaw(item: LineItem): ItemRaw {
 /* ── Number formatter ────────────────────────────────────────────── */
 
 function fmt(n: number): string {
-  return n.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return formatNumber(n, 2);
 }
 
 /* ── Component props ─────────────────────────────────────────────── */

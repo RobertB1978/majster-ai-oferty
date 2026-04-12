@@ -3,6 +3,7 @@ import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { canCancel } from './offerApprovalTypes';
+import { formatDateTime } from '@/lib/formatters';
 
 interface OfferStatusBannerProps {
   isAccepted: boolean;
@@ -46,7 +47,7 @@ export function OfferStatusBanner({
             </p>
             {acceptedAt && isAccepted && (
               <p className="text-sm text-success/80">
-                {new Date(acceptedAt).toLocaleString()}
+                {formatDateTime(acceptedAt)}
                 {acceptedVia === 'email_1click' && ' (1-klik email)'}
               </p>
             )}

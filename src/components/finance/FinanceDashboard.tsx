@@ -19,6 +19,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { LoadingCard } from '@/components/ui/loading-screen';
 import { exportFinanceToExcel, exportFinanceToPdf } from '@/lib/exportUtils';
 import { toast } from 'sonner';
+import { formatNumberCompact } from '@/lib/formatters';
 
 interface PricingRecommendation {
   category: string;
@@ -255,10 +256,10 @@ export function FinanceDashboard() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">{card.label}</p>
-                  <p className="text-2xl sm:text-3xl font-bold tracking-tight">
+                  <p className="text-2xl sm:text-3xl font-bold tracking-tight tabular-nums">
                     {card.isPercent
                       ? `${card.value.toFixed(1)}%`
-                      : `${card.value.toLocaleString()} zł`
+                      : `${formatNumberCompact(card.value)} zł`
                     }
                   </p>
                   {card.trend !== undefined && (
@@ -268,8 +269,8 @@ export function FinanceDashboard() {
                       ) : (
                         <ArrowDownRight className="h-4 w-4 text-rose-500" />
                       )}
-                      <span className={`text-sm font-medium ${card.trend >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {Math.abs(card.trend).toLocaleString()} zł
+                      <span className={`text-sm font-medium tabular-nums ${card.trend >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                        {formatNumberCompact(Math.abs(card.trend))} zł
                       </span>
                     </div>
                   )}
@@ -320,7 +321,7 @@ export function FinanceDashboard() {
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <Tooltip
-                  formatter={(value: number) => [`${value.toLocaleString()} zł`]}
+                  formatter={(value: number) => [`${formatNumberCompact(value)} zł`]}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
                   itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                   contentStyle={{
@@ -382,7 +383,7 @@ export function FinanceDashboard() {
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <Tooltip
-                  formatter={(value: number) => [`${value.toLocaleString()} zł`]}
+                  formatter={(value: number) => [`${formatNumberCompact(value)} zł`]}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
                   itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                   contentStyle={{

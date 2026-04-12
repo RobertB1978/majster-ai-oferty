@@ -5,12 +5,10 @@ import { cn } from '@/lib/utils';
 import { Loader2, Save } from 'lucide-react';
 import { calcTotals } from '@/lib/estimateCalc';
 import type { LineItem } from './WorkspaceLineItems';
+import { formatNumber } from '@/lib/formatters';
 
 function fmt(n: number): string {
-  return n.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return formatNumber(n, 2);
 }
 
 interface StickyTotalsCardProps {
