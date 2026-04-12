@@ -65,7 +65,7 @@ const STATUS_I18N_KEYS: Record<StatusFilter, string> = {
 
 const PROJECT_BADGE_CLASSES: Record<ProjectStatus, string> = {
   ACTIVE:    'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 border border-green-200 dark:border-green-800',
-  COMPLETED: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 border border-gray-200 dark:border-gray-700',
+  COMPLETED: 'bg-secondary text-secondary-foreground',
   ON_HOLD:   'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 border border-amber-200 dark:border-amber-800',
   CANCELLED: 'bg-secondary text-secondary-foreground',
 };
