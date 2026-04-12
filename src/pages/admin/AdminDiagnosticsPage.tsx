@@ -35,7 +35,7 @@ export default function AdminDiagnosticsPage() {
         <div className="flex items-center gap-3">
           <HeartPulse className="h-6 w-6 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold">{t('adminDiag.title')}</h1>
+            <h1 className="text-2xl type-title">{t('adminDiag.title')}</h1>
             <p className="text-sm text-muted-foreground">{t('adminDiag.description')}</p>
           </div>
         </div>

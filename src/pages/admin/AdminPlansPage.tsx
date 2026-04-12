@@ -36,7 +36,7 @@ export default function AdminPlansPage() {
           <div className="flex items-center gap-3">
             <CreditCard className="h-6 w-6 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold">{t('adminPlans.title')}</h1>
+              <h1 className="text-2xl type-title">{t('adminPlans.title')}</h1>
               <p className="text-sm text-muted-foreground">
                 {t('adminPlans.description')}
               </p>
