@@ -30,7 +30,7 @@ export function NewShellBottomNav() {
   return (
     <nav
       className="lg:hidden fixed bottom-0 left-0 right-0 border-t border-border/60 bg-card/95 backdrop-blur-md safe-area-bottom shell-bottom-nav"
-      style={{ zIndex: 'var(--z-nav, 50)' }}
+      style={{ zIndex: 'var(--z-nav, 40)' }}
       aria-label={t('newShell.nav.ariaLabel')}
     >
       <div className="flex h-16 items-stretch justify-around px-1">

@@ -25,8 +25,8 @@ export function MobileBottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 border-t border-border bg-card md:hidden safe-area-bottom"
-      style={{ zIndex: 'var(--z-nav)' }}
+      className="fixed bottom-0 left-0 right-0 border-t border-border/60 bg-card/95 backdrop-blur-md md:hidden safe-area-bottom"
+      style={{ zIndex: 'var(--z-nav, 40)' }}
     >
       <div className="flex h-16 items-center justify-around px-1">
         {BOTTOM_NAV_ITEMS.map((item) => {
@@ -37,14 +37,14 @@ export function MobileBottomNav() {
               to={item.path}
               className={cn(
                 'flex flex-col items-center justify-center gap-0.5 px-2 py-2 min-w-[60px] rounded-lg transition-colors',
-                item.primary
-                  ? 'text-primary bg-primary/10'
-                  : 'text-muted-foreground',
-                isActive && 'text-primary'
+                isActive ? 'text-primary' : 'text-muted-foreground'
               )}
+              // Inline style avoids matching .dark a[class*="bg-primary"] selector
+              // (index.css dark mode pass) which would add unwanted amber glow to a nav tab
+              style={item.primary ? { backgroundColor: 'hsl(var(--primary) / 0.10)' } : undefined}
             >
-              <item.icon className={cn('h-5 w-5', item.primary && 'h-6 w-6', isActive && 'text-primary')} />
-              <span className="text-[11px] font-medium leading-tight truncate max-w-[64px]">
+              <item.icon className="h-5 w-5" strokeWidth={isActive ? 2.5 : 1.8} />
+              <span className="text-[10px] font-semibold leading-tight truncate max-w-[64px]">
                 {t(item.labelKey)}
               </span>
             </NavLink>
