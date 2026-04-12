@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
@@ -176,11 +176,23 @@ export default function Settings() {
    * Mobile section panel state.
    * null   → Sheet closed, section list visible
    * string → Sheet open, showing that section's content
+   *
+   * lastMobileSectionRef keeps the previous value alive for the 200ms Sheet
+   * close animation so content doesn't flash to the fallback state mid-slide.
    */
   const [mobileSection, setMobileSection] = useState<string | null>(null);
+  const lastMobileSectionRef = useRef<string | null>(null);
   const { dense, toggleDense } = useDenseMode();
 
-  const activeSectionMeta = SETTINGS_SECTIONS.find((s) => s.id === mobileSection);
+  const openMobileSection = (id: string) => {
+    lastMobileSectionRef.current = id;
+    setMobileSection(id);
+  };
+
+  // Resolves to the open section, or the last known one during close animation
+  const activeSectionMeta = SETTINGS_SECTIONS.find(
+    (s) => s.id === (mobileSection ?? lastMobileSectionRef.current),
+  );
 
   return (
     <>
@@ -216,7 +228,7 @@ export default function Settings() {
               key={id}
               type="button"
               variant="outline"
-              onClick={() => setMobileSection(id)}
+              onClick={() => openMobileSection(id)}
               data-testid={`settings-mobile-nav-${id}`}
               className="w-full h-auto justify-start items-center gap-3 rounded-xl px-4 py-3.5 text-left bg-card border-border/60 shadow-sm hover:bg-muted/50 active:scale-[0.99] transition-all duration-150 [&>div>svg]:!size-5"
             >
