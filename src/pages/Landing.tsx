@@ -7,6 +7,7 @@ import {
   FeaturesGrid,
   HowItWorksSection,
   BeforeAfterSection,
+  ProductScreenshotsSection,
   TestimonialsSection,
   PricingSection,
   FAQSection,
@@ -162,6 +163,9 @@ export default function Landing() {
 
           {/* 3b. Before/After — Excel vs Majster.AI contrast */}
           <BeforeAfterSection />
+
+          {/* 3c. Product screenshots — real UI for trust and conversion */}
+          <ProductScreenshotsSection />
 
           {/* 4. Expected results — honest framing, no fake testimonials */}
           <TestimonialsSection />

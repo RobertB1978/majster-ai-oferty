@@ -2793,6 +2793,23 @@
       "a4": "The free plan is free for 30 days. After that you can choose a paid plan suited to your needs.",
       "q5": "What languages does the app support?",
       "a5": "The app supports three languages: Polish, English and Ukrainian. You can change the language in settings at any time."
+    },
+    "screenshots": {
+      "badge": "Real product",
+      "sectionTitle": "See it in action",
+      "sectionSubtitle": "No concept mockups. This is the real Majster.AI interface — the same one used by tradespeople every day.",
+      "dashboard": {
+        "tab": "Dashboard",
+        "caption": "Main dashboard — projects, statuses, values and deadlines in one place."
+      },
+      "editor": {
+        "tab": "Offer editor",
+        "caption": "Create professional quotes in minutes — with line items, VAT and a ready-to-send summary."
+      },
+      "pdf": {
+        "tab": "PDF preview",
+        "caption": "Ready PDF quote — with company logo, client data, scope of work, and signature block."
+      }
     }
   },
   "addons": {

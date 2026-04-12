@@ -2793,6 +2793,23 @@
       "link_dpa": "Umowa powierzenia",
       "link_gdpr": "RODO",
       "ariaLabel": "Stopka strony"
+    },
+    "screenshots": {
+      "badge": "Prawdziwy produkt",
+      "sectionTitle": "Przekonaj się, jak wygląda w praktyce",
+      "sectionSubtitle": "Żadnych wizualizacji na pokaz. To prawdziwy interfejs Majster.AI — taki sam, z jakiego korzystają fachowcy.",
+      "dashboard": {
+        "tab": "Dashboard",
+        "caption": "Pulpit główny — projekty, statusy, wartości i terminy w jednym miejscu."
+      },
+      "editor": {
+        "tab": "Edytor ofert",
+        "caption": "Twórz profesjonalne wyceny w kilka minut — z pozycjami, VAT i gotowym podsumowaniem."
+      },
+      "pdf": {
+        "tab": "Podgląd PDF",
+        "caption": "Gotowa oferta PDF — z logo firmy, danymi klienta, zakresem prac i miejscem na podpis."
+      }
     }
   },
   "addons": {
