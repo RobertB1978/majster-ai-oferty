@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   ArrowLeft,
   Download,
@@ -418,54 +419,50 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                       {data.items.length === 0 ? (
                         <p className="text-sm text-gray-400 italic">{t('offerPreview.noItems')}</p>
                       ) : (
-                        <table className="w-full text-sm border-collapse">
-                          <thead>
-                            <tr className="bg-gray-100">
-                              <th className="border border-gray-200 px-3 py-2 text-left font-medium text-gray-700">
-                                {t('offerPreview.itemName')}
-                              </th>
-                              <th className="border border-gray-200 px-3 py-2 text-right font-medium text-gray-700 w-16">
-                                {t('offerPreview.itemQty')}
-                              </th>
-                              <th className="border border-gray-200 px-3 py-2 text-center font-medium text-gray-700 w-16">
-                                {t('offerPreview.itemUnit')}
-                              </th>
-                              <th className="border border-gray-200 px-3 py-2 text-right font-medium text-gray-700 w-28">
-                                {t('offerPreview.itemUnitPrice')}
-                              </th>
-                              <th className="border border-gray-200 px-3 py-2 text-right font-medium text-gray-700 w-20">
-                                {t('offerPreview.itemVat')}
-                              </th>
-                              <th className="border border-gray-200 px-3 py-2 text-right font-medium text-gray-700 w-28">
-                                {t('offerPreview.itemTotal')}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {data.items.map((item, idx) => (
-                              <tr key={item.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                <td className="border border-gray-200 px-3 py-2 text-gray-900">
-                                  {item.name}
-                                </td>
-                                <td className="border border-gray-200 px-3 py-2 text-right text-gray-700">
-                                  {Number(item.qty)}
-                                </td>
-                                <td className="border border-gray-200 px-3 py-2 text-center text-gray-700">
-                                  {item.unit || '—'}
-                                </td>
-                                <td className="border border-gray-200 px-3 py-2 text-right text-gray-700">
-                                  {fmt(Number(item.unit_price_net), data.currency, i18n.language)}
-                                </td>
-                                <td className="border border-gray-200 px-3 py-2 text-right text-gray-700">
-                                  {item.vat_rate !== null ? `${item.vat_rate}%` : '—'}
-                                </td>
-                                <td className="border border-gray-200 px-3 py-2 text-right font-medium text-gray-900">
-                                  {fmt(Number(item.line_total_net), data.currency, i18n.language)}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                        <div className="border rounded-lg overflow-hidden">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="bg-muted hover:bg-muted">
+                                <TableHead className="px-3 py-2 h-auto">
+                                  {t('offerPreview.itemName')}
+                                </TableHead>
+                                <TableHead className="px-3 py-2 h-auto text-right w-16">
+                                  {t('offerPreview.itemQty')}
+                                </TableHead>
+                                <TableHead className="px-3 py-2 h-auto text-center w-16">
+                                  {t('offerPreview.itemUnit')}
+                                </TableHead>
+                                <TableHead className="px-3 py-2 h-auto text-right w-28">
+                                  {t('offerPreview.itemUnitPrice')}
+                                </TableHead>
+                                <TableHead className="px-3 py-2 h-auto text-right w-20">
+                                  {t('offerPreview.itemVat')}
+                                </TableHead>
+                                <TableHead className="px-3 py-2 h-auto text-right w-28">
+                                  {t('offerPreview.itemTotal')}
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {data.items.map((item, idx) => (
+                                <TableRow key={item.id} className={idx % 2 === 0 ? '' : 'bg-muted/40'}>
+                                  <TableCell className="px-3 py-2">{item.name}</TableCell>
+                                  <TableCell className="px-3 py-2 text-right">{Number(item.qty)}</TableCell>
+                                  <TableCell className="px-3 py-2 text-center">{item.unit || '—'}</TableCell>
+                                  <TableCell className="px-3 py-2 text-right">
+                                    {fmt(Number(item.unit_price_net), data.currency, i18n.language)}
+                                  </TableCell>
+                                  <TableCell className="px-3 py-2 text-right">
+                                    {item.vat_rate !== null ? `${item.vat_rate}%` : '—'}
+                                  </TableCell>
+                                  <TableCell className="px-3 py-2 text-right font-medium">
+                                    {fmt(Number(item.line_total_net), data.currency, i18n.language)}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
                       )}
                     </div>
 
