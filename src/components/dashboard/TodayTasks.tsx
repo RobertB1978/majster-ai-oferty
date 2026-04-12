@@ -116,7 +116,7 @@ function useTypeLabels() {
 }
 
 const TYPE_VARIANTS: Record<TodayTask['type'], string> = {
-  pending_offer: 'bg-ds-accent-blue-subtle text-ds-accent-blue dark:bg-muted dark:text-ds-accent-blue',
+  pending_offer: 'bg-ds-accent-blue-subtle text-ds-accent-blue dark:text-ds-accent-blue-light',
   expiring_offer: 'bg-ds-accent-amber-subtle text-ds-accent-amber dark:bg-warning/15 dark:text-warning',
   inactive_project: 'bg-muted text-muted-foreground',
 };
