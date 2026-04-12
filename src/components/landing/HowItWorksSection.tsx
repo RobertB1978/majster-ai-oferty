@@ -77,7 +77,7 @@ export function HowItWorksSection() {
 
                 {/* Icon badge with step number */}
                 <div className="relative inline-block mb-5">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-amber to-accent-amber-hover flex items-center justify-center mx-auto shadow-lg shadow-accent-amber/25">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-amber-light to-accent-amber-hover flex items-center justify-center mx-auto shadow-lg shadow-accent-amber/25">
                     <step.icon className="w-6 h-6 text-white" aria-hidden="true" />
                   </div>
                   <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white dark:bg-brand-dark border-2 border-accent-amber flex items-center justify-center shadow-sm">
@@ -103,7 +103,7 @@ export function HowItWorksSection() {
           {STEPS.map((step, idx) => (
             <div key={step.number} className="flex gap-4">
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-amber to-accent-amber-hover flex items-center justify-center shrink-0 shadow-md shadow-accent-amber/20">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-amber-light to-accent-amber-hover flex items-center justify-center shrink-0 shadow-md shadow-accent-amber/20">
                   <step.icon className="w-5 h-5 text-white" aria-hidden="true" />
                 </div>
                 {idx < STEPS.length - 1 && (
