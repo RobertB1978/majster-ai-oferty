@@ -7,21 +7,10 @@ import { SearchInput } from '@/components/ui/search-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Package, Plus, Loader2 } from 'lucide-react';
+import { formatCurrency } from '@/lib/formatters';
 
 interface TemplateSelectorProps {
   onSelectTemplate: (template: ItemTemplate) => void;
-}
-
-/** Format price as currency, avoiding Polish "zł" symbol in EN/UK locales */
-function formatPrice(price: number, lang: string): string {
-  if (lang === 'pl') {
-    return `${price.toFixed(2)} zł`;
-  }
-  return new Intl.NumberFormat(lang === 'uk' ? 'uk-UA' : 'en-GB', {
-    style: 'currency',
-    currency: 'PLN',
-    currencyDisplay: 'code',
-  }).format(price);
 }
 
 export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
@@ -116,7 +105,7 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
                     <div>
                       <p className="font-medium">{template.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        {template.default_qty} {template.unit} × {formatPrice(Number(template.default_price), i18n.language)}
+                        {template.default_qty} {template.unit} × {formatCurrency(Number(template.default_price), i18n.language)}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">

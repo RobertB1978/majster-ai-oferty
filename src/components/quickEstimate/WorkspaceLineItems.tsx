@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatNumber, formatNumberCompact } from '@/lib/formatters';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -138,15 +139,6 @@ function initRaw(item: LineItem): ItemRaw {
     materialCost: String(item.materialCost),
     marginPct: String(item.marginPct),
   };
-}
-
-/* ── Number formatter ────────────────────────────────────────────── */
-
-function fmt(n: number): string {
-  return n.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 }
 
 /* ── Component props ─────────────────────────────────────────────── */
@@ -583,7 +575,7 @@ function SuggestionRow({ suggestion, onSelect }: SuggestionRowProps) {
     suggestion.source === 'price_book'
       ? t('priceBook.sourcePriceBook')
       : t('priceBook.sourceRecentlyUsed', {
-          price: suggestion.price.toFixed(0),
+          price: formatNumberCompact(suggestion.price),
           unit: suggestion.unit,
         });
 
@@ -597,7 +589,7 @@ function SuggestionRow({ suggestion, onSelect }: SuggestionRowProps) {
       <Plus className="h-3.5 w-3.5 shrink-0 text-primary opacity-60 group-hover:opacity-100" />
       <span className="flex-1 truncate">{suggestion.name}</span>
       <span className="text-xs text-muted-foreground shrink-0">
-        {suggestion.price.toFixed(0)} zł / {suggestion.unit}
+        {formatNumberCompact(suggestion.price)} zł / {suggestion.unit}
       </span>
       <span
         className={cn(
@@ -677,7 +669,7 @@ function NameFieldWithAutocomplete({
                 >
                   <span className="flex-1 truncate">{s.name}</span>
                   <span className="text-xs text-muted-foreground shrink-0">
-                    {s.price.toFixed(0)} zł / {s.unit}
+                    {formatNumberCompact(s.price)} zł / {s.unit}
                   </span>
                   <span className="text-[10px] rounded-full px-1.5 py-0.5 bg-primary/10 text-primary shrink-0">
                     {t('priceBook.sourcePriceBook')}
@@ -705,10 +697,10 @@ function NameFieldWithAutocomplete({
                 >
                   <span className="flex-1 truncate">{s.name}</span>
                   <span className="text-xs text-muted-foreground shrink-0">
-                    {s.price.toFixed(0)} zł / {s.unit}
+                    {formatNumberCompact(s.price)} zł / {s.unit}
                   </span>
                   <span className="text-[10px] rounded-full px-1.5 py-0.5 bg-warning/10 text-warning dark:bg-warning/20 shrink-0">
-                    {t('priceBook.sourceRecentlyUsed', { price: s.price.toFixed(0), unit: s.unit })}
+                    {t('priceBook.sourceRecentlyUsed', { price: formatNumberCompact(s.price), unit: s.unit })}
                   </span>
                 </button>
               ))}
@@ -962,7 +954,7 @@ function ItemRow({
         {/* Row total */}
         {cols.rowTotal && (
           <div className="w-24 shrink-0 text-right text-sm font-medium">
-            {fmt(lineTotal)} zł
+            {formatNumber(lineTotal)} zł
           </div>
         )}
 
@@ -1130,7 +1122,7 @@ function ItemRow({
             )}
             {cols.rowTotal && (
               <div className="ml-auto text-sm font-medium text-right">
-                {fmt(lineTotal)} zł
+                {formatNumber(lineTotal)} zł
               </div>
             )}
           </div>

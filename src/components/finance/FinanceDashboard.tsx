@@ -18,6 +18,7 @@ import { usePlanGate } from '@/hooks/usePlanGate';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { LoadingCard } from '@/components/ui/loading-screen';
 import { exportFinanceToExcel, exportFinanceToPdf } from '@/lib/exportUtils';
+import { formatNumber } from '@/lib/formatters';
 import { toast } from 'sonner';
 
 interface PricingRecommendation {
@@ -258,7 +259,7 @@ export function FinanceDashboard() {
                   <p className="text-2xl sm:text-3xl font-bold tracking-tight">
                     {card.isPercent
                       ? `${card.value.toFixed(1)}%`
-                      : `${card.value.toLocaleString()} zł`
+                      : `${formatNumber(card.value, 0)} zł`
                     }
                   </p>
                   {card.trend !== undefined && (
@@ -269,7 +270,7 @@ export function FinanceDashboard() {
                         <ArrowDownRight className="h-4 w-4 text-rose-500" />
                       )}
                       <span className={`text-sm font-medium ${card.trend >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {Math.abs(card.trend).toLocaleString()} zł
+                        {formatNumber(Math.abs(card.trend), 0)} zł
                       </span>
                     </div>
                   )}
@@ -320,7 +321,7 @@ export function FinanceDashboard() {
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <Tooltip
-                  formatter={(value: number) => [`${value.toLocaleString()} zł`]}
+                  formatter={(value: number) => [`${formatNumber(value, 0)} zł`]}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
                   itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                   contentStyle={{
@@ -382,7 +383,7 @@ export function FinanceDashboard() {
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <Tooltip
-                  formatter={(value: number) => [`${value.toLocaleString()} zł`]}
+                  formatter={(value: number) => [`${formatNumber(value, 0)} zł`]}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
                   itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                   contentStyle={{

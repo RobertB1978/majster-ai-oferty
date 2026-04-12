@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatNumber, formatDateTime } from '@/lib/formatters';
 import { useQuoteVersions, useCreateQuoteVersion, useSetActiveVersion, useDeleteQuoteVersion, QuoteSnapshot } from '@/hooks/useQuoteVersions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -107,7 +108,7 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
                   <div>
                     <p className="text-sm font-medium">{version.version_name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(version.created_at).toLocaleString()} • {Number(version.quote_snapshot.total).toFixed(2)} zł
+                      {formatDateTime(version.created_at)} • {formatNumber(Number(version.quote_snapshot.total))} zł
                     </p>
                   </div>
                 </div>
@@ -168,26 +169,26 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
                 {previewSnapshot.positions.map((pos, idx) => (
                   <div key={idx} className="flex justify-between rounded border p-2 text-sm">
                     <span>{pos.name}</span>
-                    <span>{pos.qty} {pos.unit} × {pos.price} zł = {(pos.qty * pos.price).toFixed(2)} zł</span>
+                    <span>{pos.qty} {pos.unit} × {pos.price} zł = {formatNumber(pos.qty * pos.price)} zł</span>
                   </div>
                 ))}
               </div>
               <div className="border-t pt-4">
                 <div className="flex justify-between text-sm">
                   <span>{t('quotes.materials')}:</span>
-                  <span>{Number(previewSnapshot.summary_materials).toFixed(2)} zł</span>
+                  <span>{formatNumber(Number(previewSnapshot.summary_materials))} zł</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>{t('quotes.labor')}:</span>
-                  <span>{Number(previewSnapshot.summary_labor).toFixed(2)} zł</span>
+                  <span>{formatNumber(Number(previewSnapshot.summary_labor))} zł</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>{t('quotes.margin')} ({previewSnapshot.margin_percent}%):</span>
-                  <span>{((previewSnapshot.summary_materials + previewSnapshot.summary_labor) * previewSnapshot.margin_percent / 100).toFixed(2)} zł</span>
+                  <span>{formatNumber((previewSnapshot.summary_materials + previewSnapshot.summary_labor) * previewSnapshot.margin_percent / 100)} zł</span>
                 </div>
                 <div className="mt-2 flex justify-between font-bold">
                   <span>{t('quotes.grandTotal')}:</span>
-                  <span>{Number(previewSnapshot.total).toFixed(2)} zł</span>
+                  <span>{formatNumber(Number(previewSnapshot.total))} zł</span>
                 </div>
               </div>
             </div>
