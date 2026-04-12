@@ -139,7 +139,7 @@ describe('Typography Consistency - H1 Standardization', () => {
     expect(h1?.className).toContain('sm:text-3xl');
   });
 
-  it('all app page H1s use consistent font-weight (font-extrabold)', () => {
+  it('all app page H1s use the semantic type-title class', () => {
     const pages = [
       <Settings />,
       <Plan />,
@@ -148,7 +148,7 @@ describe('Typography Consistency - H1 Standardization', () => {
     pages.forEach((page) => {
       const { container } = render(page, { wrapper: TestWrapper });
       const h1 = container.querySelector('h1');
-      expect(h1?.className).toContain('font-extrabold');
+      expect(h1?.className).toContain('type-title');
     });
   });
 

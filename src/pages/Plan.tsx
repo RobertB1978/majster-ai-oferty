@@ -150,7 +150,7 @@ export default function Plan() {
       <div className="space-y-8 animate-fade-in">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-extrabold sm:text-3xl flex items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl flex items-center gap-3 type-title">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
               <CreditCard className="h-5 w-5 text-primary-foreground" />
             </div>

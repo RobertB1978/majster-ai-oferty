@@ -883,10 +883,14 @@ textarea[aria-invalid="true"]:focus-visible {
   line-height: 1.05;
 }
 
-/* Page title — main page headings */
+/* Page title — app shell top-level headings.
+   Font-size is NOT set here — use Tailwind text-* (e.g. text-2xl sm:text-3xl)
+   so responsive step-sizing is preserved without cascade conflicts.
+   This class is UNLAYERED (higher priority than @layer utilities), so the
+   font-family/weight/tracking declarations reliably win over any Tailwind class. */
 .type-title {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 700;
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800;
   letter-spacing: -0.025em;
   line-height: 1.1;
 }

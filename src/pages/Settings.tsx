@@ -204,7 +204,7 @@ export default function Settings() {
       <div className="space-y-6 animate-fade-in">
         {/* Page header — always visible */}
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold flex items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl flex items-center gap-2 type-title">
             <SettingsIcon className="h-6 w-6" />
             {t('settings.title')}
           </h1>

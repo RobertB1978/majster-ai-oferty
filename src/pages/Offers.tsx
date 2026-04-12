@@ -545,7 +545,7 @@ export default function Offers() {
     <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
       {/* Page title + action buttons */}
       <div className="flex items-center justify-between mb-5 gap-2">
-        <h1 className="text-2xl font-extrabold">{t('offersList.pageTitle')}</h1>
+        <h1 className="text-2xl type-title">{t('offersList.pageTitle')}</h1>
         <div className="flex items-center gap-2 shrink-0">
           {offers.length > 0 && (
             <Button
