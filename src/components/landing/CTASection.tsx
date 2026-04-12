@@ -10,7 +10,7 @@ export function CTASection() {
 
   return (
     <section
-      className="relative overflow-hidden py-20 md:py-28 bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400"
+      className="relative overflow-hidden py-20 md:py-28 bg-gradient-to-br from-accent-amber-hover via-accent-amber to-accent-amber-light"
       aria-labelledby="cta-heading"
     >
       {/* Subtle texture overlay */}
@@ -65,14 +65,14 @@ export function CTASection() {
           <Link
             to={CTA_ROUTE}
             onClick={() => trackEvent(ANALYTICS_EVENTS.LANDING_CTA_CLICK, { source: 'cta_section' })}
-            className="inline-flex items-center justify-center bg-black hover:bg-brand-card text-white font-semibold px-10 py-4 rounded-xl text-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-amber-500 min-h-[56px] gap-2 shadow-lg shadow-black/20"
+            className="inline-flex items-center justify-center bg-black hover:bg-brand-card text-white font-semibold px-10 py-4 rounded-xl text-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-accent-amber min-h-[56px] gap-2 shadow-lg shadow-black/20"
           >
             {t('landing.cta.cta_start')}
             <ArrowRight className="w-5 h-5" aria-hidden="true" />
           </Link>
           <Link
             to="/login"
-            className="inline-flex items-center justify-center border-2 border-black/30 hover:border-black/60 text-black font-semibold px-8 py-4 rounded-xl text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-amber-500 min-h-[56px]"
+            className="inline-flex items-center justify-center border-2 border-black/30 hover:border-black/60 text-black font-semibold px-8 py-4 rounded-xl text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-accent-amber min-h-[56px]"
           >
             {t('landing.cta.cta_login')}
           </Link>

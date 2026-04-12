@@ -147,7 +147,7 @@ export function LandingHeader() {
             <Link
               to={CTA_ROUTE}
               onClick={() => trackEvent(ANALYTICS_EVENTS.LANDING_CTA_CLICK, { source: 'header_nav' })}
-              className="inline-flex items-center bg-accent-amber hover:bg-accent-amber-hover active:bg-accent-amber text-black font-semibold px-4 py-2 rounded-xl text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[44px]"
+              className="inline-flex items-center bg-accent-amber hover:bg-accent-amber-light active:bg-accent-amber-hover text-black font-semibold px-4 py-2 rounded-xl text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[44px]"
             >
               {t('landing.nav.getStarted')}
             </Link>
@@ -262,7 +262,7 @@ export function LandingHeader() {
           <Link
             to={CTA_ROUTE}
             onClick={() => { closeDrawer(); trackEvent(ANALYTICS_EVENTS.LANDING_CTA_CLICK, { source: 'header_mobile' }); }}
-            className="block text-center py-3 px-4 rounded-xl bg-accent-amber hover:bg-accent-amber-hover text-black font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber"
+            className="block text-center py-3 px-4 rounded-xl bg-accent-amber hover:bg-accent-amber-light active:bg-accent-amber-hover text-black font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber"
           >
             {t('landing.nav.getStarted')}
           </Link>

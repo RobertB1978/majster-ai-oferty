@@ -212,6 +212,7 @@ img.leaflet-tile:not([src]) {
 
     /* Akcenty — roadmap section 3.1 */
     --accent-amber: #F59E0B;
+    --accent-amber-light: #FBBF24;  /* amber-400 — CTA hover endpoint, gradient brightness — PR-LP-01 */
     --accent-amber-hover: #D97706;
     --accent-amber-subtle: #FEF3C7;
     --accent-blue: #1E40AF;
@@ -344,6 +345,7 @@ img.leaflet-tile:not([src]) {
     --text-secondary: #9CA3AF;
     --text-muted: #6B7280;
     --accent-amber: #F59E0B;
+    --accent-amber-light: #FBBF24;  /* amber-400 — same value as light mode */
     --accent-amber-subtle: #292524;
     --state-success: #22C55E;
     --state-error: #EF4444;

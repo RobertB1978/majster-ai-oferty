@@ -60,6 +60,11 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          // Amber CTA tokens — landing page (PR-LP-01: restored 3-step palette)
+          amber:          "#F59E0B",   // amber-500 — base
+          'amber-light':  "#FBBF24",   // amber-400 — hover (brighter)
+          'amber-hover':  "#D97706",   // amber-600 — active (darker press)
+          'amber-subtle': "#FEF3C7",   // amber-100 — subtle tint
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -112,8 +117,9 @@ export default {
           'text-primary':      'var(--text-primary)',
           'text-secondary':    'var(--text-secondary)',
           'text-muted':        'var(--text-muted)',
-          'accent-amber':      'var(--accent-amber)',
-          'accent-amber-hover':'var(--accent-amber-hover)',
+          'accent-amber':       'var(--accent-amber)',
+          'accent-amber-light': 'var(--accent-amber-light)',  /* PR-LP-01 */
+          'accent-amber-hover': 'var(--accent-amber-hover)',
           'accent-amber-subtle':'var(--accent-amber-subtle)',
           'accent-blue':       'var(--accent-blue)',
           'accent-blue-subtle':'var(--accent-blue-subtle)',

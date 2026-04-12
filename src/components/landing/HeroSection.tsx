@@ -99,7 +99,7 @@ export function HeroSection() {
               <Link
                 to={CTA_ROUTE}
                 onClick={() => trackEvent(ANALYTICS_EVENTS.LANDING_CTA_CLICK, { source: 'hero_primary' })}
-                className="inline-flex items-center justify-center bg-accent-amber hover:bg-accent-amber-hover active:bg-accent-amber text-black font-semibold px-8 py-4 rounded-xl text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[48px] shadow-lg shadow-accent-amber/25 hover:shadow-xl hover:shadow-accent-amber/30"
+                className="inline-flex items-center justify-center bg-accent-amber hover:bg-accent-amber-light active:bg-accent-amber-hover text-black font-semibold px-8 py-4 rounded-xl text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[48px] shadow-lg shadow-accent-amber/25 hover:shadow-xl hover:shadow-accent-amber/30"
               >
                 {t('landing.hero.cta_start')}
               </Link>

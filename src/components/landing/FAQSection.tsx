@@ -32,8 +32,8 @@ function FAQItem({ item, isOpen, onToggle }: FAQItemProps) {
         <span
           className={`font-semibold text-base transition-colors duration-200 ${
             isOpen
-              ? 'text-accent-amber dark:text-accent-amber'
-              : 'text-gray-900 dark:text-white hover:text-accent-amber dark:hover:text-accent-amber'
+              ? 'text-accent-amber dark:text-accent-amber-light'
+              : 'text-gray-900 dark:text-white hover:text-accent-amber dark:hover:text-accent-amber-light'
           }`}
         >
           {item.question}

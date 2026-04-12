@@ -55,7 +55,7 @@ export function PricingSection() {
               {/* Popular badge */}
               {plan.highlighted && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="bg-gradient-to-r from-accent-amber to-accent-amber-hover text-black text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap shadow-sm shadow-accent-amber/30">
+                  <span className="bg-gradient-to-r from-accent-amber to-accent-amber-light text-black text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap shadow-sm shadow-accent-amber/30">
                     {t('landing.pricing.badge')}
                   </span>
                 </div>
@@ -107,7 +107,7 @@ export function PricingSection() {
                 to={CTA_ROUTE}
                 className={`block text-center py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black min-h-[44px] flex items-center justify-center ${
                   plan.highlighted
-                    ? 'bg-accent-amber hover:bg-accent-amber-hover active:bg-accent-amber text-black shadow-md shadow-accent-amber/20 hover:shadow-lg hover:shadow-accent-amber/25'
+                    ? 'bg-accent-amber hover:bg-accent-amber-light active:bg-accent-amber-hover text-black shadow-md shadow-accent-amber/20 hover:shadow-lg hover:shadow-accent-amber/25'
                     : 'border border-gray-200 dark:border-brand-border hover:border-accent-amber/60 text-gray-900 dark:text-white hover:text-accent-amber'
                 }`}
               >
