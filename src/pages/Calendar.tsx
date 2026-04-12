@@ -275,7 +275,7 @@ export default function Calendar() {
       <div className="space-y-6 animate-fade-in">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold sm:text-3xl flex items-center gap-3">
+            <h1 className="text-2xl font-extrabold sm:text-3xl flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
                 <CalendarIcon className="h-5 w-5 text-primary-foreground" />
               </div>

@@ -178,7 +178,7 @@ export default function Clients() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground sm:text-3xl flex items-center gap-3">
+          <h1 className="text-2xl font-extrabold text-foreground sm:text-3xl flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
               <Users className="h-5 w-5 text-primary-foreground" />
             </div>

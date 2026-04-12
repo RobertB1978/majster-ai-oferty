@@ -140,7 +140,7 @@ export default function Dashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+              <h1 className="text-2xl font-extrabold text-foreground sm:text-3xl">
                 {t('dashboard.welcome')}
               </h1>
               <Badge

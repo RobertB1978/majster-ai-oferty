@@ -329,7 +329,7 @@ export default function QuoteEditor() {
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-foreground sm:text-3xl">
             {t('quotes.titleFor', { name: project?.project_name ?? '' })}
           </h1>
         </div>

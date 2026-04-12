@@ -254,7 +254,7 @@ export default function OfferDetail() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <h1 className="text-2xl font-bold mb-6">{t('offerWizard.titleNew')}</h1>
+        <h1 className="text-2xl font-extrabold mb-6">{t('offerWizard.titleNew')}</h1>
         <OfferWizard offerId={undefined} />
       </div>
     );
@@ -313,7 +313,7 @@ export default function OfferDetail() {
           </BreadcrumbList>
         </Breadcrumb>
         <div className="flex items-center gap-2 flex-wrap mb-6">
-          <h1 className="text-2xl font-bold">{t('offerWizard.titleEdit')}</h1>
+          <h1 className="text-2xl font-extrabold">{t('offerWizard.titleEdit')}</h1>
           {templatePack && (
             <>
               <Badge className="text-xs gap-1 bg-primary/10 text-primary border-primary/20">
