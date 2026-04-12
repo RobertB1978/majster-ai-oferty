@@ -403,7 +403,7 @@ export default function OfferPublicAccept() {
                   daysLeft <= 3
                     ? 'border-red-400 text-red-600 bg-red-50 dark:bg-red-900/20 dark:border-red-600'
                     : daysLeft <= 7
-                      ? 'border-amber-400 text-amber-700 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-600'
+                      ? 'border-amber-600 text-amber-700 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-600'
                       : 'border-green-400 text-green-700 bg-green-50 dark:bg-green-900/20 dark:border-green-600',
                 )}
               >

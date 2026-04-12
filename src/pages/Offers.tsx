@@ -166,7 +166,7 @@ function OfferRow({ offer, onOpen, onCreateProject, onOpenProject, onArchive, on
             {t(STATUS_I18N_KEYS[status])}
           </Badge>
           {noResp !== null && (
-            <Badge className="shrink-0 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[11px] px-2 py-0.5">
+            <Badge className="shrink-0 bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 text-[11px] px-2 py-0.5">
               {t('offersList.noResponseBadge', { days: noResp })}
             </Badge>
           )}
