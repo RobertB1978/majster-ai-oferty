@@ -234,9 +234,9 @@ export const validatePasswordStrength = (password: string): {
 
 export const getPasswordStrengthLabel = (score: number): { label: string; color: string } => {
   if (score <= 2) return { label: i18n.t('validations.password.strengthWeak'), color: 'text-destructive' };
-  if (score <= 4) return { label: i18n.t('validations.password.strengthMedium'), color: 'text-yellow-500' };
-  if (score <= 5) return { label: i18n.t('validations.password.strengthGood'), color: 'text-blue-500' };
-  return { label: i18n.t('validations.password.strengthStrong'), color: 'text-green-500' };
+  if (score <= 4) return { label: i18n.t('validations.password.strengthMedium'), color: 'text-warning' };
+  if (score <= 5) return { label: i18n.t('validations.password.strengthGood'), color: 'text-info' };
+  return { label: i18n.t('validations.password.strengthStrong'), color: 'text-success' };
 };
 
 // Auth validation schemas

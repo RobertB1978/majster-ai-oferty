@@ -491,9 +491,9 @@ describe('validations - Comprehensive Tests', () => {
 
     it('should return correct colors', () => {
       expect(getPasswordStrengthLabel(1).color).toBe('text-destructive');
-      expect(getPasswordStrengthLabel(3).color).toBe('text-yellow-500');
-      expect(getPasswordStrengthLabel(5).color).toBe('text-blue-500');
-      expect(getPasswordStrengthLabel(6).color).toBe('text-green-500');
+      expect(getPasswordStrengthLabel(3).color).toBe('text-warning');
+      expect(getPasswordStrengthLabel(5).color).toBe('text-info');
+      expect(getPasswordStrengthLabel(6).color).toBe('text-success');
     });
   });
 

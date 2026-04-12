@@ -59,7 +59,7 @@ function buildMoreGroups(): MoreGroup[] {
           id: 'document-templates',
           labelKey: 'newShell.more.documentTemplates',
           icon: BookOpen,
-          iconStyle: 'bg-violet-500/10 text-violet-600 dark:text-violet-400',
+          iconStyle: 'bg-category-protocol text-category-protocol',
           route: '/app/document-templates',
         },
         ...(FF_READY_DOCUMENTS_ENABLED
