@@ -17,6 +17,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
           description: "group-[.toast]:text-muted-foreground",
           actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          // Semantic variants — DS token-aligned, override base bg/border via !important
+          success: "!bg-success/10 !border-success/30 [&>[data-icon]]:text-success",
+          error:   "!bg-destructive/10 !border-destructive/30 [&>[data-icon]]:text-destructive",
+          warning: "!bg-warning/10 !border-warning/30 [&>[data-icon]]:text-warning",
+          info:    "!bg-info/10 !border-info/30 [&>[data-icon]]:text-info",
         },
       }}
       {...props}
