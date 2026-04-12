@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { formatNumberCompact } from '@/lib/formatters';
 
 interface TableStats {
   name: string;
@@ -123,7 +124,7 @@ export function AdminDatabaseManager() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">{t('admin.db.totalRecords')}</p>
-                  <p className="text-2xl font-bold">{totalRecords.toLocaleString()}</p>
+                  <p className="text-2xl font-bold tabular-nums">{formatNumberCompact(totalRecords)}</p>
                 </div>
                 <BarChart3 className="h-8 w-8 text-primary opacity-50" />
               </div>
@@ -185,8 +186,8 @@ export function AdminDatabaseManager() {
                     <TableCell className="text-muted-foreground">
                       {table.description}
                     </TableCell>
-                    <TableCell className="text-right font-mono">
-                      {table.count.toLocaleString()}
+                    <TableCell className="text-right font-mono tabular-nums">
+                      {formatNumberCompact(table.count)}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">

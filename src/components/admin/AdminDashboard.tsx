@@ -20,6 +20,7 @@ import {
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { AdminCronManager } from './AdminCronManager';
 import { supabase } from '@/integrations/supabase/client';
+import { formatNumberCompact, formatDateTime } from '@/lib/formatters';
 
 // Plan colours for Recharts pie chart.
 // Design-system mapping (src/index.css / tailwind.config.ts):
@@ -148,7 +149,7 @@ export function AdminDashboard() {
                 {usersLoading ? (
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground mt-1" />
                 ) : (
-                  <p className="text-2xl font-bold">{usersCount?.toLocaleString() ?? '—'}</p>
+                  <p className="text-2xl font-bold tabular-nums">{usersCount != null ? formatNumberCompact(usersCount) : '—'}</p>
                 )}
                 <p className="text-xs text-muted-foreground mt-1">{t('admin.dashboard.totalRegistered')}</p>
               </div>
@@ -168,7 +169,7 @@ export function AdminDashboard() {
                 {projectsLoading ? (
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground mt-1" />
                 ) : (
-                  <p className="text-2xl font-bold">{projectsCount?.toLocaleString() ?? '—'}</p>
+                  <p className="text-2xl font-bold tabular-nums">{projectsCount != null ? formatNumberCompact(projectsCount) : '—'}</p>
                 )}
                 <p className="text-xs text-muted-foreground mt-1">{t('admin.dashboard.totalInDb')}</p>
               </div>
@@ -302,7 +303,7 @@ export function AdminDashboard() {
                         <p className="text-sm text-muted-foreground">{item.message}</p>
                       </div>
                       <span className="text-sm text-muted-foreground whitespace-nowrap">
-                        {new Date(item.created_at).toLocaleString('pl-PL', {
+                        {formatDateTime(item.created_at, undefined, {
                           day: '2-digit',
                           month: '2-digit',
                           hour: '2-digit',

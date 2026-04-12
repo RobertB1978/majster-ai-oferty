@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { History, Plus, Check, Eye, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatDateTime } from '@/lib/formatters';
 
 interface QuoteVersionsPanelProps {
   projectId: string;
@@ -107,7 +108,7 @@ export function QuoteVersionsPanel({ projectId, currentSnapshot, onLoadVersion }
                   <div>
                     <p className="text-sm font-medium">{version.version_name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(version.created_at).toLocaleString()} • {Number(version.quote_snapshot.total).toFixed(2)} zł
+                      {formatDateTime(version.created_at)} • {Number(version.quote_snapshot.total).toFixed(2)} zł
                     </p>
                   </div>
                 </div>

@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { CheckCircle2, XCircle, AlertCircle, ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
 import { logger } from '@/lib/logger';
+import { formatDateTime } from '@/lib/formatters';
 
 function AuthDiagnosticsContent() {
   const { user, session, isLoading } = useAuth();
@@ -152,7 +153,7 @@ function AuthDiagnosticsContent() {
                     <div className="flex flex-col gap-1">
                       <span className="text-muted-foreground">Expires:</span>
                       <span className="font-mono text-[10px] text-muted-foreground">
-                        {new Date(diagnostics.auth.sessionExpiresAt).toLocaleString()}
+                        {formatDateTime(diagnostics.auth.sessionExpiresAt)}
                       </span>
                     </div>
                   )}
