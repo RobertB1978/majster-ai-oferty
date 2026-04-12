@@ -79,7 +79,7 @@ export default function ProjectsList() {
       {/* Header */}
       <div className="flex items-start justify-between mb-5 gap-2">
         <div>
-          <h1 className="text-2xl font-bold">{t('projectsV2.pageTitle')}</h1>
+          <h1 className="text-2xl type-title">{t('projectsV2.pageTitle')}</h1>
           <p className="text-xs text-muted-foreground mt-0.5">
             {t('projectsV2.offerFirstNote')}
           </p>

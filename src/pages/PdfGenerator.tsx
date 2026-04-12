@@ -242,7 +242,7 @@ export default function PdfGenerator() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+        <h1 className="text-2xl sm:text-3xl text-foreground type-title">
           {t('pdfGenerator.pageHeading', { projectName: project.project_name })}
         </h1>
       </div>

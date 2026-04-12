@@ -31,7 +31,7 @@ export default function AdminAppConfigPage() {
           <div className="flex items-center gap-3">
             <Sliders className="h-6 w-6 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold">{t('adminConfig.title')}</h1>
+              <h1 className="text-2xl type-title">{t('adminConfig.title')}</h1>
               <p className="text-sm text-muted-foreground">
                 {t('adminConfig.version')}: <Badge variant="outline">{config.version}</Badge>
               </p>

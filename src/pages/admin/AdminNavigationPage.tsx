@@ -49,7 +49,7 @@ export default function AdminNavigationPage() {
           <div className="flex items-center gap-3">
             <Navigation className="h-6 w-6 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold">{t('adminNav.title')}</h1>
+              <h1 className="text-2xl type-title">{t('adminNav.title')}</h1>
               <p className="text-sm text-muted-foreground">
                 {t('adminNav.description')}
               </p>

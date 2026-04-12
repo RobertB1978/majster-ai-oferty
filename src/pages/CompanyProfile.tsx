@@ -154,7 +154,7 @@ export default function CompanyProfile() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{t('companyProfile.title')}</h1>
+        <h1 className="text-2xl sm:text-3xl text-foreground type-title">{t('companyProfile.title')}</h1>
         <p className="mt-1 text-muted-foreground">
           {t('companyProfile.subtitle')}
         </p>
