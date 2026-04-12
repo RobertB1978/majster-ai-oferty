@@ -400,6 +400,12 @@ img.leaflet-tile:not([src]) {
   .font-mono, code, kbd, pre, [data-amount], .amount {
     font-family: 'JetBrains Mono', monospace;
   }
+
+  /* Branded text selection — Safety Amber from the design system token --accent-amber */
+  ::selection {
+    background-color: rgba(245, 158, 11, 0.25);
+    color: inherit;
+  }
 }
 
 @layer utilities {
