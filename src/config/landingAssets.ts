@@ -188,12 +188,12 @@ export const LANDING_ASSETS: LandingAssetsConfig = {
   clientLogos: [],
 
   // ── Open Graph image ───────────────────────────────────────────────────────
-  // SVG social card — supported by Slack, Discord, iMessage, WhatsApp, Google,
-  // Bing, and most modern crawlers. Facebook & LinkedIn prefer PNG/JPEG: export
-  // public/og-image.svg to public/og-image.png (1200×630) and update path below
-  // for maximum cross-platform compatibility.
+  // PNG social card (1200×630) — universally supported by all major crawlers:
+  // Facebook, LinkedIn, Twitter/X, Slack, Discord, iMessage, WhatsApp, Google.
+  // Source SVG lives at public/og-image.svg — regenerate PNG via:
+  //   python3 -c "import cairosvg; cairosvg.svg2png(url='public/og-image.svg', write_to='public/og-image.png', output_width=1200, output_height=630)"
   ogImage: {
-    path: '/og-image.svg',
+    path: '/og-image.png',
     width: 1200,
     height: 630,
     isReady: true,
