@@ -2920,7 +2920,10 @@
         "quote": "Moja ekipa mówi po ukraińsku, ja po polsku. Pierwszy system, który po prostu działa dla nas obu bez żadnego kombinowania.",
         "name": "Tomasz W.",
         "role": "Firma budowlana, Wrocław"
-      }
+      },
+      "placeholderNotice": "Przykładowe opinie z okresu beta — zbieramy zweryfikowane referencje od aktualnych klientów.",
+      "logoStripTitle": "Wybierany przez firmy budowlane",
+      "logoStripPlaceholder": "Wkrótce — firmy, które wybrały Majster.AI"
     }
   },
   "addons": {

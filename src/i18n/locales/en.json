@@ -2920,7 +2920,10 @@
         "quote": "My crew speaks Ukrainian, I speak Polish. First tool that simply works for both of us without any workarounds.",
         "name": "Tomasz W.",
         "role": "Construction company, Wrocław"
-      }
+      },
+      "placeholderNotice": "Sample quotes from the beta period — we are collecting verified references from current clients.",
+      "logoStripTitle": "Chosen by construction businesses",
+      "logoStripPlaceholder": "Coming soon — businesses that chose Majster.AI"
     }
   },
   "addons": {
