@@ -375,6 +375,7 @@ export type Database = {
           created_at: string
           expires_at: string | null
           id: string
+          offer_id: string | null
           project_id: string
           public_token: string
           rejected_reason: string | null
@@ -396,6 +397,7 @@ export type Database = {
           created_at?: string
           expires_at?: string | null
           id?: string
+          offer_id?: string | null
           project_id: string
           public_token?: string
           rejected_reason?: string | null
@@ -417,6 +419,7 @@ export type Database = {
           created_at?: string
           expires_at?: string | null
           id?: string
+          offer_id?: string | null
           project_id?: string
           public_token?: string
           rejected_reason?: string | null
@@ -441,6 +444,13 @@ export type Database = {
             columns: ["v2_project_id"]
             isOneToOne: false
             referencedRelation: "v2_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offer_approvals_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
             referencedColumns: ["id"]
           },
         ]
@@ -517,6 +527,8 @@ export type Database = {
           accepted_at: string | null
           rejected_at: string | null
           last_activity_at: string
+          source: string | null
+          vat_enabled: boolean | null
           created_at: string
           updated_at: string
           /** Sprint D1: id of the industry starter pack used to create this offer. NULL for manual offers. */
@@ -536,6 +548,8 @@ export type Database = {
           accepted_at?: string | null
           rejected_at?: string | null
           last_activity_at?: string
+          source?: string | null
+          vat_enabled?: boolean | null
           created_at?: string
           updated_at?: string
           source_template_id?: string | null
@@ -554,6 +568,8 @@ export type Database = {
           accepted_at?: string | null
           rejected_at?: string | null
           last_activity_at?: string
+          source?: string | null
+          vat_enabled?: boolean | null
           created_at?: string
           updated_at?: string
           source_template_id?: string | null
@@ -683,6 +699,7 @@ export type Database = {
           terms: string | null
           title: string
           user_id: string
+          vat_rate: number | null
           version: string
         }
         Insert: {
@@ -694,6 +711,7 @@ export type Database = {
           terms?: string | null
           title?: string
           user_id: string
+          vat_rate?: number | null
           version?: string
         }
         Update: {
@@ -705,6 +723,7 @@ export type Database = {
           terms?: string | null
           title?: string
           user_id?: string
+          vat_rate?: number | null
           version?: string
         }
         Relationships: [
@@ -1457,6 +1476,7 @@ export type Database = {
       }
       user_subscriptions: {
         Row: {
+          cancel_at_period_end: boolean
           created_at: string
           current_period_end: string | null
           current_period_start: string | null
@@ -1465,10 +1485,12 @@ export type Database = {
           status: string
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          trial_end: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          cancel_at_period_end?: boolean
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
@@ -1477,10 +1499,12 @@ export type Database = {
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          trial_end?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          cancel_at_period_end?: boolean
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
@@ -1489,6 +1513,7 @@ export type Database = {
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          trial_end?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -1615,6 +1640,7 @@ export type Database = {
           vat_rate: number | null
           line_total_net: number
           variant_id: string | null
+          metadata: Json | null
           created_at: string
           updated_at: string
         }
@@ -1630,6 +1656,7 @@ export type Database = {
           vat_rate?: number | null
           line_total_net?: number
           variant_id?: string | null
+          metadata?: Json | null
           created_at?: string
           updated_at?: string
         }
@@ -1645,6 +1672,7 @@ export type Database = {
           vat_rate?: number | null
           line_total_net?: number
           variant_id?: string | null
+          metadata?: Json | null
           created_at?: string
           updated_at?: string
         }
