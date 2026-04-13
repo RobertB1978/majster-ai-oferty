@@ -1,3 +1,24 @@
+/**
+ * OfferApproval — LEGACY COMPAT (ARCH-01)
+ *
+ * Public approval page for the LEGACY flow. Served at /offer/:token.
+ * Token source: offer_approvals.public_token
+ * Backend:      get_offer_approval_by_token RPC (read) + approve-offer Edge Function (write)
+ * Status table: offer_approvals.status (lowercase: 'accepted', 'rejected', ...)
+ *
+ * ⚠️  DO NOT add new business logic here.
+ *     This component exists solely to serve links sent before the canonical flow
+ *     (acceptance_links / /a/:token) was introduced.
+ *     New features belong in OfferPublicAccept (/a/:token) — the canonical page.
+ *     Consolidation and redirect logic are planned for PR-ARCH-02.
+ *
+ * Features unique to legacy flow (not yet in canonical):
+ *   - 1-click accept via ?t=acceptToken query param
+ *   - 10-minute cancel window (cancel_accept action)
+ *   - contractor withdraw action
+ *   - auto-creates v2_project on acceptance (Acceptance Bridge)
+ *   - contractor notifications (viewed, accepted, rejected, expired)
+ */
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useSearchParams } from 'react-router-dom';

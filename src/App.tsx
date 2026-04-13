@@ -243,14 +243,24 @@ const App = () => (
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
 
-                  {/* Public offer approval (legacy English URL) */}
-                  <Route path="/offer/:token" element={<OfferApproval />} />
-
-                  {/* Public client portal (Polish URL) */}
-                  <Route path="/oferta/:token" element={<OfferPublicPage />} />
-
-                  {/* PR-12: Tokenized acceptance page (new offers system) */}
+                  {/* ── PUBLIC OFFER FLOW — CANONICAL (PR-12, ARCH-01) ────────────────
+                      Token source: acceptance_links.token
+                      Backend:      resolve_offer_acceptance_link RPC (SECURITY DEFINER)
+                      Action:       process_offer_acceptance_action RPC
+                      Status table: offers.status (UPPERCASE)
+                      ──────────────────────────────────────────────────────────────── */}
                   <Route path="/a/:token" element={<OfferPublicAccept />} />
+
+                  {/* ── PUBLIC OFFER FLOW — LEGACY COMPAT (ARCH-01, do NOT add new logic)
+                      Token source: offer_approvals.public_token
+                      Backend:      get_offer_approval_by_token RPC + approve-offer Edge Function
+                      Action:       approve-offer Edge Function (Deno)
+                      Status table: offer_approvals.status (lowercase)
+                      NOTE: These routes serve existing sent links. Do NOT add new business
+                            logic here. Consolidation happens in PR-ARCH-02.
+                      ──────────────────────────────────────────────────────────────── */}
+                  <Route path="/offer/:token" element={<OfferApproval />} />
+                  <Route path="/oferta/:token" element={<OfferPublicPage />} />
 
                   {/* PR-13: Public project status page (no login, no prices) */}
                   <Route path="/p/:token" element={<ProjectPublicStatus />} />

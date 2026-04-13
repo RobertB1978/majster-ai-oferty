@@ -1,27 +1,37 @@
 /**
- * OfferPublicAccept — PR-12 (extended in offer-versioning-7RcU5)
+ * OfferPublicAccept — CANONICAL public offer flow (ARCH-01, PR-12)
  *
- * Public acceptance page for offers. Accessible at /a/:token without login.
- * Client can review the offer summary and ACCEPT or REJECT.
+ * This is THE canonical page for public offer acceptance. All new public offer
+ * features must be implemented here (not in OfferApproval or OfferPublicPage).
  *
- * ⚠️ REFACTOR PLAN (Audyt V3, W-6):
- * Ten plik ma >700 linii. Kandydaci do wydzielenia w osobnych PR:
- *   1. ItemsTable → ./components/offers/ItemsTable.tsx (~60 linii)
- *   2. Typy i helpery → ./lib/offerPublicTypes.ts (~140 linii)
- *   3. VariantSelector → ./components/offers/VariantSelector.tsx (~80 linii)
- *   4. AcceptRejectButtons → ./components/offers/AcceptRejectButtons.tsx (~60 linii)
+ * Route:         /a/:token  (CANONICAL_PUBLIC_OFFER_ROUTE in useAcceptanceLink.ts)
+ * Token source:  acceptance_links.token (UUID v4, 30-day TTL, UNIQUE per offer)
+ * Read backend:  resolve_offer_acceptance_link RPC (SECURITY DEFINER)
+ * Write backend: process_offer_acceptance_action RPC (SECURITY DEFINER)
+ * Status table:  offers.status (UPPERCASE: 'SENT', 'ACCEPTED', 'REJECTED')
+ * Audit log:     offer_public_actions (explicit, per-action)
+ * Query key:     ['publicOffer', token]
  *
- * offer-versioning-7RcU5:
- *   - Renders variants when offer has multiple options
- *   - Client can view each variant and compare totals
- *   - Single-variant / no-variant offers degrade gracefully (unchanged)
- *   - Public photos shown when show_in_public = true (via signed URL in future)
+ * Why canonical (ADR-0005):
+ *   - useSendOffer generates /a/:token links (via acceptance_links)
+ *   - SECURITY DEFINER DB functions — no Edge Function dependency for writes
+ *   - Supports offer variants (offer-versioning-7RcU5)
+ *   - Explicit audit log (offer_public_actions)
+ *   - Directly tied to offers table (no legacy projects→quotes chain)
  *
- * Data fetched via SECURITY DEFINER DB function (resolve_offer_acceptance_link)
- * so no user auth or cross-tenant leakage is possible.
+ * Legacy compat routes still active (PR-ARCH-02 will consolidate):
+ *   /offer/:token  → OfferApproval.tsx   (LEGACY COMPAT)
+ *   /oferta/:token → OfferPublicPage.tsx (LEGACY COMPAT)
  *
+ * ⚠️ REFACTOR PLAN (Audyt V3, W-6) — this file has >700 lines:
+ *   1. ItemsTable → ./components/offers/ItemsTable.tsx (~60 lines)
+ *   2. Types/helpers → ./lib/offerPublicTypes.ts (~140 lines)
+ *   3. VariantSelector → ./components/offers/VariantSelector.tsx (~80 lines)
+ *   4. AcceptRejectButtons → ./components/offers/AcceptRejectButtons.tsx (~60 lines)
+ *
+ * Data fetched via SECURITY DEFINER DB function so no auth or cross-tenant
+ * leakage is possible. Token entropy: UUID v4 = 122 bits — unguessable.
  * Rate limiting: documented in SECURITY_BASELINE.md (apply at CDN/edge layer).
- * Token entropy: UUID v4 = 122 bits — unguessable.
  */
 
 import { useState, useEffect } from 'react';

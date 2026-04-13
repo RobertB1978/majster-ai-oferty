@@ -1,11 +1,21 @@
 /**
- * OfferPublicPage — Public client-facing offer view.
+ * OfferPublicPage — LEGACY COMPAT (ARCH-01)
+ *
+ * Public client-facing offer view for the LEGACY Polish flow. Served at /oferta/:token.
+ * Token source: offer_approvals.public_token
+ * Backend:      get_offer_approval_by_token RPC (read) + approve-offer Edge Function (write)
+ * Status table: offer_approvals.status (lowercase: 'accepted', 'rejected', ...)
+ * Service:      src/lib/publicOfferApi.ts (LEGACY FLOW SERVICE)
+ * Query key:    ['legacyOffer', token] — intentionally different from canonical ['publicOffer']
+ *
+ * ⚠️  DO NOT add new business logic here.
+ *     This component serves existing links sent before acceptance_links was introduced.
+ *     New features belong in OfferPublicAccept (/a/:token) — the canonical page.
+ *     Consolidation planned for PR-ARCH-02.
  *
  * Layout (roadmap §5.1):
  *  Desktop (≥ lg):   2-column grid — content 3fr / sticky summary sidebar 2fr
  *  Mobile (< lg):    single column + sticky bottom bar with Total + CTA
- *
- * No auth required — accessed via public_token in URL.
  */
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
@@ -67,8 +77,11 @@ export default function OfferPublicPage() {
   const [isSendingQuestion, setIsSendingQuestion] = useState(false);
   const [questionSent, setQuestionSent] = useState(false);
 
+  // ARCH-01: Legacy flow uses offer_approvals.public_token — distinct from
+  // canonical flow (['canonicalOffer'] key) which uses acceptance_links.token.
+  // Different query keys prevent TanStack Query cache collisions between flows.
   const offerQuery = useQuery({
-    queryKey: ['publicOffer', token],
+    queryKey: ['legacyOffer', token],
     enabled: Boolean(token),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 15,
