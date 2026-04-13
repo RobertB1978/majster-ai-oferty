@@ -27,6 +27,7 @@ Poniższe zasady mają bezwzględny priorytet i obowiązują w **każdej** sesji
 | 10 | **Przegląd diffa przed finalizacją** | Każda zmieniona linia musi być uzasadniona. |
 | 11 | **Rozdziel: agent vs Robert** | Jasno zaznacz co robi agent, a co Robert musi zrobić ręcznie. |
 | 12 | **Evidence Log jest obowiązkowy** | Format: `symptom → dowód → zmiana → weryfikacja → rollback` |
+| 13 | **Pass #3 = prompt linia po linii** | Przed finalizacją: wróć do oryginalnego promptu i odhaczyj KAŻDY punkt numerowany, każde "REQUIRED", każde "DOD", każde "mandatory output". Skanowanie "sedna" to za mało — poboczne wymagania (log decyzji, feature flag decision, format raportu) są równie obowiązkowe. |
 
 ### Evidence Log — szablon (obowiązkowy w każdym raporcie)
 
@@ -654,6 +655,28 @@ Przed każdym commitem Claude MUSI potwierdzić każdy punkt:
 - [ ] Uruchomiłem lint — 0 nowych błędów
 - [ ] Uruchomiłem build — sukces
 
+#### Pass #3 — Weryfikacja promptu linia po linii (OBOWIĄZKOWY)
+
+> **Ten pass powstał po diagnozie z 2026-04-13:** agent skanuje "sedno" zadania
+> i uznaje je za ukończone, pomijając wymagania poboczne wymienione w prompcie
+> (logi decyzji, jawna decyzja o feature fladze, format raportu, mandatory output).
+> Powtarzało się to w wielu sesjach. Rozwiązanie: fizyczny powrót do promptu po
+> wykonaniu kodu i odhaczenie każdego punktu jeden po drugim.
+
+Przed finalizacją (commit / raport końcowy) Claude MUSI wrócić do oryginalnego promptu i sprawdzić każdy punkt:
+
+- [ ] Każde **numerowane wymaganie** (1. 2. 3. …) — czy jest zrealizowane?
+- [ ] Każda sekcja **REQUIRED IMPLEMENTATION** — każdy podpunkt oddzielnie
+- [ ] Każda sekcja **DOD / Definition of Done** — każdy checkbox oddzielnie
+- [ ] Każde **"mandatory output"** / **"paste final line"** — czy jest w raporcie?
+- [ ] Każde **"mandatory in output"** (np. Evidence Log, Compatibility Matrix) — czy załączone?
+- [ ] Jawna odpowiedź na każde pytanie decyzyjne (np. "użyj flagi / dodaj flagę") — czy odpowiedź jest w raporcie?
+- [ ] Pliki dokumentacyjne (DECISIONS.md, ADR, COMPATIBILITY_MATRIX) — czy zaktualizowane?
+- [ ] Sekcja **"Agent does / Robert does"** — czy wyraźnie rozdzielona?
+
+**Reguła:** Jeśli jakikolwiek punkt nie jest odhaczony — NIE commituj. Uzupełnij najpierw.
+**Antywzorzec do unikania:** "Sedno jest gotowe, reszta to formalności" — formalności są równie obowiązkowe.
+
 #### Raport na końcu zadania
 Każde zakończone zadanie MUSI zawierać:
 ```
@@ -679,6 +702,7 @@ Każde zakończone zadanie MUSI zawierać:
 5. **Feature flags bez enforcement** — flagi zdefiniowane ale nie sprawdzane
 6. **Fallback bez null-safety** — brak `?? default` przy opcjonalnych polach
 7. **Brak testów dla nowego zachowania** (gdy istniejące testy nie pokrywają)
+8. **Skanowanie zamiast czytania promptu** — agent uznaje zadanie za skończone po wykonaniu "sedna", pomijając wymagania poboczne (logi decyzji, explicit feature flag decision, mandatory output format). Objaw: Robert musi pytać 2–3 razy zanim wszystko jest kompletne. Lekarstwo: Pass #3 powyżej — fizyczny powrót do promptu i odhaczenie każdego punktu przed commitem.
 
 ### Priorytet zadań gdy budżet LOC jest ograniczony
 1. Zawsze zrealizuj najpierw zadania o najwyższym wpływie biznesowym
