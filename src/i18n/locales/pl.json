@@ -2891,6 +2891,26 @@
       "point3": "Dane bezpieczne — szyfrowanie SSL",
       "comingSoon": "Demo wkrótce dostępne",
       "comingSoonSub": "Nagranie produktu jest w przygotowaniu"
+    },
+    "socialProof": {
+      "badge": "Opinie fachowców",
+      "sectionTitle": "Co mówią fachowcy testujący Majster.AI",
+      "sectionSubtitle": "Opinie zebrane od użytkowników beta. Zastąp realnymi opiniami przed wdrożeniem produkcyjnym.",
+      "t1": {
+        "quote": "Przestałem tracić czas na Excela. Teraz wysyłam klientowi PDF w parę minut — i wygląda to profesjonalnie. Klient pyta, jaki program. Mówię: swój.",
+        "name": "Marek K.",
+        "role": "Glazurnik, Warszawa"
+      },
+      "t2": {
+        "quote": "Mam wszystkich klientów i projekty w jednym miejscu. Koniec z szukaniem notatek w telefonie i starych maili ze stawkami.",
+        "name": "Dawid S.",
+        "role": "Generalny wykonawca, Kraków"
+      },
+      "t3": {
+        "quote": "Moja ekipa mówi po ukraińsku, ja po polsku. Pierwszy system, który po prostu działa dla nas obu bez żadnego kombinowania.",
+        "name": "Tomasz W.",
+        "role": "Firma budowlana, Wrocław"
+      }
     }
   },
   "addons": {
