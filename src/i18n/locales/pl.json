@@ -2469,7 +2469,8 @@
       "howItWorks": "Jak działa",
       "pricing": "Ceny",
       "faq": "FAQ",
-      "getStarted": "Zacznij za darmo"
+      "getStarted": "Zacznij za darmo",
+      "demo": "demo"
     },
     "trust": {
       "languages_label": "języki interfejsu",
@@ -2874,6 +2875,22 @@
           "footer": "Wygenerowano przez Majster.AI · app.majster.ai"
         }
       }
+    },
+    "videoDemo": {
+      "badge": "Demo produktu",
+      "title": "Zobacz Majster.AI w akcji",
+      "subtitle": "2 minuty wystarczą, żeby zobaczyć jak fachowcy tworzą profesjonalne wyceny, zarządzają projektami i wysyłają oferty PDF — bez zbędnych komplikacji.",
+      "playLabel": "Odtwórz demo produktu",
+      "iframeTitle": "Demo Majster.AI — jak działa aplikacja",
+      "duration": "ok. 2 min · bez rejestracji",
+      "chip1": "Wycena AI w 5 minut",
+      "chip2": "PDF jednym kliknięciem",
+      "chip3": "Zarządzanie projektami",
+      "point1": "Bez instalacji — działa w przeglądarce",
+      "point2": "Bezpłatny plan dostępny od razu",
+      "point3": "Dane bezpieczne — szyfrowanie SSL",
+      "comingSoon": "Demo wkrótce dostępne",
+      "comingSoonSub": "Nagranie produktu jest w przygotowaniu"
     }
   },
   "addons": {
