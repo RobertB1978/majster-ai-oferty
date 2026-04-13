@@ -2904,6 +2904,8 @@ export type Database = {
         Returns: Json
       }
       get_public_offer_photos: { Args: { p_token: string }; Returns: Json }
+      get_offer_approval_by_token: { Args: { p_token: string }; Returns: Json }
+      record_offer_viewed_by_token: { Args: { p_token: string }; Returns: undefined }
       get_user_plan_limits: { Args: { p_user_id: string }; Returns: Json }
     }
     Enums: {
