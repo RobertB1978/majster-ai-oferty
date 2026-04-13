@@ -86,7 +86,8 @@ export function QuickActions() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + index * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              whileHover={{ y: -2, transition: { duration: 0.15 } }}
+              variants={{ cardHovered: { y: -2, transition: { duration: 0.15 } } }}
+              whileHover="cardHovered"
               whileTap={{ scale: 0.96 }}
               onClick={action.onClick}
               className={cn(
@@ -94,9 +95,18 @@ export function QuickActions() {
                 cfg.card
               )}
             >
-              <div className={cn('flex h-9 w-9 items-center justify-center rounded-xl', cfg.icon)}>
+              <motion.div
+                variants={{
+                  cardHovered: {
+                    rotate: 8,
+                    scale: 1.12,
+                    transition: { type: 'spring', stiffness: 400, damping: 20 },
+                  },
+                }}
+                className={cn('flex h-9 w-9 items-center justify-center rounded-xl', cfg.icon)}
+              >
                 <Icon className={cn('h-5 w-5', cfg.iconColor)} />
-              </div>
+              </motion.div>
               <div>
                 <p className="text-sm font-semibold leading-tight">{action.label}</p>
                 {action.sublabel && (

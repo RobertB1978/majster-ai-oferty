@@ -46,12 +46,15 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }));
 
-// Mock IntersectionObserver
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+// Mock IntersectionObserver — must use a regular function (not arrow) so Framer
+// Motion's whileInView feature can call it with `new IntersectionObserver()`.
+global.IntersectionObserver = vi.fn().mockImplementation(function MockIntersectionObserver() {
+  return {
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  };
+}) as unknown as typeof IntersectionObserver;
 
 // Mock scrollTo
 window.scrollTo = vi.fn();
