@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { CheckCircle, ArrowDown, Shield, Smartphone, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { motion, useReducedMotion } from 'framer-motion';
 import HeroComposition from '@/components/illustrations/HeroComposition';
 import { trackEvent, ANALYTICS_EVENTS } from '@/lib/analytics';
 
@@ -11,8 +12,14 @@ function scrollToFeatures(e: React.MouseEvent<HTMLButtonElement>) {
   document.getElementById('features')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+const trustChipVariants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] as const } },
+};
+
 export function HeroSection() {
   const { t } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <section
@@ -78,21 +85,31 @@ export function HeroSection() {
               {t('landing.hero.valueProp')}
             </p>
 
-            {/* Trust signal chips */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8">
-              <div className="flex items-center gap-2 bg-gray-100 dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-xl px-4 py-2.5 shadow-sm">
-                <FileText className="w-4 h-4 text-accent-amber" aria-hidden="true" />
-                <span className="text-gray-700 dark:text-neutral-400 text-sm font-medium">{t('landing.trust.pdfLabel')}</span>
-              </div>
-              <div className="flex items-center gap-2 bg-gray-100 dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-xl px-4 py-2.5 shadow-sm">
-                <Smartphone className="w-4 h-4 text-accent-amber" aria-hidden="true" />
-                <span className="text-gray-700 dark:text-neutral-400 text-sm font-medium">{t('landing.trust.mobileLabel')}</span>
-              </div>
-              <div className="flex items-center gap-2 bg-gray-100 dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-xl px-4 py-2.5 shadow-sm">
-                <Shield className="w-4 h-4 text-accent-amber" aria-hidden="true" />
-                <span className="text-gray-700 dark:text-neutral-400 text-sm font-medium">PL / EN / UK</span>
-              </div>
-            </div>
+            {/* Trust signal chips — staggered entry */}
+            <motion.div
+              className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.09, delayChildren: 0.2 } },
+              }}
+            >
+              {([
+                { icon: FileText, label: t('landing.trust.pdfLabel') },
+                { icon: Smartphone, label: t('landing.trust.mobileLabel') },
+                { icon: Shield, label: 'PL / EN / UK' },
+              ] as const).map(({ icon: TrustIcon, label }) => (
+                <motion.div
+                  key={label}
+                  variants={trustChipVariants}
+                  className="flex items-center gap-2 bg-gray-100 dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-xl px-4 py-2.5 shadow-sm"
+                >
+                  <TrustIcon className="w-4 h-4 text-accent-amber" aria-hidden="true" />
+                  <span className="text-gray-700 dark:text-neutral-400 text-sm font-medium">{label}</span>
+                </motion.div>
+              ))}
+            </motion.div>
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
@@ -116,10 +133,14 @@ export function HeroSection() {
             </p>
           </div>
 
-          {/* Right: HeroComposition — isometric SVG (Faza 5) */}
-          <div className="hidden lg:flex items-center justify-center shrink-0 w-[420px]">
+          {/* Right: HeroComposition — isometric SVG (Faza 5) with gentle float */}
+          <motion.div
+            className="hidden lg:flex items-center justify-center shrink-0 w-[420px]"
+            animate={shouldReduceMotion ? {} : { y: [0, -7, 0] }}
+            transition={{ duration: 4, ease: 'easeInOut', repeat: Infinity }}
+          >
             <HeroComposition className="w-full max-w-[420px] drop-shadow-xl" />
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

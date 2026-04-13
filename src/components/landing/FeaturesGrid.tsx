@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   FileText,
   FolderOpen,
@@ -48,10 +49,12 @@ const DEMO_CAPABLE = new Set([
 interface FeatureCardProps {
   feature: Feature;
   onDemoClick: (df: DemoFeature) => void;
+  index: number;
 }
 
-function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
+function FeatureCard({ feature, onDemoClick, index }: FeatureCardProps) {
   const { t } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
   const Icon = ICON_MAP[feature.icon] ?? FileText;
   const hasDemo = DEMO_CAPABLE.has(feature.key);
   const Illustration = ILLUSTRATION_MAP[feature.key];
@@ -75,7 +78,12 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
   };
 
   return (
-    <div
+    <motion.div
+      initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+      whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={shouldReduceMotion ? undefined : { once: true, margin: '-60px' }}
+      transition={shouldReduceMotion ? undefined : { delay: index * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={shouldReduceMotion ? undefined : 'cardHovered'}
       className={`group bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-accent-amber/40 hover:shadow-lg hover:shadow-accent-amber/5 ${
         hasDemo ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-brand-card' : ''
       }`}
@@ -97,9 +105,18 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
       )}
 
       <div className="flex items-center justify-between">
-        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-accent-amber/10 to-accent-amber/5 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:from-accent-amber/20 group-hover:to-accent-amber/10 group-hover:shadow-sm group-hover:shadow-accent-amber/10">
+        <motion.div
+          variants={shouldReduceMotion ? {} : {
+            cardHovered: {
+              rotate: 6,
+              scale: 1.12,
+              transition: { type: 'spring', stiffness: 380, damping: 22 },
+            },
+          }}
+          className="w-11 h-11 rounded-xl bg-gradient-to-br from-accent-amber/10 to-accent-amber/5 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:from-accent-amber/20 group-hover:to-accent-amber/10 group-hover:shadow-sm group-hover:shadow-accent-amber/10"
+        >
           <Icon className="w-5 h-5 text-accent-amber" aria-hidden="true" />
-        </div>
+        </motion.div>
         {hasDemo && (
           <ExternalLink
             className="w-4 h-4 text-gray-300 dark:text-neutral-600 group-hover:text-accent-amber/60 transition-colors duration-300"
@@ -122,7 +139,7 @@ function FeatureCard({ feature, onDemoClick }: FeatureCardProps) {
           {t('landing.features.demoTitle')} →
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -163,8 +180,8 @@ export function FeaturesGrid() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-            {liveFeatures.map((feature) => (
-              <FeatureCard key={feature.key} feature={feature} onDemoClick={setDemoFeature} />
+            {liveFeatures.map((feature, index) => (
+              <FeatureCard key={feature.key} feature={feature} onDemoClick={setDemoFeature} index={index} />
             ))}
           </div>
         )}
