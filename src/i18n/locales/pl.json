@@ -2469,7 +2469,8 @@
       "howItWorks": "Jak działa",
       "pricing": "Ceny",
       "faq": "FAQ",
-      "getStarted": "Zacznij za darmo"
+      "getStarted": "Zacznij za darmo",
+      "demo": "demo"
     },
     "trust": {
       "languages_label": "języki interfejsu",
@@ -2887,7 +2888,9 @@
       "chip3": "Zarządzanie projektami",
       "point1": "Bez instalacji — działa w przeglądarce",
       "point2": "Bezpłatny plan dostępny od razu",
-      "point3": "Dane bezpieczne — szyfrowanie SSL"
+      "point3": "Dane bezpieczne — szyfrowanie SSL",
+      "comingSoon": "Demo wkrótce dostępne",
+      "comingSoonSub": "Nagranie produktu jest w przygotowaniu"
     }
   },
   "addons": {

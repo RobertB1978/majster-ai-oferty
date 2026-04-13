@@ -28,8 +28,9 @@ export function LandingHeader() {
   const NAV_ITEMS = [
     { label: t('landing.nav.features'),    id: 'features'     },
     { label: t('landing.nav.howItWorks'), id: 'how-it-works' },
-    { label: t('landing.nav.pricing'),        id: 'pricing'      },
-    { label: t('landing.nav.faq'),             id: 'faq'          },
+    { label: t('landing.nav.demo'),        id: 'video-demo'   },
+    { label: t('landing.nav.pricing'),    id: 'pricing'       },
+    { label: t('landing.nav.faq'),         id: 'faq'           },
   ];
   const { isDark, toggleTheme } = useTheme();
 

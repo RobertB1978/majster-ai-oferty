@@ -2469,7 +2469,8 @@
       "howItWorks": "How it works",
       "pricing": "Pricing",
       "faq": "FAQ",
-      "getStarted": "Start for free"
+      "getStarted": "Start for free",
+      "demo": "Demo"
     },
     "hero": {
       "badge": "Platform for contractors and craftspeople",
@@ -2887,7 +2888,9 @@
       "chip3": "Project management",
       "point1": "No installation — runs in your browser",
       "point2": "Free plan available immediately",
-      "point3": "Secure data — SSL encryption"
+      "point3": "Secure data — SSL encryption",
+      "comingSoon": "Demo coming soon",
+      "comingSoonSub": "The product recording is being prepared"
     }
   },
   "addons": {
