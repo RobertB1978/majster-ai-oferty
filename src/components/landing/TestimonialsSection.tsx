@@ -43,7 +43,7 @@ export function TestimonialsSection() {
 
   return (
     <section
-      className="py-20 md:py-28 bg-white dark:bg-brand-dark"
+      className="py-20 md:py-28 bg-[hsl(36_12%_98.5%)] dark:bg-brand-dark"
       aria-labelledby="results-heading"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,7 +67,7 @@ export function TestimonialsSection() {
           {RESULTS.map((result) => (
             <div
               key={result.key}
-              className={`relative bg-gray-50 dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-accent-amber/40 hover:shadow-lg hover:shadow-accent-amber/5`}
+              className={`relative bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-4 shadow-sm transition-all duration-300 hover:border-accent-amber/40 hover:shadow-lg hover:shadow-accent-amber/5`}
             >
               {/* Icon */}
               <div className={`w-12 h-12 rounded-xl ${result.bgColor} flex items-center justify-center`}>

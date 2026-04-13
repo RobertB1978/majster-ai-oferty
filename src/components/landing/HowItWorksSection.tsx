@@ -49,7 +49,7 @@ export function HowItWorksSection() {
   return (
     <section
       id="how-it-works"
-      className="py-20 md:py-28 bg-white dark:bg-brand-dark"
+      className="py-20 md:py-28 bg-[hsl(36_15%_98.5%)] dark:bg-brand-dark"
       aria-labelledby="how-heading"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

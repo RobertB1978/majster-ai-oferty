@@ -36,7 +36,7 @@ export function BeforeAfterSection() {
         </div>
 
         {/* Comparison grid */}
-        <div className="bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl overflow-hidden">
+        <div className="bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl overflow-hidden shadow-sm">
           {/* Header row */}
           <div className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-gray-200 dark:border-brand-border">
             <div className="p-4 md:p-5 text-center">
