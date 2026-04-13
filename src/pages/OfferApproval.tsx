@@ -37,18 +37,21 @@ export default function OfferApproval() {
     retry: 1,
     queryFn: async () => {
       if (!token) throw new Error('missing_token');
-      const { data, error: fetchError } = await supabase
-        .from('offer_approvals')
-        .select(`
-          *,
-          project:projects(project_name, status),
-          quote:quotes(total, positions)
-        `)
-        .eq('public_token', token)
-        .single();
+      // SEC-01: Replaced direct anon table SELECT (vulnerable to enumeration)
+      // with SECURITY DEFINER RPC that performs an exact token match server-side.
+      const { data: raw, error: fetchError } = await supabase.rpc(
+        'get_offer_approval_by_token',
+        { p_token: token },
+      );
 
       if (fetchError) throw fetchError;
-      return data as OfferData;
+
+      // RPC returns {error: 'not_found'} / {error: 'expired'} on failure.
+      const result = raw as { error?: string } | OfferData;
+      if (!result || (typeof result === 'object' && 'error' in result)) {
+        throw new Error((result as { error: string }).error ?? 'not_found');
+      }
+      return result as OfferData;
     },
   });
 

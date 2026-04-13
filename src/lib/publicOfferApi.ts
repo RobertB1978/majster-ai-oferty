@@ -1,6 +1,16 @@
 /**
  * Public offer data access — no authentication required.
- * Fetches offer data using the public_token via anon Supabase client (RLS method A).
+ *
+ * SEC-01: Direct anon table access (RLS method) replaced with SECURITY DEFINER
+ * RPC calls.  The previous approach used a broken RLS policy that allowed any
+ * anonymous client to enumerate ALL pending offers without a valid token.
+ *
+ * Access model (after SEC-01):
+ *   - fetchPublicOffer   → supabase.rpc('get_offer_approval_by_token')
+ *   - recordOfferViewed  → supabase.rpc('record_offer_viewed_by_token')
+ *
+ * Both functions are SECURITY DEFINER and perform exact token-based lookups.
+ * They return only the minimal fields needed for the public offer page.
  */
 
 import { supabase } from '@/integrations/supabase/client';
@@ -33,46 +43,39 @@ export interface PublicOfferData {
 }
 
 /**
- * Fetch a public offer by its public_token using the anon Supabase client.
- * RLS policy on offer_approvals must allow SELECT by public_token without auth.
+ * Fetch a public offer by its public_token via SECURITY DEFINER RPC.
+ *
+ * SEC-01: Replaces the broken anon SELECT policy (which allowed enumeration
+ * of all pending offers) with a controlled DB function that performs an exact
+ * token match and returns only safe display fields.
+ *
+ * @throws Error with message 'not_found' when token is missing or invalid.
+ * @throws Error with message 'expired' when the link or offer has expired.
  */
 export async function fetchPublicOffer(token: string): Promise<PublicOfferData> {
-  const { data, error } = await supabase
-    .from('offer_approvals')
-    .select(`
-      id,
-      status,
-      client_name,
-      created_at,
-      valid_until,
-      viewed_at,
-      accepted_at,
-      approved_at,
-      accepted_via,
-      withdrawn_at,
-      project:projects(project_name),
-      quote:quotes(total, positions)
-    `)
-    .eq('public_token', token)
-    .single();
+  const { data: raw, error } = await supabase.rpc('get_offer_approval_by_token', {
+    p_token: token,
+  });
 
   if (error) throw error;
-  return data as PublicOfferData;
+
+  // The RPC returns {error: 'not_found'} / {error: 'expired'} on failure,
+  // or the full offer object on success.
+  const result = raw as { error?: string } | PublicOfferData;
+  if (!result || (typeof result === 'object' && 'error' in result)) {
+    throw new Error((result as { error: string }).error ?? 'not_found');
+  }
+  return result as PublicOfferData;
 }
 
 /**
  * Record that a client opened the public offer page.
  * Sets viewed_at and transitions status to 'viewed' — only on first open.
  * Fire-and-forget: caller should not await this; failures are silent.
- * No personal data is stored — only a server-side timestamp.
  */
 export async function recordOfferViewed(token: string): Promise<void> {
-  await supabase
-    .from('offer_approvals')
-    .update({ viewed_at: new Date().toISOString(), status: 'viewed' })
-    .eq('public_token', token)
-    .is('viewed_at', null)
-    .in('status', ['sent', 'pending']);
+  // SEC-01: Replaces direct anon UPDATE on offer_approvals with controlled RPC.
+  await supabase.rpc('record_offer_viewed_by_token', { p_token: token });
   // Errors are intentionally ignored: tracking must never break the offer page.
 }
 
