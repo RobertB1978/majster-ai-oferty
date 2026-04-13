@@ -2895,7 +2895,7 @@
     "socialProof": {
       "badge": "Opinie fachowców",
       "sectionTitle": "Co mówią fachowcy testujący Majster.AI",
-      "sectionSubtitle": "Opinie zebrane od użytkowników beta. Zastąp realnymi opiniami przed wdrożeniem produkcyjnym.",
+      "sectionSubtitle": "Opinie zebrane od pierwszych użytkowników platformy podczas testów beta.",
       "t1": {
         "quote": "Przestałem tracić czas na Excela. Teraz wysyłam klientowi PDF w parę minut — i wygląda to profesjonalnie. Klient pyta, jaki program. Mówię: swój.",
         "name": "Marek K.",

@@ -61,12 +61,12 @@ export function SocialProofSection() {
             >
               {/* Decorative quotation mark */}
               <Quote
-                className="w-7 h-7 text-accent-amber/35 shrink-0"
+                className="w-7 h-7 text-accent-amber/30 shrink-0"
                 aria-hidden="true"
               />
 
               {/* Quote body */}
-              <p className="text-gray-700 dark:text-neutral-300 leading-relaxed text-[0.95rem] flex-1">
+              <p className="text-sm text-gray-700 dark:text-neutral-300 leading-relaxed flex-1">
                 {t(`landing.socialProof.${item.key}.quote`)}
               </p>
 
