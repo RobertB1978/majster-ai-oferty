@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { LayoutDashboard, FileText, Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { LANDING_ASSETS } from '@/config/landingAssets';
 
 // ---------------------------------------------------------------------------
 // Inline UI mockups — faithful SVG representations of actual product screens.
-// Replace each <Mockup /> with <img src="..."> when real screenshots are captured.
-// SVG data labels use Polish (primary market) which matches real product usage.
+// To upgrade a tab to a real screenshot: set the corresponding path in
+// src/config/landingAssets.ts (screenshots.<key>.path). The component will
+// automatically render <img> instead of the SVG when a path is present.
 // ---------------------------------------------------------------------------
 
 interface MockupStrings {
@@ -388,6 +390,14 @@ const TABS = [
 
 type TabKey = (typeof TABS)[number]['key'];
 
+// Maps each tab key to its screenshot asset config entry.
+// path: null → render inline SVG mockup; string → render <img>.
+const SCREENSHOT_ASSETS: Record<TabKey, { path: string | null; alt: string }> = {
+  dashboard: LANDING_ASSETS.screenshots.dashboard,
+  editor: LANDING_ASSETS.screenshots.offerEditor,
+  pdf: LANDING_ASSETS.screenshots.pdfPreview,
+};
+
 // ---------------------------------------------------------------------------
 // Section component
 // ---------------------------------------------------------------------------
@@ -468,6 +478,8 @@ export function ProductScreenshotsSection() {
     signClient: t('landing.screenshots.mock.pdf.signClient'),
     footer: t('landing.screenshots.mock.pdf.footer'),
   };
+
+  const activeScreenshotAsset = SCREENSHOT_ASSETS[activeTab];
 
   const panelVariants = shouldReduce
     ? { initial: {}, animate: {}, exit: {} }
@@ -555,9 +567,20 @@ export function ProductScreenshotsSection() {
                 transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className="w-full h-full"
               >
-                {activeTab === 'dashboard' && <DashboardMockup s={dashStrings} />}
-                {activeTab === 'editor' && <OfferEditorMockup s={offerStrings} />}
-                {activeTab === 'pdf' && <PdfPreviewMockup s={pdfStrings} />}
+                {activeScreenshotAsset.path !== null ? (
+                  <img
+                    src={activeScreenshotAsset.path}
+                    alt={activeScreenshotAsset.alt}
+                    className="w-full h-full object-cover"
+                    draggable={false}
+                  />
+                ) : (
+                  <>
+                    {activeTab === 'dashboard' && <DashboardMockup s={dashStrings} />}
+                    {activeTab === 'editor' && <OfferEditorMockup s={offerStrings} />}
+                    {activeTab === 'pdf' && <PdfPreviewMockup s={pdfStrings} />}
+                  </>
+                )}
               </motion.div>
             </AnimatePresence>
           </div>

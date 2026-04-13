@@ -1,15 +1,11 @@
 import { useState } from 'react';
 import { Play, Clock, Shield, Zap, Video } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { LANDING_ASSETS } from '@/config/landingAssets';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// YOUTUBE_VIDEO_ID: Replace with the actual YouTube video ID when the product
-// demo recording is ready. Format: the part after youtube.com/watch?v=
-// Example: 'dQw4w9WgXcQ' from https://www.youtube.com/watch?v=dQw4w9WgXcQ
-// ─────────────────────────────────────────────────────────────────────────────
-const YOUTUBE_VIDEO_ID = 'YOUR_VIDEO_ID_HERE';
-
-const IS_VIDEO_READY = YOUTUBE_VIDEO_ID !== 'YOUR_VIDEO_ID_HERE';
+// Video ID and readiness are managed centrally in src/config/landingAssets.ts
+const YOUTUBE_VIDEO_ID = LANDING_ASSETS.video.youtubeVideoId ?? '';
+const IS_VIDEO_READY = LANDING_ASSETS.video.youtubeVideoId !== null;
 
 const TRUST_ICONS = [Zap, Shield, Clock] as const;
 
@@ -59,26 +55,36 @@ export function VideoSection() {
             ) : (
               /* Poster state */
               <div className="absolute inset-0 flex items-center justify-center">
-                {/* Radial amber glow background */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      'radial-gradient(ellipse at 30% 40%, rgba(245,158,11,0.10) 0%, transparent 55%), radial-gradient(ellipse at 75% 65%, rgba(245,158,11,0.06) 0%, transparent 50%), linear-gradient(135deg, #0F0F0F 0%, #131313 50%, #0A0A0A 100%)',
-                  }}
-                  aria-hidden="true"
-                />
-
-                {/* Subtle dot grid */}
-                <div
-                  className="absolute inset-0 opacity-[0.025]"
-                  style={{
-                    backgroundImage:
-                      'radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px)',
-                    backgroundSize: '32px 32px',
-                  }}
-                  aria-hidden="true"
-                />
+                {/* Background: real poster image or premium dark gradient fallback */}
+                {LANDING_ASSETS.video.posterPath !== null ? (
+                  <img
+                    src={LANDING_ASSETS.video.posterPath}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover"
+                    aria-hidden="true"
+                    draggable={false}
+                  />
+                ) : (
+                  <>
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          'radial-gradient(ellipse at 30% 40%, rgba(245,158,11,0.10) 0%, transparent 55%), radial-gradient(ellipse at 75% 65%, rgba(245,158,11,0.06) 0%, transparent 50%), linear-gradient(135deg, #0F0F0F 0%, #131313 50%, #0A0A0A 100%)',
+                      }}
+                      aria-hidden="true"
+                    />
+                    <div
+                      className="absolute inset-0 opacity-[0.025]"
+                      style={{
+                        backgroundImage:
+                          'radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px)',
+                        backgroundSize: '32px 32px',
+                      }}
+                      aria-hidden="true"
+                    />
+                  </>
+                )}
 
                 {/* Floating feature chips — decorative, screen-reader hidden */}
                 <div
@@ -102,7 +108,7 @@ export function VideoSection() {
                   aria-hidden="true"
                 >
                   <Clock className="w-3 h-3" />
-                  {t('landing.videoDemo.duration')}
+                  {LANDING_ASSETS.video.durationLabel}
                 </div>
 
                 {IS_VIDEO_READY ? (
