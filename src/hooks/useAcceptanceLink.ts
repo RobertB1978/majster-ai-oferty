@@ -106,9 +106,11 @@ export const LEGACY_PUBLIC_OFFER_ROUTES = ['/offer/:token', '/oferta/:token'] as
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/** Prefix extracted from CANONICAL_PUBLIC_OFFER_ROUTE ('/a/:token' → '/a') */
+const CANONICAL_OFFER_PATH_PREFIX = CANONICAL_PUBLIC_OFFER_ROUTE.replace('/:token', '') as '/a';
+
 export function buildAcceptanceLinkUrl(token: string): string {
-  // Uses CANONICAL_PUBLIC_OFFER_ROUTE pattern: /a/:token
-  return `${window.location.origin}/a/${token}`;
+  return `${window.location.origin}${CANONICAL_OFFER_PATH_PREFIX}/${token}`;
 }
 
 export function daysUntilExpiry(expiresAt: string): number {
