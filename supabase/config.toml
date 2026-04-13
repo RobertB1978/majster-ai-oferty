@@ -74,3 +74,13 @@ verify_jwt = true
 # Requires authenticated user; renders offer, routes warranty/protocol/contract/inspection
 # with 501+pendingMigration for not-yet-migrated types (frontend falls back to jsPDF).
 verify_jwt = true
+
+# --- Functions added by PR#02 (previously missing from config) ---
+
+[functions.customer-portal]
+# Stripe Billing Portal — requires authenticated user (validates JWT in-function)
+verify_jwt = true
+
+[functions.request-plan]
+# Plan upgrade request — requires authenticated user (validates JWT in-function)
+verify_jwt = true
