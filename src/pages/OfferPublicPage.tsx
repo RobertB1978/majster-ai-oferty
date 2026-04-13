@@ -67,8 +67,11 @@ export default function OfferPublicPage() {
   const [isSendingQuestion, setIsSendingQuestion] = useState(false);
   const [questionSent, setQuestionSent] = useState(false);
 
+  // ARCH-01: Legacy flow uses offer_approvals.public_token — distinct from
+  // canonical flow (['canonicalOffer'] key) which uses acceptance_links.token.
+  // Different query keys prevent TanStack Query cache collisions between flows.
   const offerQuery = useQuery({
-    queryKey: ['publicOffer', token],
+    queryKey: ['legacyOffer', token],
     enabled: Boolean(token),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 15,

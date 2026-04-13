@@ -1,5 +1,13 @@
 /**
- * Public offer data access — no authentication required.
+ * LEGACY FLOW SERVICE — ARCH-01
+ *
+ * Public offer data access for the LEGACY flow (offer_approvals table).
+ * Used by: OfferPublicPage (/oferta/:token) and OfferApproval (/offer/:token).
+ *
+ * ⚠️  Do NOT add new business logic here.
+ *     New features must go to the CANONICAL flow (acceptance_links + /a/:token).
+ *     This service is kept for backwards compatibility with existing sent links.
+ *     Consolidation planned for PR-ARCH-02.
  *
  * SEC-01: Direct anon table access (RLS method) replaced with SECURITY DEFINER
  * RPC calls.  The previous approach used a broken RLS policy that allowed any
