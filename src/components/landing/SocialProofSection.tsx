@@ -1,31 +1,10 @@
 import { Quote } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { LANDING_ASSETS } from '@/config/landingAssets';
 
-// ---------------------------------------------------------------------------
-// PLACEHOLDER DATA — replace initials, keys, and avatarClass when you have
-// real testimonials from verified users. The i18n keys below correspond to
-// landing.socialProof.t1 / t2 / t3 in each locale file.
-// ---------------------------------------------------------------------------
-const TESTIMONIALS = [
-  {
-    key: 't1',
-    initials: 'MK',
-    avatarClass:
-      'bg-amber-100 dark:bg-accent-amber/20 text-amber-800 dark:text-accent-amber',
-  },
-  {
-    key: 't2',
-    initials: 'DS',
-    avatarClass:
-      'bg-gray-100 dark:bg-brand-surface text-gray-700 dark:text-neutral-300',
-  },
-  {
-    key: 't3',
-    initials: 'TW',
-    avatarClass:
-      'bg-amber-50 dark:bg-accent-amber/10 text-amber-700 dark:text-accent-amber-light',
-  },
-] as const;
+// Testimonial data is managed centrally in src/config/landingAssets.ts
+// Update socialProof.items there — not here — to add, remove, or verify entries.
+const { items: TESTIMONIALS } = LANDING_ASSETS.socialProof;
 
 export function SocialProofSection() {
   const { t } = useTranslation();

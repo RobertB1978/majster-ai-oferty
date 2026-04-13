@@ -1,15 +1,11 @@
 import { useState } from 'react';
 import { Play, Clock, Shield, Zap, Video } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { LANDING_ASSETS } from '@/config/landingAssets';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// YOUTUBE_VIDEO_ID: Replace with the actual YouTube video ID when the product
-// demo recording is ready. Format: the part after youtube.com/watch?v=
-// Example: 'dQw4w9WgXcQ' from https://www.youtube.com/watch?v=dQw4w9WgXcQ
-// ─────────────────────────────────────────────────────────────────────────────
-const YOUTUBE_VIDEO_ID = 'YOUR_VIDEO_ID_HERE';
-
-const IS_VIDEO_READY = YOUTUBE_VIDEO_ID !== 'YOUR_VIDEO_ID_HERE';
+// Video ID and readiness are managed centrally in src/config/landingAssets.ts
+const YOUTUBE_VIDEO_ID = LANDING_ASSETS.video.youtubeVideoId ?? '';
+const IS_VIDEO_READY = LANDING_ASSETS.video.youtubeVideoId !== null;
 
 const TRUST_ICONS = [Zap, Shield, Clock] as const;
 
