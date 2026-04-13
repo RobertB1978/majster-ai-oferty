@@ -491,10 +491,15 @@ export function ProductScreenshotsSection() {
 
   return (
     <section
-      className="py-20 md:py-28 bg-white dark:bg-brand-dark"
+      className="relative py-20 md:py-28 bg-white dark:bg-brand-dark overflow-hidden"
       aria-labelledby="screenshots-heading"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Ambient radial glow — purely decorative depth behind the frame */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] rounded-full bg-amber-400/[0.025] dark:bg-accent-amber/[0.04] blur-3xl" />
+      </div>
+
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 rounded-full border border-accent-amber/30 bg-accent-amber/10 px-4 py-1.5 text-sm font-medium text-accent-amber mb-6">
@@ -539,52 +544,67 @@ export function ProductScreenshotsSection() {
           })}
         </div>
 
-        {/* Screenshot frame */}
-        <div
-          id={`screenshot-panel-${active.key}`}
-          role="tabpanel"
-          className="rounded-2xl overflow-hidden border border-gray-200 dark:border-brand-border shadow-2xl shadow-gray-900/10 dark:shadow-black/40"
-        >
-          {/* Browser chrome */}
-          <div className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a]">
-            <span className="w-3 h-3 rounded-full bg-red-400/80 shrink-0" aria-hidden="true" />
-            <span className="w-3 h-3 rounded-full bg-yellow-400/80 shrink-0" aria-hidden="true" />
-            <span className="w-3 h-3 rounded-full bg-green-400/80 shrink-0" aria-hidden="true" />
-            <div className="flex-1 mx-3 bg-white dark:bg-[#2a2a2a] border border-gray-200 dark:border-[#3a3a3a] rounded-md px-3 py-1 text-xs text-gray-400 dark:text-neutral-600 truncate select-none">
-              {active.urlHint}
-            </div>
-          </div>
+        {/* Screenshot frame — glow ring wrapper */}
+        <div className="relative">
+          {/* Ambient amber glow ring behind the frame */}
+          <div
+            className="absolute -inset-px rounded-[1.1rem] bg-gradient-to-b from-amber-400/20 via-amber-400/5 to-transparent dark:from-accent-amber/12 dark:via-accent-amber/3 dark:to-transparent blur-sm pointer-events-none"
+            aria-hidden="true"
+          />
 
-          {/* Animated tab panel */}
-          <div className="aspect-[16/10] bg-[#F9FAFB] overflow-hidden">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={activeTab}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={panelVariants}
-                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full h-full"
-              >
-                {activeScreenshotAsset.path !== null ? (
-                  <img
-                    src={activeScreenshotAsset.path}
-                    alt={activeScreenshotAsset.alt}
-                    className="w-full h-full object-cover"
-                    draggable={false}
-                  />
-                ) : (
-                  <>
-                    {activeTab === 'dashboard' && <DashboardMockup s={dashStrings} />}
-                    {activeTab === 'editor' && <OfferEditorMockup s={offerStrings} />}
-                    {activeTab === 'pdf' && <PdfPreviewMockup s={pdfStrings} />}
-                  </>
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
+          <div
+            id={`screenshot-panel-${active.key}`}
+            role="tabpanel"
+            className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-brand-border shadow-2xl shadow-gray-900/10 dark:shadow-black/50"
+          >
+            {/* Browser chrome */}
+            <div className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a]">
+              <span className="w-3 h-3 rounded-full bg-red-400/80 shrink-0" aria-hidden="true" />
+              <span className="w-3 h-3 rounded-full bg-yellow-400/80 shrink-0" aria-hidden="true" />
+              <span className="w-3 h-3 rounded-full bg-green-400/80 shrink-0" aria-hidden="true" />
+              <div className="flex-1 mx-3 bg-white dark:bg-[#2a2a2a] border border-gray-200 dark:border-[#3a3a3a] rounded-md px-3 py-1 text-xs text-gray-400 dark:text-neutral-600 truncate select-none">
+                {active.urlHint}
+              </div>
+              {/* Honest placeholder indicator — shown only while SVG mockup is active */}
+              {activeScreenshotAsset.path === null && (
+                <span className="hidden sm:inline-flex items-center gap-1 shrink-0 ml-2 text-[10px] font-medium text-gray-400 dark:text-neutral-600 bg-gray-200/70 dark:bg-[#252525] border border-gray-300/60 dark:border-[#333] rounded px-2 py-0.5 select-none">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400/70 dark:bg-accent-amber/60 shrink-0" aria-hidden="true" />
+                  {t('landing.screenshots.badge')}
+                </span>
+              )}
+            </div>
+
+            {/* Animated tab panel */}
+            <div className="aspect-[16/10] bg-[#F9FAFB] overflow-hidden">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={activeTab}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={panelVariants}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="w-full h-full"
+                >
+                  {activeScreenshotAsset.path !== null ? (
+                    <img
+                      src={activeScreenshotAsset.path}
+                      alt={activeScreenshotAsset.alt}
+                      className="w-full h-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <>
+                      {activeTab === 'dashboard' && <DashboardMockup s={dashStrings} />}
+                      {activeTab === 'editor' && <OfferEditorMockup s={offerStrings} />}
+                      {activeTab === 'pdf' && <PdfPreviewMockup s={pdfStrings} />}
+                    </>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>{/* end role="tabpanel" */}
+        </div>{/* end glow ring wrapper */}
 
         {/* Caption */}
         <p className="mt-4 text-center text-sm text-gray-500 dark:text-neutral-500">
