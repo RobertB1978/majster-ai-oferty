@@ -55,26 +55,36 @@ export function VideoSection() {
             ) : (
               /* Poster state */
               <div className="absolute inset-0 flex items-center justify-center">
-                {/* Radial amber glow background */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      'radial-gradient(ellipse at 30% 40%, rgba(245,158,11,0.10) 0%, transparent 55%), radial-gradient(ellipse at 75% 65%, rgba(245,158,11,0.06) 0%, transparent 50%), linear-gradient(135deg, #0F0F0F 0%, #131313 50%, #0A0A0A 100%)',
-                  }}
-                  aria-hidden="true"
-                />
-
-                {/* Subtle dot grid */}
-                <div
-                  className="absolute inset-0 opacity-[0.025]"
-                  style={{
-                    backgroundImage:
-                      'radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px)',
-                    backgroundSize: '32px 32px',
-                  }}
-                  aria-hidden="true"
-                />
+                {/* Background: real poster image or premium dark gradient fallback */}
+                {LANDING_ASSETS.video.posterPath !== null ? (
+                  <img
+                    src={LANDING_ASSETS.video.posterPath}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover"
+                    aria-hidden="true"
+                    draggable={false}
+                  />
+                ) : (
+                  <>
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          'radial-gradient(ellipse at 30% 40%, rgba(245,158,11,0.10) 0%, transparent 55%), radial-gradient(ellipse at 75% 65%, rgba(245,158,11,0.06) 0%, transparent 50%), linear-gradient(135deg, #0F0F0F 0%, #131313 50%, #0A0A0A 100%)',
+                      }}
+                      aria-hidden="true"
+                    />
+                    <div
+                      className="absolute inset-0 opacity-[0.025]"
+                      style={{
+                        backgroundImage:
+                          'radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px)',
+                        backgroundSize: '32px 32px',
+                      }}
+                      aria-hidden="true"
+                    />
+                  </>
+                )}
 
                 {/* Floating feature chips — decorative, screen-reader hidden */}
                 <div
