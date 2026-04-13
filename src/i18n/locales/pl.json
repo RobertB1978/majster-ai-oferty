@@ -2900,7 +2900,8 @@
       "point2": "Bezpłatny plan dostępny od razu",
       "point3": "Dane bezpieczne — szyfrowanie SSL",
       "comingSoon": "Demo wkrótce dostępne",
-      "comingSoonSub": "Nagranie produktu jest w przygotowaniu"
+      "comingSoonSub": "Nagranie produktu jest w przygotowaniu",
+      "previewLabel": "Podgląd wewnętrzny"
     },
     "socialProof": {
       "badge": "Opinie fachowców",

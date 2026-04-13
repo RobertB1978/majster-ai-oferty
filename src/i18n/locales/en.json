@@ -2900,7 +2900,8 @@
       "point2": "Free plan available immediately",
       "point3": "Secure data — SSL encryption",
       "comingSoon": "Demo coming soon",
-      "comingSoonSub": "The product recording is being prepared"
+      "comingSoonSub": "The product recording is being prepared",
+      "previewLabel": "Internal preview"
     },
     "socialProof": {
       "badge": "From the field",
