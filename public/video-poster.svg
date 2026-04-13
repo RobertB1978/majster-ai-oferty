@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="Majster.AI — Demo produktu">
+  <!-- ==========================================================================
+       Majster.AI — Video Section Poster / Background
+       Dimensions : 1280 × 720 px  (16:9)
+       Usage      : VideoSection.tsx renders this as <img> behind its own overlays
+                    (feature chips, duration badge, play button / coming-soon state).
+                    Keep central area minimal — VideoSection owns that space.
+       Brand      : #F59E0B amber · #0A0A0A dark · #FFFFFF white
+  ========================================================================== -->
+
+  <defs>
+    <!-- Centre amber glow — radiates outward from middle -->
+    <radialGradient id="vp-centre" cx="50%" cy="50%" r="55%">
+      <stop offset="0%"   stop-color="#F59E0B" stop-opacity="0.12"/>
+      <stop offset="50%"  stop-color="#F59E0B" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Top-left accent glow -->
+    <radialGradient id="vp-tl" cx="15%" cy="15%" r="40%">
+      <stop offset="0%"   stop-color="#F59E0B" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Bottom-right accent glow -->
+    <radialGradient id="vp-br" cx="88%" cy="88%" r="35%">
+      <stop offset="0%"   stop-color="#F59E0B" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Dot grid pattern -->
+    <pattern id="vp-grid" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="0.5" cy="0.5" r="0.75" fill="rgba(255,255,255,0.05)"/>
+    </pattern>
+    <!-- Horizontal vignette (darken left+right edges) -->
+    <linearGradient id="vp-vign-h" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#000" stop-opacity="0.35"/>
+      <stop offset="18%"  stop-color="#000" stop-opacity="0"/>
+      <stop offset="82%"  stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.35"/>
+    </linearGradient>
+    <!-- Vertical vignette (darken top+bottom edges) -->
+    <linearGradient id="vp-vign-v" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#000" stop-opacity="0.3"/>
+      <stop offset="15%"  stop-color="#000" stop-opacity="0"/>
+      <stop offset="80%"  stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.55"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ── Base layer ─────────────────────────────────────────────────────── -->
+  <rect width="1280" height="720" fill="#0A0A0A"/>
+  <rect width="1280" height="720" fill="url(#vp-grid)"/>
+  <rect width="1280" height="720" fill="url(#vp-centre)"/>
+  <rect width="1280" height="720" fill="url(#vp-tl)"/>
+  <rect width="1280" height="720" fill="url(#vp-br)"/>
+  <!-- Vignette overlays -->
+  <rect width="1280" height="720" fill="url(#vp-vign-h)"/>
+  <rect width="1280" height="720" fill="url(#vp-vign-v)"/>
+
+  <!-- ── Top amber accent line ──────────────────────────────────────────── -->
+  <rect x="0" y="0" width="1280" height="3" fill="#F59E0B" opacity="0.45"/>
+
+  <!-- ── Ambient amber ring (centre background glow) ────────────────────── -->
+  <!-- Outer ring -->
+  <circle cx="640" cy="360" r="230"
+          fill="none" stroke="rgba(245,158,11,0.06)" stroke-width="1"/>
+  <!-- Middle ring -->
+  <circle cx="640" cy="360" r="170"
+          fill="none" stroke="rgba(245,158,11,0.08)" stroke-width="1"/>
+  <!-- Inner ring -->
+  <circle cx="640" cy="360" r="110"
+          fill="none" stroke="rgba(245,158,11,0.10)" stroke-width="1"/>
+
+  <!-- ── Branding — top-left corner (small, not competing with overlays) ── -->
+  <!-- Logo mark -->
+  <rect x="40" y="36" width="34" height="34" rx="8" fill="#F59E0B" opacity="0.9"/>
+  <text x="57" y="59"
+        font-family="Arial,Helvetica,sans-serif"
+        font-size="18" font-weight="900" fill="#000000"
+        text-anchor="middle">M</text>
+  <!-- Wordmark -->
+  <text x="84" y="60"
+        font-family="Arial,Helvetica,sans-serif"
+        font-size="19" font-weight="800" fill="rgba(255,255,255,0.7)"
+        letter-spacing="-0.3">Majster.AI</text>
+
+  <!-- ── Corner decorative elements ─────────────────────────────────────── -->
+
+  <!-- Top-left bracket -->
+  <path d="M 40 100 L 40 130 L 70 130"
+        fill="none" stroke="rgba(245,158,11,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Top-right bracket -->
+  <path d="M 1240 100 L 1240 130 L 1210 130"
+        fill="none" stroke="rgba(245,158,11,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Bottom-left bracket -->
+  <path d="M 40 620 L 40 590 L 70 590"
+        fill="none" stroke="rgba(245,158,11,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Bottom-right bracket -->
+  <path d="M 1240 620 L 1240 590 L 1210 590"
+        fill="none" stroke="rgba(245,158,11,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- ── Bottom strip ────────────────────────────────────────────────────── -->
+  <rect x="0" y="693" width="1280" height="27" fill="rgba(0,0,0,0.4)"/>
+  <rect x="0" y="692" width="1280" height="1" fill="rgba(255,255,255,0.04)"/>
+  <text x="640" y="711"
+        font-family="Arial,Helvetica,monospace,sans-serif"
+        font-size="12" fill="rgba(156,163,175,0.4)"
+        text-anchor="middle" letter-spacing="1">MAJSTER.AI — PROFESJONALNE NARZĘDZIA DLA FACHOWCÓW</text>
+
+  <!-- NOTE: The centre of this image (approx. 440–840 × 240–480) is intentionally
+       empty — VideoSection.tsx renders its own play button / coming-soon state and
+       feature chips as absolute overlays on top of this background. -->
+</svg>

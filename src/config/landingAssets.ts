@@ -125,8 +125,8 @@ export interface LandingAssetsConfig {
 export const LANDING_ASSETS: LandingAssetsConfig = {
   // ── Video demo ─────────────────────────────────────────────────────────────
   video: {
-    youtubeVideoId: null,   // TODO: replace with actual ID once demo is recorded
-    posterPath: null,       // TODO: '/assets/video-poster.jpg' (1920×1080, JPG)
+    youtubeVideoId: null,             // TODO: replace with actual YouTube ID once demo is recorded
+    posterPath: '/video-poster.svg',  // branded SVG backdrop — swap with real screenshot JPG when ready
     durationLabel: '~3 min',
   },
 
@@ -188,13 +188,14 @@ export const LANDING_ASSETS: LandingAssetsConfig = {
   clientLogos: [],
 
   // ── Open Graph image ───────────────────────────────────────────────────────
-  // Currently using the app icon as a fallback.
-  // Replace with a proper 1200×630 social card image:
-  //   path: '/og-image.png', width: 1200, height: 630, isReady: true
+  // SVG social card — supported by Slack, Discord, iMessage, WhatsApp, Google,
+  // Bing, and most modern crawlers. Facebook & LinkedIn prefer PNG/JPEG: export
+  // public/og-image.svg to public/og-image.png (1200×630) and update path below
+  // for maximum cross-platform compatibility.
   ogImage: {
-    path: '/icon-512.png',
-    width: 512,
-    height: 512,
-    isReady: false,
+    path: '/og-image.svg',
+    width: 1200,
+    height: 630,
+    isReady: true,
   },
 };
