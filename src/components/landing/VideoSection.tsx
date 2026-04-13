@@ -98,7 +98,7 @@ export function VideoSection() {
                   aria-hidden="true"
                 >
                   <Clock className="w-3 h-3" />
-                  {t('landing.videoDemo.duration')}
+                  {LANDING_ASSETS.video.durationLabel}
                 </div>
 
                 {IS_VIDEO_READY ? (

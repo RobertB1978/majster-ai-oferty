@@ -17,6 +17,7 @@ import {
   LandingFooter,
 } from '@/components/landing';
 import { getSiteUrl } from '@/lib/siteUrl';
+import { LANDING_ASSETS } from '@/config/landingAssets';
 
 const SITE_URL = getSiteUrl();
 
@@ -53,7 +54,7 @@ export default function Landing() {
         highPrice: '199',
         offerCount: '4',
       },
-      screenshot: `${SITE_URL}/icon-512.png`,
+      screenshot: `${SITE_URL}${LANDING_ASSETS.ogImage.path}`,
       featureList: [
         t('seoStructuredData.features.pdfOffers'),
         t('seoStructuredData.features.projectMgmt'),
@@ -113,10 +114,10 @@ export default function Landing() {
         <meta property="og:description" content={t('seo.landing.ogDescription')} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={SITE_URL} />
-        {/* TODO: Zamień na dedykowany plik og-image.png (1200x630) gdy będzie gotowy */}
-        <meta property="og:image" content={`${SITE_URL}/icon-512.png`} />
-        <meta property="og:image:width" content="512" />
-        <meta property="og:image:height" content="512" />
+        {/* OG image — managed in src/config/landingAssets.ts (ogImage slot) */}
+        <meta property="og:image" content={`${SITE_URL}${LANDING_ASSETS.ogImage.path}`} />
+        <meta property="og:image:width" content={String(LANDING_ASSETS.ogImage.width)} />
+        <meta property="og:image:height" content={String(LANDING_ASSETS.ogImage.height)} />
         <meta property="og:image:alt" content="Majster.AI — profesjonalne wyceny dla fachowców" />
         <meta property="og:site_name" content="Majster.AI" />
         <meta property="og:locale" content="pl_PL" />
@@ -127,7 +128,7 @@ export default function Landing() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={t('seo.landing.twitterTitle')} />
         <meta name="twitter:description" content={t('seo.landing.twitterDescription')} />
-        <meta name="twitter:image" content={`${SITE_URL}/icon-512.png`} />
+        <meta name="twitter:image" content={`${SITE_URL}${LANDING_ASSETS.ogImage.path}`} />
 
         {/* hreflang — multilingual support */}
         <link rel="alternate" hrefLang="pl" href={SITE_URL} />
