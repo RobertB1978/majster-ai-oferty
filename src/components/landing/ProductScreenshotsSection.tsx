@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LayoutDashboard, FileText, Eye } from 'lucide-react';
+import { LayoutDashboard, FileText, Eye, Monitor } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { LANDING_ASSETS } from '@/config/landingAssets';
@@ -544,8 +544,57 @@ export function ProductScreenshotsSection() {
           })}
         </div>
 
-        {/* Screenshot frame — glow ring wrapper */}
-        <div className="relative">
+        {/* Mobile view — readable feature highlights replace the SVG frame on small screens.
+            The 16:10 SVG mockup scales down to ~234px tall on iPhone, making all text
+            (~10–13 px in the SVG) render at 3–4 px — unreadable. This card shows the
+            same information in legible form. Hidden on sm+ where the full frame is shown. */}
+        <div className="sm:hidden rounded-2xl border border-gray-200 dark:border-brand-border bg-gray-50 dark:bg-brand-card overflow-hidden mb-0">
+          {/* Mini browser chrome for visual consistency */}
+          <div className="flex items-center gap-1.5 px-4 py-2.5 bg-gray-100 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a]">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-400/80" aria-hidden="true" />
+            <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" aria-hidden="true" />
+            <span className="w-2.5 h-2.5 rounded-full bg-green-400/80" aria-hidden="true" />
+            <span className="flex-1 mx-2 text-xs text-gray-400 dark:text-neutral-600 truncate select-none">
+              {active.urlHint}
+            </span>
+          </div>
+          {/* Feature highlights */}
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-11 h-11 rounded-xl bg-accent-amber/10 border border-accent-amber/20 flex items-center justify-center shrink-0">
+                <active.icon className="w-5 h-5 text-accent-amber" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-accent-amber mb-0.5">
+                  {t('landing.screenshots.badge')}
+                </p>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                  {t(`landing.screenshots.${activeTab}.tab`)}
+                </h3>
+              </div>
+            </div>
+            <ul className="space-y-3.5">
+              {([1, 2, 3] as const).map((n) => (
+                <li key={n} className="flex items-start gap-3 text-sm text-gray-600 dark:text-neutral-400">
+                  <span
+                    className="mt-0.5 shrink-0 w-5 h-5 rounded-full bg-amber-400/15 dark:bg-accent-amber/10 text-accent-amber flex items-center justify-center text-[10px] font-bold"
+                    aria-hidden="true"
+                  >
+                    {n}
+                  </span>
+                  <span>{t(`landing.screenshots.${activeTab}.m${n}`)}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 flex items-center gap-1.5 text-xs text-gray-400 dark:text-neutral-600">
+              <Monitor className="w-3 h-3 shrink-0" aria-hidden="true" />
+              {t('landing.screenshots.desktopHint')}
+            </p>
+          </div>
+        </div>
+
+        {/* Screenshot frame — glow ring wrapper (desktop / tablet only) */}
+        <div className="hidden sm:block relative">
           {/* Ambient amber glow ring behind the frame */}
           <div
             className="absolute -inset-px rounded-[1.1rem] bg-gradient-to-b from-amber-400/20 via-amber-400/5 to-transparent dark:from-accent-amber/12 dark:via-accent-amber/3 dark:to-transparent blur-sm pointer-events-none"
