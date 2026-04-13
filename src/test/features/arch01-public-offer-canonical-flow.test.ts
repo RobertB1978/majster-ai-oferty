@@ -10,19 +10,26 @@
  *   EMAIL-*  Email handler generates /a/:token URLs (canonical path)
  *   KEY-*    Query cache keys are separated between canonical and legacy flows
  *   SVC-*    publicOfferApi is marked as legacy and uses legacy RPC
+ *   CONST-*  CANONICAL_PUBLIC_OFFER_ROUTE and LEGACY_PUBLIC_OFFER_ROUTES exports
  *
  * All tests are pure / static — no Supabase client required.
  */
 
 import { describe, it, expect } from 'vitest';
+import {
+  CANONICAL_PUBLIC_OFFER_ROUTE,
+  LEGACY_PUBLIC_OFFER_ROUTES,
+} from '@/hooks/useAcceptanceLink';
 
 // ════════════════════════════════════════════════════════════════════════════════
 // FLOW MATRIX — source of truth for this test suite
+// Route values sourced from CANONICAL_PUBLIC_OFFER_ROUTE / LEGACY_PUBLIC_OFFER_ROUTES
+// (imported constants — not hardcoded strings).
 // ════════════════════════════════════════════════════════════════════════════════
 
 const FLOW_MATRIX = {
   canonical: {
-    route: '/a/:token',
+    route: CANONICAL_PUBLIC_OFFER_ROUTE,       // '/a/:token' — from useAcceptanceLink.ts
     component: 'OfferPublicAccept',
     tokenSource: 'acceptance_links.token',
     readRpc: 'resolve_offer_acceptance_link',
@@ -33,7 +40,7 @@ const FLOW_MATRIX = {
     serviceFile: 'src/pages/OfferPublicAccept.tsx',
   },
   legacyEnglish: {
-    route: '/offer/:token',
+    route: LEGACY_PUBLIC_OFFER_ROUTES[0],      // '/offer/:token' — from useAcceptanceLink.ts
     component: 'OfferApproval',
     tokenSource: 'offer_approvals.public_token',
     readRpc: 'get_offer_approval_by_token',
@@ -44,7 +51,7 @@ const FLOW_MATRIX = {
     serviceFile: 'src/pages/OfferApproval.tsx',
   },
   legacyPolish: {
-    route: '/oferta/:token',
+    route: LEGACY_PUBLIC_OFFER_ROUTES[1],      // '/oferta/:token' — from useAcceptanceLink.ts
     component: 'OfferPublicPage',
     tokenSource: 'offer_approvals.public_token',
     readRpc: 'get_offer_approval_by_token',
@@ -343,6 +350,44 @@ describe('[SAFETY] No cross-flow token contamination', () => {
     const canonicalAccepted = 'ACCEPTED';
     const legacyAccepted = 'accepted';
     expect(canonicalAccepted).not.toBe(legacyAccepted);
+  });
+});
+
+// ════════════════════════════════════════════════════════════════════════════════
+// CONST — Canonical constants are exported from a single source of truth
+// ════════════════════════════════════════════════════════════════════════════════
+
+describe('[CONST] Route constants are exported from useAcceptanceLink (single source of truth)', () => {
+  it('CONST-1: CANONICAL_PUBLIC_OFFER_ROUTE is /a/:token', () => {
+    expect(CANONICAL_PUBLIC_OFFER_ROUTE).toBe('/a/:token');
+  });
+
+  it('CONST-2: LEGACY_PUBLIC_OFFER_ROUTES contains /offer/:token', () => {
+    expect(LEGACY_PUBLIC_OFFER_ROUTES).toContain('/offer/:token');
+  });
+
+  it('CONST-3: LEGACY_PUBLIC_OFFER_ROUTES contains /oferta/:token', () => {
+    expect(LEGACY_PUBLIC_OFFER_ROUTES).toContain('/oferta/:token');
+  });
+
+  it('CONST-4: canonical route is NOT in legacy routes array', () => {
+    expect(LEGACY_PUBLIC_OFFER_ROUTES).not.toContain(CANONICAL_PUBLIC_OFFER_ROUTE);
+  });
+
+  it('CONST-5: FLOW_MATRIX routes match exported constants (no hardcoded divergence)', () => {
+    expect(FLOW_MATRIX.canonical.route).toBe(CANONICAL_PUBLIC_OFFER_ROUTE);
+    expect(FLOW_MATRIX.legacyEnglish.route).toBe(LEGACY_PUBLIC_OFFER_ROUTES[0]);
+    expect(FLOW_MATRIX.legacyPolish.route).toBe(LEGACY_PUBLIC_OFFER_ROUTES[1]);
+  });
+
+  it('CONST-6: buildAcceptanceLinkUrl produces URL with canonical route segment /a/', async () => {
+    const { buildAcceptanceLinkUrl } = await import('@/hooks/useAcceptanceLink');
+    const result = buildAcceptanceLinkUrl('test-token');
+    // Canonical route /a/:token → URL contains /a/
+    expect(result).toContain('/a/test-token');
+    // The canonical route segment matches CANONICAL_PUBLIC_OFFER_ROUTE prefix
+    const canonicalSegment = CANONICAL_PUBLIC_OFFER_ROUTE.replace('/:token', '');
+    expect(result).toContain(canonicalSegment);
   });
 });
 

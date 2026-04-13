@@ -95,9 +95,19 @@ export function useDeleteAcceptanceLink(offerId: string) {
   });
 }
 
+// ── ARCH-01: Canonical public offer route constants ────────────────────────────
+// Single source of truth for public offer routing (imported by tests + App.tsx comments).
+
+/** Canonical public offer route — acceptance_links.token (ARCH-01) */
+export const CANONICAL_PUBLIC_OFFER_ROUTE = '/a/:token' as const;
+
+/** Legacy compatibility routes — DO NOT add new business logic (ARCH-01) */
+export const LEGACY_PUBLIC_OFFER_ROUTES = ['/offer/:token', '/oferta/:token'] as const;
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 export function buildAcceptanceLinkUrl(token: string): string {
+  // Uses CANONICAL_PUBLIC_OFFER_ROUTE pattern: /a/:token
   return `${window.location.origin}/a/${token}`;
 }
 
