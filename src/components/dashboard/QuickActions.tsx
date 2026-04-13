@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FolderOpen, Users, FileText, Calendar, type LucideIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface Action {
@@ -38,6 +38,7 @@ const colorMap = {
 export function QuickActions() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
 
   const actions: Action[] = [
     {
@@ -96,7 +97,7 @@ export function QuickActions() {
               )}
             >
               <motion.div
-                variants={{
+                variants={shouldReduceMotion ? {} : {
                   cardHovered: {
                     rotate: 8,
                     scale: 1.12,

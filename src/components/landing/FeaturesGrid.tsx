@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   FileText,
   FolderOpen,
@@ -54,6 +54,7 @@ interface FeatureCardProps {
 
 function FeatureCard({ feature, onDemoClick, index }: FeatureCardProps) {
   const { t } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
   const Icon = ICON_MAP[feature.icon] ?? FileText;
   const hasDemo = DEMO_CAPABLE.has(feature.key);
   const Illustration = ILLUSTRATION_MAP[feature.key];
@@ -78,11 +79,11 @@ function FeatureCard({ feature, onDemoClick, index }: FeatureCardProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ delay: index * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      whileHover="cardHovered"
+      initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+      whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={shouldReduceMotion ? undefined : { once: true, margin: '-60px' }}
+      transition={shouldReduceMotion ? undefined : { delay: index * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={shouldReduceMotion ? undefined : 'cardHovered'}
       className={`group bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:border-accent-amber/40 hover:shadow-lg hover:shadow-accent-amber/5 ${
         hasDemo ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-brand-card' : ''
       }`}
@@ -105,7 +106,7 @@ function FeatureCard({ feature, onDemoClick, index }: FeatureCardProps) {
 
       <div className="flex items-center justify-between">
         <motion.div
-          variants={{
+          variants={shouldReduceMotion ? {} : {
             cardHovered: {
               rotate: 6,
               scale: 1.12,
