@@ -2921,9 +2921,11 @@
         "name": "Tomasz W.",
         "role": "Construction company, Wrocław"
       },
-      "placeholderNotice": "Sample quotes from the beta period — we are collecting verified references from current clients.",
+      "placeholderNotice": "Illustrative opinions from the beta period — not verified references from specific individuals. Confirmed references will appear here once approved.",
       "logoStripTitle": "Chosen by construction businesses",
-      "logoStripPlaceholder": "Coming soon — businesses that chose Majster.AI"
+      "logoStripPlaceholder": "Partner and client logos — coming soon",
+      "unverifiedBadge": "beta",
+      "unverifiedAriaLabel": "Opinion from the beta period, not yet verified"
     }
   },
   "addons": {

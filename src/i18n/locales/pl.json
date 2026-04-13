@@ -2921,9 +2921,11 @@
         "name": "Tomasz W.",
         "role": "Firma budowlana, Wrocław"
       },
-      "placeholderNotice": "Przykładowe opinie z okresu beta — zbieramy zweryfikowane referencje od aktualnych klientów.",
+      "placeholderNotice": "Opinie ilustracyjne z okresu beta — nie są to zweryfikowane referencje konkretnych osób. Potwierdzone referencje pojawią się tu po ich weryfikacji.",
       "logoStripTitle": "Wybierany przez firmy budowlane",
-      "logoStripPlaceholder": "Wkrótce — firmy, które wybrały Majster.AI"
+      "logoStripPlaceholder": "Loga partnerów i klientów — wkrótce",
+      "unverifiedBadge": "beta",
+      "unverifiedAriaLabel": "Opinia z okresu beta, niezweryfikowana"
     }
   },
   "addons": {

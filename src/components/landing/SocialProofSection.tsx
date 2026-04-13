@@ -2,15 +2,17 @@ import { Quote, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANDING_ASSETS } from '@/config/landingAssets';
 
-// Testimonial data and placeholder state are managed in src/config/landingAssets.ts.
-// Flip socialProof.isPlaceholder to false and set verified: true on each item
-// when real, consented testimonials are ready. Add real logos to clientLogos[]
-// when each company has approved their logo usage.
+// All testimonial data and placeholder flags live in src/config/landingAssets.ts.
+//
+// SWAP-IN PATH (no component changes needed):
+//   1. Testimonials  → set isPlaceholder: false, verified: true per item, add real quotes
+//   2. Photos        → set photoPath: '/assets/testimonials/<file>.jpg' per item
+//   3. Client logos  → push entries to clientLogos[] (written approval required per company)
 const { items: TESTIMONIALS, isPlaceholder } = LANDING_ASSETS.socialProof;
 const { clientLogos } = LANDING_ASSETS;
 
-// Variable-width placeholder slots give the logo strip a natural, non-uniform look.
-const PLACEHOLDER_SLOT_WIDTHS = [88, 72, 100, 80, 92] as const;
+// Variable-width slots give the placeholder logo row a natural, non-mechanical look.
+const PLACEHOLDER_SLOT_WIDTHS = [88, 72, 104, 80, 96] as const;
 
 export function SocialProofSection() {
   const { t } = useTranslation();
@@ -37,12 +39,22 @@ export function SocialProofSection() {
             {t('landing.socialProof.sectionSubtitle')}
           </p>
 
-          {/* Placeholder notice — visible only while isPlaceholder: true.
-              Removed automatically when config is flipped to real content. */}
+          {/* ── Placeholder notice ─────────────────────────────────────────
+              Shown when isPlaceholder: true. Removed automatically once the
+              flag is flipped to false in landingAssets.ts.
+              Amber tint makes it clearly readable — not a hidden micro-label. */}
           {isPlaceholder && (
-            <div className="mt-5 inline-flex items-center gap-2 text-xs text-gray-400 dark:text-neutral-600 bg-gray-50 dark:bg-brand-surface border border-gray-200 dark:border-brand-border rounded-lg px-3 py-2 max-w-lg">
-              <Info className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-              <span>{t('landing.socialProof.placeholderNotice')}</span>
+            <div
+              role="note"
+              className="mt-6 inline-flex items-start gap-3 max-w-xl text-left bg-accent-amber/5 dark:bg-accent-amber/10 border border-accent-amber/25 rounded-xl px-4 py-3"
+            >
+              <Info
+                className="w-4 h-4 text-accent-amber mt-0.5 shrink-0"
+                aria-hidden="true"
+              />
+              <p className="text-sm text-gray-600 dark:text-neutral-400 leading-snug">
+                {t('landing.socialProof.placeholderNotice')}
+              </p>
             </div>
           )}
         </div>
@@ -52,8 +64,20 @@ export function SocialProofSection() {
           {TESTIMONIALS.map((item) => (
             <div
               key={item.key}
-              className="bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-5 shadow-sm transition-all duration-300 hover:border-accent-amber/40 hover:shadow-lg hover:shadow-accent-amber/5"
+              className="relative bg-white dark:bg-brand-card border border-gray-200 dark:border-brand-border rounded-2xl p-6 flex flex-col gap-5 shadow-sm transition-all duration-300 hover:border-accent-amber/40 hover:shadow-lg hover:shadow-accent-amber/5"
             >
+              {/* Unverified badge — visible per card while item.verified === false.
+                  Positioned top-right so it doesn't disrupt the reading flow.
+                  Disappears automatically once verified: true is set in config. */}
+              {!item.verified && (
+                <span
+                  aria-label={t('landing.socialProof.unverifiedAriaLabel')}
+                  className="absolute top-4 right-4 text-[10px] font-semibold uppercase tracking-wider text-accent-amber/70 dark:text-accent-amber/60 bg-accent-amber/10 dark:bg-accent-amber/10 border border-accent-amber/20 rounded px-1.5 py-0.5 leading-none"
+                >
+                  {t('landing.socialProof.unverifiedBadge')}
+                </span>
+              )}
+
               {/* Decorative quotation mark */}
               <Quote
                 className="w-7 h-7 text-accent-amber/30 shrink-0"
@@ -84,11 +108,11 @@ export function SocialProofSection() {
                   </div>
                 )}
 
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white leading-tight truncate">
                     {t(`landing.socialProof.${item.key}.name`)}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-neutral-500 mt-0.5">
+                  <p className="text-xs text-gray-500 dark:text-neutral-500 mt-0.5 truncate">
                     {t(`landing.socialProof.${item.key}.role`)}
                   </p>
                 </div>
@@ -97,63 +121,66 @@ export function SocialProofSection() {
           ))}
         </div>
 
-        {/* ── Logo strip — real logos or placeholder slots ────────────────
-            Structure is ready for real client logos.
-            To activate: add entries to LANDING_ASSETS.clientLogos[] in
-            src/config/landingAssets.ts — each entry requires written
-            approval from the respective company. */}
+        {/* ── Logo strip ─────────────────────────────────────────────────────
+            Real mode  : heading + real logos from clientLogos[]
+            Placeholder: sr-only label + decorative empty slots (aria-hidden)
+            Activation : push entries to LANDING_ASSETS.clientLogos[] in
+                         src/config/landingAssets.ts (written approval required). */}
         <div className="border-t border-gray-100 dark:border-brand-border pt-10">
-          <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-600 mb-7">
-            {clientLogos.length > 0
-              ? t('landing.socialProof.logoStripTitle')
-              : t('landing.socialProof.logoStripPlaceholder')}
-          </p>
 
           {clientLogos.length > 0 ? (
-            /* Real logo strip — rendered once clientLogos[] is populated */
-            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
-              {clientLogos.map((logo) =>
-                logo.url ? (
-                  <a
-                    key={logo.name}
-                    href={logo.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={logo.name}
-                    className="opacity-50 hover:opacity-80 transition-opacity duration-200 grayscale hover:grayscale-0"
-                  >
+            <>
+              <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-600 mb-7">
+                {t('landing.socialProof.logoStripTitle')}
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+                {clientLogos.map((logo) =>
+                  logo.url ? (
+                    <a
+                      key={logo.name}
+                      href={logo.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={logo.name}
+                      className="opacity-50 hover:opacity-80 transition-opacity duration-200 grayscale hover:grayscale-0"
+                    >
+                      <img
+                        src={logo.logoPath}
+                        alt={logo.name}
+                        className="h-8 w-auto max-w-[120px] object-contain"
+                      />
+                    </a>
+                  ) : (
                     <img
+                      key={logo.name}
                       src={logo.logoPath}
                       alt={logo.name}
-                      className="h-8 w-auto max-w-[120px] object-contain"
+                      className="h-8 w-auto max-w-[120px] object-contain opacity-50 grayscale"
                     />
-                  </a>
-                ) : (
-                  <img
-                    key={logo.name}
-                    src={logo.logoPath}
-                    alt={logo.name}
-                    className="h-8 w-auto max-w-[120px] object-contain opacity-50 grayscale"
-                  />
-                )
-              )}
-            </div>
+                  )
+                )}
+              </div>
+            </>
           ) : (
-            /* Placeholder logo slots — aria-hidden, purely decorative.
-               Variable widths prevent a mechanical grid look. */
-            <div
-              className="flex flex-wrap items-center justify-center gap-4 md:gap-5"
-              aria-hidden="true"
-            >
-              {PLACEHOLDER_SLOT_WIDTHS.map((width, i) => (
-                <div
-                  key={i}
-                  className="h-7 rounded bg-gray-100 dark:bg-brand-surface/50 border border-dashed border-gray-200 dark:border-brand-border/50"
-                  style={{ width }}
-                />
-              ))}
+            /* Placeholder: purely decorative slot shapes.
+               Screen readers get an honest sr-only label instead of silence. */
+            <div role="presentation">
+              <p className="sr-only">{t('landing.socialProof.logoStripPlaceholder')}</p>
+              <div
+                className="flex flex-wrap items-center justify-center gap-4 md:gap-5"
+                aria-hidden="true"
+              >
+                {PLACEHOLDER_SLOT_WIDTHS.map((width, i) => (
+                  <div
+                    key={i}
+                    className="h-7 rounded-md bg-gray-100 dark:bg-brand-surface/50 border border-dashed border-gray-200 dark:border-brand-border/40"
+                    style={{ width }}
+                  />
+                ))}
+              </div>
             </div>
           )}
+
         </div>
 
       </div>
