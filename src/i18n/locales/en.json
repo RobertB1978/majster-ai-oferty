@@ -2921,7 +2921,12 @@
         "quote": "My crew speaks Ukrainian, I speak Polish. First tool that simply works for both of us without any workarounds.",
         "name": "Tomasz W.",
         "role": "Construction company, Wrocław"
-      }
+      },
+      "placeholderNotice": "Illustrative opinions from the beta period — not verified references from specific individuals. Confirmed references will appear here once approved.",
+      "logoStripTitle": "Chosen by construction businesses",
+      "logoStripPlaceholder": "Partner and client logos — coming soon",
+      "unverifiedBadge": "beta",
+      "unverifiedAriaLabel": "Opinion from the beta period, not yet verified"
     }
   },
   "addons": {

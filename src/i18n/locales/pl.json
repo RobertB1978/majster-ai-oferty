@@ -2921,7 +2921,12 @@
         "quote": "Moja ekipa mówi po ukraińsku, ja po polsku. Pierwszy system, który po prostu działa dla nas obu bez żadnego kombinowania.",
         "name": "Tomasz W.",
         "role": "Firma budowlana, Wrocław"
-      }
+      },
+      "placeholderNotice": "Opinie ilustracyjne z okresu beta — nie są to zweryfikowane referencje konkretnych osób. Potwierdzone referencje pojawią się tu po ich weryfikacji.",
+      "logoStripTitle": "Wybierany przez firmy budowlane",
+      "logoStripPlaceholder": "Loga partnerów i klientów — wkrótce",
+      "unverifiedBadge": "beta",
+      "unverifiedAriaLabel": "Opinia z okresu beta, niezweryfikowana"
     }
   },
   "addons": {
