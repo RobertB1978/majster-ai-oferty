@@ -2799,17 +2799,27 @@
       "badge": "Interfejs produktu",
       "sectionTitle": "Tak wygląda Majster.AI",
       "sectionSubtitle": "Pulpit, edytor ofert i podgląd PDF — trzy widoki, które fachowcy otwierają najczęściej.",
+      "desktopHint": "Pełny podgląd interfejsu dostępny na komputerze",
       "dashboard": {
         "tab": "Dashboard",
-        "caption": "Pulpit główny — projekty, statusy, wartości i terminy w jednym miejscu."
+        "caption": "Pulpit główny — projekty, statusy, wartości i terminy w jednym miejscu.",
+        "m1": "Aktywne projekty, statusy i terminy w jednym miejscu",
+        "m2": "Miesięczny przychód i oferty w toku — zawsze aktualne",
+        "m3": "Szybki podgląd ostatnich zleceń i ich wartości"
       },
       "editor": {
         "tab": "Edytor ofert",
-        "caption": "Twórz profesjonalne wyceny w kilka minut — z pozycjami, VAT i gotowym podsumowaniem."
+        "caption": "Twórz profesjonalne wyceny w kilka minut — z pozycjami, VAT i gotowym podsumowaniem.",
+        "m1": "Pozycje robocizny i materiałów z automatycznym sumowaniem",
+        "m2": "Asystent AI proponuje opisy i stawki na podstawie zakresu prac",
+        "m3": "Jeden klik — wycena zamienia się w gotowy PDF do wysyłki"
       },
       "pdf": {
         "tab": "Podgląd PDF",
-        "caption": "Gotowa oferta PDF — z logo firmy, danymi klienta, zakresem prac i miejscem na podpis."
+        "caption": "Gotowa oferta PDF — z logo firmy, danymi klienta, zakresem prac i miejscem na podpis.",
+        "m1": "Profesjonalny dokument z logo firmy i danymi klienta",
+        "m2": "Szczegółowy zakres prac z cenami jednostkowymi i podsumowaniem",
+        "m3": "Gotowy do pobrania, wydruku lub wysłania mailem jednym kliknięciem"
       },
       "mock": {
         "nav": {

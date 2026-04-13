@@ -2799,17 +2799,27 @@
       "badge": "Product interface",
       "sectionTitle": "This is Majster.AI",
       "sectionSubtitle": "Dashboard, offer editor and PDF preview — the three views tradespeople use most every day.",
+      "desktopHint": "Full interface preview available on desktop",
       "dashboard": {
         "tab": "Dashboard",
-        "caption": "Main dashboard — projects, statuses, values and deadlines in one place."
+        "caption": "Main dashboard — projects, statuses, values and deadlines in one place.",
+        "m1": "Active projects, statuses and deadlines in one place",
+        "m2": "Monthly revenue and open offers — always up to date",
+        "m3": "Quick overview of recent jobs and their values"
       },
       "editor": {
         "tab": "Offer editor",
-        "caption": "Create professional quotes in minutes — with line items, VAT and a ready-to-send summary."
+        "caption": "Create professional quotes in minutes — with line items, VAT and a ready-to-send summary.",
+        "m1": "Labour and material line items with automatic totals",
+        "m2": "AI assistant suggests descriptions and rates based on scope",
+        "m3": "One click — the quote becomes a ready-to-send PDF"
       },
       "pdf": {
         "tab": "PDF preview",
-        "caption": "Ready PDF quote — with company logo, client data, scope of work, and signature block."
+        "caption": "Ready PDF quote — with company logo, client data, scope of work, and signature block.",
+        "m1": "Professional document with company logo and client details",
+        "m2": "Detailed scope of work with unit prices and total summary",
+        "m3": "Ready to download, print or send by email in one click"
       },
       "mock": {
         "nav": {

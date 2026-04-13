@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LayoutDashboard, FileText, Eye } from 'lucide-react';
+import { LayoutDashboard, FileText, Eye, Monitor } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { LANDING_ASSETS } from '@/config/landingAssets';
@@ -491,10 +491,15 @@ export function ProductScreenshotsSection() {
 
   return (
     <section
-      className="py-20 md:py-28 bg-white dark:bg-brand-dark"
+      className="relative py-20 md:py-28 bg-white dark:bg-brand-dark overflow-hidden"
       aria-labelledby="screenshots-heading"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Ambient radial glow — purely decorative depth behind the frame */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] rounded-full bg-amber-400/[0.025] dark:bg-accent-amber/[0.04] blur-3xl" />
+      </div>
+
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 rounded-full border border-accent-amber/30 bg-accent-amber/10 px-4 py-1.5 text-sm font-medium text-accent-amber mb-6">
@@ -539,52 +544,116 @@ export function ProductScreenshotsSection() {
           })}
         </div>
 
-        {/* Screenshot frame */}
-        <div
-          id={`screenshot-panel-${active.key}`}
-          role="tabpanel"
-          className="rounded-2xl overflow-hidden border border-gray-200 dark:border-brand-border shadow-2xl shadow-gray-900/10 dark:shadow-black/40"
-        >
-          {/* Browser chrome */}
-          <div className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a]">
-            <span className="w-3 h-3 rounded-full bg-red-400/80 shrink-0" aria-hidden="true" />
-            <span className="w-3 h-3 rounded-full bg-yellow-400/80 shrink-0" aria-hidden="true" />
-            <span className="w-3 h-3 rounded-full bg-green-400/80 shrink-0" aria-hidden="true" />
-            <div className="flex-1 mx-3 bg-white dark:bg-[#2a2a2a] border border-gray-200 dark:border-[#3a3a3a] rounded-md px-3 py-1 text-xs text-gray-400 dark:text-neutral-600 truncate select-none">
+        {/* Mobile view — readable feature highlights replace the SVG frame on small screens.
+            The 16:10 SVG mockup scales down to ~234px tall on iPhone, making all text
+            (~10–13 px in the SVG) render at 3–4 px — unreadable. This card shows the
+            same information in legible form. Hidden on sm+ where the full frame is shown. */}
+        <div className="sm:hidden rounded-2xl border border-gray-200 dark:border-brand-border bg-gray-50 dark:bg-brand-card overflow-hidden mb-0">
+          {/* Mini browser chrome for visual consistency */}
+          <div className="flex items-center gap-1.5 px-4 py-2.5 bg-gray-100 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a]">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-400/80" aria-hidden="true" />
+            <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" aria-hidden="true" />
+            <span className="w-2.5 h-2.5 rounded-full bg-green-400/80" aria-hidden="true" />
+            <span className="flex-1 mx-2 text-xs text-gray-400 dark:text-neutral-600 truncate select-none">
               {active.urlHint}
-            </div>
+            </span>
           </div>
-
-          {/* Animated tab panel */}
-          <div className="aspect-[16/10] bg-[#F9FAFB] overflow-hidden">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={activeTab}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={panelVariants}
-                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full h-full"
-              >
-                {activeScreenshotAsset.path !== null ? (
-                  <img
-                    src={activeScreenshotAsset.path}
-                    alt={activeScreenshotAsset.alt}
-                    className="w-full h-full object-cover"
-                    draggable={false}
-                  />
-                ) : (
-                  <>
-                    {activeTab === 'dashboard' && <DashboardMockup s={dashStrings} />}
-                    {activeTab === 'editor' && <OfferEditorMockup s={offerStrings} />}
-                    {activeTab === 'pdf' && <PdfPreviewMockup s={pdfStrings} />}
-                  </>
-                )}
-              </motion.div>
-            </AnimatePresence>
+          {/* Feature highlights */}
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-11 h-11 rounded-xl bg-accent-amber/10 border border-accent-amber/20 flex items-center justify-center shrink-0">
+                <active.icon className="w-5 h-5 text-accent-amber" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-accent-amber mb-0.5">
+                  {t('landing.screenshots.badge')}
+                </p>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                  {t(`landing.screenshots.${activeTab}.tab`)}
+                </h3>
+              </div>
+            </div>
+            <ul className="space-y-3.5">
+              {([1, 2, 3] as const).map((n) => (
+                <li key={n} className="flex items-start gap-3 text-sm text-gray-600 dark:text-neutral-400">
+                  <span
+                    className="mt-0.5 shrink-0 w-5 h-5 rounded-full bg-amber-400/15 dark:bg-accent-amber/10 text-accent-amber flex items-center justify-center text-[10px] font-bold"
+                    aria-hidden="true"
+                  >
+                    {n}
+                  </span>
+                  <span>{t(`landing.screenshots.${activeTab}.m${n}`)}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 flex items-center gap-1.5 text-xs text-gray-400 dark:text-neutral-600">
+              <Monitor className="w-3 h-3 shrink-0" aria-hidden="true" />
+              {t('landing.screenshots.desktopHint')}
+            </p>
           </div>
         </div>
+
+        {/* Screenshot frame — glow ring wrapper (desktop / tablet only) */}
+        <div className="hidden sm:block relative">
+          {/* Ambient amber glow ring behind the frame */}
+          <div
+            className="absolute -inset-px rounded-[1.1rem] bg-gradient-to-b from-amber-400/20 via-amber-400/5 to-transparent dark:from-accent-amber/12 dark:via-accent-amber/3 dark:to-transparent blur-sm pointer-events-none"
+            aria-hidden="true"
+          />
+
+          <div
+            id={`screenshot-panel-${active.key}`}
+            role="tabpanel"
+            className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-brand-border shadow-2xl shadow-gray-900/10 dark:shadow-black/50"
+          >
+            {/* Browser chrome */}
+            <div className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a]">
+              <span className="w-3 h-3 rounded-full bg-red-400/80 shrink-0" aria-hidden="true" />
+              <span className="w-3 h-3 rounded-full bg-yellow-400/80 shrink-0" aria-hidden="true" />
+              <span className="w-3 h-3 rounded-full bg-green-400/80 shrink-0" aria-hidden="true" />
+              <div className="flex-1 mx-3 bg-white dark:bg-[#2a2a2a] border border-gray-200 dark:border-[#3a3a3a] rounded-md px-3 py-1 text-xs text-gray-400 dark:text-neutral-600 truncate select-none">
+                {active.urlHint}
+              </div>
+              {/* Honest placeholder indicator — shown only while SVG mockup is active */}
+              {activeScreenshotAsset.path === null && (
+                <span className="hidden sm:inline-flex items-center gap-1 shrink-0 ml-2 text-[10px] font-medium text-gray-400 dark:text-neutral-600 bg-gray-200/70 dark:bg-[#252525] border border-gray-300/60 dark:border-[#333] rounded px-2 py-0.5 select-none">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400/70 dark:bg-accent-amber/60 shrink-0" aria-hidden="true" />
+                  {t('landing.screenshots.badge')}
+                </span>
+              )}
+            </div>
+
+            {/* Animated tab panel */}
+            <div className="aspect-[16/10] bg-[#F9FAFB] overflow-hidden">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={activeTab}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={panelVariants}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="w-full h-full"
+                >
+                  {activeScreenshotAsset.path !== null ? (
+                    <img
+                      src={activeScreenshotAsset.path}
+                      alt={activeScreenshotAsset.alt}
+                      className="w-full h-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <>
+                      {activeTab === 'dashboard' && <DashboardMockup s={dashStrings} />}
+                      {activeTab === 'editor' && <OfferEditorMockup s={offerStrings} />}
+                      {activeTab === 'pdf' && <PdfPreviewMockup s={pdfStrings} />}
+                    </>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>{/* end role="tabpanel" */}
+        </div>{/* end glow ring wrapper */}
 
         {/* Caption */}
         <p className="mt-4 text-center text-sm text-gray-500 dark:text-neutral-500">
