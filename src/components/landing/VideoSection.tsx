@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Play, Clock, Shield, Zap, Video } from 'lucide-react';
+import { Play, Clock, Shield, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANDING_ASSETS } from '@/config/landingAssets';
 
@@ -138,16 +138,32 @@ export function VideoSection() {
                     </div>
                   </button>
                 ) : (
-                  /* Coming soon state — video ID not yet set */
-                  <div className="relative z-10 flex flex-col items-center gap-4 text-center px-6">
-                    <div className="w-20 h-20 rounded-full border border-white/10 bg-white/[0.04] flex items-center justify-center">
-                      <Video className="w-8 h-8 text-neutral-500" aria-hidden="true" />
+                  /* Placeholder state — video recording in preparation.
+                     Honest framing: label + muted play affordance signals
+                     that this will be a video demo without claiming it is live.
+                     Rings and icon are intentionally muted vs the active amber
+                     play button, but readable on the dark (#0A0A0A) poster. */
+                  <div className="relative z-10 flex flex-col items-center gap-5 text-center px-6">
+                    {/* Honest state pill */}
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-black/60 border border-white/[0.12] px-3 py-1 text-[11px] font-medium text-neutral-500 tracking-wider uppercase backdrop-blur-sm">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-neutral-600 shrink-0" aria-hidden="true" />
+                      {t('landing.videoDemo.previewLabel')}
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-neutral-300">
+
+                    {/* Muted play circle — readable on dark bg, clearly inactive vs amber active state */}
+                    <div className="relative flex items-center justify-center" aria-hidden="true">
+                      <div className="absolute w-[124px] h-[124px] rounded-full border border-white/[0.10]" />
+                      <div className="absolute w-[90px] h-[90px] rounded-full border border-white/[0.14]" />
+                      <div className="w-16 h-16 rounded-full bg-white/[0.07] border border-white/[0.18] flex items-center justify-center">
+                        <Play className="w-6 h-6 text-neutral-500 fill-neutral-600 translate-x-0.5" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <p className="text-sm font-semibold text-neutral-300">
                         {t('landing.videoDemo.comingSoon')}
                       </p>
-                      <p className="text-xs text-neutral-600 mt-1">
+                      <p className="text-xs text-neutral-500 leading-relaxed max-w-[200px] mx-auto">
                         {t('landing.videoDemo.comingSoonSub')}
                       </p>
                     </div>
