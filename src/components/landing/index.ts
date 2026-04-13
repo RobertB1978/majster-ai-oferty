@@ -6,6 +6,7 @@ export { HowItWorksSection } from './HowItWorksSection';
 export { BeforeAfterSection } from './BeforeAfterSection';
 export { ProductScreenshotsSection } from './ProductScreenshotsSection';
 export { VideoSection } from './VideoSection';
+export { SocialProofSection } from './SocialProofSection';
 export { TestimonialsSection } from './TestimonialsSection';
 export { PricingSection } from './PricingSection';
 export { FAQSection } from './FAQSection';

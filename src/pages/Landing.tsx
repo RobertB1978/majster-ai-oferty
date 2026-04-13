@@ -9,6 +9,7 @@ import {
   BeforeAfterSection,
   ProductScreenshotsSection,
   VideoSection,
+  SocialProofSection,
   TestimonialsSection,
   PricingSection,
   FAQSection,
@@ -170,6 +171,9 @@ export default function Landing() {
 
           {/* 3d. Video demo — live product walkthrough, bridges static mockups to social proof */}
           <VideoSection />
+
+          {/* 3e. Social proof — testimonial cards from beta users (placeholder, replace before launch) */}
+          <SocialProofSection />
 
           {/* 4. Expected results — honest framing, no fake testimonials */}
           <TestimonialsSection />

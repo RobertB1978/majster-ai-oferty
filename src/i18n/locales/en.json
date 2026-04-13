@@ -2891,6 +2891,26 @@
       "point3": "Secure data — SSL encryption",
       "comingSoon": "Demo coming soon",
       "comingSoonSub": "The product recording is being prepared"
+    },
+    "socialProof": {
+      "badge": "From the field",
+      "sectionTitle": "What tradespeople testing Majster.AI say",
+      "sectionSubtitle": "Feedback from early users gathered during the beta testing phase.",
+      "t1": {
+        "quote": "I stopped wasting time in Excel. Now I send the client a PDF in a few minutes — and it looks professional. They ask which software I use. I say: mine.",
+        "name": "Marek K.",
+        "role": "Tile fitter, Warsaw"
+      },
+      "t2": {
+        "quote": "I have all my clients and projects in one place. No more digging through phone notes and old emails for pricing.",
+        "name": "Dawid S.",
+        "role": "General contractor, Kraków"
+      },
+      "t3": {
+        "quote": "My crew speaks Ukrainian, I speak Polish. First tool that simply works for both of us without any workarounds.",
+        "name": "Tomasz W.",
+        "role": "Construction company, Wrocław"
+      }
     }
   },
   "addons": {
