@@ -9,6 +9,38 @@ ale komunikacja z użytkownikiem — zawsze po polsku.
 
 ---
 
+## 🚨 Globalne Zasady Operacyjne (OBOWIĄZKOWE — każda sesja)
+
+Poniższe zasady mają bezwzględny priorytet i obowiązują w **każdej** sesji, bez wyjątków.
+
+| # | Zasada | Opis |
+|---|--------|------|
+| 1 | **main = produkcja** | Każdy commit na `main` jest natychmiast na żywo. Działaj z pełną ostrożnością. |
+| 2 | **Jedna zmiana = jeden PR** | Nie łącz niepowiązanych poprawek w jednym PR. |
+| 3 | **Brak zielonego CI = brak merge** | CI musi być zielone przed każdym merge. Bez wyjątków. |
+| 4 | **Nie zgaduj** | Jeśli coś jest niejasne: STOP i zgłoś. Nie zakładaj. |
+| 5 | **Nie rozszerzaj zakresu** | Jeśli znajdziesz coś dodatkowego: zaloguj, nie naprawiaj w tym PR. |
+| 6 | **Nie modyfikuj istniejących migracji** | Tylko nowe migracje, idempotentne. |
+| 7 | **Brak sekretów w logach i kodzie** | Żadnych sekretów w logach, kodzie, komentarzach, screenshotach ani opisach PR. |
+| 8 | **Weryfikacja nie przeszła = STOP** | Zgłoś dokładny bloker. Robert decyduje o następnym kroku. |
+| 9 | **Smoke test nie przeszedł = brak merge** | Twardy stop. Przywróć branch. |
+| 10 | **Przegląd diffa przed finalizacją** | Każda zmieniona linia musi być uzasadniona. |
+| 11 | **Rozdziel: agent vs Robert** | Jasno zaznacz co robi agent, a co Robert musi zrobić ręcznie. |
+| 12 | **Evidence Log jest obowiązkowy** | Format: `symptom → dowód → zmiana → weryfikacja → rollback` |
+
+### Evidence Log — szablon (obowiązkowy w każdym raporcie)
+
+```
+## Evidence Log
+- Symptom:     [co było nie tak / co miało zostać zrobione]
+- Dowód:       [plik:linia, błąd, log, screenshot]
+- Zmiana:      [co dokładnie zostało zmienione]
+- Weryfikacja: [wynik testów / build / lint / smoke test]
+- Rollback:    [jak cofnąć tę zmianę jeśli coś pójdzie nie tak]
+```
+
+---
+
 ## Project Overview
 
 **Majster.AI** is a SaaS platform designed for construction and renovation professionals in Poland. It helps contractors, builders, and renovation specialists manage their business operations efficiently through AI-powered tools.
