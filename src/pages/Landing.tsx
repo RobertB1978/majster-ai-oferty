@@ -8,6 +8,7 @@ import {
   HowItWorksSection,
   BeforeAfterSection,
   ProductScreenshotsSection,
+  VideoSection,
   TestimonialsSection,
   PricingSection,
   FAQSection,
@@ -166,6 +167,9 @@ export default function Landing() {
 
           {/* 3c. Product screenshots — real UI for trust and conversion */}
           <ProductScreenshotsSection />
+
+          {/* 3d. Video demo — live product walkthrough, bridges static mockups to social proof */}
+          <VideoSection />
 
           {/* 4. Expected results — honest framing, no fake testimonials */}
           <TestimonialsSection />
