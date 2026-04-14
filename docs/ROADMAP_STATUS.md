@@ -419,12 +419,12 @@ SELECT public.count_monthly_finalized_offers('user-a-uuid'); -- zwraca 0 dla use
 Faza 0 (Fundament):     3/3 PR  ██████████  100%
 Faza 1 (Dostęp):        3/3 PR  ██████████  100%
 Faza 2 (Shell):         1/1 PR  ██████████  100%
-Faza 3 (Dane/Oferty):   1/2 PR  █████░░░░░  50%
+Faza 3 (Dane/Oferty):   2/2 PR  ██████████  100%
 Faza 4 (Oferty flow):   3/3 PR  ██████████  100%
-Faza 5 (Projekty):      2/6 PR  ███░░░░░░░  33%
-Faza 6 (Offline+$):     0/2 PR  ░░░░░░░░░░  0%
+Faza 5 (Projekty):      6/6 PR  ██████████  100%
+Faza 6 (Offline+$):     2/2 PR  ██████████  100%
 ─────────────────────────────────────────
-RAZEM:                  12/20 PR ███████░░░  60%
+RAZEM:                  20/20 PR ██████████  100%
 (PR-00 nie wliczany do progresu funkcjonalnego)
 ```
 

@@ -1056,7 +1056,12 @@ Zmiana tokenów + redesign strony | PDF migration + UI redesign | Analytics setu
 
 ## 31. Gotowe prompty wykonawcze — Etap 0
 
-> **Skopiuj cały blok. Wklej do Claude Code Web. Nie skracaj scope fence. Nie usuwaj PRE-MERGE.**
+> ⚠️ **ARCHIWUM — PROMPTY NIEAKTUALNE.** Ten dokument został zastąpiony przez [`docs/ROADMAP.md`](./ROADMAP.md) (v5),
+> który definiuje inny framework realizacji (21 PR-ów w 6 fazach zamiast Etapów E0–E6 z Gate Cards).
+> Poniższe prompty odnoszą się do starego frameworku i **nie powinny być używane** do nowych prac.
+> Zachowane wyłącznie jako historia projektu.
+
+> ~~**Skopiuj cały blok. Wklej do Claude Code Web. Nie skracaj scope fence. Nie usuwaj PRE-MERGE.**~~
 
 ---
 
@@ -1235,10 +1240,10 @@ Zmiana tokenów + redesign strony | PDF migration + UI redesign | Analytics setu
 
 ## PIERWSZY KROK
 
-```
-Wklej Prompt E0-A do Claude Code Web.
-Cztery prompty E0-A/B/C/D są gotowe w sekcji 31.
-```
+> ⚠️ **ARCHIWUM — patrz [`docs/ROADMAP.md`](./ROADMAP.md) (v5) dla aktualnego planu prac.**
+
+~~Wklej Prompt E0-A do Claude Code Web.~~
+~~Cztery prompty E0-A/B/C/D są gotowe w sekcji 31.~~
 
 ---
 
