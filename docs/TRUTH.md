@@ -1,4 +1,10 @@
-# Source of Truth — Majster.AI
+> ⚠️ **SNAPSHOT ARCHIWALNY — 2026-02-18**
+> Ten dokument odzwierciedla stan projektu na **2026-02-18** i nie był od tej pory aktualizowany.
+> **Aktualny stan projektu** → [`docs/ROADMAP_STATUS.md`](./ROADMAP_STATUS.md) (ostatnia aktualizacja: 2026-03-02, PR-20 DONE)
+> **Aktualny stan wdrożenia** → [`docs/DEPLOYMENT_TRUTH.md`](./DEPLOYMENT_TRUTH.md)
+> **Aktualny stan poszczególnych modułów** → [`docs/STAN_PROJEKTU.md`](./STAN_PROJEKTU.md) (2026-03-02)
+
+# Source of Truth — Majster.AI [SNAPSHOT 2026-02-18]
 
 **Last Updated**: 2026-02-18 (Reality-Sync Reconciliation session `claude/reality-sync-reconciliation-lzHqT`)
 

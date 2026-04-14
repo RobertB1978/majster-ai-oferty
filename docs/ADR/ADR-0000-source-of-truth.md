@@ -30,11 +30,13 @@ Od 2026-03-01 roadmapa została rozszerzona z 5 do 21 PR (PR-00..PR-20), obejmuj
 ## Dokumenty pomocnicze (aktualne)
 | Dokument | Rola |
 |----------|------|
+| `docs/DOCS_INDEX.md` | **Indeks nawigacyjny** — jeden plik z mapą wszystkich źródeł prawdy |
 | `docs/ROADMAP_STATUS.md` | Tracker statusów PR-00..PR-20 (aktualizuj po każdym merge) |
-| `docs/ADR/` | Decyzje architektoniczne (ADR-0000..ADR-0009+) |
+| `docs/ADR/` | Decyzje architektoniczne (ADR-0000..ADR-0014) |
 | `docs/DEPLOYMENT_TRUTH.md` | Stan wdrożenia — PASS/FAIL Vercel + Supabase |
 | `docs/TRACEABILITY_MATRIX.md` | Mapping: wymaganie → kod → PR → test → status |
 | `docs/PR_PLAYBOOK.md` | Proces PR — szablon, zasady, workflow |
+| `docs/DECISIONS.md` | Append-only log wszystkich decyzji architektonicznych |
 
 ## Zasada aktualizacji (v5)
 Przy każdym merge:

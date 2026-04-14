@@ -3,7 +3,7 @@
 **Status:** ACTIVE  
 **Created:** 2026-04-13  
 **PR:** PR-ARCH-02 (`claude/pr-arch-02-public-offer-phase2-0Kgl9`)  
-**Baseline:** ADR-0005 (PR-ARCH-01)
+**Baseline:** ADR-0014 (PR-ARCH-01)
 
 ---
 
