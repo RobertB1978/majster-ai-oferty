@@ -1,9 +1,14 @@
-# ADR-0005 — Canonical Public Offer Flow
+# ADR-0014 — Canonical Public Offer Flow
 
-**Status:** ACCEPTED  
-**Date:** 2026-04-13  
-**PR:** PR-ARCH-01 (`claude/pr-arch-01-public-offer-bxIEp`)  
+**Status:** ACCEPTED
+**Date:** 2026-04-13
+**PR:** PR-ARCH-01 (`claude/pr-arch-01-public-offer-bxIEp`)
 **Author:** Claude Code Web (Senior Staff Architect)
+
+> **Nota (2026-04-14):** Ten ADR był pierwotnie umieszczony jako `docs/ADR-0005-public-offer-canonical-flow.md`
+> z błędnym numerem kolidującym z istniejącym `ADR-0005-shell-feature-flag.md`.
+> Przeniesiony i przemianowany na ADR-0014 w ramach PR-OPS-01 (docs cleanup).
+> Treść merytoryczna bez zmian.
 
 ---
 
@@ -53,26 +58,26 @@ Taki stan prowadzi do:
 
 ### Uzasadnienie
 
-1. **Ścieżka wysyłki już używa FLOW-B.**  
+1. **Ścieżka wysyłki już używa FLOW-B.**
    `useSendOffer` (PR-11) tworzy rekord `acceptance_links` i przekazuje token do
    `send-offer-email`, który generuje linki `${FRONTEND_URL}/a/${token}`.
    Każda nowa oferta wysłana przez aplikację trafia do FLOW-B.
 
-2. **Architektura — lepsza izolacja.**  
+2. **Architektura — lepsza izolacja.**
    FLOW-B jest bezpośrednio powiązany z tabelą `offers` (nowa architektura).
    FLOW-A wymaga `projects → quotes → offer_approvals` (legacy chain).
 
-3. **Bezpieczeństwo — mniejszy attack surface.**  
+3. **Bezpieczeństwo — mniejszy attack surface.**
    SECURITY DEFINER DB functions zamiast Edge Function eliminują potrzebę
    serwisu Deno dla operacji publicznych.
 
-4. **Explicitny audit log.**  
+4. **Explicitny audit log.**
    `offer_public_actions` rejestruje każdą akcję klienta z timestampem.
 
-5. **Warianty oferty.**  
+5. **Warianty oferty.**
    Tylko FLOW-B obsługuje oferty wielowariantowe (PR `offer-versioning-7RcU5`).
 
-6. **Idempotencja na poziomie DB.**  
+6. **Idempotencja na poziomie DB.**
    `UNIQUE (offer_id)` w `acceptance_links` + `ON CONFLICT` w `upsert_acceptance_link`.
 
 ---
@@ -94,7 +99,7 @@ Taki stan prowadzi do:
 |--------|------|
 | **Tylko `/a/:token`** | `useSendOffer` generuje wyłącznie linki canoniczne przez `acceptance_links` |
 | **`buildAcceptanceLinkUrl`** | Jedyna dozwolona funkcja budowania publicznych linków oferty |
-| **Email handler** | `generateOfferEmailHtml` używa `${frontendUrl}/a/${publicToken}` — nie zmieniac |
+| **Email handler** | `generateOfferEmailHtml` używa `${frontendUrl}/a/${publicToken}` — nie zmieniać |
 
 ---
 
@@ -155,3 +160,4 @@ Jedyne efekty cofnięcia:
 ---
 
 *Wygenerowano: 2026-04-13 | PR-ARCH-01 | SHA: do uzupełnienia po merge*
+*Przeniesiono: 2026-04-14 | PR-OPS-01 (docs cleanup) — zmiana numeru z błędnego ADR-0005 na ADR-0014*
