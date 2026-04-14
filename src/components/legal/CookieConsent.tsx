@@ -186,19 +186,20 @@ export function CookieConsent() {
             >
               {showDetails ? t('cookies.hideDetails') : t('cookies.customize')}
             </Button>
+            {/* GDPR/RODO: Reject must have equal visual weight as Accept (EDPB Guidelines 03/2022) */}
             <Button
-              variant="outline"
+              variant="secondary"
               className="flex-1"
               onClick={handleRejectAll}
             >
               {t('cookies.rejectAll')}
             </Button>
             {showDetails ? (
-              <Button variant="outline" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleAcceptSelected}>
+              <Button className="flex-1" onClick={handleAcceptSelected}>
                 {t('cookies.saveSelected')}
               </Button>
             ) : (
-              <Button variant="outline" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleAcceptAll}>
+              <Button className="flex-1" onClick={handleAcceptAll}>
                 {t('cookies.acceptAll')}
               </Button>
             )}
