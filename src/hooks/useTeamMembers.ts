@@ -134,7 +134,7 @@ export function useTeamLocations(projectId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('team_locations')
-        .select('id, team_member_id, project_id, user_id, latitude, longitude, status, recorded_at, team_members(name)')
+        .select(`id, team_member_id, project_id, user_id, latitude, longitude, status, recorded_at, ${TEAM_MEMBERS_TABLE}(name)`)
         .eq('user_id', user!.id)
         .order('recorded_at', { ascending: false });
 

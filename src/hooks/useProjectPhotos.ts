@@ -46,7 +46,7 @@ function extractFilePath(photoUrl: string): string {
   return '';
 }
 
-export function useProjectPhotos(_projectId: string) {
+export function useProjectPhotos(projectId: string) {
   const { user } = useAuth();
 
   return useQuery({
