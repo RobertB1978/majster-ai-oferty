@@ -15,6 +15,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { compressImage } from '@/lib/imageCompression';
+import { MEDIA_BUCKET } from '@/lib/storage';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -31,8 +32,6 @@ export interface OfferPhoto {
   /** Populated client-side after signed URL fetch */
   signedUrl?: string;
 }
-
-const PHOTO_BUCKET = 'project-photos';
 
 // ── Query keys ────────────────────────────────────────────────────────────────
 
@@ -61,7 +60,7 @@ export function useOfferPhotos(offerId: string | null) {
       const withUrls = await Promise.all(
         rows.map(async (row) => {
           const { data: signed } = await supabase.storage
-            .from(PHOTO_BUCKET)
+            .from(MEDIA_BUCKET)
             .createSignedUrl(row.storage_path, 3600);
           return { ...row, signedUrl: signed?.signedUrl ?? undefined };
         }),
@@ -109,7 +108,7 @@ export function useUploadOfferPhoto() {
       });
 
       const { error: uploadErr } = await supabase.storage
-        .from(PHOTO_BUCKET)
+        .from(MEDIA_BUCKET)
         .upload(storagePath, compressed, {
           contentType: compressed.type,
           upsert: false,
@@ -189,7 +188,7 @@ export function useDeleteOfferPhoto() {
   return useMutation({
     mutationFn: async ({ photoId, storagePath }: DeleteParams) => {
       // Delete from storage (non-fatal if file missing)
-      await supabase.storage.from(PHOTO_BUCKET).remove([storagePath]);
+      await supabase.storage.from(MEDIA_BUCKET).remove([storagePath]);
       // Delete DB record
       const { error } = await supabase.from('offer_photos').delete().eq('id', photoId);
       if (error) throw error;

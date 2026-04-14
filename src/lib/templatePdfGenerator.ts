@@ -29,6 +29,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
+import { DOSSIER_BUCKET } from '@/lib/storage';
 import { formatDate } from '@/lib/formatters';
 import type { DocumentTemplate } from '@/data/documentTemplates';
 import type { AutofillContext } from '@/hooks/useDocumentInstances';
@@ -349,7 +350,7 @@ export async function uploadTemplatePdf(params: {
   const filePath = `${userId}/${projectPart}/documents/${safeName}_${instanceId}.pdf`;
 
   const { error } = await supabase.storage
-    .from('dossier')
+    .from(DOSSIER_BUCKET)
     .upload(filePath, pdfBlob, {
       contentType: 'application/pdf',
       upsert: true,

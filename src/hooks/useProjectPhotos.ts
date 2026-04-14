@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { stripExifData } from '@/lib/exifUtils';
 import { compressImage } from '@/lib/imageCompression';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
+import { MEDIA_BUCKET } from '@/lib/storage';
 
 export interface ProjectPhoto {
   id: string;
@@ -22,23 +23,27 @@ export interface ProjectPhoto {
 // Helper to get signed URL for private bucket
 async function getSignedUrl(filePath: string): Promise<string> {
   const { data, error } = await supabase.storage
-    .from('project-photos')
+    .from(MEDIA_BUCKET)
     .createSignedUrl(filePath, 3600); // 1 hour expiry
-  
+
   if (error || !data?.signedUrl) {
     logger.error('Failed to get signed URL:', error);
     return '';
   }
-  
+
   return data.signedUrl;
 }
 
 // Extract file path from stored URL
 function extractFilePath(photoUrl: string): string {
-  // The URL format is: https://xxx.supabase.co/storage/v1/object/public/project-photos/userId/projectId/fileName
-  // Or for signed URLs: https://xxx.supabase.co/storage/v1/object/sign/project-photos/...
-  const match = photoUrl.match(/project-photos\/(.+)/);
-  return match ? match[1].split('?')[0] : '';
+  // The URL format is: https://xxx.supabase.co/storage/v1/object/public/{bucket}/userId/projectId/fileName
+  // Or for signed URLs: https://xxx.supabase.co/storage/v1/object/sign/{bucket}/...
+  const prefix = `${MEDIA_BUCKET}/`;
+  const idx = photoUrl.indexOf(prefix);
+  if (idx !== -1) {
+    return photoUrl.slice(idx + prefix.length).split('?')[0];
+  }
+  return '';
 }
 
 export function useProjectPhotos(_projectId: string) {
@@ -98,13 +103,13 @@ export function useUploadProjectPhoto() {
       const fileName = `${user!.id}/${projectId}/${crypto.randomUUID()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('project-photos')
+        .from(MEDIA_BUCKET)
         .upload(fileName, compressedFile);
 
       if (uploadError) throw uploadError;
 
       // Store the file path reference (not a public URL since bucket is now private)
-      const storagePath = `project-photos/${fileName}`;
+      const storagePath = `${MEDIA_BUCKET}/${fileName}`;
 
       const { data, error } = await supabase
         .from('project_photos')

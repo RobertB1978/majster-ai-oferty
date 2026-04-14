@@ -34,6 +34,7 @@ import {
   type ProjectInspection,
 } from '@/hooks/useInspection';
 import { supabase } from '@/integrations/supabase/client';
+import { DOSSIER_BUCKET } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SkeletonList } from '@/components/ui/skeleton';
@@ -281,7 +282,7 @@ function InspectionCard({
       });
 
       const { error: uploadErr } = await supabase.storage
-        .from('dossier')
+        .from(DOSSIER_BUCKET)
         .upload(path, blob, { contentType: 'application/pdf', upsert: true });
 
       if (uploadErr) throw uploadErr;

@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { validateFile, FILE_VALIDATION_CONFIGS } from '@/lib/fileValidation';
 import { parseJsonColumn } from '@/lib/supabaseTypeUtils';
+import { MEDIA_BUCKET } from '@/lib/storage';
 
 export interface PurchaseCostItem {
   name: string;
@@ -92,13 +93,13 @@ export function useUploadInvoice() {
       const fileName = `${user!.id}/${projectId}/invoices/${crypto.randomUUID()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('project-photos')
+        .from(MEDIA_BUCKET)
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('project-photos')
+        .from(MEDIA_BUCKET)
         .getPublicUrl(fileName);
 
       const { data, error } = await supabase

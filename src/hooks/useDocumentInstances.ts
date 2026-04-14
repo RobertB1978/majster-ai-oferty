@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { logger } from '@/lib/logger';
 import type { AutofillSource, DocumentTemplate } from '@/data/documentTemplates';
 import type { DocumentInstanceModeBFields } from '@/types/document-mode-b';
+import { DOSSIER_BUCKET } from '@/lib/storage';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -336,7 +337,7 @@ export function useDeleteDocumentInstance() {
       // Best-effort storage cleanup
       if (pdfPath) {
         const { error: storageErr } = await supabase.storage
-          .from('dossier')
+          .from(DOSSIER_BUCKET)
           .remove([pdfPath]);
         if (storageErr) {
           logger.warn('[DocInstances] storage delete failed (orphan)', storageErr);

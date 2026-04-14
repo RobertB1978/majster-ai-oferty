@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { TEAM_MEMBERS_TABLE } from '@/lib/storage';
 
 export interface WorkTask {
   id: string;
@@ -131,7 +132,7 @@ export function useTeamCapacity(startDate: string, endDate: string) {
       if (error) throw error;
 
       const { data: members } = await supabase
-        .from('team_members')
+        .from(TEAM_MEMBERS_TABLE)
         .select('id, owner_user_id, name, role, phone, email, is_active, created_at')
         .eq('owner_user_id', user!.id)
         .eq('is_active', true);

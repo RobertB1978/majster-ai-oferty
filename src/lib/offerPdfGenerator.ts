@@ -42,6 +42,7 @@ import { logger } from './logger';
  */
 export type OfferPdfTranslateFn = (key: string, opts?: Record<string, unknown>) => string;
 import { supabase } from '@/integrations/supabase/client';
+import { COMPANY_DOCUMENTS_BUCKET } from '@/lib/storage';
 import { trackEvent } from './analytics/track';
 import { ANALYTICS_EVENTS } from './analytics/events';
 import { JETBRAINS_MONO_REGULAR_B64 } from './jetbrains-mono-b64';
@@ -969,7 +970,7 @@ export async function uploadOfferPdf(params: {
 
   // Upload to Supabase Storage (using existing 'company-documents' bucket)
   const { error: uploadError } = await supabase.storage
-    .from('company-documents')
+    .from(COMPANY_DOCUMENTS_BUCKET)
     .upload(storagePath, pdfBlob, {
       contentType: 'application/pdf',
       upsert: true, // Allow overwriting if file exists
@@ -982,7 +983,7 @@ export async function uploadOfferPdf(params: {
 
   // Get public URL
   const { data: urlData } = supabase.storage
-    .from('company-documents')
+    .from(COMPANY_DOCUMENTS_BUCKET)
     .getPublicUrl(storagePath);
 
   return {

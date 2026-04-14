@@ -24,6 +24,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { formatDate } from '@/lib/formatters';
+// DOSSIER_BUCKET — import from central source of truth, re-export for
+// backward compatibility (callers importing from this hook still work).
+import { DOSSIER_BUCKET } from '@/lib/storage';
+export { DOSSIER_BUCKET };
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -43,8 +47,6 @@ export const DOSSIER_CATEGORIES: DossierCategory[] = [
   'GUARANTEE',
   'OTHER',
 ];
-
-export const DOSSIER_BUCKET = 'dossier';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

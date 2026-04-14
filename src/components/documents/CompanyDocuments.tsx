@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { COMPANY_DOCUMENTS_BUCKET } from '@/lib/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -81,14 +82,14 @@ export function CompanyDocuments() {
 
       // Upload file to storage
       const { error: uploadError } = await supabase.storage
-        .from('company-documents')
+        .from(COMPANY_DOCUMENTS_BUCKET)
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       // Get public URL
       const { data: urlData } = supabase.storage
-        .from('company-documents')
+        .from(COMPANY_DOCUMENTS_BUCKET)
         .getPublicUrl(fileName);
 
       // Save document record
@@ -124,9 +125,9 @@ export function CompanyDocuments() {
   const deleteMutation = useMutation({
     mutationFn: async (doc: CompanyDocument) => {
       // Delete from storage
-      const filePath = doc.file_url.split('/company-documents/')[1];
+      const filePath = doc.file_url.split(`/${COMPANY_DOCUMENTS_BUCKET}/`)[1];
       if (filePath) {
-        await supabase.storage.from('company-documents').remove([filePath]);
+        await supabase.storage.from(COMPANY_DOCUMENTS_BUCKET).remove([filePath]);
       }
 
       // Delete record
