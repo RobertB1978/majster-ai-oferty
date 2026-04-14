@@ -64,7 +64,7 @@ import { ModeBDocumentCard } from '@/components/documents/mode-b/ModeBDocumentCa
 import { ModeBStatusBadge } from '@/components/documents/mode-b/ModeBStatusBadge';
 import { useModeBInstances } from '@/hooks/useModeBDocumentInstances';
 import { useModeBMasterTemplates } from '@/hooks/useModeBMasterTemplates';
-import { FF_OWNER_DIAGNOSTIC } from '@/config/featureFlags';
+import { FF_OWNER_DIAGNOSTIC, FF_MODE_B_DOCX_ENABLED } from '@/config/featureFlags';
 import {
   PREMIUM_TEMPLATE_INVENTORY,
   getPendingInventoryEntries,
@@ -466,6 +466,27 @@ export default function ReadyDocuments() {
     ) {
       clearSelection();
     }
+  }
+
+  // ── FF_MODE_B_DOCX_ENABLED gate (PR-DOCS-01) ─────────────────────────────────
+  // All hooks above run unconditionally (Rules of Hooks).
+  // When the flag is false, render a dormant placeholder — Mode B is not yet live.
+  // Enabling Mode B: set VITE_FF_MODE_B_DOCX_ENABLED=true (build-time)
+  //   or: localStorage.setItem('FF_MODE_B_DOCX_ENABLED', 'true') + refresh
+  if (!FF_MODE_B_DOCX_ENABLED) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 py-16 text-center">
+        <div className="p-4 rounded-2xl bg-muted/50 mb-5">
+          <FileCheck className="w-9 h-9 text-muted-foreground/40" />
+        </div>
+        <h2 className="text-base font-semibold text-foreground mb-2">
+          {t('readyDocs.emptyState.title')}
+        </h2>
+        <p className="text-sm text-muted-foreground max-w-xs">
+          {t('readyDocs.emptyState.description')}
+        </p>
+      </div>
+    );
   }
 
   return (
