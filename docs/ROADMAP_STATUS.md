@@ -25,7 +25,7 @@
 
 | PR | Nazwa | Status | Branch / PR Link | Data merge | Uwagi |
 |----|-------|--------|-----------------|------------|-------|
-| **PR-00** | Roadmap-as-code | 🔵 IN PROGRESS | `claude/pr-00-roadmap-as-code-ZDfe2` | — | Ten PR |
+| **PR-00** | Roadmap-as-code | ✅ DONE | `claude/pr-00-roadmap-as-code-ZDfe2` | 2026-03-01 | ROADMAP.md v5 + ROADMAP_STATUS.md + ADR-0000..0009 + PR template |
 | **PR-01** | Tooling: i18n Gate + Sentry | ✅ DONE | `claude/tooling-fundamentals-pr-01-VoocS` | 2026-03-01 | i18n gate + Sentry release tag + version metadata |
 | **PR-02** | Security Baseline + RLS | ✅ DONE | `claude/security-baseline-rls-Ad5Tx` | 2026-03-01 | SECURITY_BASELINE.md + RLS template + IDOR procedure |
 | **PR-03** | Design System + UI States | ✅ DONE | `claude/design-system-ui-states-ufHHS` | 2026-03-01 | Tokens (CSS vars), SkeletonBlock/List, EmptyState, ErrorState, touch targets, UI_SYSTEM.md |

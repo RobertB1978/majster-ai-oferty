@@ -1,10 +1,16 @@
+> ⚠️ **ARCHIWUM — NIE AKTUALIZOWAĆ**
+> Ten dokument zawiera historyczną analizę produktową i propozycje transformacji (Marzec 2026).
+> **Źródłem prawdy dla kolejności prac i zakresu jest [`docs/ROADMAP.md`](./ROADMAP.md) (v5, 2026-03-01).**
+> Twierdzenie poniżej „jedynym źródłem prawdy dla całego programu" jest **nieaktualne** — patrz [ADR-0000](./ADR/ADR-0000-source-of-truth.md).
+
 # MAJSTER.AI — Ultra Enterprise Product Transformation Program
 
-## Dokument sterujący v1.0 FINAL — REPO-READY
+## Dokument sterujący v1.0 FINAL — REPO-READY ~~[ŹRÓDŁO PRAWDY]~~ [ARCHIWUM]
 
 **Marzec 2026 · React + Vite + TypeScript + Supabase + Vercel**
 
-> **Ten dokument jest jedynym źródłem prawdy dla całego programu.**
+> ~~**Ten dokument jest jedynym źródłem prawdy dla całego programu.**~~
+> **KOREKTA:** Źródłem prawdy jest `docs/ROADMAP.md` (v5). Ten dokument jest archiwum analitycznym.
 > Poprzednie wersje (v2.3, v2.4, v2.5) są archiwum.
 > Ścieżka w repo: `docs/ULTRA_ENTERPRISE_ROADMAP.md`
 

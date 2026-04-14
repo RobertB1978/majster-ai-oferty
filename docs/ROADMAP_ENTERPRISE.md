@@ -1,6 +1,11 @@
-# Majster.AI — ROADMAP ENTERPRISE v4 (SOURCE OF TRUTH)
+> ⚠️ **ARCHIWUM — NIE AKTUALIZOWAĆ**
+> Ten dokument (v4) jest zachowany wyłącznie jako historia projektu.
+> Zastąpiony przez **[`docs/ROADMAP.md`](./ROADMAP.md) (v5, 2026-03-01)** — patrz [ADR-0000](./ADR/ADR-0000-source-of-truth.md).
+> Wszelkie decyzje dotyczące kolejności prac, zakresu i DoD należy czytać z `docs/ROADMAP.md`.
 
-**Status:** ACTIVE — Stage: MVP ENGINEERING COMPLETE (Pending Owner Verification)
+# Majster.AI — ROADMAP ENTERPRISE v4 ~~(SOURCE OF TRUTH)~~ [ARCHIWUM]
+
+**Status:** ~~ACTIVE~~ **ARCHIVED — 2026-03-01** (zastąpiony przez ROADMAP.md v5)
 **Właściciel decyzji:** Product Owner + Tech Lead
 **Zakres dokumentu:** plan wdrożeniowy i dyscyplina PR dla repozytorium
 **Ostatnia weryfikacja:** 2026-02-08 (MVP completion audit)
@@ -28,7 +33,9 @@ Ten dokument jest od teraz **jedyną mapą pracy**: co robimy, w jakiej kolejno�
 Najpierw porządkujemy „prawdę wdrożeniową" (Vercel + Supabase), żeby było jasne co naprawdę działa w produkcji, a co tylko lokalnie.
 Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy, plan wycofania i brak „dodatkowych poprawek przy okazji".
 
-> **UWAGA:** Plik `docs/ROADMAP.md` jest przestarzały i zastąpiony przez ten dokument. Patrz ADR-0000.
+> ~~**UWAGA:** Plik `docs/ROADMAP.md` jest przestarzały i zastąpiony przez ten dokument. Patrz ADR-0000.~~
+> **KOREKTA (2026-03-01):** Twierdzenie powyżej jest BŁĘDNE. Jest odwrotnie —
+> `docs/ROADMAP.md` (v5) jest źródłem prawdy i zastępuje ten dokument. Patrz [ADR-0000](./ADR/ADR-0000-source-of-truth.md).
 
 ---
 

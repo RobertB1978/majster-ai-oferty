@@ -42,8 +42,10 @@
 | ADR-0013 | [`ADR/ADR-0013-dynamic-docx-mode-b.md`](./ADR/ADR-0013-dynamic-docx-mode-b.md) | Dynamic DOCX Mode B | AKTYWNY |
 | ADR-0014 | [`ADR/ADR-0014-public-offer-canonical-flow.md`](./ADR/ADR-0014-public-offer-canonical-flow.md) | Kanoniczny flow publiczny oferty (PR-ARCH-01) | AKTYWNY |
 
-> **Uwaga ADR-0011:** Numer jest wolny (gap między ADR-0010 a ADR-0012). Następne nowe ADR powinny
-> używać ADR-0015 i dalej, chyba że ADR-0011 zostanie celowo wypełniony.
+> **Uwaga ADR-0011:** Numer jest wolny — gap między ADR-0010 a ADR-0012 wynika z wycofania
+> roboczego draftu ADR-0011 przed jego zatwierdzeniem (brak zatwierdzonego pliku w historii git).
+> Numer **nie zostanie ponownie użyty** (zasada append-only numeracji ADR).
+> Następne nowe ADR: **ADR-0015** i dalej.
 
 ---
 
@@ -70,12 +72,34 @@
 
 ---
 
-## Audyty i Raporty (Archiwum — tylko do odczytu)
+## Dokumenty Archiwalne (tylko do odczytu)
 
-Pliki audytów z dat 2026-02-xx do 2026-04-xx mają charakter historyczny.
-**Nie aktualizuj** — służą do śledzenia historii projektu.
+Poniższe pliki są zachowane wyłącznie jako historia projektu. Zawierają stan z konkretnej daty.
+**Nie aktualizuj.** Dla aktualnego stanu używaj plików z sekcji "Źródła Prawdy" powyżej.
 
-Aktualne statusy znajdziesz w `ROADMAP_STATUS.md` i `DEPLOYMENT_TRUTH.md`.
+| Dokument archiwalny | Zastąpiony przez | Data snapshotu |
+|---------------------|-----------------|----------------|
+| `docs/ROADMAP_ENTERPRISE.md` (v4) | `docs/ROADMAP.md` (v5) | 2026-02-08 |
+| `docs/ULTRA_ENTERPRISE_ROADMAP.md` | `docs/ROADMAP.md` (v5) | 2026-03 |
+| `docs/TRUTH.md` | `docs/ROADMAP_STATUS.md` + `docs/STAN_PROJEKTU.md` | 2026-02-18 |
+| `docs/AUDIT_*.md`, `docs/AUDYT_*.md` | `docs/ROADMAP_STATUS.md` | różne daty |
+| `docs/FINAL_*.md`, `docs/META_AUDIT_*.md` | `docs/ROADMAP_STATUS.md` | różne daty |
+| `docs/COMPREHENSIVE_AUDIT_*.md` | `docs/ROADMAP_STATUS.md` | różne daty |
+
+---
+
+## Sprzeczności Naprawione w PR-OPS-01
+
+Poniższe sprzeczności między core docs zostały naprawione 2026-04-14:
+
+| # | Plik | Problem | Naprawa |
+|---|------|---------|---------|
+| 1 | `ROADMAP_ENTERPRISE.md:31` | Twierdziło że `ROADMAP.md` jest przestarzały (ODWROTNIE niż rzeczywistość) | Dodano baner ARCHIWUM + korekta fałszywego twierdzenia |
+| 2 | `ROADMAP_STATUS.md:28` | PR-00 w statusie 🔵 IN PROGRESS mimo że roadmapa jest w repo od 2026-03-01 | Zmieniono na ✅ DONE z datą 2026-03-01 |
+| 3 | `ULTRA_ENTERPRISE_ROADMAP.md:7` | Twierdziło „jedynym źródłem prawdy" — sprzeczne z ADR-0000 | Dodano baner ARCHIWUM + korekta |
+| 4 | `TRUTH.md:1` | Stan z 2026-02-18 prezentowany bez ostrzeżenia jako aktualny | Dodano baner SNAPSHOT z linkami do aktualnych docs |
+| 5 | `docs/ADR-0005-public-offer-canonical-flow.md` | Błędny numer (ADR-0005 zajęty przez FF_NEW_SHELL) + misplace poza `docs/ADR/` | Przeniesiono jako `docs/ADR/ADR-0014-public-offer-canonical-flow.md` |
+| 6 | `COMPATIBILITY_MATRIX.md` + `DECISIONS.md` | Referencja do „ADR-0005 (PR-ARCH-01)" — niejednoznaczna | Zaktualizowano na ADR-0014 |
 
 ---
 
@@ -96,4 +120,4 @@ Patrz też: `docs/DECISIONS.md` — wpis z 2026-04-14.
 
 ---
 
-*Dokument: v1.0 | 2026-04-14 | PR-OPS-01 (docs cleanup)*
+*Dokument: v1.1 | 2026-04-14 | PR-OPS-01 (docs cleanup) — druga iteracja po pełnym audycie sprzeczności*
