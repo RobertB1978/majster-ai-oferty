@@ -19,6 +19,17 @@ const shouldSkipConsent =
   (typeof navigator !== 'undefined' && (navigator.webdriver || /HeadlessChrome|Playwright/i.test(navigator.userAgent))) ||
   import.meta.env.VITE_DISABLE_COOKIE_CONSENT === 'true';
 
+/** Dynamically injects the Plausible Analytics script after analytics consent is granted. */
+function initPlausible(): void {
+  if (typeof document === 'undefined') return;
+  if (document.querySelector('script[data-domain="majsterai.com"]')) return; // already loaded
+  const script = document.createElement('script');
+  script.defer = true;
+  script.dataset.domain = 'majsterai.com';
+  script.src = 'https://plausible.io/js/script.js';
+  document.head.appendChild(script);
+}
+
 export function CookieConsent() {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
@@ -37,13 +48,29 @@ export function CookieConsent() {
     const savedConsent = localStorage.getItem('cookie_consent');
     if (!savedConsent) {
       setIsVisible(true);
+    } else {
+      // Restore Plausible if analytics was previously accepted
+      try {
+        const parsed = JSON.parse(savedConsent) as ConsentState;
+        if (parsed.analytics) {
+          initPlausible();
+        }
+      } catch {
+        // Malformed consent — show banner again
+        setIsVisible(true);
+      }
     }
   }, []);
 
   const saveConsent = async (consentData: ConsentState) => {
     localStorage.setItem('cookie_consent', JSON.stringify(consentData));
     localStorage.setItem('cookie_consent_date', new Date().toISOString());
-    
+
+    // Load Plausible only when analytics consent is granted
+    if (consentData.analytics) {
+      initPlausible();
+    }
+
     // Save to database for GDPR compliance
     try {
       const consentTypes = [
@@ -164,14 +191,14 @@ export function CookieConsent() {
               className="flex-1"
               onClick={handleRejectAll}
             >
-              {t('cookies.essentialOnly')}
+              {t('cookies.rejectAll')}
             </Button>
             {showDetails ? (
-              <Button className="flex-1" onClick={handleAcceptSelected}>
+              <Button variant="outline" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleAcceptSelected}>
                 {t('cookies.saveSelected')}
               </Button>
             ) : (
-              <Button className="flex-1" onClick={handleAcceptAll}>
+              <Button variant="outline" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleAcceptAll}>
                 {t('cookies.acceptAll')}
               </Button>
             )}

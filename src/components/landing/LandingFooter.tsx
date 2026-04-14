@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Cookie } from 'lucide-react';
 
 const LANGUAGES = [
   { code: 'pl', label: 'PL', flag: '🇵🇱' },
@@ -125,9 +126,17 @@ export function LandingFooter() {
           <p className="text-sm text-gray-500 dark:text-neutral-400">
             © {new Date().getFullYear()} Majster.AI. {t('landing.footer.copyright')}
           </p>
-          <p className="text-sm text-gray-500 dark:text-neutral-400">
-            {t('landing.footer.built_in')}
-          </p>
+          <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-neutral-400">
+            <p>{t('landing.footer.built_in')}</p>
+            <span>•</span>
+            <button
+              className="hover:text-accent-amber transition-colors underline underline-offset-2"
+              onClick={() => { localStorage.removeItem('cookie_consent'); window.location.reload(); }}
+            >
+              <Cookie className="inline h-3 w-3 mr-1" />
+              {t('cookies.changeSettings')}
+            </button>
+          </div>
         </div>
       </div>
     </footer>

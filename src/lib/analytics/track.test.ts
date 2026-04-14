@@ -16,10 +16,18 @@ import type { AnalyticsPayload } from "./event-schema";
 
 beforeEach(() => {
   clearSink();
+  // Simulate analytics consent so trackEvent() passes the consent gate in tests
+  vi.spyOn(window.localStorage, 'getItem').mockImplementation((key: string) => {
+    if (key === 'cookie_consent') {
+      return JSON.stringify({ essential: true, analytics: true, marketing: false });
+    }
+    return null;
+  });
 });
 
 afterEach(() => {
   clearSink();
+  vi.restoreAllMocks();
 });
 
 describe("ANALYTICS_EVENTS dictionary", () => {

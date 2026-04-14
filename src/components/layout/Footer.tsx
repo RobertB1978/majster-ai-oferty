@@ -131,6 +131,14 @@ export function Footer() {
             <span>🇵🇱 {t('footer.madeIn')}</span>
             <span>•</span>
             <span>{t('footer.rodoCompliant')}</span>
+            <span>•</span>
+            <button
+              className="hover:text-primary transition-colors underline underline-offset-2"
+              onClick={() => { localStorage.removeItem('cookie_consent'); window.location.reload(); }}
+            >
+              <Cookie className="inline h-3 w-3 mr-1" />
+              {t('cookies.changeSettings')}
+            </button>
           </div>
         </div>
       </div>

@@ -43,12 +43,25 @@ const isDev = import.meta.env?.DEV === true;
  * - Components and hooks should call ONLY this function.
  * - Uses `ANALYTICS_EVENTS.*` constants — no literal strings.
  * - Wraps everything in try/catch so a tracking failure never crashes UI.
+ * - Respects cookie consent: silently skips if analytics consent was not granted.
  */
 export function trackEvent(
   event: AnalyticsEventName,
   payload?: AnalyticsPayload,
 ): void {
   try {
+    // Consent gate — do not track if user has not accepted analytics cookies
+    if (typeof localStorage !== 'undefined') {
+      const raw = localStorage.getItem('cookie_consent');
+      if (raw) {
+        const consent = JSON.parse(raw) as { analytics?: boolean };
+        if (!consent.analytics) return;
+      } else {
+        // No consent decision yet — do not track
+        return;
+      }
+    }
+
     if (isDev) {
       logger.debug("[analytics]", event, payload ?? {});
     }
