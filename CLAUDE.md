@@ -9,6 +9,30 @@ ale komunikacja z użytkownikiem — zawsze po polsku.
 
 ---
 
+## 🚀 Obowiązkowy Start Sesji (WARUNEK KONIECZNY)
+
+> **Geneza:** Agent wielokrotnie pomijał wytyczne z CLAUDE.md, ponieważ nie czytał ich
+> na początku sesji. Poniższy protokół jest WARUNKIEM KONIECZNYM rozpoczęcia jakiejkolwiek pracy.
+
+### Przed rozpoczęciem JAKIEGOKOLWIEK zadania, agent MUSI:
+
+1. **Przeczytać CAŁY plik CLAUDE.md** — od początku do końca, NIE pomijać żadnej sekcji
+2. **Przeczytać CAŁY prompt zadania** — od początku do końca, NIE skanować
+3. **Rozłożyć prompt na atomowe wymagania** — wypisać KAŻDE wymaganie jako osobny punkt w TodoWrite:
+   - Każdy numerowany punkt z promptu → osobne todo
+   - Każdy bullet z sekcji REQUIRED / MANDATORY → osobne todo
+   - Każdy element DOD / Definition of Done → osobne todo
+   - Każdy "mandatory output" → osobne todo
+   - Każde pytanie wymagające jawnej odpowiedzi → osobne todo
+4. **Pokazać użytkownikowi listę wymagań** i zapytać: "Czy ta lista jest kompletna? Czy coś pominąłem?"
+5. **Dopiero po potwierdzeniu** — zacząć pracę
+
+**Reguła twarda:** Jeśli agent nie przeczytał CLAUDE.md i nie rozłożył promptu na todo — KAŻDA deklaracja "zrobione" jest nieważna.
+
+**Reguła dla kontynuacji sesji:** Jeśli sesja jest kontynuacją poprzedniej — agent MUSI przeczytać CLAUDE.md ponownie (wytyczne mogły się zmienić) i odtworzyć kontekst z poprzedniej sesji.
+
+---
+
 ## 🚨 Globalne Zasady Operacyjne (OBOWIĄZKOWE — każda sesja)
 
 Poniższe zasady mają bezwzględny priorytet i obowiązują w **każdej** sesji, bez wyjątków.
@@ -709,6 +733,170 @@ Każde zakończone zadanie MUSI zawierać:
 2. Dokumentuj co zostało odroczone i DLACZEGO
 3. Nigdy nie zostawiaj kodu w stanie połowicznym — commit tylko kompletnych zmian
 4. Jeśli zadanie jest za duże na 1 PR — podziel je i zaznacz wyraźnie granicę
+
+---
+
+## 🔒 Protokół Gwarancji Kompletności (OBOWIĄZKOWY — nadrzędny)
+
+> **Geneza:** Ten protokół powstał po wielokrotnym powtarzaniu się wzorca:
+> agent deklaruje "wszystko zrobione", a przy ponownym sprawdzeniu okazuje się,
+> że wiele elementów jest pominiętych, niedopracowanych lub odłożonych bez
+> wyraźnego zaznaczenia. Istniejące Passy #1–#3 nie były wystarczające,
+> ponieważ brakowało mechanizmów WYMUSZAJĄCYCH ich faktyczne wykonanie.
+> Ten protokół jest warstwą enforcement — konkretne reguły, które eliminują
+> każdą ścieżkę do "fałszywego sukcesu".
+
+### Faza 0: Dekompozycja promptu (PRZED jakimkolwiek kodem)
+
+Patrz sekcja "Obowiązkowy Start Sesji" powyżej. Faza 0 = warunek konieczny.
+
+**Dodatkowe reguły Fazy 0:**
+- Jeśli prompt ma >5 wymagań i agent NIE użył TodoWrite — to jest błąd proceduralny, praca jest nieważna
+- Agent NIE MOŻE "scalać" wymagań (np. "punkty 3–7 to jedno todo") — każdy punkt to OSOBNE todo
+- Agent NIE MOŻE usuwać punktów z todo — może tylko oznaczać jako done (z dowodem) lub blocked (z powodem)
+- Jeśli agent odkryje w trakcie pracy NOWE wymaganie (nie z promptu) — dodaje je do todo z etykietą `[DISCOVERED]` i pyta użytkownika czy realizować
+
+### Faza 1: Praca z ciągłym śledzeniem
+
+Podczas pracy agent MUSI:
+
+1. **Oznaczać każde todo jako "done" NATYCHMIAST po jego realizacji** — nie batchować na koniec
+2. **Przy każdym oznaczeniu podać dowód:** `plik:linia` lub wynik komendy — NIE "zrobione" bez dowodu
+3. **Co ~50% postępu (lub co 5 zrealizowanych punktów)** — CHECKPOINT:
+   - Wrócić do listy todo i sprawdzić: ile done, ile remaining?
+   - Czy nie "dryfuję" od wymagań? Czy nie rozwiązuję problemu, którego nie było w prompcie?
+   - Czy żaden punkt nie został pominięty lub "cicho usunięty"?
+   - Raport checkpointu do użytkownika: "Postęp: X/Y punktów done, remaining: [lista]"
+4. **Reguła Edit → Read → Verify:** Po KAŻDEJ edycji pliku (Edit lub Write):
+   - Przeczytać zmieniony fragment (Read) — minimum 10 linii kontekstu wokół zmiany
+   - Sprawdzić: poprawność składni, brak duplikatów importów, zamknięte nawiasy, prawidłowe wcięcia
+   - Jeśli plik ma importy — sprawdzić duplikaty i czy nowy import jest faktycznie potrzebny
+5. **Jeśli wymaganie jest niejasne** — STOP, użyj AskUserQuestion z formatem:
+   ```
+   ❓ Niejasne wymaganie: [cytuj dokładne wymaganie z promptu]
+   Moja interpretacja: [jak to rozumiem]
+   Alternatywa: [inna możliwa interpretacja]
+   Pytanie: Która interpretacja jest poprawna?
+   ```
+   **ZAKAZ:** Agent NIE MOŻE sam "interpretować" niejasnego wymagania i realizować swoją interpretację bez pytania.
+
+### Faza 2: Weryfikacja techniczna (OBOWIĄZKOWA sekwencja)
+
+Po zakończeniu WSZYSTKICH punktów z todo, agent MUSI wykonać w tej kolejności:
+
+1. `npm run lint` → 0 nowych błędów
+2. `npx tsc --noEmit` → 0 błędów
+3. `npm test` → 0 failed
+4. `npm run build` → sukces
+5. `git diff` → przejrzeć KAŻDĄ zmienioną linię i uzasadnić jej istnienie
+
+**Jeśli którykolwiek krok fail:** napraw → powtórz CAŁĄ sekwencję od kroku 1.
+**NIE przechodź dalej jeśli jest choćby 1 fail.**
+**NIE commituj z komentarzem "lint/test do poprawki" — najpierw popraw, potem commituj.**
+
+### Faza 3: Wymuszona pauza i weryfikacja kompletności
+
+**ZANIM agent napisze raport końcowy lub zcommituje, MUSI wykonać WYMUSZONY STOP:**
+
+1. **Otworzyć oryginalny prompt** (przewinąć do niego w konwersacji)
+2. **Przejść KAŻDY punkt z promptu linia po linii** i dla KAŻDEGO wypisać:
+   ```
+   Wymaganie: [cytuj dosłownie]
+   Status: ✅ DONE | ❌ NOT DONE | ⚠️ PARTIAL
+   Dowód: [plik:linia | wynik komendy | output testu]
+   ```
+   - ✅ DONE — wymaga konkretnego dowodu (plik:linia, output). "Zrobiłem to" BEZ dowodu = ❌
+   - ❌ NOT DONE — wymaga powodu DLACZEGO i planu KIEDY
+   - ⚠️ PARTIAL — ZABRONIONE. Albo jest zrobione w 100%, albo nie jest zrobione. Brak "częściowo".
+3. **Sprawdzić listę TodoWrite** — czy KAŻDY punkt jest oznaczony? Czy nie ma "zapomnianego" todo?
+4. **Sprawdzić pliki POWIĄZANE** — czy zmiana w pliku A nie wymaga aktualizacji pliku B?
+5. **Jeśli JAKIKOLWIEK punkt jest ❌** — napraw TERAZ, a nie "w następnej sesji"
+6. **Jeśli naprawdę NIE DA SIĘ naprawić** — eskaluj do użytkownika przez AskUserQuestion z DOKŁADNYM powodem
+
+### Zakazane frazy i wzorce (HARD BLOCK)
+
+Agent NIE MOŻE używać poniższych fraz. Ich użycie oznacza, że praca NIE jest skończona:
+
+| Zakazana fraza | Dlaczego zakazana | Co agent MUSI zrobić zamiast tego |
+|---------------|-------------------|----------------------------------|
+| "Wszystko zrobione" / "Gotowe" | Brak dowodu per-punkt | Wypisz KAŻDY punkt z dowodem |
+| "Prawie gotowe" | Maskuje braki | Wypisz CO KONKRETNIE nie jest gotowe i ZRÓB TO |
+| "Drobne poprawki do zrobienia" | Bagatelizuje braki | Wypisz JAKIE poprawki i ZRÓB JE TERAZ |
+| "Reszta to formalności" | Formalności są obowiązkowe | Wykonaj "formalności" TERAZ |
+| "W następnej sesji / później" | Odkładanie bez zgody | Zrób TERAZ lub eskaluj JAWNIE przez AskUserQuestion |
+| "Powinno działać" | Brak faktycznej weryfikacji | Udowodnij: uruchom test, build, pokaż output |
+| "Wygląda dobrze" | Subiektywna ocena | Podaj OBIEKTYWNY dowód: test pass, build success |
+| "Zasadniczo kompletne" | 95% ≠ 100% | Wypisz brakujące 5% i ZRÓB JE |
+| "Nie powinno to wpłynąć na..." | Zgadywanie zamiast weryfikacji | Zweryfikuj FAKTYCZNIE: uruchom testy powiązane |
+| "Zakładam że..." | Narusza zasadę #4 "Nie zgaduj" | STOP, zweryfikuj lub zapytaj użytkownika |
+| "To minor issue" | Minimalizowanie problemu | Opisz problem i napraw albo eskaluj |
+
+### Reguła atomowego commita
+
+**Definicja kompletnej zmiany:**
+- 100% wymagań z promptu jest zrealizowanych, LUB
+- Agent JAWNIE eskalował do użytkownika listę tego, czego NIE DA SIĘ zrealizować
+  w tej sesji, z podaniem POWODU dla KAŻDEGO punktu, i użytkownik POTWIERDZIŁ
+  że to akceptowalne
+
+**Twarde zakazy:**
+- Agent NIE MOŻE sam zdecydować, że coś "odłoży na później" — każde odroczenie wymaga jawnej zgody użytkownika
+- Agent NIE MOŻE commitować z wiedzą o nierozwiązanych problemach bez poinformowania użytkownika
+- Agent NIE MOŻE usunąć wymagania z listy todo bez realizacji lub eskalacji
+- Agent NIE MOŻE zmienić treści wymagania w todo (np. uprościć je żeby było łatwiej odhaczyć)
+
+### Reguła "Weryfikuj output, nie intencję"
+
+Agent ma naturalną tendencję do sprawdzania czy **zamierzał** zrobić poprawnie,
+zamiast sprawdzenia czy **wynik** jest poprawny. Ta reguła to eliminuje:
+
+- Po edycji → Read zmienionego pliku (nie "wiem co napisałem")
+- Po dodaniu importu → sprawdź że nie ma duplikatu (nie "na pewno nie ma")
+- Po zmianie logiki → uruchom test (nie "logika wygląda ok")
+- Po build → sprawdź output (nie "build pewnie przeszedł")
+- Po commicie → git status/log (nie "commit pewnie się udał")
+
+**Zasada:** Każde twierdzenie o stanie kodu MUSI być poparte wynikiem komendy, NIE intencją agenta.
+
+### Reguła anty-dryfowania
+
+Podczas pracy agent może "dryfować" — zacząć naprawiać rzeczy, których nie było w prompcie,
+refaktoryzować pobocznie, dodawać "ulepszenia". To powoduje:
+- Rozszerzenie zakresu (narusza zasadę #5)
+- Utratę fokusa na wymaganiach z promptu
+- Poczucie "zrobiłem dużo" mimo niezrealizowanych wymagań
+
+**Reguła:** Przed KAŻDĄ zmianą agent MUSI odpowiedzieć na pytanie:
+"Które KONKRETNE wymaganie z promptu realizuję tą zmianą?"
+Jeśli odpowiedź to "żadne, ale to poprawi..." → NIE RÓB TEJ ZMIANY.
+
+### Reguła "Last mile" — ostatnie 10% jest krytyczne
+
+> **Wzorzec problemu:** Agent realizuje 90% wymagań szybko, potem "deklaruje sukces"
+> bo czuje że "prawie wszystko jest zrobione". Brakujące 10% to zwykle:
+> Evidence Log, raport końcowy, aktualizacja dokumentacji, explicit odpowiedzi na pytania decyzyjne.
+
+**Reguła:** Agent NIE MOŻE zacząć pisać raportu końcowego dopóki lista TodoWrite
+nie pokazuje 100% punktów jako "done". Raport jest OSTATNIĄ rzeczą, nie pierwszą po kodzie.
+
+**Sekwencja zamknięcia (OBOWIĄZKOWA):**
+1. Wszystkie todo = done (z dowodami)
+2. Faza 2 (lint/tsc/test/build) = pass
+3. Faza 3 (weryfikacja per-punkt) = pass
+4. Evidence Log = wypełniony
+5. Sekcja "Agent does / Robert does" = wyraźnie rozdzielona
+6. Dopiero TERAZ → raport końcowy
+7. Dopiero TERAZ → commit
+
+### Reguła ciągłości między sesjami
+
+Jeśli zadanie jest kontynuowane w nowej sesji:
+
+1. Agent MUSI przeczytać CLAUDE.md (mogło się zmienić)
+2. Agent MUSI odtworzyć kontekst: co było zrobione, co nie, jakie były blokery
+3. Agent MUSI zrekonstruować listę TodoWrite z poprzedniej sesji
+4. Agent NIE MOŻE założyć, że "poprzednia sesja zrobiła X dobrze" — MUSI zweryfikować
+5. Agent MUSI poinformować użytkownika o swoim rozumieniu stanu i zapytać o potwierdzenie
 
 ---
 
