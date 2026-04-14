@@ -226,4 +226,4 @@ Dopiero potem robimy małe, bezpieczne PR-y: każdy PR ma jeden cel, jasne testy
 - Stage Assessment: `docs/STAGE_ASSESSMENT_2026-02-07.md`
 - **MVP Completion:** `docs/MVP_COMPLETION_REPORT.md`
 - **Changelog:** `CHANGELOG.md`
-- **Superseded:** `docs/ROADMAP.md` (v1, Feb 3 — replaced by this document)
+- **Superseded by:** [`docs/ROADMAP.md`](./ROADMAP.md) (v5, 2026-03-01 — this document is archived)
