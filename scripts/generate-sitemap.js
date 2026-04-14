@@ -21,12 +21,14 @@ const BASE_URL =
 
 // Get base URL from environment or use fallback
 const getBaseUrl = () => {
-  // Priority: explicit site URL → Vercel system URL → Vercel URL env → fallback
+  // Priority: explicit site URL → hardcoded production domain.
+  // NOTE: VERCEL_URL is intentionally excluded — Vercel injects it automatically
+  // on every deployment (including preview builds), which would cause the sitemap
+  // to be generated with a preview hostname (e.g. majster-ai-oferty-abc.vercel.app)
+  // instead of the canonical production domain. This creates SEO domain leakage.
   const envUrl =
     process.env.VITE_PUBLIC_SITE_URL ||
     process.env.PUBLIC_SITE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
-    process.env.URL ||
     null;
 
   if (envUrl) {
