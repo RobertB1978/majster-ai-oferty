@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { TEAM_MEMBERS_TABLE } from '@/lib/storage';
 
 export interface TeamMember {
   id: string;
@@ -34,7 +35,7 @@ export function useTeamMembers() {
     queryKey: ['team_members'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('team_members')
+        .from(TEAM_MEMBERS_TABLE)
         .select('id, user_id, owner_user_id, name, phone, email, role, is_active, created_at')
         .eq('owner_user_id', user!.id)
         .order('created_at', { ascending: false });
@@ -54,7 +55,7 @@ export function useAddTeamMember() {
   return useMutation({
     mutationFn: async (member: Omit<TeamMember, 'id' | 'user_id' | 'owner_user_id' | 'created_at'>) => {
       const { data, error } = await supabase
-        .from('team_members')
+        .from(TEAM_MEMBERS_TABLE)
         .insert({
           ...member,
           user_id: user!.id,
@@ -83,7 +84,7 @@ export function useUpdateTeamMember() {
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<TeamMember> & { id: string }) => {
       const { data, error } = await supabase
-        .from('team_members')
+        .from(TEAM_MEMBERS_TABLE)
         .update(updates)
         .eq('id', id)
         .select('id, user_id, owner_user_id, name, phone, email, role, is_active, created_at')
@@ -109,7 +110,7 @@ export function useDeleteTeamMember() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('team_members')
+        .from(TEAM_MEMBERS_TABLE)
         .delete()
         .eq('id', id);
 
@@ -133,7 +134,7 @@ export function useTeamLocations(projectId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('team_locations')
-        .select('id, team_member_id, project_id, user_id, latitude, longitude, status, recorded_at, team_members(name)')
+        .select(`id, team_member_id, project_id, user_id, latitude, longitude, status, recorded_at, ${TEAM_MEMBERS_TABLE}(name)`)
         .eq('user_id', user!.id)
         .order('recorded_at', { ascending: false });
 

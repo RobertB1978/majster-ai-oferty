@@ -28,6 +28,11 @@ Poniższe zasady mają bezwzględny priorytet i obowiązują w **każdej** sesji
 | 11 | **Rozdziel: agent vs Robert** | Jasno zaznacz co robi agent, a co Robert musi zrobić ręcznie. |
 | 12 | **Evidence Log jest obowiązkowy** | Format: `symptom → dowód → zmiana → weryfikacja → rollback` |
 | 13 | **Pass #3 = prompt linia po linii** | Przed finalizacją: wróć do oryginalnego promptu i odhaczyj KAŻDY punkt numerowany, każde "REQUIRED", każde "DOD", każde "mandatory output". Skanowanie "sedna" to za mało — poboczne wymagania (log decyzji, feature flag decision, format raportu) są równie obowiązkowe. |
+| 14 | **node_modules przed weryfikacją** | PRZED uruchomieniem tsc / lint / vitest / build: sprawdź czy `node_modules/` istnieje (`ls node_modules/ 2>&1`). Bez node_modules wyniki tsc są fałszywie zielone (brak typów Supabase, i18n, itp.). Jeśli brak: najpierw `npm install`. |
+| 15 | **Prod build, nie dev build** | `npm run build` (produkcja) jest obowiązkowy w DoD. `npm run build:dev` to NIE substytut — nie miniaturyzuje, nie kompresuje gzip, nie wykrywa wszystkich błędów. Jeśli OOM: `NODE_OPTIONS="--max-old-space-size=4096" npm run build`. |
+| 16 | **Dotknięty plik = pełna odpowiedzialność** | Jeśli modyfikujesz plik X, sprawdź błędy TS specyficznie dla tego pliku po zmianach. Nie wolno zostawiać w nim WIĘCEJ błędów niż przed twoją zmianą. Pre-existing błędy w dotykanych plikach: napraw albo uzasadnij pisemnie dlaczego nie. |
+| 17 | **Follow-up wymaga estymacji LOC** | Zanim oznaczysz coś jako "follow-up / odroczone": policz ile linii kodu to faktycznie zajmie. Jeśli < 10 LOC i 0 ryzyka regresji → zrób w tym PR. Tylko jeśli > 30 LOC LUB wymaga decyzji architektonicznej → odrocz i zaloguj jako osobny ticket. |
+| 18 | **Dowód liczbowy, nie narracja** | "tsc OK", "testy przeszły", "build działa" BEZ liczb = NIEWAŻNY dowód. Wymagany format: `tsc: 365 błędów przed → 362 po (0 nowych)`, `vitest: 2285 passed 0 failed`, `build: ✓ built in 19.78s`. |
 
 ### Evidence Log — szablon (obowiązkowy w każdym raporcie)
 
@@ -650,10 +655,12 @@ Przed każdym commitem Claude MUSI potwierdzić każdy punkt:
 - [ ] Czy flagi/warunki mają poprawne defaulty (null-safety)?
 - [ ] Czy hardcoded wartości zostały zastąpione przez tokeny/zmienne?
 - [ ] Sprawdziłem pliki POWIĄZANE (nie tylko bezpośrednio zmienione)
-- [ ] Uruchomiłem testy — 0 błędów
-- [ ] Uruchomiłem tsc — 0 błędów
-- [ ] Uruchomiłem lint — 0 nowych błędów
-- [ ] Uruchomiłem build — sukces
+- [ ] **`node_modules/` istnieje** — jeśli nie: `npm install` PRZED jakąkolwiek weryfikacją
+- [ ] Uruchomiłem testy — podaj: `X passed, 0 failed` (nie samo "przeszło")
+- [ ] Uruchomiłem tsc — podaj: `X błędów przed → Y po (0 nowych wprowadzonych przeze mnie)`
+- [ ] Uruchomiłem lint — `0 errors` (warnings pre-existing są OK, żadnych nowych errors)
+- [ ] Uruchomiłem **`npm run build`** (produkcja, nie `build:dev`) — podaj ostatnią linię outputu
+- [ ] Każdy plik który dotknąłem ma ≤ tyle błędów TS co przed moją zmianą
 
 #### Pass #3 — Weryfikacja promptu linia po linii (OBOWIĄZKOWY)
 
@@ -676,22 +683,26 @@ Przed finalizacją (commit / raport końcowy) Claude MUSI wrócić do oryginalne
 
 **Reguła:** Jeśli jakikolwiek punkt nie jest odhaczony — NIE commituj. Uzupełnij najpierw.
 **Antywzorzec do unikania:** "Sedno jest gotowe, reszta to formalności" — formalności są równie obowiązkowe.
+**Antywzorzec do unikania:** "Weryfikacja przeszła" bez liczb — każdy wynik MUSI mieć liczby, nie narrację.
 
 #### Raport na końcu zadania
 Każde zakończone zadanie MUSI zawierać:
 ```
 ## Wyniki weryfikacji
-- Testy: X passed, 0 failed
-- TypeScript: 0 errors
-- Lint: 0 new errors
-- Build: ✅ sukces
+- node_modules: ✅ zainstalowane przed weryfikacją
+- Testy:        X passed, 0 failed (np. 2285 passed, 0 failed)
+- TypeScript:   X błędów przed → Y po (0 nowych; pre-existing: udokumentowane)
+- Lint:         0 errors (X pre-existing warnings — niezmienione)
+- Build prod:   ✅ ✓ built in Xs  LUB ❌ [dokładny błąd]
 
 ## Status
-- PDF VISUAL SYSTEM COMPLETE / PARTIAL / BLOCKED
-- Co zrobiono: [lista]
-- Co odroczone: [lista + powód]
+- COMPLETE / PARTIAL / BLOCKED
+- Co zrobiono: [lista z dowodami]
+- Co odroczone: [lista + powód + szacunek LOC]
 - Ryzyka: [lista]
 ```
+
+> ⚠️ Raport bez liczb = NIEWAŻNY. "Testy przeszły" bez `X passed` = NIEWAŻNE.
 
 ### Pułapki Jakościowe — Najczęstsze Błędy
 
@@ -703,12 +714,18 @@ Każde zakończone zadanie MUSI zawierać:
 6. **Fallback bez null-safety** — brak `?? default` przy opcjonalnych polach
 7. **Brak testów dla nowego zachowania** (gdy istniejące testy nie pokrywają)
 8. **Skanowanie zamiast czytania promptu** — agent uznaje zadanie za skończone po wykonaniu "sedna", pomijając wymagania poboczne (logi decyzji, explicit feature flag decision, mandatory output format). Objaw: Robert musi pytać 2–3 razy zanim wszystko jest kompletne. Lekarstwo: Pass #3 powyżej — fizyczny powrót do promptu i odhaczenie każdego punktu przed commitem.
+9. **tsc bez node_modules** — wynik jest zawsze fałszywie zielony. Bez zainstalowanych typów (Supabase, i18n, React Query) TypeScript nie sprawdza kompatybilności typów zewnętrznych. Zawsze `npm install` przed `tsc`. Diagnoza: jeśli `tsc` pokazuje 0-2 błędy a repo ma znane długi TS — środowisko jest niekompletne.
+10. **`build:dev` zamiast `npm run build`** — `build:dev` pomija minifikację i gzip compression, dlatego może "przejść" gdy prod build by failował. DoD wymaga zawsze prod buildu. Jeśli OOM: `NODE_OPTIONS="--max-old-space-size=4096" npm run build`.
+11. **Dotknięty plik z pre-existing błędami zostawiony bez analizy** — jeśli modyfikujesz plik który ma błędy TS, masz obowiązek: (a) sprawdzić ile błędów było PRZED twoją zmianą, (b) upewnić się że twoja zmiana nie dodała nowych, (c) naprawić błędy TS w liniach które zmodyfikowałeś. Wzorzec: `git stash → tsc → git stash pop → tsc` = porównanie.
+12. **Etykieta "follow-up" bez estymacji** — zanim odroczysz coś jako "follow-up", policz LOC. Reguła: < 10 LOC + 0 ryzyka regresji = zrób teraz w tym PR. 10–30 LOC = oceń. > 30 LOC lub decyzja architektoniczna = odrocz z uzasadnieniem. Cel: unikanie odkładania trywialnych uzupełnień.
+13. **Narracja zamiast liczb w raporcie** — "testy przeszły" / "tsc OK" / "build działa" bez cyfr to puste twierdzenia. Każdy wynik wymaga liczb: ile testów, ile błędów przed/po, czas builda, konkretna linia outputu. Bez liczb raport nie spełnia DoD.
 
 ### Priorytet zadań gdy budżet LOC jest ograniczony
 1. Zawsze zrealizuj najpierw zadania o najwyższym wpływie biznesowym
-2. Dokumentuj co zostało odroczone i DLACZEGO
+2. Dokumentuj co zostało odroczone i DLACZEGO + szacunek LOC + czy wymaga decyzji architektonicznej
 3. Nigdy nie zostawiaj kodu w stanie połowicznym — commit tylko kompletnych zmian
 4. Jeśli zadanie jest za duże na 1 PR — podziel je i zaznacz wyraźnie granicę
+5. **Follow-up threshold:** < 10 LOC bez ryzyka = zrób teraz | 10–30 LOC = oceń | > 30 LOC lub architektura = odrocz
 
 ---
 

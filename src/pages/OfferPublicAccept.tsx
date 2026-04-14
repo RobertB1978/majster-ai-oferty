@@ -55,6 +55,7 @@ import {
 } from 'lucide-react';
 
 import { supabase } from '@/integrations/supabase/client';
+import { MEDIA_BUCKET } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
@@ -270,7 +271,7 @@ export default function OfferPublicAccept() {
       const withUrls = await Promise.all(
         rows.map(async (row) => {
           const { data: signed } = await supabase.storage
-            .from('project-photos')
+            .from(MEDIA_BUCKET)
             .createSignedUrl(row.storage_path, 3600);
           return { ...row, signedUrl: signed?.signedUrl ?? undefined };
         }),
