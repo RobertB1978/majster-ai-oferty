@@ -745,6 +745,11 @@ Każde zakończone zadanie MUSI zawierać:
 > ponieważ brakowało mechanizmów WYMUSZAJĄCYCH ich faktyczne wykonanie.
 > Ten protokół jest warstwą enforcement — konkretne reguły, które eliminują
 > każdą ścieżkę do "fałszywego sukcesu".
+>
+> **Relacja Faz do Passów:** Passy #1–#3 (z Protokołu Jakości Enterprise) to **checklista** — CO sprawdzić.
+> Fazy 0–3 (ten protokół) to **enforcement** — JAK wymusić, żeby te checklist zostały faktycznie wykonane.
+> Fazy nie zastępują Passów — Fazy wymuszają ich realizację. Agent MUSI wykonać OBA: Passy (checklist)
+> W RAMACH Faz (enforcement).
 
 ### Faza 0: Dekompozycja promptu (PRZED jakimkolwiek kodem)
 
@@ -897,6 +902,68 @@ Jeśli zadanie jest kontynuowane w nowej sesji:
 3. Agent MUSI zrekonstruować listę TodoWrite z poprzedniej sesji
 4. Agent NIE MOŻE założyć, że "poprzednia sesja zrobiła X dobrze" — MUSI zweryfikować
 5. Agent MUSI poinformować użytkownika o swoim rozumieniu stanu i zapytać o potwierdzenie
+
+### Reguła self-audit odpowiedzi
+
+> **Wzorzec problemu:** Agent pisze "dodałem X, Y i Z" ale w rzeczywistości dodał
+> tylko X i Y. Agent nie rewiduje swojej własnej odpowiedzi przed wysłaniem,
+> przez co użytkownik dostaje fałszywe informacje o stanie pracy.
+
+**Reguła:** Przed wysłaniem KAŻDEJ odpowiedzi zawierającej twierdzenia o wykonanej pracy,
+agent MUSI:
+
+1. Przeczytać swoją odpowiedź jeszcze raz od początku do końca
+2. Dla KAŻDEGO twierdzenia ("dodałem X", "zmieniłem Y", "naprawiłem Z") — zweryfikować,
+   że to FAKTYCZNIE zostało zrobione (Read pliku, git diff, output komendy)
+3. Jeśli jakiekolwiek twierdzenie jest fałszywe — usunąć je lub naprawić ZANIM wyśle odpowiedź
+4. Nie używać liczby mnogiej dla pojedynczych zmian ("poprawiłem kilka rzeczy" gdy poprawił jedną)
+
+**Antywzorzec:** "Dodałem obsługę X, Y i Z" → w rzeczywistości dodał X, zaczął Y, zapomniał o Z.
+**Prawidłowo:** Zweryfikuj każdy punkt, potem dopiero napisz co zrobiłeś.
+
+### Reguła "Sprawdź wszystkie call-sites" (impact analysis)
+
+> **Wzorzec problemu:** Agent zmienia sygnaturę funkcji/komponentu w jednym pliku,
+> ale nie sprawdza WSZYSTKICH miejsc gdzie ta funkcja/komponent jest używany.
+> Rezultat: build przechodzi (bo TypeScript wykryje), ale jeśli zmiana jest w typach
+> opcjonalnych lub w zachowaniu — nikt nie zauważy do produkcji.
+
+**Reguła:** Kiedy agent modyfikuje:
+- **Sygnaturę funkcji/hooka** (parametry, return type) → `Grep` po nazwie funkcji w całym projekcie
+- **Props komponentu** (dodaje, usuwa, zmienia typ) → `Grep` po nazwie komponentu w całym projekcie
+- **Strukturę typu/interfejsu** → `Grep` po nazwie typu w całym projekcie
+- **Eksport z modułu** → `Grep` po ścieżce importu w całym projekcie
+- **Nazwę pliku** → `Grep` po starej ścieżce w całym projekcie
+
+Dla KAŻDEGO znalezionego call-site agent MUSI:
+1. Przeczytać kontekst użycia (Read)
+2. Ocenić czy zmiana wymaga aktualizacji w tym miejscu
+3. Jeśli tak — zaktualizować
+4. Jeśli nie — udokumentować DLACZEGO nie wymaga
+
+**ZAKAZ:** Agent NIE MOŻE zmienić interfejsu/sygnatury bez wykonania `Grep` po nazwie.
+
+### Reguła "Nie kopiuj bez weryfikacji kontekstu"
+
+> **Wzorzec problemu:** Agent kopiuje fragment kodu z jednego pliku do drugiego
+> (np. wzorzec użycia hooka, fragment JSX, logikę walidacji). Kopiowany kod
+> zawiera importy, zmienne i zależności specyficzne dla ORYGINALNEGO pliku,
+> które nie istnieją w DOCELOWYM pliku. Rezultat: błędy kompilacji lub runtime.
+
+**Reguła:** Kiedy agent kopiuje kod z pliku A do pliku B, MUSI:
+
+1. Sprawdzić KAŻDY import/zależność w kopiowanym fragmencie:
+   - Czy import istnieje w pliku B? Jeśli nie → dodaj
+   - Czy ścieżka importu jest poprawna z perspektywy pliku B? (relatywne ścieżki się zmieniają!)
+2. Sprawdzić KAŻDĄ zmienną/stan w kopiowanym fragmencie:
+   - Czy zmienna istnieje w kontekście pliku B?
+   - Czy hook jest dostępny w kontekście pliku B?
+3. Sprawdzić KAŻDY typ:
+   - Czy typy użyte w fragmencie są importowane w pliku B?
+4. Po wklejeniu — Read pliku B i zweryfikować że się kompiluje (`npx tsc --noEmit`)
+
+**ZAKAZ:** Agent NIE MOŻE kopiować kodu metoda "kopiuj-wklej i mam nadzieję że działa".
+Każdy skopiowany fragment wymaga adaptacji do kontekstu docelowego pliku.
 
 ---
 
