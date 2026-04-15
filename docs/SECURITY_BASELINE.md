@@ -568,7 +568,125 @@ ale nadal obowiązuje reguła logowania (Sekcja 4).
 
 Zmiany w `vercel.json` (CSP, nagłówki) wymagają osobnego ADR zgodnie z **Sekcją 5**.
 
+Każdy PR, który **dodaje nowy publiczny endpoint tokenizowany** (dostęp bez auth, przez
+unikalny token w URL), musi zastosować wzorzec SECURITY DEFINER z **Sekcji 11**
+zamiast polityk RLS anon.
+
 ---
 
-*Dokument: v1.0 | Data: 2026-03-01 | PR-02 Security Baseline + RLS Standard*
+## 11. Tokenizowany Dostęp Publiczny — Wzorzec SECURITY DEFINER (SEC-01)
+
+> **Wprowadzono:** PR-SEC-01 (commit `079a81e`, PR#686, 2026-04-13)
+> **Dotyczy:** `offer_approvals` — publiczna strona oferty dostępna przez `public_token`
+> **Decyzja:** `docs/DECISIONS.md` wpis z 2026-04-13 (Option B)
+
+### Problem: anon RLS USING clause nie może egzekwować predykatów wywołującego
+
+Klasyczna pułapka bezpieczeństwa w Supabase/PostgreSQL:
+
+```sql
+-- ❌ BŁĘDNY WZORZEC — NIGDY NIE STOSUJ dla tokenizowanego dostępu publicznego
+CREATE POLICY "Public can view pending offers by valid token"
+  ON public.offer_approvals FOR SELECT TO anon
+  USING (
+    (status = 'pending')
+    AND (public_token IS NOT NULL)
+    AND public.validate_offer_token(public_token)  -- ← BŁĄD: public_token to kolumna wiersza, nie parametr wywołania!
+  );
+```
+
+**Dlaczego to jest podatność:**
+Klauzula `USING` jest ewaluowana per-wiersz, sprawdzając wartość `public_token`
+**z samego wiersza** — nie z zapytania klienta. Funkcja `validate_offer_token(x)`
+sprawdza `EXISTS (SELECT 1 FROM offer_approvals WHERE public_token = x)` — token
+wiersza zawsze waliduje sam siebie. Rezultat: `USING` zwraca TRUE dla każdego
+wiersza `pending`. Anonimowy klient może wykonać:
+
+```sql
+SELECT * FROM offer_approvals  -- bez klauzuli WHERE
+```
+
+i otrzymać **wszystkie** pending oferty: PII klientów (`client_name`, `client_email`),
+`accept_token` (możliwy do użycia do 1-click forgery), `signature_data`.
+
+**Reguła:** RLS `USING` nie może odczytać predykatów zapytania wywołującego.
+Filtrowanie po stronie aplikacji (`WHERE public_token = $1`) to
+**nie jest** mechanizm bezpieczeństwa — tylko optymalizacja zapytania.
+
+### Rozwiązanie: funkcja SECURITY DEFINER z dokładnym dopasowaniem tokenu
+
+```sql
+-- ✅ POPRAWNY WZORZEC dla tokenizowanego dostępu publicznego
+CREATE OR REPLACE FUNCTION public.get_offer_approval_by_token(p_token uuid)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER         -- ← bypass RLS, ale zakres = dokładnie ten token
+SET search_path = public
+AS $$
+DECLARE v_row offer_approvals%ROWTYPE;
+BEGIN
+  -- Dokładne dopasowanie: parametr wywołania, nie kolumna wiersza.
+  SELECT * INTO v_row
+  FROM public.offer_approvals
+  WHERE public_token = p_token   -- ← p_token pochodzi od wywołującego
+  LIMIT 1;
+
+  IF NOT FOUND THEN
+    RETURN jsonb_build_object('error', 'not_found');  -- uniform response
+  END IF;
+
+  -- Zwróć TYLKO minimalne pola niezbędne do wyświetlenia oferty.
+  -- Nigdy nie zwracaj: accept_token, signature_data, user_id, project_id, expires_at.
+  RETURN jsonb_build_object( /* ... pola wyświetlania ... */ );
+END;
+$$;
+
+-- Udziel wykonania anonimowym klientom (nie dostępu do tabeli).
+GRANT EXECUTE ON FUNCTION public.get_offer_approval_by_token(uuid) TO anon;
+
+-- Defense-in-depth: cofnij dostęp do pomocniczych funkcji RLS (które były zepsute).
+REVOKE EXECUTE ON FUNCTION public.validate_offer_token(uuid) FROM anon;
+```
+
+Pełna implementacja: `supabase/migrations/20260413120000_sec01_harden_offer_approvals_anon_access.sql`
+
+### Zasady dla tokenizowanego dostępu publicznego
+
+| Zasada | Opis |
+|--------|------|
+| **SECURITY DEFINER, nie RLS anon** | Funkcja kontroluje zakres dostępu przez parametr, nie przez politykę per-wiersz |
+| **Dokładne dopasowanie tokenu** | `WHERE kolumna_tokenu = p_token` — parametr wywołania, nie wartość wiersza |
+| **Minimalne pola** | Zwracaj tylko pola niezbędne do wyświetlenia; jawnie wykluczaj tokeny wewnętrzne, FK, PII zbędne dla widoku |
+| **Uniform "not found"** | Nieprawidłowy i nieistniejący token zwraca ten sam błąd — brak timing side-channel |
+| **REVOKE pomocnicze funkcje** | Wycofaj anon EXECUTE z funkcji pomocniczych, których polityki już nie używają |
+| **Bez bezpośredniego SELECT anon** | Tabela chroniona `offer_approvals` NIE ma polityki anon SELECT — dostęp tylko przez RPC |
+
+### Stan ochrony po SEC-01 (dowody z repo)
+
+| Element | Stan | Źródło |
+|---------|------|--------|
+| Anon RLS SELECT na `offer_approvals` | ❌ USUNIĘTY (DROP POLICY) | `migrations/20260413120000_sec01_*.sql:57-58` |
+| Anon RLS UPDATE na `offer_approvals` | ❌ USUNIĘTY (DROP POLICY) | `migrations/20260413120000_sec01_*.sql:60-61` |
+| `get_offer_approval_by_token(uuid)` | ✅ SECURITY DEFINER, GRANT anon | `migrations/20260413120000_sec01_*.sql:65-186` |
+| `record_offer_viewed_by_token(uuid)` | ✅ SECURITY DEFINER, GRANT anon | `migrations/20260413120000_sec01_*.sql:190-233` |
+| `validate_offer_token(uuid)` — anon | ❌ REVOKE (defense-in-depth) | `migrations/20260413120000_sec01_*.sql:238` |
+| Frontend (`publicOfferApi.ts`) | ✅ Używa RPC zamiast direct query | `src/lib/publicOfferApi.ts:63-66` |
+| `OfferApproval.tsx` (`/ap/:token`) | ✅ Używa RPC zamiast direct query | `src/pages/OfferApproval.tsx:61-66` |
+| `approve-offer` Edge Function | ✅ Niezmieniona — używa `service_role` | bez zmian w SEC-01 |
+
+### Co NIE jest objęte tym wzorcem (wymagana weryfikacja runtime)
+
+- **Zastosowanie migracji w produkcji:** Audyt repo-only nie może potwierdzić, czy migracja
+  SEC-01 jest zastosowana w Supabase Dashboard. Weryfikacja: SQL Editor →
+  `SELECT proname FROM pg_proc WHERE proname = 'get_offer_approval_by_token';`
+- **Inne tabele z anon RLS:** SEC-01 naprawiał wyłącznie `offer_approvals`.
+  Inne tabele mogą mieć podobne wzorce — wymagają osobnego audytu.
+- **Test IDOR dla publicznych tokenów:** Procedura z Sekcji 3 dotyczy izolacji tenant-tenant.
+  Dla endpointów publicznych (anon) test należy przeprowadzić oddzielnie:
+  zweryfikować, że `SELECT * FROM offer_approvals` bez WHERE zwraca `[]` z anon key.
+
+---
+
+*Dokument: v1.1 | Zaktualizowano: 2026-04-15 | SEC-02: dodano Sekcję 11 (SECURITY DEFINER pattern)*
+*v1.0: 2026-03-01 | PR-02 Security Baseline + RLS Standard*
 *Autor: Claude (Tech Lead Majster.AI) | Właściciel: Robert B.*
