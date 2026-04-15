@@ -52,17 +52,22 @@ Po zamknięciu PR-00..PR-20, nowe PR-y wykonawcze używają notacji
 | PR-SEC-01 | #686 | ✅ MERGED | SECURITY DEFINER RPC dla publicznego dostępu do ofert | A3 |
 | PR-ARCH-01 | #687 | ✅ MERGED | Kanoniczny flow publiczny oferty (FLOW-B) + ADR-0014 | A3 |
 | PR-ARCH-02 | #688 | ✅ MERGED | Usunięcie dead code (5 hooków + 1 komponent) + COMPATIBILITY_MATRIX | A3 |
-| PR-INFRA-01 | #689 | 🟡 OPEN | SEO fix: canonical/og:url/sitemap — CI 13/13 green, Vercel preview READY | A4 |
+| PR-INFRA-01 | #689 | ✅ MERGED | SEO fix: canonical/og:url/sitemap — commit `f7b0cd6` | A4 |
 | PR-OPS-01 | #690 | ✅ MERGED | Phantom hash audyt, kolizja ADR→ADR-0014, DOCS_INDEX, banery ARCHIWUM | A4 |
 | PR-OPS-02 | #691 | ✅ MERGED | Repo hygiene: runbook + inventory (687 branchy, 68 otwartych PR) | A4 |
 | PR-BE-LOW-01 | #692 | ✅ MERGED | Centralizacja bucket names w storage.ts (14 hardcoded stringów) | A4 |
 | PR-DOCS-01 | #694 | ✅ MERGED | FF_MODE_B_DOCX_ENABLED gate w ReadyDocuments (foundation only) | A4 |
 | PR-A2-FIX | #699 | ✅ MERGED | Naprawiono 3 sprzeczności HIGH z audytu A2: C-01, C-02, C-06 | — |
-| BOOKKEEP-01 | *(ten PR)* | 🔵 IN PROGRESS | Bookkeeping: truth/status docs + ta mapa numeracji | — |
+| PR-CONSENT-01 | #702 | ✅ MERGED | GDPR/RODO: wymuszenie mechanizmu cookie consent | — |
+| BOOKKEEP-01 | #703 | ✅ MERGED | Bookkeeping: truth/status docs + ta mapa numeracji (r1) | — |
+| PR-SEC-02 | #704 | ✅ MERGED | Aktualizacja SECURITY_BASELINE.md po hardeningu oferty publicznej | — |
+| PR-ARCH-03 | #705 | ✅ MERGED | Zamknięcie luk L-1/L-2 + migracja legacy readers | — |
+| PR-ARCH-03b | #706 | ✅ MERGED | Zamknięcie ostatnich legacy readers po ARCH-03 | — |
+| BOOKKEEP-01 r2 | *(ten PR)* | 🔵 IN PROGRESS | Bookkeeping: aktualizacja statusów #689/#704/#705/#706 | — |
 
-> **PR-INFRA-01 (#689):** Czeka na decyzję Roberta (merge lub close).
-> CI 13/13 green. Wymaga też weryfikacji `VITE_PUBLIC_SITE_URL=https://majsterai.com`
-> w Vercel Dashboard → Settings → Environment Variables → Production scope.
+> **PR-INFRA-01 (#689):** Zmergowany 2026-04-15 (commit `f7b0cd6`).
+> Wymaga weryfikacji `VITE_PUBLIC_SITE_URL=https://majsterai.com`
+> w Vercel Dashboard → Settings → Environment Variables → Production scope (akcja Roberta).
 
 ---
 
@@ -78,4 +83,4 @@ Po zamknięciu PR-00..PR-20, nowe PR-y wykonawcze używają notacji
 
 ---
 
-*Dokument: v1.0 | 2026-04-15 | BOOKKEEP-01 — zapobieganie pomyleniu numeracji*
+*Dokument: v1.1 | 2026-04-15 | BOOKKEEP-01 r2 — aktualizacja statusów #689/#702–#706*
