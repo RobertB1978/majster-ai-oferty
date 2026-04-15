@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-03-02 (PR-20 DONE)
+**Ostatnia aktualizacja:** 2026-04-15 (BOOKKEEP-01: dodano sekcję post-roadmap PR-ów wykonawczych)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -46,6 +46,30 @@
 | **PR-18** | Gwarancje + Przeglądy + Przypomnienia | ✅ DONE | `claude/enterprise-compliance-features-48LQF` | 2026-03-02 | project_warranties + project_inspections + project_reminders (migration + RLS + views), WarrantySection (PDF karta A4 + dossier GUARANTEE + email), InspectionSection (lista PLANNED/OVERDUE/DONE, 6 typów z INSPECTIONS_PL.md, protokół → dossier PROTOCOL), RemindersPanel (in-app T-30/T-7), NotificationPermissionPrompt (denied→EmptyState+OpenSettings), useWarranty+useInspection+useReminders hooks, i18n PL/EN/UK (inspection.* + reminders.* 60+ kluczy), testy jednostkowe, ADR-0010 zaktualizowane |
 | **PR-19** | PWA Offline minimum | ✅ DONE | `claude/pwa-service-worker-cache-IuqSQ` | 2026-03-02 | SW v4 (stale-while-revalidate dla /rest/v1/offers + /rest/v1/v2_projects), OfflineBanner (maly baner, nie blokuje app), useOnlineStatus hook, i18n PL/EN/UK (offline.*), docs/OFFLINE_MINIMUM.md, FF_NEW_SHELL ON/OFF |
 | **PR-20** | Stripe Billing | ✅ DONE | `claude/stripe-billing-checkout-3OFjB` | 2026-03-02 | Stripe Checkout (create-checkout-session EF), customer-portal EF (Billing Portal), stripe-webhook (idempotentny, weryfikacja podpisu), migracja PR-20 (fix RLS user_subscriptions, trigger enforce_monthly_offer_send_limit na offers, fix subscription_events nullable), SubscriptionSection (Settings→Subskrypcja: plan+status+portal link), Plan.tsx (real subscription data + checkout wired + portal + ?success=true refresh), useCustomerPortal hook, FreeTierPaywallModal fix (/app/plan), /app/billing route alias, i18n PL/EN/UK (billing.subscription.*), docs/BILLING_RUNBOOK.md |
+
+---
+
+## PR-y Wykonawcze (post PR-20 — seria kwiecień 2026)
+
+> Seria PR-ów wykonawczych wygenerowana po zamknięciu oryginalnego zakresu PR-00..PR-20.
+> Szczegóły zamknięcia: audyty A3 (`docs/AUDIT_A3_PACK1_CLOSURE_2026-04-14.md`) i A4 (`docs/AUDIT_A4_PACK2_CLOSURE_2026-04-14.md`).
+> Mapowanie numeracji i GitHub PR#: [`docs/PR_NUMBERING_MAP.md`](./PR_NUMBERING_MAP.md).
+
+| PR | GitHub # | Status | Opis | Data merge |
+|----|----------|--------|------|------------|
+| PR-SUPA-01 | #684 | ✅ MERGED | Supabase types sync (ręczna rekonstrukcja schematu prod) | 2026-04-14 |
+| PR-SUPA-02 | #685 | ✅ MERGED | config.toml: rejestracja brakujących Edge Functions | 2026-04-14 |
+| PR-SEC-01 | #686 | ✅ MERGED | SECURITY DEFINER RPC dla publicznego dostępu do ofert | 2026-04-13 |
+| PR-ARCH-01 | #687 | ✅ MERGED | Kanoniczny flow publiczny oferty (FLOW-B) + ADR-0014 | 2026-04-13 |
+| PR-ARCH-02 | #688 | ✅ MERGED | Usunięcie dead code (5 hooków + 1 komponent) + COMPATIBILITY_MATRIX | 2026-04-13 |
+| PR-INFRA-01 | #689 | 🟡 OPEN | SEO fix: canonical/og:url/sitemap → CI green, Vercel preview READY | — |
+| PR-OPS-01 | #690 | ✅ MERGED | Phantom hash audyt, kolizja ADR (→ADR-0014), DOCS_INDEX, banery ARCHIWUM | 2026-04-14 |
+| PR-OPS-02 | #691 | ✅ MERGED | Repo hygiene: runbook + inventory (687 branchy, 68 otwartych PR) | 2026-04-14 |
+| PR-BE-LOW-01 | #692 | ✅ MERGED | Centralizacja bucket names w storage.ts (14 hardcoded stringów) | 2026-04-14 |
+| PR-DOCS-01 | #694 | ✅ MERGED | FF_MODE_B_DOCX_ENABLED gate w ReadyDocuments (foundation) | 2026-04-14 |
+| PR-A2-FIX | #699 | ✅ MERGED | Naprawiono 3 sprzeczności HIGH z audytu A2: C-01, C-02, C-06 | 2026-04-14 |
+
+> **PR-INFRA-01 (#689):** CI 13/13 green, Vercel preview READY. Czeka na decyzję Roberta (merge lub close z uzasadnieniem). Wymaga też weryfikacji `VITE_PUBLIC_SITE_URL=https://majsterai.com` w Vercel Dashboard → Settings → Environment Variables → Production scope.
 
 ---
 

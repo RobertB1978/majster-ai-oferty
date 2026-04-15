@@ -3,6 +3,7 @@
 > **Aktualny stan projektu** → [`docs/ROADMAP_STATUS.md`](./ROADMAP_STATUS.md) (ostatnia aktualizacja: 2026-03-02, PR-20 DONE)
 > **Aktualny stan wdrożenia** → [`docs/DEPLOYMENT_TRUTH.md`](./DEPLOYMENT_TRUTH.md)
 > **Aktualny stan poszczególnych modułów** → [`docs/STAN_PROJEKTU.md`](./STAN_PROJEKTU.md) (2026-03-02)
+> ⚠️ **Numeracja PR:** Odwołania do `PR#01`, `PR#02` itp. w tym dokumencie używają **starej numeracji z ROADMAP_ENTERPRISE v4** (np. PR#01 = Deployment Truth, PR#03 = Branch Protection). **Nie są tożsame** z nową numeracją `PR-01..PR-20` z ROADMAP.md v5 (PR-01 = Tooling i18n, PR-03 = Design System). Mapa: [`docs/PR_NUMBERING_MAP.md`](./PR_NUMBERING_MAP.md).
 
 # Source of Truth — Majster.AI [SNAPSHOT 2026-02-18]
 
