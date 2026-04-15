@@ -3,7 +3,7 @@
 > **Źródło prawdy:** [`ROADMAP.md`](./ROADMAP.md) | Aktualizuj ten plik PO KAŻDYM MERGE.
 > Format: `docs: aktualizuj status PR-XX w ROADMAP_STATUS`
 
-**Ostatnia aktualizacja:** 2026-04-15 (BOOKKEEP-01: dodano sekcję post-roadmap PR-ów wykonawczych)
+**Ostatnia aktualizacja:** 2026-04-15 (BOOKKEEP-01 r2: aktualizacja statusów #689/#704/#705/#706, nowe wpisy #702–#706)
 **Prowadzi:** Tech Lead (Claude) + Product Owner (Robert B.)
 
 ---
@@ -62,14 +62,19 @@
 | PR-SEC-01 | #686 | ✅ MERGED | SECURITY DEFINER RPC dla publicznego dostępu do ofert | 2026-04-13 |
 | PR-ARCH-01 | #687 | ✅ MERGED | Kanoniczny flow publiczny oferty (FLOW-B) + ADR-0014 | 2026-04-13 |
 | PR-ARCH-02 | #688 | ✅ MERGED | Usunięcie dead code (5 hooków + 1 komponent) + COMPATIBILITY_MATRIX | 2026-04-13 |
-| PR-INFRA-01 | #689 | 🟡 OPEN | SEO fix: canonical/og:url/sitemap → CI green, Vercel preview READY | — |
+| PR-INFRA-01 | #689 | ✅ MERGED | SEO fix: canonical/og:url/sitemap → commit `f7b0cd6` | 2026-04-15 |
 | PR-OPS-01 | #690 | ✅ MERGED | Phantom hash audyt, kolizja ADR (→ADR-0014), DOCS_INDEX, banery ARCHIWUM | 2026-04-14 |
 | PR-OPS-02 | #691 | ✅ MERGED | Repo hygiene: runbook + inventory (687 branchy, 68 otwartych PR) | 2026-04-14 |
 | PR-BE-LOW-01 | #692 | ✅ MERGED | Centralizacja bucket names w storage.ts (14 hardcoded stringów) | 2026-04-14 |
 | PR-DOCS-01 | #694 | ✅ MERGED | FF_MODE_B_DOCX_ENABLED gate w ReadyDocuments (foundation) | 2026-04-14 |
 | PR-A2-FIX | #699 | ✅ MERGED | Naprawiono 3 sprzeczności HIGH z audytu A2: C-01, C-02, C-06 | 2026-04-14 |
+| PR-CONSENT-01 | #702 | ✅ MERGED | GDPR/RODO: wymuszenie mechanizmu cookie consent | 2026-04-15 |
+| BOOKKEEP-01 | #703 | ✅ MERGED | Bookkeeping: truth/status docs + mapa numeracji PR (BOOKKEEP-01) | 2026-04-15 |
+| PR-SEC-02 | #704 | ✅ MERGED | Aktualizacja SECURITY_BASELINE.md po hardeningu oferty publicznej | 2026-04-15 |
+| PR-ARCH-03 | #705 | ✅ MERGED | Zamknięcie luk L-1/L-2 + migracja legacy readers (ARCH-03) | 2026-04-15 |
+| PR-ARCH-03b | #706 | ✅ MERGED | Zamknięcie ostatnich legacy readers po ARCH-03 (ARCH-03b) | 2026-04-15 |
 
-> **PR-INFRA-01 (#689):** CI 13/13 green, Vercel preview READY. Czeka na decyzję Roberta (merge lub close z uzasadnieniem). Wymaga też weryfikacji `VITE_PUBLIC_SITE_URL=https://majsterai.com` w Vercel Dashboard → Settings → Environment Variables → Production scope.
+> **PR-INFRA-01 (#689):** Zmergowany 2026-04-15 (commit `f7b0cd6`). Wymaga weryfikacji `VITE_PUBLIC_SITE_URL=https://majsterai.com` w Vercel Dashboard → Settings → Environment Variables → Production scope (akcja Roberta).
 
 ---
 
