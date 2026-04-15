@@ -6,13 +6,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCreateNotification } from '@/hooks/useNotifications';
 import { differenceInDays, differenceInHours, parseISO, isBefore } from 'date-fns';
 
+// ARCH-03b: migrated from offer_approvals to acceptance_links (canonical table)
 interface ExpiringOffer {
   id: string;
-  project_id: string;
-  client_name: string | null;
-  client_email: string | null;
+  offer_id: string;
   expires_at: string;
   created_at: string;
+  offers: { title: string | null; status: string } | null;
 }
 
 interface ExpiringSubscription {
@@ -30,7 +30,7 @@ export function useExpirationMonitor() {
   const { user } = useAuth();
   const createNotification = useCreateNotification();
 
-  // Fetch offers expiring within 7 days
+  // Fetch offers expiring within 7 days — ARCH-03b: reads from acceptance_links (canonical)
   const { data: expiringOffers } = useQuery({
     queryKey: ['expiring-offers'],
     queryFn: async () => {
@@ -38,16 +38,18 @@ export function useExpirationMonitor() {
       sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
 
       const { data, error } = await supabase
-        .from('offer_approvals')
-        .select('id, project_id, client_name, client_email, expires_at, created_at')
+        .from('acceptance_links')
+        .select('id, offer_id, expires_at, created_at, offers(title, status)')
         .eq('user_id', user!.id)
-        .eq('status', 'pending')
         .lte('expires_at', sevenDaysFromNow.toISOString())
         .gte('expires_at', new Date().toISOString())
         .order('expires_at', { ascending: true });
 
       if (error) throw error;
-      return data as ExpiringOffer[];
+      // Only monitor SENT offers — ARCH-03b: acceptance_links persist after ACCEPT/REJECT
+      return ((data ?? []) as ExpiringOffer[]).filter(
+        (link) => link.offers?.status === 'SENT'
+      );
     },
     enabled: !!user,
     refetchInterval: 1000 * 60 * 60, // Refetch every hour
@@ -101,7 +103,7 @@ export function useExpirationMonitor() {
         let message = '';
         let type: 'info' | 'warning' | 'error' = 'info';
 
-        const clientRef = offer.client_name || offer.client_email || t('expirationMonitor.client');
+        const clientRef = offer.offers?.title || t('expirationMonitor.client');
         if (hoursLeft <= 24) {
           title = t('expirationMonitor.offerExpiresToday');
           message = t('expirationMonitor.offerExpiresTodayMsg', { client: clientRef, hours: hoursLeft });
@@ -121,7 +123,7 @@ export function useExpirationMonitor() {
             title,
             message,
             type,
-            action_url: `/app/projects/${offer.project_id}`,
+            action_url: `/app/offers/${offer.offer_id}`,
           });
         }
       }

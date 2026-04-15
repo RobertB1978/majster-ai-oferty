@@ -51,26 +51,27 @@ function useTodayTasks() {
         }
       }
 
-      // Offers expiring in 3 days (via offer_approvals)
+      // Offers expiring in 3 days (via acceptance_links — canonical, ARCH-03b)
       const threeDaysFromNow = new Date(now);
       threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
 
-      const { data: expiringApprovals } = await supabase
-        .from('offer_approvals')
-        .select('id, project_id, expires_at')
-        .eq('status', 'pending')
+      const { data: expiringLinks } = await supabase
+        .from('acceptance_links')
+        .select('id, offer_id, expires_at, offers(status)')
+        .eq('user_id', user.id)
         .lte('expires_at', threeDaysFromNow.toISOString())
         .gte('expires_at', now.toISOString())
         .limit(3);
 
-      if (expiringApprovals) {
-        for (const approval of expiringApprovals) {
-          const daysLeft = Math.ceil((new Date(approval.expires_at).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      if (expiringLinks) {
+        for (const link of expiringLinks) {
+          if ((link.offers as { status: string } | null)?.status !== 'SENT') continue;
+          const daysLeft = Math.ceil((new Date(link.expires_at).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
           tasks.push({
-            id: `expiring-${approval.id}`,
+            id: `expiring-${link.id}`,
             type: 'expiring_offer',
             label: `Oferta wygasa za ${daysLeft} dni`,
-            href: `/app/projects/${approval.project_id}`,
+            href: `/app/offers/${link.offer_id}`,
           });
         }
       }

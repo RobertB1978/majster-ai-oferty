@@ -103,8 +103,8 @@ but should be migrated to the canonical `offers` / `acceptance_links` tables in 
 
 | Caller | Location | What it reads | Priority | Status |
 |--------|----------|---------------|---------|--------|
-| `useExpirationMonitor` | `src/hooks/useExpirationMonitor.ts` | `offer_approvals` — expiring pending offers for in-app notifications | P2 | OPEN (ARCH-03b) |
-| `TodayTasks` | `src/components/dashboard/TodayTasks.tsx` | `offer_approvals` — offers expiring in 3 days for dashboard widget | P2 | OPEN (ARCH-03b) |
+| `useExpirationMonitor` | `src/hooks/useExpirationMonitor.ts` | ~~`offer_approvals`~~ → `acceptance_links` JOIN `offers` (status=SENT), action_url `/app/offers/:id` | P2 | **MIGRATED** (PR-ARCH-03b, 2026-04-15) |
+| `TodayTasks` | `src/components/dashboard/TodayTasks.tsx` | ~~`offer_approvals`~~ → `acceptance_links` JOIN `offers` (status=SENT), href `/app/offers/:id` | P2 | **MIGRATED** (PR-ARCH-03b, 2026-04-15) |
 | `useOfferStats` | `src/hooks/useOfferStats.ts` | ~~`offer_approvals`~~ → `offers WHERE status='ACCEPTED'` | P2 | **MIGRATED** (PR-ARCH-03, 2026-04-15) |
 | `useFreeTierOfferQuota` | `src/hooks/useFreeTierOfferQuota.ts` | ~~`offer_approvals`~~ fallback → `offers WHERE status IN ['SENT','ACCEPTED','REJECTED']` | P3 | **MIGRATED** (PR-ARCH-03, 2026-04-15) |
 
@@ -172,20 +172,22 @@ Rollback effects:
 
 ---
 
-## ARCH-03 Deferred Work (ARCH-03b)
+## ARCH-03b Closure (2026-04-15)
 
-Two legacy readers require a UX decision before migration (the `project_id` URL
-changes to `/app/offers/:id` since no project exists at SENT stage):
+Both legacy readers have been migrated to the canonical `acceptance_links` table.
+The URL decision (`/app/offers/:id`) was confirmed by ARCH-03 SQL (L-2 notification
+uses `/app/offers/` — `supabase/migrations/20260415120000_arch03_l1_l2_close_canonical_gaps.sql:165`)
+and by the existing `TodayTasks` `pending_offer` pattern already using `/app/offers/:id`.
 
-| Caller | File | Block |
-|--------|------|-------|
-| `useExpirationMonitor` | `src/hooks/useExpirationMonitor.ts:41` | Reads `offer_approvals WHERE status='pending'` for expiring offers |
-| `TodayTasks` | `src/components/dashboard/TodayTasks.tsx:56-67` | Reads `offer_approvals WHERE status='pending'` for 3-day expiry widget |
+| Caller | File | Resolution |
+|--------|------|------------|
+| `useExpirationMonitor` | `src/hooks/useExpirationMonitor.ts` | **MIGRATED**: reads `acceptance_links` JOIN `offers(status=SENT)`, `action_url=/app/offers/:id` |
+| `TodayTasks` | `src/components/dashboard/TodayTasks.tsx` | **MIGRATED**: reads `acceptance_links` JOIN `offers(status=SENT)`, `href=/app/offers/:id` |
 
-**Decision needed:** after migration, notifications/tasks will link to `/app/offers/:id`
-(not `/app/projects/:id`). Robert must confirm this is acceptable before ARCH-03b ships.
+**All 4 legacy readers from COMPATIBILITY_MATRIX are now migrated. Zero remaining `offer_approvals` reads in monitoring/stats paths.**
 
 ---
 
 *Generated: 2026-04-13 | PR-ARCH-02 | Branch: `claude/pr-arch-02-public-offer-phase2-0Kgl9`*
 *Updated: 2026-04-15 | PR-ARCH-03 | Branch: `claude/arch-03-close-remaining-gaps-GKpt1` — L-1/L-2 closed, 2 readers migrated*
+*Updated: 2026-04-15 | PR-ARCH-03b | Branch: `claude/arch-03b-close-legacy-readers-cmPHo` — remaining 2 readers migrated (useExpirationMonitor, TodayTasks)*
