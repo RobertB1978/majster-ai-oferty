@@ -28,10 +28,12 @@ export function SEOHead({
 }: SEOHeadProps) {
   const fullTitle = `${title} | Majster.AI`;
   const siteUrl = getSiteUrl();
-  // Use pathname only (no query params) so canonical never varies by language query param
-  const cleanUrl = typeof window !== 'undefined'
-    ? window.location.origin + window.location.pathname
-    : siteUrl;
+  // Use siteUrl (from VITE_PUBLIC_SITE_URL env) as the origin so that canonical
+  // and og:url always reflect the production domain, even when the page is
+  // accessed via a Vercel preview URL. Falls back to window.location.origin
+  // only when siteUrl is empty (local dev without VITE_PUBLIC_SITE_URL set).
+  const origin = siteUrl || (typeof window !== 'undefined' ? window.location.origin : '');
+  const cleanUrl = origin + (typeof window !== 'undefined' ? window.location.pathname : '');
   const canonical = canonicalUrl || cleanUrl;
 
   const defaultStructuredData = {
