@@ -101,12 +101,12 @@ These callers **read** from `offer_approvals` for internal monitoring/stats purp
 They do **not** generate new public offer links. They are not blocking current phase,
 but should be migrated to the canonical `offers` / `acceptance_links` tables in a future sprint.
 
-| Caller | Location | What it reads | Priority |
-|--------|----------|---------------|---------|
-| `useExpirationMonitor` | `src/hooks/useExpirationMonitor.ts` | `offer_approvals` — expiring pending offers for in-app notifications | P2 |
-| `TodayTasks` | `src/components/dashboard/TodayTasks.tsx` | `offer_approvals` — offers expiring in 3 days for dashboard widget | P2 |
-| `useOfferStats` | `src/hooks/useOfferStats.ts` | `offer_approvals` — accepted offer count for stats widget | P2 |
-| `useFreeTierOfferQuota` | `src/hooks/useFreeTierOfferQuota.ts` | `offer_approvals` — fallback count when `count_monthly_finalized_offers` RPC fails | P3 |
+| Caller | Location | What it reads | Priority | Status |
+|--------|----------|---------------|---------|--------|
+| `useExpirationMonitor` | `src/hooks/useExpirationMonitor.ts` | `offer_approvals` — expiring pending offers for in-app notifications | P2 | OPEN (ARCH-03b) |
+| `TodayTasks` | `src/components/dashboard/TodayTasks.tsx` | `offer_approvals` — offers expiring in 3 days for dashboard widget | P2 | OPEN (ARCH-03b) |
+| `useOfferStats` | `src/hooks/useOfferStats.ts` | ~~`offer_approvals`~~ → `offers WHERE status='ACCEPTED'` | P2 | **MIGRATED** (PR-ARCH-03, 2026-04-15) |
+| `useFreeTierOfferQuota` | `src/hooks/useFreeTierOfferQuota.ts` | ~~`offer_approvals`~~ fallback → `offers WHERE status IN ['SENT','ACCEPTED','REJECTED']` | P3 | **MIGRATED** (PR-ARCH-03, 2026-04-15) |
 
 ---
 
@@ -138,14 +138,14 @@ All three public offer page components use distinct query key prefixes to preven
 The following feature gaps in the canonical flow must be closed before `/offer/:token`
 and `/oferta/:token` can be safely deprecated:
 
-| ID | Gap | Priority | PR responsible |
-|----|-----|---------|----------------|
-| L-1 | `process_offer_acceptance_action` must auto-create `v2_projects` on ACCEPT | P0 | PR-ARCH-03 |
-| L-2 | `process_offer_acceptance_action` must insert to `notifications` on ACCEPT/REJECT | P0 | PR-ARCH-03 |
-| L-5 | `useOffers` hook must return unified status from both `offers.status` and `offer_approvals.status` | P1 | PR-ARCH-03 |
-| L-6 | `process_offer_acceptance_action` must handle `accept_token` (1-click from email) | P1 | PR-ARCH-03 |
-| L-3 | `process_offer_acceptance_action` must support `CANCEL_ACCEPT` action (10-min window) | P2 | PR-ARCH-04 |
-| L-4 | `process_offer_acceptance_action` must support `WITHDRAW` action with JWT verification | P2 | PR-ARCH-04 |
+| ID | Gap | Priority | PR responsible | Status |
+|----|-----|---------|----------------|--------|
+| L-1 | `process_offer_acceptance_action` must auto-create `v2_projects` on ACCEPT | P0 | PR-ARCH-03 | **CLOSED** (2026-04-15) |
+| L-2 | `process_offer_acceptance_action` must insert to `notifications` on ACCEPT/REJECT | P0 | PR-ARCH-03 | **CLOSED** (2026-04-15) |
+| L-5 | `useOffers` hook must return unified status from both `offers.status` and `offer_approvals.status` | P1 | PR-ARCH-04 | OPEN |
+| L-6 | `process_offer_acceptance_action` must handle `accept_token` (1-click from email) | P1 | PR-ARCH-04 | OPEN |
+| L-3 | `process_offer_acceptance_action` must support `CANCEL_ACCEPT` action (10-min window) | P2 | PR-ARCH-04 | OPEN |
+| L-4 | `process_offer_acceptance_action` must support `WITHDRAW` action with JWT verification | P2 | PR-ARCH-04 | OPEN |
 
 After L-1 and L-2 are done:
 - Add redirect: `/offer/:token` → lookup `acceptance_link` for same offer → redirect to `/a/:acceptance_link_token`
@@ -170,4 +170,22 @@ Rollback effects:
 
 ---
 
+---
+
+## ARCH-03 Deferred Work (ARCH-03b)
+
+Two legacy readers require a UX decision before migration (the `project_id` URL
+changes to `/app/offers/:id` since no project exists at SENT stage):
+
+| Caller | File | Block |
+|--------|------|-------|
+| `useExpirationMonitor` | `src/hooks/useExpirationMonitor.ts:41` | Reads `offer_approvals WHERE status='pending'` for expiring offers |
+| `TodayTasks` | `src/components/dashboard/TodayTasks.tsx:56-67` | Reads `offer_approvals WHERE status='pending'` for 3-day expiry widget |
+
+**Decision needed:** after migration, notifications/tasks will link to `/app/offers/:id`
+(not `/app/projects/:id`). Robert must confirm this is acceptable before ARCH-03b ships.
+
+---
+
 *Generated: 2026-04-13 | PR-ARCH-02 | Branch: `claude/pr-arch-02-public-offer-phase2-0Kgl9`*
+*Updated: 2026-04-15 | PR-ARCH-03 | Branch: `claude/arch-03-close-remaining-gaps-GKpt1` — L-1/L-2 closed, 2 readers migrated*
