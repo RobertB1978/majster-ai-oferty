@@ -46,11 +46,12 @@ export function useFreeTierOfferQuota(): FreeTierOfferQuota {
 
       if (error) {
         // Fallback: client-side count on error (less accurate but never crashes)
+        // ARCH-03: migrated from offer_approvals to canonical offers table
         const { count, error: fallbackError } = await supabase
-          .from('offer_approvals')
+          .from('offers')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id)
-          .in('status', ['sent', 'accepted', 'rejected'])
+          .in('status', ['SENT', 'ACCEPTED', 'REJECTED'])
           .gte('created_at', getMonthStart());
 
         if (fallbackError) return 0;

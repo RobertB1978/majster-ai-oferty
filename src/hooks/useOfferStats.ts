@@ -43,28 +43,26 @@ export function useOfferStats() {
       // Calculate basic statistics
       const sentCount = data?.length || 0;
 
-      // Without tracking_status, we count accepted from offer_approvals
-      const { data: approvals, error: approvalsError } = await supabase
-        .from('offer_approvals')
-        .select('status')
+      // Count accepted offers from canonical offers table (ARCH-03: migrated from offer_approvals)
+      const { count: acceptedCount, error: acceptedError } = await supabase
+        .from('offers')
+        .select('*', { count: 'exact', head: true })
         .eq('user_id', user!.id)
-        .eq('status', 'approved')
-        .gte('created_at', thirtyDaysAgo.toISOString());
+        .eq('status', 'ACCEPTED')
+        .gte('accepted_at', thirtyDaysAgo.toISOString());
 
-      if (approvalsError) {
-        logger.warn('useOfferStats: offer_approvals query failed', approvalsError.message);
+      if (acceptedError) {
+        logger.warn('useOfferStats: offers accepted query failed', acceptedError.message);
       }
 
-      const acceptedCount = approvals?.length || 0;
-
       const conversionRate = sentCount > 0
-        ? Math.round((acceptedCount / sentCount) * 100)
+        ? Math.round(((acceptedCount ?? 0) / sentCount) * 100)
         : 0;
 
       // Simplified follow-up stats (since tracking_status is not available)
       return {
         sentCount,
-        acceptedCount,
+        acceptedCount: acceptedCount ?? 0,
         conversionRate,
         followupCount: 0,
         followupNotOpened: 0,
