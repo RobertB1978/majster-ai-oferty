@@ -17,6 +17,7 @@
 | **Stan wdrożenia** | [`docs/DEPLOYMENT_TRUTH.md`](./DEPLOYMENT_TRUTH.md) | PASS/FAIL Vercel + Supabase, ścieżka canonical deploy |
 | **Konfiguracja Supabase** | [`docs/SINGLE_SOURCE_OF_TRUTH.md`](./SINGLE_SOURCE_OF_TRUTH.md) | Jedyny `project_id` produkcyjny, jak zmienić |
 | **Log decyzji** | [`docs/DECISIONS.md`](./DECISIONS.md) | Append-only log wszystkich decyzji architektonicznych |
+| **Mapa numeracji PR** | [`docs/PR_NUMBERING_MAP.md`](./PR_NUMBERING_MAP.md) | Disambiguacja starej numeracji PR#xx (archiwum) vs nowej PR-xx (v5) vs serii post-roadmap |
 | **Macierz śledzenia** | [`docs/TRACEABILITY_MATRIX.md`](./TRACEABILITY_MATRIX.md) | Wymaganie → kod → PR → test → status |
 | **Playbook PR** | [`docs/PR_PLAYBOOK.md`](./PR_PLAYBOOK.md) | Proces PR: szablon, zasady, workflow |
 
@@ -88,6 +89,21 @@ Poniższe pliki są zachowane wyłącznie jako historia projektu. Zawierają sta
 
 ---
 
+## Aktywne Raporty Audytowe (seria 2026-04)
+
+> Te raporty są **aktywne** — dokumentują zamknięcie i pozostałe issues serii post-roadmap.
+> Nie są archiwum — zawierają evidence i macierze statusów do przyszłego użytku.
+
+| Raport | Opis |
+|--------|------|
+| [`docs/AUDIT_A2_CORE_DOCS_CONSISTENCY_2026-04-14.md`](./AUDIT_A2_CORE_DOCS_CONSISTENCY_2026-04-14.md) | Audyt spójności core docs — 7 sprzeczności C-01..C-07 |
+| [`docs/AUDIT_A3_PACK1_CLOSURE_2026-04-14.md`](./AUDIT_A3_PACK1_CLOSURE_2026-04-14.md) | Closure Pack 1: PR-SUPA-01/02, PR-SEC-01, PR-ARCH-01/02 |
+| [`docs/AUDIT_A4_PACK2_CLOSURE_2026-04-14.md`](./AUDIT_A4_PACK2_CLOSURE_2026-04-14.md) | Closure Pack 2: PR-INFRA-01 (OPEN), PR-OPS-01/02, PR-BE-LOW-01, PR-DOCS-01 |
+| [`docs/AUDIT_A5A_FINAL_STATUS_MATRIX_2026-04-14.md`](./AUDIT_A5A_FINAL_STATUS_MATRIX_2026-04-14.md) | Final status matrix: 8 PASS, 1 CONDITIONAL, 1 OPEN |
+| [`docs/AUDIT_A5B1_REMAINING_ISSUES_MATRIX_2026-04-15.md`](./AUDIT_A5B1_REMAINING_ISSUES_MATRIX_2026-04-15.md) | Remaining issues matrix + Deferred work + External decisions |
+
+---
+
 ## Sprzeczności Naprawione w PR-OPS-01
 
 Poniższe sprzeczności między core docs zostały naprawione 2026-04-14:
@@ -100,6 +116,14 @@ Poniższe sprzeczności między core docs zostały naprawione 2026-04-14:
 | 4 | `TRUTH.md:1` | Stan z 2026-02-18 prezentowany bez ostrzeżenia jako aktualny | Dodano baner SNAPSHOT z linkami do aktualnych docs |
 | 5 | `docs/ADR-0005-public-offer-canonical-flow.md` | Błędny numer (ADR-0005 zajęty przez FF_NEW_SHELL) + misplace poza `docs/ADR/` | Przeniesiono jako `docs/ADR/ADR-0014-public-offer-canonical-flow.md` |
 | 6 | `COMPATIBILITY_MATRIX.md` + `DECISIONS.md` | Referencja do „ADR-0005 (PR-ARCH-01)" — niejednoznaczna | Zaktualizowano na ADR-0014 |
+
+## Sprzeczności Naprawione w PR#699 (2026-04-14)
+
+| ID | Plik | Problem (z audytu A2) | Naprawa |
+|----|------|----------------------|---------|
+| C-01 | `ROADMAP_ENTERPRISE.md:229` | Resztka "Superseded" twierdząca że ENTERPRISE zastępuje ROADMAP.md — sprzeczna z banerem ARCHIWUM | Zmieniono na "Superseded by: ROADMAP.md v5" |
+| C-02 | `ROADMAP_STATUS.md:416-431` | Wskaźniki postępu 12/20=60% sprzeczne z tabelą 20/20=100% DONE | Zaktualizowano wszystkie wskaźniki do 100% |
+| C-06 | `ULTRA_ENTERPRISE_ROADMAP.md:sekcja 31` | Dokument oznaczony archiwum zawierał wykonywalne prompty bez ostrzeżenia | Dodano wyraźne ostrzeżenia archiwalne i przekreślono instrukcje kopiowania |
 
 ---
 
@@ -120,4 +144,4 @@ Patrz też: `docs/DECISIONS.md` — wpis z 2026-04-14.
 
 ---
 
-*Dokument: v1.1 | 2026-04-14 | PR-OPS-01 (docs cleanup) — druga iteracja po pełnym audycie sprzeczności*
+*Dokument: v1.2 | 2026-04-15 | BOOKKEEP-01 — dodano PR_NUMBERING_MAP, aktywne raporty audytowe, wpis PR#699*
