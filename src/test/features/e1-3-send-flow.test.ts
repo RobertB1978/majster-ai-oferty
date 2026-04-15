@@ -43,6 +43,17 @@ describe('ANALYTICS_EVENTS — send flow events exist', () => {
 describe('trackEvent — never throws into UI', () => {
   beforeEach(() => {
     vi.resetModules();
+    // Simulate analytics consent so trackEvent() passes the consent gate
+    vi.spyOn(window.localStorage, 'getItem').mockImplementation((key: string) => {
+      if (key === 'cookie_consent') {
+        return JSON.stringify({ essential: true, analytics: true, marketing: false });
+      }
+      return null;
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('trackEvent does not throw when no sink is registered', async () => {

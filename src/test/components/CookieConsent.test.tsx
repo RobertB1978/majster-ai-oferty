@@ -52,16 +52,16 @@ describe('CookieConsent', () => {
     });
   });
 
-  describe('Ścieżka odrzucenia (Tylko niezbędne)', () => {
-    it('kliknięcie "Tylko niezbędne" zapisuje zgodę tylko na niezbędne i ukrywa baner', async () => {
+  describe('Ścieżka odrzucenia (Odrzuć wszystkie)', () => {
+    it('kliknięcie "Odrzuć wszystkie" zapisuje zgodę tylko na niezbędne i ukrywa baner', async () => {
       const user = userEvent.setup();
       renderBanner();
 
       await waitFor(() => {
-        expect(screen.getByText(/Tylko niezbędne/i)).toBeDefined();
+        expect(screen.getByText(/Odrzuć wszystkie/i)).toBeDefined();
       });
 
-      const rejectBtn = screen.getByRole('button', { name: /Tylko niezbędne/i });
+      const rejectBtn = screen.getByRole('button', { name: /Odrzuć wszystkie/i });
       await user.click(rejectBtn);
 
       // Sprawdź, że zapisano minimalną zgodę

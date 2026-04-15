@@ -41,18 +41,15 @@ export default function CookiesPolicy() {
       provider: 'Majster.AI',
     },
     {
-      name: '_ga',
+      name: i18n.language === 'pl' ? 'Brak (cookieless)' : i18n.language === 'uk' ? 'Немає (без кукі)' : 'None (cookieless)',
       type: t('legal.cookies.analytics'),
-      purpose: i18n.language === 'pl' ? 'Identyfikator Google Analytics' : i18n.language === 'uk' ? 'Ідентифікатор Google Analytics' : 'Google Analytics identifier',
-      duration: i18n.language === 'pl' ? '2 lata' : i18n.language === 'uk' ? '2 роки' : '2 years',
-      provider: 'Google',
-    },
-    {
-      name: '_gid',
-      type: t('legal.cookies.analytics'),
-      purpose: i18n.language === 'pl' ? 'Rozróżnianie użytkowników' : i18n.language === 'uk' ? 'Розрізнення користувачів' : 'User distinction',
-      duration: i18n.language === 'pl' ? '24 godziny' : i18n.language === 'uk' ? '24 години' : '24 hours',
-      provider: 'Google',
+      purpose: i18n.language === 'pl'
+        ? 'Anonimowa analityka odwiedzin — bez identyfikatorów, bez śledzenia, EU-hosted'
+        : i18n.language === 'uk'
+        ? 'Анонімна аналітика відвідувань — без ідентифікаторів, без відстеження, розміщено в ЄС'
+        : 'Anonymous visit analytics — no identifiers, no tracking, EU-hosted',
+      duration: i18n.language === 'pl' ? 'N/A' : i18n.language === 'uk' ? 'N/A' : 'N/A',
+      provider: 'Plausible Analytics (plausible.io)',
     },
   ];
 
