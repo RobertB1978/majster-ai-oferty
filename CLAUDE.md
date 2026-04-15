@@ -984,4 +984,48 @@ Każdy skopiowany fragment wymaga adaptacji do kontekstu docelowego pliku.
 
 ---
 
+## 🌐 CCW Stability Rules (Claude Code Web — OBOWIĄZKOWE)
+
+> **Geneza:** W sesjach CCW (Claude Code Web) narzędzia MCP (`mcp__github__*`) regularnie
+> się rozłączają w trakcie dłuższych zadań. Powoduje to utratę postępu i konieczność
+> restartu. Poniższe reguły eliminują zależność od niestabilnych narzędzi MCP
+> dla kluczowych operacji.
+
+### Reguły
+
+| # | Reguła | Opis |
+|---|--------|------|
+| CCW-1 | **Nie używaj MCP do core deliverables** | `mcp__github__*` może się rozłączyć w każdej chwili. Nigdy nie uzależniaj zapisu pliku, commitu ani pusha od narzędzi MCP. |
+| CCW-2 | **Git przez Bash** | Wszystkie operacje git (`add`, `commit`, `push`, `log`, `show`) — zawsze przez narzędzie `Bash`, nigdy przez MCP. |
+| CCW-3 | **Duże pliki: kawałki < 2KB** | Przy zapisie pliku > 50 linii: użyj `bash cat >> heredoc` w częściach (każda < 2KB). Nigdy jednego `Write` > 100 linii — ryzyko timeout. |
+| CCW-4 | **PR przez interfejs GitHub, nie MCP** | Po `git push` GitHub wypisuje URL do tworzenia PR. Podaj ten URL Robertowi — nie twórz PR przez `mcp__github__create_pull_request`. |
+| CCW-5 | **Checkpoint po każdej fazie** | Przy zadaniach wieloetapowych: po każdej fazie wypisz co zostało zapisane/scommitowane. Jeśli MCP się rozłączy — wiadomo od czego wznowić. |
+
+### Technika anty-timeout (zapis pliku w kawałkach)
+
+```bash
+# Kawałek 1
+cat > docs/plik.md << 'PART1'
+... treść < 2KB ...
+PART1
+echo "PART1 OK: $(wc -l < docs/plik.md) linii"
+
+# Kawałek 2
+cat >> docs/plik.md << 'PART2'
+... treść < 2KB ...
+PART2
+echo "PART2 OK: $(wc -l < docs/plik.md) linii"
+
+# itd.
+```
+
+### Co robić gdy MCP się rozłączy
+
+1. NIE restartuj od zera — odczytaj ostatni CHECKPOINT z konwersacji
+2. Sprawdź co zostało zapisane: `git status`, `git log --oneline -5`
+3. Wznów od następnej niewykonanej fazy
+4. Do core deliverables (pliki, git) używaj tylko `Bash` i `Write`
+
+---
+
 **This document is your guide to working effectively on Majster.AI. When in doubt, ask the owner!**
