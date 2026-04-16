@@ -62,9 +62,15 @@ ALTER TABLE public.user_roles ALTER COLUMN user_id SET NOT NULL;
 -- PART 4: Add UNIQUE(user_id, role) constraint
 -- ============================================================
 DO $$ BEGIN
-  ALTER TABLE public.user_roles
-    ADD CONSTRAINT user_roles_user_id_role_key UNIQUE (user_id, role);
-EXCEPTION WHEN duplicate_object THEN NULL;
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.table_constraints
+    WHERE constraint_name = 'user_roles_user_id_role_key'
+      AND table_name = 'user_roles'
+      AND table_schema = 'public'
+  ) THEN
+    ALTER TABLE public.user_roles
+      ADD CONSTRAINT user_roles_user_id_role_key UNIQUE (user_id, role);
+  END IF;
 END $$;
 
 -- ============================================================
