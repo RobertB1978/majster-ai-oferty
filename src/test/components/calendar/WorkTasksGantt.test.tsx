@@ -49,6 +49,7 @@ const endISO   = `${y}-${m}-05`;
 const mockTask = {
   id: 'task-1',
   project_id: 'proj-1',
+  v2_project_id: 'proj-1',
   user_id: 'user-1',
   title: 'Malowanie ścian',
   description: null,
