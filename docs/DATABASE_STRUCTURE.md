@@ -1,6 +1,6 @@
 # DATABASE_STRUCTURE.md
 
-> **Last updated:** 2026-03-20
+> **Last updated:** 2026-04-17
 > **Total tables:** 53 (public schema)
 > **Migrations:** 51 files in `supabase/migrations/` (chronological, immutable)
 > **RLS:** Enabled on ALL tables — never disable without explicit approval
@@ -48,8 +48,14 @@ User profile and company information.
 RBAC roles per user.
 | Column | Type | Notes |
 |--------|------|-------|
-| user_id | uuid | FK → auth.users |
-| role | text | `'admin'`, `'owner'`, `'member'` |
+| id | bigint | PK |
+| user_id | uuid | FK → auth.users, NOT NULL |
+| role | app_role | `'admin'`, `'moderator'`, `'user'`; NOT NULL, default `'user'` |
+| created_at | timestamptz | |
+
+UNIQUE `(user_id, role)`. RLS enabled — 2 policies: `Users can view their own roles` (SELECT own `user_id`); `Admins can manage all roles` (ALL via `has_role()`).
+Function: `public.has_role(_user_id uuid, _role app_role) → boolean` (SECURITY DEFINER, STABLE).
+Bootstrap (service_role only): `grant_admin_role(email)` / `revoke_admin_role(email)`.
 
 ### `user_consents`
 GDPR consent tracking.
