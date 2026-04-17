@@ -95,7 +95,7 @@ export const FEATURES: Feature[] = [
     title: 'Asystent AI',
     desc: 'Sugestie i automatyzacja wycen.',
     status: 'beta',
-    evidence: 'src/components/ai/AiChatAgent.tsx + VoiceQuoteCreator.tsx — components exist, no confirmed full route',
+    evidence: 'src/components/ai/AiChatAgent.tsx — component exists, no confirmed full route',
   },
   {
     key: 'voice',
@@ -103,7 +103,7 @@ export const FEATURES: Feature[] = [
     title: 'Wyceny głosem',
     desc: 'Twórz oferty dyktując głosem.',
     status: 'beta',
-    evidence: 'src/components/ai/VoiceInputButton.tsx + VoiceQuoteCreator.tsx — components exist',
+    evidence: 'src/components/voice/VoiceInputButton.tsx — component exists',
   },
   {
     key: 'privacy',
