@@ -77,6 +77,10 @@ verify_jwt = true
 
 # --- Functions added by PR#02 (previously missing from config) ---
 
+[functions.verify-contact-email]
+# Sends verification email to contractor's contact_email — requires authenticated user
+verify_jwt = true
+
 [functions.customer-portal]
 # Stripe Billing Portal — requires authenticated user (validates JWT in-function)
 verify_jwt = true
