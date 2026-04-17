@@ -7,6 +7,9 @@ import { useQuote, useSaveQuote, QuotePosition } from '@/hooks/useQuotes';
 import { useCreateItemTemplate, ItemTemplate } from '@/hooks/useItemTemplates';
 import { useAiSuggestions } from '@/hooks/useAiSuggestions';
 import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
+import { useVoiceQuote } from '@/hooks/useVoiceQuote';
+import { useVoiceToText } from '@/hooks/useVoiceToText';
+import { usePlanGate } from '@/hooks/usePlanGate';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { UnsavedChangesDialog } from '@/components/ui/unsaved-changes-dialog';
-import { Plus, Trash2, Save, Loader2, AlertCircle, Bookmark, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, Save, Loader2, AlertCircle, Bookmark, Sparkles, CheckCircle2, Mic, MicOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { TemplateSelector } from '@/components/quotes/TemplateSelector';
 import { QuoteVersionsPanel } from '@/components/quotes/QuoteVersionsPanel';
@@ -58,6 +61,8 @@ export default function QuoteEditor() {
   const saveQuote = useSaveQuote();
   const createTemplate = useCreateItemTemplate();
   const aiSuggestions = useAiSuggestions();
+  const voiceQuote = useVoiceQuote();
+  const { checkFeature } = usePlanGate();
   const navigate = useNavigate();
 
   const [positions, setPositions] = useState<QuotePosition[]>([]);
@@ -69,6 +74,47 @@ export default function QuoteEditor() {
   const [savedOnce, setSavedOnce] = useState(false);
 
   const { blocker } = useUnsavedChanges(isDirty);
+
+  const {
+    transcript: voiceTranscript,
+    isListening: voiceIsListening,
+    isSupported: voiceIsSupported,
+    startListening: voiceStartListening,
+    stopListening: voiceStopListening,
+    resetTranscript: voiceResetTranscript,
+  } = useVoiceToText({ language: 'pl-PL', continuous: false, interimResults: true });
+
+  useEffect(() => {
+    if (voiceTranscript && !voiceIsListening && !voiceQuote.isPending) {
+      const text = voiceTranscript.trim();
+      voiceResetTranscript();
+      if (text.length >= 5) {
+        voiceQuote.mutate(text, {
+          onSuccess: (data) => {
+            const newPositions = data.items.map((item) => ({
+              id: crypto.randomUUID(),
+              name: item.name,
+              qty: item.qty,
+              unit: item.unit,
+              price: item.price,
+              category: item.category,
+            }));
+            const newInputs: Record<string, { qty: string; price: string }> = {};
+            newPositions.forEach((p) => {
+              newInputs[p.id] = { qty: String(p.qty), price: String(p.price) };
+            });
+            setPositions((prev) => [...prev, ...newPositions]);
+            setPositionInputs((prev) => ({ ...prev, ...newInputs }));
+            setIsDirty(true);
+            setSavedOnce(false);
+            toast.success(t('voiceQuote.quoteCreated'));
+          },
+        });
+      }
+    }
+  // voiceQuote.mutate is stable (TanStack mutation), intentionally excluded from deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voiceTranscript, voiceIsListening]);
 
   useEffect(() => {
     if (existingQuote && !isInitialized) {
@@ -374,6 +420,36 @@ export default function QuoteEditor() {
           )}
           {t('quotes.aiSuggestions')}
         </Button>
+        {voiceIsSupported && (
+          <Button
+            size="lg"
+            variant={voiceIsListening ? 'destructive' : 'outline'}
+            onClick={() => {
+              if (voiceIsListening) {
+                voiceStopListening();
+                return;
+              }
+              if (!checkFeature('voice')) return;
+              voiceStartListening();
+            }}
+            disabled={voiceQuote.isPending}
+            className={voiceIsListening ? 'animate-pulse' : undefined}
+            aria-label={voiceIsListening ? t('voiceQuote.statusListening') : t('voiceQuote.title')}
+          >
+            {voiceQuote.isPending ? (
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            ) : voiceIsListening ? (
+              <MicOff className="mr-2 h-5 w-5" />
+            ) : (
+              <Mic className="mr-2 h-5 w-5" />
+            )}
+            {voiceQuote.isPending
+              ? t('voiceQuote.statusProcessing')
+              : voiceIsListening
+                ? t('voiceQuote.statusListening')
+                : t('voiceQuote.title')}
+          </Button>
+        )}
       </div>
 
       {/* Positions */}
