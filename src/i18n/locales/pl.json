@@ -897,10 +897,23 @@
         "saved": "Email do odpowiedzi zapisany. Sprawdź skrzynkę pocztową, by go zweryfikować.",
         "saveError": "Nie udało się zapisać adresu email",
         "verificationSent": "Email weryfikacyjny został wysłany. Sprawdź skrzynkę pocztową.",
-        "verificationSentNoService": "Email weryfikacyjny wysłany (usługa email musi być skonfigurowana)."
+        "verificationSentNoService": "Email weryfikacyjny wysłany (usługa email musi być skonfigurowana).",
+        "verificationError": "Nie udało się wysłać emaila weryfikacyjnego. Spróbuj ponownie."
       },
       "placeholder": "jan@firma.pl"
     }
+  },
+  "verifyContactEmail": {
+    "pageTitle": "Weryfikacja adresu email",
+    "titleLoading": "Weryfikacja...",
+    "titleSuccess": "Email zweryfikowany!",
+    "titleError": "Weryfikacja nieudana",
+    "descLoading": "Weryfikujemy Twój adres email kontaktowego.",
+    "descSuccess": "Twój adres email kontaktowy został pomyślnie zweryfikowany. Możesz teraz używać go jako adres Reply-To w ofertach.",
+    "descInvalid": "Link weryfikacyjny jest nieprawidłowy lub niekompletny.",
+    "descError": "Nie udało się zweryfikować adresu email. Link mógł wygasnąć lub został już użyty.",
+    "goToSettings": "Przejdź do ustawień",
+    "goHome": "Strona główna"
   },
   "billing": {
     "title": "Płatności i subskrypcje",

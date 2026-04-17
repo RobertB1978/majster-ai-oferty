@@ -34,6 +34,7 @@ const EnvCheck = lazy(() => import("./pages/EnvCheck"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
+const VerifyContactEmail = lazy(() => import("./pages/VerifyContactEmail"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Landing = lazy(() => import("./pages/Landing"));
@@ -239,6 +240,7 @@ const App = () => (
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/verify-email" element={<VerifyEmail />} />
+                  <Route path="/verify-contact-email" element={<VerifyContactEmail />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
