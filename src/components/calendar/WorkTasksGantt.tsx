@@ -111,7 +111,7 @@ export function WorkTasksGantt({ projectId }: WorkTasksGanttProps) {
       const startDay = differenceInDays(barStart, monthStart);
       const duration = differenceInDays(barEnd, barStart) + 1;
 
-      const project = projects.find(p => p.id === task.project_id);
+      const project = projects.find(p => p.id === (task.v2_project_id ?? task.project_id));
       const member = teamMembers.find(m => m.id === task.assigned_team_member_id);
 
       acc.push({

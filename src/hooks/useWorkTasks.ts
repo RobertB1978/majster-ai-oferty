@@ -8,6 +8,7 @@ import { TEAM_MEMBERS_TABLE } from '@/lib/storage';
 export interface WorkTask {
   id: string;
   project_id: string;
+  v2_project_id: string | null;
   user_id: string;
   title: string;
   description: string | null;
@@ -28,7 +29,7 @@ export function useWorkTasks(projectId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('work_tasks')
-        .select(`id, project_id, user_id, title, description, assigned_team_member_id, task_type, status, start_date, end_date, color, created_at, ${TEAM_MEMBERS_TABLE}(*)`)
+        .select(`id, project_id, v2_project_id, user_id, title, description, assigned_team_member_id, task_type, status, start_date, end_date, color, created_at, ${TEAM_MEMBERS_TABLE}(*)`)
         .eq('user_id', user!.id)
         .order('start_date', { ascending: true });
 
@@ -124,7 +125,7 @@ export function useTeamCapacity(startDate: string, endDate: string) {
     queryFn: async () => {
       const { data: tasks, error } = await supabase
         .from('work_tasks')
-        .select(`id, project_id, user_id, title, description, assigned_team_member_id, task_type, status, start_date, end_date, color, created_at, ${TEAM_MEMBERS_TABLE}(*)`)
+        .select(`id, project_id, v2_project_id, user_id, title, description, assigned_team_member_id, task_type, status, start_date, end_date, color, created_at, ${TEAM_MEMBERS_TABLE}(*)`)
         .eq('user_id', user!.id)
         .gte('start_date', startDate)
         .lte('end_date', endDate);
