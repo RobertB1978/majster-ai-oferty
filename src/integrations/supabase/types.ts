@@ -149,6 +149,7 @@ export type Database = {
           status: string
           title: string
           user_id: string
+          v2_project_id: string | null
         }
         Insert: {
           created_at?: string
@@ -164,6 +165,7 @@ export type Database = {
           status?: string
           title: string
           user_id: string
+          v2_project_id?: string | null
         }
         Update: {
           created_at?: string
@@ -179,6 +181,7 @@ export type Database = {
           status?: string
           title?: string
           user_id?: string
+          v2_project_id?: string | null
         }
         Relationships: [
           {
@@ -186,6 +189,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_events_v2_project_id_fkey"
+            columns: ["v2_project_id"]
+            isOneToOne: false
+            referencedRelation: "v2_projects"
             referencedColumns: ["id"]
           },
         ]

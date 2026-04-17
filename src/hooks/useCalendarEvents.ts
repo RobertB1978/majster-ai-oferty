@@ -9,6 +9,7 @@ export interface CalendarEvent {
   id: string;
   user_id: string;
   project_id: string | null;
+  v2_project_id: string | null;
   title: string;
   description: string | null;
   event_date: string;
@@ -56,6 +57,7 @@ export function useCalendarEvents(startDate?: string, endDate?: string) {
         end_time: (row['end_time'] as string | null | undefined) ?? null,
         recurrence_rule: (row['recurrence_rule'] as string | undefined) ?? 'none',
         recurrence_end_date: (row['recurrence_end_date'] as string | null | undefined) ?? null,
+        v2_project_id: (row['v2_project_id'] as string | null | undefined) ?? null,
       })) as CalendarEvent[];
     },
     enabled: !!user,
