@@ -75,8 +75,7 @@ export function ContactEmailSettings() {
       toast.success(t('settings.contactEmail.toast.verificationSent'));
     },
     onError: () => {
-      // Edge function may not exist yet — still show partial success
-      toast.success(t('settings.contactEmail.toast.verificationSentNoService'));
+      toast.error(t('settings.contactEmail.toast.verificationError'));
     },
   });
 

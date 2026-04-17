@@ -88,3 +88,8 @@ verify_jwt = true
 [functions.request-plan]
 # Plan upgrade request — requires authenticated user (validates JWT in-function)
 verify_jwt = true
+
+[functions.consume-contact-email-token]
+# Public token-consume endpoint — email link clicked by contractor (no JWT)
+# Security: validates UUID token format, uses service_role internally, clears token after use
+verify_jwt = false

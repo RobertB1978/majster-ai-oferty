@@ -897,10 +897,23 @@
         "saved": "Reply email saved. Check your inbox to verify it.",
         "saveError": "Failed to save email address",
         "verificationSent": "Verification email sent. Check your inbox.",
-        "verificationSentNoService": "Verification email sent (email service must be configured)."
+        "verificationSentNoService": "Verification email sent (email service must be configured).",
+        "verificationError": "Failed to send verification email. Please try again."
       },
       "placeholder": "john@company.com"
     }
+  },
+  "verifyContactEmail": {
+    "pageTitle": "Contact Email Verification",
+    "titleLoading": "Verifying...",
+    "titleSuccess": "Email verified!",
+    "titleError": "Verification failed",
+    "descLoading": "We are verifying your contact email address.",
+    "descSuccess": "Your contact email address has been successfully verified. You can now use it as the Reply-To address in your offers.",
+    "descInvalid": "The verification link is invalid or incomplete.",
+    "descError": "Failed to verify your email address. The link may have expired or already been used.",
+    "goToSettings": "Go to settings",
+    "goHome": "Home"
   },
   "billing": {
     "title": "Billing & Subscriptions",
