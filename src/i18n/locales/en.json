@@ -898,7 +898,9 @@
         "saveError": "Failed to save email address",
         "verificationSent": "Verification email sent. Check your inbox.",
         "verificationSentNoService": "Verification email sent (email service must be configured).",
-        "verificationError": "Failed to send verification email. Please try again."
+        "verificationError": "Failed to send verification email. Please try again.",
+        "verified": "Email address successfully verified!",
+        "verifyError": "Could not verify email address. The link may have expired."
       },
       "placeholder": "john@company.com"
     }
@@ -2327,7 +2329,11 @@
     "createAnother": "Create another",
     "categoryMaterial": "Material",
     "categoryLabor": "Labor",
-    "itemQtyPrice": "{{qty}} {{unit}} × {{price}} zł"
+    "itemQtyPrice": "{{qty}} {{unit}} × {{price}} zł",
+    "processed": "Added {{count}} items from dictation",
+    "rateLimitError": "Too many requests. Please wait a moment.",
+    "addToQuoteBtn": "Dictate quote by voice",
+    "addToQuoteHint": "Say e.g. \"Bathroom renovation 10m², tiles, bathtub\" — AI will add items automatically"
   },
   "templateSelector": {
     "addFromTemplate": "Add from template",
