@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,9 +22,39 @@ export function ContactEmailSettings() {
   const { data: profile, isLoading } = useProfile();
   const queryClient = useQueryClient();
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const [editEmail, setEditEmail] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [emailError, setEmailError] = useState('');
+
+  // Handle verification link: /app/settings?tab=email&verify-email=<token>
+  useEffect(() => {
+    const verifyToken = searchParams.get('verify-email');
+    if (!verifyToken || !user?.id) return;
+
+    supabase
+      .from('profiles')
+      .update({
+        contact_email_verified: true,
+        contact_email_verified_at: new Date().toISOString(),
+        contact_email_verification_token: crypto.randomUUID(),
+      })
+      .eq('user_id', user.id)
+      .eq('contact_email_verification_token', verifyToken)
+      .then(({ error }) => {
+        if (error) {
+          toast.error(t('settings.contactEmail.toast.verifyError'));
+        } else {
+          toast.success(t('settings.contactEmail.toast.verified'));
+          queryClient.invalidateQueries({ queryKey: ['profile'] });
+        }
+        // Remove the token from URL regardless of outcome
+        const next = new URLSearchParams(searchParams);
+        next.delete('verify-email');
+        setSearchParams(next, { replace: true });
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const saveEmailMutation = useMutation({
     mutationFn: async (newEmail: string) => {

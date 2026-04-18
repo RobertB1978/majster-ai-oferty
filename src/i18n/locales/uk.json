@@ -898,7 +898,9 @@
         "saveError": "Не вдалося зберегти адресу email",
         "verificationSent": "Лист підтвердження надіслано. Перевірте пошту.",
         "verificationSentNoService": "Лист підтвердження надіслано (сервіс email має бути налаштований).",
-        "verificationError": "Не вдалося надіслати лист підтвердження. Спробуйте ще раз."
+        "verificationError": "Не вдалося надіслати лист підтвердження. Спробуйте ще раз.",
+        "verified": "Адресу email успішно підтверджено!",
+        "verifyError": "Не вдалося підтвердити адресу email. Посилання могло застаріти."
       },
       "placeholder": "ivan@firma.pl"
     }
@@ -2327,7 +2329,11 @@
     "createAnother": "Створити ще один",
     "categoryMaterial": "Матеріал",
     "categoryLabor": "Робота",
-    "itemQtyPrice": "{{qty}} {{unit}} × {{price}} zł"
+    "itemQtyPrice": "{{qty}} {{unit}} × {{price}} zł",
+    "processed": "Додано {{count}} позицій з диктування",
+    "rateLimitError": "Забагато запитів. Зачекайте хвилину.",
+    "addToQuoteBtn": "Диктувати вицінку голосом",
+    "addToQuoteHint": "Скажіть напр. «Ремонт ванної 10м², плитка, ванна» — AI додасть позиції автоматично"
   },
   "templateSelector": {
     "addFromTemplate": "Додати з шаблону",

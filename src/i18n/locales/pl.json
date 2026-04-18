@@ -898,7 +898,9 @@
         "saveError": "Nie udało się zapisać adresu email",
         "verificationSent": "Email weryfikacyjny został wysłany. Sprawdź skrzynkę pocztową.",
         "verificationSentNoService": "Email weryfikacyjny wysłany (usługa email musi być skonfigurowana).",
-        "verificationError": "Nie udało się wysłać emaila weryfikacyjnego. Spróbuj ponownie."
+        "verificationError": "Nie udało się wysłać emaila weryfikacyjnego. Spróbuj ponownie.",
+        "verified": "Adres email został pomyślnie zweryfikowany!",
+        "verifyError": "Nie udało się zweryfikować adresu email. Link mógł wygasnąć."
       },
       "placeholder": "jan@firma.pl"
     }
@@ -2327,7 +2329,11 @@
     "createAnother": "Stwórz kolejną",
     "categoryMaterial": "Materiał",
     "categoryLabor": "Robocizna",
-    "itemQtyPrice": "{{qty}} {{unit}} × {{price}} zł"
+    "itemQtyPrice": "{{qty}} {{unit}} × {{price}} zł",
+    "processed": "Dodano {{count}} pozycji z dyktowania",
+    "rateLimitError": "Zbyt wiele żądań. Spróbuj za chwilę.",
+    "addToQuoteBtn": "Dyktuj wycenę głosem",
+    "addToQuoteHint": "Powiedz np. \"Remont łazienki 10m², płytki, wanna\" — AI doda pozycje automatycznie"
   },
   "templateSelector": {
     "addFromTemplate": "Dodaj z szablonu",
