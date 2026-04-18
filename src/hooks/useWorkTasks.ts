@@ -7,7 +7,7 @@ import { TEAM_MEMBERS_TABLE } from '@/lib/storage';
 
 export interface WorkTask {
   id: string;
-  project_id: string;
+  project_id: string | null;
   v2_project_id: string | null;
   user_id: string;
   title: string;

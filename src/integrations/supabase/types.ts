@@ -1537,7 +1537,7 @@ export type Database = {
           description: string | null
           end_date: string
           id: string
-          project_id: string
+          project_id: string | null
           v2_project_id: string | null
           start_date: string
           status: string
@@ -1552,7 +1552,7 @@ export type Database = {
           description?: string | null
           end_date: string
           id?: string
-          project_id: string
+          project_id?: string | null
           v2_project_id?: string | null
           start_date: string
           status?: string
@@ -1567,7 +1567,7 @@ export type Database = {
           description?: string | null
           end_date?: string
           id?: string
-          project_id?: string
+          project_id?: string | null
           v2_project_id?: string | null
           start_date?: string
           status?: string
@@ -1581,13 +1581,6 @@ export type Database = {
             columns: ["assigned_team_member_id"]
             isOneToOne: false
             referencedRelation: "team_members"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "work_tasks_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
