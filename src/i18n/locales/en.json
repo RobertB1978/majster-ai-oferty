@@ -4043,7 +4043,16 @@
       "phone": "Phone",
       "email": "Email",
       "emailPlaceholder": "john@example.com",
-      "phonePlaceholder": "+48 500 000 000"
+      "phonePlaceholder": "+48 500 000 000",
+      "nip": "NIP (optional)",
+      "nipPlaceholder": "1234567890",
+      "nipInvalid": "Invalid NIP (10 digits, checksum)",
+      "street": "Street and number",
+      "streetPlaceholder": "ul. Example 1",
+      "postalCode": "Postal code",
+      "postalCodePlaceholder": "00-000",
+      "city": "City",
+      "cityPlaceholder": "Warsaw"
     },
     "itemsStep": {
       "libraryTitle": "Price Library",

@@ -4043,7 +4043,16 @@
       "phone": "Telefon",
       "email": "Email",
       "emailPlaceholder": "jan@example.pl",
-      "phonePlaceholder": "+48 500 000 000"
+      "phonePlaceholder": "+48 500 000 000",
+      "nip": "NIP (opcjonalnie)",
+      "nipPlaceholder": "1234567890",
+      "nipInvalid": "Nieprawidłowy NIP (10 cyfr, suma kontrolna)",
+      "street": "Ulica i numer",
+      "streetPlaceholder": "ul. Przykładowa 1",
+      "postalCode": "Kod pocztowy",
+      "postalCodePlaceholder": "00-000",
+      "city": "Miasto",
+      "cityPlaceholder": "Warszawa"
     },
     "itemsStep": {
       "libraryTitle": "Biblioteka cennika",
