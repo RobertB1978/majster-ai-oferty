@@ -4131,7 +4131,11 @@
     "statusBadgeDraft": "Draft",
     "shareLinkHint": "Copy and send to client — no login required",
     "noAcceptanceLinkNote": "Generate an acceptance link from the offer details (Send tab) to share with your client.",
-    "missingCompanyAlert": "Company profile is incomplete — the PDF will not contain company information. Complete it in Settings → Company Profile."
+    "missingCompanyAlert": "Company profile is incomplete — the PDF will not contain company information. Complete it in Settings → Company Profile.",
+    "sendBlockedNoClient": "Please select a client before sending the offer.",
+    "sendBlockedIncompleteProfile": "Complete your company profile (name, NIP, street, postal code, city) before sending.",
+    "recipientEmailLabel": "Recipient email:",
+    "recipientEmailPlaceholder": "email@address.com (optional)"
   },
   "acceptanceLink": {
     "panelTitle": "Client Acceptance Link",

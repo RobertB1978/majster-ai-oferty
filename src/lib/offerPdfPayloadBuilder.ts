@@ -160,7 +160,7 @@ export async function buildOfferPdfPayloadFromOffer(
     : (rawProfile?.representative_role || 'Prezes Zarządu');
 
   const company: CompanyInfo = {
-    name: rawProfile?.company_name || 'Majster.AI',
+    name: rawProfile?.company_name || '',
     nip: rawProfile?.nip ?? undefined,
     regon: rawProfile?.regon ?? undefined,
     krs: isJdg ? undefined : (rawProfile?.krs ?? undefined),

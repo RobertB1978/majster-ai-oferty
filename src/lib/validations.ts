@@ -282,3 +282,32 @@ export const resetPasswordSchema = z.object({
   message: i18n.t('validations.auth.passwordsNotMatch'),
   path: ['confirmPassword'],
 });
+
+// ── SEND-gate: minimum sender profile required before SEND (not draft) ────────
+
+export interface SenderProfileMinimum {
+  company_name?: string | null;
+  nip?: string | null;
+  street?: string | null;
+  postal_code?: string | null;
+  city?: string | null;
+}
+
+export type SenderRequiredField = 'company_name' | 'nip' | 'street' | 'postal_code' | 'city';
+
+export interface SenderValidationResult {
+  valid: boolean;
+  missingFields: SenderRequiredField[];
+}
+
+/**
+ * Validates minimum sender profile fields before an offer can be SENT.
+ * Does NOT apply to drafts — call only on the SEND action.
+ */
+export function validateSenderProfileForSend(
+  profile: SenderProfileMinimum | null | undefined,
+): SenderValidationResult {
+  const required: SenderRequiredField[] = ['company_name', 'nip', 'street', 'postal_code', 'city'];
+  const missingFields = required.filter((field) => !profile?.[field]?.trim());
+  return { valid: missingFields.length === 0, missingFields };
+}
