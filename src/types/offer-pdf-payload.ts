@@ -62,6 +62,8 @@ export interface PDFQuoteData {
   netTotal: number;
   vatAmount: number;
   grossTotal: number;
+  /** true when items carry more than one distinct VAT rate */
+  hasMixedVatRates?: boolean;
 }
 
 export type PDFTemplateId = 'classic' | 'modern' | 'minimal';

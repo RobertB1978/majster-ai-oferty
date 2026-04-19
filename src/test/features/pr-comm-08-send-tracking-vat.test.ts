@@ -96,3 +96,38 @@ describe('offerPdfGenerator — uses hasMixedVatRates for safe labels', () => {
     expect(source).toContain("hasMixedVatRates ? 'Różne stawki VAT:'");
   });
 });
+
+// ── 5. Mixed VAT — wire format serializer passes flag through ─────────────────
+
+describe('serialize-offer-pdf-payload — passes hasMixedVatRates to Edge Function', () => {
+  it('PDFQuoteData type includes hasMixedVatRates optional field', () => {
+    const source = readSrc('src/types/offer-pdf-payload.ts');
+    expect(source).toContain('hasMixedVatRates?:');
+  });
+
+  it('serializeQuote includes hasMixedVatRates when truthy', () => {
+    const source = readSrc('src/lib/serialize-offer-pdf-payload.ts');
+    expect(source).toContain('hasMixedVatRates');
+  });
+});
+
+// ── 6. Mixed VAT — Edge Function renderer uses mixedVat label ────────────────
+
+describe('generate-offer-pdf Edge Function — uses mixedVat label', () => {
+  it('Deno types include hasMixedVatRates in PDFQuoteData', () => {
+    const source = readSrc('supabase/functions/generate-offer-pdf/types.ts');
+    expect(source).toContain('hasMixedVatRates?:');
+  });
+
+  it('renderer labels have mixedVat key in all 3 locales (pl/en/uk)', () => {
+    const source = readSrc('supabase/functions/generate-offer-pdf/renderer.ts');
+    const matches = source.match(/mixedVat:/g);
+    expect(matches).toBeTruthy();
+    expect(matches!.length).toBeGreaterThanOrEqual(4); // interface + pl + en + uk
+  });
+
+  it('renderer uses hasMixedVatRates to pick mixedVat label over single-rate', () => {
+    const source = readSrc('supabase/functions/generate-offer-pdf/renderer.ts');
+    expect(source).toContain('hasMixedVatRates ? labels.mixedVat');
+  });
+});

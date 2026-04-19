@@ -39,6 +39,7 @@ function serializeQuote(q: QuoteData): PDFQuoteData {
     netTotal: q.netTotal,
     vatAmount: q.vatAmount,
     grossTotal: q.grossTotal,
+    ...(q.hasMixedVatRates && { hasMixedVatRates: true }),
   };
 }
 
