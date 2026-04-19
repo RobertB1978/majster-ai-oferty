@@ -64,19 +64,21 @@ function useOfferMeta(offerId: string | undefined) {
 // ── Status badge helpers ──────────────────────────────────────────────────────
 
 const STATUS_BADGE_CLASSES: Record<string, string> = {
-  DRAFT:    'bg-muted text-muted-foreground',
-  SENT:     'bg-info/10 text-info dark:bg-info/20',
-  ACCEPTED: 'bg-success/10 text-success dark:bg-success/20',
-  REJECTED: 'bg-destructive/10 text-destructive dark:bg-destructive/20',
-  ARCHIVED: 'bg-secondary text-secondary-foreground',
+  DRAFT:     'bg-muted text-muted-foreground',
+  SENT:      'bg-info/10 text-info dark:bg-info/20',
+  ACCEPTED:  'bg-success/10 text-success dark:bg-success/20',
+  REJECTED:  'bg-destructive/10 text-destructive dark:bg-destructive/20',
+  ARCHIVED:  'bg-secondary text-secondary-foreground',
+  WITHDRAWN: 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400',
 };
 
 const STATUS_I18N_KEYS: Record<string, string> = {
-  DRAFT:    'offersList.statusDraft',
-  SENT:     'offersList.statusSent',
-  ACCEPTED: 'offersList.statusAccepted',
-  REJECTED: 'offersList.statusRejected',
-  ARCHIVED: 'offersList.statusArchived',
+  DRAFT:     'offersList.statusDraft',
+  SENT:      'offersList.statusSent',
+  ACCEPTED:  'offersList.statusAccepted',
+  REJECTED:  'offersList.statusRejected',
+  ARCHIVED:  'offersList.statusArchived',
+  WITHDRAWN: 'offersList.statusWithdrawn',
 };
 
 // ── TemplateDetailSheet ───────────────────────────────────────────────────────

@@ -3967,6 +3967,7 @@
     "statusAccepted": "Zaakceptowane",
     "statusRejected": "Odrzucone",
     "statusArchived": "Zarchiwizowane",
+    "statusWithdrawn": "Wycofane",
     "noResponseBadge": "Brak odpowiedzi {{days}} dni",
     "updatedAgo": "zm. {{time}}",
     "emptyTitle": "Brak ofert",
@@ -4172,7 +4173,13 @@
     "rejectedAt": "Odrzucono: {{date}}",
     "createProjectCta": "Utwórz projekt",
     "createProjectHint": "Oferta zaakceptowana — czas zacząć projekt!",
-    "openProjectCta": "Otwórz projekt"
+    "openProjectCta": "Otwórz projekt",
+    "statusWithdrawn": "Oferta wycofana",
+    "withdrawBtn": "Wycofaj ofertę",
+    "withdrawConfirm": "Czy na pewno chcesz wycofać tę ofertę? Klient straci dostęp do linku.",
+    "withdrawing": "Wycofywanie...",
+    "withdrawSuccess": "Oferta wycofana.",
+    "withdrawError": "Nie udało się wycofać oferty. Spróbuj ponownie."
   },
   "publicOffer": {
     "pageTitle": "Oferta do akceptacji",
@@ -4221,7 +4228,10 @@
     "variantsAriaLabel": "Warianty oferty",
     "viewingVariant": "Przeglądasz",
     "secureConnection": "Bezpieczne połączenie",
-    "photosTitle": "Zdjęcia z realizacji"
+    "photosTitle": "Zdjęcia z realizacji",
+    "cancelAcceptBtn": "Cofnij akceptację",
+    "cancelAcceptCountdown": "Możesz cofnąć akceptację przez: {{seconds}} s",
+    "cancelWindowExpired": "Czas na cofnięcie akceptacji minął."
   },
   "offerPhotos": {
     "sectionTitle": "Zdjęcia do oferty",

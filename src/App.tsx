@@ -38,8 +38,8 @@ const VerifyContactEmail = lazy(() => import("./pages/VerifyContactEmail"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Landing = lazy(() => import("./pages/Landing"));
-const OfferApproval = lazy(() => import("./pages/OfferApproval"));
-const OfferPublicPage = lazy(() => import("./pages/OfferPublicPage"));
+// ARCH-06: Legacy routes wrapped for canonical redirect (30-day migration window)
+const LegacyOfferRedirect = lazy(() => import("./pages/LegacyOfferRedirect"));
 // PR-12: New tokenized acceptance page
 const OfferPublicAccept = lazy(() => import("./pages/OfferPublicAccept"));
 const PlanyPage = lazy(() => import("./pages/Plany"));
@@ -253,16 +253,18 @@ const App = () => (
                       ──────────────────────────────────────────────────────────────── */}
                   <Route path="/a/:token" element={<OfferPublicAccept />} />
 
-                  {/* ── PUBLIC OFFER FLOW — LEGACY COMPAT (ARCH-01, do NOT add new logic)
+                  {/* ── PUBLIC OFFER FLOW — LEGACY COMPAT (ARCH-01, ARCH-06 redirect)
                       Token source: offer_approvals.public_token
                       Backend:      get_offer_approval_by_token RPC + approve-offer Edge Function
                       Action:       approve-offer Edge Function (Deno)
                       Status table: offer_approvals.status (lowercase)
-                      NOTE: These routes serve existing sent links. Do NOT add new business
-                            logic here. Consolidation happens in PR-ARCH-02.
+                      ARCH-06: LegacyOfferRedirect checks for a canonical acceptance_link for
+                               the same offer and redirects to /a/:token when found.
+                               Falls back to the legacy component when no canonical link exists.
+                               Freeze: no new business logic added to OfferApproval / OfferPublicPage.
                       ──────────────────────────────────────────────────────────────── */}
-                  <Route path="/offer/:token" element={<OfferApproval />} />
-                  <Route path="/oferta/:token" element={<OfferPublicPage />} />
+                  <Route path="/offer/:token" element={<LegacyOfferRedirect flow="offer" />} />
+                  <Route path="/oferta/:token" element={<LegacyOfferRedirect flow="oferta" />} />
 
                   {/* PR-13: Public project status page (no login, no prices) */}
                   <Route path="/p/:token" element={<ProjectPublicStatus />} />

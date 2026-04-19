@@ -38,7 +38,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { differenceInDays } from 'date-fns';
 import {
   CheckCircle2,
@@ -245,10 +245,14 @@ export default function OfferPublicAccept() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
   const [publicPhotos, setPublicPhotos] = useState<PublicOfferPhoto[]>([]);
+  // L-3: CANCEL_ACCEPT — tracks accepted_at for countdown; resets on cancel
+  const [acceptedAt, setAcceptedAt] = useState<string | null>(null);
+  const [cancelCountdown, setCancelCountdown] = useState(0);
 
   // L-6: 1-click accept from email (?t=<accept_token>)
   const acceptTokenParam = searchParams.get('t') ?? undefined;
   const autoAcceptTriggered = useRef(false);
+  const queryClient = useQueryClient();
 
   const { data: result, isLoading } = useQuery({
     queryKey: ['publicOffer', token],
@@ -311,10 +315,30 @@ export default function OfferPublicAccept() {
         const res = raw as { error?: string };
         if (res?.error) { setActionError(t('publicOffer.actionError')); return; }
         setActionResult('ACCEPTED');
+        setAcceptedAt(new Date().toISOString());
       })
       .catch(() => setActionError(t('publicOffer.actionError')))
       .finally(() => setSubmitting(false));
   }, [acceptTokenParam, token, result?.data?.offer?.status, t]);
+
+  // ── L-3: Init acceptedAt from DB when offer is already ACCEPTED on load ──────
+  useEffect(() => {
+    if (result?.data?.offer?.status === 'ACCEPTED' && result.data.offer.accepted_at) {
+      setAcceptedAt(result.data.offer.accepted_at);
+    }
+  }, [result?.data?.offer?.status, result?.data?.offer?.accepted_at]);
+
+  // ── L-3: Countdown for CANCEL_ACCEPT window (10 min = 600 s) ────────────────
+  useEffect(() => {
+    if (!acceptedAt) { setCancelCountdown(0); return; }
+    const update = () => {
+      const diffMs = Date.now() - new Date(acceptedAt).getTime();
+      setCancelCountdown(Math.max(0, Math.ceil((600_000 - diffMs) / 1000)));
+    };
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, [acceptedAt]);
 
   // ── Loading ─────────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -416,6 +440,34 @@ export default function OfferPublicAccept() {
       }
 
       setActionResult(action === 'ACCEPT' ? 'ACCEPTED' : 'REJECTED');
+      if (action === 'ACCEPT') setAcceptedAt(new Date().toISOString());
+    } catch {
+      setActionError(t('publicOffer.actionError'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // ── L-3: Cancel accepted offer within 10-minute window ──────────────────────
+  const handleCancelAccept = async () => {
+    if (!token) return;
+    setSubmitting(true);
+    setActionError(null);
+    try {
+      const { data: raw, error } = await supabase.rpc(
+        'process_offer_acceptance_action',
+        { p_token: token, p_action: 'CANCEL_ACCEPT', p_comment: null },
+      );
+      if (error) throw error;
+      const res = raw as { error?: string };
+      if (res?.error === 'cancel_window_expired') {
+        setActionError(t('publicOffer.cancelWindowExpired'));
+        return;
+      }
+      if (res?.error) { setActionError(t('publicOffer.actionError')); return; }
+      setActionResult(null);
+      setAcceptedAt(null);
+      queryClient.invalidateQueries({ queryKey: ['publicOffer', token] });
     } catch {
       setActionError(t('publicOffer.actionError'));
     } finally {
@@ -477,34 +529,55 @@ export default function OfferPublicAccept() {
           {(isAlreadyAccepted || isAlreadyRejected) && (
             <div
               className={cn(
-                'rounded-lg border p-5 flex items-center gap-4',
+                'rounded-lg border p-5',
                 isAlreadyAccepted
                   ? 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-900/20'
                   : 'border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-900/20',
                 actionResult === 'ACCEPTED' && 'ring-2 ring-green-400 ring-offset-2',
               )}
             >
-              {isAlreadyAccepted ? (
-                <CheckCircle2
-                  className={cn(
-                    'h-8 w-8 text-green-600 shrink-0',
-                    actionResult === 'ACCEPTED' && 'animate-bounce',
+              <div className="flex items-center gap-4">
+                {isAlreadyAccepted ? (
+                  <CheckCircle2
+                    className={cn(
+                      'h-8 w-8 text-green-600 shrink-0',
+                      actionResult === 'ACCEPTED' && 'animate-bounce',
+                    )}
+                  />
+                ) : (
+                  <XCircle className="h-8 w-8 text-red-600 shrink-0" />
+                )}
+                <div>
+                  <p className={cn('font-semibold text-base', isAlreadyAccepted ? 'text-green-700' : 'text-red-700')}>
+                    {isAlreadyAccepted ? t('publicOffer.alreadyAccepted') : t('publicOffer.alreadyRejected')}
+                  </p>
+                  {isAlreadyAccepted && data.offer.accepted_at && (
+                    <p className="text-sm text-green-600">{fmtDate(data.offer.accepted_at, i18n.language)}</p>
                   )}
-                />
-              ) : (
-                <XCircle className="h-8 w-8 text-red-600 shrink-0" />
-              )}
-              <div>
-                <p className={cn('font-semibold text-base', isAlreadyAccepted ? 'text-green-700' : 'text-red-700')}>
-                  {isAlreadyAccepted ? t('publicOffer.alreadyAccepted') : t('publicOffer.alreadyRejected')}
-                </p>
-                {isAlreadyAccepted && data.offer.accepted_at && (
-                  <p className="text-sm text-green-600">{fmtDate(data.offer.accepted_at, i18n.language)}</p>
-                )}
-                {isAlreadyRejected && data.offer.rejected_at && (
-                  <p className="text-sm text-red-600">{fmtDate(data.offer.rejected_at, i18n.language)}</p>
-                )}
+                  {isAlreadyRejected && data.offer.rejected_at && (
+                    <p className="text-sm text-red-600">{fmtDate(data.offer.rejected_at, i18n.language)}</p>
+                  )}
+                </div>
               </div>
+
+              {/* ── L-3: CANCEL_ACCEPT window (10 min) ──────────────────────── */}
+              {isAlreadyAccepted && cancelCountdown > 0 && (
+                <div className="mt-3 pt-3 border-t border-green-200 dark:border-green-800">
+                  <p className="text-xs text-green-600 mb-2">
+                    {t('publicOffer.cancelAcceptCountdown', { seconds: cancelCountdown })}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCancelAccept}
+                    disabled={submitting}
+                    className="border-green-300 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-400 dark:hover:bg-green-900/20 gap-1.5"
+                  >
+                    {submitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                    {t('publicOffer.cancelAcceptBtn')}
+                  </Button>
+                </div>
+              )}
             </div>
           )}
 

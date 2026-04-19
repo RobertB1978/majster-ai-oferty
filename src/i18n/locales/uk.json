@@ -3967,6 +3967,7 @@
     "statusAccepted": "Прийняті",
     "statusRejected": "Відхилені",
     "statusArchived": "Архівовані",
+    "statusWithdrawn": "Відкликані",
     "noResponseBadge": "Немає відповіді {{days}} дн.",
     "updatedAgo": "зм. {{time}}",
     "emptyTitle": "Немає пропозицій",
@@ -4172,7 +4173,13 @@
     "rejectedAt": "Відхилено: {{date}}",
     "createProjectCta": "Створити проект",
     "createProjectHint": "Пропозицію прийнято — час починати проект!",
-    "openProjectCta": "Відкрити проєкт"
+    "openProjectCta": "Відкрити проєкт",
+    "statusWithdrawn": "Пропозицію відкликано",
+    "withdrawBtn": "Відкликати пропозицію",
+    "withdrawConfirm": "Ви впевнені, що хочете відкликати цю пропозицію? Клієнт втратить доступ до посилання.",
+    "withdrawing": "Відкликання...",
+    "withdrawSuccess": "Пропозицію відкликано.",
+    "withdrawError": "Не вдалося відкликати пропозицію. Спробуйте ще раз."
   },
   "publicOffer": {
     "pageTitle": "Пропозиція для акцепту",
@@ -4221,7 +4228,10 @@
     "variantsAriaLabel": "Варіанти пропозиції",
     "viewingVariant": "Переглядаєте",
     "secureConnection": "Захищене з'єднання",
-    "photosTitle": "Фото проекту"
+    "photosTitle": "Фото проекту",
+    "cancelAcceptBtn": "Скасувати акцепт",
+    "cancelAcceptCountdown": "Можна скасувати акцепт протягом: {{seconds}} с",
+    "cancelWindowExpired": "Час для скасування акцепту минув."
   },
   "offerPhotos": {
     "sectionTitle": "Фотографії до пропозиції",

@@ -116,7 +116,7 @@ Both flows use different status value conventions:
 
 | Flow | Table | Column | Status values | Case |
 |------|-------|--------|---------------|------|
-| Canonical | `offers` | `status` | `DRAFT`, `SENT`, `ACCEPTED`, `REJECTED`, `ARCHIVED` | UPPERCASE |
+| Canonical | `offers` | `status` | `DRAFT`, `SENT`, `ACCEPTED`, `REJECTED`, `ARCHIVED`, `WITHDRAWN` | UPPERCASE |
 | Legacy | `offer_approvals` | `status` | `pending`, `draft`, `sent`, `viewed`, `accepted`, `approved`, `rejected`, `expired`, `withdrawn` | lowercase |
 
 ---
@@ -144,14 +144,16 @@ and `/oferta/:token` can be safely deprecated:
 | L-2 | `process_offer_acceptance_action` must insert to `notifications` on ACCEPT/REJECT | P0 | PR-ARCH-03 | **CLOSED** (2026-04-15) |
 | L-5 | `useOffers` hook must return unified status from both `offers.status` and `offer_approvals.status` | P1 | PR-CANON-05 | **CLOSED** (2026-04-19) |
 | L-6 | `process_offer_acceptance_action` must handle `accept_token` (1-click from email) | P1 | PR-CANON-05 | **CLOSED** (2026-04-19) |
-| L-3 | `process_offer_acceptance_action` must support `CANCEL_ACCEPT` action (10-min window) | P2 | PR-ARCH-04 | OPEN |
-| L-4 | `process_offer_acceptance_action` must support `WITHDRAW` action with JWT verification | P2 | PR-ARCH-04 | OPEN |
+| L-3 | `process_offer_acceptance_action` must support `CANCEL_ACCEPT` action (10-min window) | P2 | PR-CANON-06 | **CLOSED** (2026-04-19) |
+| L-4 | `process_offer_acceptance_action` must support `WITHDRAW` action with JWT verification | P2 | PR-CANON-06 | **CLOSED** (2026-04-19) |
 
-After L-1 and L-2 are done:
-- Add redirect: `/offer/:token` → lookup `acceptance_link` for same offer → redirect to `/a/:acceptance_link_token`
-- Add redirect: `/oferta/:token` → same lookup logic
-- Wait 30 days
-- Remove legacy routes and components
+**All L-gaps are now CLOSED.** Legacy route deprecation prerequisites met.
+
+Legacy redirect window (active since 2026-04-19):
+- `/offer/:token` → `LegacyOfferRedirect` (flow=offer) → calls `resolve_legacy_to_canonical_token` RPC → if canonical link found: `<Navigate replace to="/a/:canonical_token" />` → else: renders `OfferApproval` unchanged
+- `/oferta/:token` → `LegacyOfferRedirect` (flow=oferta) → same lookup → if found: redirect → else: renders `OfferPublicPage` unchanged
+- Wait 30 days from 2026-04-19 (i.e. after **2026-05-19**)
+- Remove legacy routes, `LegacyOfferRedirect`, and legacy components
 
 ---
 
@@ -192,6 +194,7 @@ and by the existing `TodayTasks` `pending_offer` pattern already using `/app/off
 *Updated: 2026-04-15 | PR-ARCH-03 | Branch: `claude/arch-03-close-remaining-gaps-GKpt1` — L-1/L-2 closed, 2 readers migrated*
 *Updated: 2026-04-15 | PR-ARCH-03b | Branch: `claude/arch-03b-close-legacy-readers-cmPHo` — remaining 2 readers migrated (useExpirationMonitor, TodayTasks)*
 *Updated: 2026-04-19 | PR-CANON-05 | Branch: `claude/canonical-status-accept-token-a78Mr` — L-5/L-6 closed*
+*Updated: 2026-04-19 | PR-CANON-06 | Branch: `claude/cancel-withdraw-legacy-redirect-k9HMq` — L-3/L-4 closed, legacy redirect window started, all L-gaps CLOSED*
 
 ---
 
@@ -205,3 +208,19 @@ L-5 and L-6 closed. PR-CANON-05 (`claude/canonical-status-accept-token-a78Mr`).
 | L-6 | `acceptance_links.accept_token` (new UUID column, DEFAULT gen_random_uuid()) added. `upsert_acceptance_link` generates and returns it. `process_offer_acceptance_action` accepts optional `p_accept_token` (4th param, DEFAULT NULL). Valid token forces ACCEPT; invalid returns `{error: 'invalid_accept_token'}`. `useSendOffer` passes `acceptToken` to `send-offer-email`. `OfferPublicAccept` reads `?t=` query param and auto-triggers ACCEPT via RPC on page load. |
 
 **Remaining open items (L-3, L-4):** cancel/withdraw not included in this PR (per FORBIDDEN scope).
+
+---
+
+## CANON-06 Closure (2026-04-19)
+
+L-3 and L-4 closed. PR-CANON-06 (`claude/cancel-withdraw-legacy-redirect-k9HMq`).
+
+| Gap | Resolution |
+|-----|-----------|
+| L-3 | `process_offer_acceptance_action` now handles `CANCEL_ACCEPT` before the idempotency gate. Checks `status = 'ACCEPTED'` + `now() - accepted_at < INTERVAL '10 minutes'`. Resets `status → SENT`, `accepted_at → NULL`. Returns `{error:'not_accepted'}`, `{error:'cancel_window_expired'}`, or `{success:true,status:'SENT'}`. `OfferPublicAccept` displays a countdown timer and calls RPC on user click. |
+| L-4 | `process_offer_acceptance_action` now handles `WITHDRAW`. Checks `auth.uid() = offer.user_id` (JWT) and `status = 'SENT'`. Sets `status → WITHDRAWN`. Returns `{error:'not_authorized'}`, `{error:'not_withdrawable'}`, or `{success:true,status:'WITHDRAWN'}`. `AcceptanceLinkPanel` shows WITHDRAW button for offer owners. New `WITHDRAWN` status added to `offers.status` CHECK constraint (via migration `20260419210000_arch06_l3_l4_cancel_withdraw.sql`). `OfferDetail` shows orange badge for WITHDRAWN. |
+| REDIRECT | New `resolve_legacy_to_canonical_token(p_legacy_token uuid)` SECURITY DEFINER RPC: JOINs `offer_approvals` + `acceptance_links` on `offer_id`, returns `{canonical_token: uuid \| null}`. New `LegacyOfferRedirect.tsx` thin wrapper replaces direct lazy imports of `OfferApproval` and `OfferPublicPage` in `App.tsx`. Uses React Router `<Navigate replace />` — no back-navigation loop. |
+
+**All 6 L-gaps CLOSED. All prerequisites for legacy route deprecation are now met.**
+
+*Deprecation scheduled after 2026-05-19 (30-day redirect window).*
