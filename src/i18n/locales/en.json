@@ -3967,6 +3967,7 @@
     "statusAccepted": "Accepted",
     "statusRejected": "Rejected",
     "statusArchived": "Archived",
+    "statusWithdrawn": "Withdrawn",
     "noResponseBadge": "No response {{days}} days",
     "updatedAgo": "upd. {{time}}",
     "emptyTitle": "No offers yet",
@@ -4172,7 +4173,13 @@
     "rejectedAt": "Rejected: {{date}}",
     "createProjectCta": "Create project",
     "createProjectHint": "Offer accepted — time to start the project!",
-    "openProjectCta": "Open project"
+    "openProjectCta": "Open project",
+    "statusWithdrawn": "Offer withdrawn",
+    "withdrawBtn": "Withdraw offer",
+    "withdrawConfirm": "Are you sure you want to withdraw this offer? The client will lose access to the link.",
+    "withdrawing": "Withdrawing...",
+    "withdrawSuccess": "Offer withdrawn.",
+    "withdrawError": "Failed to withdraw the offer. Please try again."
   },
   "publicOffer": {
     "pageTitle": "Offer for approval",
@@ -4221,7 +4228,10 @@
     "variantsAriaLabel": "Offer variants",
     "viewingVariant": "Viewing",
     "secureConnection": "Secure connection",
-    "photosTitle": "Project photos"
+    "photosTitle": "Project photos",
+    "cancelAcceptBtn": "Undo acceptance",
+    "cancelAcceptCountdown": "You can undo your acceptance for: {{seconds}} s",
+    "cancelWindowExpired": "The undo window has expired."
   },
   "offerPhotos": {
     "sectionTitle": "Offer photos",

@@ -17,7 +17,9 @@ describe('Performance Regression Guards', () => {
       const lazyPages = [
         'Dashboard', 'Clients', 'ProjectsList', 'NewProjectV2', 'ProjectHub',
         'QuoteEditor', 'CompanyProfile', 'ItemTemplates', 'Settings',
-        'PdfGenerator', 'Calendar', 'Finance', 'OfferApproval',
+        'PdfGenerator', 'Calendar', 'Finance',
+        // ARCH-06: OfferApproval/OfferPublicPage are now lazy-loaded inside LegacyOfferRedirect
+        'LegacyOfferRedirect',
         // Admin zone: individually lazy-loaded for separate chunk splitting
         'AdminDashboardPage', 'AdminUsersPage', 'AdminThemePage',
       ];

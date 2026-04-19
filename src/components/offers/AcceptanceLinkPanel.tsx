@@ -15,8 +15,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Link2, Copy, Check, Loader2, CheckCircle2, XCircle, FolderPlus, FolderOpen } from 'lucide-react';
+import { Link2, Copy, Check, Loader2, CheckCircle2, XCircle, FolderPlus, FolderOpen, Ban } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,8 +41,10 @@ interface Props {
 export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejectedAt }: Props) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
   const [creatingProject, setCreatingProject] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
 
   const { data: link, isLoading } = useAcceptanceLink(offerId);
   const createLink = useCreateAcceptanceLink(offerId);
@@ -49,6 +53,7 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
   const isAccepted = offerStatus === 'ACCEPTED';
   const isRejected = offerStatus === 'REJECTED';
   const isSent = offerStatus === 'SENT';
+  const isWithdrawn = offerStatus === 'WITHDRAWN';
 
   // Eager project lookup — only runs when offer is ACCEPTED.
   // Allows showing "Open project" immediately instead of "Create project".
@@ -61,6 +66,28 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
       toast.success(t('acceptanceLink.createSuccess'));
     } catch {
       toast.error(t('acceptanceLink.createError'));
+    }
+  };
+
+  // ── L-4: WITHDRAW — authenticated owner pulls back a SENT offer ──────────────
+  const handleWithdraw = async () => {
+    if (!link) return;
+    if (!window.confirm(t('acceptanceLink.withdrawConfirm'))) return;
+    setWithdrawing(true);
+    try {
+      const { data: raw, error } = await supabase.rpc(
+        'process_offer_acceptance_action',
+        { p_token: link.token, p_action: 'WITHDRAW', p_comment: null },
+      );
+      if (error) throw error;
+      const res = raw as { error?: string };
+      if (res?.error) throw new Error(res.error);
+      toast.success(t('acceptanceLink.withdrawSuccess'));
+      queryClient.invalidateQueries({ queryKey: ['offerMeta', offerId] });
+    } catch {
+      toast.error(t('acceptanceLink.withdrawError'));
+    } finally {
+      setWithdrawing(false);
     }
   };
 
@@ -164,6 +191,20 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
     );
   }
 
+  // ── WITHDRAWN state — L-4 ───────────────────────────────────────────────────
+  if (isWithdrawn) {
+    return (
+      <div className="rounded-lg border border-border bg-muted/40 p-4">
+        <div className="flex items-center gap-2">
+          <Ban className="h-5 w-5 text-muted-foreground shrink-0" />
+          <p className="font-semibold text-muted-foreground">
+            {t('acceptanceLink.statusWithdrawn')}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // ── Not SENT ────────────────────────────────────────────────────────────────
   if (!isSent) {
     return (
@@ -211,19 +252,36 @@ export function AcceptanceLinkPanel({ offerId, offerStatus, acceptedAt, rejected
               )}
             </Button>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCopy}
-            className="gap-2"
-          >
-            {copied ? (
-              <Check className="h-4 w-4 text-success" />
-            ) : (
-              <Copy className="h-4 w-4" />
-            )}
-            {copied ? t('acceptanceLink.linkCopied') : t('acceptanceLink.copyLink')}
-          </Button>
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCopy}
+              className="gap-2"
+            >
+              {copied ? (
+                <Check className="h-4 w-4 text-success" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+              {copied ? t('acceptanceLink.linkCopied') : t('acceptanceLink.copyLink')}
+            </Button>
+            {/* L-4: WITHDRAW — only shown when link exists (token required for RPC) */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleWithdraw}
+              disabled={withdrawing}
+              className="gap-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/5"
+            >
+              {withdrawing ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Ban className="h-3.5 w-3.5" />
+              )}
+              {withdrawing ? t('acceptanceLink.withdrawing') : t('acceptanceLink.withdrawBtn')}
+            </Button>
+          </div>
         </div>
       ) : (
         // No link or expired
