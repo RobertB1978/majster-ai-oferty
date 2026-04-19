@@ -172,8 +172,8 @@ export function getPdfComplianceLines(payload: OfferPdfPayload, t?: OfferPdfTran
       ? t('offerPdf.vatExemptNote')
       : 'Sprzedawca zwolniony z podatku VAT (art. 43 ust. 1 ustawy o VAT)',
     vatRateLine:
-      payload.quote?.vatRate !== null && payload.quote?.vatRate !== undefined
-        ? `VAT (${payload.quote.vatRate}%):`
+      payload.quote?.isVatExempt === false
+        ? (payload.quote.hasMixedVatRates ? 'Różne stawki VAT:' : `VAT (${payload.quote.vatRate}%):`)
         : null,
   };
 }
@@ -599,7 +599,7 @@ export async function generateOfferPdf(
     yPosition += 9;
 
     // Resolve VAT label for table header
-    const vatLabel = quote.isVatExempt ? 'zw.' : `${quote.vatRate ?? 0}%`;
+    const vatLabel = quote.isVatExempt ? 'zw.' : (quote.hasMixedVatRates ? 'różne' : `${quote.vatRate ?? 0}%`);
 
     const tableData = quote.positions.map((pos) => {
       const netValue = pos.qty * pos.price;
@@ -720,9 +720,10 @@ export async function generateOfferPdf(
       doc.setFont(bodyFont, 'normal');
       doc.setTextColor(...TEXT_PRIMARY);
       yPosition += 6;
-      if (quote.vatRate !== null) {
+      if (quote.vatRate !== null || quote.hasMixedVatRates) {
         doc.setTextColor(...TEXT_SECONDARY);
-        doc.text(`VAT (${quote.vatRate}%):`, summaryX + 1, yPosition);
+        const vatSummaryLabel = quote.hasMixedVatRates ? 'Różne stawki VAT:' : `VAT (${quote.vatRate}%):`;
+        doc.text(vatSummaryLabel, summaryX + 1, yPosition);
         doc.setFont(monoFont, 'normal');
         doc.text(formatCurrency(quote.vatAmount, locale), pageWidth - margin, yPosition, { align: 'right' });
         doc.setFont(bodyFont, 'normal');

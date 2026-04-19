@@ -142,20 +142,24 @@ export function useSendOffer() {
 
       // ── 4. Send email (non-fatal) ─────────────────────────────────────
       let emailSent = false;
+      let emailSubject = '';
+      let emailMessage = '';
       if (clientEmail) {
-        try {
-          const title = offerRow.title as string | null;
-          const gross = offerRow.total_gross as number | null;
-          const net = offerRow.total_net as number | null;
-          const currency = (offerRow.currency as string) ?? 'PLN';
-          const amount = (gross ?? net ?? 0).toFixed(2);
+        const title = offerRow.title as string | null;
+        const gross = offerRow.total_gross as number | null;
+        const net = offerRow.total_net as number | null;
+        const currency = (offerRow.currency as string) ?? 'PLN';
+        const amount = (gross ?? net ?? 0).toFixed(2);
+        const offerTitle = title ?? t('sendOffer.autoSubjectNoTitle');
+        emailSubject = t('sendOffer.autoSubject', { title: offerTitle });
+        emailMessage = t('sendOffer.autoMessage', { amount, currency });
 
-          const offerTitle = title ?? t('sendOffer.autoSubjectNoTitle');
+        try {
           const { error: emailErr } = await supabase.functions.invoke('send-offer-email', {
             body: {
               to: clientEmail,
-              subject: t('sendOffer.autoSubject', { title: offerTitle }),
-              message: t('sendOffer.autoMessage', { amount, currency }),
+              subject: emailSubject,
+              message: emailMessage,
               projectName: offerTitle,
               pdfUrl: pdfUrl ?? undefined,
               publicToken: acceptanceLinkToken,
@@ -167,6 +171,24 @@ export function useSendOffer() {
         } catch (emailErr) {
           // Non-fatal: SENT status was already set
           logger.error('[useSendOffer] Email send failed (non-fatal):', emailErr);
+        }
+
+        // ── 4.5. Record send history (non-fatal) ───────────────────────
+        // Persists who received the offer so the send-history panel and
+        // future tracking logic can identify the recipient.
+        try {
+          await supabase.from('offer_sends').insert({
+            project_id: offerId,
+            user_id: user.id,
+            client_email: clientEmail,
+            subject: emailSubject,
+            message: emailMessage,
+            status: emailSent ? 'sent' : 'pending',
+            pdf_url: pdfUrl ?? null,
+            tracking_status: 'sent',
+          });
+        } catch (histErr) {
+          logger.error('[useSendOffer] offer_sends insert failed (non-fatal):', histErr);
         }
       }
 
