@@ -31,6 +31,10 @@ interface RawOffer {
   total_gross: number | null;
   client_id: string | null;
   created_at: string;
+  offer_text: string | null;
+  terms: string | null;
+  deadline_text: string | null;
+  valid_until: string | null;
 }
 
 interface RawOfferItem {
@@ -94,7 +98,7 @@ export async function buildOfferPdfPayloadFromOffer(
   // ── 1. Load offer row ────────────────────────────────────────────────────
   const { data: offer, error: offerErr } = await supabase
     .from('offers')
-    .select('id, title, currency, total_net, total_vat, total_gross, client_id, created_at')
+    .select('id, title, currency, total_net, total_vat, total_gross, client_id, created_at, offer_text, terms, deadline_text, valid_until')
     .eq('id', offerId)
     .single();
 
@@ -268,15 +272,18 @@ export async function buildOfferPdfPayloadFromOffer(
 
   // ── 9. Build PDF config ───────────────────────────────────────────────────
   const issuedAt = new Date();
-  const validUntil = new Date(issuedAt.getTime() + 30 * 24 * 60 * 60 * 1000);
+  // Use stored valid_until when set; fall back to issued_at + 30 days.
+  const validUntil = rawOffer.valid_until
+    ? new Date(rawOffer.valid_until)
+    : new Date(issuedAt.getTime() + 30 * 24 * 60 * 60 * 1000);
 
   const pdfConfig: PdfConfig = {
     version: 'standard',
     templateId: 'classic',
     title: rawOffer.title || 'Oferta',
-    offerText: '',
-    terms: '',
-    deadlineText: '',
+    offerText: rawOffer.offer_text ?? '',
+    terms: rawOffer.terms ?? '',
+    deadlineText: rawOffer.deadline_text ?? '',
   };
 
   return {

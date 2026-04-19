@@ -4078,7 +4078,16 @@
       "saveDraft": "Save draft",
       "saving": "Saving...",
       "previewAndSend": "Preview & Send",
-      "variantTotalsNote": "Totals shown per variant. The offer contains several options for the client to choose from."
+      "variantTotalsNote": "Totals shown per variant. The offer contains several options for the client to choose from.",
+      "commercialSection": "Commercial content",
+      "validUntil": "Valid until",
+      "validUntilHint": "Leave empty — defaults to 30 days from issue date.",
+      "offerText": "Introduction (offer text)",
+      "offerTextPlaceholder": "Dear Sir/Madam, we are pleased to submit our offer for...",
+      "deadlineText": "Execution deadline",
+      "deadlineTextPlaceholder": "E.g. 4 weeks from contract signing",
+      "terms": "Payment terms / notes",
+      "termsPlaceholder": "E.g. Payment due 14 days after completion. 24-month guarantee."
     },
     "variants": {
       "defaultLabel": "Option",

@@ -4078,7 +4078,16 @@
       "saveDraft": "Zapisz szkic",
       "saving": "Zapisywanie...",
       "previewAndSend": "Podgląd i Wyślij",
-      "variantTotalsNote": "Kwoty podane oddzielnie per wariant. Oferta zawiera kilka opcji do wyboru."
+      "variantTotalsNote": "Kwoty podane oddzielnie per wariant. Oferta zawiera kilka opcji do wyboru.",
+      "commercialSection": "Treść handlowa",
+      "validUntil": "Ważna do",
+      "validUntilHint": "Pozostaw puste — domyślnie 30 dni od daty wystawienia.",
+      "offerText": "Wstęp (tekst oferty)",
+      "offerTextPlaceholder": "Szanowni Państwo, z przyjemnością przedstawiamy ofertę na wykonanie prac...",
+      "deadlineText": "Termin realizacji",
+      "deadlineTextPlaceholder": "Np. 4 tygodnie od podpisania umowy",
+      "terms": "Warunki płatności / uwagi",
+      "termsPlaceholder": "Np. Płatność 14 dni od zakończenia prac. Gwarancja 24 miesiące."
     },
     "variants": {
       "defaultLabel": "Wariant",

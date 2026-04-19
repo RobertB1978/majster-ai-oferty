@@ -71,6 +71,12 @@ export interface WizardFormData {
    * Max 3 variants enforced in UI layer.
    */
   variants: WizardVariant[];
+  /** PR-COMM-04: commercial text fields */
+  offerText: string;
+  terms: string;
+  deadlineText: string;
+  /** ISO 8601 string or empty — stored as valid_until in DB. Empty = use +30d default at PDF build time. */
+  validUntil: string;
 }
 
 export interface OfferWithItems {
@@ -83,6 +89,10 @@ export interface OfferWithItems {
   total_vat: number | null;
   total_gross: number | null;
   currency: string;
+  offer_text: string | null;
+  terms: string | null;
+  deadline_text: string | null;
+  valid_until: string | null;
   items: WizardItem[];
   variants: WizardVariant[];
 }
@@ -131,7 +141,7 @@ export function useLoadOfferDraft(offerId: string | null) {
 
       const { data: offer, error: offerErr } = await supabase
         .from('offers')
-        .select('id, user_id, client_id, title, status, total_net, total_gross, currency')
+        .select('id, user_id, client_id, title, status, total_net, total_gross, currency, offer_text, terms, deadline_text, valid_until')
         .eq('id', offerId)
         .maybeSingle();
 
@@ -196,7 +206,7 @@ export function useLoadOfferDraft(offerId: string | null) {
         total_vat: null,
         items: noVariantItems,
         variants,
-      };
+      } as OfferWithItems;
     },
     enabled: !!user && !!offerId,
     staleTime: 1000 * 60,
@@ -240,6 +250,13 @@ export function useSaveDraft() {
 
       // 2. Upsert offer
       let offerId = form.offerId;
+      const commercialFields = {
+        offer_text: form.offerText.trim() || null,
+        terms: form.terms.trim() || null,
+        deadline_text: form.deadlineText.trim() || null,
+        valid_until: form.validUntil.trim() || null,
+      };
+
       if (offerId) {
         const { error } = await supabase
           .from('offers')
@@ -250,6 +267,7 @@ export function useSaveDraft() {
             total_net: totals.total_net,
             total_vat: totals.total_vat,
             total_gross: totals.total_gross,
+            ...commercialFields,
           })
           .eq('id', offerId);
         if (error) throw error;
@@ -264,6 +282,7 @@ export function useSaveDraft() {
             total_net: totals.total_net,
             total_vat: totals.total_vat,
             total_gross: totals.total_gross,
+            ...commercialFields,
           })
           .select('id')
           .single();
