@@ -1940,25 +1940,34 @@ export type Database = {
           created_at: string
           expires_at: string
           id: string
+          last_viewed_at: string | null
           offer_id: string
           token: string
+          updated_at: string
           user_id: string
+          views: number
         }
         Insert: {
           created_at?: string
           expires_at?: string
           id?: string
+          last_viewed_at?: string | null
           offer_id: string
           token?: string
+          updated_at?: string
           user_id: string
+          views?: number
         }
         Update: {
           created_at?: string
           expires_at?: string
           id?: string
+          last_viewed_at?: string | null
           offer_id?: string
           token?: string
+          updated_at?: string
           user_id?: string
+          views?: number
         }
         Relationships: [
           {
