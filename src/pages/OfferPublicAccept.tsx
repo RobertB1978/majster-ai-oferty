@@ -34,8 +34,8 @@
  * Rate limiting: documented in SECURITY_BASELINE.md (apply at CDN/edge layer).
  */
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
@@ -237,6 +237,7 @@ function ItemsTable({ items, currency, t, locale }: ItemsTableProps) {
 export default function OfferPublicAccept() {
   const { t, i18n } = useTranslation();
   const { token } = useParams<{ token: string }>();
+  const [searchParams] = useSearchParams();
 
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -244,6 +245,10 @@ export default function OfferPublicAccept() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
   const [publicPhotos, setPublicPhotos] = useState<PublicOfferPhoto[]>([]);
+
+  // L-6: 1-click accept from email (?t=<accept_token>)
+  const acceptTokenParam = searchParams.get('t') ?? undefined;
+  const autoAcceptTriggered = useRef(false);
 
   const { data: result, isLoading } = useQuery({
     queryKey: ['publicOffer', token],
@@ -282,6 +287,34 @@ export default function OfferPublicAccept() {
     void loadPhotos();
     return () => { cancelled = true; };
   }, [token, isLoading]);
+
+  // ── L-6: Auto-accept from 1-click email link (?t=<accept_token>) ────────────
+  // Must be before any conditional return to comply with Rules of Hooks.
+  useEffect(() => {
+    const offerStatus = result?.data?.offer?.status;
+    if (!acceptTokenParam || !token || autoAcceptTriggered.current) return;
+    if (!offerStatus || offerStatus !== 'SENT') return;
+
+    autoAcceptTriggered.current = true;
+    setSubmitting(true);
+    setActionError(null);
+
+    void supabase
+      .rpc('process_offer_acceptance_action', {
+        p_token: token,
+        p_action: 'ACCEPT',
+        p_comment: null,
+        p_accept_token: acceptTokenParam,
+      })
+      .then(({ data: raw, error }) => {
+        if (error) { setActionError(t('publicOffer.actionError')); return; }
+        const res = raw as { error?: string };
+        if (res?.error) { setActionError(t('publicOffer.actionError')); return; }
+        setActionResult('ACCEPTED');
+      })
+      .catch(() => setActionError(t('publicOffer.actionError')))
+      .finally(() => setSubmitting(false));
+  }, [acceptTokenParam, token, result?.data?.offer?.status, t]);
 
   // ── Loading ─────────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -345,17 +378,30 @@ export default function OfferPublicAccept() {
   const variantTotals = hasVariants ? computeVariantTotals(displayedItems) : null;
 
   // ── Action handler ──────────────────────────────────────────────────────────
-  const handleAction = async (action: 'ACCEPT' | 'REJECT') => {
+  const handleAction = async (action: 'ACCEPT' | 'REJECT', acceptTokenOverride?: string) => {
     if (!token) return;
     setSubmitting(true);
     setActionError(null);
 
     try {
-      const { data: raw, error } = await supabase.rpc('process_offer_acceptance_action', {
+      const rpcParams: {
+        p_token: string;
+        p_action: string;
+        p_comment: string | null;
+        p_accept_token?: string;
+      } = {
         p_token: token,
         p_action: action,
         p_comment: comment.trim() || null,
-      });
+      };
+      if (acceptTokenOverride) {
+        rpcParams.p_accept_token = acceptTokenOverride;
+      }
+
+      const { data: raw, error } = await supabase.rpc(
+        'process_offer_acceptance_action',
+        rpcParams,
+      );
 
       if (error) throw error;
 

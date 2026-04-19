@@ -1956,6 +1956,7 @@ export type Database = {
       }
       acceptance_links: {
         Row: {
+          accept_token: string
           created_at: string
           expires_at: string
           id: string
@@ -1967,6 +1968,7 @@ export type Database = {
           views: number
         }
         Insert: {
+          accept_token?: string
           created_at?: string
           expires_at?: string
           id?: string
@@ -1978,6 +1980,7 @@ export type Database = {
           views?: number
         }
         Update: {
+          accept_token?: string
           created_at?: string
           expires_at?: string
           id?: string
@@ -2941,7 +2944,7 @@ export type Database = {
       resolve_dossier_share_token: { Args: { p_token: string }; Returns: Json }
       resolve_offer_acceptance_link: { Args: { p_token: string }; Returns: Json }
       process_offer_acceptance_action: {
-        Args: { p_token: string; p_action: string; p_comment?: string }
+        Args: { p_token: string; p_action: string; p_comment?: string | null; p_accept_token?: string | null }
         Returns: Json
       }
       get_public_offer_photos: { Args: { p_token: string }; Returns: Json }

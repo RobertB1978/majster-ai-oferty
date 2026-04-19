@@ -13,6 +13,59 @@ import { useAuth } from '@/contexts/AuthContext';
 export type OfferStatus = 'DRAFT' | 'SENT' | 'ACCEPTED' | 'REJECTED' | 'ARCHIVED';
 export type OfferSort = 'last_activity_at' | 'created_at' | 'total_net';
 
+// ── L-5: Unified status mapping ───────────────────────────────────────────────
+// Legacy offer_approvals uses lowercase statuses; canonical offers uses UPPERCASE.
+// When a SENT offer was accepted/rejected via the legacy flow (approve-offer EF),
+// offers.status remains 'SENT'. resolveUnifiedStatus corrects this discrepancy.
+
+/** Maps legacy offer_approvals status values to canonical OfferStatus. */
+export const LEGACY_TO_CANONICAL: Readonly<Partial<Record<string, OfferStatus>>> = {
+  accepted: 'ACCEPTED',
+  approved: 'ACCEPTED',
+  rejected: 'REJECTED',
+} as const;
+
+/**
+ * Resolves the authoritative status when canonical (offers.status) and legacy
+ * (offer_approvals.status) may disagree.
+ * Canonical wins unless still SENT and legacy has a more terminal state.
+ */
+export function resolveUnifiedStatus(
+  canonicalStatus: OfferStatus,
+  legacyStatus: string | undefined | null,
+): OfferStatus {
+  if (canonicalStatus === 'SENT' && legacyStatus) {
+    return LEGACY_TO_CANONICAL[legacyStatus] ?? canonicalStatus;
+  }
+  return canonicalStatus;
+}
+
+/**
+ * For a batch of offers, fetches any legacy offer_approvals that override
+ * the canonical status for SENT offers. Returns a Map of offer_id → resolved status.
+ * No-op (returns empty map) when there are no SENT offers in the batch.
+ */
+async function buildLegacyStatusOverrides(
+  offers: Offer[],
+): Promise<Map<string, OfferStatus>> {
+  const sentIds = offers.filter((o) => o.status === 'SENT').map((o) => o.id);
+  if (sentIds.length === 0) return new Map();
+
+  const { data: approvals } = await supabase
+    .from('offer_approvals')
+    .select('offer_id, status')
+    .in('offer_id', sentIds)
+    .in('status', ['accepted', 'approved', 'rejected']);
+
+  const overrides = new Map<string, OfferStatus>();
+  for (const row of approvals ?? []) {
+    const resolved = LEGACY_TO_CANONICAL[(row as { offer_id: string | null; status: string }).status];
+    const offerId = (row as { offer_id: string | null; status: string }).offer_id;
+    if (resolved && offerId) overrides.set(offerId, resolved);
+  }
+  return overrides;
+}
+
 export interface Offer {
   id: string;
   user_id: string;
@@ -93,9 +146,13 @@ export function useOffers(params: OffersQueryParams = {}) {
         }
       }
 
+      // L-5: Resolve status for offers accepted/rejected via legacy flow
+      const statusOverrides = await buildLegacyStatusOverrides(offers);
+
       return offers.map((offer) => ({
         ...offer,
         client_reference: offer.client_id ? (clientMap.get(offer.client_id) ?? offer.client_id) : null,
+        status: statusOverrides.get(offer.id) ?? offer.status,
       }));
     },
     enabled: !!user,
@@ -182,9 +239,13 @@ export function useOffersInfinite(params: OffersQueryParams = {}) {
         }
       }
 
+      // L-5: Resolve status for offers accepted/rejected via legacy flow
+      const statusOverrides = await buildLegacyStatusOverrides(offers);
+
       return offers.map((o) => ({
         ...o,
         client_reference: o.client_id ? (clientMap.get(o.client_id) ?? o.client_id) : null,
+        status: statusOverrides.get(o.id) ?? o.status,
       }));
     },
     getNextPageParam: (lastPage, allPages) =>

@@ -142,8 +142,8 @@ and `/oferta/:token` can be safely deprecated:
 |----|-----|---------|----------------|--------|
 | L-1 | `process_offer_acceptance_action` must auto-create `v2_projects` on ACCEPT | P0 | PR-ARCH-03 | **CLOSED** (2026-04-15) |
 | L-2 | `process_offer_acceptance_action` must insert to `notifications` on ACCEPT/REJECT | P0 | PR-ARCH-03 | **CLOSED** (2026-04-15) |
-| L-5 | `useOffers` hook must return unified status from both `offers.status` and `offer_approvals.status` | P1 | PR-ARCH-04 | OPEN |
-| L-6 | `process_offer_acceptance_action` must handle `accept_token` (1-click from email) | P1 | PR-ARCH-04 | OPEN |
+| L-5 | `useOffers` hook must return unified status from both `offers.status` and `offer_approvals.status` | P1 | PR-CANON-05 | **CLOSED** (2026-04-19) |
+| L-6 | `process_offer_acceptance_action` must handle `accept_token` (1-click from email) | P1 | PR-CANON-05 | **CLOSED** (2026-04-19) |
 | L-3 | `process_offer_acceptance_action` must support `CANCEL_ACCEPT` action (10-min window) | P2 | PR-ARCH-04 | OPEN |
 | L-4 | `process_offer_acceptance_action` must support `WITHDRAW` action with JWT verification | P2 | PR-ARCH-04 | OPEN |
 
@@ -191,3 +191,17 @@ and by the existing `TodayTasks` `pending_offer` pattern already using `/app/off
 *Generated: 2026-04-13 | PR-ARCH-02 | Branch: `claude/pr-arch-02-public-offer-phase2-0Kgl9`*
 *Updated: 2026-04-15 | PR-ARCH-03 | Branch: `claude/arch-03-close-remaining-gaps-GKpt1` — L-1/L-2 closed, 2 readers migrated*
 *Updated: 2026-04-15 | PR-ARCH-03b | Branch: `claude/arch-03b-close-legacy-readers-cmPHo` — remaining 2 readers migrated (useExpirationMonitor, TodayTasks)*
+*Updated: 2026-04-19 | PR-CANON-05 | Branch: `claude/canonical-status-accept-token-a78Mr` — L-5/L-6 closed*
+
+---
+
+## ARCH-05 Closure (2026-04-19)
+
+L-5 and L-6 closed. PR-CANON-05 (`claude/canonical-status-accept-token-a78Mr`).
+
+| Gap | Resolution |
+|-----|-----------|
+| L-5 | `useOffers` + `useOffersInfinite` now call `buildLegacyStatusOverrides` after fetching canonical offers. For any SENT offers, a secondary query to `offer_approvals` resolves the authoritative status. `resolveUnifiedStatus` maps `accepted`/`approved` → `ACCEPTED`, `rejected` → `REJECTED`. |
+| L-6 | `acceptance_links.accept_token` (new UUID column, DEFAULT gen_random_uuid()) added. `upsert_acceptance_link` generates and returns it. `process_offer_acceptance_action` accepts optional `p_accept_token` (4th param, DEFAULT NULL). Valid token forces ACCEPT; invalid returns `{error: 'invalid_accept_token'}`. `useSendOffer` passes `acceptToken` to `send-offer-email`. `OfferPublicAccept` reads `?t=` query param and auto-triggers ACCEPT via RPC on page load. |
+
+**Remaining open items (L-3, L-4):** cancel/withdraw not included in this PR (per FORBIDDEN scope).

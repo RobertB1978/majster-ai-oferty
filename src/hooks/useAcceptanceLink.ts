@@ -19,6 +19,8 @@ export interface AcceptanceLink {
   id: string;
   offer_id: string;
   token: string;
+  /** L-6: 1-click accept token for email (?t=<accept_token>). Owner-only. */
+  accept_token: string;
   expires_at: string;
   created_at: string;
 }
@@ -38,7 +40,7 @@ export function useAcceptanceLink(offerId: string | undefined) {
       if (!offerId) return null;
       const { data, error } = await supabase
         .from('acceptance_links')
-        .select('id, offer_id, token, expires_at, created_at')
+        .select('id, offer_id, token, accept_token, expires_at, created_at')
         .eq('offer_id', offerId)
         .maybeSingle();
       if (error) throw error;
