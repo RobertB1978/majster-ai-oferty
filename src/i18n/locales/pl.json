@@ -4131,7 +4131,11 @@
     "statusBadgeDraft": "Szkic",
     "shareLinkHint": "Skopiuj i wyślij klientowi — nie wymaga logowania",
     "noAcceptanceLinkNote": "Wygeneruj link akceptacji w szczegółach oferty (zakładka Wyślij), aby udostępnić go klientowi.",
-    "missingCompanyAlert": "Profil firmy jest niekompletny — PDF nie będzie zawierał danych firmowych. Uzupełnij dane w Ustawieniach → Profil firmy."
+    "missingCompanyAlert": "Profil firmy jest niekompletny — PDF nie będzie zawierał danych firmowych. Uzupełnij dane w Ustawieniach → Profil firmy.",
+    "sendBlockedNoClient": "Wybierz klienta przed wysłaniem oferty.",
+    "sendBlockedIncompleteProfile": "Uzupełnij profil firmy (nazwa, NIP, ulica, kod pocztowy, miasto) przed wysłaniem oferty.",
+    "recipientEmailLabel": "E-mail odbiorcy:",
+    "recipientEmailPlaceholder": "adres@email.com (opcjonalnie)"
   },
   "acceptanceLink": {
     "panelTitle": "Link akceptacji dla klienta",

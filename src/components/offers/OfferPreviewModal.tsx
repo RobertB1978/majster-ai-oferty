@@ -10,7 +10,7 @@
  * Quota gating via useFreeTierOfferQuota + FreeTierPaywallModal (PR-06).
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   ArrowLeft,
@@ -38,6 +39,7 @@ import { useSendOffer } from '@/hooks/useSendOffer';
 import { generateOfferPdfWithServer } from '@/lib/generateServerPdf';
 import { useAcceptanceLink, useCreateAcceptanceLink, buildAcceptanceLinkUrl } from '@/hooks/useAcceptanceLink';
 import { formatNumber, formatDate as formatDateLocale } from '@/lib/formatters';
+import { validateSenderProfileForSend } from '@/lib/validations';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -191,8 +193,16 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [sentPdfUrl, setSentPdfUrl] = useState<string | null>(null);
+  const [recipientEmail, setRecipientEmail] = useState('');
 
   const isSent = data?.status === 'SENT';
+
+  // Auto-fill recipient email from client data; allow manual override afterwards
+  useEffect(() => {
+    if (data?.client?.email) {
+      setRecipientEmail(data.client.email);
+    }
+  }, [data?.client?.email]);
 
   // ── PDF download ───────────────────────────────────────────────────────────
   const handleDownloadPdf = async () => {
@@ -223,13 +233,26 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
   const handleSend = async () => {
     if (!data) return;
 
+    // SEND-gate: client must be selected
+    if (!data.client) {
+      toast.error(t('offerPreview.sendBlockedNoClient'));
+      return;
+    }
+
+    // SEND-gate: sender profile minimum must be complete
+    const profileCheck = validateSenderProfileForSend(data.company);
+    if (!profileCheck.valid) {
+      toast.error(t('offerPreview.sendBlockedIncompleteProfile'));
+      return;
+    }
+
     // Quota gate (PR-06)
     if (!offerQuota.canSend && !isSent) {
       setShowPaywall(true);
       return;
     }
 
-    const clientEmail = data.client?.email ?? undefined;
+    const clientEmail = recipientEmail.trim() || undefined;
 
     sendOffer.mutate(
       { offerId, clientEmail },
@@ -326,12 +349,22 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                   </Alert>
                 )}
 
-                {/* Company profile incomplete warning */}
-                {!data.company?.company_name && (
-                  <Alert className="mt-4 border-warning/30 bg-warning/5 dark:bg-warning/10">
-                    <AlertCircle className="h-4 w-4 text-warning" />
-                    <AlertDescription className="text-sm text-warning">
-                      {t('offerPreview.missingCompanyAlert')}
+                {/* SEND-gate: no client assigned */}
+                {!isSent && !data.client && (
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="text-sm">
+                      {t('offerPreview.sendBlockedNoClient')}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* SEND-gate: sender profile minimum incomplete */}
+                {!isSent && data.client && !validateSenderProfileForSend(data.company).valid && (
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="text-sm">
+                      {t('offerPreview.sendBlockedIncompleteProfile')}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -545,7 +578,25 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
           </div>
 
           {/* Sticky footer actions */}
-          <div className="sticky bottom-0 bg-background border-t px-4 sm:px-6 py-4 flex flex-wrap justify-between gap-2 sm:gap-3">
+          <div className="sticky bottom-0 bg-background border-t px-4 sm:px-6 py-4 space-y-3">
+            {/* Recipient email — auto-filled from client, editable before send */}
+            {!isSent && data?.client && (
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-muted-foreground whitespace-nowrap shrink-0">
+                  {t('offerPreview.recipientEmailLabel')}
+                </label>
+                <Input
+                  type="email"
+                  value={recipientEmail}
+                  onChange={(e) => setRecipientEmail(e.target.value)}
+                  placeholder={t('offerPreview.recipientEmailPlaceholder')}
+                  className="h-9 flex-1"
+                  disabled={sendOffer.isPending}
+                />
+              </div>
+            )}
+
+            <div className="flex flex-wrap justify-between gap-2 sm:gap-3">
             <Button
               variant="outline"
               onClick={onClose}
@@ -574,7 +625,13 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
               {!isSent && (
                 <Button
                   onClick={handleSend}
-                  disabled={sendOffer.isPending || isLoading || !data}
+                  disabled={
+                    sendOffer.isPending ||
+                    isLoading ||
+                    !data ||
+                    !data.client ||
+                    !validateSenderProfileForSend(data.company).valid
+                  }
                   className="min-h-[44px]"
                 >
                   {sendOffer.isPending ? (
@@ -585,6 +642,7 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
                   {sendOffer.isPending ? t('offerPreview.sending') : t('offerPreview.send')}
                 </Button>
               )}
+            </div>
             </div>
           </div>
         </DialogContent>
