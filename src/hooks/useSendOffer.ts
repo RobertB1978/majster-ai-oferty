@@ -109,25 +109,31 @@ export function useSendOffer() {
       }
 
       // ── 3.5. Create acceptance link BEFORE email (non-fatal) ──────────
-      // Link must exist before email so the token can be included in the message.
+      // Link must exist before email so the token (and 1-click accept_token)
+      // can be included in the message.
       let acceptanceLinkToken: string | undefined;
+      let acceptanceLinkAcceptToken: string | undefined;
       try {
         // Fetch existing link first (upsert with ignoreDuplicates=true returns nothing on conflict)
         const { data: existingLink } = await supabase
           .from('acceptance_links')
-          .select('token')
+          .select('token, accept_token')
           .eq('offer_id', offerId)
           .maybeSingle();
 
         if (existingLink) {
-          acceptanceLinkToken = (existingLink as { token: string }).token;
+          const link = existingLink as { token: string; accept_token: string };
+          acceptanceLinkToken = link.token;
+          acceptanceLinkAcceptToken = link.accept_token;
         } else {
           const { data: newLink } = await supabase
             .from('acceptance_links')
             .insert({ user_id: user.id, offer_id: offerId })
-            .select('token')
+            .select('token, accept_token')
             .single();
-          acceptanceLinkToken = (newLink as { token: string } | null)?.token;
+          const link = newLink as { token: string; accept_token: string } | null;
+          acceptanceLinkToken = link?.token;
+          acceptanceLinkAcceptToken = link?.accept_token;
         }
       } catch (linkErr) {
         // Non-fatal: email sends without action button
@@ -153,6 +159,7 @@ export function useSendOffer() {
               projectName: offerTitle,
               pdfUrl: pdfUrl ?? undefined,
               publicToken: acceptanceLinkToken,
+              acceptToken: acceptanceLinkAcceptToken,
               locale: i18n.language,
             },
           });
