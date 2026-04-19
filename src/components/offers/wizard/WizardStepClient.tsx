@@ -1,6 +1,7 @@
 /**
- * WizardStepClient — PR-10 Step 1
+ * WizardStepClient — PR-10 Step 1 (extended in PR-COMM-03)
  * Select an existing client or create a minimal client inline.
+ * PR-COMM-03: added NIP, street, postal_code, city to the quick-create form.
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,10 +22,29 @@ interface Props {
   errors: Record<string, string>;
 }
 
+function validateNip(nip: string): boolean {
+  const digits = nip.replace(/[\s-]/g, '');
+  if (!/^\d{10}$/.test(digits)) return false;
+  const weights = [6, 5, 7, 2, 3, 4, 5, 6, 7];
+  const sum = weights.reduce((acc, w, i) => acc + w * Number(digits[i]), 0);
+  return sum % 11 === Number(digits[9]);
+}
+
+const EMPTY_NEW_CLIENT = {
+  name: '',
+  phone: '',
+  email: '',
+  nip: '',
+  street: '',
+  postal_code: '',
+  city: '',
+};
+
 export function WizardStepClient({ form, onChange, errors }: Props) {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [nipError, setNipError] = useState('');
 
   const { data: allClients = [] } = useClients();
 
@@ -40,17 +60,32 @@ export function WizardStepClient({ form, onChange, errors }: Props) {
   };
 
   const handleStartCreate = () => {
-    onChange({ clientId: null, newClient: { name: '', phone: '', email: '' } });
+    onChange({ clientId: null, newClient: { ...EMPTY_NEW_CLIENT } });
     setIsCreating(true);
+    setNipError('');
   };
 
   const handleCancelCreate = () => {
     onChange({ newClient: null });
     setIsCreating(false);
+    setNipError('');
   };
 
-  const handleNewClientChange = (field: 'name' | 'phone' | 'email', value: string) => {
-    onChange({ newClient: { ...(form.newClient ?? { name: '', phone: '', email: '' }), [field]: value } });
+  const handleNewClientChange = (
+    field: keyof typeof EMPTY_NEW_CLIENT,
+    value: string,
+  ) => {
+    const base = form.newClient ?? { ...EMPTY_NEW_CLIENT };
+    onChange({ newClient: { ...base, [field]: value } });
+
+    if (field === 'nip') {
+      const trimmed = value.replace(/[\s-]/g, '');
+      if (trimmed && !validateNip(value)) {
+        setNipError(t('offerWizard.clientStep.nipInvalid'));
+      } else {
+        setNipError('');
+      }
+    }
   };
 
   const selectedClient = allClients.find((c) => c.id === form.clientId);
@@ -116,6 +151,7 @@ export function WizardStepClient({ form, onChange, errors }: Props) {
         <div className="rounded-lg border border-border p-4 space-y-3">
           <p className="text-sm font-medium">{t('offerWizard.clientStep.newClientTitle')}</p>
 
+          {/* Name */}
           <div className="space-y-1">
             <Label htmlFor="nc-name">{t('offerWizard.clientStep.name')}</Label>
             <Input
@@ -130,6 +166,7 @@ export function WizardStepClient({ form, onChange, errors }: Props) {
             )}
           </div>
 
+          {/* Phone + Email */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="nc-phone">{t('offerWizard.clientStep.phone')}</Label>
@@ -149,6 +186,55 @@ export function WizardStepClient({ form, onChange, errors }: Props) {
                 value={form.newClient?.email ?? ''}
                 onChange={(e) => handleNewClientChange('email', e.target.value)}
                 placeholder={t('offerWizard.clientStep.emailPlaceholder')}
+              />
+            </div>
+          </div>
+
+          {/* NIP */}
+          <div className="space-y-1">
+            <Label htmlFor="nc-nip">{t('offerWizard.clientStep.nip')}</Label>
+            <Input
+              id="nc-nip"
+              value={form.newClient?.nip ?? ''}
+              onChange={(e) => handleNewClientChange('nip', e.target.value)}
+              placeholder={t('offerWizard.clientStep.nipPlaceholder')}
+              maxLength={13}
+            />
+            {nipError && (
+              <p className="text-xs text-destructive">{nipError}</p>
+            )}
+          </div>
+
+          {/* Street */}
+          <div className="space-y-1">
+            <Label htmlFor="nc-street">{t('offerWizard.clientStep.street')}</Label>
+            <Input
+              id="nc-street"
+              value={form.newClient?.street ?? ''}
+              onChange={(e) => handleNewClientChange('street', e.target.value)}
+              placeholder={t('offerWizard.clientStep.streetPlaceholder')}
+            />
+          </div>
+
+          {/* Postal code + City */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="nc-postal">{t('offerWizard.clientStep.postalCode')}</Label>
+              <Input
+                id="nc-postal"
+                value={form.newClient?.postal_code ?? ''}
+                onChange={(e) => handleNewClientChange('postal_code', e.target.value)}
+                placeholder={t('offerWizard.clientStep.postalCodePlaceholder')}
+                maxLength={6}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="nc-city">{t('offerWizard.clientStep.city')}</Label>
+              <Input
+                id="nc-city"
+                value={form.newClient?.city ?? ''}
+                onChange={(e) => handleNewClientChange('city', e.target.value)}
+                placeholder={t('offerWizard.clientStep.cityPlaceholder')}
               />
             </div>
           </div>

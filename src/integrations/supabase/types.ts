@@ -203,32 +203,38 @@ export type Database = {
       clients: {
         Row: {
           address: string | null
+          city: string | null
           created_at: string
           email: string | null
           id: string
           name: string
           nip: string
           phone: string | null
+          postal_code: string | null
           user_id: string
         }
         Insert: {
           address?: string | null
+          city?: string | null
           created_at?: string
           email?: string | null
           id?: string
           name: string
           nip?: string
           phone?: string | null
+          postal_code?: string | null
           user_id: string
         }
         Update: {
           address?: string | null
+          city?: string | null
           created_at?: string
           email?: string | null
           id?: string
           name?: string
           nip?: string
           phone?: string | null
+          postal_code?: string | null
           user_id?: string
         }
         Relationships: []

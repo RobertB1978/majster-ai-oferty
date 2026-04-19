@@ -4043,7 +4043,16 @@
       "phone": "Телефон",
       "email": "Email",
       "emailPlaceholder": "ivan@example.com",
-      "phonePlaceholder": "+48 500 000 000"
+      "phonePlaceholder": "+48 500 000 000",
+      "nip": "NIP (необов'язково)",
+      "nipPlaceholder": "1234567890",
+      "nipInvalid": "Невірний NIP (10 цифр, контрольна сума)",
+      "street": "Вулиця та номер",
+      "streetPlaceholder": "вул. Прикладова 1",
+      "postalCode": "Поштовий індекс",
+      "postalCodePlaceholder": "00-000",
+      "city": "Місто",
+      "cityPlaceholder": "Варшава"
     },
     "itemsStep": {
       "libraryTitle": "Бібліотека цін",

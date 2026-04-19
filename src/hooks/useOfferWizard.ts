@@ -51,7 +51,15 @@ export interface WizardFormData {
   offerId: string | null;
   clientId: string | null;
   /** When user creates a new client inline */
-  newClient: { name: string; phone: string; email: string } | null;
+  newClient: {
+    name: string;
+    phone: string;
+    email: string;
+    nip: string;
+    street: string;
+    postal_code: string;
+    city: string;
+  } | null;
   title: string;
   /**
    * Items in no-variant mode (variants.length === 0).
@@ -216,6 +224,10 @@ export function useSaveDraft() {
             name: form.newClient.name.trim(),
             phone: form.newClient.phone.trim() || null,
             email: form.newClient.email.trim() || null,
+            nip: form.newClient.nip.trim() || '',
+            address: form.newClient.street.trim() || null,
+            postal_code: form.newClient.postal_code.trim() || null,
+            city: form.newClient.city.trim() || null,
           })
           .select('id')
           .single();
