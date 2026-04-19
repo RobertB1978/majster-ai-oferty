@@ -75,6 +75,10 @@ function emptyForm(offerId: string | null): WizardFormData {
     title: '',
     items: [],
     variants: [],
+    offerText: '',
+    terms: '',
+    deadlineText: '',
+    validUntil: '',
   };
 }
 
@@ -118,6 +122,10 @@ export function OfferWizard({ offerId }: Props) {
         title: existing.title ?? '',
         items: existing.items,
         variants: existing.variants ?? [],
+        offerText: existing.offer_text ?? '',
+        terms: existing.terms ?? '',
+        deadlineText: existing.deadline_text ?? '',
+        validUntil: existing.valid_until ?? '',
       });
     }
   }, [existing]);

@@ -549,6 +549,11 @@ export type Database = {
           updated_at: string
           /** Sprint D1: id of the industry starter pack used to create this offer. NULL for manual offers. */
           source_template_id: string | null
+          /** PR-COMM-04: commercial text fields */
+          offer_text: string | null
+          terms: string | null
+          deadline_text: string | null
+          valid_until: string | null
         }
         Insert: {
           id?: string
@@ -569,6 +574,10 @@ export type Database = {
           created_at?: string
           updated_at?: string
           source_template_id?: string | null
+          offer_text?: string | null
+          terms?: string | null
+          deadline_text?: string | null
+          valid_until?: string | null
         }
         Update: {
           id?: string
@@ -589,6 +598,10 @@ export type Database = {
           created_at?: string
           updated_at?: string
           source_template_id?: string | null
+          offer_text?: string | null
+          terms?: string | null
+          deadline_text?: string | null
+          valid_until?: string | null
         }
         Relationships: []
       }

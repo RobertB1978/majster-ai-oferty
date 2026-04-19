@@ -15,6 +15,7 @@ import { useClients } from '@/hooks/useClients';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { formatNumber } from '@/lib/formatters';
 
 interface Props {
@@ -53,6 +54,69 @@ export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isS
           placeholder={t('offerWizard.reviewStep.titlePlaceholder')}
         />
         {errors.title && <p className="text-xs text-destructive">{errors.title}</p>}
+      </div>
+
+      {/* Commercial fields — PR-COMM-04 */}
+      <div className="space-y-3 rounded-lg border border-border p-3">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          {t('offerWizard.reviewStep.commercialSection')}
+        </p>
+
+        <div className="space-y-1">
+          <Label htmlFor="offer-valid-until" className="text-sm">
+            {t('offerWizard.reviewStep.validUntil')}
+          </Label>
+          <Input
+            id="offer-valid-until"
+            type="date"
+            value={form.validUntil ? form.validUntil.substring(0, 10) : ''}
+            onChange={(e) => onChange({ validUntil: e.target.value ? `${e.target.value}T00:00:00.000Z` : '' })}
+          />
+          <p className="text-xs text-muted-foreground">
+            {t('offerWizard.reviewStep.validUntilHint')}
+          </p>
+        </div>
+
+        <div className="space-y-1">
+          <Label htmlFor="offer-text" className="text-sm">
+            {t('offerWizard.reviewStep.offerText')}
+          </Label>
+          <Textarea
+            id="offer-text"
+            rows={3}
+            value={form.offerText}
+            onChange={(e) => onChange({ offerText: e.target.value })}
+            placeholder={t('offerWizard.reviewStep.offerTextPlaceholder')}
+            className="text-sm resize-none"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <Label htmlFor="offer-deadline" className="text-sm">
+            {t('offerWizard.reviewStep.deadlineText')}
+          </Label>
+          <Input
+            id="offer-deadline"
+            value={form.deadlineText}
+            onChange={(e) => onChange({ deadlineText: e.target.value })}
+            placeholder={t('offerWizard.reviewStep.deadlineTextPlaceholder')}
+            className="text-sm"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <Label htmlFor="offer-terms" className="text-sm">
+            {t('offerWizard.reviewStep.terms')}
+          </Label>
+          <Textarea
+            id="offer-terms"
+            rows={3}
+            value={form.terms}
+            onChange={(e) => onChange({ terms: e.target.value })}
+            placeholder={t('offerWizard.reviewStep.termsPlaceholder')}
+            className="text-sm resize-none"
+          />
+        </div>
       </div>
 
       {/* Summary */}
