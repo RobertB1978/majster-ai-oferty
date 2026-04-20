@@ -2,39 +2,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { logger } from '@/lib/logger';
+import { insertComplianceAuditEvent } from '@/lib/auditLog';
+import type { ComplianceEventType, ComplianceAuditLogEntry } from '@/types/audit';
 
-export type AuditAction = 
-  | 'user.login'
-  | 'user.logout'
-  | 'user.register'
-  | 'user.password_change'
-  | 'user.profile_update'
-  | 'user.consent_update'
-  | 'user.data_export'
-  | 'user.data_delete_request'
-  | 'client.create'
-  | 'client.update'
-  | 'client.delete'
-  | 'project.create'
-  | 'project.update'
-  | 'project.delete'
-  | 'quote.create'
-  | 'quote.update'
-  | 'quote.version_create'
-  | 'pdf.generate'
-  | 'pdf.download'
-  | 'offer.send'
-  | 'offer.approve'
-  | 'offer.reject'
-  | 'team.member_add'
-  | 'team.member_remove'
-  | 'team.role_change'
-  | 'api.key_create'
-  | 'api.key_revoke'
-  | 'subscription.change'
-  | 'settings.update'
-  | 'document.upload'
-  | 'document.delete';
+export type AuditAction = ComplianceEventType;
 
 export interface AuditLogEntry {
   id: string;
@@ -50,8 +21,6 @@ export interface AuditLogEntry {
   created_at: string;
 }
 
-// Store audit logs in notifications table with special type for now
-// In production, this would be a dedicated audit_logs table
 export function useLogAuditEvent() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -74,7 +43,6 @@ export function useLogAuditEvent() {
     }) => {
       if (!user) return;
 
-      // Log to console for debugging
       logger.log('[AUDIT]', {
         action,
         entityType,
@@ -83,21 +51,18 @@ export function useLogAuditEvent() {
         timestamp: new Date().toISOString(),
       });
 
-      // Store as a notification with audit type
-      const { error } = await supabase.from('notifications').insert({
-        user_id: user.id,
-        title: `Audit: ${action}`,
-        message: JSON.stringify({
-          action,
-          entityType,
-          entityId,
+      const { error } = await insertComplianceAuditEvent({
+        event_type: action,
+        actor_user_id: user.id,
+        entity_type: entityType,
+        entity_id: entityId ?? null,
+        metadata: {
           oldValues,
           newValues,
-          metadata,
+          ...metadata,
           userAgent: navigator.userAgent,
-        }),
-        type: 'info',
-        is_read: true, // Don't show in notification center
+        },
+        source: 'frontend',
       });
 
       if (error) {
@@ -110,8 +75,8 @@ export function useLogAuditEvent() {
   });
 }
 
-export function useAuditLogs(options?: { 
-  action?: AuditAction; 
+export function useAuditLogs(options?: {
+  action?: AuditAction;
   entityType?: string;
   limit?: number;
 }) {
@@ -120,38 +85,37 @@ export function useAuditLogs(options?: {
   return useQuery({
     queryKey: ['audit-logs', options],
     queryFn: async () => {
-      const query = supabase
-        .from('notifications')
-        .select('id, user_id, title, message, created_at')
-        .eq('user_id', user!.id)
-        .like('title', 'Audit:%')
+      let query = supabase
+        .from('compliance_audit_log')
+        .select('id, actor_user_id, event_type, entity_type, entity_id, metadata, created_at')
+        .eq('actor_user_id', user!.id)
         .order('created_at', { ascending: false })
-        .limit(options?.limit || 100);
+        .limit(options?.limit ?? 100);
+
+      if (options?.action) {
+        query = query.eq('event_type', options.action);
+      }
+      if (options?.entityType) {
+        query = query.eq('entity_type', options.entityType);
+      }
 
       const { data, error } = await query;
 
       if (error) throw error;
 
-      // Parse audit logs from notifications
-      return data.map((n: unknown) => {
-        const parsed = JSON.parse(n.message);
-        return {
-          id: n.id,
-          user_id: n.user_id,
-          action: parsed.action,
-          entity_type: parsed.entityType,
-          entity_id: parsed.entityId,
-          old_values: parsed.oldValues,
-          new_values: parsed.newValues,
-          metadata: parsed.metadata,
-          user_agent: parsed.userAgent,
-          created_at: n.created_at,
-        } as AuditLogEntry;
-      }).filter((log: AuditLogEntry) => {
-        if (options?.action && log.action !== options.action) return false;
-        if (options?.entityType && log.entity_type !== options.entityType) return false;
-        return true;
-      });
+      return (data as ComplianceAuditLogEntry[]).map((row) => ({
+        id: row.id,
+        user_id: row.actor_user_id ?? '',
+        action: row.event_type,
+        entity_type: row.entity_type ?? '',
+        entity_id: row.entity_id,
+        old_values: (row.metadata as Record<string, unknown>)?.oldValues as Record<string, unknown> | null ?? null,
+        new_values: (row.metadata as Record<string, unknown>)?.newValues as Record<string, unknown> | null ?? null,
+        ip_address: null,
+        user_agent: (row.metadata as Record<string, unknown>)?.userAgent as string | null ?? null,
+        metadata: row.metadata,
+        created_at: row.created_at,
+      } as AuditLogEntry));
     },
     enabled: !!user,
   });
