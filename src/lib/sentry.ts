@@ -11,6 +11,36 @@ export function isSentryConfigured(): boolean {
 }
 
 /**
+ * Reads analytics consent from localStorage.
+ * Returns true only when the user has explicitly granted analytics consent.
+ * Used to gate non-essential Sentry telemetry (replay, tracing, web vitals).
+ * ePrivacy Art. 5(3) / GDPR Art. 7 compliance gate.
+ */
+export function isAnalyticsConsented(): boolean {
+  try {
+    if (typeof localStorage === 'undefined') return false;
+    const raw = localStorage.getItem('cookie_consent');
+    if (!raw) return false;
+    const consent = JSON.parse(raw) as { analytics?: boolean };
+    return consent.analytics === true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Enables non-essential Sentry features (web vitals) after analytics consent is granted
+ * during the current session. Call this immediately after saving analytics consent.
+ *
+ * Session Replay and browser tracing integrations are only active when consent existed
+ * at Sentry init time (i.e., on page load). They will be fully active on next page load.
+ */
+export function enableSentryWebVitals(): void {
+  if (!isSentryConfigured()) return;
+  initWebVitals();
+}
+
+/**
  * Self-check for Sentry configuration
  * Warns if monitoring is not configured in production
  */
@@ -31,8 +61,13 @@ function sentryConfigSelfCheck() {
 }
 
 /**
- * Inicjalizacja Sentry dla monitoringu błędów i wydajności
- * Sentry będzie aktywne tylko w produkcji (gdy VITE_SENTRY_DSN jest ustawione)
+ * Inicjalizacja Sentry dla monitoringu błędów i wydajności.
+ * Sentry będzie aktywne tylko jeśli DSN jest ustawiony.
+ *
+ * Zgodność z ePrivacy Art. 5(3) / GDPR Art. 7:
+ * - Podstawowy monitoring błędów (bez replay) uruchamia się zawsze gdy DSN jest dostępny.
+ * - Session Replay, browser tracing i web vitals — tylko przy zgodzie na analytics.
+ * - enableSentryWebVitals() aktywuje web vitals jeśli zgoda zostanie udzielona w trakcie sesji.
  */
 export function initSentry() {
   const dsn = import.meta.env.VITE_SENTRY_DSN;
@@ -41,94 +76,92 @@ export function initSentry() {
   // Run self-check first
   sentryConfigSelfCheck();
 
-  // Inicjalizuj Sentry tylko jeśli DSN jest ustawiony
-  if (dsn) {
-    Sentry.init({
-      dsn,
-      environment,
-      // Tag every event with the app version for release tracking (PR-01)
-      release: `majster-ai@${APP_VERSION}`,
+  if (!dsn) {
+    if (import.meta.env.DEV) {
+      console.log('Sentry not configured (missing VITE_SENTRY_DSN)');
+    }
+    return;
+  }
 
-      // Performance Monitoring
-      integrations: [
+  // Check analytics consent BEFORE initializing non-essential integrations.
+  // Session Replay and performance tracing are non-essential under ePrivacy Art. 5(3).
+  const analyticsConsented = isAnalyticsConsented();
+
+  Sentry.init({
+    dsn,
+    environment,
+    release: `majster-ai@${APP_VERSION}`,
+
+    integrations: [
+      // Non-essential integrations: only include when analytics consent exists.
+      // Without consent, basic error capture still works (no PII beyond IP/UA in error events).
+      ...(analyticsConsented ? [
         Sentry.browserTracingIntegration(),
         Sentry.replayIntegration({
-          // Session Replay dla debugowania - tylko błędy w produkcji
           maskAllText: true,
           blockAllMedia: true,
         }),
-      ],
+      ] : []),
+    ],
 
-      // Performance monitoring - sample rate 10% w produkcji, 100% w dev
-      tracesSampleRate: environment === "production" ? 0.1 : 1.0,
+    // Performance tracing: non-essential — only with consent
+    tracesSampleRate: analyticsConsented
+      ? (environment === "production" ? 0.1 : 1.0)
+      : 0.0,
 
-      // Session Replay - tylko sesje z błędami
-      replaysSessionSampleRate: 0.0, // Nie nagrywaj zwykłych sesji
-      replaysOnErrorSampleRate: environment === "production" ? 1.0 : 0.0, // Zawsze nagrywaj sesje z błędami
+    // Session Replay: non-essential
+    replaysSessionSampleRate: 0.0,
+    replaysOnErrorSampleRate: analyticsConsented
+      ? (environment === "production" ? 1.0 : 0.0)
+      : 0.0,
 
-      // Filtruj wrażliwe dane
-      beforeSend(event) {
-        // Usuń wrażliwe dane z breadcrumbs
-        if (event.breadcrumbs) {
-          event.breadcrumbs = event.breadcrumbs.map(breadcrumb => {
-            if (breadcrumb.data) {
-              // Usuń potencjalnie wrażliwe dane
-              delete breadcrumb.data.email;
-              delete breadcrumb.data.password;
-              delete breadcrumb.data.token;
-              delete breadcrumb.data.apiKey;
-            }
-            return breadcrumb;
-          });
-        }
+    // Filtruj wrażliwe dane
+    beforeSend(event) {
+      if (event.breadcrumbs) {
+        event.breadcrumbs = event.breadcrumbs.map(breadcrumb => {
+          if (breadcrumb.data) {
+            delete breadcrumb.data.email;
+            delete breadcrumb.data.password;
+            delete breadcrumb.data.token;
+            delete breadcrumb.data.apiKey;
+          }
+          return breadcrumb;
+        });
+      }
 
-        // Usuń wrażliwe dane z contextu
-        if (event.request?.headers) {
-          delete event.request.headers['Authorization'];
-          delete event.request.headers['Cookie'];
-        }
+      if (event.request?.headers) {
+        delete event.request.headers['Authorization'];
+        delete event.request.headers['Cookie'];
+      }
 
-        return event;
-      },
+      return event;
+    },
 
-      // Ignoruj znane błędy, które nie wymagają akcji
-      ignoreErrors: [
-        // Błędy przeglądarki
-        'Non-Error promise rejection captured',
-        'ResizeObserver loop limit exceeded',
-        'ResizeObserver loop completed with undelivered notifications',
+    ignoreErrors: [
+      'Non-Error promise rejection captured',
+      'ResizeObserver loop limit exceeded',
+      'ResizeObserver loop completed with undelivered notifications',
+      'Extension context invalidated',
+      'chrome-extension://',
+      'moz-extension://',
+      'Failed to fetch',
+      'NetworkError',
+      'Network request failed',
+      'AbortError',
+    ],
+  });
 
-        // Błędy rozszerzeń
-        'Extension context invalidated',
-        'chrome-extension://',
-        'moz-extension://',
-
-        // Błędy sieciowe (transient errors)
-        'Failed to fetch',
-        'NetworkError',
-        'Network request failed',
-
-        // Aborted requests - normalne zachowanie
-        'AbortError',
-      ],
-    });
-
-    // Inicjalizuj Web Vitals monitoring ASYNCHRONOUSLY during idle time
-    // This prevents blocking the main thread during startup
+  // Web Vitals: non-essential — only with analytics consent
+  if (analyticsConsented) {
     if (typeof requestIdleCallback === 'function') {
-      requestIdleCallback(() => {
-        initWebVitals();
-      }, { timeout: 2000 });
+      requestIdleCallback(() => initWebVitals(), { timeout: 2000 });
     } else {
-      // Fallback for browsers without requestIdleCallback
       setTimeout(initWebVitals, 100);
     }
+  }
 
-    if (import.meta.env.DEV) {
-      console.log(`Sentry initialized (${environment})`);
-    }
-  } else if (import.meta.env.DEV) {
-    console.log('Sentry not configured (missing VITE_SENTRY_DSN)');
+  if (import.meta.env.DEV) {
+    console.log(`Sentry initialized (${environment}, analytics consent: ${analyticsConsented})`);
   }
 }
 

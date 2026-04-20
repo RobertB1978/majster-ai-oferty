@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Cookie, Shield, BarChart, Megaphone } from 'lucide-react';
+import { Cookie, Shield, BarChart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 
@@ -69,14 +69,17 @@ export function CookieConsent() {
     // Load Plausible only when analytics consent is granted
     if (consentData.analytics) {
       initPlausible();
+      // Enable Sentry non-essential features (web vitals) for the current session.
+      // Session Replay and performance tracing activate on next page load.
+      import('@/lib/sentry').then(m => m.enableSentryWebVitals()).catch(() => {});
     }
 
-    // Save to database for GDPR compliance
+    // Save to database for GDPR compliance (works for both anonymous and authenticated users).
+    // Anonymous insert is allowed by the anon RLS policy added in migration pr_compliance_01.
     try {
       const consentTypes = [
         { type: 'cookies_essential', granted: consentData.essential },
         { type: 'cookies_analytics', granted: consentData.analytics },
-        { type: 'cookies_marketing', granted: consentData.marketing },
       ];
 
       for (const c of consentTypes) {
@@ -95,7 +98,8 @@ export function CookieConsent() {
   };
 
   const handleAcceptAll = () => {
-    const fullConsent = { essential: true, analytics: true, marketing: true };
+    // marketing is always false: no marketing cookies are currently used
+    const fullConsent = { essential: true, analytics: true, marketing: false };
     setConsent(fullConsent);
     saveConsent(fullConsent);
   };
@@ -162,19 +166,7 @@ export function CookieConsent() {
                 {t('cookies.analyticsDescription')}
               </p>
 
-              <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center gap-2">
-                  <Megaphone className="h-4 w-4 text-warning" />
-                  <Label className="font-medium">{t('cookies.marketing')}</Label>
-                </div>
-                <Switch
-                  checked={consent.marketing}
-                  onCheckedChange={(checked) => setConsent({ ...consent, marketing: checked })}
-                />
-              </div>
-              <p className="text-xs text-muted-foreground ml-6">
-                {t('cookies.marketingDescription')}
-              </p>
+              {/* Marketing cookies are not currently used — toggle intentionally omitted. */}
             </div>
           )}
 
