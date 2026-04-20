@@ -39,12 +39,15 @@ const localStorageMock = {
 };
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-// Mock ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+// Mock ResizeObserver — must use a regular function (not arrow) so Radix UI
+// components can call it with `new ResizeObserver()`.
+global.ResizeObserver = vi.fn().mockImplementation(function MockResizeObserver() {
+  return {
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  };
+}) as unknown as typeof ResizeObserver;
 
 // Mock IntersectionObserver — must use a regular function (not arrow) so Framer
 // Motion's whileInView feature can call it with `new IntersectionObserver()`.
