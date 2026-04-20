@@ -4231,7 +4231,8 @@
     "photosTitle": "Фото проекту",
     "cancelAcceptBtn": "Скасувати акцепт",
     "cancelAcceptCountdown": "Можна скасувати акцепт протягом: {{seconds}} с",
-    "cancelWindowExpired": "Час для скасування акцепту минув."
+    "cancelWindowExpired": "Час для скасування акцепту минув.",
+    "signatureLabel": "Підпис підтвердження (необов'язково)"
   },
   "offerPhotos": {
     "sectionTitle": "Фотографії до пропозиції",

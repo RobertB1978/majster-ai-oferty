@@ -4231,7 +4231,8 @@
     "photosTitle": "Zdjęcia z realizacji",
     "cancelAcceptBtn": "Cofnij akceptację",
     "cancelAcceptCountdown": "Możesz cofnąć akceptację przez: {{seconds}} s",
-    "cancelWindowExpired": "Czas na cofnięcie akceptacji minął."
+    "cancelWindowExpired": "Czas na cofnięcie akceptacji minął.",
+    "signatureLabel": "Podpis potwierdzający akceptację (opcjonalnie)"
   },
   "offerPhotos": {
     "sectionTitle": "Zdjęcia do oferty",

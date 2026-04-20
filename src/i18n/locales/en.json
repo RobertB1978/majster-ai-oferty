@@ -4231,7 +4231,8 @@
     "photosTitle": "Project photos",
     "cancelAcceptBtn": "Undo acceptance",
     "cancelAcceptCountdown": "You can undo your acceptance for: {{seconds}} s",
-    "cancelWindowExpired": "The undo window has expired."
+    "cancelWindowExpired": "The undo window has expired.",
+    "signatureLabel": "Acceptance signature (optional)"
   },
   "offerPhotos": {
     "sectionTitle": "Offer photos",

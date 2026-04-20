@@ -58,6 +58,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { MEDIA_BUCKET } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { SignatureCanvas } from '@/components/offers/SignatureCanvas';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
@@ -240,6 +241,7 @@ export default function OfferPublicAccept() {
   const [searchParams] = useSearchParams();
 
   const [comment, setComment] = useState('');
+  const [signatureData, setSignatureData] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [actionResult, setActionResult] = useState<'ACCEPTED' | 'REJECTED' | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -413,6 +415,7 @@ export default function OfferPublicAccept() {
         p_action: string;
         p_comment: string | null;
         p_accept_token?: string;
+        p_signature_data?: string | null;
       } = {
         p_token: token,
         p_action: action,
@@ -420,6 +423,9 @@ export default function OfferPublicAccept() {
       };
       if (acceptTokenOverride) {
         rpcParams.p_accept_token = acceptTokenOverride;
+      }
+      if (action === 'ACCEPT' && signatureData) {
+        rpcParams.p_signature_data = signatureData;
       }
 
       const { data: raw, error } = await supabase.rpc(
@@ -792,6 +798,14 @@ export default function OfferPublicAccept() {
                   maxLength={1000}
                   disabled={submitting}
                 />
+              </div>
+
+              {/* Signature capture (optional) */}
+              <div className="space-y-1">
+                <label className="text-sm font-medium">
+                  {t('publicOffer.signatureLabel')}
+                </label>
+                <SignatureCanvas onSignatureChange={setSignatureData} />
               </div>
 
               {/* Action error */}
