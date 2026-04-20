@@ -3,15 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, FileText, Shield, Server, Lock, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ExternalLink, FileText, Shield, Server, Lock, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { getLegalEffectiveDate } from '@/lib/legalVersions';
+import { usePublicSubprocessors } from '@/hooks/usePublicSubprocessors';
 
 export default function DPA() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const lastUpdated = getLegalEffectiveDate('dpa', i18n.language);
+  const { data: subprocessors = [], isError: subprocessorsError, isLoading: subprocessorsLoading } = usePublicSubprocessors();
 
-  const sections = [
+  const sectionsBefore = [
     {
       icon: FileText,
       title: t('legal.dpa.s1title'),
@@ -27,11 +29,9 @@ export default function DPA() {
       title: t('legal.dpa.s3title'),
       content: t('legal.dpa.s3content'),
     },
-    {
-      icon: Server,
-      title: t('legal.dpa.s4title'),
-      content: t('legal.dpa.s4content'),
-    },
+  ];
+
+  const sectionsAfter = [
     {
       icon: AlertTriangle,
       title: t('legal.dpa.s5title'),
@@ -83,7 +83,97 @@ export default function DPA() {
           )}
 
           <div className="space-y-6">
-            {sections.map((section) => (
+            {sectionsBefore.map((section) => (
+              <Card key={section.title} className="overflow-hidden">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-3 text-lg">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                      <section.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    {section.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
+                    {section.content}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+
+            {/* Section 4 — Subprocessors: dynamic from DB */}
+            <Card className="overflow-hidden">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-3 text-lg">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                    <Server className="h-5 w-5 text-primary" />
+                  </div>
+                  {t('legal.dpa.s4title')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {subprocessorsError && (
+                  <>
+                    <p className="text-sm text-muted-foreground mb-3">{t('legal.dpa.s4loadError')}</p>
+                    <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
+                      {t('legal.dpa.s4content')}
+                    </p>
+                  </>
+                )}
+                {!subprocessorsError && !subprocessorsLoading && subprocessors.length === 0 && (
+                  <p className="text-muted-foreground">{t('legal.dpa.s4emptyState')}</p>
+                )}
+                {!subprocessorsError && subprocessors.length > 0 && (
+                  <div className="space-y-4">
+                    {subprocessors.map((sp) => (
+                      <div key={sp.slug} className="border rounded-lg p-4 space-y-1.5">
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <span className="font-medium">{sp.name}</span>
+                          <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                            {sp.category}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{sp.purpose}</p>
+                        {sp.location && (
+                          <p className="text-xs text-muted-foreground">
+                            {sp.location}
+                            {sp.transfer_basis ? ` — ${sp.transfer_basis}` : ''}
+                          </p>
+                        )}
+                        {(sp.dpa_url || sp.privacy_url) && (
+                          <div className="flex gap-3 pt-1">
+                            {sp.dpa_url && (
+                              <a
+                                href={sp.dpa_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                              >
+                                {t('legal.dpa.s4dpaLink')}
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            )}
+                            {sp.privacy_url && (
+                              <a
+                                href={sp.privacy_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                              >
+                                {t('legal.dpa.s4privacyLink')}
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {sectionsAfter.map((section) => (
               <Card key={section.title} className="overflow-hidden">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-3 text-lg">

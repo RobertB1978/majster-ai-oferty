@@ -3726,7 +3726,11 @@
       "s5title": "5. Obligations of the Parties",
       "s5content": "Processor obligations:\n• Process data only on documented Controller instructions\n• Maintain staff confidentiality\n• Assist Controller in fulfilling data subject rights\n• Notify of data breaches within 72 hours\n• Delete data upon agreement termination\n\nController obligations:\n• Establish legal basis for processing\n• Inform data subjects\n• Fulfil data subject rights",
       "s6title": "6. Audits & Inspections",
-      "s6content": "The Controller may:\n• Request information about processing\n• Conduct audits (once per year, with 30 days notice)\n• Inspect security documentation\n\nAudit costs are borne by the initiating party, unless the audit reveals violations."
+      "s6content": "The Controller may:\n• Request information about processing\n• Conduct audits (once per year, with 30 days notice)\n• Inspect security documentation\n\nAudit costs are borne by the initiating party, unless the audit reveals violations.",
+      "s4emptyState": "No registered subprocessors.",
+      "s4loadError": "Could not load the subprocessors list. Static version shown below:",
+      "s4dpaLink": "DPA",
+      "s4privacyLink": "Privacy Policy"
     },
     "gdpr": {
       "pageTitle": "GDPR Centre",
