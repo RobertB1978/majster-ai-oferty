@@ -35,6 +35,13 @@
       "required_columns": ["id", "user_id", "company_name", "created_at"],
       "rls_required": true,
       "notes": "RLS: user_id = auth.uid(). Auto-created on auth.users INSERT via trigger."
+    },
+    {
+      "name": "dsar_requests",
+      "migration_source": "20260420190000_pr_l3_dsar_requests.sql",
+      "required_columns": ["id", "requester_user_id", "request_type", "status", "due_at", "created_at"],
+      "rls_required": true,
+      "notes": "PR-L3 DSAR Inbox. RLS: requester_user_id=auth.uid() (user own); admin via user_roles. No DELETE policy — soft-close via status. SLA: due_at = created_at + 30 days."
     }
   ]
 }
