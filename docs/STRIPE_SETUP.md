@@ -346,6 +346,7 @@ More test cards: https://stripe.com/docs/testing
 ### Checklist
 
 - [ ] Stripe account created and activated
+- [ ] Stripe Tax activated (Stripe Dashboard → Tax → Get started → Activate) — required for automatic_tax
 - [ ] Products created in Stripe
 - [ ] Prices created (monthly + yearly for each plan)
 - [ ] Environment variables set (both Supabase and Vercel)

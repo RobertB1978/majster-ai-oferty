@@ -165,6 +165,10 @@ const handler = async (req: Request): Promise<Response> => {
       allow_promotion_codes: true,
       // Collect billing address
       billing_address_collection: "required",
+      // Polish B2B compliance: collect NIP / EU VAT number
+      tax_id_collection: { enabled: true },
+      // Automatic tax calculation based on customer location
+      automatic_tax: { enabled: true },
       // NIE ustawiamy customer_email gdy customer jest już podany —
       // Stripe zwraca błąd 400 gdy obie wartości są obecne jednocześnie.
     });

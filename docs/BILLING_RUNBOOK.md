@@ -42,22 +42,25 @@ Wzorzec: `price_` + min. 14 znaków alfanumerycznych bez dodatkowych podkreślni
         VITE_STRIPE_PRICE_ENTERPRISE_MONTHLY=...         ← opcjonalny
 [ ] 4. Ustaw sekret Stripe w Supabase → Edge Functions → Secrets:
         STRIPE_SECRET_KEY=sk_test_...   (test) lub sk_live_... (prod)
-[ ] 5. Skonfiguruj webhook w Stripe Dashboard → Developers → Webhooks:
+[ ] 5. Aktywuj Stripe Tax (wymagane dla automatic_tax):
+        Stripe Dashboard → Tax → Get started → Activate
+        Bez tego checkout zwróci błąd Stripe API.
+[ ] 6. Skonfiguruj webhook w Stripe Dashboard → Developers → Webhooks:
         URL: https://<PROJECT_REF>.supabase.co/functions/v1/stripe-webhook
         Zdarzenia: checkout.session.completed, customer.subscription.*,
                    invoice.payment_succeeded, invoice.payment_failed
         Po dodaniu: skopiuj Webhook signing secret (whsec_...)
-[ ] 6. Ustaw sekret webhooka w Supabase → Edge Functions → Secrets:
+[ ] 7. Ustaw sekret webhooka w Supabase → Edge Functions → Secrets:
         STRIPE_WEBHOOK_SECRET=whsec_...
-[ ] 7. Ustaw sekret STRIPE_PRICE_PLAN_MAP w Supabase → Edge Functions → Secrets:
+[ ] 8. Ustaw sekret STRIPE_PRICE_PLAN_MAP w Supabase → Edge Functions → Secrets:
         Wartość to obiekt JSON mapujący prawdziwe Stripe Price IDs na nazwy planów.
         Przykład (skopiuj i wypełnij swoimi ID z kroku 2):
           {"price_1MkWBNLkBkqDaVD26L6D3Dz": "pro", "price_1DEFghijKLMN456789": "business"}
         WAŻNE: Jeśli ten sekret nie jest ustawiony, webhook zwróci HTTP 500
         i Stripe będzie ponawiał próby — to celowe (fail loudly), dopóki
         operator nie skonfiguruje mapowania.
-[ ] 8. Zrób test checkout (sekcja 4 poniżej)
-[ ] 9. Przełącz Stripe na LIVE MODE i powtórz kroki 2-8 z kluczami live_
+[ ] 9. Zrób test checkout (sekcja 4 poniżej)
+[ ] 10. Przełącz Stripe na LIVE MODE i powtórz kroki 2-9 z kluczami live_
 ```
 
 > **Uwaga:** Dopóki VITE_STRIPE_PRICE_PRO_MONTHLY nie zawiera prawdziwego Stripe Price ID
