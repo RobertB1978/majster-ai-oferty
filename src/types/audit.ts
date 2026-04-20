@@ -29,7 +29,11 @@ export type ComplianceEventType =
   | 'subscription.change'
   | 'settings.update'
   | 'document.upload'
-  | 'document.delete';
+  | 'document.delete'
+  | 'dsar.request_created'
+  | 'dsar.status_changed'
+  | 'dsar.resolved'
+  | 'dsar.rejected';
 
 export type ComplianceAuditSource = 'frontend' | 'edge_function' | 'migration' | 'admin';
 

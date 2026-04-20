@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ArrowLeft,
@@ -13,7 +14,9 @@ import {
   FileEdit,
   AlertTriangle,
   CheckCircle2,
-  Loader2
+  Loader2,
+  Clock,
+  InboxIcon,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,23 +32,63 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useLogAuditEvent } from '@/hooks/useAuditLog';
+import { useCreateDsarRequest, useUserDsarRequests } from '@/hooks/useDsarRequests';
 import { logger } from '@/lib/logger';
+import type { DsarRequest } from '@/types/dsar';
+
+// ── helpers ───────────────────────────────────────────────────────────────────
+
+const STATUS_LABELS: Record<DsarRequest['status'], string> = {
+  open: 'Otwarte',
+  in_progress: 'W trakcie',
+  waiting_for_user: 'Oczekuje na Ciebie',
+  resolved: 'Rozwiązane',
+  rejected: 'Odrzucone',
+};
+
+const STATUS_VARIANT: Record<
+  DsarRequest['status'],
+  'default' | 'secondary' | 'destructive' | 'outline'
+> = {
+  open: 'default',
+  in_progress: 'secondary',
+  waiting_for_user: 'outline',
+  resolved: 'secondary',
+  rejected: 'destructive',
+};
+
+const TYPE_LABELS: Record<DsarRequest['request_type'], string> = {
+  access: 'Dostęp do danych',
+  deletion: 'Usunięcie danych',
+  rectification: 'Sprostowanie danych',
+  portability: 'Przeniesienie danych',
+  restriction: 'Ograniczenie przetwarzania',
+  objection: 'Sprzeciw',
+  other: 'Inne',
+};
+
+function daysUntil(dateStr: string): number {
+  return Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86_400_000);
+}
+
+// ── component ─────────────────────────────────────────────────────────────────
 
 export default function GDPRCenter() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
   const logAudit = useLogAuditEvent();
+  const createDsar = useCreateDsarRequest();
+  const { data: dsarRequests, isLoading: dsarLoading } = useUserDsarRequests();
+
   const [isExporting, setIsExporting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleExportData = async () => {
     if (!user) return;
 
     setIsExporting(true);
     try {
-      // Fetch all user data
       const [
         { data: profile },
         { data: clients },
@@ -80,7 +123,6 @@ export default function GDPRCenter() {
         consents,
       };
 
-      // Create and download JSON file
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -106,35 +148,21 @@ export default function GDPRCenter() {
     }
   };
 
+  // Replaces the old notification hack — creates a real dsar_requests record.
   const handleDeleteRequest = async () => {
     if (!user) return;
-
-    setIsDeleting(true);
     try {
-      await logAudit.mutateAsync({
-        action: 'user.data_delete_request',
-        entityType: 'user',
-        entityId: user.id,
+      await createDsar.mutateAsync({
+        requestType: 'deletion',
+        description: `Żądanie usunięcia konta złożone przez użytkownika ${user.email} zgodnie z art. 17 RODO.`,
       });
-
-      // Create a notification for admin (stored in PL as system data)
-      await supabase.from('notifications').insert({
-        user_id: user.id,
-        title: 'Żądanie usunięcia konta',
-        message: `Użytkownik ${user.email} złożył żądanie usunięcia konta zgodnie z art. 17 RODO.`,
-        type: 'warning',
-      });
-
       toast.success(t('legal.gdpr.toast.deleteSuccess'), {
         description: t('legal.gdpr.toast.deleteSuccessDesc'),
       });
-
       setShowDeleteDialog(false);
     } catch (error) {
       logger.error('Delete request error:', error);
       toast.error(t('legal.gdpr.toast.deleteError'));
-    } finally {
-      setIsDeleting(false);
     }
   };
 
@@ -224,7 +252,8 @@ export default function GDPRCenter() {
             </CardContent>
           </Card>
 
-          <div className="space-y-4">
+          {/* Rights cards */}
+          <div className="space-y-4 mb-8">
             {rights.map((right) => (
               <Card key={right.title}>
                 <CardHeader className="pb-3">
@@ -253,7 +282,69 @@ export default function GDPRCenter() {
             ))}
           </div>
 
-          <div className="mt-8 p-6 rounded-xl bg-muted/50">
+          {/* My DSAR requests */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <InboxIcon className="h-5 w-5 text-primary" />
+                Moje wnioski RODO
+              </CardTitle>
+              <CardDescription>
+                Historia złożonych przez Ciebie wniosków o prawa do danych. Termin realizacji: 30 dni od złożenia.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {dsarLoading && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Ładowanie wniosków…
+                </div>
+              )}
+              {!dsarLoading && (!dsarRequests || dsarRequests.length === 0) && (
+                <p className="text-sm text-muted-foreground py-4">
+                  Nie złożyłeś jeszcze żadnego wniosku RODO.
+                </p>
+              )}
+              {!dsarLoading && dsarRequests && dsarRequests.length > 0 && (
+                <div className="space-y-3">
+                  {dsarRequests.map((req) => {
+                    const daysLeft = daysUntil(req.due_at);
+                    const overdue = daysLeft < 0;
+                    return (
+                      <div
+                        key={req.id}
+                        className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 rounded-lg border p-3 text-sm"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium">{TYPE_LABELS[req.request_type]}</p>
+                          <p className="text-muted-foreground text-xs mt-0.5">
+                            Złożono: {new Date(req.created_at).toLocaleDateString('pl-PL')}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Badge variant={STATUS_VARIANT[req.status]}>
+                            {STATUS_LABELS[req.status]}
+                          </Badge>
+                          {req.status !== 'resolved' && req.status !== 'rejected' && (
+                            <span
+                              className={`flex items-center gap-1 text-xs ${overdue ? 'text-destructive' : 'text-muted-foreground'}`}
+                            >
+                              <Clock className="h-3 w-3" />
+                              {overdue
+                                ? `Termin przekroczony o ${Math.abs(daysLeft)} dni`
+                                : `${daysLeft} dni do terminu`}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <div className="mt-2 p-6 rounded-xl bg-muted/50">
             <div className="flex gap-4">
               <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
               <div>
@@ -295,11 +386,11 @@ export default function GDPRCenter() {
             <AlertDialogCancel>{t('legal.gdpr.deleteDialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteRequest}
-              disabled={isDeleting}
+              disabled={createDsar.isPending}
               className="bg-destructive hover:bg-destructive/90"
             >
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isDeleting ? t('legal.gdpr.deleteDialog.submitting') : t('legal.gdpr.deleteDialog.submit')}
+              {createDsar.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {createDsar.isPending ? t('legal.gdpr.deleteDialog.submitting') : t('legal.gdpr.deleteDialog.submit')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
