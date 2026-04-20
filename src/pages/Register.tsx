@@ -6,16 +6,19 @@ import { CANONICAL_HOME } from '@/config/featureFlags';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
 import { validatePasswordStrength } from '@/lib/validations';
-import { Wrench, Mail, Lock, Phone } from 'lucide-react';
+import { Wrench, Mail, Lock, Phone, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { TurnstileWidget, isCaptchaEnabled } from '@/components/auth/TurnstileWidget';
 import { Helmet } from 'react-helmet-async';
 import { getSiteUrl } from '@/lib/siteUrl';
 import { trackEvent, ANALYTICS_EVENTS } from '@/lib/analytics';
+import { fetchSignupRequiredDocs, storePendingAcceptances } from '@/lib/legal/acceptance';
+import type { SignupLegalDoc } from '@/lib/legal/acceptance';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -25,6 +28,13 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [termsChecked, setTermsChecked] = useState(false);
+  const [privacyChecked, setPrivacyChecked] = useState(false);
+  const [termsError, setTermsError] = useState(false);
+  const [privacyError, setPrivacyError] = useState(false);
+  const [legalDocs, setLegalDocs] = useState<SignupLegalDoc[]>([]);
+  const [legalLoading, setLegalLoading] = useState(true);
+  const [legalFetchError, setLegalFetchError] = useState(false);
   const { register, user } = useAuth();
   const navigate = useNavigate();
 
@@ -33,6 +43,29 @@ export default function Register() {
       navigate(CANONICAL_HOME);
     }
   }, [user, navigate]);
+
+  const loadLegalDocs = () => {
+    setLegalLoading(true);
+    setLegalFetchError(false);
+    let active = true;
+    fetchSignupRequiredDocs()
+      .then((docs) => {
+        if (!active) return;
+        // Both terms and privacy must be present; treat partial as a fetch error.
+        const hasTerms = docs.some(d => d.slug === 'terms');
+        const hasPrivacy = docs.some(d => d.slug === 'privacy');
+        if (hasTerms && hasPrivacy) {
+          setLegalDocs(docs);
+        } else {
+          setLegalFetchError(true);
+        }
+      })
+      .catch(() => { if (active) setLegalFetchError(true); })
+      .finally(() => { if (active) setLegalLoading(false); });
+    return () => { active = false; };
+  };
+
+  useEffect(loadLegalDocs, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,6 +117,13 @@ export default function Register() {
       return;
     }
 
+    // Legal acceptance validation
+    const missingTerms = !termsChecked;
+    const missingPrivacy = !privacyChecked;
+    if (missingTerms) setTermsError(true);
+    if (missingPrivacy) setPrivacyError(true);
+    if (missingTerms || missingPrivacy) return;
+
     trackEvent(ANALYTICS_EVENTS.SIGNUP_STARTED);
     setIsLoading(true);
     const { error } = await register(email, password);
@@ -103,6 +143,12 @@ export default function Register() {
     }
 
     trackEvent(ANALYTICS_EVENTS.SIGNUP_COMPLETED);
+    // Store legal acceptances in localStorage; they will be written to legal_acceptances
+    // when the user confirms their email and a real authenticated session is established
+    // (AuthContext.onAuthStateChange 'SIGNED_IN' handler picks them up).
+    if (legalDocs.length > 0) {
+      storePendingAcceptances(legalDocs);
+    }
     setIsLoading(false);
     // Supabase wymaga potwierdzenia emaila — kierujemy użytkownika na ekran oczekiwania,
     // NIE do aplikacji. Konto nie jest w pełni aktywne przed kliknięciem w link.
@@ -195,6 +241,111 @@ export default function Register() {
                 />
               </div>
             </div>
+            {/* Legal acceptance — binding for signup */}
+            <div className="space-y-3 rounded-md border border-border bg-muted/30 p-4">
+              {legalFetchError && (
+                <div className="flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>
+                    {t('auth.legalConsent.fetchError')}{' '}
+                    <button
+                      type="button"
+                      className="underline hover:no-underline"
+                      onClick={loadLegalDocs}
+                    >
+                      {t('auth.legalConsent.retryFetch')}
+                    </button>
+                  </span>
+                </div>
+              )}
+
+              {/* Terms of Service checkbox */}
+              <div className="space-y-1">
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="termsAccepted"
+                    checked={termsChecked}
+                    onCheckedChange={(checked) => {
+                      setTermsChecked(checked === true);
+                      if (checked) setTermsError(false);
+                    }}
+                    disabled={legalLoading || legalFetchError}
+                    className="mt-0.5"
+                    aria-required="true"
+                  />
+                  <label
+                    htmlFor="termsAccepted"
+                    className="cursor-pointer text-sm leading-relaxed"
+                  >
+                    {t('auth.legalConsent.termsPrefix')}{' '}
+                    <Link
+                      to="/terms"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline hover:no-underline"
+                    >
+                      {t('auth.legalConsent.termsLinkText')}
+                    </Link>
+                    {' '}{t('auth.legalConsent.termsSuffix')}
+                    {legalDocs.find(d => d.slug === 'terms') && (
+                      <span className="ml-1 text-xs text-muted-foreground">
+                        (v{legalDocs.find(d => d.slug === 'terms')!.version})
+                      </span>
+                    )}
+                    <span className="ml-1 text-destructive" aria-hidden="true">*</span>
+                  </label>
+                </div>
+                {termsError && (
+                  <p className="pl-7 text-xs text-destructive" role="alert">
+                    {t('auth.legalConsent.termsRequired')}
+                  </p>
+                )}
+              </div>
+
+              {/* Privacy Policy checkbox */}
+              <div className="space-y-1">
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="privacyAccepted"
+                    checked={privacyChecked}
+                    onCheckedChange={(checked) => {
+                      setPrivacyChecked(checked === true);
+                      if (checked) setPrivacyError(false);
+                    }}
+                    disabled={legalLoading || legalFetchError}
+                    className="mt-0.5"
+                    aria-required="true"
+                  />
+                  <label
+                    htmlFor="privacyAccepted"
+                    className="cursor-pointer text-sm leading-relaxed"
+                  >
+                    {t('auth.legalConsent.privacyPrefix')}{' '}
+                    <Link
+                      to="/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline hover:no-underline"
+                    >
+                      {t('auth.legalConsent.privacyLinkText')}
+                    </Link>
+                    {' '}{t('auth.legalConsent.privacySuffix')}
+                    {legalDocs.find(d => d.slug === 'privacy') && (
+                      <span className="ml-1 text-xs text-muted-foreground">
+                        (v{legalDocs.find(d => d.slug === 'privacy')!.version})
+                      </span>
+                    )}
+                    <span className="ml-1 text-destructive" aria-hidden="true">*</span>
+                  </label>
+                </div>
+                {privacyError && (
+                  <p className="pl-7 text-xs text-destructive" role="alert">
+                    {t('auth.legalConsent.privacyRequired')}
+                  </p>
+                )}
+              </div>
+            </div>
+
             <TurnstileWidget
               onVerify={(token) => setCaptchaToken(token)}
               onError={() => setCaptchaToken(null)}

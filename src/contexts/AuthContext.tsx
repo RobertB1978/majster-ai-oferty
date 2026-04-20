@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { writePendingAcceptances } from '@/lib/legal/acceptance';
 
 /** Safety timeout — if auth state is not resolved within this time, force isLoading=false.
  *  Prevents the app from being stuck on the loading spinner forever (e.g. Supabase unreachable). */
@@ -47,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         if (!isMounted) return;
         // Always update session/user on auth events (login, logout, token refresh)
         setSession(session);
@@ -56,6 +57,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           resolvedRef.current = true;
           setIsLoading(false);
           boot('BOOT_6', 'Auth init done (via listener) — user=' + (session?.user?.email ?? 'anonymous'));
+        }
+        // Write any pending legal acceptances stored during signup (deferred because
+        // legal_acceptances INSERT requires an authenticated session, which is only
+        // available after email confirmation fires SIGNED_IN).
+        if (event === 'SIGNED_IN' && session?.user?.id) {
+          writePendingAcceptances(session.user.id).catch((err: unknown) => {
+            logger.error('[legal] pending acceptance write failed:', err);
+          });
         }
       }
     );

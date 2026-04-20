@@ -220,6 +220,18 @@
       "resentCooldown": "Poczekaj {{seconds}} s",
       "backToLogin": "Wróć do logowania",
       "noEmailError": "Brak adresu email. Wróć do rejestracji."
+    },
+    "legalConsent": {
+      "termsPrefix": "Akceptuję",
+      "termsLinkText": "Regulamin Serwisu",
+      "termsSuffix": "Majster.AI.",
+      "privacyPrefix": "Zapoznałem/zapoznałam się z",
+      "privacyLinkText": "Polityką Prywatności",
+      "privacySuffix": "Majster.AI i wyrażam zgodę na przetwarzanie moich danych osobowych w celach opisanych w tej Polityce.",
+      "termsRequired": "Wymagana akceptacja Regulaminu Serwisu",
+      "privacyRequired": "Wymagana akceptacja Polityki Prywatności",
+      "fetchError": "Nie można załadować dokumentów prawnych. Sprawdź połączenie i spróbuj ponownie.",
+      "retryFetch": "Spróbuj ponownie"
     }
   },
   "dashboard": {
