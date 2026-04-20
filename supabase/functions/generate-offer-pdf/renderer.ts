@@ -439,6 +439,7 @@ interface OfferPdfLabels {
   labour: string;
   net: string;
   vat: string;
+  mixedVat: string;
   totalGross: string;
   terms: string;
   onlineAcceptance: string;
@@ -464,6 +465,7 @@ const LABELS: Record<string, OfferPdfLabels> = {
     labour: "Robocizna",
     net: "Netto",
     vat: "VAT",
+    mixedVat: "Różne stawki VAT",
     totalGross: "RAZEM BRUTTO",
     terms: "WARUNKI",
     onlineAcceptance: "AKCEPTACJA ONLINE",
@@ -487,6 +489,7 @@ const LABELS: Record<string, OfferPdfLabels> = {
     labour: "Labour",
     net: "Net",
     vat: "VAT",
+    mixedVat: "Mixed VAT rates",
     totalGross: "TOTAL GROSS",
     terms: "TERMS",
     onlineAcceptance: "ONLINE ACCEPTANCE",
@@ -510,6 +513,7 @@ const LABELS: Record<string, OfferPdfLabels> = {
     labour: "Робота",
     net: "Нетто",
     vat: "ПДВ",
+    mixedVat: "Різні ставки ПДВ",
     totalGross: "РАЗОМ БРУТТО",
     terms: "УМОВИ",
     onlineAcceptance: "ПРИЙНЯТТЯ ОНЛАЙН",
@@ -706,7 +710,7 @@ function buildTotals(quote: PDFQuoteData, labels: OfferPdfLabels, locale?: strin
             e(Text, { style: styles.totalValue }, "zw."),
           )
         : e(View, { style: styles.totalRow },
-            e(Text, { style: styles.totalLabel }, `${labels.vat} ${quote.vatRate ?? 0}%`),
+            e(Text, { style: styles.totalLabel }, quote.hasMixedVatRates ? labels.mixedVat : `${labels.vat} ${quote.vatRate ?? 0}%`),
             e(Text, { style: styles.totalValue }, formatPLN(quote.vatAmount, locale)),
           ),
     ),

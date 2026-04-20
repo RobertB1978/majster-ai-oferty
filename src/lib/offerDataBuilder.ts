@@ -79,6 +79,11 @@ export interface QuoteData {
   vatAmount: number;
   /** Gross total including VAT (equals total when VAT-exempt) */
   grossTotal: number;
+  /**
+   * true when items carry more than one distinct VAT rate.
+   * Renderer should show "Różne stawki VAT" instead of a single rate label.
+   */
+  hasMixedVatRates?: boolean;
 }
 
 /**

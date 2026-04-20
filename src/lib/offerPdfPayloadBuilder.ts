@@ -196,6 +196,8 @@ export async function buildOfferPdfPayloadFromOffer(
   }): QuoteData | null {
     if (items.length === 0) return null;
     const vatRates = items.map((it) => it.vat_rate).filter((r): r is number => r !== null);
+    const distinctRates = [...new Set(vatRates)];
+    const hasMixedVatRates = distinctRates.length > 1;
     const vatRate = vatRates.length > 0 ? vatRates[0] : null;
     const isVatExempt = vatRate === null;
     const netTotal = overrideTotals?.net ?? items.reduce((s, it) => s + it.line_total_net, 0);
@@ -223,6 +225,7 @@ export async function buildOfferPdfPayloadFromOffer(
       netTotal,
       vatAmount,
       grossTotal,
+      hasMixedVatRates: hasMixedVatRates || undefined,
     };
   }
 

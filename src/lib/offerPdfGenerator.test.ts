@@ -248,6 +248,27 @@ describe('PDF compliance fields (Δ3)', () => {
     const lines = getPdfComplianceLines(payload);
     expect(lines.vatRateLine).toBeNull();
   });
+
+  it('should show "Różne stawki VAT" label when hasMixedVatRates is true', () => {
+    const payload = createMockPayload({
+      quote: {
+        positions: [],
+        summaryMaterials: 0,
+        summaryLabor: 0,
+        marginPercent: 0,
+        total: 1000,
+        vatRate: 23,
+        isVatExempt: false,
+        netTotal: 1000,
+        vatAmount: 150,
+        grossTotal: 1150,
+        hasMixedVatRates: true,
+      },
+    });
+    const lines = getPdfComplianceLines(payload);
+    expect(lines.vatRateLine).toBe('Różne stawki VAT:');
+    expect(lines.vatRateLine).not.toContain('23%');
+  });
 });
 
 describe('Gate 1 prestige — OFFER_PDF_GENERATED analytics', () => {
