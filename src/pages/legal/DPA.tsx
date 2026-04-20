@@ -4,11 +4,12 @@ import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, FileText, Shield, Server, Lock, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { getLegalEffectiveDate } from '@/lib/legalVersions';
 
 export default function DPA() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const lastUpdated = new Date().toLocaleDateString(i18n.language === 'pl' ? 'pl-PL' : i18n.language === 'uk' ? 'uk-UA' : 'en-GB');
+  const lastUpdated = getLegalEffectiveDate('dpa', i18n.language);
 
   const sections = [
     {
