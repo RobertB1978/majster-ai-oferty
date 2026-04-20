@@ -79,6 +79,7 @@ function emptyForm(offerId: string | null): WizardFormData {
     terms: '',
     deadlineText: '',
     validUntil: '',
+    marginPercent: 0,
   };
 }
 
@@ -126,6 +127,7 @@ export function OfferWizard({ offerId }: Props) {
         terms: existing.terms ?? '',
         deadlineText: existing.deadline_text ?? '',
         validUntil: existing.valid_until ?? '',
+        marginPercent: existing.margin_percent ?? 0,
       });
     }
   }, [existing]);

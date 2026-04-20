@@ -9,7 +9,12 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle, Eye, Send, Layers } from 'lucide-react';
 
 import type { WizardFormData } from '@/hooks/useOfferWizard';
-import { computeTotals, computeTotalsForItems } from '@/hooks/useOfferWizard';
+import {
+  computeTotals,
+  computeTotalsForItems,
+  applyMargin,
+  clampMarginPercent,
+} from '@/hooks/useOfferWizard';
 
 import { useClients } from '@/hooks/useClients';
 import { Button } from '@/components/ui/button';
@@ -117,6 +122,33 @@ export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isS
             className="text-sm resize-none"
           />
         </div>
+
+        {/* PR-FIN-10: offer-level margin (narzut) — single number input */}
+        <div className="space-y-1">
+          <Label htmlFor="offer-margin" className="text-sm">
+            {t('offerWizard.reviewStep.marginPercent')}
+          </Label>
+          <div className="flex items-center gap-2">
+            <Input
+              id="offer-margin"
+              type="number"
+              inputMode="decimal"
+              min={0}
+              max={100}
+              step={1}
+              value={Number.isFinite(form.marginPercent) ? form.marginPercent : 0}
+              onChange={(e) => {
+                const parsed = parseFloat(e.target.value);
+                onChange({ marginPercent: clampMarginPercent(parsed) });
+              }}
+              className="w-24 text-sm"
+            />
+            <span className="text-sm text-muted-foreground">%</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {t('offerWizard.reviewStep.marginPercentHint')}
+          </p>
+        </div>
       </div>
 
       {/* Summary */}
@@ -127,30 +159,50 @@ export function WizardStepReview({ form, onChange, onSave, onPreviewAndSend, isS
         </div>
 
         {/* No-variant summary */}
-        {!hasVariants && (
-          <>
-            <div className="flex justify-between px-4 py-2.5">
-              <span className="text-muted-foreground">{t('offerWizard.reviewStep.itemCount')}</span>
-              <span className="font-medium">{form.items.length}</span>
-            </div>
-            <div className="flex justify-between px-4 py-2.5">
-              <span className="text-muted-foreground">{t('common.net')}</span>
-              <span className="font-medium">{formatMoney(totals.total_net, i18n.language)} zł</span>
-            </div>
-            <div className="flex justify-between px-4 py-2.5">
-              <span className="text-muted-foreground">VAT</span>
-              <span>{formatMoney(totals.total_vat, i18n.language)} zł</span>
-            </div>
-            <div className="flex justify-between px-4 py-2.5 bg-muted rounded-b-lg">
-              <span className="font-semibold">{t('common.gross')}</span>
-              <span className="font-bold text-lg">{formatMoney(totals.total_gross, i18n.language)} zł</span>
-            </div>
-          </>
-        )}
+        {!hasVariants && (() => {
+          const rawTotals = computeTotalsForItems(form.items);
+          const marginAmount = totals.total_net - rawTotals.total_net;
+          const showMarginLine = clampMarginPercent(form.marginPercent) > 0;
+          return (
+            <>
+              <div className="flex justify-between px-4 py-2.5">
+                <span className="text-muted-foreground">{t('offerWizard.reviewStep.itemCount')}</span>
+                <span className="font-medium">{form.items.length}</span>
+              </div>
+              {showMarginLine && (
+                <>
+                  <div className="flex justify-between px-4 py-2.5">
+                    <span className="text-muted-foreground">{t('offerWizard.reviewStep.subtotalNet')}</span>
+                    <span>{formatMoney(rawTotals.total_net, i18n.language)} zł</span>
+                  </div>
+                  <div className="flex justify-between px-4 py-2.5">
+                    <span className="text-muted-foreground">
+                      {t('offerWizard.reviewStep.marginLine', { percent: clampMarginPercent(form.marginPercent) })}
+                    </span>
+                    <span>+{formatMoney(marginAmount, i18n.language)} zł</span>
+                  </div>
+                </>
+              )}
+              <div className="flex justify-between px-4 py-2.5">
+                <span className="text-muted-foreground">{t('common.net')}</span>
+                <span className="font-medium">{formatMoney(totals.total_net, i18n.language)} zł</span>
+              </div>
+              <div className="flex justify-between px-4 py-2.5">
+                <span className="text-muted-foreground">VAT</span>
+                <span>{formatMoney(totals.total_vat, i18n.language)} zł</span>
+              </div>
+              <div className="flex justify-between px-4 py-2.5 bg-muted rounded-b-lg">
+                <span className="font-semibold">{t('common.gross')}</span>
+                <span className="font-bold text-lg">{formatMoney(totals.total_gross, i18n.language)} zł</span>
+              </div>
+            </>
+          );
+        })()}
 
         {/* Per-variant summary */}
         {hasVariants && form.variants.map((v, idx) => {
-          const vTotals = computeTotalsForItems(v.items);
+          // PR-FIN-10: apply same offer-level margin to every variant for consistency.
+          const vTotals = applyMargin(computeTotalsForItems(v.items), form.marginPercent);
           return (
             <div key={v.localId} className="px-4 py-2.5 space-y-1">
               <div className="flex items-center gap-1.5">

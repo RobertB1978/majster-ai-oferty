@@ -77,6 +77,12 @@ export interface WizardFormData {
   deadlineText: string;
   /** ISO 8601 string or empty — stored as valid_until in DB. Empty = use +30d default at PDF build time. */
   validUntil: string;
+  /**
+   * PR-FIN-10: offer-level markup (narzut) in percent, 0..100.
+   * Applied uniformly to net + VAT to produce final stored totals.
+   * Default 0 = no markup (totals == sum of line totals).
+   */
+  marginPercent: number;
 }
 
 export interface OfferWithItems {
@@ -93,13 +99,21 @@ export interface OfferWithItems {
   terms: string | null;
   deadline_text: string | null;
   valid_until: string | null;
+  /** PR-FIN-10: offer-level markup percent, 0..100. Default 0 for legacy offers. */
+  margin_percent: number;
   items: WizardItem[];
   variants: WizardVariant[];
 }
 
 // ── Computed totals ───────────────────────────────────────────────────────────
 
-export function computeTotalsForItems(items: WizardItem[]) {
+export interface OfferTotals {
+  total_net: number;
+  total_vat: number;
+  total_gross: number;
+}
+
+export function computeTotalsForItems(items: WizardItem[]): OfferTotals {
   const total_net = items.reduce((sum, it) => sum + it.qty * it.unit_price_net, 0);
   const total_vat = items.reduce((sum, it) => {
     const rate = it.vat_rate ?? 0;
@@ -113,14 +127,43 @@ export function computeTotalsForItems(items: WizardItem[]) {
 }
 
 /**
- * Compute totals from form data.
+ * PR-FIN-10: clamp a margin value into the safe 0..100 range.
+ * NaN / null / undefined / negative → 0; values above 100 → 100.
+ */
+export function clampMarginPercent(value: number | null | undefined): number {
+  if (value === null || value === undefined || Number.isNaN(value)) return 0;
+  if (value < 0) return 0;
+  if (value > 100) return 100;
+  return value;
+}
+
+/**
+ * PR-FIN-10: apply offer-level markup (narzut) to a raw totals triplet.
+ * VAT is scaled by the same factor so per-item VAT proportions are preserved.
+ * Result is rounded to 2 decimals (matching DB NUMERIC scale).
+ */
+export function applyMargin(raw: OfferTotals, marginPercent: number): OfferTotals {
+  const factor = 1 + clampMarginPercent(marginPercent) / 100;
+  const total_net = Math.round(raw.total_net * factor * 100) / 100;
+  const total_vat = Math.round(raw.total_vat * factor * 100) / 100;
+  return {
+    total_net,
+    total_vat,
+    total_gross: Math.round((total_net + total_vat) * 100) / 100,
+  };
+}
+
+/**
+ * Compute totals from form data, applying the offer-level margin (PR-FIN-10).
  * In variant mode, returns totals for the first variant (representative totals for the offer row).
  */
-export function computeTotals(form: Pick<WizardFormData, 'items' | 'variants'>) {
-  if (form.variants.length > 0) {
-    return computeTotalsForItems(form.variants[0]?.items ?? []);
-  }
-  return computeTotalsForItems(form.items);
+export function computeTotals(
+  form: Pick<WizardFormData, 'items' | 'variants' | 'marginPercent'>,
+): OfferTotals {
+  const raw = form.variants.length > 0
+    ? computeTotalsForItems(form.variants[0]?.items ?? [])
+    : computeTotalsForItems(form.items);
+  return applyMargin(raw, form.marginPercent);
 }
 
 // ── Keys ─────────────────────────────────────────────────────────────────────
@@ -141,7 +184,7 @@ export function useLoadOfferDraft(offerId: string | null) {
 
       const { data: offer, error: offerErr } = await supabase
         .from('offers')
-        .select('id, user_id, client_id, title, status, total_net, total_gross, currency, offer_text, terms, deadline_text, valid_until')
+        .select('id, user_id, client_id, title, status, total_net, total_gross, currency, offer_text, terms, deadline_text, valid_until, margin_percent')
         .eq('id', offerId)
         .maybeSingle();
 
@@ -202,8 +245,10 @@ export function useLoadOfferDraft(offerId: string | null) {
         }));
 
       return {
-        ...(offer as Omit<OfferWithItems, 'items' | 'total_vat' | 'variants'>),
+        ...(offer as Omit<OfferWithItems, 'items' | 'total_vat' | 'variants' | 'margin_percent'>),
         total_vat: null,
+        // PR-FIN-10: numeric column may arrive as string from supabase-js; coerce + clamp.
+        margin_percent: clampMarginPercent(Number((offer as { margin_percent?: number | string | null }).margin_percent ?? 0)),
         items: noVariantItems,
         variants,
       } as OfferWithItems;
@@ -246,7 +291,9 @@ export function useSaveDraft() {
         clientId = newClient.id;
       }
 
+      // PR-FIN-10: computeTotals already applies form.marginPercent.
       const totals = computeTotals(form);
+      const marginPercent = clampMarginPercent(form.marginPercent);
 
       // 2. Upsert offer
       let offerId = form.offerId;
@@ -255,6 +302,7 @@ export function useSaveDraft() {
         terms: form.terms.trim() || null,
         deadline_text: form.deadlineText.trim() || null,
         valid_until: form.validUntil.trim() || null,
+        margin_percent: marginPercent,
       };
 
       if (offerId) {
