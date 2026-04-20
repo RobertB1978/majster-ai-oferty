@@ -220,6 +220,18 @@
       "resentCooldown": "Wait {{seconds}} s",
       "backToLogin": "Back to login",
       "noEmailError": "No email address. Please go back to registration."
+    },
+    "legalConsent": {
+      "termsPrefix": "I accept the",
+      "termsLinkText": "Terms of Service",
+      "termsSuffix": "of Majster.AI.",
+      "privacyPrefix": "I have read the",
+      "privacyLinkText": "Privacy Policy",
+      "privacySuffix": "of Majster.AI and consent to the processing of my personal data as described therein.",
+      "termsRequired": "Acceptance of the Terms of Service is required",
+      "privacyRequired": "Acceptance of the Privacy Policy is required",
+      "fetchError": "Could not load legal documents. Check your connection and try again.",
+      "retryFetch": "Try again"
     }
   },
   "dashboard": {
