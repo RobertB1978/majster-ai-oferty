@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Cookie, Shield, BarChart, Settings } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { getLegalEffectiveDate } from '@/lib/legalVersions';
 
 export default function CookiesPolicy() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const lastUpdated = new Date().toLocaleDateString(i18n.language === 'pl' ? 'pl-PL' : i18n.language === 'uk' ? 'uk-UA' : 'en-GB');
+  const lastUpdated = getLegalEffectiveDate('cookies', i18n.language);
 
   const cookies = [
     {
