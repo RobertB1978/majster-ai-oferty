@@ -32,6 +32,44 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Detect migration changes in this changeset
+        id: detect-migrations
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          has_migrations=false
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            pr_num="${{ github.event.pull_request.number }}"
+            migration_files=$(gh api "repos/${{ github.repository }}/pulls/${pr_num}/files" \
+              --paginate --jq '.[].filename' 2>/dev/null \
+              | grep '^supabase/migrations/' || true)
+
+          elif [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ] \
+               && [ -n "${{ github.event.before }}" ]; then
+            migration_files=$(gh api \
+              "repos/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.sha }}" \
+              --jq '.files[].filename' 2>/dev/null \
+              | grep '^supabase/migrations/' || true)
+
+          else
+            # Initial push or force-push — conservatively treat as containing migrations
+            migration_files=$(find supabase/migrations -maxdepth 1 -name '*.sql' 2>/dev/null \
+              | head -5 || true)
+          fi
+
+          if [ -n "$migration_files" ]; then
+            has_migrations=true
+            echo "MIGRATION_GATE: Wykryto zmiany w supabase/migrations/:"
+            echo "$migration_files"
+          else
+            echo "MIGRATION_GATE: Brak zmian w supabase/migrations/ w tym zestawie zmian."
+          fi
+
+          echo "has_migrations=${has_migrations}" >> "$GITHUB_OUTPUT"
+
       - name: Repo inventory
         run: bash scripts/verify/repo_inventory.sh
 
@@ -53,6 +91,27 @@ jobs:
           done
 
           if [ "${#missing[@]}" -gt 0 ]; then
+            if [ "${{ steps.detect-migrations.outputs.has_migrations }}" = "true" ]; then
+              echo ""
+              echo "╔══════════════════════════════════════════════════════════════════╗"
+              echo "║  FAIL: MIGRATION-DEPENDENT PR — BRAK WYMAGANYCH SEKRETÓW        ║"
+              echo "╚══════════════════════════════════════════════════════════════════╝"
+              echo ""
+              echo "Ten PR/push zawiera zmiany w supabase/migrations/."
+              echo "Bez poniższych sekretów migracja NIE zostanie wdrożona do produkcji."
+              echo "Cichy skip jest niedopuszczalny dla PR z migracjami — merge ZABLOKOWANY."
+              echo ""
+              echo "Brakujące sekrety GitHub (tylko nazwy — wartości nigdy nie są logowane):"
+              printf '  ✗ %s\n' "${missing[@]}"
+              echo ""
+              echo "Jak naprawić:"
+              echo "  GitHub → Settings → Secrets and variables → Actions → New repository secret"
+              echo "  Wymagane sekrety: SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD,"
+              echo "                    SUPABASE_PROJECT_REF, SUPABASE_ANON_KEY"
+              echo ""
+              exit 1
+            fi
+
             echo "WARN: Brak Supabase secrets — deploy Supabase pominięty (nie blokuje Vercel):"
             printf ' - %s\n' "${missing[@]}"
             echo "supabase_skip=true" >> "$GITHUB_OUTPUT"

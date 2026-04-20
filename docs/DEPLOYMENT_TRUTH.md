@@ -34,13 +34,32 @@ Repo zawiera workflowy w `.github/workflows/`, w tym:
 ## Co robi canonical Deployment Truth Gate
 1. Start na `pull_request` i `push` do `main`.
 2. Odpala diagnostykę repo (`scripts/verify/repo_inventory.sh`, `supabase_pipeline_check.sh`, `vercel_pipeline_check.sh`).
-3. Fail-fast, jeśli brakuje wymaganych sekretów/zmiennych (w logu tylko **nazwy**, bez wartości).
-4. Loguje do Supabase CLI i linkuje projekt.
-5. Na `push main`: wykonuje `supabase db push` i deploy Edge Functions.
-6. Weryfikuje wynik przez `supabase migration list` + `supabase functions list` i status komend (exit code truth).
-7. Na końcu logu emituje dokładnie jeden marker binarny:
-   - sukces: `SUPABASE_DEPLOY: PASS`
-   - porażka: `SUPABASE_DEPLOY: FAIL`
+3. **[PR-L3b]** Wykrywa zmiany w `supabase/migrations/` za pomocą GitHub API (`detect-migrations`).
+4. Fail-hard, jeśli PR zawiera migracje **I** brakuje wymaganych sekretów — cichy skip jest niedopuszczalny dla migration-dependent PRs.
+5. Fail-fast (skip, nie fail), jeśli brakuje sekretów i PR **nie** zawiera migracji — nie blokuje Vercel.
+6. W logu wypisuje tylko **nazwy** brakujących sekretów, nigdy wartości.
+7. Loguje do Supabase CLI i linkuje projekt.
+8. Na `push main`: wykonuje `supabase db push` i deploy Edge Functions.
+9. Weryfikuje wynik przez `supabase migration list` + `supabase functions list` i status komend (exit code truth).
+10. Na końcu logu emituje dokładnie jeden marker binarny:
+    - sukces: `SUPABASE_DEPLOY: PASS`
+    - porażka: `SUPABASE_DEPLOY: FAIL`
+
+## Kontrakt: PR z migracjami (od PR-L3b)
+
+> **Twardy kontrakt:** Każdy PR zawierający pliki w `supabase/migrations/**` MUSI mieć skonfigurowane
+> wszystkie 4 sekrety Supabase w GitHub Actions. Brak sekretów = workflow FAIL, merge ZABLOKOWANY.
+
+Dotyczy: każdego nowego PR dodającego lub modyfikującego migracje bazy danych.
+Nie dotyczy: PR bez zmian w `supabase/migrations/` — dla nich brak sekretów nadal powoduje SKIP (nie FAIL).
+
+## Reality Check coverage (od PR-L3b)
+
+`scripts/verify/expected-schema.json` weryfikuje obecność i kolumny tabel po deployu.
+
+Tabele objęte weryfikacją:
+- `offers`, `v2_projects`, `clients`, `plan_limits`, `profiles`
+- **`dsar_requests`** ← dodane w PR-L3b (migration: `20260420190000_pr_l3_dsar_requests.sql`)
 
 ## Co robi teraz `supabase-deploy.yml`
 - Uruchamia się tylko na `pull_request` (zmiany w Supabase/workflow/docs/checker).
@@ -55,3 +74,4 @@ Repo zawiera workflowy w `.github/workflows/`, w tym:
 
 ## Czego repo nadal nie potwierdza
 - Vercel dashboard-side: mapowanie repo→project, branch produkcyjny, status ostatniego deploymentu, konfiguracja ENV w panelu.
+- RLS enforcement w Reality Check — stan `relrowsecurity` jest `UNKNOWN` w Phase 1 (patrz `docs/ops/REALITY_CHECK_RUNBOOK.md`).
