@@ -35,6 +35,8 @@ interface RawOffer {
   terms: string | null;
   deadline_text: string | null;
   valid_until: string | null;
+  /** PR-FIN-10: offer-level markup percent (0..100). NUMERIC may arrive as string from supabase-js. */
+  margin_percent: number | string | null;
 }
 
 interface RawOfferItem {
@@ -98,12 +100,19 @@ export async function buildOfferPdfPayloadFromOffer(
   // ── 1. Load offer row ────────────────────────────────────────────────────
   const { data: offer, error: offerErr } = await supabase
     .from('offers')
-    .select('id, title, currency, total_net, total_vat, total_gross, client_id, created_at, offer_text, terms, deadline_text, valid_until')
+    .select('id, title, currency, total_net, total_vat, total_gross, client_id, created_at, offer_text, terms, deadline_text, valid_until, margin_percent')
     .eq('id', offerId)
     .single();
 
   if (offerErr) throw offerErr;
   const rawOffer = offer as RawOffer;
+
+  // PR-FIN-10: parse offer-level margin (NUMERIC may arrive as string), clamp to 0..100.
+  const rawMargin = Number(rawOffer.margin_percent ?? 0);
+  const marginPercent = Number.isFinite(rawMargin)
+    ? Math.max(0, Math.min(100, rawMargin))
+    : 0;
+  const marginFactor = 1 + marginPercent / 100;
 
   // ── 2. Load offer items (now includes variant_id) ────────────────────────
   const { data: itemsData, error: itemsErr } = await supabase
@@ -190,7 +199,9 @@ export async function buildOfferPdfPayloadFromOffer(
 
   // ── 8. Build quote data from offer_items ─────────────────────────────────
 
-  // Helper to build QuoteData from a slice of items
+  // Helper to build QuoteData from a slice of items.
+  // PR-FIN-10: when no overrideTotals are provided, the offer-level margin is
+  // applied to the per-item sum so every variant reflects the same markup.
   function buildQuoteData(items: RawOfferItem[], overrideTotals?: {
     net: number; vat: number; gross: number;
   }): QuoteData | null {
@@ -200,12 +211,16 @@ export async function buildOfferPdfPayloadFromOffer(
     const hasMixedVatRates = distinctRates.length > 1;
     const vatRate = vatRates.length > 0 ? vatRates[0] : null;
     const isVatExempt = vatRate === null;
-    const netTotal = overrideTotals?.net ?? items.reduce((s, it) => s + it.line_total_net, 0);
-    const vatAmount = overrideTotals?.vat ?? (isVatExempt ? 0 : items.reduce((s, it) => {
+
+    const rawNet = items.reduce((s, it) => s + it.line_total_net, 0);
+    const rawVat = isVatExempt ? 0 : items.reduce((s, it) => {
       const r = it.vat_rate ?? 0;
       return s + Number(it.qty) * Number(it.unit_price_net) * (r / 100);
-    }, 0));
-    const grossTotal = overrideTotals?.gross ?? netTotal + vatAmount;
+    }, 0);
+
+    const netTotal = overrideTotals?.net ?? Math.round(rawNet * marginFactor * 100) / 100;
+    const vatAmount = overrideTotals?.vat ?? Math.round(rawVat * marginFactor * 100) / 100;
+    const grossTotal = overrideTotals?.gross ?? Math.round((netTotal + vatAmount) * 100) / 100;
 
     return {
       positions: items.map((it) => ({
@@ -216,9 +231,10 @@ export async function buildOfferPdfPayloadFromOffer(
         price: Number(it.unit_price_net),
         category: it.item_type === 'material' ? 'Materiał' : 'Robocizna',
       })),
+      // Subtotals stay raw (pre-margin) so the PDF can render the "Marża X%" line.
       summaryMaterials: items.filter((it) => it.item_type === 'material').reduce((s, it) => s + it.line_total_net, 0),
       summaryLabor: items.filter((it) => it.item_type !== 'material').reduce((s, it) => s + it.line_total_net, 0),
-      marginPercent: 0,
+      marginPercent,
       total: netTotal,
       vatRate,
       isVatExempt,
@@ -244,7 +260,7 @@ export async function buildOfferPdfPayloadFromOffer(
           positions: [],
           summaryMaterials: 0,
           summaryLabor: 0,
-          marginPercent: 0,
+          marginPercent,
           total: 0,
           vatRate: null,
           isVatExempt: true,

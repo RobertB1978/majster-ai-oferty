@@ -137,6 +137,7 @@ describe('computeTotals', () => {
         unit_price_net: 50, vat_rate: null, item_type: 'labor' as const,
       }],
       variants: [],
+      marginPercent: 0,
     };
     const result = computeTotals(form);
     expect(result.total_net).toBe(50);
@@ -162,6 +163,7 @@ describe('computeTotals', () => {
           }],
         },
       ],
+      marginPercent: 0,
     };
     const result = computeTotals(form);
     // Should use first variant (400), not second (999)
@@ -174,6 +176,7 @@ describe('computeTotals', () => {
     const form = {
       items: [],
       variants: [{ localId: 'v1', dbId: null, label: 'Wariant 1', items: [] }],
+      marginPercent: 0,
     };
     const result = computeTotals(form);
     expect(result.total_net).toBe(0);

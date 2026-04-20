@@ -554,6 +554,8 @@ export type Database = {
           terms: string | null
           deadline_text: string | null
           valid_until: string | null
+          /** PR-FIN-10: offer-level markup percent (0..100). Applied to net/VAT to produce stored totals. */
+          margin_percent: number
         }
         Insert: {
           id?: string
@@ -578,6 +580,7 @@ export type Database = {
           terms?: string | null
           deadline_text?: string | null
           valid_until?: string | null
+          margin_percent?: number
         }
         Update: {
           id?: string
@@ -602,6 +605,7 @@ export type Database = {
           terms?: string | null
           deadline_text?: string | null
           valid_until?: string | null
+          margin_percent?: number
         }
         Relationships: []
       }

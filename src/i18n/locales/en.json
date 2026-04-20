@@ -3430,6 +3430,7 @@
     "finalValue": "Final value:",
     "vatExemptNote": "Seller is VAT exempt (art. 43 sect. 1 of VAT Act)",
     "netValue": "Net value:",
+    "marginLine": "Margin {{percent}}%:",
     "grossPayable": "Total payable (gross):",
     "noQuote": "Quote has not been prepared yet.",
     "termsSection": "Terms:",
@@ -4088,7 +4089,11 @@
       "deadlineText": "Execution deadline",
       "deadlineTextPlaceholder": "E.g. 4 weeks from contract signing",
       "terms": "Payment terms / notes",
-      "termsPlaceholder": "E.g. Payment due 14 days after completion. 24-month guarantee."
+      "termsPlaceholder": "E.g. Payment due 14 days after completion. 24-month guarantee.",
+      "marginPercent": "Margin (markup) %",
+      "marginPercentHint": "Added on top of the net cost subtotal. 0 = no markup. Applied uniformly to every variant.",
+      "marginLine": "Margin {{percent}}%",
+      "subtotalNet": "Cost subtotal (net)"
     },
     "variants": {
       "defaultLabel": "Option",
@@ -4124,6 +4129,7 @@
     "totalsNet": "Net total",
     "totalsVat": "VAT",
     "totalsGross": "Gross total",
+    "marginIncludedLabel": "(includes {{percent}}% margin)",
     "vatExempt": "Seller exempt from VAT (art. 43)",
     "offerNumber": "Offer no.",
     "issuedAt": "Issued",

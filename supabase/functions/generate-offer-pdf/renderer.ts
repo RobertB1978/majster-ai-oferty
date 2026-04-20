@@ -437,6 +437,7 @@ interface OfferPdfLabels {
   colValue: string;
   materials: string;
   labour: string;
+  margin: (percent: number) => string;
   net: string;
   vat: string;
   mixedVat: string;
@@ -463,6 +464,7 @@ const LABELS: Record<string, OfferPdfLabels> = {
     colValue: "WARTOŚĆ",
     materials: "Materiały",
     labour: "Robocizna",
+    margin: (p) => `Marża ${p}%`,
     net: "Netto",
     vat: "VAT",
     mixedVat: "Różne stawki VAT",
@@ -487,6 +489,7 @@ const LABELS: Record<string, OfferPdfLabels> = {
     colValue: "VALUE",
     materials: "Materials",
     labour: "Labour",
+    margin: (p) => `Margin ${p}%`,
     net: "Net",
     vat: "VAT",
     mixedVat: "Mixed VAT rates",
@@ -511,6 +514,7 @@ const LABELS: Record<string, OfferPdfLabels> = {
     colValue: "ВАРТІСТЬ",
     materials: "Матеріали",
     labour: "Робота",
+    margin: (p) => `Націнка ${p}%`,
     net: "Нетто",
     vat: "ПДВ",
     mixedVat: "Різні ставки ПДВ",
@@ -680,6 +684,12 @@ function buildPositionsTable(quote: PDFQuoteData, label?: string, labels?: Offer
 }
 
 function buildTotals(quote: PDFQuoteData, labels: OfferPdfLabels, locale?: string, tokens?: BaseStyleTokens) {
+  // PR-FIN-10: derive raw subtotal + margin amount transparently for the PDF.
+  // summaryMaterials / summaryLabor are pre-margin (cost basis), netTotal is post-margin.
+  const rawSubtotal = quote.summaryMaterials + quote.summaryLabor;
+  const marginAmount = Math.round((quote.netTotal - rawSubtotal) * 100) / 100;
+  const showMargin = quote.marginPercent > 0 && marginAmount > 0;
+
   return e(View, { style: styles.totalsContainer },
     e(View, { style: styles.totalsBox },
       // Materials subtotal
@@ -694,6 +704,13 @@ function buildTotals(quote: PDFQuoteData, labels: OfferPdfLabels, locale?: strin
         ? e(View, { style: styles.totalRow },
             e(Text, { style: styles.totalLabel }, labels.labour),
             e(Text, { style: styles.totalValue }, formatPLN(quote.summaryLabor, locale)),
+          )
+        : null,
+      // Margin (narzut) — shown only when > 0 so legacy offers stay unchanged
+      showMargin
+        ? e(View, { style: styles.totalRow },
+            e(Text, { style: styles.totalLabel }, labels.margin(quote.marginPercent)),
+            e(Text, { style: styles.totalValue }, `+${formatPLN(marginAmount, locale)}`),
           )
         : null,
       // Separator

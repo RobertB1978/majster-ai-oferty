@@ -3430,6 +3430,7 @@
     "finalValue": "Wartość końcowa:",
     "vatExemptNote": "Sprzedawca zwolniony z podatku VAT (art. 43 ust. 1 ustawy o VAT)",
     "netValue": "Wartość netto:",
+    "marginLine": "Marża {{percent}}%:",
     "grossPayable": "Do zapłaty (brutto):",
     "noQuote": "Wycena nie została jeszcze przygotowana.",
     "termsSection": "Warunki:",
@@ -4088,7 +4089,11 @@
       "deadlineText": "Termin realizacji",
       "deadlineTextPlaceholder": "Np. 4 tygodnie od podpisania umowy",
       "terms": "Warunki płatności / uwagi",
-      "termsPlaceholder": "Np. Płatność 14 dni od zakończenia prac. Gwarancja 24 miesiące."
+      "termsPlaceholder": "Np. Płatność 14 dni od zakończenia prac. Gwarancja 24 miesiące.",
+      "marginPercent": "Marża (narzut) %",
+      "marginPercentHint": "Doliczana do sumy kosztów netto. 0 = bez marży. Stosuje się jednolicie do wszystkich wariantów.",
+      "marginLine": "Marża {{percent}}%",
+      "subtotalNet": "Suma kosztów netto"
     },
     "variants": {
       "defaultLabel": "Wariant",
@@ -4124,6 +4129,7 @@
     "totalsNet": "Suma netto",
     "totalsVat": "VAT",
     "totalsGross": "Suma brutto",
+    "marginIncludedLabel": "(zawiera marżę {{percent}}%)",
     "vatExempt": "Sprzedawca zwolniony z VAT (art. 43 ust. 1)",
     "offerNumber": "Nr oferty",
     "issuedAt": "Data wystawienia",

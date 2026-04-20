@@ -58,6 +58,8 @@ interface OfferPreviewData {
   total_net: number | null;
   total_vat: number | null;
   total_gross: number | null;
+  /** PR-FIN-10: offer-level markup percent (0..100). Coerced from NUMERIC. */
+  margin_percent: number;
   created_at: string;
   client: {
     name: string;
@@ -97,7 +99,7 @@ function useOfferPreviewData(offerId: string) {
       // Load offer
       const { data: offer, error: offerErr } = await supabase
         .from('offers')
-        .select('id, title, status, currency, total_net, total_vat, total_gross, client_id, created_at')
+        .select('id, title, status, currency, total_net, total_vat, total_gross, client_id, created_at, margin_percent')
         .eq('id', offerId)
         .single();
       if (offerErr) throw offerErr;
@@ -136,6 +138,12 @@ function useOfferPreviewData(offerId: string) {
         }
       }
 
+      // PR-FIN-10: NUMERIC may arrive as string from supabase-js — coerce + clamp.
+      const rawMargin = Number((offer as { margin_percent?: number | string | null }).margin_percent ?? 0);
+      const marginPercent = Number.isFinite(rawMargin)
+        ? Math.max(0, Math.min(100, rawMargin))
+        : 0;
+
       return {
         id: offer.id as string,
         title: offer.title as string | null,
@@ -144,6 +152,7 @@ function useOfferPreviewData(offerId: string) {
         total_net: offer.total_net as number | null,
         total_vat: offer.total_vat as number | null,
         total_gross: offer.total_gross as number | null,
+        margin_percent: marginPercent,
         created_at: offer.created_at as string,
         client,
         items: (itemsData ?? []) as OfferPreviewData['items'],
@@ -501,6 +510,12 @@ export function OfferPreviewModal({ open, onClose, offerId, onSent }: OfferPrevi
 
                     {/* Totals */}
                     <div className="ml-auto max-w-xs space-y-1 text-sm">
+                      {/* PR-FIN-10: show margin line transparently when > 0 */}
+                      {data.margin_percent > 0 && (
+                        <div className="flex justify-between text-xs text-gray-500 italic">
+                          <span>{t('offerPreview.marginIncludedLabel', { percent: data.margin_percent })}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between">
                         <span className="text-gray-600">{t('offerPreview.totalsNet')}</span>
                         <span className="font-medium">{fmt(data.total_net ?? 0, data.currency, i18n.language)}</span>
