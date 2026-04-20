@@ -1,8 +1,27 @@
-# Legal Versioning Foundation — PR-L1
+# Legal Versioning Foundation — PR-L1 + PR-L1b
 
 **Data wdrożenia:** 2026-04-20
 **Branch:** `claude/legal-versioning-foundation-M1Rey`
-**Status:** WDROŻONE
+**Status:** WDROŻONE (po pre-merge review + fix PR-L1b)
+
+### Pre-merge review — wykryte problemy i fix
+
+**Problem wykryty w code review (2026-04-20):**
+Migracja PR-L1 (20260420160000) wstawiła seed z `content = 'i18n:legal.privacy.*'` —
+wskaźnik na plik JSON, nie snapshot tekstu. Zmiana `pl.json` zmieniałaby efektywną
+treść opublikowanej wersji 1.0 bez bumpu wersji i bez audit trail.
+Dodatkowo: klucz `legal.rodo.*` nie istnieje w `pl.json` (poprawny: `legal.gdpr.*`).
+
+**Fix (migracja PR-L1b: 20260420170000):**
+1. `UPDATE` 5 wierszy — zastąpiono wskaźniki prawdziwym tekstem z `pl.json`
+   (frozen snapshot: privacy 1566 znaków, terms 2156, dpa 1773, cookies 990, rodo 256)
+2. Trigger `trg_legal_documents_immutability` — blokuje `UPDATE content` i `UPDATE version`
+   na wierszach ze `status = 'published'`
+
+**Znane luki odroczone do PR-L2:**
+- EN/UK wersje nie mają seedów (tylko PL v1.0); strony wyświetlają EN/UK treść z i18n
+- Frontend nadal czyta treść z i18n JSON, nie z DB (PR-L2: hook `useLegalDocument`)
+- `LEGAL_VERSIONS` TS map nie jest połączona z DB (PR-L2: zamiana na live fetch)
 
 ---
 
