@@ -3430,6 +3430,7 @@
     "finalValue": "Wartość końcowa:",
     "vatExemptNote": "Sprzedawca zwolniony z podatku VAT (art. 43 ust. 1 ustawy o VAT)",
     "netValue": "Wartość netto:",
+    "marginLine": "Marża {{percent}}%:",
     "grossPayable": "Do zapłaty (brutto):",
     "noQuote": "Wycena nie została jeszcze przygotowana.",
     "termsSection": "Warunki:",

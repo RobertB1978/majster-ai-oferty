@@ -294,10 +294,10 @@ export function useDuplicateOffer() {
     mutationFn: async (sourceOfferId: string): Promise<string> => {
       if (!user) throw new Error('Not authenticated');
 
-      // 1. Load source offer header
+      // 1. Load source offer header (PR-FIN-10: also copy margin_percent)
       const { data: source, error: sourceErr } = await supabase
         .from('offers')
-        .select('client_id, title, currency')
+        .select('client_id, title, currency, margin_percent')
         .eq('id', sourceOfferId)
         .single();
       if (sourceErr) throw sourceErr;
@@ -322,7 +322,8 @@ export function useDuplicateOffer() {
       const allVariants = rawVariants ?? [];
       const hasVariants = allVariants.length > 0;
 
-      // 4. Compute totals (mirrors computeTotals from useOfferWizard)
+      // 4. Compute totals (mirrors computeTotals from useOfferWizard).
+      // PR-FIN-10: apply offer-level margin to keep duplicate consistent with source.
       let totalNet = 0;
       let totalVat = 0;
       const repItems = hasVariants
@@ -334,9 +335,14 @@ export function useDuplicateOffer() {
         totalNet += net;
         totalVat += vat;
       }
-      const roundedNet = Math.round(totalNet * 100) / 100;
-      const roundedVat = Math.round(totalVat * 100) / 100;
-      const roundedGross = Math.round((totalNet + totalVat) * 100) / 100;
+      const rawMargin = Number(source.margin_percent ?? 0);
+      const marginPercent = Number.isFinite(rawMargin)
+        ? Math.max(0, Math.min(100, rawMargin))
+        : 0;
+      const marginFactor = 1 + marginPercent / 100;
+      const roundedNet = Math.round(totalNet * marginFactor * 100) / 100;
+      const roundedVat = Math.round(totalVat * marginFactor * 100) / 100;
+      const roundedGross = Math.round((roundedNet + roundedVat) * 100) / 100;
 
       // 5. Create new DRAFT offer (source_template_id intentionally not copied)
       const { data: newOffer, error: insertErr } = await supabase
@@ -350,6 +356,7 @@ export function useDuplicateOffer() {
           total_net: roundedNet,
           total_vat: roundedVat,
           total_gross: roundedGross,
+          margin_percent: marginPercent,
         })
         .select('id')
         .single();

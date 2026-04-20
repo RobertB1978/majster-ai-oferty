@@ -672,8 +672,16 @@ export async function generateOfferPdf(
     const summaryX = pageWidth - margin - 72;
     const summaryBoxWidth = pageWidth - margin - summaryX + 4;
 
+    // PR-FIN-10: derive raw subtotal + margin amount transparently for the PDF.
+    // summaryMaterials / summaryLabor are pre-margin (cost basis), netTotal is post-margin.
+    const rawSubtotal = quote.summaryMaterials + quote.summaryLabor;
+    const marginAmount = Math.round((quote.netTotal - rawSubtotal) * 100) / 100;
+    const showMargin = quote.marginPercent > 0 && marginAmount > 0;
+
     // Estimate summary box height: vat-exempt → ~22mm, with VAT → ~32mm
-    const summaryBoxHeight = quote.isVatExempt ? 22 : (quote.vatRate !== null ? 32 : 26);
+    // PR-FIN-10: extend by 6mm when a margin line is shown.
+    const baseBoxHeight = quote.isVatExempt ? 22 : (quote.vatRate !== null ? 32 : 26);
+    const summaryBoxHeight = baseBoxHeight + (showMargin ? 6 : 0);
 
     // Draw amber-50 background for summary section
     doc.setFillColor(theme.summaryBg[0], theme.summaryBg[1], theme.summaryBg[2]);
@@ -691,6 +699,20 @@ export async function generateOfferPdf(
 
     doc.setFontSize(FONT_SIZES.base);
     doc.setFont(bodyFont, 'normal');
+
+    // PR-FIN-10: transparent "Marża X% +kwota" line shown only when margin > 0
+    if (showMargin) {
+      doc.setTextColor(...TEXT_SECONDARY);
+      const marginLabel = t
+        ? t('offerPdf.marginLine', { percent: quote.marginPercent })
+        : `Marża ${quote.marginPercent}%:`;
+      doc.text(marginLabel, summaryX + 1, yPosition);
+      doc.setFont(monoFont, 'normal');
+      doc.text(`+${formatCurrency(marginAmount, locale)}`, pageWidth - margin, yPosition, { align: 'right' });
+      doc.setFont(bodyFont, 'normal');
+      doc.setTextColor(...TEXT_PRIMARY);
+      yPosition += 6;
+    }
 
     if (quote.isVatExempt) {
       // Trade-aware highlight band behind the total row

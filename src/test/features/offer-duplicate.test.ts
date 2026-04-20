@@ -39,6 +39,7 @@ function buildDuplicateTitle(sourceTitle: string | null): string | null {
 function computeDuplicateTotals(
   items: ItemStub[],
   variants: VariantStub[],
+  marginPercent = 0,
 ): { total_net: number; total_vat: number; total_gross: number } {
   const hasVariants = variants.length > 0;
   const repItems = hasVariants
@@ -54,10 +55,15 @@ function computeDuplicateTotals(
     totalVat += vat;
   }
 
+  // PR-FIN-10: apply offer-level margin uniformly to net + VAT.
+  const clamped = Math.max(0, Math.min(100, marginPercent));
+  const factor = 1 + clamped / 100;
+  const roundedNet = Math.round(totalNet * factor * 100) / 100;
+  const roundedVat = Math.round(totalVat * factor * 100) / 100;
   return {
-    total_net: Math.round(totalNet * 100) / 100,
-    total_vat: Math.round(totalVat * 100) / 100,
-    total_gross: Math.round((totalNet + totalVat) * 100) / 100,
+    total_net: roundedNet,
+    total_vat: roundedVat,
+    total_gross: Math.round((roundedNet + roundedVat) * 100) / 100,
   };
 }
 
@@ -168,6 +174,54 @@ describe('Duplikowanie oferty — obliczanie totalsów (tryb z wariantami)', () 
     expect(result.total_net).toBe(200);
     expect(result.total_vat).toBe(16);
     expect(result.total_gross).toBe(216);
+  });
+});
+
+// ── PR-FIN-10: Testy: kopiowanie marży ────────────────────────────────────────
+
+describe('Duplikowanie oferty — zachowanie offer-level margin (PR-FIN-10)', () => {
+  it('margin = 0 daje wynik identyczny z legacy zachowaniem', () => {
+    const items: ItemStub[] = [
+      { qty: 1, unit_price_net: 100, vat_rate: 23, variant_id: null },
+    ];
+    const result = computeDuplicateTotals(items, [], 0);
+    expect(result.total_net).toBe(100);
+    expect(result.total_vat).toBe(23);
+    expect(result.total_gross).toBe(123);
+  });
+
+  it('margin = 20% jest aplikowane do kopii (net + VAT skalowane)', () => {
+    const items: ItemStub[] = [
+      { qty: 1, unit_price_net: 100, vat_rate: 23, variant_id: null },
+    ];
+    const result = computeDuplicateTotals(items, [], 20);
+    // Net 100 × 1.20 = 120; VAT 23 × 1.20 = 27.6; Gross = 147.6
+    expect(result.total_net).toBe(120);
+    expect(result.total_vat).toBe(27.6);
+    expect(result.total_gross).toBe(147.6);
+  });
+
+  it('margin jest aplikowany również w trybie wariantów (pierwszy wariant)', () => {
+    const variants: VariantStub[] = [{ id: 'v1' }, { id: 'v2' }];
+    const items: ItemStub[] = [
+      { qty: 1, unit_price_net: 200, vat_rate: 8, variant_id: 'v1' },
+      { qty: 1, unit_price_net: 999, vat_rate: 8, variant_id: 'v2' }, // ignored
+    ];
+    const result = computeDuplicateTotals(items, variants, 10);
+    // Net 200 × 1.10 = 220; VAT 16 × 1.10 = 17.6; Gross = 237.6
+    expect(result.total_net).toBe(220);
+    expect(result.total_vat).toBe(17.6);
+    expect(result.total_gross).toBe(237.6);
+  });
+
+  it('margin powyżej 100 jest ucinany do 100', () => {
+    const items: ItemStub[] = [
+      { qty: 1, unit_price_net: 50, vat_rate: null, variant_id: null },
+    ];
+    const result = computeDuplicateTotals(items, [], 250);
+    // Clamped to 100% → factor 2 → net 100
+    expect(result.total_net).toBe(100);
+    expect(result.total_gross).toBe(100);
   });
 });
 

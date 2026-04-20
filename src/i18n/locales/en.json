@@ -3430,6 +3430,7 @@
     "finalValue": "Final value:",
     "vatExemptNote": "Seller is VAT exempt (art. 43 sect. 1 of VAT Act)",
     "netValue": "Net value:",
+    "marginLine": "Margin {{percent}}%:",
     "grossPayable": "Total payable (gross):",
     "noQuote": "Quote has not been prepared yet.",
     "termsSection": "Terms:",
