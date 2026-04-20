@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Cookie, Shield, BarChart, Megaphone, Settings } from 'lucide-react';
+import { ArrowLeft, Cookie, Shield, BarChart, Settings } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function CookiesPolicy() {
@@ -50,6 +50,17 @@ export default function CookiesPolicy() {
         : 'Anonymous visit analytics — no identifiers, no tracking, EU-hosted',
       duration: i18n.language === 'pl' ? 'N/A' : i18n.language === 'uk' ? 'N/A' : 'N/A',
       provider: 'Plausible Analytics (plausible.io)',
+    },
+    {
+      name: i18n.language === 'pl' ? 'Brak (tylko sesja JS)' : i18n.language === 'uk' ? 'Немає (тільки JS-сесія)' : 'None (JS session only)',
+      type: t('legal.cookies.analytics'),
+      purpose: i18n.language === 'pl'
+        ? 'Monitoring błędów aplikacji i wydajności; nagrywanie sesji z błędami (maskowane). Aktywny tylko przy zgodzie na analytics.'
+        : i18n.language === 'uk'
+        ? 'Моніторинг помилок та продуктивності; запис сесій із помилками (маскований). Активний лише за згодою на аналітику.'
+        : 'Application error monitoring and performance; error session replay (masked). Active only with analytics consent.',
+      duration: i18n.language === 'pl' ? 'Sesja' : i18n.language === 'uk' ? 'Сесія' : 'Session',
+      provider: 'Sentry Inc. (sentry.io)',
     },
   ];
 
@@ -128,10 +139,10 @@ export default function CookiesPolicy() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="opacity-60">
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                  <Megaphone className="h-5 w-5 text-warning" />
+                  <BarChart className="h-5 w-5 text-muted-foreground" />
                   {t('legal.cookies.marketing')}
                 </CardTitle>
               </CardHeader>

@@ -90,10 +90,11 @@ describe('CookieConsent', () => {
       await user.click(customizeBtn);
 
       // Panel preferencji powinien być widoczny — wystarczy sprawdzić
-      // unikalny element "Analityczne" (etykieta switcha) i nowy przycisk
+      // unikalny element "Analityczne" (etykieta switcha) i nowy przycisk.
+      // "Marketingowe" jest celowo ukryte (brak aktywnego vendora marketingowego).
       await waitFor(() => {
         expect(screen.getAllByText(/Analityczne/i).length).toBeGreaterThan(0);
-        expect(screen.getAllByText(/Marketingowe/i).length).toBeGreaterThan(0);
+        expect(screen.queryByText(/Marketingowe/i)).toBeNull();
         // Przycisk zmienia się na "Zapisz wybrane"
         expect(screen.getByRole('button', { name: /Zapisz wybrane/i })).toBeDefined();
       });
@@ -139,9 +140,10 @@ describe('CookieConsent', () => {
 
       await user.click(screen.getByRole('button', { name: /Akceptuję wszystkie/i }));
 
+      // marketing is always false: no marketing vendor is currently active
       expect(window.localStorage.setItem).toHaveBeenCalledWith(
         'cookie_consent',
-        JSON.stringify({ essential: true, analytics: true, marketing: true })
+        JSON.stringify({ essential: true, analytics: true, marketing: false })
       );
 
       await waitFor(() => {
