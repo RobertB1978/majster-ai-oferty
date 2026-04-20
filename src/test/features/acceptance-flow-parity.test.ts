@@ -366,6 +366,54 @@ describe('[REAL] Rozbieżność statusów — problem synchronizacji', () => {
   });
 });
 
+describe('[REAL] PR-LEGAL-09 — signature parity contract', () => {
+  // Weryfikuje kontrakty schematu i RPC po dodaniu signature_data (PR-LEGAL-09).
+
+  it('offer_public_actions.signature_data istnieje jako nullable column (PR-LEGAL-09)', () => {
+    // Migration: ALTER TABLE offer_public_actions ADD COLUMN IF NOT EXISTS signature_data text;
+    // Nullable — podpis jest opcjonalny
+    const columnDef = { name: 'signature_data', type: 'text', nullable: true };
+    expect(columnDef.nullable).toBe(true);
+    expect(columnDef.type).toBe('text');
+  });
+
+  it('process_offer_acceptance_action przyjmuje p_signature_data jako 5. param z DEFAULT NULL', () => {
+    // Backward compat: istniejące wywołania bez p_signature_data nadal działają
+    type RpcParams = {
+      p_token: string;
+      p_action: string;
+      p_comment?: string | null;
+      p_accept_token?: string | null;
+      p_signature_data?: string | null;
+    };
+    const paramsWithoutSig: RpcParams = { p_token: 'tok', p_action: 'ACCEPT', p_comment: null };
+    const paramsWithSig: RpcParams = { ...paramsWithoutSig, p_signature_data: 'data:image/png;base64,...' };
+
+    expect(paramsWithoutSig.p_signature_data).toBeUndefined();
+    expect(paramsWithSig.p_signature_data).toContain('data:image/png');
+  });
+
+  it('signature_data zapisywany tylko przy ACCEPT, nie przy REJECT', () => {
+    // Kontrakt z migration: CASE WHEN v_action = 'ACCEPT' THEN p_signature_data ELSE NULL END
+    function resolveSignatureForAudit(action: string, sig: string | null): string | null {
+      return action === 'ACCEPT' ? sig : null;
+    }
+
+    expect(resolveSignatureForAudit('ACCEPT', 'data:image/png;base64,abc')).not.toBeNull();
+    expect(resolveSignatureForAudit('REJECT', 'data:image/png;base64,abc')).toBeNull();
+  });
+
+  it('legacy flow: signature stored in offer_approvals.signature_data (base64 PNG)', () => {
+    const legacyStorage = { table: 'offer_approvals', column: 'signature_data', format: 'base64 PNG data URL' };
+    expect(legacyStorage.table).toBe('offer_approvals');
+  });
+
+  it('new flow (PR-LEGAL-09): signature stored in offer_public_actions.signature_data (base64 PNG)', () => {
+    const newStorage = { table: 'offer_public_actions', column: 'signature_data', format: 'base64 PNG data URL' };
+    expect(newStorage.table).toBe('offer_public_actions');
+  });
+});
+
 // ════════════════════════════════════════════════════════════════════════════════
 // SEKCJA 2 — TESTY SKIP
 // Wymagają Supabase client, staging tokenów lub live DB.

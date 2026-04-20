@@ -198,6 +198,24 @@ and by the existing `TodayTasks` `pending_offer` pattern already using `/app/off
 
 ---
 
+## PR-LEGAL-09 — Signature Parity (2026-04-20)
+
+Signature capture added to canonical `/a/:token` flow. Previously only legacy flows captured signatures.
+
+| Aspect | Legacy (`/offer/:token`, `/oferta/:token`) | Canonical (`/a/:token`) |
+|--------|------------------------------------------|------------------------|
+| Signature capture | YES — `SignatureCanvas` component | **NOW YES** — `SignatureCanvas` added (PR-LEGAL-09) |
+| Signature storage | `offer_approvals.signature_data` (base64 PNG) | `offer_public_actions.signature_data` (base64 PNG, nullable) |
+| Signature required | YES (required before approve button) | NO (optional — user can accept without signing) |
+| Legal claims | None beyond "signature captured" | None beyond "captured acceptance signature" — no eIDAS |
+
+**Schema change:** `ALTER TABLE offer_public_actions ADD COLUMN IF NOT EXISTS signature_data text;`  
+**RPC change:** `process_offer_acceptance_action` — new optional `p_signature_data text DEFAULT NULL` (5th param). All existing callers unaffected.  
+**Migration:** `20260420120000_pr_legal_09_signature_parity.sql`  
+**Branch:** `claude/signature-parity-acceptance-TPXKd`
+
+---
+
 ## ARCH-05 Closure (2026-04-19)
 
 L-5 and L-6 closed. PR-CANON-05 (`claude/canonical-status-accept-token-a78Mr`).
