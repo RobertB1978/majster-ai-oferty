@@ -1028,4 +1028,103 @@ echo "PART2 OK: $(wc -l < docs/plik.md) linii"
 
 ---
 
+## 🤖 Protokół Automatyzacji Wdrożeń (OBOWIĄZKOWY)
+
+> **Geneza:** W sesji 2026-04-21 skonfigurowano pełny pipeline automatyzacji.
+> Ten protokół opisuje jak działa automatyzacja i co agent MUSI robić przy każdym PR.
+
+### Stan automatyzacji (po skonfigurowaniu sekretów)
+
+Cały pipeline wdrożeń jest zawarty w `.github/workflows/deployment-truth.yml`.
+Po merge do `main` GitHub Actions automatycznie:
+
+| Krok | Co się dzieje | Warunek |
+|------|--------------|---------|
+| 1 | Wykrywa czy PR zawiera migracje SQL | zawsze |
+| 2 | Instaluje Supabase CLI | jeśli sekrety skonfigurowane |
+| 3 | `supabase db push` — wdraża migracje do produkcji | push do `main` + sekrety OK |
+| 4 | `supabase functions deploy` — wdraża wszystkie Edge Functions | push do `main` + sekrety OK |
+| 5 | Reality Check — weryfikuje rzeczywisty stan bazy (tabele, kolumny) | zawsze |
+| 6 | `vercel deploy --prod` — wdraża frontend do Vercel | push do `main` + sekrety OK |
+| Marker | Emituje `SUPABASE_DEPLOY: PASS/FAIL` i `VERCEL_DEPLOY: PASS/FAIL` | zawsze |
+
+**Efekt:** Merge PR do `main` = automatyczne wdrożenie wszystkiego (baza + funkcje + frontend).
+
+### Wymagane GitHub Secrets (Robert konfiguruje raz)
+
+Adres do ustawień: `https://github.com/RobertB1978/majster-ai-oferty/settings/secrets/actions`
+
+#### Supabase Secrets (6 sztuk)
+
+| Nazwa sekretu | Gdzie znaleźć wartość |
+|--------------|----------------------|
+| `SUPABASE_ACCESS_TOKEN` | supabase.com → avatar → Account → Access Tokens → Generate new token |
+| `SUPABASE_PROJECT_REF` | Wartość: `xwxvqhhnozfrjcjmcltv` (z `supabase/config.toml`) |
+| `SUPABASE_DB_PASSWORD` | Supabase Dashboard → projekt → Settings → Database → Database password |
+| `SUPABASE_ANON_KEY` | Supabase Dashboard → projekt → Settings → API → `anon` `public` key |
+| `SUPABASE_URL` | Supabase Dashboard → projekt → Settings → API → Project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → projekt → Settings → API → `service_role` `secret` key |
+
+#### Vercel Secrets (3 sztuki)
+
+| Nazwa sekretu | Gdzie znaleźć wartość |
+|--------------|----------------------|
+| `VERCEL_TOKEN` | vercel.com → avatar → Settings → Tokens → Create token |
+| `VERCEL_ORG_ID` | Vercel → projekt → Settings → General → Team ID (lub Personal Account ID) |
+| `VERCEL_PROJECT_ID` | Vercel → projekt → Settings → General → Project ID |
+
+**Ważne:** `SUPABASE_SERVICE_ROLE_KEY` to klucz TAJNY — nigdy nie wklejaj go w kod ani logi.
+`SUPABASE_PROJECT_REF` = `xwxvqhhnozfrjcjmcltv` — wartość już znana z `supabase/config.toml`.
+
+### Procedura auto-watch PR (OBOWIĄZKOWA dla agenta)
+
+**Po każdym utworzeniu PR agent MUSI:**
+
+1. Wywołać `mcp__github__subscribe_pr_activity` z numerem nowego PR
+2. Monitorować zdarzenia `<github-webhook-activity>` w sesji
+3. Gdy CI fail: zbadać logi → naprawić → pushować fix automatycznie (bez pytania Roberta)
+4. Gdy review comment od Roberta: odpowiedzieć lub wprowadzić poprawkę (zależnie od jasności)
+5. Gdy CI green + Robert zaapprował: powiadomić Roberta że PR gotowy do merge
+
+**Przykład po utworzeniu PR #XYZ:**
+```
+mcp__github__subscribe_pr_activity(owner="RobertB1978", repo="majster-ai-oferty", pullNumber=XYZ)
+```
+
+### Procedura Vercel MCP (jednorazowa autoryzacja)
+
+Vercel MCP wymaga OAuth — Robert musi zaautoryzować raz na sesję:
+
+1. Agent wywołuje `mcp__vercel__authenticate` → dostaje URL OAuth
+2. Robert otwiera URL w przeglądarce → loguje się na Vercel → klika Authorize
+3. Przeglądarka próbuje otworzyć `localhost:54221` i pokazuje błąd — **to normalne**
+4. Robert kopiuje pełny URL z paska adresu i wkleja go do chatu
+5. Agent wywołuje `mcp__vercel__complete_authentication(callback_url=...)`
+6. Po autoryzacji agent ma dostęp do narzędzi Vercel MCP w tej sesji
+
+### Reguła: PR z migracjami = twardy wymóg sekretów
+
+Jeśli PR zawiera pliki w `supabase/migrations/**`:
+- CI workflow (`deployment-truth.yml`) sprawdza czy sekrety są skonfigurowane
+- Brak sekretów → CI FAIL → merge ZABLOKOWANY
+- To celowe zachowanie — migracje MUSZĄ być wdrożone przez pipeline, nie ręcznie
+
+### Co robi agent automatycznie vs. co robi Robert
+
+| Operacja | Kto | Kiedy |
+|----------|-----|-------|
+| Pisanie kodu, migracji, Edge Functions | Agent | Zawsze |
+| Commit + push na branch feature | Agent | Zawsze |
+| Tworzenie PR | Agent | Zawsze |
+| Naprawa CI failures po push | Agent | Automatycznie (auto-watch) |
+| Odpowiedź na review comments | Agent | Automatycznie (jeśli jednoznaczne) |
+| **Merge PR do main** | **Robert** | **Decyzja Roberta — zawsze** |
+| Wdrożenie Supabase migracji | GitHub Actions | Automatycznie po merge |
+| Wdrożenie Edge Functions | GitHub Actions | Automatycznie po merge |
+| Wdrożenie Vercel | GitHub Actions | Automatycznie po merge |
+| Konfiguracja GitHub Secrets | Robert | Jednorazowo |
+| Autoryzacja Vercel MCP | Robert | Raz na sesję |
+
+---
+
 **This document is your guide to working effectively on Majster.AI. When in doubt, ask the owner!**
