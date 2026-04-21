@@ -1,10 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@/test/utils';
 import PrivacyPolicy from '@/pages/legal/PrivacyPolicy';
 import TermsOfService from '@/pages/legal/TermsOfService';
 import CookiesPolicy from '@/pages/legal/CookiesPolicy';
 import DPA from '@/pages/legal/DPA';
 import GDPRCenter from '@/pages/legal/GDPRCenter';
+
+// PR-L4b: pages now use usePublicLegalDocument. Return isFallback=true so that
+// existing i18n section content is rendered and existing assertions still pass.
+vi.mock('@/hooks/usePublicLegalDocument', () => ({
+  usePublicLegalDocument: () => ({ doc: null, isLoading: false, isFallback: true, effectiveDate: null }),
+}));
 
 /**
  * Legal Pages - Rendering Tests

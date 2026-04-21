@@ -6,11 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, ExternalLink, FileText, Shield, Server, Lock, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { getLegalEffectiveDate } from '@/lib/legalVersions';
 import { usePublicSubprocessors } from '@/hooks/usePublicSubprocessors';
+import { usePublicLegalDocument } from '@/hooks/usePublicLegalDocument';
+import { LegalDocumentContent } from '@/components/legal/LegalDocumentContent';
 
 export default function DPA() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const lastUpdated = getLegalEffectiveDate('dpa', i18n.language);
+  const { doc, isLoading: docLoading, isFallback, effectiveDate } = usePublicLegalDocument('dpa', i18n.language);
+  const lastUpdated = effectiveDate ?? getLegalEffectiveDate('dpa', i18n.language);
   const { data: subprocessors = [], isError: subprocessorsError, isLoading: subprocessorsLoading } = usePublicSubprocessors();
 
   const sectionsBefore = [
@@ -83,7 +86,17 @@ export default function DPA() {
           )}
 
           <div className="space-y-6">
-            {sectionsBefore.map((section) => (
+            {/* Primary: DB content replaces static text sections */}
+            {!isFallback && (
+              <Card className="overflow-hidden">
+                <CardContent className="pt-6">
+                  <LegalDocumentContent content={doc?.content ?? ''} isLoading={docLoading} />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Fallback: static sections before subprocessors */}
+            {isFallback && sectionsBefore.map((section) => (
               <Card key={section.title} className="overflow-hidden">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-3 text-lg">
@@ -173,7 +186,8 @@ export default function DPA() {
               </CardContent>
             </Card>
 
-            {sectionsAfter.map((section) => (
+            {/* Fallback: static sections after subprocessors */}
+            {isFallback && sectionsAfter.map((section) => (
               <Card key={section.title} className="overflow-hidden">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-3 text-lg">
