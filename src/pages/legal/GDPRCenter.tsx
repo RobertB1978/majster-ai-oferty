@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { usePublicLegalDocument } from '@/hooks/usePublicLegalDocument';
+import { LegalDocumentContent } from '@/components/legal/LegalDocumentContent';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -75,11 +77,12 @@ function daysUntil(dateStr: string): number {
 
 export default function GDPRCenter() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const logAudit = useLogAuditEvent();
   const createDsar = useCreateDsarRequest();
   const { data: dsarRequests, isLoading: dsarLoading } = useUserDsarRequests();
+  const { doc: rodoDoc, isFallback: rodoFallback } = usePublicLegalDocument('rodo', i18n.language);
 
   const [isExporting, setIsExporting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -231,11 +234,20 @@ export default function GDPRCenter() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
               <Shield className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mb-2">{t('legal.gdpr.pageTitle')}</h1>
+            <h1 className="text-3xl font-bold mb-2">{rodoDoc?.title ?? t('legal.gdpr.pageTitle')}</h1>
             <p className="text-muted-foreground">
               {t('legal.gdpr.subtitle')}
             </p>
           </div>
+
+          {/* Primary: DB-backed RODO/GDPR document text */}
+          {!rodoFallback && rodoDoc && (
+            <Card className="mb-8">
+              <CardContent className="pt-6">
+                <LegalDocumentContent content={rodoDoc.content} />
+              </CardContent>
+            </Card>
+          )}
 
           {/* User info card */}
           <Card className="mb-6">

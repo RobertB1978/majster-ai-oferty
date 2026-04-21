@@ -6,11 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Cookie, Shield, BarChart, Settings } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { getLegalEffectiveDate } from '@/lib/legalVersions';
+import { usePublicLegalDocument } from '@/hooks/usePublicLegalDocument';
+import { LegalDocumentContent } from '@/components/legal/LegalDocumentContent';
 
 export default function CookiesPolicy() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const lastUpdated = getLegalEffectiveDate('cookies', i18n.language);
+  const { doc, isLoading, isFallback, effectiveDate } = usePublicLegalDocument('cookies', i18n.language);
+  const lastUpdated = effectiveDate ?? getLegalEffectiveDate('cookies', i18n.language);
 
   const cookies = [
     {
@@ -103,54 +106,68 @@ export default function CookiesPolicy() {
             </div>
           )}
 
+          {/* Primary: DB content replaces static text sections */}
+          {!isFallback && (
+            <Card className="mb-6">
+              <CardContent className="pt-6">
+                <LegalDocumentContent content={doc?.content ?? ''} isLoading={isLoading} />
+              </CardContent>
+            </Card>
+          )}
+
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Cookie className="h-5 w-5 text-primary" />
-                  {t('legal.cookies.whatAreCookies')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-muted-foreground space-y-4">
-                <p>{t('legal.cookies.whatAreCookiesText')}</p>
-              </CardContent>
-            </Card>
+            {/* Fallback: static text sections — only shown when DB content unavailable */}
+            {isFallback && (
+              <>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <Cookie className="h-5 w-5 text-primary" />
+                      {t('legal.cookies.whatAreCookies')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-muted-foreground space-y-4">
+                    <p>{t('legal.cookies.whatAreCookiesText')}</p>
+                  </CardContent>
+                </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Shield className="h-5 w-5 text-success" />
-                  {t('legal.cookies.necessary')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-muted-foreground">
-                <p className="mb-4">{t('legal.cookies.necessaryText')}</p>
-              </CardContent>
-            </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <Shield className="h-5 w-5 text-success" />
+                      {t('legal.cookies.necessary')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-muted-foreground">
+                    <p className="mb-4">{t('legal.cookies.necessaryText')}</p>
+                  </CardContent>
+                </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <BarChart className="h-5 w-5 text-info" />
-                  {t('legal.cookies.analytics')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-muted-foreground">
-                <p>{t('legal.cookies.analyticsText')}</p>
-              </CardContent>
-            </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <BarChart className="h-5 w-5 text-info" />
+                      {t('legal.cookies.analytics')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-muted-foreground">
+                    <p>{t('legal.cookies.analyticsText')}</p>
+                  </CardContent>
+                </Card>
 
-            <Card className="opacity-60">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <BarChart className="h-5 w-5 text-muted-foreground" />
-                  {t('legal.cookies.marketing')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-muted-foreground">
-                <p>{t('legal.cookies.marketingText')}</p>
-              </CardContent>
-            </Card>
+                <Card className="opacity-60">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <BarChart className="h-5 w-5 text-muted-foreground" />
+                      {t('legal.cookies.marketing')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-muted-foreground">
+                    <p>{t('legal.cookies.marketingText')}</p>
+                  </CardContent>
+                </Card>
+              </>
+            )}
 
             <Card>
               <CardHeader>

@@ -5,43 +5,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, FileText, Scale, CreditCard, AlertTriangle, Ban, Gavel } from 'lucide-react';
 import { getLegalEffectiveDate } from '@/lib/legalVersions';
+import { usePublicLegalDocument } from '@/hooks/usePublicLegalDocument';
+import { LegalDocumentContent } from '@/components/legal/LegalDocumentContent';
 
 export default function TermsOfService() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const lastUpdated = getLegalEffectiveDate('terms', i18n.language);
+  const { doc, isLoading, isFallback, effectiveDate } = usePublicLegalDocument('terms', i18n.language);
 
+  const lastUpdated = effectiveDate ?? getLegalEffectiveDate('terms', i18n.language);
+
+  // Static fallback sections
   const sections = [
-    {
-      icon: FileText,
-      title: t('legal.terms.s1title'),
-      content: t('legal.terms.s1content'),
-    },
-    {
-      icon: Scale,
-      title: t('legal.terms.s2title'),
-      content: t('legal.terms.s2content'),
-    },
-    {
-      icon: CreditCard,
-      title: t('legal.terms.s3title'),
-      content: t('legal.terms.s3content'),
-    },
-    {
-      icon: Ban,
-      title: t('legal.terms.s4title'),
-      content: t('legal.terms.s4content'),
-    },
-    {
-      icon: AlertTriangle,
-      title: t('legal.terms.s5title'),
-      content: t('legal.terms.s5content'),
-    },
-    {
-      icon: Gavel,
-      title: t('legal.terms.s6title'),
-      content: t('legal.terms.s6content'),
-    },
+    { icon: FileText,     title: t('legal.terms.s1title'), content: t('legal.terms.s1content') },
+    { icon: Scale,        title: t('legal.terms.s2title'), content: t('legal.terms.s2content') },
+    { icon: CreditCard,   title: t('legal.terms.s3title'), content: t('legal.terms.s3content') },
+    { icon: Ban,          title: t('legal.terms.s4title'), content: t('legal.terms.s4content') },
+    { icon: AlertTriangle,title: t('legal.terms.s5title'), content: t('legal.terms.s5content') },
+    { icon: Gavel,        title: t('legal.terms.s6title'), content: t('legal.terms.s6content') },
   ];
 
   return (
@@ -54,11 +35,7 @@ export default function TermsOfService() {
 
       <div className="min-h-screen bg-background">
         <div className="container max-w-4xl py-8 px-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="mb-6"
-          >
+          <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
             <ArrowLeft className="mr-2 h-4 w-4" />
             {t('legal.back')}
           </Button>
@@ -67,10 +44,10 @@ export default function TermsOfService() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
               <FileText className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mb-2">{t('legal.terms.pageTitle')}</h1>
-            <p className="text-muted-foreground">
-              {t('legal.terms.subtitle')}
-            </p>
+            <h1 className="text-3xl font-bold mb-2">
+              {doc?.title ?? t('legal.terms.pageTitle')}
+            </h1>
+            <p className="text-muted-foreground">{t('legal.terms.subtitle')}</p>
             <p className="text-sm text-muted-foreground mt-2">
               {t('legal.lastUpdated')} {lastUpdated}
             </p>
@@ -82,30 +59,40 @@ export default function TermsOfService() {
             </div>
           )}
 
-          <div className="space-y-6">
-            {sections.map((section) => (
-              <Card key={section.title} className="overflow-hidden">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-3 text-lg">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <section.icon className="h-5 w-5 text-primary" />
-                    </div>
-                    {section.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
-                    {section.content}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {/* Primary: DB content */}
+          {!isFallback && (
+            <Card className="mb-6">
+              <CardContent className="pt-6">
+                <LegalDocumentContent content={doc?.content ?? ''} isLoading={isLoading} />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Fallback: static i18n sections */}
+          {isFallback && (
+            <div className="space-y-6">
+              {sections.map((section) => (
+                <Card key={section.title} className="overflow-hidden">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-3 text-lg">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                        <section.icon className="h-5 w-5 text-primary" />
+                      </div>
+                      {section.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
+                      {section.content}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
           <div className="mt-8 p-6 rounded-xl bg-muted/50 text-center">
-            <p className="text-sm text-muted-foreground">
-              {t('legal.terms.agreement')}
-            </p>
+            <p className="text-sm text-muted-foreground">{t('legal.terms.agreement')}</p>
           </div>
         </div>
       </div>

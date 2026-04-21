@@ -11,6 +11,12 @@ vi.mock('@/hooks/usePublicSubprocessors', () => ({
   usePublicSubprocessors: () => ({ data: [], isError: false, isLoading: false }),
 }));
 
+// PR-L4b: all 5 legal pages now use usePublicLegalDocument (React Query).
+// Mock it to return isFallback=true so existing i18n content renders unchanged.
+vi.mock('@/hooks/usePublicLegalDocument', () => ({
+  usePublicLegalDocument: () => ({ doc: null, isLoading: false, isFallback: true, effectiveDate: null }),
+}));
+
 /**
  * Legal Routes - Route Mapping Tests
  *
