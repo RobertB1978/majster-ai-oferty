@@ -1,9 +1,15 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import i18n from '@/i18n';
+
+// DPA now uses usePublicSubprocessors (React Query). Mock it so the route test
+// doesn't require a QueryClientProvider wrapper.
+vi.mock('@/hooks/usePublicSubprocessors', () => ({
+  usePublicSubprocessors: () => ({ data: [], isError: false, isLoading: false }),
+}));
 
 /**
  * Legal Routes - Route Mapping Tests

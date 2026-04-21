@@ -3726,7 +3726,11 @@
       "s5title": "5. Obowiązki stron",
       "s5content": "Obowiązki Procesora:\n• Przetwarzanie wyłącznie na polecenie Administratora\n• Poufność przez personel\n• Pomoc w realizacji praw osób\n• Powiadomienie o naruszeniu w ciągu 72 godzin\n• Usunięcie danych po zakończeniu umowy\n\nObowiązki Administratora:\n• Podstawa prawna przetwarzania\n• Informowanie osób, których dane dotyczą\n• Realizacja praw osób",
       "s6title": "6. Audyty i kontrole",
-      "s6content": "Administrator ma prawo do:\n• Żądania informacji o przetwarzaniu\n• Audytów (raz w roku, 30-dniowe wyprzedzenie)\n• Inspekcji dokumentacji\n\nKoszty audytu ponosi strona inicjująca, chyba że wykaże naruszenia."
+      "s6content": "Administrator ma prawo do:\n• Żądania informacji o przetwarzaniu\n• Audytów (raz w roku, 30-dniowe wyprzedzenie)\n• Inspekcji dokumentacji\n\nKoszty audytu ponosi strona inicjująca, chyba że wykaże naruszenia.",
+      "s4emptyState": "Brak zarejestrowanych podprocesorów.",
+      "s4loadError": "Nie udało się załadować listy podprocesorów. Poniżej wersja statyczna:",
+      "s4dpaLink": "DPA",
+      "s4privacyLink": "Polityka prywatności"
     },
     "gdpr": {
       "pageTitle": "Centrum RODO",
