@@ -33,7 +33,11 @@ export type ComplianceEventType =
   | 'dsar.request_created'
   | 'dsar.status_changed'
   | 'dsar.resolved'
-  | 'dsar.rejected';
+  | 'dsar.rejected'
+  | 'breach.created'
+  | 'breach.status_changed'
+  | 'breach.report_marked'
+  | 'breach.closed';
 
 export type ComplianceAuditSource = 'frontend' | 'edge_function' | 'migration' | 'admin';
 
