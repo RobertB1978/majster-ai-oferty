@@ -110,6 +110,7 @@ const AdminDiagnosticsPage = lazy(() => import("./pages/admin/AdminDiagnosticsPa
 const AdminDsarPage = lazy(() => import("./pages/admin/AdminDsarPage"));
 const AdminRetentionPage = lazy(() => import("./pages/admin/AdminRetentionPage"));
 const AdminBreachPage = lazy(() => import("./pages/admin/AdminBreachPage"));
+const AdminLegalDocumentsPage = lazy(() => import("./pages/admin/AdminLegalDocumentsPage"));
 
 /** Redirect old /projects/:id paths to /app/projects/:id, preserving the real param value. */
 function ProjectRedirect({ suffix = '' }: { suffix?: string }) {
@@ -395,6 +396,7 @@ const App = () => (
                     <Route path="dsar" element={<AdminDsarPage />} />
                     <Route path="retention" element={<AdminRetentionPage />} />
                     <Route path="breach" element={<AdminBreachPage />} />
+                    <Route path="legal/documents" element={<AdminLegalDocumentsPage />} />
                   </Route>
 
                   {/* ============================================
