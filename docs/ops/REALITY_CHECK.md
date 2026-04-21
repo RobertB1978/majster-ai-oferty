@@ -183,8 +183,59 @@ Weryfikacja RLS wymaga dodatkowego mechanizmu — patrz `REALITY_CHECK_RUNBOOK.m
 
 ---
 
+---
+
+## Pokrycie compliance stack (od 2026-04-21)
+
+`expected-schema.json` obejmuje **pełny compliance stack** wdrożony przez PR-L1 – PR-L8.
+
+### Tabele compliance w kontrakcie
+
+| Tabela | PR | RLS | Opis |
+|--------|----|-----|------|
+| `dsar_requests` | PR-L3 | ✅ user-own + admin | DSAR Inbox; SLA 30 dni |
+| `legal_documents` | PR-L1 | ✅ public read (published) + admin CRUD | Wersjonowane dokumenty prawne |
+| `legal_acceptances` | PR-L1 | ✅ user-own INSERT+SELECT | Dowód zgody RODO; brak DELETE |
+| `compliance_audit_log` | PR-L8 | ✅ append-only (brak UPDATE/DELETE) | Niezmienny log zdarzeń compliance |
+| `subprocessors` | PR-L5 | ✅ public SELECT active | Rejestr podmiotów przetwarzających (art. 28 RODO) |
+| `retention_rules` | PR-L6 | ✅ admin-only | Harmonogram retencji danych |
+| `data_breaches` | PR-L7 | ✅ admin-only | Rejestr incydentów; brak DELETE; 72h SLA |
+
+Po deployu, gdy `REALITY_CHECK: PASS`, każda z tych tabel:
+- **EXISTS** (tabela istnieje w PostgREST OpenAPI)
+- ma wszystkie **required_columns** zdefiniowane w kontrakcie
+- ma `rlsStatus: UNKNOWN` (Phase 1 limitation — RLS potwierdzane ręcznie, patrz niżej)
+
+### Funkcje bazodanowe compliance (weryfikacja manualna)
+
+Checker Phase 1 weryfikuje tabele przez PostgREST OpenAPI `definitions` — **nie weryfikuje automatycznie funkcji DB**.
+
+Trzy funkcje compliance z migracji `20260421120000_pr_legal_l4_cms_admin.sql` wymagają ręcznej weryfikacji post-deploy:
+
+| Funkcja | Typ | Cel | Weryfikacja manualna |
+|---------|-----|-----|----------------------|
+| `public.is_admin()` | SQL, STABLE, SECURITY DEFINER | Sprawdza czy bieżący użytkownik ma rolę `admin` w `user_roles` | Supabase Dashboard → Database → Functions → znajdź `is_admin` |
+| `public.publish_legal_document(p_draft_id uuid)` | PL/pgSQL, SECURITY DEFINER | Atomowe publikowanie draftu dokumentu prawnego (draft→published) | Supabase Dashboard → Database → Functions → znajdź `publish_legal_document` |
+| `public.create_legal_draft_from_published(p_published_id uuid)` | PL/pgSQL, SECURITY DEFINER | Tworzy nowy draft na bazie opublikowanego dokumentu | Supabase Dashboard → Database → Functions → znajdź `create_legal_draft_from_published` |
+
+**Weryfikacja przez SQL Editor (Supabase Dashboard):**
+
+```sql
+-- Sprawdź czy funkcje compliance istnieją w schemacie public
+SELECT routine_name, routine_type, security_type
+FROM information_schema.routines
+WHERE routine_schema = 'public'
+  AND routine_name IN ('is_admin', 'publish_legal_document', 'create_legal_draft_from_published')
+ORDER BY routine_name;
+-- Oczekiwany wynik: 3 wiersze, security_type = 'DEFINER'
+```
+
+**Uwaga:** PostgREST wystawia SECURITY DEFINER funkcje jako endpointy `/rpc/{nazwa}` w sekcji `paths` specyfikacji OpenAPI. Phase 2 checkera mógłby weryfikować ich obecność automatycznie przez `spec.paths`. Poza scopem Phase 1.
+
+---
+
 ## Powiązane dokumenty
 
-- `docs/ops/REALITY_CHECK_RUNBOOK.md` — rollback, owner actions, sekrety
+- `docs/ops/REALITY_CHECK_RUNBOOK.md` — rollback, owner actions, sekrety, compliance stack verification
 - `docs/DEPLOYMENT_TRUTH.md` — szerszy kontekst Deployment Truth Gate
 - `.github/workflows/deployment-truth.yml` — CI konfiguracja
