@@ -37,3 +37,22 @@ export interface LegalDocumentMeta {
   status: LegalDocumentStatus;
   effective_at: string | null;
 }
+
+/** Input payload for creating or updating a draft in the Admin Legal CMS. */
+export interface LegalDraftInput {
+  slug: LegalDocumentSlug;
+  language: string;
+  version: string;
+  title: string;
+  content: string;
+  effective_at?: string | null;
+}
+
+/** Documents grouped for the Admin Legal CMS list view. */
+export interface LegalDocumentGroup {
+  slug: LegalDocumentSlug;
+  language: string;
+  published: LegalDocument | null;
+  drafts: LegalDocument[];
+  archived: LegalDocument[];
+}
