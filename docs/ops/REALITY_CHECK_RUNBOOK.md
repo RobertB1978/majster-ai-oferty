@@ -175,8 +175,71 @@ grep "REALITY_CHECK:" <plik_logu>
 
 ---
 
+---
+
+## Weryfikacja compliance stack post-deploy
+
+Po deployu migracj PR-L1–PR-L8 Reality Check automatycznie weryfikuje obecność i strukturę tabel compliance. Poniżej lista **owner actions** wymaganych do pełnego potwierdzenia poprawności compliance stack.
+
+### Krok 1 — Potwierdź P0: tabele compliance EXISTS
+
+Gdy `REALITY_CHECK: PASS`, wszystkie poniższe tabele są automatycznie potwierdzone jako EXISTS:
+
+```
+dsar_requests, legal_documents, legal_acceptances,
+compliance_audit_log, subprocessors, retention_rules, data_breaches
+```
+
+Jeśli któraś tabela ma status `MISSING` lub `PARTIAL` → P0 FAIL → sprawdź czy migracja została wdrożona przez Supabase Dashboard → Database → Migrations.
+
+### Krok 2 — Potwierdź RLS (manual, Phase 1 limitation)
+
+Dla tabel compliance wykonaj w Supabase Dashboard → SQL Editor:
+
+```sql
+-- Sprawdź stan RLS dla wszystkich tabel compliance
+SELECT tablename, rowsecurity
+FROM pg_tables
+WHERE schemaname = 'public'
+  AND tablename IN (
+    'dsar_requests', 'legal_documents', 'legal_acceptances',
+    'compliance_audit_log', 'subprocessors', 'retention_rules', 'data_breaches'
+  )
+ORDER BY tablename;
+-- Oczekiwany wynik: rowsecurity = true dla wszystkich 7 tabel
+```
+
+### Krok 3 — Potwierdź funkcje compliance (manual)
+
+```sql
+-- Sprawdź czy 3 funkcje compliance istnieją z SECURITY DEFINER
+SELECT routine_name, security_type
+FROM information_schema.routines
+WHERE routine_schema = 'public'
+  AND routine_name IN ('is_admin', 'publish_legal_document', 'create_legal_draft_from_published')
+ORDER BY routine_name;
+-- Oczekiwany wynik: 3 wiersze, security_type = 'DEFINER'
+```
+
+Jeśli któraś funkcja brakuje → migracja `20260421120000_pr_legal_l4_cms_admin.sql` nie została wdrożona.
+
+### Krok 4 — Potwierdź seed danych (manual)
+
+```sql
+-- subprocessors: oczekiwane min. 8 rekordów (status active lub planned)
+SELECT COUNT(*) FROM public.subprocessors;
+
+-- retention_rules: oczekiwane min. 10 rekordów
+SELECT COUNT(*) FROM public.retention_rules;
+
+-- legal_documents: oczekiwane min. 5 rekordów (PL: privacy/terms/cookies/dpa/rodo)
+SELECT COUNT(*) FROM public.legal_documents WHERE status = 'published';
+```
+
+---
+
 ## Powiązane dokumenty
 
-- `docs/ops/REALITY_CHECK.md` — dokumentacja użytkowa
+- `docs/ops/REALITY_CHECK.md` — dokumentacja użytkowa, tabela compliance stack
 - `docs/DEPLOYMENT_TRUTH.md` — Deployment Truth Gate overview
 - `scripts/verify/expected-schema.json` — kontrakt schematu

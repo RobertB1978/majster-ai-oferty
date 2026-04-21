@@ -42,6 +42,48 @@
       "required_columns": ["id", "requester_user_id", "request_type", "status", "due_at", "created_at"],
       "rls_required": true,
       "notes": "PR-L3 DSAR Inbox. RLS: requester_user_id=auth.uid() (user own); admin via user_roles. No DELETE policy — soft-close via status. SLA: due_at = created_at + 30 days."
+    },
+    {
+      "name": "legal_documents",
+      "migration_source": "20260420160000_pr_legal_l1_versioning_foundation.sql",
+      "required_columns": ["id", "slug", "language", "version", "title", "content", "status", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "PR-L1. RLS: public SELECT for published; admin CRUD via is_admin() (PR-L4). Status: draft/published/archived. Unique partial index: one published per slug+language."
+    },
+    {
+      "name": "legal_acceptances",
+      "migration_source": "20260420160000_pr_legal_l1_versioning_foundation.sql",
+      "required_columns": ["id", "user_id", "legal_document_id", "accepted_at", "acceptance_source", "created_at"],
+      "rls_required": true,
+      "notes": "PR-L1. RLS: authenticated INSERT (user_id=auth.uid()); authenticated SELECT own rows. GDPR consent audit trail — no DELETE policy."
+    },
+    {
+      "name": "compliance_audit_log",
+      "migration_source": "20260420180000_pr_l8_compliance_audit_log.sql",
+      "required_columns": ["id", "event_type", "source", "created_at"],
+      "rls_required": true,
+      "notes": "PR-L8. Append-only (no UPDATE/DELETE policy). RLS: authenticated INSERT (actor_user_id=auth.uid()); SELECT own events. source CHECK: frontend/edge_function/migration/admin."
+    },
+    {
+      "name": "subprocessors",
+      "migration_source": "20260420200000_pr_l5_subprocessors_registry.sql",
+      "required_columns": ["id", "slug", "name", "category", "purpose", "status", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "PR-L5. RLS: public SELECT for active rows (status='active'). No INSERT/UPDATE/DELETE for non-admin. Seeded: supabase/resend/sentry/stripe/openai/anthropic/gemini/plausible/vercel."
+    },
+    {
+      "name": "retention_rules",
+      "migration_source": "20260421120000_pr_l6_retention_rules.sql",
+      "required_columns": ["id", "data_domain", "rule_name", "applies_to", "deletion_strategy", "status", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "PR-L6. RLS: admin-only SELECT and UPDATE. Seeded with evidence-based retention periods. UNIQUE on applies_to."
+    },
+    {
+      "name": "data_breaches",
+      "migration_source": "20260421130000_pr_l7_breach_register.sql",
+      "required_columns": ["id", "title", "description", "severity", "status", "detected_at", "report_deadline_at", "created_at", "updated_at"],
+      "rls_required": true,
+      "notes": "PR-L7. RLS: admin-only SELECT/INSERT/UPDATE. No DELETE policy — breach records are legal evidence. 72h reporting SLA: report_deadline_at = detected_at + 72h."
     }
   ]
 }
