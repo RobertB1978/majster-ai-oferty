@@ -344,7 +344,32 @@ export default function GDPRCenter() {
             </CardContent>
           </Card>
 
-          <div className="mt-2 p-6 rounded-xl bg-muted/50">
+          <Card className="mt-6">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Shield className="h-5 w-5 text-primary" />
+                {t('legal.gdpr.privacyContact.title')}
+              </CardTitle>
+              <CardDescription>
+                {t('legal.gdpr.privacyContact.description')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div>
+                <span className="font-medium">{t('legal.gdpr.privacyContact.emailLabel')} </span>
+                <a
+                  href={`mailto:${t('legal.gdpr.privacyContact.email')}`}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  {t('legal.gdpr.privacyContact.email')}
+                </a>
+              </div>
+              <p className="text-muted-foreground">{t('legal.gdpr.privacyContact.responseTime')}</p>
+              <p className="text-muted-foreground">{t('legal.gdpr.privacyContact.note')}</p>
+            </CardContent>
+          </Card>
+
+          <div className="mt-4 p-6 rounded-xl bg-muted/50">
             <div className="flex gap-4">
               <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
               <div>

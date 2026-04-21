@@ -3787,6 +3787,14 @@
         "deleteSuccess": "Żądanie usunięcia zostało wysłane",
         "deleteSuccessDesc": "Skontaktujemy się z Tobą w ciągu 30 dni.",
         "deleteError": "Błąd podczas wysyłania żądania"
+      },
+      "privacyContact": {
+        "title": "Kontakt ds. prywatności i danych",
+        "description": "W sprawach dotyczących Twoich danych osobowych, praw RODO lub zgód skontaktuj się z nami.",
+        "email": "kontakt.majsterai@gmail.com",
+        "responseTime": "Odpowiadamy w ciągu 30 dni zgodnie z wymogami RODO.",
+        "note": "Możesz też skorzystać z formularza żądania powyżej.",
+        "emailLabel": "E-mail:"
       }
     }
   },

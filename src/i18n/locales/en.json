@@ -3787,6 +3787,14 @@
         "deleteSuccess": "Deletion request submitted",
         "deleteSuccessDesc": "We will contact you within 30 days.",
         "deleteError": "Error submitting deletion request"
+      },
+      "privacyContact": {
+        "title": "Privacy & Data Contact",
+        "description": "For questions about your personal data, GDPR rights, or consent, please contact us.",
+        "email": "kontakt.majsterai@gmail.com",
+        "responseTime": "We respond within 30 days as required by GDPR.",
+        "note": "You can also use the request form above.",
+        "emailLabel": "E-mail:"
       }
     }
   },
