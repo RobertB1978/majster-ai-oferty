@@ -108,6 +108,7 @@ const AdminPlansPage = lazy(() => import("./pages/admin/AdminPlansPage"));
 const AdminNavigationPage = lazy(() => import("./pages/admin/AdminNavigationPage"));
 const AdminDiagnosticsPage = lazy(() => import("./pages/admin/AdminDiagnosticsPage"));
 const AdminDsarPage = lazy(() => import("./pages/admin/AdminDsarPage"));
+const AdminRetentionPage = lazy(() => import("./pages/admin/AdminRetentionPage"));
 
 /** Redirect old /projects/:id paths to /app/projects/:id, preserving the real param value. */
 function ProjectRedirect({ suffix = '' }: { suffix?: string }) {
@@ -391,6 +392,7 @@ const App = () => (
                     <Route path="navigation" element={<AdminNavigationPage />} />
                     <Route path="diagnostics" element={<AdminDiagnosticsPage />} />
                     <Route path="dsar" element={<AdminDsarPage />} />
+                    <Route path="retention" element={<AdminRetentionPage />} />
                   </Route>
 
                   {/* ============================================

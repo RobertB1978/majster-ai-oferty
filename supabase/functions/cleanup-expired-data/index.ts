@@ -21,6 +21,17 @@ interface CleanupResult {
   errors?: string[];
 }
 
+async function recordRetentionRun(
+  supabase: ReturnType<typeof createClient>,
+  appliesTo: string,
+  status: 'success' | 'error'
+): Promise<void> {
+  await supabase
+    .from('retention_rules')
+    .update({ last_run_at: new Date().toISOString(), last_run_status: status })
+    .eq('applies_to', appliesTo);
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -78,14 +89,17 @@ serve(async (req) => {
       if (keysError) {
         console.error('Error cleaning API keys:', keysError);
         result.errors?.push(`API keys: ${keysError.message}`);
+        await recordRetentionRun(supabase, 'api_keys', 'error');
       } else {
         result.cleaned.apiKeys = unusedKeys?.length || 0;
         console.log(`✓ Cleaned ${result.cleaned.apiKeys} unused API keys`);
+        await recordRetentionRun(supabase, 'api_keys', 'success');
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       result.errors?.push(`API keys exception: ${message}`);
       console.error('Exception cleaning API keys:', error);
+      await recordRetentionRun(supabase, 'api_keys', 'error');
     }
 
     // 2. Cleanup old offer approvals (starsze niż 90 dni i już zatwierdzone/odrzucone)
@@ -103,14 +117,17 @@ serve(async (req) => {
       if (offersError) {
         console.error('Error cleaning offer approvals:', offersError);
         result.errors?.push(`Offer approvals: ${offersError.message}`);
+        await recordRetentionRun(supabase, 'offer_approvals', 'error');
       } else {
         result.cleaned.offerApprovals = oldOffers?.length || 0;
         console.log(`✓ Cleaned ${result.cleaned.offerApprovals} old offer approvals`);
+        await recordRetentionRun(supabase, 'offer_approvals', 'success');
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       result.errors?.push(`Offer approvals exception: ${message}`);
       console.error('Exception cleaning offer approvals:', error);
+      await recordRetentionRun(supabase, 'offer_approvals', 'error');
     }
 
     // 3. Cleanup inactive push tokens (starsze niż 180 dni)
@@ -128,14 +145,17 @@ serve(async (req) => {
       if (tokensError) {
         console.error('Error cleaning push tokens:', tokensError);
         result.errors?.push(`Push tokens: ${tokensError.message}`);
+        await recordRetentionRun(supabase, 'push_tokens', 'error');
       } else {
         result.cleaned.pushTokens = oldTokens?.length || 0;
         console.log(`✓ Cleaned ${result.cleaned.pushTokens} inactive push tokens`);
+        await recordRetentionRun(supabase, 'push_tokens', 'success');
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       result.errors?.push(`Push tokens exception: ${message}`);
       console.error('Exception cleaning push tokens:', error);
+      await recordRetentionRun(supabase, 'push_tokens', 'error');
     }
 
     // 4. Cleanup old AI chat history (starsza niż 180 dni)
@@ -152,14 +172,17 @@ serve(async (req) => {
       if (chatsError) {
         console.error('Error cleaning chat history:', chatsError);
         result.errors?.push(`Chat history: ${chatsError.message}`);
+        await recordRetentionRun(supabase, 'ai_chat_history', 'error');
       } else {
         result.cleaned.chatHistory = oldChats?.length || 0;
         console.log(`✓ Cleaned ${result.cleaned.chatHistory} old chat messages`);
+        await recordRetentionRun(supabase, 'ai_chat_history', 'success');
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       result.errors?.push(`Chat history exception: ${message}`);
       console.error('Exception cleaning chat history:', error);
+      await recordRetentionRun(supabase, 'ai_chat_history', 'error');
     }
 
     // Podsumowanie
