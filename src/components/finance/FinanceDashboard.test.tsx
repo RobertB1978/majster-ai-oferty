@@ -26,6 +26,7 @@ vi.mock('recharts', () => ({
   YAxis: () => null,
   CartesianGrid: () => null,
   Tooltip: () => null,
+  Legend: () => null,
 }));
 
 // Mock LoadingCard

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useFinancialSummary, useAIFinancialAnalysis } from '@/hooks/useFinancialReports';
 import { usePlanGate } from '@/hooks/usePlanGate';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 import { LoadingCard } from '@/components/ui/loading-screen';
 import { exportFinanceToExcel, exportFinanceToPdf } from '@/lib/exportUtils';
 import { toast } from 'sonner';
@@ -28,12 +28,20 @@ interface PricingRecommendation {
   reason: string;
 }
 
+interface CashflowForecast {
+  nextMonth: number;
+  trend: 'up' | 'down' | 'stable';
+}
+
 // Kształt odpowiedzi z edge function finance-ai-analysis (supabase/functions/finance-ai-analysis/index.ts)
 interface AIAnalysisResult {
   keyInsights?: string[];
   actionItems?: string[];
   pricingRecommendations?: PricingRecommendation[];
   riskFactors?: string[];
+  profitableProjectTypes?: string[];
+  losingAreas?: string[];
+  cashflowForecast?: CashflowForecast;
 }
 
 export function FinanceDashboard() {
@@ -52,7 +60,7 @@ export function FinanceDashboard() {
     [dateFrom, dateTo],
   );
 
-  const { data: summary, isLoading } = useFinancialSummary(dateRange);
+  const { data: summary, isLoading, isError } = useFinancialSummary(dateRange);
   const aiAnalysis = useAIFinancialAnalysis();
 
   const handleRunAnalysis = async () => {
@@ -163,7 +171,7 @@ export function FinanceDashboard() {
     </div>
   );
 
-  if (isLoading || !summary) {
+  if (isLoading || (!summary && !isError)) {
     return (
       <div className="space-y-6">
         {filterToolbar}
@@ -180,7 +188,25 @@ export function FinanceDashboard() {
     );
   }
 
-  if (!summary.monthly.length) {
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        {filterToolbar}
+        <EmptyState
+          icon={AlertTriangle}
+          title={t('finance.loadError')}
+          description={t('finance.loadErrorDesc')}
+          action={{
+            label: t('common.refresh'),
+            onClick: () => window.location.reload(),
+          }}
+          className="min-h-[400px]"
+        />
+      </div>
+    );
+  }
+
+  if (!summary?.monthly.length) {
     return (
       <div className="space-y-6">
         {filterToolbar}
@@ -321,7 +347,7 @@ export function FinanceDashboard() {
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <Tooltip
-                  formatter={(value: number) => [`${formatNumberCompact(value)} zł`]}
+                  formatter={(value: number, name: string) => [`${formatNumberCompact(value)} zł`, name]}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
                   itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                   contentStyle={{
@@ -331,6 +357,7 @@ export function FinanceDashboard() {
                     boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)',
                   }}
                 />
+                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '12px' }} />
                 <Area
                   type="monotone"
                   dataKey="revenue"
@@ -383,7 +410,7 @@ export function FinanceDashboard() {
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <Tooltip
-                  formatter={(value: number) => [`${formatNumberCompact(value)} zł`]}
+                  formatter={(value: number, name: string) => [`${formatNumberCompact(value)} zł`, name]}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
                   itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                   contentStyle={{
@@ -393,6 +420,7 @@ export function FinanceDashboard() {
                     boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)',
                   }}
                 />
+                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '12px' }} />
                 <Bar
                   dataKey="margin"
                   fill="url(#barGradient)"
@@ -433,6 +461,7 @@ export function FinanceDashboard() {
                 <TabsTrigger value="insights">{t('finance.insights')}</TabsTrigger>
                 <TabsTrigger value="pricing">{t('finance.pricingTab')}</TabsTrigger>
                 <TabsTrigger value="risks">{t('finance.risks')}</TabsTrigger>
+                <TabsTrigger value="forecast">{t('finance.forecastTab')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="insights" className="space-y-4 mt-4">
@@ -484,6 +513,68 @@ export function FinanceDashboard() {
                     <p>{risk}</p>
                   </div>
                 ))}
+              </TabsContent>
+
+              <TabsContent value="forecast" className="space-y-6 mt-4">
+                {analysisResult.cashflowForecast ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-4 bg-muted rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">{t('finance.nextMonth')}</p>
+                      <p className="text-2xl font-bold">
+                        {analysisResult.cashflowForecast.nextMonth.toLocaleString()} zł
+                      </p>
+                    </div>
+                    <div className="p-4 bg-muted rounded-lg flex items-center gap-3">
+                      {analysisResult.cashflowForecast.trend === 'up'
+                        ? <TrendingUp className="h-5 w-5 text-emerald-500" />
+                        : analysisResult.cashflowForecast.trend === 'down'
+                          ? <TrendingDown className="h-5 w-5 text-rose-500" />
+                          : <BarChart3 className="h-5 w-5 text-muted-foreground" />}
+                      <div>
+                        <p className="text-sm text-muted-foreground">{t('finance.trend')}</p>
+                        <p className={`font-medium ${
+                          analysisResult.cashflowForecast.trend === 'up' ? 'text-emerald-500'
+                          : analysisResult.cashflowForecast.trend === 'down' ? 'text-rose-500'
+                          : 'text-muted-foreground'
+                        }`}>
+                          {analysisResult.cashflowForecast.trend === 'up' ? t('finance.trendUp')
+                            : analysisResult.cashflowForecast.trend === 'down' ? t('finance.trendDown')
+                            : t('finance.trendStable')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-center py-4">{t('finance.noForecastData')}</p>
+                )}
+
+                {(analysisResult.profitableProjectTypes?.length ?? 0) > 0 && (
+                  <div>
+                    <h4 className="font-medium mb-3">{t('finance.profitableTypes')}</h4>
+                    <ul className="space-y-2">
+                      {analysisResult.profitableProjectTypes!.map((type, i) => (
+                        <li key={i} className="flex items-center gap-2 p-2 bg-emerald-500/10 rounded-lg text-sm">
+                          <TrendingUp className="h-4 w-4 text-emerald-500 shrink-0" />
+                          {type}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {(analysisResult.losingAreas?.length ?? 0) > 0 && (
+                  <div>
+                    <h4 className="font-medium mb-3">{t('finance.losingAreas')}</h4>
+                    <ul className="space-y-2">
+                      {analysisResult.losingAreas!.map((area, i) => (
+                        <li key={i} className="flex items-center gap-2 p-2 bg-rose-500/10 rounded-lg text-sm">
+                          <TrendingDown className="h-4 w-4 text-rose-500 shrink-0" />
+                          {area}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           ) : (
