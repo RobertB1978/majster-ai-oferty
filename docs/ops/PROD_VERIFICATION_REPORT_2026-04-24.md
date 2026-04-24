@@ -62,7 +62,7 @@
 | `offers` | TAK | (pre-existing) | Stara migracja |
 | `clients` | TAK | (pre-existing) | Stara migracja |
 
-**Powód UNKNOWN:** Skrypt `scripts/verify/supabase_reality_check.mjs` wymaga `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`. Bez tych credentials wykonuje `exit 0` (soft-fail) emitując `REALITY_CHECK: UNKNOWN`. CI jest zawsze zielone niezależnie od stanu bazy.
+**Powód UNKNOWN:** Workflow wrapper (`.github/workflows/deployment-truth.yml`) sprawdza obecność `SUPABASE_URL` i `SUPABASE_SERVICE_ROLE_KEY` PRZED wywołaniem skryptu. Gdy brakuje któregoś z sekretów, wrapper emituje `REALITY_CHECK: UNKNOWN` i wykonuje `exit 0` — skrypt Node nigdy nie jest uruchamiany. Gdyby skrypt wywołano bez tych zmiennych, `validateRequiredEnv()` zakończyłby działanie z kodem `exit 1`. CI jest zielone niezależnie od stanu bazy, bo wrapper nigdy nie failuje bez sekretów.
 
 ---
 
@@ -152,7 +152,17 @@ PROD PARTIAL
 
 3. **[KRYTYCZNE] Jeśli tabele NIE istnieją — wdróż migracje ręcznie**:
    - Supabase Dashboard → SQL Editor
-   - Uruchom kolejno pliki z `supabase/migrations/20260420*` i `20260421*` (compliance)
+   - Uruchom **wyłącznie** te pliki compliance (w kolejności chronologicznej):
+     1. `20260420155000_pr_compliance_01_anon_consent.sql`
+     2. `20260420160000_pr_legal_l1_versioning_foundation.sql`
+     3. `20260420170000_pr_legal_l1b_content_snapshot.sql`
+     4. `20260420180000_pr_l8_compliance_audit_log.sql`
+     5. `20260420190000_pr_l3_dsar_requests.sql`
+     6. `20260420200000_pr_l5_subprocessors_registry.sql`
+     7. `20260421120000_pr_l6_retention_rules.sql`
+     8. `20260421120000_pr_legal_l4_cms_admin.sql`
+     9. `20260421130000_pr_l7_breach_register.sql`
+   - **Nie używaj wildcard** `20260420*` / `20260421*` — na tych datach są też pliki niezwiązane z compliance
    - LUB: skonfiguruj GitHub Secrets (punkt 1) i push triggera deploy
 
 4. **[MINOR] Po skonfigurowaniu secrets — push dowolnej zmiany na main**:
