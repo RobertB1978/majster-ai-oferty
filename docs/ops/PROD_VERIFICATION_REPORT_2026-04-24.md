@@ -107,13 +107,49 @@
 
 ---
 
+## 7b. Działania podjęte — Sesja 2 (po skonfigurowaniu sekretów)
+
+| Działanie | Status | Dowód |
+|-----------|--------|-------|
+| Konfiguracja 9 GitHub Secrets | ✅ DONE — Robert | Screenshot: wszystkie 9 sekretów widoczne |
+| PR #756 merge do main | ✅ DONE | Merge commit `95aaf072` @ 2026-04-24T13:40:41Z |
+| Vercel deploy (przez GitHub Actions) | ✅ PASS | `version.json.buildTimestamp = 2026-04-24T13:41:39.511Z` |
+| Supabase deploy (przez GitHub Actions) | ❌ FAIL | Run `24892597468`, job `72888633929` |
+| Supabase Reality Check | ❓ UNKNOWN | Nie ustalono — zależy od przyczyny FAIL powyżej |
+| Korekty raportu (Codex review P1+P2) | ✅ DONE | Commit `c869073` |
+
+**Nowe ustalenia Sesja 2:**
+- Wszystkie 9 sekretów zostało skonfigurowanych przez Roberta ✅
+- Pipeline `deployment-truth.yml` uruchomił się PO RAZ PIERWSZY z kompletem sekretów
+- Wercel deploy: **PASS** — build timestamp `13:41:39` (1 minuta po merge) potwierdza deploy przez Actions z `VERCEL_TOKEN`
+- Supabase deploy: **FAIL** — job zakończył się błędem; przyczyna nieznana (GitHub API rate limit uniemożliwia pobranie logów z zewnątrz)
+- Check suites dla `95aaf072`: 4 × GitHub Actions success, 1 × GitHub Actions **failure** (Supabase Deploy)
+
+---
+
 ## 8. Pozostałe blokery
 
-### BLOKER 1 (KRYTYCZNY): Supabase — stan bazy UNKNOWN
+### BLOKER 1 (KRYTYCZNY): Supabase Deploy FAIL w Actions
 
-**Problem:** Nie wiadomo, czy compliance migrations (L1–L8) zostały wdrożone do produkcyjnej bazy Supabase. GitHub Actions CI ma soft-fail logic: Reality Check exituje 0 bez sekretów, więc CI zawsze jest zielone.
+**Problem:** Job `Supabase Deploy (migrations + functions)` zakończył się `failure` w run `24892597468` po merge `95aaf072` (pierwszym run z wszystkimi sekretami). Dokładny krok, który zawiódł, jest nieznany — logi wymagają bezpośredniego wglądu w GitHub Actions.
 
-**Root cause:** GitHub Secrets (`SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`, `SUPABASE_ANON_KEY`) prawdopodobnie nie są skonfigurowane → CI skip zamiast deploy.
+**Możliwe przyczyny (w kolejności prawdopodobieństwa):**
+1. `supabase login --token` lub `supabase link` — błędny/wygasły `SUPABASE_ACCESS_TOKEN` lub `SUPABASE_DB_PASSWORD`
+2. `supabase db push` — błąd SQL w jednej z migracji compliance przy pierwszym wdrożeniu
+3. `Supabase Reality Check` — tabele nie istnieją (bo db push zawiódł) → P0 FAIL → exit 1
+
+**Jak zdiagnozować:** Otwórz logi bezpośrednio:
+`https://github.com/RobertB1978/majster-ai-oferty/actions/runs/24892597468/job/72888633929`
+
+Szukaj pierwszego kroku z czerwoną ikoną ❌. Jeśli:
+- `Login and link project` → problem z `SUPABASE_ACCESS_TOKEN` lub `SUPABASE_DB_PASSWORD`
+- `Deploy migrations` → błąd SQL; wklej pełny komunikat błędu
+- `Supabase Reality Check` (a deploy steps są zielone) → tabele nie istnieją po db push
+
+**Jeśli Reality Check jest jedyną przyczyną failure** (kroki deploy zielone):
+→ Tabele zostały wdrożone, ale Reality Check nie może ich znaleźć
+→ Sprawdź artifact `reality-check-report` z tego runu (zakładka Artifacts)
+→ Lub uruchom ponownie workflow (Re-run jobs)
 
 ### BLOKER 2 (MINOR): 503 na majsterai.com/legal/dpa
 
@@ -123,34 +159,47 @@
 
 ## 9. Werdykt końcowy
 
+**Sesja 1 (przed sekretami):**
 ```
 PROD PARTIAL
-
 ✅ REPO-COMPLETE:   YES (HEAD a0354bfe, 9/9 migracji, expected-schema 12/12)
 ✅ VERCEL-COMPLETE: YES (build 2026-04-24T13:11, wszystkie trasy HTTP 200)
 ⚠️ SUPABASE-PROD:  UNKNOWN (brak credentials do Reality Check)
 ```
 
+**Sesja 2 (po skonfigurowaniu sekretów, po merge #756):**
+```
+PROD PARTIAL — SUPABASE DEPLOY FAILED
+
+✅ REPO-COMPLETE:   YES (HEAD main=95aaf072)
+✅ VERCEL-COMPLETE: YES (build 2026-04-24T13:41:39, via Actions VERCEL_TOKEN)
+❌ SUPABASE-DEPLOY: FAIL (run 24892597468 — przyczyna do zbadania w Actions logs)
+❓ SUPABASE-SCHEMA: UNKNOWN (brak potwierdzenia czy compliance tables istnieją)
+```
+
 ---
 
-## 10. Wymagane działania Roberta (max 5 punktów)
+## 10. Wymagane działania Roberta
 
-1. **[KRYTYCZNE] Skonfiguruj GitHub Secrets dla Supabase** (raz):
-   - `SUPABASE_ACCESS_TOKEN` → supabase.com → Account → Access Tokens
-   - `SUPABASE_DB_PASSWORD` → Supabase Dashboard → Settings → Database
-   - `SUPABASE_PROJECT_REF` → wartość: `xwxvqhhnozfrjcjmcltv`
-   - `SUPABASE_ANON_KEY` → Supabase Dashboard → Settings → API
-   - `SUPABASE_URL` → Supabase Dashboard → Settings → API
-   - `SUPABASE_SERVICE_ROLE_KEY` → Supabase Dashboard → Settings → API
-   - Link: https://github.com/RobertB1978/majster-ai-oferty/settings/secrets/actions
+1. **[KRYTYCZNE] Zbadaj logi Supabase Deploy w GitHub Actions**:
+   - URL: `https://github.com/RobertB1978/majster-ai-oferty/actions/runs/24892597468/job/72888633929`
+   - Znajdź pierwszy krok z czerwoną ikoną ❌
+   - Jeśli `Login and link project` → sprawdź `SUPABASE_ACCESS_TOKEN` i `SUPABASE_DB_PASSWORD`
+   - Jeśli `Deploy migrations` → skopiuj komunikat błędu SQL i przekaż agentowi
+   - Jeśli tylko `Supabase Reality Check` → sprawdź artifact `reality-check-report` (zakładka Artifacts w runie)
 
-2. **[KRYTYCZNE] Zweryfikuj compliance tables w Supabase Dashboard**:
+2. **[KRYTYCZNE — jeśli login/db push fail] Zweryfikuj wartości sekretów**:
+   - `SUPABASE_ACCESS_TOKEN` → supabase.com → Account → Access Tokens → sprawdź czy token jest aktywny
+   - `SUPABASE_DB_PASSWORD` → Supabase Dashboard → Settings → Database → Database password
+   - Zaktualizuj sekrety jeśli są błędne: https://github.com/RobertB1978/majster-ai-oferty/settings/secrets/actions
+
+3. **[KRYTYCZNE] Zweryfikuj compliance tables w Supabase Dashboard**:
    - Supabase Dashboard → Table Editor — sprawdź czy istnieją:
      `legal_documents`, `legal_acceptances`, `compliance_audit_log`,
      `dsar_requests`, `subprocessors`, `retention_rules`, `data_breaches`
    - SQL: `SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;`
 
-3. **[KRYTYCZNE] Jeśli tabele NIE istnieją — wdróż migracje ręcznie**:
+4. **[KRYTYCZNE] Jeśli tabele NIE istnieją — wdróż migracje ręcznie**:
    - Supabase Dashboard → SQL Editor
    - Uruchom **wyłącznie** te pliki compliance (w kolejności chronologicznej):
      1. `20260420155000_pr_compliance_01_anon_consent.sql`
@@ -163,11 +212,6 @@ PROD PARTIAL
      8. `20260421120000_pr_legal_l4_cms_admin.sql`
      9. `20260421130000_pr_l7_breach_register.sql`
    - **Nie używaj wildcard** `20260420*` / `20260421*` — na tych datach są też pliki niezwiązane z compliance
-   - LUB: skonfiguruj GitHub Secrets (punkt 1) i push triggera deploy
-
-4. **[MINOR] Po skonfigurowaniu secrets — push dowolnej zmiany na main**:
-   - GitHub Actions automatycznie uruchomi `supabase db push` i Reality Check
-   - Sprawdź w Actions log: `SUPABASE_DEPLOY: PASS` i `REALITY_CHECK: PASS`
 
 5. **[MINOR] Zbadaj 503 na majsterai.com/legal/dpa**:
    - Vercel Dashboard → Domains → sprawdź redirect config dla apex domeny
@@ -176,4 +220,4 @@ PROD PARTIAL
 
 ---
 
-*Raport wygenerowany: 2026-04-24 | Sesja: claude/setup-release-engineering-1n5Ty*
+*Raport wygenerowany: 2026-04-24 | Zaktualizowany Sesja 2: 2026-04-24 | Sesja: claude/setup-release-engineering-1n5Ty*
