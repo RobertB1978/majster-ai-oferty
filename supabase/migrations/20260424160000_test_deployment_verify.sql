@@ -13,9 +13,9 @@ CREATE TABLE public.deployment_test (
 -- Dodaj RLS
 ALTER TABLE public.deployment_test ENABLE ROW LEVEL SECURITY;
 
--- Ubezpiecz dostęp
-CREATE POLICY "Allow read for all authenticated" ON public.deployment_test
-  FOR SELECT TO authenticated
+-- Ubezpiecz dostęp — tylko service role (internal) może czytać
+CREATE POLICY "Allow read for service role only" ON public.deployment_test
+  FOR SELECT TO service_role
   USING (true);
 
 INSERT INTO public.deployment_test (test_name, environment)
