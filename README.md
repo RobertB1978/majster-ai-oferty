@@ -1,6 +1,8 @@
 # Majster.AI - Platforma SaaS dla Firm Budowlanych 🏗️
 
 > **Zarządzaj swoją firmą budowlaną z AI:** Klienci, Projekty, Oferty, Faktury, Finanse - wszystko w jednym miejscu.
+>
+> **[DEPLOYMENT TEST] Weryfikacja automatycznego wdrażania (24-04-2026)**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue)](https://www.typescriptlang.org/)
