@@ -139,7 +139,13 @@ jobs:
           set -euo pipefail
           supabase --version
           supabase login --token "$SUPABASE_ACCESS_TOKEN"
-          supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          if [ -n "${SUPABASE_DB_URL:-}" ]; then
+            # DB_URL mode: skip link — db push uses --db-url, functions deploy uses --project-ref
+            echo "SUPABASE_DB_URL_MODE: login only, skipping link (no --password required)"
+          else
+            # Password mode: link requires direct DB connection
+            supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          fi
 
       - name: Deploy migrations
         if: steps.validate-secrets.outputs.supabase_skip != 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -166,7 +172,11 @@ jobs:
             fi
             if [ -f "supabase/functions/$fn/index.ts" ]; then
               echo "Deploying function: $fn"
-              supabase functions deploy "$fn"
+              if [ -n "${SUPABASE_DB_URL:-}" ]; then
+                supabase functions deploy "$fn" --project-ref "$SUPABASE_PROJECT_REF"
+              else
+                supabase functions deploy "$fn"
+              fi
             fi
           done
 
@@ -175,8 +185,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          supabase migration list
-          supabase functions list
+          if [ -n "${SUPABASE_DB_URL:-}" ]; then
+            supabase migration list --db-url "$SUPABASE_DB_URL"
+            supabase functions list --project-ref "$SUPABASE_PROJECT_REF"
+          else
+            supabase migration list
+            supabase functions list
+          fi
           echo "PASS: Supabase deploy commands zakończone kodem 0"
 
       # ── Supabase Reality Check — Phase 1 ─────────────────────────────────
