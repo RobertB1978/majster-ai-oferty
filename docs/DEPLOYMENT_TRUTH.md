@@ -27,9 +27,10 @@ Repo zawiera workflowy w `.github/workflows/`, w tym:
 - Obecne katalogi: `supabase/migrations/`, `supabase/functions/`.
 - Gate wymaga nazw sekretów:
   - `SUPABASE_ACCESS_TOKEN`
-  - `SUPABASE_DB_PASSWORD`
   - `SUPABASE_PROJECT_REF`
   - `SUPABASE_ANON_KEY`
+  - `SUPABASE_DB_URL` (**preferowany** — Session Pooler connection string) **lub** `SUPABASE_DB_PASSWORD` (fallback)
+- **Rekomendacja:** używaj `SUPABASE_DB_URL` (Session Pooler). Rozwiązuje błędy SASL auth z GitHub Actions.
 
 ## Co robi canonical Deployment Truth Gate
 1. Start na `pull_request` i `push` do `main`.
@@ -39,7 +40,7 @@ Repo zawiera workflowy w `.github/workflows/`, w tym:
 5. Fail-fast (skip, nie fail), jeśli brakuje sekretów i PR **nie** zawiera migracji — nie blokuje Vercel.
 6. W logu wypisuje tylko **nazwy** brakujących sekretów, nigdy wartości.
 7. Loguje do Supabase CLI i linkuje projekt.
-8. Na `push main`: wykonuje `supabase db push` i deploy Edge Functions.
+8. Na `push main`: wykonuje `supabase db push` (przez `--db-url` jeśli `SUPABASE_DB_URL` jest ustawiony, inaczej `--password`) i deploy Edge Functions.
 9. Weryfikuje wynik przez `supabase migration list` + `supabase functions list` i status komend (exit code truth).
 10. Na końcu logu emituje dokładnie jeden marker binarny:
     - sukces: `SUPABASE_DEPLOY: PASS`
@@ -48,7 +49,9 @@ Repo zawiera workflowy w `.github/workflows/`, w tym:
 ## Kontrakt: PR z migracjami (od PR-L3b)
 
 > **Twardy kontrakt:** Każdy PR zawierający pliki w `supabase/migrations/**` MUSI mieć skonfigurowane
-> wszystkie 4 sekrety Supabase w GitHub Actions. Brak sekretów = workflow FAIL, merge ZABLOKOWANY.
+> sekrety Supabase w GitHub Actions: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `SUPABASE_ANON_KEY`
+> oraz `SUPABASE_DB_URL` (preferowany) lub `SUPABASE_DB_PASSWORD` (fallback).
+> Brak sekretów = workflow FAIL, merge ZABLOKOWANY.
 
 Dotyczy: każdego nowego PR dodającego lub modyfikującego migracje bazy danych.
 Nie dotyczy: PR bez zmian w `supabase/migrations/` — dla nich brak sekretów nadal powoduje SKIP (nie FAIL).
@@ -68,9 +71,14 @@ Tabele objęte weryfikacją:
 - Nie wykonuje `supabase db push` ani `supabase functions deploy`.
 
 ## Owner actions minimalne (tylko jeśli brak)
-1. Dodać 4 sekrety repo w GitHub Actions: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`, `SUPABASE_ANON_KEY`.
+1. Dodać sekrety repo w GitHub Actions:
+   - `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `SUPABASE_ANON_KEY` (zawsze wymagane)
+   - `SUPABASE_DB_URL` — **preferowany** (Session Pooler connection string; eliminuje błędy SASL auth)
+   - `SUPABASE_DB_PASSWORD` — tylko jako fallback jeśli `SUPABASE_DB_URL` niedostępny
 2. Upewnić się, że merge do `main` jest jedyną ścieżką wdrożenia produkcyjnego.
-3. Monitorować wynik workflow `Deployment Truth Gate` po każdym merge oraz marker `SUPABASE_DEPLOY: PASS/FAIL`.
+3. Monitorować wynik workflow `Deployment Truth Gate` po każdym merge oraz markery:
+   - `SUPABASE_DEPLOY: PASS` / `SUPABASE_DEPLOY: FAIL`
+   - `SUPABASE_DB_URL_MODE: ON` (gdy używany Session Pooler) lub `SUPABASE_DB_PASSWORD_MODE: ON` (fallback)
 
 ## Czego repo nadal nie potwierdza
 - Vercel dashboard-side: mapowanie repo→project, branch produkcyjny, status ostatniego deploymentu, konfiguracja ENV w panelu.

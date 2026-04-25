@@ -25,6 +25,7 @@ jobs:
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
       SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
@@ -84,11 +85,15 @@ jobs:
         run: |
           set -euo pipefail
           missing=()
-          for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_REF SUPABASE_ANON_KEY; do
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF SUPABASE_ANON_KEY; do
             if [ -z "${!name:-}" ]; then
               missing+=("$name")
             fi
           done
+          # DB auth: SUPABASE_DB_URL preferred (Session Pooler), SUPABASE_DB_PASSWORD as fallback
+          if [ -z "${SUPABASE_DB_URL:-}" ] && [ -z "${SUPABASE_DB_PASSWORD:-}" ]; then
+            missing+=("SUPABASE_DB_URL lub SUPABASE_DB_PASSWORD")
+          fi
 
           if [ "${#missing[@]}" -gt 0 ]; then
             if [ "${{ steps.detect-migrations.outputs.has_migrations }}" = "true" ]; then
@@ -106,8 +111,8 @@ jobs:
               echo ""
               echo "Jak naprawić:"
               echo "  GitHub → Settings → Secrets and variables → Actions → New repository secret"
-              echo "  Wymagane sekrety: SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD,"
-              echo "                    SUPABASE_PROJECT_REF, SUPABASE_ANON_KEY"
+              echo "  Wymagane sekrety: SUPABASE_ACCESS_TOKEN, SUPABASE_PROJECT_REF, SUPABASE_ANON_KEY"
+              echo "                    oraz SUPABASE_DB_URL (preferowany) lub SUPABASE_DB_PASSWORD (fallback)"
               echo ""
               exit 1
             fi
@@ -134,14 +139,26 @@ jobs:
           set -euo pipefail
           supabase --version
           supabase login --token "$SUPABASE_ACCESS_TOKEN"
-          supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          if [ -n "${SUPABASE_DB_URL:-}" ]; then
+            # DB_URL mode: skip link — db push uses --db-url, functions deploy uses --project-ref
+            echo "SUPABASE_DB_URL_MODE: login only, skipping link (no --password required)"
+          else
+            # Password mode: link requires direct DB connection
+            supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          fi
 
       - name: Deploy migrations
         if: steps.validate-secrets.outputs.supabase_skip != 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
-          supabase db push --password "$SUPABASE_DB_PASSWORD" --yes
+          if [ -n "${SUPABASE_DB_URL:-}" ]; then
+            echo "SUPABASE_DB_URL_MODE: ON"
+            supabase db push --db-url "$SUPABASE_DB_URL" --yes
+          else
+            echo "SUPABASE_DB_PASSWORD_MODE: ON"
+            supabase db push --password "$SUPABASE_DB_PASSWORD" --yes
+          fi
 
       - name: Deploy edge functions
         if: steps.validate-secrets.outputs.supabase_skip != 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -155,7 +172,11 @@ jobs:
             fi
             if [ -f "supabase/functions/$fn/index.ts" ]; then
               echo "Deploying function: $fn"
-              supabase functions deploy "$fn"
+              if [ -n "${SUPABASE_DB_URL:-}" ]; then
+                supabase functions deploy "$fn" --project-ref "$SUPABASE_PROJECT_REF"
+              else
+                supabase functions deploy "$fn"
+              fi
             fi
           done
 
@@ -164,8 +185,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          supabase migration list
-          supabase functions list
+          if [ -n "${SUPABASE_DB_URL:-}" ]; then
+            supabase migration list --db-url "$SUPABASE_DB_URL"
+            supabase functions list --project-ref "$SUPABASE_PROJECT_REF"
+          else
+            supabase migration list
+            supabase functions list
+          fi
           echo "PASS: Supabase deploy commands zakończone kodem 0"
 
       # ── Supabase Reality Check — Phase 1 ─────────────────────────────────
