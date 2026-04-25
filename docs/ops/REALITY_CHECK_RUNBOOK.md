@@ -86,7 +86,8 @@ Naprawa: sprawdź `SUPABASE_URL` — czy wskazuje na właściwy projekt.
 **Krok 4: Jeśli tabela faktycznie nie istnieje (prawdziwy P0)**
 
 - Sprawdź czy migracja została wdrożona: Supabase Dashboard → Database → Migrations
-- Uruchom ręcznie: `supabase db push --password "$SUPABASE_DB_PASSWORD" --yes`
+- Uruchom ręcznie (preferowany — Session Pooler): `supabase db push --db-url "$SUPABASE_DB_URL" --yes`
+- Fallback (jeśli brak SUPABASE_DB_URL): `supabase db push --password "$SUPABASE_DB_PASSWORD" --yes`
 - Weryfikacja: ponownie uruchom workflow
 
 ### Wyłączenie Reality Check (tymczasowe)
